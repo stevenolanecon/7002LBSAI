@@ -1,0 +1,31 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "7002LBSAI"
+  description: "Research Methods in Analytics — MSc Business Analytics and AI, LJMU"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: schedule.qmd
+        text: Schedule
+      - href: assessment.qmd
+        text: Assessment
+      - href: resources.qmd
+        text: Resources
+    right:
+      - icon: github
+        href: https://github.com/stevenolan/7002LBSAI
+  page-footer:
+    left: "7002LBSAI Research Methods in Analytics — LJMU"
+    right: "Steve Nolan"
+
+format:
+  html:
+    theme:
+      light: flatly
+    css: styles.css
+    toc: true
+    toc-depth: 2

@@ -1,0 +1,86 @@
+[
+  {
+    "objectID": "schedule.html",
+    "href": "schedule.html",
+    "title": "Schedule",
+    "section": "",
+    "text": "Week\nWorkshop\nCore question\n\n\n\n\n1\nDistributions and summarising data\nWhat does a variable actually look like?\n\n\n2\nInference\nWhen is a difference real?\n\n\n3\nRelationships between variables\nHow do two variables move together — and what does that tell us?\n\n\n4\nRegression I\nWhat does a coefficient actually measure?\n\n\n5\nRegression II\nWhat does “controlling for” actually mean?\n\n\n6\nChoosing your model\nWhen is linear regression the wrong tool?\n\n\n7\nUnderstanding your model\nAre you controlling for the right things?\n\n\n8\nTime and data\nWhat goes wrong when observations are not independent?\n\n\n9\nExperiments and A/B testing\nWhy does randomisation solve the confounding problem?\n\n\n10\nWhen you can’t experiment\nCan we estimate causal effects without randomisation?\n\n\n11\nSynthesis and assessment clinic\nHow do I choose a method — and what are its limits?\n\n\n\nWeekly materials will be added here as the module progresses."
+  },
+  {
+    "objectID": "schedule.html#workshop-and-online-session-overview",
+    "href": "schedule.html#workshop-and-online-session-overview",
+    "title": "Schedule",
+    "section": "",
+    "text": "Week\nWorkshop\nCore question\n\n\n\n\n1\nDistributions and summarising data\nWhat does a variable actually look like?\n\n\n2\nInference\nWhen is a difference real?\n\n\n3\nRelationships between variables\nHow do two variables move together — and what does that tell us?\n\n\n4\nRegression I\nWhat does a coefficient actually measure?\n\n\n5\nRegression II\nWhat does “controlling for” actually mean?\n\n\n6\nChoosing your model\nWhen is linear regression the wrong tool?\n\n\n7\nUnderstanding your model\nAre you controlling for the right things?\n\n\n8\nTime and data\nWhat goes wrong when observations are not independent?\n\n\n9\nExperiments and A/B testing\nWhy does randomisation solve the confounding problem?\n\n\n10\nWhen you can’t experiment\nCan we estimate causal effects without randomisation?\n\n\n11\nSynthesis and assessment clinic\nHow do I choose a method — and what are its limits?\n\n\n\nWeekly materials will be added here as the module progresses."
+  },
+  {
+    "objectID": "assessment.html",
+    "href": "assessment.html",
+    "title": "Assessment",
+    "section": "",
+    "text": "Component\nWeight\nDetails\n\n\n\n\nExamination\n40%\n\n\n\nApplied project\n60%\n\n\n\n\nFull assessment briefs will be published here ahead of the module start."
+  },
+  {
+    "objectID": "assessment.html#overview",
+    "href": "assessment.html#overview",
+    "title": "Assessment",
+    "section": "",
+    "text": "Component\nWeight\nDetails\n\n\n\n\nExamination\n40%\n\n\n\nApplied project\n60%\n\n\n\n\nFull assessment briefs will be published here ahead of the module start."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Research Methods in Analytics",
+    "section": "",
+    "text": "This is the module page for 7002LBSAI Research Methods in Analytics, part of the MSc Business Analytics and AI programme at Liverpool John Moores University.\nThis module is the statistical engine room of the MSc. It bridges from descriptive analytics to causal inference, and feeds directly into Predictive Analytics and Machine Learning."
+  },
+  {
+    "objectID": "index.html#welcome",
+    "href": "index.html#welcome",
+    "title": "Research Methods in Analytics",
+    "section": "",
+    "text": "This is the module page for 7002LBSAI Research Methods in Analytics, part of the MSc Business Analytics and AI programme at Liverpool John Moores University.\nThis module is the statistical engine room of the MSc. It bridges from descriptive analytics to causal inference, and feeds directly into Predictive Analytics and Machine Learning."
+  },
+  {
+    "objectID": "index.html#module-overview",
+    "href": "index.html#module-overview",
+    "title": "Research Methods in Analytics",
+    "section": "Module overview",
+    "text": "Module overview\n\n\n\nModule code\n7002LBSAI\n\n\nCredits\n20\n\n\nDelivery\n11 × 3-hour workshops + 11 × 1-hour online sessions\n\n\nAssessment\n40% examination, 60% applied project\n\n\nStart\nSeptember 2026"
+  },
+  {
+    "objectID": "index.html#module-leader",
+    "href": "index.html#module-leader",
+    "title": "Research Methods in Analytics",
+    "section": "Module leader",
+    "text": "Module leader\nDr Steve Nolan Liverpool Business School, LJMU S.P.Nolan@ljmu.ac.uk"
+  },
+  {
+    "objectID": "resources.html",
+    "href": "resources.html",
+    "title": "Resources",
+    "section": "",
+    "text": "Békés, G. & Kézdi, G. (2021). Data Analysis for Business, Economics, and Policy. Cambridge University Press.\nFree materials and data at gabors-data-analysis.com."
+  },
+  {
+    "objectID": "resources.html#primary-textbook",
+    "href": "resources.html#primary-textbook",
+    "title": "Resources",
+    "section": "",
+    "text": "Békés, G. & Kézdi, G. (2021). Data Analysis for Business, Economics, and Policy. Cambridge University Press.\nFree materials and data at gabors-data-analysis.com."
+  },
+  {
+    "objectID": "resources.html#software",
+    "href": "resources.html#software",
+    "title": "Resources",
+    "section": "Software",
+    "text": "Software\nThis module uses Python for applied work, coordinated with the Programming for Business Analytics module.\nKey packages: statsmodels, pandas, matplotlib, marginaleffects."
+  },
+  {
+    "objectID": "resources.html#further-reading",
+    "href": "resources.html#further-reading",
+    "title": "Resources",
+    "section": "Further reading",
+    "text": "Further reading\nTo be added as the module progresses."
+  }
+]

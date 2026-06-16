@@ -1,0 +1,30 @@
+---
+title: "Research Methods in Analytics"
+subtitle: "7002LBSAI — MSc Business Analytics and AI, LJMU"
+---
+
+## Welcome
+
+This is the module page for **7002LBSAI Research Methods in Analytics**, part of the MSc Business Analytics and AI programme at Liverpool John Moores University.
+
+This module is the statistical engine room of the MSc. It bridges from descriptive analytics to causal inference, and feeds directly into Predictive Analytics and Machine Learning.
+
+---
+
+## Module overview
+
+| | |
+|--|--|
+| **Module code** | 7002LBSAI |
+| **Credits** | 20 |
+| **Delivery** | 11 × 3-hour workshops + 11 × 1-hour online sessions |
+| **Assessment** | 40% examination, 60% applied project |
+| **Start** | September 2026 |
+
+---
+
+## Module leader
+
+**Dr Steve Nolan**
+Liverpool Business School, LJMU
+[S.P.Nolan\@ljmu.ac.uk](mailto:S.P.Nolan@ljmu.ac.uk)

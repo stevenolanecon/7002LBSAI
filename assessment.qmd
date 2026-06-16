@@ -1,0 +1,12 @@
+---
+title: "Assessment"
+---
+
+## Overview
+
+| Component | Weight | Details |
+|-----------|--------|---------|
+| Examination | 40% | |
+| Applied project | 60% | |
+
+Full assessment briefs will be published here ahead of the module start.

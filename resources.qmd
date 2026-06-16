@@ -1,0 +1,19 @@
+---
+title: "Resources"
+---
+
+## Primary textbook
+
+Békés, G. & Kézdi, G. (2021). *Data Analysis for Business, Economics, and Policy*. Cambridge University Press.
+
+Free materials and data at [gabors-data-analysis.com](https://gabors-data-analysis.com).
+
+## Software
+
+This module uses Python for applied work, coordinated with the Programming for Business Analytics module.
+
+Key packages: `statsmodels`, `pandas`, `matplotlib`, `marginaleffects`.
+
+## Further reading
+
+To be added as the module progresses.

@@ -1,0 +1,23 @@
+---
+title: "Schedule"
+---
+
+## Workshop and online session overview
+
+| Week | Workshop | Core question |
+|------|----------|---------------|
+| 1 | Distributions and summarising data | What does a variable actually look like? |
+| 2 | Inference | When is a difference real? |
+| 3 | Relationships between variables | How do two variables move together — and what does that tell us? |
+| 4 | Regression I | What does a coefficient actually measure? |
+| 5 | Regression II | What does "controlling for" actually mean? |
+| 6 | Choosing your model | When is linear regression the wrong tool? |
+| 7 | Understanding your model | Are you controlling for the right things? |
+| 8 | Time and data | What goes wrong when observations are not independent? |
+| 9 | Experiments and A/B testing | Why does randomisation solve the confounding problem? |
+| 10 | When you can't experiment | Can we estimate causal effects without randomisation? |
+| 11 | Synthesis and assessment clinic | How do I choose a method — and what are its limits? |
+
+: {tbl-colwidths="[8,30,62]"}
+
+Weekly materials will be added here as the module progresses.
