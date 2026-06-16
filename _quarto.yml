@@ -11,6 +11,8 @@ website:
         text: Home
       - href: schedule.qmd
         text: Schedule
+      - href: week1-tool.qmd
+        text: Week 1 Exercise
       - href: assessment.qmd
         text: Assessment
       - href: resources.qmd
