@@ -200,8 +200,14 @@ toc: false
       <option value="Phone">Phone</option>
       <option value="Laptop">Laptop</option>
     </select>
+    <label>Had caffeine in the last 2 hours?</label>
+    <select id="rt-caffeine">
+      <option value="">Select…</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
     <button class="rt-btn btn-blue" onclick="rtSetup()">Continue →</button>
-    <p id="rt-setup-err" class="error-msg" style="display:none">Please enter your name and select a device.</p>
+    <p id="rt-setup-err" class="error-msg" style="display:none">Please enter your name and answer all questions.</p>
   </div>
 
   <!-- ── Instructions ── -->
@@ -241,7 +247,7 @@ toc: false
 
 <script>
 const TOTAL = 10;
-let rtName = '', rtDevice = '', rtTrial = 0, rtStart = null, rtResults = [], rtTimer = null, rtState = 'idle';
+let rtName = '', rtDevice = '', rtCaffeine = '', rtTrial = 0, rtStart = null, rtResults = [], rtTimer = null, rtState = 'idle';
 
 function rtShow(id) {
   document.querySelectorAll('.rt-screen, #rt-wait, #rt-go').forEach(el => el.classList.remove('active'));
@@ -249,9 +255,10 @@ function rtShow(id) {
 }
 
 function rtSetup() {
-  rtName   = document.getElementById('rt-name').value.trim();
-  rtDevice = document.getElementById('rt-device').value;
-  if (!rtName || !rtDevice) { document.getElementById('rt-setup-err').style.display = 'block'; return; }
+  rtName     = document.getElementById('rt-name').value.trim();
+  rtDevice   = document.getElementById('rt-device').value;
+  rtCaffeine = document.getElementById('rt-caffeine').value;
+  if (!rtName || !rtDevice || !rtCaffeine) { document.getElementById('rt-setup-err').style.display = 'block'; return; }
   document.getElementById('rt-setup-err').style.display = 'none';
   rtShow('rt-instructions');
 }
@@ -313,9 +320,10 @@ function rtSave() {
     mode:    'no-cors',
     headers: { 'Content-Type': 'application/json' },
     body:    JSON.stringify({
-      name:    rtName,
-      device:  rtDevice,
-      results: rtResults
+      name:     rtName,
+      device:   rtDevice,
+      caffeine: rtCaffeine,
+      results:  rtResults
     })
   })
   .then(() => {
