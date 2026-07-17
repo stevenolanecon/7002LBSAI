@@ -206,8 +206,11 @@ toc: false
       <option value="Yes">Yes</option>
       <option value="No">No</option>
     </select>
+    <label>Index finger length (mm) — tip to base crease, on your dominant hand</label>
+    <input type="text" inputmode="numeric" id="rt-finger" placeholder="e.g. 72" autocomplete="off">
+    <p style="font-size:0.8em;color:#666;margin-top:-10px;align-self:flex-start;">Use a ruler. This is for a later session — not related to your response time.</p>
     <button class="rt-btn btn-blue" onclick="rtSetup()">Continue →</button>
-    <p id="rt-setup-err" class="error-msg" style="display:none">Please enter your name and answer all questions.</p>
+    <p id="rt-setup-err" class="error-msg" style="display:none">Please enter your name, finger length, and answer all questions.</p>
   </div>
 
   <!-- ── Instructions ── -->
@@ -247,7 +250,7 @@ toc: false
 
 <script>
 const TOTAL = 10;
-let rtName = '', rtDevice = '', rtCaffeine = '', rtTrial = 0, rtStart = null, rtResults = [], rtTimer = null, rtState = 'idle';
+let rtName = '', rtDevice = '', rtCaffeine = '', rtFinger = '', rtTrial = 0, rtStart = null, rtResults = [], rtTimer = null, rtState = 'idle';
 
 function rtShow(id) {
   document.querySelectorAll('.rt-screen, #rt-wait, #rt-go').forEach(el => el.classList.remove('active'));
@@ -258,7 +261,9 @@ function rtSetup() {
   rtName     = document.getElementById('rt-name').value.trim();
   rtDevice   = document.getElementById('rt-device').value;
   rtCaffeine = document.getElementById('rt-caffeine').value;
-  if (!rtName || !rtDevice || !rtCaffeine) { document.getElementById('rt-setup-err').style.display = 'block'; return; }
+  rtFinger   = document.getElementById('rt-finger').value.trim();
+  const fingerOk = rtFinger !== '' && !isNaN(rtFinger) && +rtFinger > 0;
+  if (!rtName || !rtDevice || !rtCaffeine || !fingerOk) { document.getElementById('rt-setup-err').style.display = 'block'; return; }
   document.getElementById('rt-setup-err').style.display = 'none';
   rtShow('rt-instructions');
 }
@@ -320,10 +325,11 @@ function rtSave() {
     mode:    'no-cors',
     headers: { 'Content-Type': 'application/json' },
     body:    JSON.stringify({
-      name:     rtName,
-      device:   rtDevice,
-      caffeine: rtCaffeine,
-      results:  rtResults
+      name:         rtName,
+      device:       rtDevice,
+      caffeine:     rtCaffeine,
+      finger_mm:    rtFinger,
+      results:      rtResults
     })
   })
   .then(() => {
