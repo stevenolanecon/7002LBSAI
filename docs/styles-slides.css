@@ -1,0 +1,89 @@
+/* ── Week 1 slide styles ── */
+
+.reveal {
+  /* Theme defaults (40px / 12px margins / 64px h2) overflow a 605px content
+     area after 6-7 lines. Tighten globally via the theme's own custom
+     properties so the reduction cascades to every element automatically. */
+  --r-main-font-size: 30px;
+  --r-block-margin: 9px;
+  --r-heading-margin: 0 0 10px 0;
+  --r-heading-line-height: 1.15;
+  --r-heading1-size: 2.2em;
+  --r-heading2-size: 1.35em;
+}
+
+.reveal,
+.reveal .slides {
+  font-family: "Inter", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Section divider slides */
+.reveal h1 { font-weight: 700; }
+.reveal h2 { font-weight: 600; color: #1a1a2e; }
+
+/* Tighten default paragraph/list rhythm so more content fits per slide */
+.reveal p, .reveal ul, .reveal ol { line-height: 1.35; margin-bottom: 0.5em; }
+.reveal li { margin-bottom: 0.15em; }
+
+/* Instructions box */
+.instructions-box {
+  background: #f0f4f8;
+  border-left: 5px solid #457b9d;
+  padding: 0.7em 1.4em;
+  border-radius: 6px;
+  font-size: 1em;
+  line-height: 1.5;
+  margin: 0.5em 0;
+}
+
+/* Stat chips */
+.stat-row { display: flex; gap: 1.2em; margin: 0.5em 0 0.8em 0; }
+.stat-chip {
+  padding: 0.35em 1em;
+  border-radius: 20px;
+  font-size: 1em;
+  font-weight: 500;
+}
+.chip-red    { background: #fde8e8; color: #e63946; }
+.chip-orange { background: #fef3e8; color: #c87941; }
+
+/* Two-column layout */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 2em; margin-top: 0.5em; }
+.col { padding: 0.4em; }
+
+/* Checklist */
+.checklist ol { line-height: 2.1; font-size: 1.05em; }
+.checklist ol li { padding-left: 0.3em; }
+
+/* Tables */
+.reveal table { font-size: 0.9em; }
+.reveal table th { background: #f0f4f8; }
+
+/* Callout overrides — make them slightly smaller in slides */
+.reveal .callout { font-size: 0.9em; margin: 0.8em 0; }
+
+/* ── OJS input controls — compact for slides ── */
+.reveal .observablehq label {
+  font-size: 0.68rem !important;
+  line-height: 1.4 !important;
+  font-family: "Helvetica Neue", sans-serif !important;
+}
+.reveal .observablehq input[type=range] {
+  height: 16px !important;
+  width: 140px !important;
+}
+.reveal .observablehq input[type=checkbox] {
+  width: 14px !important;
+  height: 14px !important;
+}
+/* Remove extra spacing OJS adds between form elements */
+.reveal .observablehq form > * {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.reveal .observablehq {
+  padding: 2px 0 !important;
+}

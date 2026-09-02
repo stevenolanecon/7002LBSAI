@@ -1,0 +1,1289 @@
+---
+title: "EDA: Understanding Your Data"
+subtitle: "7002LBSAI Research Methods in Analytics — Week 1"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    css: styles-slides.css
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{python}
+import pandas as pd
+import numpy as np
+
+# Live Google Sheet (switch back to this once the module is running):
+# df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIOZ03GpUJgqvGVmI9cih169mMq0ajLMj6a0VTd2tytB3K5BmX5AUiKQ8FKIL6KUKEcgb-1LR-1eM/pub?gid=0&single=true&output=csv")
+# Synthetic data for building/testing slides before the module runs:
+df = pd.read_csv("data/synthetic_reaction_times.csv")
+
+# Normalise column name — sheet uses 'name', dummy data uses 'student_name'
+if 'name' in df.columns and 'student_name' not in df.columns:
+    df = df.rename(columns={'name': 'student_name'})
+
+# Handle caffeine column — may not exist in early data
+if 'caffeine' not in df.columns:
+    df['caffeine'] = 'Unknown'
+df['caffeine'] = df['caffeine'].fillna('Unknown')
+
+students = sorted(df["student_name"].unique().tolist())
+
+# Per-student summary (one row per student for frequency tables)
+students_df = df.drop_duplicates('student_name')
+
+device_freq = (
+    students_df.groupby('device').size()
+    .reset_index(name='count')
+)
+device_freq['pct'] = (device_freq['count'] / device_freq['count'].sum() * 100).round(1)
+
+caff_freq = (
+    students_df.groupby('caffeine').size()
+    .reset_index(name='count')
+)
+caff_freq['pct'] = (caff_freq['count'] / caff_freq['count'].sum() * 100).round(1)
+
+student_stats = (
+    df.groupby(["student_name", "device", "caffeine"])["reaction_time_ms"]
+    .agg(mean="mean", median="median", sd="std", min="min", max="max")
+    .reset_index()
+    .round(1)
+)
+
+# NaN (e.g. missing finger_mm on older submissions) is not valid JSON. All
+# ojs_define() values share one JSON payload, so a single stray NaN anywhere
+# breaks every variable in the call — clean before handing over.
+df_clean = df.astype(object).where(df.notna(), None)
+student_stats_clean = student_stats.astype(object).where(student_stats.notna(), None)
+
+ojs_define(
+    data         = df_clean.to_dict(orient="records"),
+    students     = students,
+    pool_mean    = round(float(df["reaction_time_ms"].mean()), 1),
+    pool_med     = round(float(df["reaction_time_ms"].median()), 1),
+    pool_sd      = round(float(df["reaction_time_ms"].std()), 1),
+    pool_max     = int(df["reaction_time_ms"].max()),
+    pool_min     = int(df["reaction_time_ms"].min()),
+    smry         = student_stats_clean.to_dict(orient="records"),
+    device_freq  = device_freq.to_dict(orient="records"),
+    caff_freq    = caff_freq.to_dict(orient="records"),
+)
+```
+
+## {background-color="#1a1a2e"}
+
+::: {style="text-align: center; padding-top: 180px;"}
+[**How do we understand a variable?**]{style="font-size: 2.2em; color: white;"}
+
+[Before any model, any test, any result — you need to know what your data actually looks like.]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+:::
+
+## What is exploratory data analysis?
+
+::: {.instructions-box}
+**Exploratory data analysis (EDA)** is the process of describing your variables — the values they take, how often they take them, and whether anything is unusual. 
+
+This is the **crucial** step to take before you do anything else with the data.
+:::
+
+Békés & Kézdi frame it as three questions to ask before any model:
+
+- How should you start the analysis itself?
+- How do you describe the data and present its key features?
+- How do you explore the data and check whether it's clean enough for further analysis?
+
+::: {style="font-size:0.75em;color:#999;margin-top:24px;"}
+Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Policy*, Ch. 3
+:::
+
+## Why bother with EDA?
+
+Five reasons:
+
+1. **To check data cleaning** — EDA is part of an iterative cleaning process
+2. **To guide subsequent analysis** — what you see shapes what you do next
+3. **To give context** for interpreting later results
+4. **To ask additional questions** — EDA can refine the research question itself
+5. It can **offer simple, but possibly important, answers** on its own
+
+::: {style="font-size:0.75em;color:#999;margin-top:24px;"}
+Source: Békés & Kézdi (2021), Ch. 3
+:::
+
+## The business question
+
+::: {.instructions-box}
+A regional bank's customer service centre measures agent **response time** — how quickly an agent reacts to an incoming alert. It's a key operational metric.
+
+HR currently records **one test score per agent**, taken once at onboarding, and uses it to rank and place staff.
+:::
+
+::: {.fragment}
+**Is a single measurement an adequate way to capture this metric?**
+
+That's the question we'll answer today — using data we collect ourselves.
+:::
+
+## Collect the data
+
+::: {.instructions-box}
+1. Open **stevenolanecon.github.io/7002LBSAI/week1-tool.html** on your phone or laptop
+2. Enter your name, select your device, answer the caffeine question, and measure your **index finger length** with a ruler (tip to base crease, mm)
+3. Complete **10 trials** — tap as soon as the screen turns green
+4. Your results save automatically when you finish
+:::
+
+::: {.callout-note}
+Results go directly to the class dataset. We will explore them together today and in the coming weeks. 
+:::
+
+---
+
+# Section A {background-color="#2d6a4f"}
+## Types of variable
+
+---
+
+## What did we just collect?
+
+```{ojs}
+html`<table style="width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;">
+  <thead>
+    <tr style="background:#1a1a2e;color:white;">
+      <th style="padding:12px 20px;text-align:left;">Variable</th>
+      <th style="padding:12px 20px;text-align:left;">Type</th>
+      <th style="padding:12px 20px;text-align:left;">Scale</th>
+      <th style="padding:12px 20px;text-align:left;">Example values</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom:1px solid #eee;">
+      <td style="padding:12px 20px;font-weight:600;">Name</td>
+      <td style="padding:12px 20px;">Categorical</td>
+      <td style="padding:12px 20px;">Nominal</td>
+      <td style="padding:12px 20px;color:#666;">Alice Smith, …</td>
+    </tr>
+    <tr style="background:#fafafa;border-bottom:1px solid #eee;">
+      <td style="padding:12px 20px;font-weight:600;">Reaction time</td>
+      <td style="padding:12px 20px;">Continuous</td>
+      <td style="padding:12px 20px;">Ratio</td>
+      <td style="padding:12px 20px;color:#666;">243 ms, 312 ms, …</td>
+    </tr>
+    <tr style="border-bottom:1px solid #eee;">
+      <td style="padding:12px 20px;font-weight:600;">Device</td>
+      <td style="padding:12px 20px;">Categorical</td>
+      <td style="padding:12px 20px;">Nominal</td>
+      <td style="padding:12px 20px;color:#666;">Phone, Laptop</td>
+    </tr>
+    <tr style="background:#fafafa;">
+      <td style="padding:12px 20px;font-weight:600;">Caffeine</td>
+      <td style="padding:12px 20px;">Binary</td>
+      <td style="padding:12px 20px;">Nominal</td>
+      <td style="padding:12px 20px;color:#666;">Yes, No</td>
+    </tr>
+  </tbody>
+</table>`
+```
+
+::: {.fragment}
+::: {.callout-note}
+The **type** of variable determines which summaries and visualisations are meaningful.
+Taking a mean of *Device* is not just unhelpful — it is **nonsense**.
+:::
+:::
+
+## One student's raw data
+
+```{ojs}
+viewof selected_student = Inputs.select([null, ...students], {
+  label: null,
+  format: d => d === null ? "— select a student —" : d,
+  value: null
+})
+```
+
+```{ojs}
+student_data = selected_student
+  ? data.filter(d => d.student_name === selected_student)
+  : []
+```
+
+```{ojs}
+{
+  if (!selected_student) return html`<p style="color:#aaa;text-align:center;margin-top:60px;font-size:1.1em;">Select a student from the dropdown above.</p>`
+
+  const th = `<thead><tr style="background:#1a1a2e;color:white;">
+    <th style="padding:11px 40px;text-align:center;font-size:0.95em;">Trial</th>
+    <th style="padding:11px 40px;text-align:center;font-size:0.95em;">Time (ms)</th>
+  </tr></thead>`
+
+  const rows = slice => slice.map(d =>
+    `<tr style="border-bottom:1px solid #eee;">
+      <td style="padding:10px 40px;text-align:center;">${d.trial}</td>
+      <td style="padding:10px 40px;text-align:center;font-weight:700;color:#457b9d;font-size:1.05em;">${d.reaction_time_ms}</td>
+    </tr>`).join('')
+
+  return html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;width:75%;margin:24px auto 0;">
+    <table style="border-collapse:collapse;font-family:sans-serif;width:100%">
+      ${th}<tbody>${rows(student_data.slice(0,5))}</tbody>
+    </table>
+    <table style="border-collapse:collapse;font-family:sans-serif;width:100%">
+      ${th}<tbody>${rows(student_data.slice(5,10))}</tbody>
+    </table>
+  </div>`
+}
+```
+
+
+---
+
+# Section B {background-color="#2d6a4f"}
+## Format of the dataset
+
+---
+
+## Tidy data
+
+Every row is one **observation**. Every column is one **variable**.
+
+```{ojs}
+html`<table style="width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.88em;margin-top:16px;">
+  <thead>
+    <tr style="background:#1a1a2e;color:white;">
+      <th style="padding:10px 18px;text-align:left;">student_name</th>
+      <th style="padding:10px 18px;text-align:left;">trial</th>
+      <th style="padding:10px 18px;text-align:left;">reaction_time_ms</th>
+      <th style="padding:10px 18px;text-align:left;">device</th>
+      <th style="padding:10px 18px;text-align:left;">caffeine</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${data.slice(0,5).map((r,i) => `
+      <tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
+        <td style="padding:9px 18px;">${r.student_name}</td>
+        <td style="padding:9px 18px;text-align:center;">${r.trial}</td>
+        <td style="padding:9px 18px;text-align:right;font-weight:700;color:#457b9d;">${r.reaction_time_ms}</td>
+        <td style="padding:9px 18px;">${r.device}</td>
+        <td style="padding:9px 18px;">${r.caffeine || '—'}</td>
+      </tr>`).join('')}
+    <tr><td colspan="5" style="padding:9px 18px;color:#888;font-style:italic;font-size:0.9em;">… ${data.length} rows total (10 trials × ${students.length} students)</td></tr>
+  </tbody>
+</table>`
+```
+
+::: {.fragment}
+This format makes filtering, grouping, and plotting straightforward.
+One student's data = filter by `student_name`. One trial type = filter by `trial`. One device group = filter by `device`.
+:::
+
+---
+
+# Section C {background-color="#2d6a4f"}
+## Visualising distributions
+
+---
+
+## Frequency, probability, distribution
+
+- **Absolute frequency** — the count of observations with a particular value
+- **Relative frequency** — that count expressed as a proportion, or percentage, of all observations
+- **Probability** generalises relative frequency: a measure of the likelihood of an event, always between 0 and 1 — and, unlike relative frequency, it can describe an event without needing a dataset at all
+- The **distribution** of a variable tells you the frequency of each value it takes in the data, independent of what the other variables show
+
+::: {style="font-size:0.75em;color:#999;margin-top:20px;"}
+Source: Békés & Kézdi (2021), Ch. 3
+:::
+
+## Frequencies and probabilities in our data
+
+**Task (paper)** — Using the data we have generated, complete a frequency table for *Device*. What is the probability that a randomly selected student used a phone?
+
+::: {.fragment}
+```{ojs}
+html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:8px;">
+  <div>
+    <p style="font-weight:700;margin-bottom:12px;font-family:sans-serif;font-size:1.05em;">Device</p>
+    <table style="width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;">
+      <thead>
+        <tr style="background:#1a1a2e;color:white;">
+          <th style="padding:10px 16px;text-align:left;">Device</th>
+          <th style="padding:10px 16px;text-align:right;">Count</th>
+          <th style="padding:10px 16px;text-align:right;">%</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${device_freq.map((r,i) => `
+          <tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
+            <td style="padding:10px 16px;">${r.device}</td>
+            <td style="padding:10px 16px;text-align:right;font-weight:600;">${r.count}</td>
+            <td style="padding:10px 16px;text-align:right;color:#457b9d;">${r.pct}%</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <p style="font-weight:700;margin-bottom:12px;font-family:sans-serif;font-size:1.05em;">Caffeine (last 2 hours)</p>
+    <table style="width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;">
+      <thead>
+        <tr style="background:#1a1a2e;color:white;">
+          <th style="padding:10px 16px;text-align:left;">Caffeine</th>
+          <th style="padding:10px 16px;text-align:right;">Count</th>
+          <th style="padding:10px 16px;text-align:right;">%</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${caff_freq.map((r,i) => `
+          <tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
+            <td style="padding:10px 16px;">${r.caffeine}</td>
+            <td style="padding:10px 16px;text-align:right;font-weight:600;">${r.count}</td>
+            <td style="padding:10px 16px;text-align:right;color:#457b9d;">${r.pct}%</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>
+</div>`
+```
+:::
+
+## Visualisation
+
+- Statistics are useful but it often (always?) useful to **look** at your data
+- There are many ways to understanding the distribution of your variables
+- Histograms are the most famous 
+
+## What is a histogram?
+
+A histogram is a bar chart of a variable's distribution — bars show how many observations (or what percentage) fall in each bin.
+
+Reading one, look for:
+
+| Feature | What to look for |
+|---|---|
+| **Modes** | Peaks that stand out from their neighbourhood |
+| **Centre and tails** | Where most of the mass sits, and how it thins out |
+| **Symmetry** | Symmetric, or a long left/right tail? |
+| **Extreme values** | Points far from the rest, out in the tails |
+
+::: {.fragment}
+Now let's build one from data we collected ten minutes ago.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 3
+:::
+
+## One person's trials
+
+```{ojs}
+viewof selected_student_trials = Inputs.select([null, ...students], {
+  label: null,
+  format: d => d === null ? "— select a student —" : d,
+  value: null
+})
+```
+
+```{ojs}
+student_data_trials = selected_student_trials
+  ? data.filter(d => d.student_name === selected_student_trials)
+  : []
+```
+
+```{ojs}
+{
+  if (!selected_student_trials) return html`<p style="color:#aaa;text-align:center;margin-top:60px;font-size:1.1em;">
+    Select a student from the dropdown above.</p>`
+
+  const vals = student_data_trials.map(d => d.reaction_time_ms)
+  const lo   = d3.min(vals)
+  const hi   = d3.max(vals)
+  const pad  = Math.max(20, Math.round((hi - lo) * 0.15))
+
+  return Plot.plot({
+    height: 400,
+    marginLeft: 60,
+    marginBottom: 40,
+    x: { label: "Trial number", tickFormat: d => d },
+    y: { label: "Reaction time (ms)", domain: [lo - pad, hi + pad] },
+    marks: [
+      Plot.line(student_data_trials, { x: "trial", y: "reaction_time_ms", stroke: "#ccc", strokeWidth: 1.5 }),
+      Plot.dot(student_data_trials,  { x: "trial", y: "reaction_time_ms", fill: "#457b9d", r: 9,
+                                tip: true, title: d => `Trial ${d.trial}: ${d.reaction_time_ms} ms` }),
+    ]
+  })
+}
+```
+
+## One person's distribution
+
+```{ojs}
+{
+  if (!selected_student_trials) return html`<p style="color:#aaa;text-align:center;margin-top:100px;font-size:1.1em;">
+    Select a student on the previous slide.</p>`
+
+  const vals = student_data_trials.map(d => d.reaction_time_ms)
+
+  return Plot.plot({
+    height: 420,
+    marginLeft: 60,
+    marginBottom: 40,
+    x: { label: "Reaction time (ms)" },
+    y: { label: "Count" },
+    marks: [
+      Plot.rectY(vals, Plot.binX({ y: "count" }, { x: d => d, thresholds: 6, fill: "#457b9d" })),
+      Plot.ruleY([0]),
+    ]
+  })
+}
+```
+
+
+## Pooled histogram
+
+```{ojs}
+viewof hist_controls = {
+  const f = html`<div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;
+                              font-size:13px;font-family:'Helvetica Neue',sans-serif;
+                              padding:6px 2px;color:#333;">
+    <label style="display:flex;align-items:center;gap:8px;">
+      <span style="color:#666;white-space:nowrap;">Bin width</span>
+      <input type="range" name="bin_width" min="10" max="80" step="10" value="30"
+             style="width:100px;cursor:pointer;accent-color:#457b9d;">
+      <span id="bw-label" style="font-weight:600;min-width:34px;color:#457b9d;">30 ms</span>
+    </label>
+    <label style="display:flex;align-items:center;gap:8px;">
+      <span style="color:#e63946;white-space:nowrap;font-weight:600;">Exclude above</span>
+      <input type="range" name="threshold" min="${pool_min}" max="${Math.ceil(pool_max/10)*10 + 10}" step="10" value="${Math.ceil(pool_max/10)*10 + 10}"
+             style="width:110px;cursor:pointer;accent-color:#e63946;">
+      <span id="thr-label" style="font-weight:600;min-width:40px;color:#e63946;">All</span>
+    </label>
+    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+      <input type="checkbox" name="show_mean" checked style="cursor:pointer;accent-color:#e63946;"> Mean
+    </label>
+    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+      <input type="checkbox" name="show_median" style="cursor:pointer;accent-color:#f4a261;"> Median
+    </label>
+    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+      <input type="checkbox" name="show_kde" style="cursor:pointer;accent-color:#2d6a4f;"> KDE
+    </label>
+    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+      <input type="checkbox" name="show_pct" style="cursor:pointer;accent-color:#333;"> Show as %
+    </label>
+  </div>`
+
+  const bwRange  = f.querySelector('[name=bin_width]')
+  const bwLabel  = f.querySelector('#bw-label')
+  const thrRange = f.querySelector('[name=threshold]')
+  const thrLabel = f.querySelector('#thr-label')
+
+  bwRange.addEventListener('input', () => {
+    bwLabel.textContent = bwRange.value + ' ms'
+    f.dispatchEvent(new CustomEvent('input'))
+  })
+  const thrMax = Math.ceil(pool_max / 10) * 10 + 10
+  thrRange.addEventListener('input', () => {
+    thrLabel.textContent = +thrRange.value >= thrMax ? 'All' : thrRange.value + ' ms'
+    f.dispatchEvent(new CustomEvent('input'))
+  })
+  f.querySelectorAll('input[type=checkbox]').forEach(cb =>
+    cb.addEventListener('change', () => f.dispatchEvent(new CustomEvent('input')))
+  )
+  Object.defineProperty(f, 'value', { get() { return {
+    bin_width:  +f.querySelector('[name=bin_width]').value,
+    threshold:  +f.querySelector('[name=threshold]').value,
+    show_mean:   f.querySelector('[name=show_mean]').checked,
+    show_median: f.querySelector('[name=show_median]').checked,
+    show_kde:    f.querySelector('[name=show_kde]').checked,
+    show_pct:    f.querySelector('[name=show_pct]').checked,
+  }}})
+  return f
+}
+```
+
+```{ojs}
+{
+  const thr      = hist_controls.threshold
+  const thrMax   = Math.ceil(pool_max / 10) * 10 + 10
+  const filtered = data.filter(d => d.reaction_time_ms <= thr)
+  const vals     = filtered.map(d => d.reaction_time_ms)
+  const mu       = d3.mean(vals)
+  const med      = d3.median(vals)
+  const sigma    = d3.deviation(vals)
+  const excluded = data.length - filtered.length
+  const bw       = hist_controls.bin_width
+  const pct      = hist_controls.show_pct
+
+  const pad  = Math.max(20, Math.round((d3.max(vals) - d3.min(vals)) * 0.1))
+  const xmin = Math.floor((d3.min(vals) - pad) / 10) * 10
+  const xmax = Math.ceil((thr + pad) / 10) * 10
+
+  // KDE — Epanechnikov kernel, Silverman's bandwidth
+  // Absolute mode scales density to expected count per bin; relative mode
+  // scales it to the same proportion-per-bin units as the "proportion" reducer.
+  const h = sigma * 1.06 * Math.pow(vals.length, -0.2)
+  const kdePoints = d3.range(xmin, xmax, 2).map(x => {
+    const density = d3.mean(vals, v => {
+      const u = (x - v) / h
+      return Math.abs(u) <= 1 ? 0.75 * (1 - u * u) / h : 0
+    })
+    return { x, y: pct ? density * bw : density * filtered.length * bw }
+  })
+
+  return Plot.plot({
+    height: 330,
+    marginLeft: 55,
+    marginBottom: 32,
+    x: { label: "Reaction time (ms)", domain: [xmin, xmax] },
+    y: pct
+      ? { label: "% of trials", percent: true }
+      : { label: "Count" },
+    marks: [
+      Plot.rectY(filtered,
+        Plot.binX({ y: pct ? "proportion" : "count" },
+          { x: "reaction_time_ms", thresholds: d3.range(xmin, xmax + bw, bw),
+            fill: "#457b9d", fillOpacity: 0.75 })),
+      Plot.ruleX([0]),
+      hist_controls.show_mean   ? Plot.ruleX([mu],  { stroke: "#e63946", strokeWidth: 2.5,
+                             strokeDasharray: "6,4",
+                             tip: true, title: () => `Mean: ${mu.toFixed(1)} ms` }) : null,
+      hist_controls.show_median ? Plot.ruleX([med], { stroke: "#f4a261", strokeWidth: 2.5,
+                             strokeDasharray: "6,4",
+                             tip: true, title: () => `Median: ${med.toFixed(1)} ms` }) : null,
+      hist_controls.show_kde    ? Plot.line(kdePoints, { x: "x", y: "y",
+                             stroke: "#2d6a4f", strokeWidth: 2.5 }) : null,
+      excluded > 0 ? Plot.text([{ x: xmax, y: 0 }], {
+                             text: () => `${excluded} value${excluded > 1 ? 's' : ''} excluded`,
+                             x: "x", frameAnchor: "top-right",
+                             fill: "#e63946", fontSize: 12, fontStyle: "italic" }) : null,
+    ]
+  })
+}
+```
+
+::: {.fragment}
+Wider bins can smooth away real structure and suggest a more gradual decline than the data actually shows — bin width is a choice, not a neutral default.
+:::
+
+## Shape and outliers
+
+::: {.two-col}
+::: {.col}
+**What the histogram tells us**
+
+| Feature | What we see |
+|---------|-------------|
+| **Floor** | ~150 ms minimum |
+| **Tail** | Long tail to the right |
+| **Skew** | Right-skewed |
+| **KDE** | Smoothed shape of the distribution |
+
+:::
+::: {.col .fragment}
+**Outliers**
+
+There is some theoretical minimum - no human can react instantaneously. 
+
+There is no ceiling. Distraction, hesitation, accidental clicks — all extend the right tail.
+
+
+:::
+:::
+
+::: {.fragment}
+**Task** — In Excel: experiment with bin width. Try plotting reaction times split by device and by caffeine group.
+:::
+
+## What do we do with an outlier?
+
+For every extreme value, ask three questions — in order:
+
+| Question | If yes | Reaction-time example |
+|---|---|---|
+| **Is it an error?** | Drop or fix it | A 4 ms trial — a mis-click before the screen turned green |
+| **Is it real, but not what we're studying?** | Drop it, with a note | A slow trial because the student was talking to a neighbour |
+| **Is it a genuine feature of the process?** | Keep it | A slow trial from real hesitation — this *is* operational variability |
+
+::: {.fragment}
+The decision changes what you're measuring. Dropping every slow trial doesn't just clean the data — it can quietly redefine the metric.
+:::
+
+---
+
+# Section D {background-color="#2d6a4f"}
+## Summary statistics
+
+---
+
+## What is a summary statistic?
+
+For any variable, a **statistic** is a meaningful number you can compute from the data. **Summary statistics** describe the most important features of a distribution — its centre, its spread, its shape.
+
+::: {style="font-size:0.75em;color:#999;margin-top:20px;"}
+Source: Békés & Kézdi (2021), Ch. 3
+:::
+
+## The mean and expected value
+
+It is standard to refer to our variable as $x$. The mean (or average) of $x$ is calculated as: 
+
+$$\bar{x} = \frac{\sum x_i}{n}$$
+If we have $a$ and $b$ that are fixed whilst $x$ varies we get two useful properties: $\overline{x+a} = \bar{x} + a$ and $\overline{x \cdot b} = \bar{x} \cdot b$.
+
+::: {.fragment}
+The **expected value**, $E[x]$, is the value you'd expect for a randomly chosen observation.
+
+- For a quantitative variable, $E[x]$ is the mean
+- For a binary variable coded 0/1 — like *caffeine* — $E[x]$ is the **probability**, or relative frequency, of the category coded 1
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 3
+:::
+
+## Median, quantiles, mode
+
+- **Median** — the middle value when sorted; half the observations lie below, half above
+- **Quantiles / percentiles** divide the data into proportions. **Quartiles** divide it into fourths — the median is the 2nd quartile, the 50th percentile
+- **Mode** — the most frequent value; some distributions have more than one
+
+::: {style="font-size:0.75em;color:#999;margin-top:20px;"}
+Source: Békés & Kézdi (2021), Ch. 3
+:::
+
+## Centre: mean vs median
+
+```{ojs}
+viewof centre_student = Inputs.select(students, {
+  label: null,
+  value: students[2]
+})
+```
+
+```{ojs}
+{
+  const sd   = data.filter(d => d.student_name === centre_student)
+  const vals = sd.map(d => d.reaction_time_ms).sort((a,b) => a - b)
+  const mu   = d3.mean(vals)
+  const med  = d3.median(vals)
+  const cPad = Math.max(30, Math.round((d3.max(vals) - d3.min(vals)) * 0.2))
+  const cMin = d3.min(vals) - cPad
+  const cMax = d3.max(vals) + cPad
+  const jittered = vals.map(v => ({ v, y: (Math.random() - 0.5) * 0.8 }))
+
+  return Plot.plot({
+    height: 240,
+    marginLeft: 55,
+    x: { label: "Reaction time (ms)", domain: [cMin, cMax] },
+    y: { axis: null, domain: [-1, 1] },
+    marks: [
+      Plot.dot(jittered, { x: "v", y: "y", fill: "#457b9d", r: 5, fillOpacity: 0.65 }),
+      Plot.ruleX([mu],  { stroke: "#e63946", strokeWidth: 3,
+                          tip: true, title: () => `Mean: ${mu.toFixed(1)} ms` }),
+      Plot.ruleX([med], { stroke: "#f4a261", strokeWidth: 3,
+                          tip: true, title: () => `Median: ${med.toFixed(1)} ms` }),
+      Plot.text([{ x: mu,  label: `Mean\n${mu.toFixed(1)}`  }],
+                { x: "x", text: "label", dy: -28, fill: "#e63946", fontSize: 13 }),
+      Plot.text([{ x: med, label: `Median\n${med.toFixed(1)}` }],
+                { x: "x", text: "label", dy: 38,  fill: "#f4a261", fontSize: 13 }),
+    ]
+  })
+}
+```
+
+::: {.fragment}
+**Mean** — sum ÷ *n*. The balance point. Sensitive to every value, including outliers.
+
+**Median** — the middle value when sorted. Robust to extreme values.
+
+**Mode** — the most frequent value. Most useful for discrete or categorical data.
+
+When mean and median diverge, ask *why*. The answer is usually the shape of the distribution.
+:::
+
+::: {.fragment}
+After the workshop, go back to the histogram and drag the "exclude above" threshold down. Watch how much the **mean** moves compared to the **median** as the slowest trials drop out — that gap *is* the sensitivity to outliers.
+:::
+
+## Variance and standard deviation
+
+$$Var[x] = \frac{\sum (x_i - \bar{x})^2}{n} \qquad SD[x] = \sqrt{\frac{\sum (x_i - \bar{x})^2}{n}}$$
+
+- **Variance** is the average *squared* deviation from the mean — harder to interpret directly, but easy to work with algebraically because it is itself a mean
+- **Standard deviation** is the square root of variance — back in the original units, and roughly the typical distance between a randomly chosen observation and the mean
+
+::: {.fragment}
+Two distributions can share a mean but differ in spread: the higher the SD, the more dispersed the data. In finance, SD is literally how volatility is measured — a higher SD means a price that jumps around more.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 3
+:::
+
+## Spread: SD and IQR
+
+```{ojs}
+viewof spread_student = Inputs.select(students, {
+  label: null,
+  value: students[4]
+})
+```
+
+```{ojs}
+{
+  const sd   = data.filter(d => d.student_name === spread_student)
+  const vals = sd.map(d => d.reaction_time_ms)
+  const mu   = d3.mean(vals)
+  const sig  = d3.deviation(vals)
+  const q1   = d3.quantile(vals.slice().sort((a,b) => a-b), 0.25)
+  const q3   = d3.quantile(vals.slice().sort((a,b) => a-b), 0.75)
+
+  const sPad = Math.max(30, Math.round((d3.max(vals) - d3.min(vals)) * 0.2))
+  const sMin = d3.min(vals) - sPad
+  const sMax = d3.max(vals) + sPad
+  const jittered = vals.map(v => ({ v, y: (Math.random() - 0.5) * 1.0 }))
+
+  return Plot.plot({
+    height: 220,
+    marginLeft: 55,
+    x: { label: "Reaction time (ms)", domain: [sMin, sMax] },
+    y: { axis: null },
+    marks: [
+      Plot.rectX([{ x1: q1, x2: q3 }],
+        { x1: "x1", x2: "x2", y1: -0.6, y2: 0.6, fill: "#f4a261", fillOpacity: 0.25 }),
+      Plot.rectX([{ x1: mu - sig, x2: mu + sig }],
+        { x1: "x1", x2: "x2", y1: -0.6, y2: 0.6, fill: "#e63946", fillOpacity: 0.15 }),
+      Plot.dot(jittered, { x: "v", y: "y", fill: "#457b9d", r: 5, fillOpacity: 0.7 }),
+      Plot.ruleX([mu], { stroke: "#e63946", strokeWidth: 2.5 }),
+      Plot.text([
+        { x: mu,        label: `Mean: ${mu.toFixed(1)}`          },
+        { x: mu - sig,  label: `−1 SD (${(mu-sig).toFixed(0)})` },
+        { x: mu + sig,  label: `+1 SD (${(mu+sig).toFixed(0)})` },
+      ], { x: "x", text: "label", dy: -32, fill: "#e63946", fontSize: 11 }),
+      Plot.text([
+        { x: (q1+q3)/2, label: `IQR: ${q1.toFixed(0)}–${q3.toFixed(0)} ms` }
+      ], { x: "x", text: "label", dy: 38, fill: "#f4a261", fontSize: 12 }),
+    ]
+  })
+}
+```
+
+::: {.fragment}
+**Range** = max − min. Simple but dominated by extremes.
+
+**SD** = √variance. Same units as the data. Sensitive to outliers.
+
+**IQR** = Q3 − Q1. Spread of the middle 50%. Robust to outliers.
+
+**90–10 range** = 90th percentile − 10th percentile. A middle ground — trims the most extreme 20% without being as narrow as the IQR.
+:::
+
+## Standardised values and skewness
+
+Standardising expresses a value in units of standard deviation:
+
+$$x_{\text{standardised}} = \frac{x - \bar{x}}{SD[x]}$$
+
+A standardised value of 1 means "one SD above the mean"; −1 means "one SD below."
+
+::: {.fragment}
+A distribution is **skewed** if it isn't symmetric. A simple measure:
+
+$$\text{Skewness} = \frac{\bar{x} - \text{median}(x)}{SD[x]}$$
+
+When the right tail is long, the mean sits above the median and skewness is positive — exactly why our reaction-time data is right-skewed.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 3
+:::
+
+## Reading a box plot and a violin plot
+
+::: {.two-col}
+::: {.col}
+```{=html}
+<svg viewBox="0 0 430 380" width="100%" style="max-height:380px;">
+  <line x1="110" y1="40"  x2="110" y2="120" stroke="#457b9d" stroke-width="2"/>
+  <line x1="110" y1="240" x2="110" y2="320" stroke="#457b9d" stroke-width="2"/>
+  <line x1="75"  y1="40"  x2="145" y2="40"  stroke="#457b9d" stroke-width="2"/>
+  <line x1="75"  y1="320" x2="145" y2="320" stroke="#457b9d" stroke-width="2"/>
+  <rect x="60" y="120" width="100" height="120" fill="#457b9d" fill-opacity="0.22" stroke="#457b9d" stroke-width="2"/>
+  <line x1="60" y1="180" x2="160" y2="180" stroke="#e63946" stroke-width="3"/>
+  <circle cx="110" cy="355" r="4" fill="#e63946"/>
+
+  <line x1="145" y1="40"  x2="195" y2="40"  stroke="#bbb" stroke-width="1"/>
+  <text x="200" y="44" font-size="13" fill="#333">Upper adjacent value</text>
+  <line x1="110" y1="80"  x2="195" y2="80"  stroke="#bbb" stroke-width="1"/>
+  <text x="200" y="84" font-size="13" fill="#333">Whisker</text>
+  <line x1="160" y1="125" x2="195" y2="115" stroke="#bbb" stroke-width="1"/>
+  <text x="200" y="119" font-size="13" fill="#333">75th percentile (upper hinge)</text>
+  <line x1="160" y1="180" x2="195" y2="180" stroke="#bbb" stroke-width="1"/>
+  <text x="200" y="184" font-size="13" fill="#e63946" font-weight="600">Median</text>
+  <line x1="160" y1="235" x2="195" y2="245" stroke="#bbb" stroke-width="1"/>
+  <text x="200" y="249" font-size="13" fill="#333">25th percentile (lower hinge)</text>
+  <line x1="110" y1="280" x2="195" y2="290" stroke="#bbb" stroke-width="1"/>
+  <text x="200" y="294" font-size="13" fill="#333">Whisker</text>
+  <line x1="145" y1="320" x2="195" y2="320" stroke="#bbb" stroke-width="1"/>
+  <text x="200" y="324" font-size="13" fill="#333">Lower adjacent value</text>
+  <line x1="114" y1="355" x2="195" y2="355" stroke="#bbb" stroke-width="1"/>
+  <text x="200" y="359" font-size="13" fill="#e63946">Outside value</text>
+</svg>
+```
+:::
+::: {.col}
+```{=html}
+<svg viewBox="0 0 430 380" width="100%" style="max-height:380px;">
+  <path d="M 150.0,40.0 L 155.4,48.0 L 161.4,56.0 L 168.0,64.0 L 176.2,72.0 L 185.2,80.0 L 192.0,88.0
+           L 196.6,96.0 L 199.7,104.0 L 198.6,112.0 L 193.4,120.0 L 189.3,128.0 L 186.5,136.0
+           L 184.5,144.0 L 183.8,152.0 L 183.4,160.0 L 183.2,168.0 L 183.0,176.0 L 183.0,184.0
+           L 183.2,192.0 L 183.4,200.0 L 183.8,208.0 L 184.5,216.0 L 186.5,224.0 L 189.3,232.0
+           L 193.4,240.0 L 198.6,248.0 L 199.7,256.0 L 196.2,264.0 L 191.4,272.0 L 184.5,280.0
+           L 175.9,288.0 L 168.0,296.0 L 161.5,304.0 L 155.5,312.0 L 150.0,320.0
+           L 150.0,320.0 L 144.5,312.0 L 138.5,304.0 L 132.0,296.0 L 124.1,288.0 L 115.5,280.0
+           L 108.6,272.0 L 103.8,264.0 L 100.3,256.0 L 101.4,248.0 L 106.6,240.0 L 110.7,232.0
+           L 113.5,224.0 L 115.5,216.0 L 116.2,208.0 L 116.6,200.0 L 116.8,192.0 L 117.0,184.0
+           L 117.0,176.0 L 116.8,168.0 L 116.6,160.0 L 116.2,152.0 L 115.5,144.0 L 113.5,136.0
+           L 110.7,128.0 L 106.6,120.0 L 101.4,112.0 L 100.3,104.0 L 103.4,96.0 L 108.0,88.0
+           L 114.8,80.0 L 123.8,72.0 L 132.0,64.0 L 138.6,56.0 L 144.6,48.0 L 150.0,40.0 Z"
+        fill="#2d6a4f" fill-opacity="0.18" stroke="#2d6a4f" stroke-width="2" stroke-linejoin="round"/>
+  <line x1="150" y1="40" x2="150" y2="320" stroke="#2d6a4f" stroke-width="1.5"/>
+  <rect x="115" y="140" width="70" height="40" fill="#2d6a4f" fill-opacity="0.45" stroke="#2d6a4f" stroke-width="2"/>
+  <rect x="115" y="180" width="70" height="40" fill="#2d6a4f" fill-opacity="0.75" stroke="#2d6a4f" stroke-width="2"/>
+
+  <line x1="150" y1="100" x2="195" y2="100" stroke="#bbb" stroke-width="1"/>
+  <text x="200" y="104" font-size="13" fill="#333">95% confidence interval</text>
+  <line x1="185" y1="155" x2="195" y2="150" stroke="#bbb" stroke-width="1"/>
+  <text x="200" y="154" font-size="13" fill="#333">Interquartile range</text>
+  <line x1="185" y1="180" x2="195" y2="180" stroke="#bbb" stroke-width="1"/>
+  <text x="200" y="184" font-size="13" fill="#e63946" font-weight="600">Median</text>
+  <line x1="150" y1="260" x2="195" y2="260" stroke="#bbb" stroke-width="1"/>
+  <text x="200" y="264" font-size="13" fill="#333">95% confidence interval</text>
+</svg>
+```
+:::
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:4px;"}
+Source: Békés & Kézdi (2021), Ch. 3 — box plot and violin plot anatomy
+:::
+
+## Task — build your own box plot
+
+::: {.instructions-box}
+1. In Excel, use the reaction-time data — the full class, or just your own 10 trials
+2. Sort the values and find the median, the 25th and 75th percentiles, and the min/max
+3. Build a box plot from those five numbers
+4. If your version of Excel supports it, add a violin or "box and whisker with data points" chart alongside it
+:::
+
+::: {.fragment}
+Compare your box plot against a neighbour's — same data, does it look the same?
+:::
+
+## Box plot and violin plot: our data
+
+```{ojs}
+{
+  const allVals = data.map(d => d.reaction_time_ms)
+  const bPad = Math.max(30, Math.round((d3.max(allVals) - d3.min(allVals)) * 0.1))
+  const bMin = Math.floor((d3.min(allVals) - bPad) / 10) * 10
+  const bMax = Math.ceil((d3.max(allVals) + bPad) / 10) * 10
+  const colours = { Phone: "#457b9d", Laptop: "#2d6a4f" }
+
+  const grouped = ["Phone", "Laptop"].map(dev => {
+    const vals = data.filter(d => d.device === dev).map(d => d.reaction_time_ms).sort((a,b) => a-b)
+    const q1 = d3.quantile(vals,0.25), q3 = d3.quantile(vals,0.75)
+    const iqr = q3 - q1
+    const fenceLo = q1 - 1.5 * iqr, fenceHi = q3 + 1.5 * iqr
+    const inRange = vals.filter(v => v >= fenceLo && v <= fenceHi)
+    return {
+      group: dev,
+      q1, q2: d3.quantile(vals,0.5), q3,
+      lo: d3.min(inRange), hi: d3.max(inRange), mean: d3.mean(vals),
+    }
+  })
+
+  const fenceLookup = Object.fromEntries(grouped.map(g => [g.group, g]))
+  const outliers = data.filter(d => {
+    const g = fenceLookup[d.device]
+    return d.reaction_time_ms < g.lo || d.reaction_time_ms > g.hi
+  })
+
+  return Plot.plot({
+    height: 190,
+    marginLeft: 80,
+    x: { label: "Reaction time (ms)", domain: [bMin, bMax] },
+    y: { label: null, type: "band" },
+    marks: [
+      Plot.dot(data,      { x: "reaction_time_ms", y: "device",
+                            fill: d => colours[d.device], r: 4, fillOpacity: 0.2, jitter: "y" }),
+      Plot.ruleY(grouped, { y: "group", x1: "lo", x2: "hi", stroke: d => colours[d.group], strokeWidth: 1.5 }),
+      Plot.barX(grouped,  { x1: "q1", x2: "q3", y: "group", insetTop: 14, insetBottom: 14,
+                            fill: d => colours[d.group], fillOpacity: 0.55,
+                            stroke: d => colours[d.group], strokeWidth: 2 }),
+      Plot.tickX(grouped, { x: "q2", y: "group", insetTop: 14, insetBottom: 14, stroke: "white", strokeWidth: 3 }),
+      Plot.dot(grouped,   { x: "mean", y: "group", fill: d => colours[d.group], stroke: "white",
+                            strokeWidth: 1, r: 6, symbol: "diamond" }),
+      Plot.dot(outliers,  { x: "reaction_time_ms", y: "device",
+                            stroke: d => colours[d.device], fill: "white", r: 5, strokeWidth: 1.5 }),
+    ]
+  })
+}
+```
+
+```{ojs}
+{
+  const groups = ["Phone", "Laptop"]
+  const yPos = { Phone: 1, Laptop: 0 }
+  const colours = { Phone: "#457b9d", Laptop: "#2d6a4f" }
+  const allVals = data.map(d => d.reaction_time_ms)
+  const bPad = Math.max(30, Math.round((d3.max(allVals) - d3.min(allVals)) * 0.1))
+  const bMin = Math.floor((d3.min(allVals) - bPad) / 10) * 10
+  const bMax = Math.ceil((d3.max(allVals) + bPad) / 10) * 10
+
+  const violinData = groups.flatMap(g => {
+    const vals = data.filter(d => d.device === g).map(d => d.reaction_time_ms)
+    if (vals.length < 2) return []
+    const sigma = d3.deviation(vals)
+    const h = sigma * 1.06 * Math.pow(vals.length, -0.2)
+    const xs = d3.range(bMin, bMax, 2)
+    const dens = x => d3.mean(vals, v => {
+      const u = (x - v) / h
+      return Math.abs(u) <= 1 ? 0.75 * (1 - u * u) / h : 0
+    })
+    const maxDensity = d3.max(xs, dens)
+    return xs.map(x => {
+      const norm = maxDensity ? (dens(x) / maxDensity) * 0.42 : 0
+      return { group: g, x, y1: yPos[g] - norm, y2: yPos[g] + norm }
+    })
+  })
+
+  return Plot.plot({
+    height: 190,
+    marginLeft: 80,
+    x: { label: "Reaction time (ms)", domain: [bMin, bMax] },
+    y: { domain: [-0.7, 1.7], ticks: [0, 1],
+         tickFormat: v => v === 1 ? "Phone" : v === 0 ? "Laptop" : "", label: null },
+    marks: groups.map(g => Plot.areaY(violinData.filter(d => d.group === g),
+      { x: "x", y1: "y1", y2: "y2", fill: colours[g], fillOpacity: 0.5, stroke: colours[g], strokeWidth: 1.5 })),
+  })
+}
+```
+
+::: {.fragment}
+Box = IQR · Line = median · Diamond = mean · Whiskers = furthest point within 1.5×IQR of the box · Open circles = outliers beyond that. Violin = the same distribution, shown as its full shape rather than five summary numbers.
+:::
+
+## Python does this for you
+
+Ultimatly, in your working life you will not be calculting all these statistics yourself. Rather, you'll use statistical software. Here is what the Python output looks like: 
+
+```python
+import statsmodels.stats.descriptivestats as smd
+print(smd.describe(df["reaction_time_ms"]))
+```
+
+```{python}
+#| output: asis
+import statsmodels.stats.descriptivestats as smd
+
+_desc = smd.describe(df["reaction_time_ms"])["reaction_time_ms"]
+_rows = [
+    ("nobs", f"{_desc['nobs']:.0f}"),
+    ("mean", f"{_desc['mean']:.1f}"),
+    ("std_err", f"{_desc['std_err']:.1f}"),
+    ("upper_ci", f"{_desc['upper_ci']:.1f}"),
+    ("lower_ci", f"{_desc['lower_ci']:.1f}"),
+    ("std", f"{_desc['std']:.1f}"),
+    ("iqr", f"{_desc['iqr']:.1f}"),
+    ("skewness", f"{_desc['skew']:.2f}"),
+    ("kurtosis", f"{_desc['kurtosis']:.2f}"),
+    ("mode", f"{_desc['mode']:.1f}"),
+    ("median", f"{_desc['median']:.1f}"),
+]
+_line_width = 16
+_lines = "<br>".join(k + "&nbsp;" * (_line_width - len(k)) + v for k, v in _rows)
+
+print(
+    '::: {style="font-family: monospace; font-size: 0.78em; background: #f8f8f8; '
+    'border-left: 4px solid #457b9d; padding: 14px 20px; border-radius: 4px; line-height: 1.9;"}\n'
+    f'{_lines}\n:::'
+)
+```
+
+::: {.fragment}
+**Task** — In Excel: produce a summary statistics table for the full dataset and by device group.
+:::
+
+## So — was a single test score enough?
+
+::: {.two-col}
+::: {.col}
+Go back to HR's onboarding test: **one trial, one number, one ranking.**
+
+Every student here just produced **10** trials — and for most, the spread between fastest and slowest trial was far bigger than the difference between students.
+:::
+::: {.col .fragment}
+A single measurement doesn't tell you someone's typical response time. It tells you where **one random draw** from their distribution happened to land.
+
+**HR's test is measuring noise as if it were signal.**
+:::
+:::
+
+---
+
+# Section E {background-color="#2d6a4f"}
+## Group differences
+
+- Does reaction time differ by device type?
+
+::: {.fragment}
+**Task** - Calculated the mean reaction time for each device. 
+:::
+
+---
+
+## Does reaction time differ?
+
+```{ojs}
+viewof show_pts_device = Inputs.toggle({ label: "Show individual points", value: true })
+```
+
+```{ojs}
+{
+  const allVals = data.map(d => d.reaction_time_ms)
+  const bPad = Math.max(30, Math.round((d3.max(allVals) - d3.min(allVals)) * 0.1))
+  const bMin = Math.floor((d3.min(allVals) - bPad) / 10) * 10
+  const bMax = Math.ceil((d3.max(allVals) + bPad) / 10) * 10
+  const colours = { Phone: "#457b9d", Laptop: "#2d6a4f" }
+
+  const grouped = ["Phone", "Laptop"].map(dev => {
+    const vals = data.filter(d => d.device === dev).map(d => d.reaction_time_ms).sort((a,b) => a-b)
+    const q1 = d3.quantile(vals,0.25), q3 = d3.quantile(vals,0.75)
+    const iqr = q3 - q1
+    const fenceLo = q1 - 1.5 * iqr, fenceHi = q3 + 1.5 * iqr
+    const inRange = vals.filter(v => v >= fenceLo && v <= fenceHi)
+    return { group: dev, q1, q2: d3.quantile(vals,0.5), q3,
+             lo: d3.min(inRange), hi: d3.max(inRange), mean: d3.mean(vals) }
+  })
+
+  const fenceLookup = Object.fromEntries(grouped.map(g => [g.group, g]))
+  const outliers = data.filter(d => {
+    const g = fenceLookup[d.device]
+    return d.reaction_time_ms < g.lo || d.reaction_time_ms > g.hi
+  })
+
+  return Plot.plot({
+    height: 280,
+    marginLeft: 80,
+    x: { label: "Reaction time (ms)", domain: [bMin, bMax] },
+    y: { label: null, type: "band" },
+    marks: [
+      show_pts_device
+        ? Plot.dot(data, { x: "reaction_time_ms", y: "device",
+                           fill: d => colours[d.device], r: 4, fillOpacity: 0.2, jitter: "y" })
+        : null,
+      Plot.ruleY(grouped, { y: "group", x1: "lo", x2: "hi", stroke: d => colours[d.group], strokeWidth: 1.5 }),
+      Plot.barX(grouped,  { x1: "q1", x2: "q3", y: "group", insetTop: 22, insetBottom: 22,
+                            fill: d => colours[d.group], fillOpacity: 0.55,
+                            stroke: d => colours[d.group], strokeWidth: 2 }),
+      Plot.tickX(grouped, { x: "q2", y: "group", insetTop: 22, insetBottom: 22, stroke: "white", strokeWidth: 3 }),
+      Plot.dot(grouped,   { x: "mean", y: "group", fill: d => colours[d.group], stroke: "white",
+                            strokeWidth: 1, r: 6, symbol: "diamond" }),
+      Plot.dot(outliers, { x: "reaction_time_ms", y: "device",
+                           stroke: d => colours[d.device], fill: "white", r: 5, strokeWidth: 1.5 }),
+    ]
+  })
+}
+```
+
+## Does caffeine matter?
+
+```{ojs}
+viewof show_pts_caff = Inputs.toggle({ label: "Show individual points", value: true })
+```
+
+```{ojs}
+{
+  const colours = { Yes: "#e63946", No: "#457b9d" }
+  const allVals = data.map(d => d.reaction_time_ms)
+  const bPad = Math.max(30, Math.round((d3.max(allVals) - d3.min(allVals)) * 0.1))
+  const bMin = Math.floor((d3.min(allVals) - bPad) / 10) * 10
+  const bMax = Math.ceil((d3.max(allVals) + bPad) / 10) * 10
+
+  const grouped = ["Yes", "No"].map(c => {
+    const vals = data.filter(d => d.caffeine === c).map(d => d.reaction_time_ms).sort((a,b) => a-b)
+    if (!vals.length) return null
+    const q1 = d3.quantile(vals,0.25), q3 = d3.quantile(vals,0.75)
+    const iqr = q3 - q1
+    const fenceLo = q1 - 1.5 * iqr, fenceHi = q3 + 1.5 * iqr
+    const inRange = vals.filter(v => v >= fenceLo && v <= fenceHi)
+    return { group: c, q1, q2: d3.quantile(vals,0.5), q3,
+             lo: d3.min(inRange), hi: d3.max(inRange), mean: d3.mean(vals) }
+  }).filter(Boolean)
+
+  const pointData = data.filter(d => d.caffeine === "Yes" || d.caffeine === "No")
+
+  const fenceLookup = Object.fromEntries(grouped.map(g => [g.group, g]))
+  const outliers = pointData.filter(d => {
+    const g = fenceLookup[d.caffeine]
+    return g && (d.reaction_time_ms < g.lo || d.reaction_time_ms > g.hi)
+  })
+
+  return Plot.plot({
+    height: 280,
+    marginLeft: 80,
+    x: { label: "Reaction time (ms)", domain: [bMin, bMax] },
+    y: { label: "Caffeine?", type: "band" },
+    marks: [
+      show_pts_caff
+        ? Plot.dot(pointData, { x: "reaction_time_ms", y: "caffeine",
+                                fill: d => colours[d.caffeine], r: 4, fillOpacity: 0.2, jitter: "y" })
+        : null,
+      Plot.ruleY(grouped, { y: "group", x1: "lo", x2: "hi", stroke: d => colours[d.group], strokeWidth: 1.5 }),
+      Plot.barX(grouped,  { x1: "q1", x2: "q3", y: "group", insetTop: 22, insetBottom: 22,
+                            fill: d => colours[d.group], fillOpacity: 0.55,
+                            stroke: d => colours[d.group], strokeWidth: 2 }),
+      Plot.tickX(grouped, { x: "q2", y: "group", insetTop: 22, insetBottom: 22, stroke: "white", strokeWidth: 3 }),
+      Plot.dot(grouped,   { x: "mean", y: "group", fill: d => colours[d.group], stroke: "white",
+                            strokeWidth: 1, r: 6, symbol: "diamond" }),
+      Plot.dot(outliers, { x: "reaction_time_ms", y: "caffeine",
+                           stroke: d => colours[d.caffeine], fill: "white", r: 5, strokeWidth: 1.5 }),
+    ]
+  })
+}
+```
+
+## Comparing groups: the numbers
+
+```{ojs}
+{
+  function summarise(vals) {
+    if (!vals.length) return { n: 0, mean: "—", median: "—", min: "—", max: "—", sd: "—", skew: "—" }
+    const sorted = vals.slice().sort((a,b) => a-b)
+    const mu  = d3.mean(sorted)
+    const med = d3.median(sorted)
+    const sig = d3.deviation(sorted)
+    return {
+      n: sorted.length,
+      mean: mu.toFixed(1),
+      median: med.toFixed(1),
+      min: d3.min(sorted),
+      max: d3.max(sorted),
+      sd: sig !== undefined ? sig.toFixed(1) : "—",
+      skew: sig ? ((mu - med) / sig).toFixed(2) : "—",
+    }
+  }
+
+  const rows = [
+    { group: "Phone",  ...summarise(data.filter(d => d.device === "Phone").map(d => d.reaction_time_ms)) },
+    { group: "Laptop", ...summarise(data.filter(d => d.device === "Laptop").map(d => d.reaction_time_ms)) },
+  ]
+
+  return html`<table style="width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;margin-top:16px;">
+    <thead>
+      <tr style="background:#1a1a2e;color:white;">
+        <th style="padding:10px 16px;text-align:left;">Device</th>
+        <th style="padding:10px 16px;text-align:right;">N</th>
+        <th style="padding:10px 16px;text-align:right;">Mean</th>
+        <th style="padding:10px 16px;text-align:right;">Median</th>
+        <th style="padding:10px 16px;text-align:right;">Min</th>
+        <th style="padding:10px 16px;text-align:right;">Max</th>
+        <th style="padding:10px 16px;text-align:right;">SD</th>
+        <th style="padding:10px 16px;text-align:right;">Skew</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rows.map((r,i) => `
+        <tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
+          <td style="padding:10px 16px;font-weight:600;">${r.group}</td>
+          <td style="padding:10px 16px;text-align:right;">${r.n}</td>
+          <td style="padding:10px 16px;text-align:right;">${r.mean}</td>
+          <td style="padding:10px 16px;text-align:right;">${r.median}</td>
+          <td style="padding:10px 16px;text-align:right;">${r.min}</td>
+          <td style="padding:10px 16px;text-align:right;">${r.max}</td>
+          <td style="padding:10px 16px;text-align:right;">${r.sd}</td>
+          <td style="padding:10px 16px;text-align:right;">${r.skew}</td>
+        </tr>`).join('')}
+    </tbody>
+  </table>`
+}
+```
+
+::: {.fragment}
+A chart plus a table is the standard way to present a group comparison — the chart shows shape, the table gives exact numbers to quote.
+:::
+
+
+
+## Can we claim a difference is real?
+
+::: {.two-col}
+::: {.col}
+**We can see differences in the charts.**
+
+But is the class the *population* we care about?
+
+- If **yes** — we have all the data. No inference needed. The difference is the difference.
+- If **no** — we are treating the class as a **sample** from a larger group (all students? all adults?).
+
+:::
+::: {.col .fragment}
+**This is the inference question.**
+
+Any sample will show differences between groups — **by chance alone**.
+
+*How do we decide which differences to take seriously?*
+
+That requires thinking about **sampling**, **variability**, and **probability**.
+
+**That's Week 2.**
+:::
+:::
+
+---
+
+## Online session — Types of distribution
+
+The workshop looked at one histogram. The online session (1 hour) covers the recognisable shapes distributions come in — normal, log-normal, power-law, and where our reaction-time data fits.
+
+::: {.instructions-box}
+See **week1-online.html** — a short standalone deck for this week's online session.
+:::
+
+## Six steps of EDA
+
+1. Start with the variables that matter most
+2. Qualitative variables — list frequencies
+3. Quantitative variables — look at the histogram
+4. Check for extreme values. Decide what to do with them, deliberately
+5. Look at summary statistics — let them guide further questions
+6. Explore further if needed — by group, over time, or otherwise
+
+::: {.fragment}
+Every one of these steps, we just did.
+:::
+
+---
+
+## Coming up: Week 2
+
+::: {style="text-align: center; padding-top: 60px;"}
+[We can *see* a difference between groups.]{style="font-size: 1.3em;"}
+
+[But how do we know if it's **real** — or just chance?]{style="font-size: 1.3em; padding-top: 20px; display:block;"}
+
+[**Inference: when is a difference real?**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
+
+::: {.fragment style="padding-top:40px;"}
+*Sampling distributions · confidence intervals · p-values*
+:::
+:::

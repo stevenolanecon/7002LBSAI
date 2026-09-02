@@ -1,0 +1,200 @@
+---
+title: "Types of Distribution"
+subtitle: "7002LBSAI Research Methods in Analytics — Week 1 Online Session"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    css: styles-slides.css
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{python}
+import pandas as pd
+
+# Live Google Sheet (switch back to this once the module is running):
+# df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIOZ03GpUJgqvGVmI9cih169mMq0ajLMj6a0VTd2tytB3K5BmX5AUiKQ8FKIL6KUKEcgb-1LR-1eM/pub?gid=0&single=true&output=csv")
+# Synthetic data for building/testing slides before the module runs:
+df = pd.read_csv("data/synthetic_reaction_times.csv")
+
+ojs_define(
+    rt = df["reaction_time_ms"].tolist(),
+)
+```
+
+## {background-color="#1a1a2e"}
+
+::: {style="text-align: center; padding-top: 180px;"}
+[**Types of distribution**]{style="font-size: 2.2em; color: white;"}
+
+[The workshop looked at one histogram. This session looks at the recognisable shapes distributions come in — and checks which one ours is.]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+:::
+
+## Theoretical distributions
+
+**Theoretical distributions** describe idealised properties — not the frequencies in one dataset, but the likelihood of values in an abstract "population." They're fully described by a handful of *parameters*.
+
+::: {style="font-size:0.75em;color:#999;margin-top:20px;"}
+Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Policy*, Ch. 3
+:::
+
+## The normal distribution
+
+::: {.two-col}
+::: {.col}
+- Bell-shaped, symmetric — mean, median, and mode coincide
+- Fully described by two parameters: $\mu$ (the mean) and $\sigma$ (the standard deviation)
+- Examples: height, IQ, measurement error
+:::
+::: {.col}
+```{ojs}
+{
+  const rng = d3.randomNormal(0, 1)
+  const sample = Array.from({ length: 4000 }, rng)
+  return Plot.plot({
+    height: 240,
+    x: { label: "x", domain: [-4, 4] },
+    y: { label: "% of draws", percent: true },
+    marks: [
+      Plot.rectY(sample, Plot.binX({ y: "proportion" },
+        { x: d => d, thresholds: 30, fill: "#457b9d", fillOpacity: 0.8 })),
+      Plot.ruleX([0]),
+    ]
+  })
+}
+```
+:::
+:::
+
+## The log-normal distribution
+
+::: {.two-col}
+::: {.col}
+- Normal arises from **summing** many small, independent effects. Log-normal arises from **multiplying** them — and since $\log(a \times b) = \log a + \log b$, the log of such a variable is itself a sum, so it's approximately normal
+- Transform a normal $x$ with $e^x$ and you get exactly this: always non-negative, long right tail
+- Examples: income, firm size, our reaction-time data — each the result of many small multiplicative factors (attention, motor noise, distraction, ...)
+:::
+::: {.col}
+```{ojs}
+{
+  const rng = d3.randomLogNormal(0, 0.5)
+  const sample = Array.from({ length: 4000 }, rng)
+  const cutoff = d3.quantile(sample.slice().sort(d3.ascending), 0.99)
+  return Plot.plot({
+    height: 240,
+    x: { label: "x", domain: [0, cutoff] },
+    y: { label: "% of draws", percent: true },
+    marks: [
+      Plot.rectY(sample.filter(d => d <= cutoff), Plot.binX({ y: "proportion" },
+        { x: d => d, thresholds: 30, fill: "#2d6a4f", fillOpacity: 0.8 })),
+      Plot.ruleX([0]),
+    ]
+  })
+}
+```
+:::
+:::
+
+## The power-law distribution
+
+::: {.two-col}
+::: {.col}
+- Also called the **Pareto** distribution — large extreme values are common at any scale
+- Examples: city population, word frequency, wealth
+:::
+::: {.col}
+```{ojs}
+{
+  const alpha = 2.5, xmin = 1
+  const sample = Array.from({ length: 4000 }, () => xmin * Math.pow(1 - Math.random(), -1 / alpha))
+  const cutoff = d3.quantile(sample.slice().sort(d3.ascending), 0.97)
+  return Plot.plot({
+    height: 240,
+    x: { label: "x", domain: [0, cutoff] },
+    y: { label: "% of draws", percent: true },
+    marks: [
+      Plot.rectY(sample.filter(d => d <= cutoff), Plot.binX({ y: "proportion" },
+        { x: d => d, thresholds: 30, fill: "#e63946", fillOpacity: 0.8 })),
+      Plot.ruleX([0]),
+    ]
+  })
+}
+```
+:::
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:8px;"}
+Source: Békés & Kézdi (2021), Ch. 3 — shapes simulated here to show each family's characteristic silhouette
+:::
+
+## Other common distributions
+
+Not covered in this chapter of the textbook, but useful to have in view:
+
+| Distribution | Typical shape | Common use |
+|---|---|---|
+| **Uniform** | Flat — all values equally likely | Random number generators |
+| **Bernoulli** | Two outcomes (0 or 1) | Single test: pass/fail, yes/no |
+| **Binomial** | Count of successes in *n* trials | Defects per batch, correct answers |
+| **Poisson** | Count of events in a fixed interval | Arrivals per hour, emails per day |
+
+## Our data, and its log
+
+If reaction times are log-normal, the **log** of reaction time should look roughly normal. Let's check, using the class data collected in the workshop.
+
+```{ojs}
+{
+  const rtSorted = rt.slice().sort(d3.ascending)
+  const rtCut    = d3.quantile(rtSorted, 0.98)
+  const logRt    = rt.map(Math.log)
+
+  const p1 = Plot.plot({
+    height: 240, width: 380,
+    x: { label: "Reaction time (ms)", domain: [0, rtCut] },
+    y: { label: "% of trials", percent: true },
+    marks: [
+      Plot.rectY(rt.filter(d => d <= rtCut), Plot.binX({ y: "proportion" },
+        { x: d => d, thresholds: 20, fill: "#457b9d", fillOpacity: 0.8 })),
+      Plot.ruleX([0]),
+    ]
+  })
+  const p2 = Plot.plot({
+    height: 240, width: 380,
+    x: { label: "log(reaction time)" },
+    y: { label: "% of trials", percent: true },
+    marks: [
+      Plot.rectY(logRt, Plot.binX({ y: "proportion" },
+        { x: d => d, thresholds: 20, fill: "#2d6a4f", fillOpacity: 0.8 })),
+      Plot.ruleX([0]),
+    ]
+  })
+
+  return html`<div style="display:flex;gap:24px;justify-content:center;">${p1}${p2}</div>`
+}
+```
+
+::: {.fragment}
+Raw reaction times (blue) are right-skewed with a long tail. Their log (green) looks far closer to symmetric and bell-shaped — exactly what the log-normal claim predicts.
+:::
+
+## Coming up: Week 2
+
+::: {style="text-align: center; padding-top: 60px;"}
+[We can *see* a difference between groups.]{style="font-size: 1.3em;"}
+
+[But how do we know if it's **real** — or just chance?]{style="font-size: 1.3em; padding-top: 20px; display:block;"}
+
+[**Inference: when is a difference real?**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
+
+::: {.fragment style="padding-top:40px;"}
+*Fisher's tea test · sampling distributions · confidence intervals · p-values*
+:::
+:::

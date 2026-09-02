@@ -1,59 +1,24 @@
 [
   {
-    "objectID": "schedule.html",
-    "href": "schedule.html",
-    "title": "Schedule",
+    "objectID": "notebooks/7002LBSAI_Week_6.html",
+    "href": "notebooks/7002LBSAI_Week_6.html",
+    "title": "7002LBSAI",
     "section": "",
-    "text": "Week\nWorkshop\nCore question\n\n\n\n\n1\nDistributions and summarising data\nWhat does a variable actually look like?\n\n\n2\nInference\nWhen is a difference real?\n\n\n3\nRelationships between variables\nHow do two variables move together — and what does that tell us?\n\n\n4\nRegression I\nWhat does a coefficient actually measure?\n\n\n5\nRegression II\nWhat does “controlling for” actually mean?\n\n\n6\nChoosing your model\nWhen is linear regression the wrong tool?\n\n\n7\nUnderstanding your model\nAre you controlling for the right things?\n\n\n8\nTime and data\nWhat goes wrong when observations are not independent?\n\n\n9\nExperiments and A/B testing\nWhy does randomisation solve the confounding problem?\n\n\n10\nWhen you can’t experiment\nCan we estimate causal effects without randomisation?\n\n\n11\nSynthesis and assessment clinic\nHow do I choose a method — and what are its limits?\n\n\n\nWeekly materials will be added here as the module progresses."
-  },
-  {
-    "objectID": "schedule.html#workshop-and-online-session-overview",
-    "href": "schedule.html#workshop-and-online-session-overview",
-    "title": "Schedule",
-    "section": "",
-    "text": "Week\nWorkshop\nCore question\n\n\n\n\n1\nDistributions and summarising data\nWhat does a variable actually look like?\n\n\n2\nInference\nWhen is a difference real?\n\n\n3\nRelationships between variables\nHow do two variables move together — and what does that tell us?\n\n\n4\nRegression I\nWhat does a coefficient actually measure?\n\n\n5\nRegression II\nWhat does “controlling for” actually mean?\n\n\n6\nChoosing your model\nWhen is linear regression the wrong tool?\n\n\n7\nUnderstanding your model\nAre you controlling for the right things?\n\n\n8\nTime and data\nWhat goes wrong when observations are not independent?\n\n\n9\nExperiments and A/B testing\nWhy does randomisation solve the confounding problem?\n\n\n10\nWhen you can’t experiment\nCan we estimate causal effects without randomisation?\n\n\n11\nSynthesis and assessment clinic\nHow do I choose a method — and what are its limits?\n\n\n\nWeekly materials will be added here as the module progresses."
-  },
-  {
-    "objectID": "assessment.html",
-    "href": "assessment.html",
-    "title": "Assessment",
-    "section": "",
-    "text": "Component\nWeight\nDetails\n\n\n\n\nExamination\n40%\n\n\n\nApplied project\n60%\n\n\n\n\nFull assessment briefs will be published here ahead of the module start."
-  },
-  {
-    "objectID": "assessment.html#overview",
-    "href": "assessment.html#overview",
-    "title": "Assessment",
-    "section": "",
-    "text": "Component\nWeight\nDetails\n\n\n\n\nExamination\n40%\n\n\n\nApplied project\n60%\n\n\n\n\nFull assessment briefs will be published here ahead of the module start."
-  },
-  {
-    "objectID": "week1-tool.html",
-    "href": "week1-tool.html",
-    "title": "Week 1 — Reaction Time Exercise",
-    "section": "",
-    "text": "A regional bank is reviewing performance data from its customer service centre.\n      Response time — how quickly agents react to incoming alerts — is a key operational metric.\n      HR currently records a single test score per agent during onboarding.\n      Your task: collect your own response time data and evaluate whether\n      a single measurement is an adequate way to capture this metric.\n    \n    Your name\n    \n    Device you are using\n    \n      Select…\n      Phone\n      Laptop\n    \n    Had caffeine in the last 2 hours?\n    \n      Select…\n      Yes\n      No\n    \n    Index finger length (mm) — tip to base crease, on your dominant hand\n    \n    Use a ruler. This is for a later session — not related to your response time.\n    Continue →\n    Please enter your name, finger length, and answer all questions.\n  \n\n  \n  \n    How it works\n    \n      You will complete 10 trials.\n      The screen will turn green after a random delay.\n      Tap anywhere as fast as you can.\n      Note down each time as it appears — you'll need them at the end.\n    \n    Start trials\n  \n\n  \n  \n    Trial 1 of 10\n    Wait…\n    Tap when the screen turns green\n    Too early — wait for green!\n  \n\n  \n  \n    Trial 1 of 10\n    TAP!\n  \n\n  \n  \n    All done!\n    \n    Saving your results…"
+    "text": "measurement_data = \"https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/synthetic_reaction_times.csv\""
   },
   {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Research Methods in Analytics",
     "section": "",
-    "text": "This is the module page for 7002LBSAI Research Methods in Analytics, part of the MSc Business Analytics and AI programme at Liverpool John Moores University.\nThis module is the statistical engine room of the MSc. It bridges from descriptive analytics to causal inference, and feeds directly into Predictive Analytics and Machine Learning."
+    "text": "This site hosts the interactive materials for 7002LBSAI Research Methods in Analytics — slide decks and in-class tools that need to run as live web pages rather than static files.\nYour Canvas module is the main hub for the schedule, the textbook, datasets, notebooks, recordings, and assessment information. Come here only when a Canvas page links you to a specific tool or interactive slide deck."
   },
   {
-    "objectID": "index.html#welcome",
-    "href": "index.html#welcome",
+    "objectID": "index.html#what-this-site-is",
+    "href": "index.html#what-this-site-is",
     "title": "Research Methods in Analytics",
     "section": "",
-    "text": "This is the module page for 7002LBSAI Research Methods in Analytics, part of the MSc Business Analytics and AI programme at Liverpool John Moores University.\nThis module is the statistical engine room of the MSc. It bridges from descriptive analytics to causal inference, and feeds directly into Predictive Analytics and Machine Learning."
-  },
-  {
-    "objectID": "index.html#module-overview",
-    "href": "index.html#module-overview",
-    "title": "Research Methods in Analytics",
-    "section": "Module overview",
-    "text": "Module overview\n\n\n\nModule code\n7002LBSAI\n\n\nCredits\n20\n\n\nDelivery\n11 × 3-hour workshops + 11 × 1-hour online sessions\n\n\nAssessment\n40% examination, 60% applied project\n\n\nStart\nSeptember 2026"
+    "text": "This site hosts the interactive materials for 7002LBSAI Research Methods in Analytics — slide decks and in-class tools that need to run as live web pages rather than static files.\nYour Canvas module is the main hub for the schedule, the textbook, datasets, notebooks, recordings, and assessment information. Come here only when a Canvas page links you to a specific tool or interactive slide deck."
   },
   {
     "objectID": "index.html#module-leader",
@@ -63,31 +28,353 @@
     "text": "Module leader\nDr Steve Nolan Liverpool Business School, LJMU S.P.Nolan@ljmu.ac.uk"
   },
   {
-    "objectID": "resources.html",
-    "href": "resources.html",
-    "title": "Resources",
+    "objectID": "week1-tool.html",
+    "href": "week1-tool.html",
+    "title": "Week 1 — Reaction Time Exercise",
     "section": "",
-    "text": "Békés, G. & Kézdi, G. (2021). Data Analysis for Business, Economics, and Policy. Cambridge University Press.\nFree materials and data at gabors-data-analysis.com."
+    "text": "A regional bank is reviewing performance data from its customer service centre.\n      Response time — how quickly agents react to incoming alerts — is a key operational metric.\n      HR currently records a single test score per agent during onboarding.\n      Your task: collect your own response time data and evaluate whether\n      a single measurement is an adequate way to capture this metric.\n    \n    Your name\n    \n    Device you are using\n    \n      Select…\n      Phone\n      Laptop\n    \n    Had caffeine in the last 2 hours?\n    \n      Select…\n      Yes\n      No\n    \n    Index finger length (mm) — tip to base crease, on your dominant hand\n    \n    Use a ruler. This is for a later session — not related to your response time.\n    Continue →\n    Please enter your name, finger length, and answer all questions.\n  \n\n  \n  \n    How it works\n    \n      You will complete 10 trials.\n      The screen will turn green after a random delay.\n      Tap anywhere as fast as you can.\n      Note down each time as it appears — you'll need them at the end.\n    \n    Start trials\n  \n\n  \n  \n    Trial 1 of 10\n    Wait…\n    Tap when the screen turns green\n    Too early — wait for green!\n  \n\n  \n  \n    Trial 1 of 10\n    TAP!\n  \n\n  \n  \n    All done!\n    \n    Saving your results…"
   },
   {
-    "objectID": "resources.html#primary-textbook",
-    "href": "resources.html#primary-textbook",
-    "title": "Resources",
+    "objectID": "week1-slides.html#section",
+    "href": "week1-slides.html#section",
+    "title": "EDA: Understanding Your Data",
     "section": "",
-    "text": "Békés, G. & Kézdi, G. (2021). Data Analysis for Business, Economics, and Policy. Cambridge University Press.\nFree materials and data at gabors-data-analysis.com."
+    "text": "How do we understand a variable?\nBefore any model, any test, any result — you need to know what your data actually looks like."
   },
   {
-    "objectID": "resources.html#software",
-    "href": "resources.html#software",
-    "title": "Resources",
-    "section": "Software",
-    "text": "Software\nThis module uses Python for applied work, coordinated with the Programming for Business Analytics module.\nKey packages: statsmodels, pandas, matplotlib, marginaleffects."
+    "objectID": "week1-slides.html#what-is-exploratory-data-analysis",
+    "href": "week1-slides.html#what-is-exploratory-data-analysis",
+    "title": "EDA: Understanding Your Data",
+    "section": "What is exploratory data analysis?",
+    "text": "What is exploratory data analysis?\n\nExploratory data analysis (EDA) is the process of describing your variables — the values they take, how often they take them, and whether anything is unusual.\nThis is the crucial step to take before you do anything else with the data.\n\nBékés & Kézdi frame it as three questions to ask before any model:\n\nHow should you start the analysis itself?\nHow do you describe the data and present its key features?\nHow do you explore the data and check whether it’s clean enough for further analysis?\n\n\nSource: Békés & Kézdi (2021), Data Analysis for Business, Economics, and Policy, Ch. 3"
   },
   {
-    "objectID": "resources.html#further-reading",
-    "href": "resources.html#further-reading",
-    "title": "Resources",
-    "section": "Further reading",
-    "text": "Further reading\nTo be added as the module progresses."
+    "objectID": "week1-slides.html#why-bother-with-eda",
+    "href": "week1-slides.html#why-bother-with-eda",
+    "title": "EDA: Understanding Your Data",
+    "section": "Why bother with EDA?",
+    "text": "Why bother with EDA?\nFive reasons:\n\nTo check data cleaning — EDA is part of an iterative cleaning process\nTo guide subsequent analysis — what you see shapes what you do next\nTo give context for interpreting later results\nTo ask additional questions — EDA can refine the research question itself\nIt can offer simple, but possibly important, answers on its own\n\n\nSource: Békés & Kézdi (2021), Ch. 3"
+  },
+  {
+    "objectID": "week1-slides.html#the-business-question",
+    "href": "week1-slides.html#the-business-question",
+    "title": "EDA: Understanding Your Data",
+    "section": "The business question",
+    "text": "The business question\n\nA regional bank’s customer service centre measures agent response time — how quickly an agent reacts to an incoming alert. It’s a key operational metric.\nHR currently records one test score per agent, taken once at onboarding, and uses it to rank and place staff.\n\n\nIs a single measurement an adequate way to capture this metric?\nThat’s the question we’ll answer today — using data we collect ourselves."
+  },
+  {
+    "objectID": "week1-slides.html#collect-the-data",
+    "href": "week1-slides.html#collect-the-data",
+    "title": "EDA: Understanding Your Data",
+    "section": "Collect the data",
+    "text": "Collect the data\n\n\nOpen stevenolanecon.github.io/7002LBSAI/week1-tool.html on your phone or laptop\nEnter your name, select your device, answer the caffeine question, and measure your index finger length with a ruler (tip to base crease, mm)\nComplete 10 trials — tap as soon as the screen turns green\nYour results save automatically when you finish\n\n\n\n\n\n\n\n\nNote\n\n\nResults go directly to the class dataset. We will explore them together today and in the coming weeks."
+  },
+  {
+    "objectID": "week1-slides.html#types-of-variable",
+    "href": "week1-slides.html#types-of-variable",
+    "title": "EDA: Understanding Your Data",
+    "section": "Types of variable",
+    "text": "Types of variable"
+  },
+  {
+    "objectID": "week1-slides.html#what-did-we-just-collect",
+    "href": "week1-slides.html#what-did-we-just-collect",
+    "title": "EDA: Understanding Your Data",
+    "section": "What did we just collect?",
+    "text": "What did we just collect?\n\nhtml`&lt;table style=\"width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;\"&gt;\n  &lt;thead&gt;\n    &lt;tr style=\"background:#1a1a2e;color:white;\"&gt;\n      &lt;th style=\"padding:12px 20px;text-align:left;\"&gt;Variable&lt;/th&gt;\n      &lt;th style=\"padding:12px 20px;text-align:left;\"&gt;Type&lt;/th&gt;\n      &lt;th style=\"padding:12px 20px;text-align:left;\"&gt;Scale&lt;/th&gt;\n      &lt;th style=\"padding:12px 20px;text-align:left;\"&gt;Example values&lt;/th&gt;\n    &lt;/tr&gt;\n  &lt;/thead&gt;\n  &lt;tbody&gt;\n    &lt;tr style=\"border-bottom:1px solid #eee;\"&gt;\n      &lt;td style=\"padding:12px 20px;font-weight:600;\"&gt;Name&lt;/td&gt;\n      &lt;td style=\"padding:12px 20px;\"&gt;Categorical&lt;/td&gt;\n      &lt;td style=\"padding:12px 20px;\"&gt;Nominal&lt;/td&gt;\n      &lt;td style=\"padding:12px 20px;color:#666;\"&gt;Alice Smith, …&lt;/td&gt;\n    &lt;/tr&gt;\n    &lt;tr style=\"background:#fafafa;border-bottom:1px solid #eee;\"&gt;\n      &lt;td style=\"padding:12px 20px;font-weight:600;\"&gt;Reaction time&lt;/td&gt;\n      &lt;td style=\"padding:12px 20px;\"&gt;Continuous&lt;/td&gt;\n      &lt;td style=\"padding:12px 20px;\"&gt;Ratio&lt;/td&gt;\n      &lt;td style=\"padding:12px 20px;color:#666;\"&gt;243 ms, 312 ms, …&lt;/td&gt;\n    &lt;/tr&gt;\n    &lt;tr style=\"border-bottom:1px solid #eee;\"&gt;\n      &lt;td style=\"padding:12px 20px;font-weight:600;\"&gt;Device&lt;/td&gt;\n      &lt;td style=\"padding:12px 20px;\"&gt;Categorical&lt;/td&gt;\n      &lt;td style=\"padding:12px 20px;\"&gt;Nominal&lt;/td&gt;\n      &lt;td style=\"padding:12px 20px;color:#666;\"&gt;Phone, Laptop&lt;/td&gt;\n    &lt;/tr&gt;\n    &lt;tr style=\"background:#fafafa;\"&gt;\n      &lt;td style=\"padding:12px 20px;font-weight:600;\"&gt;Caffeine&lt;/td&gt;\n      &lt;td style=\"padding:12px 20px;\"&gt;Binary&lt;/td&gt;\n      &lt;td style=\"padding:12px 20px;\"&gt;Nominal&lt;/td&gt;\n      &lt;td style=\"padding:12px 20px;color:#666;\"&gt;Yes, No&lt;/td&gt;\n    &lt;/tr&gt;\n  &lt;/tbody&gt;\n&lt;/table&gt;`\n\n\n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\nThe type of variable determines which summaries and visualisations are meaningful. Taking a mean of Device is not just unhelpful — it is nonsense."
+  },
+  {
+    "objectID": "week1-slides.html#one-students-raw-data",
+    "href": "week1-slides.html#one-students-raw-data",
+    "title": "EDA: Understanding Your Data",
+    "section": "One student’s raw data",
+    "text": "One student’s raw data\n\nviewof selected_student = Inputs.select([null, ...students], {\n  label: null,\n  format: d =&gt; d === null ? \"— select a student —\" : d,\n  value: null\n})\n\n\n\n\n\n\n\nstudent_data = selected_student\n  ? data.filter(d =&gt; d.student_name === selected_student)\n  : []\n\n\n\n\n\n\n\n{\n  if (!selected_student) return html`&lt;p style=\"color:#aaa;text-align:center;margin-top:60px;font-size:1.1em;\"&gt;Select a student from the dropdown above.&lt;/p&gt;`\n\n  const th = `&lt;thead&gt;&lt;tr style=\"background:#1a1a2e;color:white;\"&gt;\n    &lt;th style=\"padding:11px 40px;text-align:center;font-size:0.95em;\"&gt;Trial&lt;/th&gt;\n    &lt;th style=\"padding:11px 40px;text-align:center;font-size:0.95em;\"&gt;Time (ms)&lt;/th&gt;\n  &lt;/tr&gt;&lt;/thead&gt;`\n\n  const rows = slice =&gt; slice.map(d =&gt;\n    `&lt;tr style=\"border-bottom:1px solid #eee;\"&gt;\n      &lt;td style=\"padding:10px 40px;text-align:center;\"&gt;${d.trial}&lt;/td&gt;\n      &lt;td style=\"padding:10px 40px;text-align:center;font-weight:700;color:#457b9d;font-size:1.05em;\"&gt;${d.reaction_time_ms}&lt;/td&gt;\n    &lt;/tr&gt;`).join('')\n\n  return html`&lt;div style=\"display:grid;grid-template-columns:1fr 1fr;gap:60px;width:75%;margin:24px auto 0;\"&gt;\n    &lt;table style=\"border-collapse:collapse;font-family:sans-serif;width:100%\"&gt;\n      ${th}&lt;tbody&gt;${rows(student_data.slice(0,5))}&lt;/tbody&gt;\n    &lt;/table&gt;\n    &lt;table style=\"border-collapse:collapse;font-family:sans-serif;width:100%\"&gt;\n      ${th}&lt;tbody&gt;${rows(student_data.slice(5,10))}&lt;/tbody&gt;\n    &lt;/table&gt;\n  &lt;/div&gt;`\n}"
+  },
+  {
+    "objectID": "week1-slides.html#format-of-the-dataset",
+    "href": "week1-slides.html#format-of-the-dataset",
+    "title": "EDA: Understanding Your Data",
+    "section": "Format of the dataset",
+    "text": "Format of the dataset"
+  },
+  {
+    "objectID": "week1-slides.html#tidy-data",
+    "href": "week1-slides.html#tidy-data",
+    "title": "EDA: Understanding Your Data",
+    "section": "Tidy data",
+    "text": "Tidy data\nEvery row is one observation. Every column is one variable.\n\nhtml`&lt;table style=\"width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.88em;margin-top:16px;\"&gt;\n  &lt;thead&gt;\n    &lt;tr style=\"background:#1a1a2e;color:white;\"&gt;\n      &lt;th style=\"padding:10px 18px;text-align:left;\"&gt;student_name&lt;/th&gt;\n      &lt;th style=\"padding:10px 18px;text-align:left;\"&gt;trial&lt;/th&gt;\n      &lt;th style=\"padding:10px 18px;text-align:left;\"&gt;reaction_time_ms&lt;/th&gt;\n      &lt;th style=\"padding:10px 18px;text-align:left;\"&gt;device&lt;/th&gt;\n      &lt;th style=\"padding:10px 18px;text-align:left;\"&gt;caffeine&lt;/th&gt;\n    &lt;/tr&gt;\n  &lt;/thead&gt;\n  &lt;tbody&gt;\n    ${data.slice(0,5).map((r,i) =&gt; `\n      &lt;tr style=\"${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;\"&gt;\n        &lt;td style=\"padding:9px 18px;\"&gt;${r.student_name}&lt;/td&gt;\n        &lt;td style=\"padding:9px 18px;text-align:center;\"&gt;${r.trial}&lt;/td&gt;\n        &lt;td style=\"padding:9px 18px;text-align:right;font-weight:700;color:#457b9d;\"&gt;${r.reaction_time_ms}&lt;/td&gt;\n        &lt;td style=\"padding:9px 18px;\"&gt;${r.device}&lt;/td&gt;\n        &lt;td style=\"padding:9px 18px;\"&gt;${r.caffeine || '—'}&lt;/td&gt;\n      &lt;/tr&gt;`).join('')}\n    &lt;tr&gt;&lt;td colspan=\"5\" style=\"padding:9px 18px;color:#888;font-style:italic;font-size:0.9em;\"&gt;… ${data.length} rows total (10 trials × ${students.length} students)&lt;/td&gt;&lt;/tr&gt;\n  &lt;/tbody&gt;\n&lt;/table&gt;`\n\n\n\n\n\n\n\nThis format makes filtering, grouping, and plotting straightforward. One student’s data = filter by student_name. One trial type = filter by trial. One device group = filter by device."
+  },
+  {
+    "objectID": "week1-slides.html#visualising-distributions",
+    "href": "week1-slides.html#visualising-distributions",
+    "title": "EDA: Understanding Your Data",
+    "section": "Visualising distributions",
+    "text": "Visualising distributions"
+  },
+  {
+    "objectID": "week1-slides.html#frequency-probability-distribution",
+    "href": "week1-slides.html#frequency-probability-distribution",
+    "title": "EDA: Understanding Your Data",
+    "section": "Frequency, probability, distribution",
+    "text": "Frequency, probability, distribution\n\nAbsolute frequency — the count of observations with a particular value\nRelative frequency — that count expressed as a proportion, or percentage, of all observations\nProbability generalises relative frequency: a measure of the likelihood of an event, always between 0 and 1 — and, unlike relative frequency, it can describe an event without needing a dataset at all\nThe distribution of a variable tells you the frequency of each value it takes in the data, independent of what the other variables show\n\n\nSource: Békés & Kézdi (2021), Ch. 3"
+  },
+  {
+    "objectID": "week1-slides.html#frequencies-and-probabilities-in-our-data",
+    "href": "week1-slides.html#frequencies-and-probabilities-in-our-data",
+    "title": "EDA: Understanding Your Data",
+    "section": "Frequencies and probabilities in our data",
+    "text": "Frequencies and probabilities in our data\nTask (paper) — Using the data we have generated, complete a frequency table for Device. What is the probability that a randomly selected student used a phone?\n\n\nhtml`&lt;div style=\"display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:8px;\"&gt;\n  &lt;div&gt;\n    &lt;p style=\"font-weight:700;margin-bottom:12px;font-family:sans-serif;font-size:1.05em;\"&gt;Device&lt;/p&gt;\n    &lt;table style=\"width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;\"&gt;\n      &lt;thead&gt;\n        &lt;tr style=\"background:#1a1a2e;color:white;\"&gt;\n          &lt;th style=\"padding:10px 16px;text-align:left;\"&gt;Device&lt;/th&gt;\n          &lt;th style=\"padding:10px 16px;text-align:right;\"&gt;Count&lt;/th&gt;\n          &lt;th style=\"padding:10px 16px;text-align:right;\"&gt;%&lt;/th&gt;\n        &lt;/tr&gt;\n      &lt;/thead&gt;\n      &lt;tbody&gt;\n        ${device_freq.map((r,i) =&gt; `\n          &lt;tr style=\"${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;\"&gt;\n            &lt;td style=\"padding:10px 16px;\"&gt;${r.device}&lt;/td&gt;\n            &lt;td style=\"padding:10px 16px;text-align:right;font-weight:600;\"&gt;${r.count}&lt;/td&gt;\n            &lt;td style=\"padding:10px 16px;text-align:right;color:#457b9d;\"&gt;${r.pct}%&lt;/td&gt;\n          &lt;/tr&gt;`).join('')}\n      &lt;/tbody&gt;\n    &lt;/table&gt;\n  &lt;/div&gt;\n  &lt;div&gt;\n    &lt;p style=\"font-weight:700;margin-bottom:12px;font-family:sans-serif;font-size:1.05em;\"&gt;Caffeine (last 2 hours)&lt;/p&gt;\n    &lt;table style=\"width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;\"&gt;\n      &lt;thead&gt;\n        &lt;tr style=\"background:#1a1a2e;color:white;\"&gt;\n          &lt;th style=\"padding:10px 16px;text-align:left;\"&gt;Caffeine&lt;/th&gt;\n          &lt;th style=\"padding:10px 16px;text-align:right;\"&gt;Count&lt;/th&gt;\n          &lt;th style=\"padding:10px 16px;text-align:right;\"&gt;%&lt;/th&gt;\n        &lt;/tr&gt;\n      &lt;/thead&gt;\n      &lt;tbody&gt;\n        ${caff_freq.map((r,i) =&gt; `\n          &lt;tr style=\"${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;\"&gt;\n            &lt;td style=\"padding:10px 16px;\"&gt;${r.caffeine}&lt;/td&gt;\n            &lt;td style=\"padding:10px 16px;text-align:right;font-weight:600;\"&gt;${r.count}&lt;/td&gt;\n            &lt;td style=\"padding:10px 16px;text-align:right;color:#457b9d;\"&gt;${r.pct}%&lt;/td&gt;\n          &lt;/tr&gt;`).join('')}\n      &lt;/tbody&gt;\n    &lt;/table&gt;\n  &lt;/div&gt;\n&lt;/div&gt;`"
+  },
+  {
+    "objectID": "week1-slides.html#visualisation",
+    "href": "week1-slides.html#visualisation",
+    "title": "EDA: Understanding Your Data",
+    "section": "Visualisation",
+    "text": "Visualisation\n\nStatistics are useful but it often (always?) useful to look at your data\nThere are many ways to understanding the distribution of your variables\nHistograms are the most famous"
+  },
+  {
+    "objectID": "week1-slides.html#what-is-a-histogram",
+    "href": "week1-slides.html#what-is-a-histogram",
+    "title": "EDA: Understanding Your Data",
+    "section": "What is a histogram?",
+    "text": "What is a histogram?\nA histogram is a bar chart of a variable’s distribution — bars show how many observations (or what percentage) fall in each bin.\nReading one, look for:\n\n\n\n\n\n\n\nFeature\nWhat to look for\n\n\n\n\nModes\nPeaks that stand out from their neighbourhood\n\n\nCentre and tails\nWhere most of the mass sits, and how it thins out\n\n\nSymmetry\nSymmetric, or a long left/right tail?\n\n\nExtreme values\nPoints far from the rest, out in the tails\n\n\n\n\nNow let’s build one from data we collected ten minutes ago.\n\n\nSource: Békés & Kézdi (2021), Ch. 3"
+  },
+  {
+    "objectID": "week1-slides.html#one-persons-trials",
+    "href": "week1-slides.html#one-persons-trials",
+    "title": "EDA: Understanding Your Data",
+    "section": "One person’s trials",
+    "text": "One person’s trials\n\nviewof selected_student_trials = Inputs.select([null, ...students], {\n  label: null,\n  format: d =&gt; d === null ? \"— select a student —\" : d,\n  value: null\n})\n\n\n\n\n\n\n\nstudent_data_trials = selected_student_trials\n  ? data.filter(d =&gt; d.student_name === selected_student_trials)\n  : []\n\n\n\n\n\n\n\n{\n  if (!selected_student_trials) return html`&lt;p style=\"color:#aaa;text-align:center;margin-top:60px;font-size:1.1em;\"&gt;\n    Select a student from the dropdown above.&lt;/p&gt;`\n\n  const vals = student_data_trials.map(d =&gt; d.reaction_time_ms)\n  const lo   = d3.min(vals)\n  const hi   = d3.max(vals)\n  const pad  = Math.max(20, Math.round((hi - lo) * 0.15))\n\n  return Plot.plot({\n    height: 400,\n    marginLeft: 60,\n    marginBottom: 40,\n    x: { label: \"Trial number\", tickFormat: d =&gt; d },\n    y: { label: \"Reaction time (ms)\", domain: [lo - pad, hi + pad] },\n    marks: [\n      Plot.line(student_data_trials, { x: \"trial\", y: \"reaction_time_ms\", stroke: \"#ccc\", strokeWidth: 1.5 }),\n      Plot.dot(student_data_trials,  { x: \"trial\", y: \"reaction_time_ms\", fill: \"#457b9d\", r: 9,\n                                tip: true, title: d =&gt; `Trial ${d.trial}: ${d.reaction_time_ms} ms` }),\n    ]\n  })\n}"
+  },
+  {
+    "objectID": "week1-slides.html#one-persons-distribution",
+    "href": "week1-slides.html#one-persons-distribution",
+    "title": "EDA: Understanding Your Data",
+    "section": "One person’s distribution",
+    "text": "One person’s distribution\n\n{\n  if (!selected_student_trials) return html`&lt;p style=\"color:#aaa;text-align:center;margin-top:100px;font-size:1.1em;\"&gt;\n    Select a student on the previous slide.&lt;/p&gt;`\n\n  const vals = student_data_trials.map(d =&gt; d.reaction_time_ms)\n\n  return Plot.plot({\n    height: 420,\n    marginLeft: 60,\n    marginBottom: 40,\n    x: { label: \"Reaction time (ms)\" },\n    y: { label: \"Count\" },\n    marks: [\n      Plot.rectY(vals, Plot.binX({ y: \"count\" }, { x: d =&gt; d, thresholds: 6, fill: \"#457b9d\" })),\n      Plot.ruleY([0]),\n    ]\n  })\n}"
+  },
+  {
+    "objectID": "week1-slides.html#pooled-histogram",
+    "href": "week1-slides.html#pooled-histogram",
+    "title": "EDA: Understanding Your Data",
+    "section": "Pooled histogram",
+    "text": "Pooled histogram\n\nviewof hist_controls = {\n  const f = html`&lt;div style=\"display:flex;align-items:center;gap:24px;flex-wrap:wrap;\n                              font-size:13px;font-family:'Helvetica Neue',sans-serif;\n                              padding:6px 2px;color:#333;\"&gt;\n    &lt;label style=\"display:flex;align-items:center;gap:8px;\"&gt;\n      &lt;span style=\"color:#666;white-space:nowrap;\"&gt;Bin width&lt;/span&gt;\n      &lt;input type=\"range\" name=\"bin_width\" min=\"10\" max=\"80\" step=\"10\" value=\"30\"\n             style=\"width:100px;cursor:pointer;accent-color:#457b9d;\"&gt;\n      &lt;span id=\"bw-label\" style=\"font-weight:600;min-width:34px;color:#457b9d;\"&gt;30 ms&lt;/span&gt;\n    &lt;/label&gt;\n    &lt;label style=\"display:flex;align-items:center;gap:8px;\"&gt;\n      &lt;span style=\"color:#e63946;white-space:nowrap;font-weight:600;\"&gt;Exclude above&lt;/span&gt;\n      &lt;input type=\"range\" name=\"threshold\" min=\"${pool_min}\" max=\"${Math.ceil(pool_max/10)*10 + 10}\" step=\"10\" value=\"${Math.ceil(pool_max/10)*10 + 10}\"\n             style=\"width:110px;cursor:pointer;accent-color:#e63946;\"&gt;\n      &lt;span id=\"thr-label\" style=\"font-weight:600;min-width:40px;color:#e63946;\"&gt;All&lt;/span&gt;\n    &lt;/label&gt;\n    &lt;label style=\"display:flex;align-items:center;gap:6px;cursor:pointer;\"&gt;\n      &lt;input type=\"checkbox\" name=\"show_mean\" checked style=\"cursor:pointer;accent-color:#e63946;\"&gt; Mean\n    &lt;/label&gt;\n    &lt;label style=\"display:flex;align-items:center;gap:6px;cursor:pointer;\"&gt;\n      &lt;input type=\"checkbox\" name=\"show_median\" style=\"cursor:pointer;accent-color:#f4a261;\"&gt; Median\n    &lt;/label&gt;\n    &lt;label style=\"display:flex;align-items:center;gap:6px;cursor:pointer;\"&gt;\n      &lt;input type=\"checkbox\" name=\"show_kde\" style=\"cursor:pointer;accent-color:#2d6a4f;\"&gt; KDE\n    &lt;/label&gt;\n    &lt;label style=\"display:flex;align-items:center;gap:6px;cursor:pointer;\"&gt;\n      &lt;input type=\"checkbox\" name=\"show_pct\" style=\"cursor:pointer;accent-color:#333;\"&gt; Show as %\n    &lt;/label&gt;\n  &lt;/div&gt;`\n\n  const bwRange  = f.querySelector('[name=bin_width]')\n  const bwLabel  = f.querySelector('#bw-label')\n  const thrRange = f.querySelector('[name=threshold]')\n  const thrLabel = f.querySelector('#thr-label')\n\n  bwRange.addEventListener('input', () =&gt; {\n    bwLabel.textContent = bwRange.value + ' ms'\n    f.dispatchEvent(new CustomEvent('input'))\n  })\n  const thrMax = Math.ceil(pool_max / 10) * 10 + 10\n  thrRange.addEventListener('input', () =&gt; {\n    thrLabel.textContent = +thrRange.value &gt;= thrMax ? 'All' : thrRange.value + ' ms'\n    f.dispatchEvent(new CustomEvent('input'))\n  })\n  f.querySelectorAll('input[type=checkbox]').forEach(cb =&gt;\n    cb.addEventListener('change', () =&gt; f.dispatchEvent(new CustomEvent('input')))\n  )\n  Object.defineProperty(f, 'value', { get() { return {\n    bin_width:  +f.querySelector('[name=bin_width]').value,\n    threshold:  +f.querySelector('[name=threshold]').value,\n    show_mean:   f.querySelector('[name=show_mean]').checked,\n    show_median: f.querySelector('[name=show_median]').checked,\n    show_kde:    f.querySelector('[name=show_kde]').checked,\n    show_pct:    f.querySelector('[name=show_pct]').checked,\n  }}})\n  return f\n}\n\n\n\n\n\n\n\n{\n  const thr      = hist_controls.threshold\n  const thrMax   = Math.ceil(pool_max / 10) * 10 + 10\n  const filtered = data.filter(d =&gt; d.reaction_time_ms &lt;= thr)\n  const vals     = filtered.map(d =&gt; d.reaction_time_ms)\n  const mu       = d3.mean(vals)\n  const med      = d3.median(vals)\n  const sigma    = d3.deviation(vals)\n  const excluded = data.length - filtered.length\n  const bw       = hist_controls.bin_width\n  const pct      = hist_controls.show_pct\n\n  const pad  = Math.max(20, Math.round((d3.max(vals) - d3.min(vals)) * 0.1))\n  const xmin = Math.floor((d3.min(vals) - pad) / 10) * 10\n  const xmax = Math.ceil((thr + pad) / 10) * 10\n\n  // KDE — Epanechnikov kernel, Silverman's bandwidth\n  // Absolute mode scales density to expected count per bin; relative mode\n  // scales it to the same proportion-per-bin units as the \"proportion\" reducer.\n  const h = sigma * 1.06 * Math.pow(vals.length, -0.2)\n  const kdePoints = d3.range(xmin, xmax, 2).map(x =&gt; {\n    const density = d3.mean(vals, v =&gt; {\n      const u = (x - v) / h\n      return Math.abs(u) &lt;= 1 ? 0.75 * (1 - u * u) / h : 0\n    })\n    return { x, y: pct ? density * bw : density * filtered.length * bw }\n  })\n\n  return Plot.plot({\n    height: 330,\n    marginLeft: 55,\n    marginBottom: 32,\n    x: { label: \"Reaction time (ms)\", domain: [xmin, xmax] },\n    y: pct\n      ? { label: \"% of trials\", percent: true }\n      : { label: \"Count\" },\n    marks: [\n      Plot.rectY(filtered,\n        Plot.binX({ y: pct ? \"proportion\" : \"count\" },\n          { x: \"reaction_time_ms\", thresholds: d3.range(xmin, xmax + bw, bw),\n            fill: \"#457b9d\", fillOpacity: 0.75 })),\n      Plot.ruleX([0]),\n      hist_controls.show_mean   ? Plot.ruleX([mu],  { stroke: \"#e63946\", strokeWidth: 2.5,\n                             strokeDasharray: \"6,4\",\n                             tip: true, title: () =&gt; `Mean: ${mu.toFixed(1)} ms` }) : null,\n      hist_controls.show_median ? Plot.ruleX([med], { stroke: \"#f4a261\", strokeWidth: 2.5,\n                             strokeDasharray: \"6,4\",\n                             tip: true, title: () =&gt; `Median: ${med.toFixed(1)} ms` }) : null,\n      hist_controls.show_kde    ? Plot.line(kdePoints, { x: \"x\", y: \"y\",\n                             stroke: \"#2d6a4f\", strokeWidth: 2.5 }) : null,\n      excluded &gt; 0 ? Plot.text([{ x: xmax, y: 0 }], {\n                             text: () =&gt; `${excluded} value${excluded &gt; 1 ? 's' : ''} excluded`,\n                             x: \"x\", frameAnchor: \"top-right\",\n                             fill: \"#e63946\", fontSize: 12, fontStyle: \"italic\" }) : null,\n    ]\n  })\n}\n\n\n\n\n\n\n\nWider bins can smooth away real structure and suggest a more gradual decline than the data actually shows — bin width is a choice, not a neutral default."
+  },
+  {
+    "objectID": "week1-slides.html#shape-and-outliers",
+    "href": "week1-slides.html#shape-and-outliers",
+    "title": "EDA: Understanding Your Data",
+    "section": "Shape and outliers",
+    "text": "Shape and outliers\n\n\nWhat the histogram tells us\n\n\n\nFeature\nWhat we see\n\n\n\n\nFloor\n~150 ms minimum\n\n\nTail\nLong tail to the right\n\n\nSkew\nRight-skewed\n\n\nKDE\nSmoothed shape of the distribution\n\n\n\n\n\nOutliers\nThere is some theoretical minimum - no human can react instantaneously.\nThere is no ceiling. Distraction, hesitation, accidental clicks — all extend the right tail.\n\n\n\nTask — In Excel: experiment with bin width. Try plotting reaction times split by device and by caffeine group."
+  },
+  {
+    "objectID": "week1-slides.html#what-do-we-do-with-an-outlier",
+    "href": "week1-slides.html#what-do-we-do-with-an-outlier",
+    "title": "EDA: Understanding Your Data",
+    "section": "What do we do with an outlier?",
+    "text": "What do we do with an outlier?\nFor every extreme value, ask three questions — in order:\n\n\n\n\n\n\n\n\nQuestion\nIf yes\nReaction-time example\n\n\n\n\nIs it an error?\nDrop or fix it\nA 4 ms trial — a mis-click before the screen turned green\n\n\nIs it real, but not what we’re studying?\nDrop it, with a note\nA slow trial because the student was talking to a neighbour\n\n\nIs it a genuine feature of the process?\nKeep it\nA slow trial from real hesitation — this is operational variability\n\n\n\n\nThe decision changes what you’re measuring. Dropping every slow trial doesn’t just clean the data — it can quietly redefine the metric."
+  },
+  {
+    "objectID": "week1-slides.html#summary-statistics",
+    "href": "week1-slides.html#summary-statistics",
+    "title": "EDA: Understanding Your Data",
+    "section": "Summary statistics",
+    "text": "Summary statistics"
+  },
+  {
+    "objectID": "week1-slides.html#what-is-a-summary-statistic",
+    "href": "week1-slides.html#what-is-a-summary-statistic",
+    "title": "EDA: Understanding Your Data",
+    "section": "What is a summary statistic?",
+    "text": "What is a summary statistic?\nFor any variable, a statistic is a meaningful number you can compute from the data. Summary statistics describe the most important features of a distribution — its centre, its spread, its shape.\n\nSource: Békés & Kézdi (2021), Ch. 3"
+  },
+  {
+    "objectID": "week1-slides.html#the-mean-and-expected-value",
+    "href": "week1-slides.html#the-mean-and-expected-value",
+    "title": "EDA: Understanding Your Data",
+    "section": "The mean and expected value",
+    "text": "The mean and expected value\nIt is standard to refer to our variable as \\(x\\). The mean (or average) of \\(x\\) is calculated as:\n\\[\\bar{x} = \\frac{\\sum x_i}{n}\\] If we have \\(a\\) and \\(b\\) that are fixed whilst \\(x\\) varies we get two useful properties: \\(\\overline{x+a} = \\bar{x} + a\\) and \\(\\overline{x \\cdot b} = \\bar{x} \\cdot b\\).\n\nThe expected value, \\(E[x]\\), is the value you’d expect for a randomly chosen observation.\n\nFor a quantitative variable, \\(E[x]\\) is the mean\nFor a binary variable coded 0/1 — like caffeine — \\(E[x]\\) is the probability, or relative frequency, of the category coded 1\n\n\n\nSource: Békés & Kézdi (2021), Ch. 3"
+  },
+  {
+    "objectID": "week1-slides.html#median-quantiles-mode",
+    "href": "week1-slides.html#median-quantiles-mode",
+    "title": "EDA: Understanding Your Data",
+    "section": "Median, quantiles, mode",
+    "text": "Median, quantiles, mode\n\nMedian — the middle value when sorted; half the observations lie below, half above\nQuantiles / percentiles divide the data into proportions. Quartiles divide it into fourths — the median is the 2nd quartile, the 50th percentile\nMode — the most frequent value; some distributions have more than one\n\n\nSource: Békés & Kézdi (2021), Ch. 3"
+  },
+  {
+    "objectID": "week1-slides.html#centre-mean-vs-median",
+    "href": "week1-slides.html#centre-mean-vs-median",
+    "title": "EDA: Understanding Your Data",
+    "section": "Centre: mean vs median",
+    "text": "Centre: mean vs median\n\nviewof centre_student = Inputs.select(students, {\n  label: null,\n  value: students[2]\n})\n\n\n\n\n\n\n\n{\n  const sd   = data.filter(d =&gt; d.student_name === centre_student)\n  const vals = sd.map(d =&gt; d.reaction_time_ms).sort((a,b) =&gt; a - b)\n  const mu   = d3.mean(vals)\n  const med  = d3.median(vals)\n  const cPad = Math.max(30, Math.round((d3.max(vals) - d3.min(vals)) * 0.2))\n  const cMin = d3.min(vals) - cPad\n  const cMax = d3.max(vals) + cPad\n  const jittered = vals.map(v =&gt; ({ v, y: (Math.random() - 0.5) * 0.8 }))\n\n  return Plot.plot({\n    height: 240,\n    marginLeft: 55,\n    x: { label: \"Reaction time (ms)\", domain: [cMin, cMax] },\n    y: { axis: null, domain: [-1, 1] },\n    marks: [\n      Plot.dot(jittered, { x: \"v\", y: \"y\", fill: \"#457b9d\", r: 5, fillOpacity: 0.65 }),\n      Plot.ruleX([mu],  { stroke: \"#e63946\", strokeWidth: 3,\n                          tip: true, title: () =&gt; `Mean: ${mu.toFixed(1)} ms` }),\n      Plot.ruleX([med], { stroke: \"#f4a261\", strokeWidth: 3,\n                          tip: true, title: () =&gt; `Median: ${med.toFixed(1)} ms` }),\n      Plot.text([{ x: mu,  label: `Mean\\n${mu.toFixed(1)}`  }],\n                { x: \"x\", text: \"label\", dy: -28, fill: \"#e63946\", fontSize: 13 }),\n      Plot.text([{ x: med, label: `Median\\n${med.toFixed(1)}` }],\n                { x: \"x\", text: \"label\", dy: 38,  fill: \"#f4a261\", fontSize: 13 }),\n    ]\n  })\n}\n\n\n\n\n\n\n\nMean — sum ÷ n. The balance point. Sensitive to every value, including outliers.\nMedian — the middle value when sorted. Robust to extreme values.\nMode — the most frequent value. Most useful for discrete or categorical data.\nWhen mean and median diverge, ask why. The answer is usually the shape of the distribution.\n\n\nAfter the workshop, go back to the histogram and drag the “exclude above” threshold down. Watch how much the mean moves compared to the median as the slowest trials drop out — that gap is the sensitivity to outliers."
+  },
+  {
+    "objectID": "week1-slides.html#variance-and-standard-deviation",
+    "href": "week1-slides.html#variance-and-standard-deviation",
+    "title": "EDA: Understanding Your Data",
+    "section": "Variance and standard deviation",
+    "text": "Variance and standard deviation\n\\[Var[x] = \\frac{\\sum (x_i - \\bar{x})^2}{n} \\qquad SD[x] = \\sqrt{\\frac{\\sum (x_i - \\bar{x})^2}{n}}\\]\n\nVariance is the average squared deviation from the mean — harder to interpret directly, but easy to work with algebraically because it is itself a mean\nStandard deviation is the square root of variance — back in the original units, and roughly the typical distance between a randomly chosen observation and the mean\n\n\nTwo distributions can share a mean but differ in spread: the higher the SD, the more dispersed the data. In finance, SD is literally how volatility is measured — a higher SD means a price that jumps around more.\n\n\nSource: Békés & Kézdi (2021), Ch. 3"
+  },
+  {
+    "objectID": "week1-slides.html#spread-sd-and-iqr",
+    "href": "week1-slides.html#spread-sd-and-iqr",
+    "title": "EDA: Understanding Your Data",
+    "section": "Spread: SD and IQR",
+    "text": "Spread: SD and IQR\n\nviewof spread_student = Inputs.select(students, {\n  label: null,\n  value: students[4]\n})\n\n\n\n\n\n\n\n{\n  const sd   = data.filter(d =&gt; d.student_name === spread_student)\n  const vals = sd.map(d =&gt; d.reaction_time_ms)\n  const mu   = d3.mean(vals)\n  const sig  = d3.deviation(vals)\n  const q1   = d3.quantile(vals.slice().sort((a,b) =&gt; a-b), 0.25)\n  const q3   = d3.quantile(vals.slice().sort((a,b) =&gt; a-b), 0.75)\n\n  const sPad = Math.max(30, Math.round((d3.max(vals) - d3.min(vals)) * 0.2))\n  const sMin = d3.min(vals) - sPad\n  const sMax = d3.max(vals) + sPad\n  const jittered = vals.map(v =&gt; ({ v, y: (Math.random() - 0.5) * 1.0 }))\n\n  return Plot.plot({\n    height: 220,\n    marginLeft: 55,\n    x: { label: \"Reaction time (ms)\", domain: [sMin, sMax] },\n    y: { axis: null },\n    marks: [\n      Plot.rectX([{ x1: q1, x2: q3 }],\n        { x1: \"x1\", x2: \"x2\", y1: -0.6, y2: 0.6, fill: \"#f4a261\", fillOpacity: 0.25 }),\n      Plot.rectX([{ x1: mu - sig, x2: mu + sig }],\n        { x1: \"x1\", x2: \"x2\", y1: -0.6, y2: 0.6, fill: \"#e63946\", fillOpacity: 0.15 }),\n      Plot.dot(jittered, { x: \"v\", y: \"y\", fill: \"#457b9d\", r: 5, fillOpacity: 0.7 }),\n      Plot.ruleX([mu], { stroke: \"#e63946\", strokeWidth: 2.5 }),\n      Plot.text([\n        { x: mu,        label: `Mean: ${mu.toFixed(1)}`          },\n        { x: mu - sig,  label: `−1 SD (${(mu-sig).toFixed(0)})` },\n        { x: mu + sig,  label: `+1 SD (${(mu+sig).toFixed(0)})` },\n      ], { x: \"x\", text: \"label\", dy: -32, fill: \"#e63946\", fontSize: 11 }),\n      Plot.text([\n        { x: (q1+q3)/2, label: `IQR: ${q1.toFixed(0)}–${q3.toFixed(0)} ms` }\n      ], { x: \"x\", text: \"label\", dy: 38, fill: \"#f4a261\", fontSize: 12 }),\n    ]\n  })\n}\n\n\n\n\n\n\n\nRange = max − min. Simple but dominated by extremes.\nSD = √variance. Same units as the data. Sensitive to outliers.\nIQR = Q3 − Q1. Spread of the middle 50%. Robust to outliers.\n90–10 range = 90th percentile − 10th percentile. A middle ground — trims the most extreme 20% without being as narrow as the IQR."
+  },
+  {
+    "objectID": "week1-slides.html#standardised-values-and-skewness",
+    "href": "week1-slides.html#standardised-values-and-skewness",
+    "title": "EDA: Understanding Your Data",
+    "section": "Standardised values and skewness",
+    "text": "Standardised values and skewness\nStandardising expresses a value in units of standard deviation:\n\\[x_{\\text{standardised}} = \\frac{x - \\bar{x}}{SD[x]}\\]\nA standardised value of 1 means “one SD above the mean”; −1 means “one SD below.”\n\nA distribution is skewed if it isn’t symmetric. A simple measure:\n\\[\\text{Skewness} = \\frac{\\bar{x} - \\text{median}(x)}{SD[x]}\\]\nWhen the right tail is long, the mean sits above the median and skewness is positive — exactly why our reaction-time data is right-skewed.\n\n\nSource: Békés & Kézdi (2021), Ch. 3"
+  },
+  {
+    "objectID": "week1-slides.html#reading-a-box-plot-and-a-violin-plot",
+    "href": "week1-slides.html#reading-a-box-plot-and-a-violin-plot",
+    "title": "EDA: Understanding Your Data",
+    "section": "Reading a box plot and a violin plot",
+    "text": "Reading a box plot and a violin plot\n\n\n\n  \n  \n  \n  \n  \n  \n  \n\n  \n  Upper adjacent value\n  \n  Whisker\n  \n  75th percentile (upper hinge)\n  \n  Median\n  \n  25th percentile (lower hinge)\n  \n  Whisker\n  \n  Lower adjacent value\n  \n  Outside value\n\n\n\n\n  \n  \n  \n  \n\n  \n  95% confidence interval\n  \n  Interquartile range\n  \n  Median\n  \n  95% confidence interval\n\n\n\n\nSource: Békés & Kézdi (2021), Ch. 3 — box plot and violin plot anatomy"
+  },
+  {
+    "objectID": "week1-slides.html#task-build-your-own-box-plot",
+    "href": "week1-slides.html#task-build-your-own-box-plot",
+    "title": "EDA: Understanding Your Data",
+    "section": "Task — build your own box plot",
+    "text": "Task — build your own box plot\n\n\nIn Excel, use the reaction-time data — the full class, or just your own 10 trials\nSort the values and find the median, the 25th and 75th percentiles, and the min/max\nBuild a box plot from those five numbers\nIf your version of Excel supports it, add a violin or “box and whisker with data points” chart alongside it\n\n\n\nCompare your box plot against a neighbour’s — same data, does it look the same?"
+  },
+  {
+    "objectID": "week1-slides.html#box-plot-and-violin-plot-our-data",
+    "href": "week1-slides.html#box-plot-and-violin-plot-our-data",
+    "title": "EDA: Understanding Your Data",
+    "section": "Box plot and violin plot: our data",
+    "text": "Box plot and violin plot: our data\n\n{\n  const allVals = data.map(d =&gt; d.reaction_time_ms)\n  const bPad = Math.max(30, Math.round((d3.max(allVals) - d3.min(allVals)) * 0.1))\n  const bMin = Math.floor((d3.min(allVals) - bPad) / 10) * 10\n  const bMax = Math.ceil((d3.max(allVals) + bPad) / 10) * 10\n  const colours = { Phone: \"#457b9d\", Laptop: \"#2d6a4f\" }\n\n  const grouped = [\"Phone\", \"Laptop\"].map(dev =&gt; {\n    const vals = data.filter(d =&gt; d.device === dev).map(d =&gt; d.reaction_time_ms).sort((a,b) =&gt; a-b)\n    const q1 = d3.quantile(vals,0.25), q3 = d3.quantile(vals,0.75)\n    const iqr = q3 - q1\n    const fenceLo = q1 - 1.5 * iqr, fenceHi = q3 + 1.5 * iqr\n    const inRange = vals.filter(v =&gt; v &gt;= fenceLo && v &lt;= fenceHi)\n    return {\n      group: dev,\n      q1, q2: d3.quantile(vals,0.5), q3,\n      lo: d3.min(inRange), hi: d3.max(inRange), mean: d3.mean(vals),\n    }\n  })\n\n  const fenceLookup = Object.fromEntries(grouped.map(g =&gt; [g.group, g]))\n  const outliers = data.filter(d =&gt; {\n    const g = fenceLookup[d.device]\n    return d.reaction_time_ms &lt; g.lo || d.reaction_time_ms &gt; g.hi\n  })\n\n  return Plot.plot({\n    height: 190,\n    marginLeft: 80,\n    x: { label: \"Reaction time (ms)\", domain: [bMin, bMax] },\n    y: { label: null, type: \"band\" },\n    marks: [\n      Plot.dot(data,      { x: \"reaction_time_ms\", y: \"device\",\n                            fill: d =&gt; colours[d.device], r: 4, fillOpacity: 0.2, jitter: \"y\" }),\n      Plot.ruleY(grouped, { y: \"group\", x1: \"lo\", x2: \"hi\", stroke: d =&gt; colours[d.group], strokeWidth: 1.5 }),\n      Plot.barX(grouped,  { x1: \"q1\", x2: \"q3\", y: \"group\", insetTop: 14, insetBottom: 14,\n                            fill: d =&gt; colours[d.group], fillOpacity: 0.55,\n                            stroke: d =&gt; colours[d.group], strokeWidth: 2 }),\n      Plot.tickX(grouped, { x: \"q2\", y: \"group\", insetTop: 14, insetBottom: 14, stroke: \"white\", strokeWidth: 3 }),\n      Plot.dot(grouped,   { x: \"mean\", y: \"group\", fill: d =&gt; colours[d.group], stroke: \"white\",\n                            strokeWidth: 1, r: 6, symbol: \"diamond\" }),\n      Plot.dot(outliers,  { x: \"reaction_time_ms\", y: \"device\",\n                            stroke: d =&gt; colours[d.device], fill: \"white\", r: 5, strokeWidth: 1.5 }),\n    ]\n  })\n}\n\n\n\n\n\n\n\n{\n  const groups = [\"Phone\", \"Laptop\"]\n  const yPos = { Phone: 1, Laptop: 0 }\n  const colours = { Phone: \"#457b9d\", Laptop: \"#2d6a4f\" }\n  const allVals = data.map(d =&gt; d.reaction_time_ms)\n  const bPad = Math.max(30, Math.round((d3.max(allVals) - d3.min(allVals)) * 0.1))\n  const bMin = Math.floor((d3.min(allVals) - bPad) / 10) * 10\n  const bMax = Math.ceil((d3.max(allVals) + bPad) / 10) * 10\n\n  const violinData = groups.flatMap(g =&gt; {\n    const vals = data.filter(d =&gt; d.device === g).map(d =&gt; d.reaction_time_ms)\n    if (vals.length &lt; 2) return []\n    const sigma = d3.deviation(vals)\n    const h = sigma * 1.06 * Math.pow(vals.length, -0.2)\n    const xs = d3.range(bMin, bMax, 2)\n    const dens = x =&gt; d3.mean(vals, v =&gt; {\n      const u = (x - v) / h\n      return Math.abs(u) &lt;= 1 ? 0.75 * (1 - u * u) / h : 0\n    })\n    const maxDensity = d3.max(xs, dens)\n    return xs.map(x =&gt; {\n      const norm = maxDensity ? (dens(x) / maxDensity) * 0.42 : 0\n      return { group: g, x, y1: yPos[g] - norm, y2: yPos[g] + norm }\n    })\n  })\n\n  return Plot.plot({\n    height: 190,\n    marginLeft: 80,\n    x: { label: \"Reaction time (ms)\", domain: [bMin, bMax] },\n    y: { domain: [-0.7, 1.7], ticks: [0, 1],\n         tickFormat: v =&gt; v === 1 ? \"Phone\" : v === 0 ? \"Laptop\" : \"\", label: null },\n    marks: groups.map(g =&gt; Plot.areaY(violinData.filter(d =&gt; d.group === g),\n      { x: \"x\", y1: \"y1\", y2: \"y2\", fill: colours[g], fillOpacity: 0.5, stroke: colours[g], strokeWidth: 1.5 })),\n  })\n}\n\n\n\n\n\n\n\nBox = IQR · Line = median · Diamond = mean · Whiskers = furthest point within 1.5×IQR of the box · Open circles = outliers beyond that. Violin = the same distribution, shown as its full shape rather than five summary numbers."
+  },
+  {
+    "objectID": "week1-slides.html#python-does-this-for-you",
+    "href": "week1-slides.html#python-does-this-for-you",
+    "title": "EDA: Understanding Your Data",
+    "section": "Python does this for you",
+    "text": "Python does this for you\nUltimatly, in your working life you will not be calculting all these statistics yourself. Rather, you’ll use statistical software. Here is what the Python output looks like:\nimport statsmodels.stats.descriptivestats as smd\nprint(smd.describe(df[\"reaction_time_ms\"]))\n\nnobs            200mean            318.3std_err         7.1upper_ci        332.2lower_ci        304.5std             100.1iqr             90.2skewness        2.40kurtosis        11.73mode            271.0median          296.0\n\n\nTask — In Excel: produce a summary statistics table for the full dataset and by device group."
+  },
+  {
+    "objectID": "week1-slides.html#so-was-a-single-test-score-enough",
+    "href": "week1-slides.html#so-was-a-single-test-score-enough",
+    "title": "EDA: Understanding Your Data",
+    "section": "So — was a single test score enough?",
+    "text": "So — was a single test score enough?\n\n\nGo back to HR’s onboarding test: one trial, one number, one ranking.\nEvery student here just produced 10 trials — and for most, the spread between fastest and slowest trial was far bigger than the difference between students.\n\n\nA single measurement doesn’t tell you someone’s typical response time. It tells you where one random draw from their distribution happened to land.\nHR’s test is measuring noise as if it were signal."
+  },
+  {
+    "objectID": "week1-slides.html#group-differences",
+    "href": "week1-slides.html#group-differences",
+    "title": "EDA: Understanding Your Data",
+    "section": "Group differences",
+    "text": "Group differences\n\nDoes reaction time differ by device type?\n\n\nTask - Calculated the mean reaction time for each device."
+  },
+  {
+    "objectID": "week1-slides.html#does-reaction-time-differ",
+    "href": "week1-slides.html#does-reaction-time-differ",
+    "title": "EDA: Understanding Your Data",
+    "section": "Does reaction time differ?",
+    "text": "Does reaction time differ?\n\nviewof show_pts_device = Inputs.toggle({ label: \"Show individual points\", value: true })\n\n\n\n\n\n\n\n{\n  const allVals = data.map(d =&gt; d.reaction_time_ms)\n  const bPad = Math.max(30, Math.round((d3.max(allVals) - d3.min(allVals)) * 0.1))\n  const bMin = Math.floor((d3.min(allVals) - bPad) / 10) * 10\n  const bMax = Math.ceil((d3.max(allVals) + bPad) / 10) * 10\n  const colours = { Phone: \"#457b9d\", Laptop: \"#2d6a4f\" }\n\n  const grouped = [\"Phone\", \"Laptop\"].map(dev =&gt; {\n    const vals = data.filter(d =&gt; d.device === dev).map(d =&gt; d.reaction_time_ms).sort((a,b) =&gt; a-b)\n    const q1 = d3.quantile(vals,0.25), q3 = d3.quantile(vals,0.75)\n    const iqr = q3 - q1\n    const fenceLo = q1 - 1.5 * iqr, fenceHi = q3 + 1.5 * iqr\n    const inRange = vals.filter(v =&gt; v &gt;= fenceLo && v &lt;= fenceHi)\n    return { group: dev, q1, q2: d3.quantile(vals,0.5), q3,\n             lo: d3.min(inRange), hi: d3.max(inRange), mean: d3.mean(vals) }\n  })\n\n  const fenceLookup = Object.fromEntries(grouped.map(g =&gt; [g.group, g]))\n  const outliers = data.filter(d =&gt; {\n    const g = fenceLookup[d.device]\n    return d.reaction_time_ms &lt; g.lo || d.reaction_time_ms &gt; g.hi\n  })\n\n  return Plot.plot({\n    height: 280,\n    marginLeft: 80,\n    x: { label: \"Reaction time (ms)\", domain: [bMin, bMax] },\n    y: { label: null, type: \"band\" },\n    marks: [\n      show_pts_device\n        ? Plot.dot(data, { x: \"reaction_time_ms\", y: \"device\",\n                           fill: d =&gt; colours[d.device], r: 4, fillOpacity: 0.2, jitter: \"y\" })\n        : null,\n      Plot.ruleY(grouped, { y: \"group\", x1: \"lo\", x2: \"hi\", stroke: d =&gt; colours[d.group], strokeWidth: 1.5 }),\n      Plot.barX(grouped,  { x1: \"q1\", x2: \"q3\", y: \"group\", insetTop: 22, insetBottom: 22,\n                            fill: d =&gt; colours[d.group], fillOpacity: 0.55,\n                            stroke: d =&gt; colours[d.group], strokeWidth: 2 }),\n      Plot.tickX(grouped, { x: \"q2\", y: \"group\", insetTop: 22, insetBottom: 22, stroke: \"white\", strokeWidth: 3 }),\n      Plot.dot(grouped,   { x: \"mean\", y: \"group\", fill: d =&gt; colours[d.group], stroke: \"white\",\n                            strokeWidth: 1, r: 6, symbol: \"diamond\" }),\n      Plot.dot(outliers, { x: \"reaction_time_ms\", y: \"device\",\n                           stroke: d =&gt; colours[d.device], fill: \"white\", r: 5, strokeWidth: 1.5 }),\n    ]\n  })\n}"
+  },
+  {
+    "objectID": "week1-slides.html#does-caffeine-matter",
+    "href": "week1-slides.html#does-caffeine-matter",
+    "title": "EDA: Understanding Your Data",
+    "section": "Does caffeine matter?",
+    "text": "Does caffeine matter?\n\nviewof show_pts_caff = Inputs.toggle({ label: \"Show individual points\", value: true })\n\n\n\n\n\n\n\n{\n  const colours = { Yes: \"#e63946\", No: \"#457b9d\" }\n  const allVals = data.map(d =&gt; d.reaction_time_ms)\n  const bPad = Math.max(30, Math.round((d3.max(allVals) - d3.min(allVals)) * 0.1))\n  const bMin = Math.floor((d3.min(allVals) - bPad) / 10) * 10\n  const bMax = Math.ceil((d3.max(allVals) + bPad) / 10) * 10\n\n  const grouped = [\"Yes\", \"No\"].map(c =&gt; {\n    const vals = data.filter(d =&gt; d.caffeine === c).map(d =&gt; d.reaction_time_ms).sort((a,b) =&gt; a-b)\n    if (!vals.length) return null\n    const q1 = d3.quantile(vals,0.25), q3 = d3.quantile(vals,0.75)\n    const iqr = q3 - q1\n    const fenceLo = q1 - 1.5 * iqr, fenceHi = q3 + 1.5 * iqr\n    const inRange = vals.filter(v =&gt; v &gt;= fenceLo && v &lt;= fenceHi)\n    return { group: c, q1, q2: d3.quantile(vals,0.5), q3,\n             lo: d3.min(inRange), hi: d3.max(inRange), mean: d3.mean(vals) }\n  }).filter(Boolean)\n\n  const pointData = data.filter(d =&gt; d.caffeine === \"Yes\" || d.caffeine === \"No\")\n\n  const fenceLookup = Object.fromEntries(grouped.map(g =&gt; [g.group, g]))\n  const outliers = pointData.filter(d =&gt; {\n    const g = fenceLookup[d.caffeine]\n    return g && (d.reaction_time_ms &lt; g.lo || d.reaction_time_ms &gt; g.hi)\n  })\n\n  return Plot.plot({\n    height: 280,\n    marginLeft: 80,\n    x: { label: \"Reaction time (ms)\", domain: [bMin, bMax] },\n    y: { label: \"Caffeine?\", type: \"band\" },\n    marks: [\n      show_pts_caff\n        ? Plot.dot(pointData, { x: \"reaction_time_ms\", y: \"caffeine\",\n                                fill: d =&gt; colours[d.caffeine], r: 4, fillOpacity: 0.2, jitter: \"y\" })\n        : null,\n      Plot.ruleY(grouped, { y: \"group\", x1: \"lo\", x2: \"hi\", stroke: d =&gt; colours[d.group], strokeWidth: 1.5 }),\n      Plot.barX(grouped,  { x1: \"q1\", x2: \"q3\", y: \"group\", insetTop: 22, insetBottom: 22,\n                            fill: d =&gt; colours[d.group], fillOpacity: 0.55,\n                            stroke: d =&gt; colours[d.group], strokeWidth: 2 }),\n      Plot.tickX(grouped, { x: \"q2\", y: \"group\", insetTop: 22, insetBottom: 22, stroke: \"white\", strokeWidth: 3 }),\n      Plot.dot(grouped,   { x: \"mean\", y: \"group\", fill: d =&gt; colours[d.group], stroke: \"white\",\n                            strokeWidth: 1, r: 6, symbol: \"diamond\" }),\n      Plot.dot(outliers, { x: \"reaction_time_ms\", y: \"caffeine\",\n                           stroke: d =&gt; colours[d.caffeine], fill: \"white\", r: 5, strokeWidth: 1.5 }),\n    ]\n  })\n}"
+  },
+  {
+    "objectID": "week1-slides.html#comparing-groups-the-numbers",
+    "href": "week1-slides.html#comparing-groups-the-numbers",
+    "title": "EDA: Understanding Your Data",
+    "section": "Comparing groups: the numbers",
+    "text": "Comparing groups: the numbers\n\n{\n  function summarise(vals) {\n    if (!vals.length) return { n: 0, mean: \"—\", median: \"—\", min: \"—\", max: \"—\", sd: \"—\", skew: \"—\" }\n    const sorted = vals.slice().sort((a,b) =&gt; a-b)\n    const mu  = d3.mean(sorted)\n    const med = d3.median(sorted)\n    const sig = d3.deviation(sorted)\n    return {\n      n: sorted.length,\n      mean: mu.toFixed(1),\n      median: med.toFixed(1),\n      min: d3.min(sorted),\n      max: d3.max(sorted),\n      sd: sig !== undefined ? sig.toFixed(1) : \"—\",\n      skew: sig ? ((mu - med) / sig).toFixed(2) : \"—\",\n    }\n  }\n\n  const rows = [\n    { group: \"Phone\",  ...summarise(data.filter(d =&gt; d.device === \"Phone\").map(d =&gt; d.reaction_time_ms)) },\n    { group: \"Laptop\", ...summarise(data.filter(d =&gt; d.device === \"Laptop\").map(d =&gt; d.reaction_time_ms)) },\n  ]\n\n  return html`&lt;table style=\"width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;margin-top:16px;\"&gt;\n    &lt;thead&gt;\n      &lt;tr style=\"background:#1a1a2e;color:white;\"&gt;\n        &lt;th style=\"padding:10px 16px;text-align:left;\"&gt;Device&lt;/th&gt;\n        &lt;th style=\"padding:10px 16px;text-align:right;\"&gt;N&lt;/th&gt;\n        &lt;th style=\"padding:10px 16px;text-align:right;\"&gt;Mean&lt;/th&gt;\n        &lt;th style=\"padding:10px 16px;text-align:right;\"&gt;Median&lt;/th&gt;\n        &lt;th style=\"padding:10px 16px;text-align:right;\"&gt;Min&lt;/th&gt;\n        &lt;th style=\"padding:10px 16px;text-align:right;\"&gt;Max&lt;/th&gt;\n        &lt;th style=\"padding:10px 16px;text-align:right;\"&gt;SD&lt;/th&gt;\n        &lt;th style=\"padding:10px 16px;text-align:right;\"&gt;Skew&lt;/th&gt;\n      &lt;/tr&gt;\n    &lt;/thead&gt;\n    &lt;tbody&gt;\n      ${rows.map((r,i) =&gt; `\n        &lt;tr style=\"${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;\"&gt;\n          &lt;td style=\"padding:10px 16px;font-weight:600;\"&gt;${r.group}&lt;/td&gt;\n          &lt;td style=\"padding:10px 16px;text-align:right;\"&gt;${r.n}&lt;/td&gt;\n          &lt;td style=\"padding:10px 16px;text-align:right;\"&gt;${r.mean}&lt;/td&gt;\n          &lt;td style=\"padding:10px 16px;text-align:right;\"&gt;${r.median}&lt;/td&gt;\n          &lt;td style=\"padding:10px 16px;text-align:right;\"&gt;${r.min}&lt;/td&gt;\n          &lt;td style=\"padding:10px 16px;text-align:right;\"&gt;${r.max}&lt;/td&gt;\n          &lt;td style=\"padding:10px 16px;text-align:right;\"&gt;${r.sd}&lt;/td&gt;\n          &lt;td style=\"padding:10px 16px;text-align:right;\"&gt;${r.skew}&lt;/td&gt;\n        &lt;/tr&gt;`).join('')}\n    &lt;/tbody&gt;\n  &lt;/table&gt;`\n}\n\n\n\n\n\n\n\nA chart plus a table is the standard way to present a group comparison — the chart shows shape, the table gives exact numbers to quote."
+  },
+  {
+    "objectID": "week1-slides.html#can-we-claim-a-difference-is-real",
+    "href": "week1-slides.html#can-we-claim-a-difference-is-real",
+    "title": "EDA: Understanding Your Data",
+    "section": "Can we claim a difference is real?",
+    "text": "Can we claim a difference is real?\n\n\nWe can see differences in the charts.\nBut is the class the population we care about?\n\nIf yes — we have all the data. No inference needed. The difference is the difference.\nIf no — we are treating the class as a sample from a larger group (all students? all adults?).\n\n\n\nThis is the inference question.\nAny sample will show differences between groups — by chance alone.\nHow do we decide which differences to take seriously?\nThat requires thinking about sampling, variability, and probability.\nThat’s Week 2."
+  },
+  {
+    "objectID": "week1-slides.html#online-session-types-of-distribution",
+    "href": "week1-slides.html#online-session-types-of-distribution",
+    "title": "EDA: Understanding Your Data",
+    "section": "Online session — Types of distribution",
+    "text": "Online session — Types of distribution\nThe workshop looked at one histogram. The online session (1 hour) covers the recognisable shapes distributions come in — normal, log-normal, power-law, and where our reaction-time data fits.\n\nSee week1-online.html — a short standalone deck for this week’s online session."
+  },
+  {
+    "objectID": "week1-slides.html#six-steps-of-eda",
+    "href": "week1-slides.html#six-steps-of-eda",
+    "title": "EDA: Understanding Your Data",
+    "section": "Six steps of EDA",
+    "text": "Six steps of EDA\n\nStart with the variables that matter most\nQualitative variables — list frequencies\nQuantitative variables — look at the histogram\nCheck for extreme values. Decide what to do with them, deliberately\nLook at summary statistics — let them guide further questions\nExplore further if needed — by group, over time, or otherwise\n\n\nEvery one of these steps, we just did."
+  },
+  {
+    "objectID": "week1-slides.html#coming-up-week-2",
+    "href": "week1-slides.html#coming-up-week-2",
+    "title": "EDA: Understanding Your Data",
+    "section": "Coming up: Week 2",
+    "text": "Coming up: Week 2\n\nWe can see a difference between groups.\nBut how do we know if it’s real — or just chance?\nInference: when is a difference real?\n\nSampling distributions · confidence intervals · p-values"
+  },
+  {
+    "objectID": "week1-online-slides.html#section",
+    "href": "week1-online-slides.html#section",
+    "title": "Types of Distribution",
+    "section": "",
+    "text": "Types of distribution\nThe workshop looked at one histogram. This session looks at the recognisable shapes distributions come in — and checks which one ours is."
+  },
+  {
+    "objectID": "week1-online-slides.html#theoretical-distributions",
+    "href": "week1-online-slides.html#theoretical-distributions",
+    "title": "Types of Distribution",
+    "section": "Theoretical distributions",
+    "text": "Theoretical distributions\nTheoretical distributions describe idealised properties — not the frequencies in one dataset, but the likelihood of values in an abstract “population.” They’re fully described by a handful of parameters.\n\nSource: Békés & Kézdi (2021), Data Analysis for Business, Economics, and Policy, Ch. 3"
+  },
+  {
+    "objectID": "week1-online-slides.html#the-normal-distribution",
+    "href": "week1-online-slides.html#the-normal-distribution",
+    "title": "Types of Distribution",
+    "section": "The normal distribution",
+    "text": "The normal distribution\n\n\n\nBell-shaped, symmetric — mean, median, and mode coincide\nFully described by two parameters: \\(\\mu\\) (the mean) and \\(\\sigma\\) (the standard deviation)\nExamples: height, IQ, measurement error\n\n\n\n\n{\n  const rng = d3.randomNormal(0, 1)\n  const sample = Array.from({ length: 4000 }, rng)\n  return Plot.plot({\n    height: 240,\n    x: { label: \"x\", domain: [-4, 4] },\n    y: { label: \"% of draws\", percent: true },\n    marks: [\n      Plot.rectY(sample, Plot.binX({ y: \"proportion\" },\n        { x: d =&gt; d, thresholds: 30, fill: \"#457b9d\", fillOpacity: 0.8 })),\n      Plot.ruleX([0]),\n    ]\n  })\n}"
+  },
+  {
+    "objectID": "week1-online-slides.html#the-log-normal-distribution",
+    "href": "week1-online-slides.html#the-log-normal-distribution",
+    "title": "Types of Distribution",
+    "section": "The log-normal distribution",
+    "text": "The log-normal distribution\n\n\n\nNormal arises from summing many small, independent effects. Log-normal arises from multiplying them — and since \\(\\log(a \\times b) = \\log a + \\log b\\), the log of such a variable is itself a sum, so it’s approximately normal\nTransform a normal \\(x\\) with \\(e^x\\) and you get exactly this: always non-negative, long right tail\nExamples: income, firm size, our reaction-time data — each the result of many small multiplicative factors (attention, motor noise, distraction, …)\n\n\n\n\n{\n  const rng = d3.randomLogNormal(0, 0.5)\n  const sample = Array.from({ length: 4000 }, rng)\n  const cutoff = d3.quantile(sample.slice().sort(d3.ascending), 0.99)\n  return Plot.plot({\n    height: 240,\n    x: { label: \"x\", domain: [0, cutoff] },\n    y: { label: \"% of draws\", percent: true },\n    marks: [\n      Plot.rectY(sample.filter(d =&gt; d &lt;= cutoff), Plot.binX({ y: \"proportion\" },\n        { x: d =&gt; d, thresholds: 30, fill: \"#2d6a4f\", fillOpacity: 0.8 })),\n      Plot.ruleX([0]),\n    ]\n  })\n}"
+  },
+  {
+    "objectID": "week1-online-slides.html#the-power-law-distribution",
+    "href": "week1-online-slides.html#the-power-law-distribution",
+    "title": "Types of Distribution",
+    "section": "The power-law distribution",
+    "text": "The power-law distribution\n\n\n\nAlso called the Pareto distribution — large extreme values are common at any scale\nExamples: city population, word frequency, wealth\n\n\n\n\n{\n  const alpha = 2.5, xmin = 1\n  const sample = Array.from({ length: 4000 }, () =&gt; xmin * Math.pow(1 - Math.random(), -1 / alpha))\n  const cutoff = d3.quantile(sample.slice().sort(d3.ascending), 0.97)\n  return Plot.plot({\n    height: 240,\n    x: { label: \"x\", domain: [0, cutoff] },\n    y: { label: \"% of draws\", percent: true },\n    marks: [\n      Plot.rectY(sample.filter(d =&gt; d &lt;= cutoff), Plot.binX({ y: \"proportion\" },\n        { x: d =&gt; d, thresholds: 30, fill: \"#e63946\", fillOpacity: 0.8 })),\n      Plot.ruleX([0]),\n    ]\n  })\n}\n\n\n\n\n\n\n\n\n\nSource: Békés & Kézdi (2021), Ch. 3 — shapes simulated here to show each family’s characteristic silhouette"
+  },
+  {
+    "objectID": "week1-online-slides.html#other-common-distributions",
+    "href": "week1-online-slides.html#other-common-distributions",
+    "title": "Types of Distribution",
+    "section": "Other common distributions",
+    "text": "Other common distributions\nNot covered in this chapter of the textbook, but useful to have in view:\n\n\n\n\n\n\n\n\nDistribution\nTypical shape\nCommon use\n\n\n\n\nUniform\nFlat — all values equally likely\nRandom number generators\n\n\nBernoulli\nTwo outcomes (0 or 1)\nSingle test: pass/fail, yes/no\n\n\nBinomial\nCount of successes in n trials\nDefects per batch, correct answers\n\n\nPoisson\nCount of events in a fixed interval\nArrivals per hour, emails per day"
+  },
+  {
+    "objectID": "week1-online-slides.html#our-data-and-its-log",
+    "href": "week1-online-slides.html#our-data-and-its-log",
+    "title": "Types of Distribution",
+    "section": "Our data, and its log",
+    "text": "Our data, and its log\nIf reaction times are log-normal, the log of reaction time should look roughly normal. Let’s check, using the class data collected in the workshop.\n\n{\n  const rtSorted = rt.slice().sort(d3.ascending)\n  const rtCut    = d3.quantile(rtSorted, 0.98)\n  const logRt    = rt.map(Math.log)\n\n  const p1 = Plot.plot({\n    height: 240, width: 380,\n    x: { label: \"Reaction time (ms)\", domain: [0, rtCut] },\n    y: { label: \"% of trials\", percent: true },\n    marks: [\n      Plot.rectY(rt.filter(d =&gt; d &lt;= rtCut), Plot.binX({ y: \"proportion\" },\n        { x: d =&gt; d, thresholds: 20, fill: \"#457b9d\", fillOpacity: 0.8 })),\n      Plot.ruleX([0]),\n    ]\n  })\n  const p2 = Plot.plot({\n    height: 240, width: 380,\n    x: { label: \"log(reaction time)\" },\n    y: { label: \"% of trials\", percent: true },\n    marks: [\n      Plot.rectY(logRt, Plot.binX({ y: \"proportion\" },\n        { x: d =&gt; d, thresholds: 20, fill: \"#2d6a4f\", fillOpacity: 0.8 })),\n      Plot.ruleX([0]),\n    ]\n  })\n\n  return html`&lt;div style=\"display:flex;gap:24px;justify-content:center;\"&gt;${p1}${p2}&lt;/div&gt;`\n}\n\n\n\n\n\n\n\nRaw reaction times (blue) are right-skewed with a long tail. Their log (green) looks far closer to symmetric and bell-shaped — exactly what the log-normal claim predicts."
+  },
+  {
+    "objectID": "week1-online-slides.html#coming-up-week-2",
+    "href": "week1-online-slides.html#coming-up-week-2",
+    "title": "Types of Distribution",
+    "section": "Coming up: Week 2",
+    "text": "Coming up: Week 2\n\nWe can see a difference between groups.\nBut how do we know if it’s real — or just chance?\nInference: when is a difference real?\n\nFisher’s tea test · sampling distributions · confidence intervals · p-values"
   }
 ]

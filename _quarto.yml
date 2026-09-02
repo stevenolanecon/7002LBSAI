@@ -9,17 +9,15 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - href: schedule.qmd
-        text: Schedule
       - href: week1-tool.qmd
         text: Week 1 Exercise
-      - href: assessment.qmd
-        text: Assessment
-      - href: resources.qmd
-        text: Resources
+      - href: week1-slides.qmd
+        text: Week 1 Slides
+      - href: week1-online-slides.qmd
+        text: Week 1 Online Session
     right:
       - icon: github
-        href: https://github.com/stevenolan/7002LBSAI
+        href: https://github.com/stevenolanecon/7002LBSAI
   page-footer:
     left: "7002LBSAI Research Methods in Analytics — LJMU"
     right: "Steve Nolan"
