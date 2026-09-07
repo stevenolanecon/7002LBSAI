@@ -385,6 +385,7 @@ ul.task-list li input[type="checkbox"] {
     <h2 class="anchored">All done!</h2>
     <div class="times-grid" id="rt-all-times"></div>
     <p id="rt-save-status" style="font-size:0.9em; color:#aaa;">Saving your results…</p>
+    <button class="rt-btn btn-blue" id="rt-retry-btn" onclick="rtSave()" style="display:none">Retry save</button>
   </div>
 
 </div>
@@ -461,10 +462,20 @@ function rtComplete() {
 
 function rtSave() {
   const status = document.getElementById('rt-save-status');
+  const retryBtn = document.getElementById('rt-retry-btn');
+  retryBtn.style.display = 'none';
+  status.textContent = 'Saving your results…';
+  status.style.color = '#aaa';
+  status.style.fontWeight = 'normal';
+
+  // Plain-text content type avoids a CORS preflight (which Apps Script
+  // doesn't handle), so this stays a "simple request" and the real
+  // response — including failures — comes back readable. Apps Script's
+  // doPost still reads e.postData.contents as JSON regardless of the
+  // declared content type.
   fetch(SHEET_URL, {
     method:  'POST',
-    mode:    'no-cors',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body:    JSON.stringify({
       name:         rtName,
       device:       rtDevice,
@@ -473,14 +484,16 @@ function rtSave() {
       results:      rtResults
     })
   })
-  .then(() => {
+  .then(response => {
+    if (!response.ok) throw new Error('Server responded with ' + response.status);
     status.textContent = '✓ Results saved. Thank you!';
     status.style.color = '#2d6a4f';
     status.style.fontWeight = '600';
   })
   .catch(() => {
-    status.textContent = 'Could not save — let your instructor know.';
+    status.textContent = 'Could not save — please retry, or note down your times above and let your instructor know.';
     status.style.color = '#e63946';
+    retryBtn.style.display = 'block';
   });
 }
 </script>
