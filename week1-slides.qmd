@@ -3,10 +3,6 @@ title: "EDA: Understanding Your Data"
 subtitle: "7002LBSAI Research Methods in Analytics — Week 1"
 format:
   revealjs:
-    include-in-header:
-      text: |
-        <meta name="robots" content="noindex, nofollow">
-        <link rel="stylesheet" href="styles-slides.css?v=20260908">
     theme: simple
     slide-number: true
     transition: fade
@@ -14,6 +10,10 @@ format:
     width: 1280
     height: 720
     margin: 0.08
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="stylesheet" href="styles-slides.css?v=20260908">
 execute:
   echo: false
   warning: false
@@ -408,6 +408,8 @@ student_data_trials = selected_student_trials
   const pad  = Math.max(20, Math.round((hi - lo) * 0.15))
 
   return Plot.plot({
+    ariaLabel: "Line chart of one student's reaction times across their ten trials",
+    ariaDescription: "Reaction time in milliseconds plotted against trial number, one to ten, for the selected student, with points connected in trial order to show how much one person's own times vary from trial to trial.",
     height: 400,
     marginLeft: 60,
     marginBottom: 40,
@@ -432,6 +434,8 @@ student_data_trials = selected_student_trials
   const vals = student_data_trials.map(d => d.reaction_time_ms)
 
   return Plot.plot({
+    ariaLabel: "Histogram of one student's ten reaction times",
+    ariaDescription: "A histogram of the selected student's ten reaction times, grouped into six bins. Even with only ten trials, the values spread across a noticeable range rather than clustering on a single number.",
     height: 420,
     marginLeft: 60,
     marginBottom: 40,
@@ -538,6 +542,13 @@ viewof hist_controls = {
   })
 
   return Plot.plot({
+    ariaLabel: "Histogram of the whole class's reaction times, with adjustable bin width and outlier threshold",
+    ariaDescription: `A histogram of all students' reaction times pooled together, in bins ${bw} ms wide` +
+      (excluded > 0 ? `, with ${excluded} value${excluded > 1 ? 's' : ''} above ${thr} ms excluded` : ", with no values excluded") +
+      `. The shape is right-skewed: most values cluster at the low end with a long tail of slower times.` +
+      (hist_controls.show_mean ? ` The mean is ${mu.toFixed(1)} ms.` : "") +
+      (hist_controls.show_median ? ` The median is ${med.toFixed(1)} ms.` : "") +
+      (hist_controls.show_kde ? " A smoothed density curve is overlaid on the bars." : ""),
     height: 330,
     marginLeft: 55,
     marginBottom: 32,
@@ -655,6 +666,8 @@ There is no ceiling. Distraction, hesitation, accidental clicks — all extend t
   const labelY = maxBinCount + Math.max(2, Math.round(maxBinCount * 0.35))
 
   return Plot.plot({
+    ariaLabel: "Histogram of all reaction times with the single highest value highlighted",
+    ariaDescription: `The same pooled histogram as before, with an arrow pointing to the single highest reaction time in the dataset, ${maxVal.toFixed(0)} ms — the one extreme point furthest from the rest of the distribution.`,
     height: 380,
     marginLeft: 55,
     marginTop: 55,
@@ -755,6 +768,8 @@ viewof centre_student = Inputs.select(students, {
   const jittered = vals.map(v => ({ v, y: (Math.random() - 0.5) * 0.8 }))
 
   return Plot.plot({
+    ariaLabel: "Dot plot of one student's ten reaction times with the mean and median marked",
+    ariaDescription: `${centre_student}'s ten reaction times shown as dots, with a red line marking the mean at ${mu.toFixed(1)} ms and an orange line marking the median at ${med.toFixed(1)} ms — the two sit close together, near the middle of the spread of dots.`,
     height: 240,
     marginLeft: 55,
     x: { label: "Reaction time (ms)", domain: [cMin, cMax] },
@@ -868,7 +883,17 @@ mutable spreadStage = 'none'
   const showSD  = spreadStage === 'sd' || spreadStage === 'iqr'
   const showIQR = spreadStage === 'iqr'
 
+  const stageDescription = {
+    none:   "no measure of spread is highlighted yet",
+    range:  `the full range is shaded, from the minimum ${rMin.toFixed(0)} ms to the maximum ${rMax.toFixed(0)} ms`,
+    sd:     `one standard deviation either side of the mean is shaded, from ${(mu-sig).toFixed(0)} to ${(mu+sig).toFixed(0)} ms`,
+    iqr:    `the interquartile range is shaded, from the 25th percentile ${q1.toFixed(0)} ms to the 75th percentile ${q3.toFixed(0)} ms`,
+    '90-10': `the middle 80% is shaded, from the 10th percentile ${p10.toFixed(0)} ms to the 90th percentile ${p90.toFixed(0)} ms`,
+  }[spreadStage]
+
   return Plot.plot({
+    ariaLabel: "Dot plot of one student's ten reaction times with a shaded band showing spread",
+    ariaDescription: `${spread_student}'s ten reaction times shown as dots; ${stageDescription}.`,
     height: 220,
     marginLeft: 55,
     x: { label: "Reaction time (ms)", domain: [sMin, sMax] },
@@ -946,7 +971,7 @@ Source: Békés & Kézdi (2021), Ch. 3
 ::: {.two-col}
 ::: {.col}
 ```{=html}
-<svg viewBox="0 0 430 380" width="100%" style="max-height:380px;">
+<svg viewBox="0 0 430 380" width="100%" style="max-height:380px;" role="img" aria-label="Diagram of box plot anatomy: whiskers extend to the upper and lower adjacent values, a box spans the 25th to 75th percentile with the median marked as a red line inside it, and an outside value is shown as a separate red dot beyond the lower whisker">
   <line x1="110" y1="40"  x2="110" y2="120" stroke="#457b9d" stroke-width="2"/>
   <line x1="110" y1="240" x2="110" y2="320" stroke="#457b9d" stroke-width="2"/>
   <line x1="75"  y1="40"  x2="145" y2="40"  stroke="#457b9d" stroke-width="2"/>
@@ -976,7 +1001,7 @@ Source: Békés & Kézdi (2021), Ch. 3
 :::
 ::: {.col}
 ```{=html}
-<svg viewBox="0 0 430 380" width="100%" style="max-height:380px;">
+<svg viewBox="0 0 430 380" width="100%" style="max-height:380px;" role="img" aria-label="Diagram of violin plot anatomy: the full curved shape shows the density of the distribution, widest where values are most common, with a narrower inner box marking the interquartile range around the median and lighter bands above and below showing the 95% confidence interval">
   <path d="M 150.0,40.0 L 155.4,48.0 L 161.4,56.0 L 168.0,64.0 L 176.2,72.0 L 185.2,80.0 L 192.0,88.0
            L 196.6,96.0 L 199.7,104.0 L 198.6,112.0 L 193.4,120.0 L 189.3,128.0 L 186.5,136.0
            L 184.5,144.0 L 183.8,152.0 L 183.4,160.0 L 183.2,168.0 L 183.0,176.0 L 183.0,184.0
@@ -1054,6 +1079,8 @@ Compare your box plot against a neighbour's — same data, does it look the same
   })
 
   return Plot.plot({
+    ariaLabel: "Box plot comparing reaction times for phone and laptop users",
+    ariaDescription: `Two horizontal box plots, one for phone users (median ${grouped[0].q2.toFixed(0)} ms) and one for laptop users (median ${grouped[1].q2.toFixed(0)} ms). Each box spans the interquartile range with the median marked by a white tick and the mean by a diamond, whiskers reach the furthest non-outlier point, and open circles mark outliers beyond that. Individual trial times are also shown as faint jittered dots behind each box.`,
     height: 190,
     marginLeft: 80,
     x: { label: "Reaction time (ms)", domain: [bMin, bMax] },
@@ -1103,6 +1130,8 @@ Compare your box plot against a neighbour's — same data, does it look the same
   })
 
   return Plot.plot({
+    ariaLabel: "Violin plot comparing reaction times for phone and laptop users",
+    ariaDescription: "The same phone-versus-laptop comparison as the box plot above, shown instead as two mirrored density shapes — the width of each violin at a given reaction time shows how common that value is, giving the full shape of each group's distribution rather than five summary numbers.",
     height: 190,
     marginLeft: 80,
     x: { label: "Reaction time (ms)", domain: [bMin, bMax] },
@@ -1217,6 +1246,9 @@ viewof show_pts_device = Inputs.toggle({ label: "Show individual points", value:
   })
 
   return Plot.plot({
+    ariaLabel: "Box plot comparing reaction times for phone and laptop users",
+    ariaDescription: `Two horizontal box plots comparing phone (median ${grouped[0].q2.toFixed(0)} ms) and laptop (median ${grouped[1].q2.toFixed(0)} ms) reaction times — box shows the interquartile range, tick the median, diamond the mean, whiskers reach the furthest non-outlier point, and open circles mark outliers.` +
+      (show_pts_device ? " Individual trials are also shown as jittered dots." : ""),
     height: 280,
     marginLeft: 80,
     x: { label: "Reaction time (ms)", domain: [bMin, bMax] },
@@ -1274,6 +1306,9 @@ viewof show_pts_caff = Inputs.toggle({ label: "Show individual points", value: t
   })
 
   return Plot.plot({
+    ariaLabel: "Box plot comparing reaction times for students who did and didn't have caffeine",
+    ariaDescription: "Two horizontal box plots comparing reaction times between students who reported caffeine in the last two hours and those who didn't — box shows the interquartile range, tick the median, diamond the mean, whiskers reach the furthest non-outlier point, and open circles mark outliers." +
+      (show_pts_caff ? " Individual trials are also shown as jittered dots." : ""),
     height: 280,
     marginLeft: 80,
     x: { label: "Reaction time (ms)", domain: [bMin, bMax] },
