@@ -33,6 +33,23 @@ ojs_define(
 )
 ```
 
+```{ojs}
+// Screen readers walk into an SVG's own children unless told otherwise —
+// Observable Plot gives every mark and axis tick its own generic aria-label
+// ("dot", "x-axis tick", ...), so without this wrapper a screen reader reads
+// through dozens of those instead of one meaningful description. Wrapping in
+// a role="img" container and hiding the SVG itself (aria-hidden) makes the
+// wrapper's one aria-label the whole story.
+function accessibleChart(node, label) {
+  node.setAttribute("aria-hidden", "true")
+  const wrapper = document.createElement("div")
+  wrapper.setAttribute("role", "img")
+  wrapper.setAttribute("aria-label", label)
+  wrapper.appendChild(node)
+  return wrapper
+}
+```
+
 ## {background-color="#1a1a2e"}
 
 ::: {style="text-align: center; padding-top: 180px;"}
@@ -62,9 +79,7 @@ Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Pol
 {
   const rng = d3.randomNormal(0, 1)
   const sample = Array.from({ length: 4000 }, rng)
-  return Plot.plot({
-    ariaLabel: "Histogram of a simulated normal distribution",
-    ariaDescription: "4,000 simulated draws from a standard normal distribution, shown as a histogram. The shape is symmetric and bell-shaped, peaking at zero and falling away evenly on both sides.",
+  return accessibleChart(Plot.plot({
     height: 240,
     x: { label: "x", domain: [-4, 4] },
     y: { label: "% of draws", percent: true },
@@ -73,7 +88,7 @@ Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Pol
         { x: d => d, thresholds: 30, fill: "#457b9d", fillOpacity: 0.8 })),
       Plot.ruleX([0]),
     ]
-  })
+  }), "Histogram of a simulated normal distribution. 4,000 simulated draws from a standard normal distribution, shown as a histogram. The shape is symmetric and bell-shaped, peaking at zero and falling away evenly on both sides.")
 }
 ```
 :::
@@ -93,9 +108,7 @@ Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Pol
   const rng = d3.randomLogNormal(0, 0.5)
   const sample = Array.from({ length: 4000 }, rng)
   const cutoff = d3.quantile(sample.slice().sort(d3.ascending), 0.99)
-  return Plot.plot({
-    ariaLabel: "Histogram of a simulated log-normal distribution",
-    ariaDescription: "4,000 simulated draws from a log-normal distribution, shown as a histogram. The shape is right-skewed: most values cluster near zero with a long tail of larger values, unlike the symmetric normal distribution.",
+  return accessibleChart(Plot.plot({
     height: 240,
     x: { label: "x", domain: [0, cutoff] },
     y: { label: "% of draws", percent: true },
@@ -104,7 +117,7 @@ Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Pol
         { x: d => d, thresholds: 30, fill: "#2d6a4f", fillOpacity: 0.8 })),
       Plot.ruleX([0]),
     ]
-  })
+  }), "Histogram of a simulated log-normal distribution. 4,000 simulated draws from a log-normal distribution, shown as a histogram. The shape is right-skewed: most values cluster near zero with a long tail of larger values, unlike the symmetric normal distribution.")
 }
 ```
 :::
@@ -123,9 +136,7 @@ Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Pol
   const alpha = 2.5, xmin = 1
   const sample = Array.from({ length: 4000 }, () => xmin * Math.pow(1 - Math.random(), -1 / alpha))
   const cutoff = d3.quantile(sample.slice().sort(d3.ascending), 0.97)
-  return Plot.plot({
-    ariaLabel: "Histogram of a simulated power-law (Pareto) distribution",
-    ariaDescription: "4,000 simulated draws from a power-law distribution, shown as a histogram. Almost all values are small and close to the minimum, with a very long thin tail of much larger values — extreme values are far more common here than in a normal or log-normal distribution.",
+  return accessibleChart(Plot.plot({
     height: 240,
     x: { label: "x", domain: [0, cutoff] },
     y: { label: "% of draws", percent: true },
@@ -134,7 +145,7 @@ Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Pol
         { x: d => d, thresholds: 30, fill: "#e63946", fillOpacity: 0.8 })),
       Plot.ruleX([0]),
     ]
-  })
+  }), "Histogram of a simulated power-law (Pareto) distribution. 4,000 simulated draws from a power-law distribution, shown as a histogram. Almost all values are small and close to the minimum, with a very long thin tail of much larger values — extreme values are far more common here than in a normal or log-normal distribution.")
 }
 ```
 :::
@@ -158,9 +169,7 @@ Source: Békés & Kézdi (2021), Ch. 3 — shapes simulated here to show each fa
 {
   const rng = d3.randomUniform(0, 10)
   const sample = Array.from({ length: 4000 }, rng)
-  return Plot.plot({
-    ariaLabel: "Histogram of a simulated uniform distribution",
-    ariaDescription: "4,000 simulated draws from a uniform distribution between 0 and 10, shown as a histogram. The bars are roughly the same height across the whole range — every value is equally likely, with no peak.",
+  return accessibleChart(Plot.plot({
     height: 240,
     x: { label: "x", domain: [0, 10] },
     y: { label: "% of draws", percent: true },
@@ -169,7 +178,7 @@ Source: Békés & Kézdi (2021), Ch. 3 — shapes simulated here to show each fa
         { x: d => d, thresholds: 20, fill: "#f4a261", fillOpacity: 0.8 })),
       Plot.ruleX([0]),
     ]
-  })
+  }), "Histogram of a simulated uniform distribution. 4,000 simulated draws from a uniform distribution between 0 and 10, shown as a histogram. The bars are roughly the same height across the whole range — every value is equally likely, with no peak.")
 }
 ```
 :::
@@ -189,9 +198,7 @@ Source: Békés & Kézdi (2021), Ch. 3 — shapes simulated here to show each fa
 {
   const p = 0.3
   const sample = Array.from({ length: 4000 }, d3.randomBernoulli(p))
-  return Plot.plot({
-    ariaLabel: "Bar chart of a simulated Bernoulli distribution",
-    ariaDescription: "4,000 simulated draws from a Bernoulli distribution with a 30% probability of success, shown as two bars. The bar at zero (failure) is taller, at roughly 70% of draws, and the bar at one (success) is shorter, at roughly 30%.",
+  return accessibleChart(Plot.plot({
     height: 240,
     x: { label: "Outcome", domain: [-0.5, 1.5], ticks: [0, 1] },
     y: { label: "% of draws", percent: true },
@@ -200,7 +207,7 @@ Source: Békés & Kézdi (2021), Ch. 3 — shapes simulated here to show each fa
         { x: d => d, interval: 1, fill: "#1d3557", fillOpacity: 0.8 })),
       Plot.ruleX([0]),
     ]
-  })
+  }), "Bar chart of a simulated Bernoulli distribution. 4,000 simulated draws from a Bernoulli distribution with a 30% probability of success, shown as two bars. The bar at zero (failure) is taller, at roughly 70% of draws, and the bar at one (success) is shorter, at roughly 30%.")
 }
 ```
 :::
@@ -220,9 +227,7 @@ Source: Békés & Kézdi (2021), Ch. 3 — shapes simulated here to show each fa
 {
   const n = 20, p = 0.3
   const sample = Array.from({ length: 4000 }, d3.randomBinomial(n, p))
-  return Plot.plot({
-    ariaLabel: "Histogram of a simulated binomial distribution",
-    ariaDescription: "4,000 simulated draws of the number of successes in 20 trials with a 30% success probability, shown as a histogram. The shape is roughly symmetric and bell-shaped, peaking around 6 successes — an early preview of how the binomial approaches the normal shape as the number of trials grows.",
+  return accessibleChart(Plot.plot({
     height: 240,
     x: { label: "Number of successes (out of 20)", domain: [-0.5, n + 0.5] },
     y: { label: "% of draws", percent: true },
@@ -231,7 +236,7 @@ Source: Békés & Kézdi (2021), Ch. 3 — shapes simulated here to show each fa
         { x: d => d, interval: 1, fill: "#e9c46a", fillOpacity: 0.8 })),
       Plot.ruleX([0]),
     ]
-  })
+  }), "Histogram of a simulated binomial distribution. 4,000 simulated draws of the number of successes in 20 trials with a 30% success probability, shown as a histogram. The shape is roughly symmetric and bell-shaped, peaking around 6 successes — an early preview of how the binomial approaches the normal shape as the number of trials grows.")
 }
 ```
 :::
@@ -251,9 +256,7 @@ Source: Békés & Kézdi (2021), Ch. 3 — shapes simulated here to show each fa
 {
   const lambda = 4
   const sample = Array.from({ length: 4000 }, d3.randomPoisson(lambda))
-  return Plot.plot({
-    ariaLabel: "Histogram of a simulated Poisson distribution",
-    ariaDescription: "4,000 simulated draws from a Poisson distribution with an average rate of 4 events, shown as a histogram. The shape is right-skewed and concentrated on small whole numbers, peaking around 3 to 4 events.",
+  return accessibleChart(Plot.plot({
     height: 240,
     x: { label: "Number of events", domain: [-0.5, 15.5] },
     y: { label: "% of draws", percent: true },
@@ -262,7 +265,7 @@ Source: Békés & Kézdi (2021), Ch. 3 — shapes simulated here to show each fa
         { x: d => d, interval: 1, fill: "#e63946", fillOpacity: 0.8 })),
       Plot.ruleX([0]),
     ]
-  })
+  }), "Histogram of a simulated Poisson distribution. 4,000 simulated draws from a Poisson distribution with an average rate of 4 events, shown as a histogram. The shape is right-skewed and concentrated on small whole numbers, peaking around 3 to 4 events.")
 }
 ```
 :::
@@ -285,9 +288,7 @@ Let's work through this together in Excel — a histogram of the raw reaction ti
   const rtCut    = d3.quantile(rtSorted, 0.98)
   const logRt    = rt.map(Math.log)
 
-  const p1 = Plot.plot({
-    ariaLabel: "Histogram of the class's raw reaction times",
-    ariaDescription: "A histogram of the class's actual reaction times in milliseconds, trimmed to the bottom 98% to exclude the most extreme outlier. The shape is right-skewed, matching the log-normal prediction.",
+  const p1 = accessibleChart(Plot.plot({
     height: 240, width: 380,
     x: { label: "Reaction time (ms)", domain: [0, rtCut] },
     y: { label: "% of trials", percent: true },
@@ -296,10 +297,8 @@ Let's work through this together in Excel — a histogram of the raw reaction ti
         { x: d => d, thresholds: 20, fill: "#457b9d", fillOpacity: 0.8 })),
       Plot.ruleX([0]),
     ]
-  })
-  const p2 = Plot.plot({
-    ariaLabel: "Histogram of the log of the class's reaction times",
-    ariaDescription: "A histogram of the natural log of the same reaction times. The shape is much closer to symmetric and bell-shaped than the raw histogram beside it, supporting the claim that reaction time is log-normally distributed.",
+  }), "Histogram of the class's raw reaction times. A histogram of the class's actual reaction times in milliseconds, trimmed to the bottom 98% to exclude the most extreme outlier. The shape is right-skewed, matching the log-normal prediction.")
+  const p2 = accessibleChart(Plot.plot({
     height: 240, width: 380,
     x: { label: "log(reaction time)" },
     y: { label: "% of trials", percent: true },
@@ -308,7 +307,7 @@ Let's work through this together in Excel — a histogram of the raw reaction ti
         { x: d => d, thresholds: 20, fill: "#2d6a4f", fillOpacity: 0.8 })),
       Plot.ruleX([0]),
     ]
-  })
+  }), "Histogram of the log of the class's reaction times. A histogram of the natural log of the same reaction times. The shape is much closer to symmetric and bell-shaped than the raw histogram beside it, supporting the claim that reaction time is log-normally distributed.")
 
   return html`<div style="display:flex;gap:24px;justify-content:center;">${p1}${p2}</div>`
 }

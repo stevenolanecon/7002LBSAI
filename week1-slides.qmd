@@ -82,6 +82,23 @@ ojs_define(
 )
 ```
 
+```{ojs}
+// Screen readers walk into an SVG's own children unless told otherwise —
+// Observable Plot gives every mark and axis tick its own generic aria-label
+// ("dot", "x-axis tick", ...), so without this wrapper a screen reader reads
+// through dozens of those instead of one meaningful description. Wrapping in
+// a role="img" container and hiding the SVG itself (aria-hidden) makes the
+// wrapper's one aria-label the whole story.
+function accessibleChart(node, label) {
+  node.setAttribute("aria-hidden", "true")
+  const wrapper = document.createElement("div")
+  wrapper.setAttribute("role", "img")
+  wrapper.setAttribute("aria-label", label)
+  wrapper.appendChild(node)
+  return wrapper
+}
+```
+
 ## {background-color="#1a1a2e"}
 
 ::: {style="text-align: center; padding-top: 180px;"}
@@ -407,9 +424,7 @@ student_data_trials = selected_student_trials
   const hi   = d3.max(vals)
   const pad  = Math.max(20, Math.round((hi - lo) * 0.15))
 
-  return Plot.plot({
-    ariaLabel: "Line chart of one student's reaction times across their ten trials",
-    ariaDescription: "Reaction time in milliseconds plotted against trial number, one to ten, for the selected student, with points connected in trial order to show how much one person's own times vary from trial to trial.",
+  return accessibleChart(Plot.plot({
     height: 400,
     marginLeft: 60,
     marginBottom: 40,
@@ -420,7 +435,7 @@ student_data_trials = selected_student_trials
       Plot.dot(student_data_trials,  { x: "trial", y: "reaction_time_ms", fill: "#457b9d", r: 9,
                                 tip: true, title: d => `Trial ${d.trial}: ${d.reaction_time_ms} ms` }),
     ]
-  })
+  }), "Line chart of one student's reaction times across their ten trials. Reaction time in milliseconds is plotted against trial number, one to ten, with points connected in trial order to show how much one person's own times vary from trial to trial.")
 }
 ```
 
@@ -433,9 +448,7 @@ student_data_trials = selected_student_trials
 
   const vals = student_data_trials.map(d => d.reaction_time_ms)
 
-  return Plot.plot({
-    ariaLabel: "Histogram of one student's ten reaction times",
-    ariaDescription: "A histogram of the selected student's ten reaction times, grouped into six bins. Even with only ten trials, the values spread across a noticeable range rather than clustering on a single number.",
+  return accessibleChart(Plot.plot({
     height: 420,
     marginLeft: 60,
     marginBottom: 40,
@@ -445,7 +458,7 @@ student_data_trials = selected_student_trials
       Plot.rectY(vals, Plot.binX({ y: "count" }, { x: d => d, thresholds: 6, fill: "#457b9d" })),
       Plot.ruleY([0]),
     ]
-  })
+  }), "Histogram of one student's ten reaction times, grouped into six bins. Even with only ten trials, the values spread across a noticeable range rather than clustering on a single number.")
 }
 ```
 
@@ -541,14 +554,14 @@ viewof hist_controls = {
     return { x, y: pct ? density * bw : density * filtered.length * bw }
   })
 
-  return Plot.plot({
-    ariaLabel: "Histogram of the whole class's reaction times, with adjustable bin width and outlier threshold",
-    ariaDescription: `A histogram of all students' reaction times pooled together, in bins ${bw} ms wide` +
-      (excluded > 0 ? `, with ${excluded} value${excluded > 1 ? 's' : ''} above ${thr} ms excluded` : ", with no values excluded") +
-      `. The shape is right-skewed: most values cluster at the low end with a long tail of slower times.` +
-      (hist_controls.show_mean ? ` The mean is ${mu.toFixed(1)} ms.` : "") +
-      (hist_controls.show_median ? ` The median is ${med.toFixed(1)} ms.` : "") +
-      (hist_controls.show_kde ? " A smoothed density curve is overlaid on the bars." : ""),
+  const chartLabel = `Histogram of the whole class's reaction times, in bins ${bw} ms wide` +
+    (excluded > 0 ? `, with ${excluded} value${excluded > 1 ? 's' : ''} above ${thr} ms excluded` : ", with no values excluded") +
+    `. The shape is right-skewed: most values cluster at the low end with a long tail of slower times.` +
+    (hist_controls.show_mean ? ` The mean is ${mu.toFixed(1)} ms.` : "") +
+    (hist_controls.show_median ? ` The median is ${med.toFixed(1)} ms.` : "") +
+    (hist_controls.show_kde ? " A smoothed density curve is overlaid on the bars." : "")
+
+  return accessibleChart(Plot.plot({
     height: 330,
     marginLeft: 55,
     marginBottom: 32,
@@ -575,7 +588,7 @@ viewof hist_controls = {
                              x: "x", frameAnchor: "top-right",
                              fill: "#e63946", fontSize: 12, fontStyle: "italic" }) : null,
     ]
-  })
+  }), chartLabel)
 }
 ```
 
@@ -665,9 +678,7 @@ There is no ceiling. Distraction, hesitation, accidental clicks — all extend t
   const topBin = bins.find(b => maxVal >= b.x0 && maxVal < b.x1) ?? bins[bins.length - 1]
   const labelY = maxBinCount + Math.max(2, Math.round(maxBinCount * 0.35))
 
-  return Plot.plot({
-    ariaLabel: "Histogram of all reaction times with the single highest value highlighted",
-    ariaDescription: `The same pooled histogram as before, with an arrow pointing to the single highest reaction time in the dataset, ${maxVal.toFixed(0)} ms — the one extreme point furthest from the rest of the distribution.`,
+  return accessibleChart(Plot.plot({
     height: 380,
     marginLeft: 55,
     marginTop: 55,
@@ -683,7 +694,7 @@ There is no ceiling. Distraction, hesitation, accidental clicks — all extend t
                 { x: "x", y: "y", text: "label", dy: -10, fill: "#e63946",
                   fontSize: 13, fontWeight: 600 }),
     ]
-  })
+  }), `Histogram of all reaction times with the single highest value highlighted: an arrow points to ${maxVal.toFixed(0)} ms, the one extreme point furthest from the rest of the distribution.`)
 }
 ```
 
@@ -767,9 +778,7 @@ viewof centre_student = Inputs.select(students, {
   const cMax = d3.max(vals) + cPad
   const jittered = vals.map(v => ({ v, y: (Math.random() - 0.5) * 0.8 }))
 
-  return Plot.plot({
-    ariaLabel: "Dot plot of one student's ten reaction times with the mean and median marked",
-    ariaDescription: `${centre_student}'s ten reaction times shown as dots, with a red line marking the mean at ${mu.toFixed(1)} ms and an orange line marking the median at ${med.toFixed(1)} ms — the two sit close together, near the middle of the spread of dots.`,
+  return accessibleChart(Plot.plot({
     height: 240,
     marginLeft: 55,
     x: { label: "Reaction time (ms)", domain: [cMin, cMax] },
@@ -785,7 +794,7 @@ viewof centre_student = Inputs.select(students, {
                 { x: "x", text: "label", dy: 38,  fill: "#f4a261", fontSize: 14, fontWeight: 700,
                   stroke: "white", strokeWidth: 4, paintOrder: "stroke" }),
     ]
-  })
+  }), `Dot plot of ${centre_student}'s ten reaction times, with a red line marking the mean at ${mu.toFixed(1)} ms and an orange line marking the median at ${med.toFixed(1)} ms — the two sit close together, near the middle of the spread of dots.`)
 }
 ```
 
@@ -891,9 +900,7 @@ mutable spreadStage = 'none'
     '90-10': `the middle 80% is shaded, from the 10th percentile ${p10.toFixed(0)} ms to the 90th percentile ${p90.toFixed(0)} ms`,
   }[spreadStage]
 
-  return Plot.plot({
-    ariaLabel: "Dot plot of one student's ten reaction times with a shaded band showing spread",
-    ariaDescription: `${spread_student}'s ten reaction times shown as dots; ${stageDescription}.`,
+  return accessibleChart(Plot.plot({
     height: 220,
     marginLeft: 55,
     x: { label: "Reaction time (ms)", domain: [sMin, sMax] },
@@ -926,7 +933,7 @@ mutable spreadStage = 'none'
         { x: p90, label: `P90 (${p90.toFixed(0)})` },
       ], { x: "x", text: "label", dy: -32, fill: "#1d3557", fontSize: 11 }) : null,
     ]
-  })
+  }), `Dot plot of ${spread_student}'s ten reaction times; ${stageDescription}.`)
 }
 ```
 
@@ -971,7 +978,8 @@ Source: Békés & Kézdi (2021), Ch. 3
 ::: {.two-col}
 ::: {.col}
 ```{=html}
-<svg viewBox="0 0 430 380" width="100%" style="max-height:380px;" role="img" aria-label="Diagram of box plot anatomy: whiskers extend to the upper and lower adjacent values, a box spans the 25th to 75th percentile with the median marked as a red line inside it, and an outside value is shown as a separate red dot beyond the lower whisker">
+<div role="img" aria-label="Diagram of box plot anatomy: whiskers extend to the upper and lower adjacent values, a box spans the 25th to 75th percentile with the median marked as a red line inside it, and an outside value is shown as a separate red dot beyond the lower whisker">
+<svg viewBox="0 0 430 380" width="100%" style="max-height:380px;" aria-hidden="true">
   <line x1="110" y1="40"  x2="110" y2="120" stroke="#457b9d" stroke-width="2"/>
   <line x1="110" y1="240" x2="110" y2="320" stroke="#457b9d" stroke-width="2"/>
   <line x1="75"  y1="40"  x2="145" y2="40"  stroke="#457b9d" stroke-width="2"/>
@@ -997,11 +1005,13 @@ Source: Békés & Kézdi (2021), Ch. 3
   <line x1="114" y1="355" x2="195" y2="355" stroke="#bbb" stroke-width="1"/>
   <text x="200" y="359" font-size="13" fill="#e63946">Outside value</text>
 </svg>
+</div>
 ```
 :::
 ::: {.col}
 ```{=html}
-<svg viewBox="0 0 430 380" width="100%" style="max-height:380px;" role="img" aria-label="Diagram of violin plot anatomy: the full curved shape shows the density of the distribution, widest where values are most common, with a narrower inner box marking the interquartile range around the median and lighter bands above and below showing the 95% confidence interval">
+<div role="img" aria-label="Diagram of violin plot anatomy: the full curved shape shows the density of the distribution, widest where values are most common, with a narrower inner box marking the interquartile range around the median and lighter bands above and below showing the 95% confidence interval">
+<svg viewBox="0 0 430 380" width="100%" style="max-height:380px;" aria-hidden="true">
   <path d="M 150.0,40.0 L 155.4,48.0 L 161.4,56.0 L 168.0,64.0 L 176.2,72.0 L 185.2,80.0 L 192.0,88.0
            L 196.6,96.0 L 199.7,104.0 L 198.6,112.0 L 193.4,120.0 L 189.3,128.0 L 186.5,136.0
            L 184.5,144.0 L 183.8,152.0 L 183.4,160.0 L 183.2,168.0 L 183.0,176.0 L 183.0,184.0
@@ -1028,6 +1038,7 @@ Source: Békés & Kézdi (2021), Ch. 3
   <line x1="150" y1="260" x2="195" y2="260" stroke="#bbb" stroke-width="1"/>
   <text x="200" y="264" font-size="13" fill="#333">95% confidence interval</text>
 </svg>
+</div>
 ```
 :::
 :::
@@ -1078,9 +1089,7 @@ Compare your box plot against a neighbour's — same data, does it look the same
     return d.reaction_time_ms < g.lo || d.reaction_time_ms > g.hi
   })
 
-  return Plot.plot({
-    ariaLabel: "Box plot comparing reaction times for phone and laptop users",
-    ariaDescription: `Two horizontal box plots, one for phone users (median ${grouped[0].q2.toFixed(0)} ms) and one for laptop users (median ${grouped[1].q2.toFixed(0)} ms). Each box spans the interquartile range with the median marked by a white tick and the mean by a diamond, whiskers reach the furthest non-outlier point, and open circles mark outliers beyond that. Individual trial times are also shown as faint jittered dots behind each box.`,
+  return accessibleChart(Plot.plot({
     height: 190,
     marginLeft: 80,
     x: { label: "Reaction time (ms)", domain: [bMin, bMax] },
@@ -1098,7 +1107,7 @@ Compare your box plot against a neighbour's — same data, does it look the same
       Plot.dot(outliers,  { x: "reaction_time_ms", y: "device",
                             stroke: d => colours[d.device], fill: "white", r: 5, strokeWidth: 1.5 }),
     ]
-  })
+  }), `Box plot comparing reaction times for phone and laptop users. Two horizontal box plots, one for phone users (median ${grouped[0].q2.toFixed(0)} ms) and one for laptop users (median ${grouped[1].q2.toFixed(0)} ms). Each box spans the interquartile range with the median marked by a white tick and the mean by a diamond, whiskers reach the furthest non-outlier point, and open circles mark outliers beyond that. Individual trial times are also shown as faint jittered dots behind each box.`)
 }
 ```
 
@@ -1129,9 +1138,7 @@ Compare your box plot against a neighbour's — same data, does it look the same
     })
   })
 
-  return Plot.plot({
-    ariaLabel: "Violin plot comparing reaction times for phone and laptop users",
-    ariaDescription: "The same phone-versus-laptop comparison as the box plot above, shown instead as two mirrored density shapes — the width of each violin at a given reaction time shows how common that value is, giving the full shape of each group's distribution rather than five summary numbers.",
+  return accessibleChart(Plot.plot({
     height: 190,
     marginLeft: 80,
     x: { label: "Reaction time (ms)", domain: [bMin, bMax] },
@@ -1139,7 +1146,7 @@ Compare your box plot against a neighbour's — same data, does it look the same
          tickFormat: v => v === 1 ? "Phone" : v === 0 ? "Laptop" : "", label: null },
     marks: groups.map(g => Plot.areaY(violinData.filter(d => d.group === g),
       { x: "x", y1: "y1", y2: "y2", fill: colours[g], fillOpacity: 0.5, stroke: colours[g], strokeWidth: 1.5 })),
-  })
+  }), "Violin plot comparing reaction times for phone and laptop users. The same phone-versus-laptop comparison as the box plot above, shown instead as two mirrored density shapes — the width of each violin at a given reaction time shows how common that value is, giving the full shape of each group's distribution rather than five summary numbers.")
 }
 ```
 
@@ -1245,10 +1252,10 @@ viewof show_pts_device = Inputs.toggle({ label: "Show individual points", value:
     return d.reaction_time_ms < g.lo || d.reaction_time_ms > g.hi
   })
 
-  return Plot.plot({
-    ariaLabel: "Box plot comparing reaction times for phone and laptop users",
-    ariaDescription: `Two horizontal box plots comparing phone (median ${grouped[0].q2.toFixed(0)} ms) and laptop (median ${grouped[1].q2.toFixed(0)} ms) reaction times — box shows the interquartile range, tick the median, diamond the mean, whiskers reach the furthest non-outlier point, and open circles mark outliers.` +
-      (show_pts_device ? " Individual trials are also shown as jittered dots." : ""),
+  const chartLabel = `Box plot comparing reaction times for phone and laptop users. Two horizontal box plots comparing phone (median ${grouped[0].q2.toFixed(0)} ms) and laptop (median ${grouped[1].q2.toFixed(0)} ms) reaction times — box shows the interquartile range, tick the median, diamond the mean, whiskers reach the furthest non-outlier point, and open circles mark outliers.` +
+    (show_pts_device ? " Individual trials are also shown as jittered dots." : "")
+
+  return accessibleChart(Plot.plot({
     height: 280,
     marginLeft: 80,
     x: { label: "Reaction time (ms)", domain: [bMin, bMax] },
@@ -1268,7 +1275,7 @@ viewof show_pts_device = Inputs.toggle({ label: "Show individual points", value:
       Plot.dot(outliers, { x: "reaction_time_ms", y: "device",
                            stroke: d => colours[d.device], fill: "white", r: 5, strokeWidth: 1.5 }),
     ]
-  })
+  }), chartLabel)
 }
 ```
 
@@ -1305,10 +1312,10 @@ viewof show_pts_caff = Inputs.toggle({ label: "Show individual points", value: t
     return g && (d.reaction_time_ms < g.lo || d.reaction_time_ms > g.hi)
   })
 
-  return Plot.plot({
-    ariaLabel: "Box plot comparing reaction times for students who did and didn't have caffeine",
-    ariaDescription: "Two horizontal box plots comparing reaction times between students who reported caffeine in the last two hours and those who didn't — box shows the interquartile range, tick the median, diamond the mean, whiskers reach the furthest non-outlier point, and open circles mark outliers." +
-      (show_pts_caff ? " Individual trials are also shown as jittered dots." : ""),
+  const chartLabel = "Box plot comparing reaction times for students who did and didn't have caffeine. Two horizontal box plots comparing reaction times between students who reported caffeine in the last two hours and those who didn't — box shows the interquartile range, tick the median, diamond the mean, whiskers reach the furthest non-outlier point, and open circles mark outliers." +
+    (show_pts_caff ? " Individual trials are also shown as jittered dots." : "")
+
+  return accessibleChart(Plot.plot({
     height: 280,
     marginLeft: 80,
     x: { label: "Reaction time (ms)", domain: [bMin, bMax] },
@@ -1328,7 +1335,7 @@ viewof show_pts_caff = Inputs.toggle({ label: "Show individual points", value: t
       Plot.dot(outliers, { x: "reaction_time_ms", y: "caffeine",
                            stroke: d => colours[d.caffeine], fill: "white", r: 5, strokeWidth: 1.5 }),
     ]
-  })
+  }), chartLabel)
 }
 ```
 
