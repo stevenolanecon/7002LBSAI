@@ -22,9 +22,11 @@ import pandas as pd
 import numpy as np
 
 # Live Google Sheet (switch back to this once the module is running):
-df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIOZ03GpUJgqvGVmI9cih169mMq0ajLMj6a0VTd2tytB3K5BmX5AUiKQ8FKIL6KUKEcgb-1LR-1eM/pub?gid=0&single=true&output=csv")
+# df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIOZ03GpUJgqvGVmI9cih169mMq0ajLMj6a0VTd2tytB3K5BmX5AUiKQ8FKIL6KUKEcgb-1LR-1eM/pub?gid=0&single=true&output=csv")
 # Synthetic data for building/testing slides before the module runs:
 # df = pd.read_csv("data/synthetic_reaction_times.csv")
+# Test dataset (16 named students, 10 trials each) — generated test data:
+df = pd.read_excel("data/reaction_times.xlsx")
 
 # Normalise column name — sheet uses 'name', dummy data uses 'student_name'
 if 'name' in df.columns and 'student_name' not in df.columns:
