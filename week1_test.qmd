@@ -3,6 +3,9 @@ title: "EDA: Understanding Your Data [TEST — not for students]"
 subtitle: "7002LBSAI Research Methods in Analytics — Week 1"
 format:
   revealjs:
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
     theme: simple
     slide-number: true
     transition: fade

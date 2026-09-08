@@ -3,6 +3,9 @@ title: "Types of Distribution"
 subtitle: "7002LBSAI Research Methods in Analytics — Week 1 Online Session"
 format:
   revealjs:
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
     theme: simple
     slide-number: true
     transition: fade
