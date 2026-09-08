@@ -1,0 +1,75 @@
+---
+title: "Data"
+subtitle: "Datasets used across 7002LBSAI"
+toc: false
+---
+
+```{=html}
+<div class="site-hero">
+  <div class="hero-inner">
+    <p class="kicker">7002LBSAI</p>
+    <h1>Data</h1>
+    <p>Datasets used across the module, hosted here so notebooks can load them directly</p>
+  </div>
+</div>
+```
+
+::: {.page-intro}
+Grouped by the week each dataset was introduced. Use the **raw** link with `pd.read_csv()` — never a relative path, since opening a notebook via the Colab-from-GitHub link only fetches that one file, not the whole repo.
+:::
+
+```{python}
+#| echo: false
+#| output: asis
+
+RAW_BASE = "https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/"
+
+data_groups = [
+    ("Week 1", [
+        ("synthetic_reaction_times.csv", "Placeholder reaction-time data used to build and test slides before the live class dataset exists"),
+        ("reaction_times.xlsx", "Generated test dataset — 16 students, 10 trials each — used for demos and dry runs"),
+    ]),
+    ("Week 4", [
+        ("hotels_vienna.csv", "Hotel prices and star ratings for Vienna — Békés & Kézdi's own case study"),
+        ("hotels_europe_nov2017_weekday.csv", "European hotel prices, Nov 2017 weekday stays, 46 cities"),
+        ("used_cars_chicago.csv", "Toyota Camry listings from Chicago — age, mileage, price"),
+    ]),
+    ("Week 5", [
+        ("wms_management_2006.csv", "World Management Survey, 2006 wave, 13 countries"),
+    ]),
+    ("Week 6", [
+        ("cps_gender_pay_gap.csv", "US Current Population Survey earnings data — gender pay gap case study"),
+        ("worldbank_lifeexp_2017.csv", "World Bank life expectancy and GDP data, 2017, with continent groupings"),
+    ]),
+    ("Week 8", [
+        ("share_health.csv", "Survey of Health, Ageing and Retirement in Europe — smoking and health outcomes"),
+        ("bike_sharing_day.csv", "UCI daily bike-share rental counts"),
+        ("wms_management_2010_export.csv", "World Management Survey, 2010 wave, includes export share"),
+    ]),
+    ("Week 9", [
+        ("wfh_person.csv", "Bloom et al.'s Working from Home field experiment (Ctrip RCT)"),
+        ("food_health.csv", "NHANES food intake and blood pressure data"),
+        ("ab_test_social_media.csv", "Social media ad A/B test click-through data"),
+    ]),
+    ("Week 10", [
+        ("cps_earnings_2014.csv", "Full 2014 CPS earnings sample — 149,316 individuals"),
+        ("airbnb_hackney.csv", "Airbnb listings in the London borough of Hackney"),
+        ("airbnb_london.csv", "Airbnb listings across all of London, 33 boroughs"),
+    ]),
+    ("Week 11", [
+        ("stocks_monthly.csv", "Monthly stock prices (MSFT, AAPL) and S&P 500, with risk-free rate"),
+        ("arizona_electricity.csv", "Arizona electricity demand and temperature data"),
+        ("swim_tickets.csv", "Daily swimming-pool ticket sales — seasonality case study"),
+        ("case_shiller_la.csv", "Case-Shiller Los Angeles house price index"),
+    ]),
+]
+
+for week, items in data_groups:
+    print(f'<div class="data-group"><h3>{week}</h3><table class="data-table"><tbody>')
+    for name, desc in items:
+        # Single line — Pandoc's raw-HTML-block passthrough is unreliable
+        # across multi-line nested tags under `output: asis`.
+        print(f'<tr><td class="fname">{name}</td><td class="fdesc">{desc}</td>'
+              f'<td class="flink"><a href="{RAW_BASE}{name}">raw ↗</a></td></tr>')
+    print("</tbody></table></div>")
+```

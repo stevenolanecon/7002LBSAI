@@ -1,13 +1,85 @@
 ---
 title: "Research Methods in Analytics"
 subtitle: "7002LBSAI — MSc Business Analytics and AI, LJMU"
+toc: false
 ---
 
-## What this site is
+```{=html}
+<div class="site-hero">
+  <div class="hero-inner">
+    <p class="kicker">7002LBSAI</p>
+    <h1>Research Methods in Analytics</h1>
+    <p>Interactive course site — live slides, tools, and data</p>
+  </div>
+</div>
+```
 
-This site hosts the interactive materials for **7002LBSAI Research Methods in Analytics** — slide decks and in-class tools that need to run as live web pages rather than static files.
+::: {.page-intro}
+This site hosts the materials that need to run as live web pages — interactive slide decks, in-class tools, and the datasets behind them.
 
-**Your Canvas module is the main hub** for the schedule, the textbook, datasets, notebooks, recordings, and assessment information. Come here only when a Canvas page links you to a specific tool or interactive slide deck.
+::: {.canvas-note}
+For the schedule, assessment details, recordings, and everything else, your [Canvas module](https://canvas.ljmu.ac.uk/courses/126948) is the hub. Come here to open a specific week's slides or tool.
+:::
+:::
+
+## Weeks
+
+Workshop and online-session slides, published as each week runs.
+
+```{python}
+#| echo: false
+#| output: asis
+
+weeks = [
+    {"n": 1, "topic": "Distributions and Summarising Data", "status": "live",
+     "links": [
+         ("Workshop slides", "week1-slides.html", False),
+         ("Online session", "week1-online-slides.html", False),
+         ("Reaction-time tool", "week1-tool.html", True),
+     ]},
+    {"n": 2, "topic": "Inference", "status": "pending"},
+    {"n": 3, "topic": "Relationships Between Variables", "status": "pending"},
+    {"n": 4, "topic": "Regression I — Fitting the Line", "status": "pending"},
+    {"n": 5, "topic": "Regression I — Model Problems & Inference", "status": "pending"},
+    {"n": 6, "topic": "Regression II — Multiple Regression", "status": "pending"},
+    {"n": 7, "note": "Curriculum Enrichment Week — no session"},
+    {"n": 8, "topic": "Other Models (GLMs)", "status": "pending"},
+    {"n": 9, "topic": "Causal Analysis and Experiments", "status": "pending"},
+    {"n": 10, "topic": "Prediction", "status": "pending"},
+    {"n": 11, "topic": "Time Series", "status": "pending"},
+    {"n": 12, "note": "Portfolio presentations — see Canvas"},
+]
+
+def week_card(w):
+    # Built as a single line — Pandoc's raw-HTML-block passthrough is
+    # unreliable across multi-line nested divs under `output: asis`.
+    if "note" in w:
+        return (f'<div class="week-card is-note">'
+                 f'<span class="week-num">Week {w["n"]:02d}</span>'
+                 f'<p class="note-text">{w["note"]}</p></div>')
+
+    if w["status"] == "live":
+        chip = '<span class="status-chip live"><span class="dot"></span>Live</span>'
+        pills = "".join(
+            f'<a class="pill{" tool" if tool else ""}" href="{href}">{label}</a>'
+            for label, href, tool in w["links"]
+        )
+    else:
+        chip = '<span class="status-chip pending"><span class="dot"></span>Coming soon</span>'
+        pills = ('<span class="pill disabled">Workshop slides</span>'
+                 '<span class="pill disabled">Online session</span>')
+
+    return (f'<div class="week-card">'
+             f'<div class="week-card-head">'
+             f'<div><span class="week-num">Week {w["n"]:02d}</span>'
+             f'<span class="week-topic">{w["topic"]}</span></div>{chip}</div>'
+             f'<div class="pill-row">{pills}</div></div>')
+
+print('<div class="week-grid">')
+for w in weeks:
+    print(week_card(w))
+print('</div>')
+```
 
 ## Module leader
 

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Research Methods in Analytics – 7002LBSAI</title>
+<title>Data – 7002LBSAI</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -91,11 +91,11 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./data.html"> 
+    <a class="nav-link active" href="./data.html" aria-current="page"> 
 <span class="menu-text">Data</span></a>
   </li>  
 </ul>
@@ -122,8 +122,8 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Research Methods in Analytics</h1>
-<p class="subtitle lead">7002LBSAI — MSc Business Analytics and AI, LJMU</p>
+<h1 class="title">Data</h1>
+<p class="subtitle lead">Datasets used across 7002LBSAI</p>
 </div>
 
 
@@ -143,150 +143,318 @@ ul.task-list li input[type="checkbox"] {
 <div class="site-hero">
   <div class="hero-inner">
     <p class="kicker">7002LBSAI</p>
-    <h1>Research Methods in Analytics</h1>
-    <p>Interactive course site — live slides, tools, and data</p>
+    <h1>Data</h1>
+    <p>Datasets used across the module, hosted here so notebooks can load them directly</p>
   </div>
 </div>
 <div class="page-intro">
-<p>This site hosts the materials that need to run as live web pages — interactive slide decks, in-class tools, and the datasets behind them.</p>
-<div class="canvas-note">
-<p>For the schedule, assessment details, recordings, and everything else, your <a href="https://canvas.ljmu.ac.uk/courses/126948">Canvas module</a> is the hub. Come here to open a specific week’s slides or tool.</p>
+<p>Grouped by the week each dataset was introduced. Use the <strong>raw</strong> link with <code>pd.read_csv()</code> — never a relative path, since opening a notebook via the Colab-from-GitHub link only fetches that one file, not the whole repo.</p>
 </div>
+<div class="data-group">
+<h3 class="anchored">
+Week 1
+</h3>
+<table class="data-table">
+<tbody>
+<tr>
+<td class="fname">
+synthetic_reaction_times.csv
+</td>
+<td class="fdesc">
+Placeholder reaction-time data used to build and test slides before the live class dataset exists
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/synthetic_reaction_times.csv">raw ↗</a>
+</td>
+</tr>
+<tr>
+<td class="fname">
+reaction_times.xlsx
+</td>
+<td class="fdesc">
+Generated test dataset — 16 students, 10 trials each — used for demos and dry runs
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/reaction_times.xlsx">raw ↗</a>
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<section id="weeks" class="level2">
-<h2 class="anchored" data-anchor-id="weeks">Weeks</h2>
-<p>Workshop and online-session slides, published as each week runs.</p>
-<div class="week-grid">
-<div class="week-card">
-<div class="week-card-head">
-<div>
-<span class="week-num">Week 01</span><span class="week-topic">Distributions and Summarising Data</span>
+<div class="data-group">
+<h3 class="anchored">
+Week 4
+</h3>
+<table class="data-table">
+<tbody>
+<tr>
+<td class="fname">
+hotels_vienna.csv
+</td>
+<td class="fdesc">
+Hotel prices and star ratings for Vienna — Békés &amp; Kézdi’s own case study
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/hotels_vienna.csv">raw ↗</a>
+</td>
+</tr>
+<tr>
+<td class="fname">
+hotels_europe_nov2017_weekday.csv
+</td>
+<td class="fdesc">
+European hotel prices, Nov 2017 weekday stays, 46 cities
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/hotels_europe_nov2017_weekday.csv">raw ↗</a>
+</td>
+</tr>
+<tr>
+<td class="fname">
+used_cars_chicago.csv
+</td>
+<td class="fdesc">
+Toyota Camry listings from Chicago — age, mileage, price
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/used_cars_chicago.csv">raw ↗</a>
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<span class="status-chip live"><span class="dot"></span>Live</span>
+<div class="data-group">
+<h3 class="anchored">
+Week 5
+</h3>
+<table class="data-table">
+<tbody>
+<tr>
+<td class="fname">
+wms_management_2006.csv
+</td>
+<td class="fdesc">
+World Management Survey, 2006 wave, 13 countries
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/wms_management_2006.csv">raw ↗</a>
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div class="pill-row">
-<a class="pill" href="week1-slides.html">Workshop slides</a><a class="pill" href="week1-online-slides.html">Online session</a><a class="pill tool" href="week1-tool.html">Reaction-time tool</a>
+<div class="data-group">
+<h3 class="anchored">
+Week 6
+</h3>
+<table class="data-table">
+<tbody>
+<tr>
+<td class="fname">
+cps_gender_pay_gap.csv
+</td>
+<td class="fdesc">
+US Current Population Survey earnings data — gender pay gap case study
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/cps_gender_pay_gap.csv">raw ↗</a>
+</td>
+</tr>
+<tr>
+<td class="fname">
+worldbank_lifeexp_2017.csv
+</td>
+<td class="fdesc">
+World Bank life expectancy and GDP data, 2017, with continent groupings
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/worldbank_lifeexp_2017.csv">raw ↗</a>
+</td>
+</tr>
+</tbody>
+</table>
 </div>
+<div class="data-group">
+<h3 class="anchored">
+Week 8
+</h3>
+<table class="data-table">
+<tbody>
+<tr>
+<td class="fname">
+share_health.csv
+</td>
+<td class="fdesc">
+Survey of Health, Ageing and Retirement in Europe — smoking and health outcomes
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/share_health.csv">raw ↗</a>
+</td>
+</tr>
+<tr>
+<td class="fname">
+bike_sharing_day.csv
+</td>
+<td class="fdesc">
+UCI daily bike-share rental counts
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/bike_sharing_day.csv">raw ↗</a>
+</td>
+</tr>
+<tr>
+<td class="fname">
+wms_management_2010_export.csv
+</td>
+<td class="fdesc">
+World Management Survey, 2010 wave, includes export share
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/wms_management_2010_export.csv">raw ↗</a>
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div class="week-card">
-<div class="week-card-head">
-<div>
-<span class="week-num">Week 02</span><span class="week-topic">Inference</span>
+<div class="data-group">
+<h3 class="anchored">
+Week 9
+</h3>
+<table class="data-table">
+<tbody>
+<tr>
+<td class="fname">
+wfh_person.csv
+</td>
+<td class="fdesc">
+Bloom et al.’s Working from Home field experiment (Ctrip RCT)
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/wfh_person.csv">raw ↗</a>
+</td>
+</tr>
+<tr>
+<td class="fname">
+food_health.csv
+</td>
+<td class="fdesc">
+NHANES food intake and blood pressure data
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/food_health.csv">raw ↗</a>
+</td>
+</tr>
+<tr>
+<td class="fname">
+ab_test_social_media.csv
+</td>
+<td class="fdesc">
+Social media ad A/B test click-through data
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/ab_test_social_media.csv">raw ↗</a>
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<span class="status-chip pending"><span class="dot"></span>Coming soon</span>
+<div class="data-group">
+<h3 class="anchored">
+Week 10
+</h3>
+<table class="data-table">
+<tbody>
+<tr>
+<td class="fname">
+cps_earnings_2014.csv
+</td>
+<td class="fdesc">
+Full 2014 CPS earnings sample — 149,316 individuals
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/cps_earnings_2014.csv">raw ↗</a>
+</td>
+</tr>
+<tr>
+<td class="fname">
+airbnb_hackney.csv
+</td>
+<td class="fdesc">
+Airbnb listings in the London borough of Hackney
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/airbnb_hackney.csv">raw ↗</a>
+</td>
+</tr>
+<tr>
+<td class="fname">
+airbnb_london.csv
+</td>
+<td class="fdesc">
+Airbnb listings across all of London, 33 boroughs
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/airbnb_london.csv">raw ↗</a>
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div class="pill-row">
-<span class="pill disabled">Workshop slides</span><span class="pill disabled">Online session</span>
+<div class="data-group">
+<h3 class="anchored">
+Week 11
+</h3>
+<table class="data-table">
+<tbody>
+<tr>
+<td class="fname">
+stocks_monthly.csv
+</td>
+<td class="fdesc">
+Monthly stock prices (MSFT, AAPL) and S&amp;P 500, with risk-free rate
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/stocks_monthly.csv">raw ↗</a>
+</td>
+</tr>
+<tr>
+<td class="fname">
+arizona_electricity.csv
+</td>
+<td class="fdesc">
+Arizona electricity demand and temperature data
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/arizona_electricity.csv">raw ↗</a>
+</td>
+</tr>
+<tr>
+<td class="fname">
+swim_tickets.csv
+</td>
+<td class="fdesc">
+Daily swimming-pool ticket sales — seasonality case study
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/swim_tickets.csv">raw ↗</a>
+</td>
+</tr>
+<tr>
+<td class="fname">
+case_shiller_la.csv
+</td>
+<td class="fdesc">
+Case-Shiller Los Angeles house price index
+</td>
+<td class="flink">
+<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/case_shiller_la.csv">raw ↗</a>
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-</div>
-<div class="week-card">
-<div class="week-card-head">
-<div>
-<span class="week-num">Week 03</span><span class="week-topic">Relationships Between Variables</span>
-</div>
-<span class="status-chip pending"><span class="dot"></span>Coming soon</span>
-</div>
-<div class="pill-row">
-<span class="pill disabled">Workshop slides</span><span class="pill disabled">Online session</span>
-</div>
-</div>
-<div class="week-card">
-<div class="week-card-head">
-<div>
-<span class="week-num">Week 04</span><span class="week-topic">Regression I — Fitting the Line</span>
-</div>
-<span class="status-chip pending"><span class="dot"></span>Coming soon</span>
-</div>
-<div class="pill-row">
-<span class="pill disabled">Workshop slides</span><span class="pill disabled">Online session</span>
-</div>
-</div>
-<div class="week-card">
-<div class="week-card-head">
-<div>
-<span class="week-num">Week 05</span><span class="week-topic">Regression I — Model Problems &amp; Inference</span>
-</div>
-<span class="status-chip pending"><span class="dot"></span>Coming soon</span>
-</div>
-<div class="pill-row">
-<span class="pill disabled">Workshop slides</span><span class="pill disabled">Online session</span>
-</div>
-</div>
-<div class="week-card">
-<div class="week-card-head">
-<div>
-<span class="week-num">Week 06</span><span class="week-topic">Regression II — Multiple Regression</span>
-</div>
-<span class="status-chip pending"><span class="dot"></span>Coming soon</span>
-</div>
-<div class="pill-row">
-<span class="pill disabled">Workshop slides</span><span class="pill disabled">Online session</span>
-</div>
-</div>
-<div class="week-card is-note">
-<span class="week-num">Week 07</span>
-<p class="note-text">
-Curriculum Enrichment Week — no session
-</p>
-</div>
-<div class="week-card">
-<div class="week-card-head">
-<div>
-<span class="week-num">Week 08</span><span class="week-topic">Other Models (GLMs)</span>
-</div>
-<span class="status-chip pending"><span class="dot"></span>Coming soon</span>
-</div>
-<div class="pill-row">
-<span class="pill disabled">Workshop slides</span><span class="pill disabled">Online session</span>
-</div>
-</div>
-<div class="week-card">
-<div class="week-card-head">
-<div>
-<span class="week-num">Week 09</span><span class="week-topic">Causal Analysis and Experiments</span>
-</div>
-<span class="status-chip pending"><span class="dot"></span>Coming soon</span>
-</div>
-<div class="pill-row">
-<span class="pill disabled">Workshop slides</span><span class="pill disabled">Online session</span>
-</div>
-</div>
-<div class="week-card">
-<div class="week-card-head">
-<div>
-<span class="week-num">Week 10</span><span class="week-topic">Prediction</span>
-</div>
-<span class="status-chip pending"><span class="dot"></span>Coming soon</span>
-</div>
-<div class="pill-row">
-<span class="pill disabled">Workshop slides</span><span class="pill disabled">Online session</span>
-</div>
-</div>
-<div class="week-card">
-<div class="week-card-head">
-<div>
-<span class="week-num">Week 11</span><span class="week-topic">Time Series</span>
-</div>
-<span class="status-chip pending"><span class="dot"></span>Coming soon</span>
-</div>
-<div class="pill-row">
-<span class="pill disabled">Workshop slides</span><span class="pill disabled">Online session</span>
-</div>
-</div>
-<div class="week-card is-note">
-<span class="week-num">Week 12</span>
-<p class="note-text">
-Portfolio presentations — see Canvas
-</p>
-</div>
-</div>
-</section>
-<section id="module-leader" class="level2">
-<h2 class="anchored" data-anchor-id="module-leader">Module leader</h2>
-<p><strong>Dr Steve Nolan</strong> Liverpool Business School, LJMU <a href="mailto:S.P.Nolan@ljmu.ac.uk">S.P.Nolan@ljmu.ac.uk</a></p>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

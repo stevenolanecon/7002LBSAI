@@ -1,7 +1,165 @@
 /* 7002LBSAI site styles */
 
+:root {
+  --teal: #47b5b4;
+  --teal-dark: #1f7a79;
+  --teal-tint: #f3fbfb;
+  --ink: #1d2b2a;
+  --muted: #5c7776;
+  --pending: #b9c4c3;
+  --pending-bg: #f4f7f7;
+  --border: #dcefee;
+  --code-bg: #eef7f6;
+}
+
 .navbar-brand { font-weight: 700; }
 
 h1.title { color: #1a1a2e; }
 
 table { font-size: 0.95em; }
+
+/* Reskin Quarto's navbar to the module's teal brand */
+.navbar { background-color: var(--teal) !important; }
+
+/* Pages use their own .site-hero banner instead of Quarto's default title block */
+#title-block-header { display: none; }
+
+/* ---- Hero banner (used at the top of index.qmd / data.qmd) ---- */
+.site-hero {
+  background: var(--teal);
+  margin: -1.5rem calc(-50vw + 50%) 2rem;
+  padding: 34px 28px 30px;
+}
+.site-hero .hero-inner { max-width: 850px; margin: 0 auto; }
+.site-hero .kicker {
+  color: #eafaf9;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0 0 6px;
+}
+.site-hero h1 {
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 6px;
+  border: none;
+}
+.site-hero p {
+  color: #eafaf9;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.page-intro { max-width: 66ch; }
+.page-intro .canvas-note { color: var(--muted); font-size: 0.9rem; }
+
+/* ---- Week cards ---- */
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+  margin: 20px 0 8px;
+}
+.week-card {
+  background: var(--teal-tint);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.week-card.is-note {
+  background: transparent;
+  border-style: dashed;
+  justify-content: center;
+}
+.week-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+.week-num {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 3px;
+}
+.week-topic { font-size: 1.02rem; font-weight: 700; color: var(--ink); }
+.status-chip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.status-chip.live { background: var(--teal); color: #ffffff; }
+.status-chip.pending { background: var(--pending-bg); color: var(--muted); }
+.status-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block; }
+
+.pill-row { display: flex; flex-wrap: wrap; gap: 8px; }
+a.pill {
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 7px 13px;
+  border-radius: 20px;
+  border: 1.5px solid var(--teal);
+  color: var(--teal-dark);
+  background: #ffffff;
+  text-decoration: none;
+}
+a.pill:hover { background: var(--teal); color: #ffffff; }
+a.pill.tool::before { content: "▸ "; }
+span.pill.disabled {
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 7px 13px;
+  border-radius: 20px;
+  border: 1.5px solid var(--pending);
+  color: var(--pending);
+  background: transparent;
+}
+.note-text { color: var(--muted); font-size: 0.85rem; text-align: center; }
+
+/* ---- Data page ---- */
+.data-group { margin-bottom: 30px; }
+.data-group h3 {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+table.data-table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+table.data-table td { padding: 9px 4px; vertical-align: top; border-bottom: 1px solid var(--border); }
+table.data-table tr:last-child td { border-bottom: none; }
+td.fname {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.82rem;
+  color: var(--ink);
+  background: var(--code-bg);
+  border-radius: 5px;
+  padding: 3px 8px;
+  white-space: nowrap;
+  width: 1%;
+}
+td.fdesc { color: var(--muted); font-size: 0.86rem; padding-left: 16px; }
+td.flink { text-align: right; white-space: nowrap; padding-left: 16px; }
+td.flink a { font-size: 0.82rem; font-weight: 700; }
+
+@media (max-width: 560px) {
+  td.fdesc { display: none; }
+}

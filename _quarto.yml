@@ -9,12 +9,8 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - href: week1-tool.qmd
-        text: Week 1 Exercise
-      - href: week1-slides.qmd
-        text: Week 1 Slides
-      - href: week1-online-slides.qmd
-        text: Week 1 Online Session
+      - href: data.qmd
+        text: Data
     right:
       - icon: github
         href: https://github.com/stevenolanecon/7002LBSAI
