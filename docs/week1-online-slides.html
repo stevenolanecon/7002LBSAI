@@ -208,7 +208,7 @@
 </section>
 <section class="slide level2">
 
-<div id="0116f6ee" class="cell" data-execution_count="1">
+<div id="92da2b84" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-display">
 <script type="ojs-define">{"contents": [{"name": "rt", "value": [267, 266, 367, 341, 283, 320, 329, 421, 262, 328, 290, 324, 222, 232, 824, 208, 290, 421, 209, 262, 834, 343, 277, 306, 351, 342, 305, 280, 489, 388, 365, 300, 275, 285, 246, 411, 303, 391, 287, 334, 228, 383, 276, 370, 367, 320, 284, 302, 289, 197, 262, 260, 359, 306, 333, 287, 336, 296, 293, 315, 313, 421, 285, 522, 264, 204, 248, 447, 257, 219, 515, 288, 593, 329, 480, 336, 380, 343, 337, 366, 352, 312, 293, 310, 486, 389, 255, 307, 363, 319, 334, 231, 296, 268, 270, 368, 271, 298, 206, 385, 308, 270, 412, 446, 353, 353, 309, 288, 264, 315, 292, 291, 252, 233, 287, 213, 205, 270, 285, 270, 339, 228, 191, 271, 229, 307, 265, 217, 247, 304, 259, 232, 275, 266, 310, 293, 256, 354, 271, 199, 220, 279, 197, 256, 276, 260, 552, 246, 294, 503, 368, 251, 208, 362, 328, 821, 404, 272, 243, 297, 199, 605, 183, 229, 210, 275, 271, 323, 195, 240, 308, 306, 418, 296, 247, 287, 248, 198, 265, 408, 406, 362, 426, 462, 382, 397, 388, 377, 331, 327, 320, 348, 272, 271, 575, 219, 336, 218, 260, 310]}]}</script>
 </div>
@@ -337,85 +337,193 @@
 <p>Source: Békés &amp; Kézdi (2021), Ch. 3 — shapes simulated here to show each family’s characteristic silhouette</p>
 </div>
 </section>
-<section id="other-common-distributions" class="slide level2">
-<h2>Other common distributions</h2>
-<p>Not covered in this chapter of the textbook, but useful to have in view:</p>
-<table class="caption-top">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Distribution</th>
-<th>Typical shape</th>
-<th>Common use</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Uniform</strong></td>
-<td>Flat — all values equally likely</td>
-<td>Random number generators</td>
-</tr>
-<tr class="even">
-<td><strong>Bernoulli</strong></td>
-<td>Two outcomes (0 or 1)</td>
-<td>Single test: pass/fail, yes/no</td>
-</tr>
-<tr class="odd">
-<td><strong>Binomial</strong></td>
-<td>Count of successes in <em>n</em> trials</td>
-<td>Defects per batch, correct answers</td>
-</tr>
-<tr class="even">
-<td><strong>Poisson</strong></td>
-<td>Count of events in a fixed interval</td>
-<td>Arrivals per hour, emails per day</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="our-data-and-its-log" class="slide level2">
-<h2>Our data, and its log</h2>
-<p>If reaction times are log-normal, the <strong>log</strong> of reaction time should look roughly normal. Let’s check, using the class data collected in the workshop.</p>
+<section id="the-uniform-distribution" class="slide level2">
+<h2>The uniform distribution</h2>
+<div class="two-col">
+<div class="col">
+<ul>
+<li>Flat — every value in a range is equally likely</li>
+<li>Fully described by two parameters: the minimum and maximum</li>
+<li>Mean and median sit at the midpoint, but there’s no peak — no value is any more “typical” than another</li>
+<li>Examples: random number generators, rounding error, waiting time within a fixed interval</li>
+</ul>
+</div>
+<div class="col">
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb4" data-startfrom="156" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 155;"><span id="cb4-156"><a></a>{</span>
-<span id="cb4-157"><a></a>  <span class="kw">const</span> rtSorted <span class="op">=</span> rt<span class="op">.</span><span class="fu">slice</span>()<span class="op">.</span><span class="fu">sort</span>(d3<span class="op">.</span><span class="at">ascending</span>)</span>
-<span id="cb4-158"><a></a>  <span class="kw">const</span> rtCut    <span class="op">=</span> d3<span class="op">.</span><span class="fu">quantile</span>(rtSorted<span class="op">,</span> <span class="fl">0.98</span>)</span>
-<span id="cb4-159"><a></a>  <span class="kw">const</span> logRt    <span class="op">=</span> rt<span class="op">.</span><span class="fu">map</span>(<span class="bu">Math</span><span class="op">.</span><span class="fu">log</span>)</span>
-<span id="cb4-160"><a></a></span>
-<span id="cb4-161"><a></a>  <span class="kw">const</span> p1 <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
-<span id="cb4-162"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">240</span><span class="op">,</span> <span class="dt">width</span><span class="op">:</span> <span class="dv">380</span><span class="op">,</span></span>
-<span id="cb4-163"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Reaction time (ms)"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> rtCut] }<span class="op">,</span></span>
-<span id="cb4-164"><a></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"% of trials"</span><span class="op">,</span> <span class="dt">percent</span><span class="op">:</span> <span class="kw">true</span> }<span class="op">,</span></span>
-<span id="cb4-165"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
-<span id="cb4-166"><a></a>      Plot<span class="op">.</span><span class="fu">rectY</span>(rt<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d <span class="op">&lt;=</span> rtCut)<span class="op">,</span> Plot<span class="op">.</span><span class="fu">binX</span>({ <span class="dt">y</span><span class="op">:</span> <span class="st">"proportion"</span> }<span class="op">,</span></span>
-<span id="cb4-167"><a></a>        { <span class="dt">x</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">,</span> <span class="dt">thresholds</span><span class="op">:</span> <span class="dv">20</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#457b9d"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.8</span> }))<span class="op">,</span></span>
-<span id="cb4-168"><a></a>      Plot<span class="op">.</span><span class="fu">ruleX</span>([<span class="dv">0</span>])<span class="op">,</span></span>
-<span id="cb4-169"><a></a>    ]</span>
-<span id="cb4-170"><a></a>  })</span>
-<span id="cb4-171"><a></a>  <span class="kw">const</span> p2 <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
-<span id="cb4-172"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">240</span><span class="op">,</span> <span class="dt">width</span><span class="op">:</span> <span class="dv">380</span><span class="op">,</span></span>
-<span id="cb4-173"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"log(reaction time)"</span> }<span class="op">,</span></span>
-<span id="cb4-174"><a></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"% of trials"</span><span class="op">,</span> <span class="dt">percent</span><span class="op">:</span> <span class="kw">true</span> }<span class="op">,</span></span>
-<span id="cb4-175"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
-<span id="cb4-176"><a></a>      Plot<span class="op">.</span><span class="fu">rectY</span>(logRt<span class="op">,</span> Plot<span class="op">.</span><span class="fu">binX</span>({ <span class="dt">y</span><span class="op">:</span> <span class="st">"proportion"</span> }<span class="op">,</span></span>
-<span id="cb4-177"><a></a>        { <span class="dt">x</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">,</span> <span class="dt">thresholds</span><span class="op">:</span> <span class="dv">20</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#2d6a4f"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.8</span> }))<span class="op">,</span></span>
-<span id="cb4-178"><a></a>      Plot<span class="op">.</span><span class="fu">ruleX</span>([<span class="dv">0</span>])<span class="op">,</span></span>
-<span id="cb4-179"><a></a>    ]</span>
-<span id="cb4-180"><a></a>  })</span>
-<span id="cb4-181"><a></a></span>
-<span id="cb4-182"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div style="display:flex;gap:24px;justify-content:center;"&gt;</span><span class="sc">${</span>p1<span class="sc">}${</span>p2<span class="sc">}</span><span class="vs">&lt;/div&gt;`</span></span>
-<span id="cb4-183"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb4" data-startfrom="151" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 150;"><span id="cb4-151"><a></a>{</span>
+<span id="cb4-152"><a></a>  <span class="kw">const</span> rng <span class="op">=</span> d3<span class="op">.</span><span class="fu">randomUniform</span>(<span class="dv">0</span><span class="op">,</span> <span class="dv">10</span>)</span>
+<span id="cb4-153"><a></a>  <span class="kw">const</span> sample <span class="op">=</span> <span class="bu">Array</span><span class="op">.</span><span class="fu">from</span>({ <span class="dt">length</span><span class="op">:</span> <span class="dv">4000</span> }<span class="op">,</span> rng)</span>
+<span id="cb4-154"><a></a>  <span class="cf">return</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb4-155"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">240</span><span class="op">,</span></span>
+<span id="cb4-156"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">10</span>] }<span class="op">,</span></span>
+<span id="cb4-157"><a></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"% of draws"</span><span class="op">,</span> <span class="dt">percent</span><span class="op">:</span> <span class="kw">true</span> }<span class="op">,</span></span>
+<span id="cb4-158"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb4-159"><a></a>      Plot<span class="op">.</span><span class="fu">rectY</span>(sample<span class="op">,</span> Plot<span class="op">.</span><span class="fu">binX</span>({ <span class="dt">y</span><span class="op">:</span> <span class="st">"proportion"</span> }<span class="op">,</span></span>
+<span id="cb4-160"><a></a>        { <span class="dt">x</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">,</span> <span class="dt">thresholds</span><span class="op">:</span> <span class="dv">20</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#f4a261"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.8</span> }))<span class="op">,</span></span>
+<span id="cb4-161"><a></a>      Plot<span class="op">.</span><span class="fu">ruleX</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb4-162"><a></a>    ]</span>
+<span id="cb4-163"><a></a>  })</span>
+<span id="cb4-164"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="ojs-cell-4" data-nodetype="expression">
 
 </div>
 </div>
 </div>
+</div>
+</div>
+</section>
+<section id="the-bernoulli-distribution" class="slide level2">
+<h2>The Bernoulli distribution</h2>
+<div class="two-col">
+<div class="col">
+<ul>
+<li>The simplest distribution — a single trial with two possible outcomes</li>
+<li>Fully described by one parameter: <span class="math inline">\(p\)</span>, the probability of success</li>
+<li>The building block every other distribution on this page is made from</li>
+<li>Examples: a single coin flip, one pass/fail test, one yes/no question</li>
+</ul>
+</div>
+<div class="col">
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb5" data-startfrom="180" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 179;"><span id="cb5-180"><a></a>{</span>
+<span id="cb5-181"><a></a>  <span class="kw">const</span> p <span class="op">=</span> <span class="fl">0.3</span></span>
+<span id="cb5-182"><a></a>  <span class="kw">const</span> sample <span class="op">=</span> <span class="bu">Array</span><span class="op">.</span><span class="fu">from</span>({ <span class="dt">length</span><span class="op">:</span> <span class="dv">4000</span> }<span class="op">,</span> d3<span class="op">.</span><span class="fu">randomBernoulli</span>(p))</span>
+<span id="cb5-183"><a></a>  <span class="cf">return</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb5-184"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">240</span><span class="op">,</span></span>
+<span id="cb5-185"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Outcome"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="op">-</span><span class="fl">0.5</span><span class="op">,</span> <span class="fl">1.5</span>]<span class="op">,</span> <span class="dt">ticks</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">1</span>] }<span class="op">,</span></span>
+<span id="cb5-186"><a></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"% of draws"</span><span class="op">,</span> <span class="dt">percent</span><span class="op">:</span> <span class="kw">true</span> }<span class="op">,</span></span>
+<span id="cb5-187"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb5-188"><a></a>      Plot<span class="op">.</span><span class="fu">rectY</span>(sample<span class="op">,</span> Plot<span class="op">.</span><span class="fu">groupX</span>({ <span class="dt">y</span><span class="op">:</span> <span class="st">"proportion"</span> }<span class="op">,</span></span>
+<span id="cb5-189"><a></a>        { <span class="dt">x</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">,</span> <span class="dt">interval</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#1d3557"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.8</span> }))<span class="op">,</span></span>
+<span id="cb5-190"><a></a>      Plot<span class="op">.</span><span class="fu">ruleX</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb5-191"><a></a>    ]</span>
+<span id="cb5-192"><a></a>  })</span>
+<span id="cb5-193"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-5" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="the-binomial-distribution" class="slide level2">
+<h2>The binomial distribution</h2>
+<div class="two-col">
+<div class="col">
+<ul>
+<li>The number of successes across <span class="math inline">\(n\)</span> independent Bernoulli trials</li>
+<li>Described by two parameters: <span class="math inline">\(n\)</span> (number of trials) and <span class="math inline">\(p\)</span> (probability of success on each)</li>
+<li>As <span class="math inline">\(n\)</span> grows, its shape approaches the normal distribution — a preview of why the normal shows up so often</li>
+<li>Examples: defective items in a batch, correct answers on a multiple-choice test</li>
+</ul>
+</div>
+<div class="col">
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb6" data-startfrom="209" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 208;"><span id="cb6-209"><a></a>{</span>
+<span id="cb6-210"><a></a>  <span class="kw">const</span> n <span class="op">=</span> <span class="dv">20</span><span class="op">,</span> p <span class="op">=</span> <span class="fl">0.3</span></span>
+<span id="cb6-211"><a></a>  <span class="kw">const</span> sample <span class="op">=</span> <span class="bu">Array</span><span class="op">.</span><span class="fu">from</span>({ <span class="dt">length</span><span class="op">:</span> <span class="dv">4000</span> }<span class="op">,</span> d3<span class="op">.</span><span class="fu">randomBinomial</span>(n<span class="op">,</span> p))</span>
+<span id="cb6-212"><a></a>  <span class="cf">return</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb6-213"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">240</span><span class="op">,</span></span>
+<span id="cb6-214"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Number of successes (out of 20)"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="op">-</span><span class="fl">0.5</span><span class="op">,</span> n <span class="op">+</span> <span class="fl">0.5</span>] }<span class="op">,</span></span>
+<span id="cb6-215"><a></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"% of draws"</span><span class="op">,</span> <span class="dt">percent</span><span class="op">:</span> <span class="kw">true</span> }<span class="op">,</span></span>
+<span id="cb6-216"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb6-217"><a></a>      Plot<span class="op">.</span><span class="fu">rectY</span>(sample<span class="op">,</span> Plot<span class="op">.</span><span class="fu">groupX</span>({ <span class="dt">y</span><span class="op">:</span> <span class="st">"proportion"</span> }<span class="op">,</span></span>
+<span id="cb6-218"><a></a>        { <span class="dt">x</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">,</span> <span class="dt">interval</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#e9c46a"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.8</span> }))<span class="op">,</span></span>
+<span id="cb6-219"><a></a>      Plot<span class="op">.</span><span class="fu">ruleX</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb6-220"><a></a>    ]</span>
+<span id="cb6-221"><a></a>  })</span>
+<span id="cb6-222"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-6" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="the-poisson-distribution" class="slide level2">
+<h2>The Poisson distribution</h2>
+<div class="two-col">
+<div class="col">
+<ul>
+<li>The number of events in a fixed interval, given a constant average rate</li>
+<li>Described by a single parameter: <span class="math inline">\(\lambda\)</span> (lambda), the average rate itself</li>
+<li>Mean and variance are both exactly <span class="math inline">\(\lambda\)</span> — a distinctive fingerprint of this distribution</li>
+<li>Examples: customer arrivals per hour, emails per day, typos per page</li>
+</ul>
+</div>
+<div class="col">
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="238" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 237;"><span id="cb7-238"><a></a>{</span>
+<span id="cb7-239"><a></a>  <span class="kw">const</span> lambda <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb7-240"><a></a>  <span class="kw">const</span> sample <span class="op">=</span> <span class="bu">Array</span><span class="op">.</span><span class="fu">from</span>({ <span class="dt">length</span><span class="op">:</span> <span class="dv">4000</span> }<span class="op">,</span> d3<span class="op">.</span><span class="fu">randomPoisson</span>(lambda))</span>
+<span id="cb7-241"><a></a>  <span class="cf">return</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb7-242"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">240</span><span class="op">,</span></span>
+<span id="cb7-243"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Number of events"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="op">-</span><span class="fl">0.5</span><span class="op">,</span> <span class="fl">15.5</span>] }<span class="op">,</span></span>
+<span id="cb7-244"><a></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"% of draws"</span><span class="op">,</span> <span class="dt">percent</span><span class="op">:</span> <span class="kw">true</span> }<span class="op">,</span></span>
+<span id="cb7-245"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb7-246"><a></a>      Plot<span class="op">.</span><span class="fu">rectY</span>(sample<span class="op">,</span> Plot<span class="op">.</span><span class="fu">groupX</span>({ <span class="dt">y</span><span class="op">:</span> <span class="st">"proportion"</span> }<span class="op">,</span></span>
+<span id="cb7-247"><a></a>        { <span class="dt">x</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">,</span> <span class="dt">interval</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#e63946"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.8</span> }))<span class="op">,</span></span>
+<span id="cb7-248"><a></a>      Plot<span class="op">.</span><span class="fu">ruleX</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb7-249"><a></a>    ]</span>
+<span id="cb7-250"><a></a>  })</span>
+<span id="cb7-251"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-7" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:8px;">
+<p>Not covered in this chapter of the textbook, but useful to have in view.</p>
+</div>
+</section>
+<section id="our-data-and-its-log" class="slide level2">
+<h2>Our data, and its log</h2>
+<p>If reaction times are log-normal, the <strong>log</strong> of reaction time should look roughly normal.</p>
+<p>Let’s work through this together in Excel — a histogram of the raw reaction times, then a histogram of their log. Compare the shapes before we look at the answer.</p>
 <div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb8" data-startfrom="268" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 267;"><span id="cb8-268"><a></a>{</span>
+<span id="cb8-269"><a></a>  <span class="kw">const</span> rtSorted <span class="op">=</span> rt<span class="op">.</span><span class="fu">slice</span>()<span class="op">.</span><span class="fu">sort</span>(d3<span class="op">.</span><span class="at">ascending</span>)</span>
+<span id="cb8-270"><a></a>  <span class="kw">const</span> rtCut    <span class="op">=</span> d3<span class="op">.</span><span class="fu">quantile</span>(rtSorted<span class="op">,</span> <span class="fl">0.98</span>)</span>
+<span id="cb8-271"><a></a>  <span class="kw">const</span> logRt    <span class="op">=</span> rt<span class="op">.</span><span class="fu">map</span>(<span class="bu">Math</span><span class="op">.</span><span class="fu">log</span>)</span>
+<span id="cb8-272"><a></a></span>
+<span id="cb8-273"><a></a>  <span class="kw">const</span> p1 <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb8-274"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">240</span><span class="op">,</span> <span class="dt">width</span><span class="op">:</span> <span class="dv">380</span><span class="op">,</span></span>
+<span id="cb8-275"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Reaction time (ms)"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> rtCut] }<span class="op">,</span></span>
+<span id="cb8-276"><a></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"% of trials"</span><span class="op">,</span> <span class="dt">percent</span><span class="op">:</span> <span class="kw">true</span> }<span class="op">,</span></span>
+<span id="cb8-277"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb8-278"><a></a>      Plot<span class="op">.</span><span class="fu">rectY</span>(rt<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d <span class="op">&lt;=</span> rtCut)<span class="op">,</span> Plot<span class="op">.</span><span class="fu">binX</span>({ <span class="dt">y</span><span class="op">:</span> <span class="st">"proportion"</span> }<span class="op">,</span></span>
+<span id="cb8-279"><a></a>        { <span class="dt">x</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">,</span> <span class="dt">thresholds</span><span class="op">:</span> <span class="dv">20</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#457b9d"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.8</span> }))<span class="op">,</span></span>
+<span id="cb8-280"><a></a>      Plot<span class="op">.</span><span class="fu">ruleX</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb8-281"><a></a>    ]</span>
+<span id="cb8-282"><a></a>  })</span>
+<span id="cb8-283"><a></a>  <span class="kw">const</span> p2 <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb8-284"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">240</span><span class="op">,</span> <span class="dt">width</span><span class="op">:</span> <span class="dv">380</span><span class="op">,</span></span>
+<span id="cb8-285"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"log(reaction time)"</span> }<span class="op">,</span></span>
+<span id="cb8-286"><a></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"% of trials"</span><span class="op">,</span> <span class="dt">percent</span><span class="op">:</span> <span class="kw">true</span> }<span class="op">,</span></span>
+<span id="cb8-287"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb8-288"><a></a>      Plot<span class="op">.</span><span class="fu">rectY</span>(logRt<span class="op">,</span> Plot<span class="op">.</span><span class="fu">binX</span>({ <span class="dt">y</span><span class="op">:</span> <span class="st">"proportion"</span> }<span class="op">,</span></span>
+<span id="cb8-289"><a></a>        { <span class="dt">x</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">,</span> <span class="dt">thresholds</span><span class="op">:</span> <span class="dv">20</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#2d6a4f"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.8</span> }))<span class="op">,</span></span>
+<span id="cb8-290"><a></a>      Plot<span class="op">.</span><span class="fu">ruleX</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb8-291"><a></a>    ]</span>
+<span id="cb8-292"><a></a>  })</span>
+<span id="cb8-293"><a></a></span>
+<span id="cb8-294"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div style="display:flex;gap:24px;justify-content:center;"&gt;</span><span class="sc">${</span>p1<span class="sc">}${</span>p2<span class="sc">}</span><span class="vs">&lt;/div&gt;`</span></span>
+<span id="cb8-295"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-8" data-nodetype="expression">
+
+</div>
+</div>
+</div>
 <p>Raw reaction times (blue) are right-skewed with a long tail. Their log (green) looks far closer to symmetric and bell-shaped — exactly what the log-normal claim predicts.</p>
 </div>
 </section>
@@ -648,7 +756,7 @@
       });
     </script>
     <script type="ojs-module-contents">
-    eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgY29uc3Qgcm5nID0gZDMucmFuZG9tTm9ybWFsKDAsIDEpXG4gIGNvbnN0IHNhbXBsZSA9IEFycmF5LmZyb20oeyBsZW5ndGg6IDQwMDAgfSwgcm5nKVxuICByZXR1cm4gUGxvdC5wbG90KHtcbiAgICBoZWlnaHQ6IDI0MCxcbiAgICB4OiB7IGxhYmVsOiBcInhcIiwgZG9tYWluOiBbLTQsIDRdIH0sXG4gICAgeTogeyBsYWJlbDogXCIlIG9mIGRyYXdzXCIsIHBlcmNlbnQ6IHRydWUgfSxcbiAgICBtYXJrczogW1xuICAgICAgUGxvdC5yZWN0WShzYW1wbGUsIFBsb3QuYmluWCh7IHk6IFwicHJvcG9ydGlvblwiIH0sXG4gICAgICAgIHsgeDogZCA9PiBkLCB0aHJlc2hvbGRzOiAzMCwgZmlsbDogXCIjNDU3YjlkXCIsIGZpbGxPcGFjaXR5OiAwLjggfSkpLFxuICAgICAgUGxvdC5ydWxlWChbMF0pLFxuICAgIF1cbiAgfSlcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMiIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgY29uc3Qgcm5nID0gZDMucmFuZG9tTG9nTm9ybWFsKDAsIDAuNSlcbiAgY29uc3Qgc2FtcGxlID0gQXJyYXkuZnJvbSh7IGxlbmd0aDogNDAwMCB9LCBybmcpXG4gIGNvbnN0IGN1dG9mZiA9IGQzLnF1YW50aWxlKHNhbXBsZS5zbGljZSgpLnNvcnQoZDMuYXNjZW5kaW5nKSwgMC45OSlcbiAgcmV0dXJuIFBsb3QucGxvdCh7XG4gICAgaGVpZ2h0OiAyNDAsXG4gICAgeDogeyBsYWJlbDogXCJ4XCIsIGRvbWFpbjogWzAsIGN1dG9mZl0gfSxcbiAgICB5OiB7IGxhYmVsOiBcIiUgb2YgZHJhd3NcIiwgcGVyY2VudDogdHJ1ZSB9LFxuICAgIG1hcmtzOiBbXG4gICAgICBQbG90LnJlY3RZKHNhbXBsZS5maWx0ZXIoZCA9PiBkIDw9IGN1dG9mZiksIFBsb3QuYmluWCh7IHk6IFwicHJvcG9ydGlvblwiIH0sXG4gICAgICAgIHsgeDogZCA9PiBkLCB0aHJlc2hvbGRzOiAzMCwgZmlsbDogXCIjMmQ2YTRmXCIsIGZpbGxPcGFjaXR5OiAwLjggfSkpLFxuICAgICAgUGxvdC5ydWxlWChbMF0pLFxuICAgIF1cbiAgfSlcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMyIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgY29uc3QgYWxwaGEgPSAyLjUsIHhtaW4gPSAxXG4gIGNvbnN0IHNhbXBsZSA9IEFycmF5LmZyb20oeyBsZW5ndGg6IDQwMDAgfSwgKCkgPT4geG1pbiAqIE1hdGgucG93KDEgLSBNYXRoLnJhbmRvbSgpLCAtMSAvIGFscGhhKSlcbiAgY29uc3QgY3V0b2ZmID0gZDMucXVhbnRpbGUoc2FtcGxlLnNsaWNlKCkuc29ydChkMy5hc2NlbmRpbmcpLCAwLjk3KVxuICByZXR1cm4gUGxvdC5wbG90KHtcbiAgICBoZWlnaHQ6IDI0MCxcbiAgICB4OiB7IGxhYmVsOiBcInhcIiwgZG9tYWluOiBbMCwgY3V0b2ZmXSB9LFxuICAgIHk6IHsgbGFiZWw6IFwiJSBvZiBkcmF3c1wiLCBwZXJjZW50OiB0cnVlIH0sXG4gICAgbWFya3M6IFtcbiAgICAgIFBsb3QucmVjdFkoc2FtcGxlLmZpbHRlcihkID0+IGQgPD0gY3V0b2ZmKSwgUGxvdC5iaW5YKHsgeTogXCJwcm9wb3J0aW9uXCIgfSxcbiAgICAgICAgeyB4OiBkID0+IGQsIHRocmVzaG9sZHM6IDMwLCBmaWxsOiBcIiNlNjM5NDZcIiwgZmlsbE9wYWNpdHk6IDAuOCB9KSksXG4gICAgICBQbG90LnJ1bGVYKFswXSksXG4gICAgXVxuICB9KVxufVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC00IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICBjb25zdCBydFNvcnRlZCA9IHJ0LnNsaWNlKCkuc29ydChkMy5hc2NlbmRpbmcpXG4gIGNvbnN0IHJ0Q3V0ICAgID0gZDMucXVhbnRpbGUocnRTb3J0ZWQsIDAuOTgpXG4gIGNvbnN0IGxvZ1J0ICAgID0gcnQubWFwKE1hdGgubG9nKVxuXG4gIGNvbnN0IHAxID0gUGxvdC5wbG90KHtcbiAgICBoZWlnaHQ6IDI0MCwgd2lkdGg6IDM4MCxcbiAgICB4OiB7IGxhYmVsOiBcIlJlYWN0aW9uIHRpbWUgKG1zKVwiLCBkb21haW46IFswLCBydEN1dF0gfSxcbiAgICB5OiB7IGxhYmVsOiBcIiUgb2YgdHJpYWxzXCIsIHBlcmNlbnQ6IHRydWUgfSxcbiAgICBtYXJrczogW1xuICAgICAgUGxvdC5yZWN0WShydC5maWx0ZXIoZCA9PiBkIDw9IHJ0Q3V0KSwgUGxvdC5iaW5YKHsgeTogXCJwcm9wb3J0aW9uXCIgfSxcbiAgICAgICAgeyB4OiBkID0+IGQsIHRocmVzaG9sZHM6IDIwLCBmaWxsOiBcIiM0NTdiOWRcIiwgZmlsbE9wYWNpdHk6IDAuOCB9KSksXG4gICAgICBQbG90LnJ1bGVYKFswXSksXG4gICAgXVxuICB9KVxuICBjb25zdCBwMiA9IFBsb3QucGxvdCh7XG4gICAgaGVpZ2h0OiAyNDAsIHdpZHRoOiAzODAsXG4gICAgeDogeyBsYWJlbDogXCJsb2cocmVhY3Rpb24gdGltZSlcIiB9LFxuICAgIHk6IHsgbGFiZWw6IFwiJSBvZiB0cmlhbHNcIiwgcGVyY2VudDogdHJ1ZSB9LFxuICAgIG1hcmtzOiBbXG4gICAgICBQbG90LnJlY3RZKGxvZ1J0LCBQbG90LmJpblgoeyB5OiBcInByb3BvcnRpb25cIiB9LFxuICAgICAgICB7IHg6IGQgPT4gZCwgdGhyZXNob2xkczogMjAsIGZpbGw6IFwiIzJkNmE0ZlwiLCBmaWxsT3BhY2l0eTogMC44IH0pKSxcbiAgICAgIFBsb3QucnVsZVgoWzBdKSxcbiAgICBdXG4gIH0pXG5cbiAgcmV0dXJuIGh0bWxgPGRpdiBzdHlsZT1cImRpc3BsYXk6ZmxleDtnYXA6MjRweDtqdXN0aWZ5LWNvbnRlbnQ6Y2VudGVyO1wiPiR7cDF9JHtwMn08L2Rpdj5gXG59XG4ifV19
+    eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgY29uc3Qgcm5nID0gZDMucmFuZG9tTm9ybWFsKDAsIDEpXG4gIGNvbnN0IHNhbXBsZSA9IEFycmF5LmZyb20oeyBsZW5ndGg6IDQwMDAgfSwgcm5nKVxuICByZXR1cm4gUGxvdC5wbG90KHtcbiAgICBoZWlnaHQ6IDI0MCxcbiAgICB4OiB7IGxhYmVsOiBcInhcIiwgZG9tYWluOiBbLTQsIDRdIH0sXG4gICAgeTogeyBsYWJlbDogXCIlIG9mIGRyYXdzXCIsIHBlcmNlbnQ6IHRydWUgfSxcbiAgICBtYXJrczogW1xuICAgICAgUGxvdC5yZWN0WShzYW1wbGUsIFBsb3QuYmluWCh7IHk6IFwicHJvcG9ydGlvblwiIH0sXG4gICAgICAgIHsgeDogZCA9PiBkLCB0aHJlc2hvbGRzOiAzMCwgZmlsbDogXCIjNDU3YjlkXCIsIGZpbGxPcGFjaXR5OiAwLjggfSkpLFxuICAgICAgUGxvdC5ydWxlWChbMF0pLFxuICAgIF1cbiAgfSlcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMiIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgY29uc3Qgcm5nID0gZDMucmFuZG9tTG9nTm9ybWFsKDAsIDAuNSlcbiAgY29uc3Qgc2FtcGxlID0gQXJyYXkuZnJvbSh7IGxlbmd0aDogNDAwMCB9LCBybmcpXG4gIGNvbnN0IGN1dG9mZiA9IGQzLnF1YW50aWxlKHNhbXBsZS5zbGljZSgpLnNvcnQoZDMuYXNjZW5kaW5nKSwgMC45OSlcbiAgcmV0dXJuIFBsb3QucGxvdCh7XG4gICAgaGVpZ2h0OiAyNDAsXG4gICAgeDogeyBsYWJlbDogXCJ4XCIsIGRvbWFpbjogWzAsIGN1dG9mZl0gfSxcbiAgICB5OiB7IGxhYmVsOiBcIiUgb2YgZHJhd3NcIiwgcGVyY2VudDogdHJ1ZSB9LFxuICAgIG1hcmtzOiBbXG4gICAgICBQbG90LnJlY3RZKHNhbXBsZS5maWx0ZXIoZCA9PiBkIDw9IGN1dG9mZiksIFBsb3QuYmluWCh7IHk6IFwicHJvcG9ydGlvblwiIH0sXG4gICAgICAgIHsgeDogZCA9PiBkLCB0aHJlc2hvbGRzOiAzMCwgZmlsbDogXCIjMmQ2YTRmXCIsIGZpbGxPcGFjaXR5OiAwLjggfSkpLFxuICAgICAgUGxvdC5ydWxlWChbMF0pLFxuICAgIF1cbiAgfSlcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMyIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgY29uc3QgYWxwaGEgPSAyLjUsIHhtaW4gPSAxXG4gIGNvbnN0IHNhbXBsZSA9IEFycmF5LmZyb20oeyBsZW5ndGg6IDQwMDAgfSwgKCkgPT4geG1pbiAqIE1hdGgucG93KDEgLSBNYXRoLnJhbmRvbSgpLCAtMSAvIGFscGhhKSlcbiAgY29uc3QgY3V0b2ZmID0gZDMucXVhbnRpbGUoc2FtcGxlLnNsaWNlKCkuc29ydChkMy5hc2NlbmRpbmcpLCAwLjk3KVxuICByZXR1cm4gUGxvdC5wbG90KHtcbiAgICBoZWlnaHQ6IDI0MCxcbiAgICB4OiB7IGxhYmVsOiBcInhcIiwgZG9tYWluOiBbMCwgY3V0b2ZmXSB9LFxuICAgIHk6IHsgbGFiZWw6IFwiJSBvZiBkcmF3c1wiLCBwZXJjZW50OiB0cnVlIH0sXG4gICAgbWFya3M6IFtcbiAgICAgIFBsb3QucmVjdFkoc2FtcGxlLmZpbHRlcihkID0+IGQgPD0gY3V0b2ZmKSwgUGxvdC5iaW5YKHsgeTogXCJwcm9wb3J0aW9uXCIgfSxcbiAgICAgICAgeyB4OiBkID0+IGQsIHRocmVzaG9sZHM6IDMwLCBmaWxsOiBcIiNlNjM5NDZcIiwgZmlsbE9wYWNpdHk6IDAuOCB9KSksXG4gICAgICBQbG90LnJ1bGVYKFswXSksXG4gICAgXVxuICB9KVxufVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC00IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICBjb25zdCBybmcgPSBkMy5yYW5kb21Vbmlmb3JtKDAsIDEwKVxuICBjb25zdCBzYW1wbGUgPSBBcnJheS5mcm9tKHsgbGVuZ3RoOiA0MDAwIH0sIHJuZylcbiAgcmV0dXJuIFBsb3QucGxvdCh7XG4gICAgaGVpZ2h0OiAyNDAsXG4gICAgeDogeyBsYWJlbDogXCJ4XCIsIGRvbWFpbjogWzAsIDEwXSB9LFxuICAgIHk6IHsgbGFiZWw6IFwiJSBvZiBkcmF3c1wiLCBwZXJjZW50OiB0cnVlIH0sXG4gICAgbWFya3M6IFtcbiAgICAgIFBsb3QucmVjdFkoc2FtcGxlLCBQbG90LmJpblgoeyB5OiBcInByb3BvcnRpb25cIiB9LFxuICAgICAgICB7IHg6IGQgPT4gZCwgdGhyZXNob2xkczogMjAsIGZpbGw6IFwiI2Y0YTI2MVwiLCBmaWxsT3BhY2l0eTogMC44IH0pKSxcbiAgICAgIFBsb3QucnVsZVgoWzBdKSxcbiAgICBdXG4gIH0pXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTUiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIGNvbnN0IHAgPSAwLjNcbiAgY29uc3Qgc2FtcGxlID0gQXJyYXkuZnJvbSh7IGxlbmd0aDogNDAwMCB9LCBkMy5yYW5kb21CZXJub3VsbGkocCkpXG4gIHJldHVybiBQbG90LnBsb3Qoe1xuICAgIGhlaWdodDogMjQwLFxuICAgIHg6IHsgbGFiZWw6IFwiT3V0Y29tZVwiLCBkb21haW46IFstMC41LCAxLjVdLCB0aWNrczogWzAsIDFdIH0sXG4gICAgeTogeyBsYWJlbDogXCIlIG9mIGRyYXdzXCIsIHBlcmNlbnQ6IHRydWUgfSxcbiAgICBtYXJrczogW1xuICAgICAgUGxvdC5yZWN0WShzYW1wbGUsIFBsb3QuZ3JvdXBYKHsgeTogXCJwcm9wb3J0aW9uXCIgfSxcbiAgICAgICAgeyB4OiBkID0+IGQsIGludGVydmFsOiAxLCBmaWxsOiBcIiMxZDM1NTdcIiwgZmlsbE9wYWNpdHk6IDAuOCB9KSksXG4gICAgICBQbG90LnJ1bGVYKFswXSksXG4gICAgXVxuICB9KVxufVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC02IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICBjb25zdCBuID0gMjAsIHAgPSAwLjNcbiAgY29uc3Qgc2FtcGxlID0gQXJyYXkuZnJvbSh7IGxlbmd0aDogNDAwMCB9LCBkMy5yYW5kb21CaW5vbWlhbChuLCBwKSlcbiAgcmV0dXJuIFBsb3QucGxvdCh7XG4gICAgaGVpZ2h0OiAyNDAsXG4gICAgeDogeyBsYWJlbDogXCJOdW1iZXIgb2Ygc3VjY2Vzc2VzIChvdXQgb2YgMjApXCIsIGRvbWFpbjogWy0wLjUsIG4gKyAwLjVdIH0sXG4gICAgeTogeyBsYWJlbDogXCIlIG9mIGRyYXdzXCIsIHBlcmNlbnQ6IHRydWUgfSxcbiAgICBtYXJrczogW1xuICAgICAgUGxvdC5yZWN0WShzYW1wbGUsIFBsb3QuZ3JvdXBYKHsgeTogXCJwcm9wb3J0aW9uXCIgfSxcbiAgICAgICAgeyB4OiBkID0+IGQsIGludGVydmFsOiAxLCBmaWxsOiBcIiNlOWM0NmFcIiwgZmlsbE9wYWNpdHk6IDAuOCB9KSksXG4gICAgICBQbG90LnJ1bGVYKFswXSksXG4gICAgXVxuICB9KVxufVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC03IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICBjb25zdCBsYW1iZGEgPSA0XG4gIGNvbnN0IHNhbXBsZSA9IEFycmF5LmZyb20oeyBsZW5ndGg6IDQwMDAgfSwgZDMucmFuZG9tUG9pc3NvbihsYW1iZGEpKVxuICByZXR1cm4gUGxvdC5wbG90KHtcbiAgICBoZWlnaHQ6IDI0MCxcbiAgICB4OiB7IGxhYmVsOiBcIk51bWJlciBvZiBldmVudHNcIiwgZG9tYWluOiBbLTAuNSwgMTUuNV0gfSxcbiAgICB5OiB7IGxhYmVsOiBcIiUgb2YgZHJhd3NcIiwgcGVyY2VudDogdHJ1ZSB9LFxuICAgIG1hcmtzOiBbXG4gICAgICBQbG90LnJlY3RZKHNhbXBsZSwgUGxvdC5ncm91cFgoeyB5OiBcInByb3BvcnRpb25cIiB9LFxuICAgICAgICB7IHg6IGQgPT4gZCwgaW50ZXJ2YWw6IDEsIGZpbGw6IFwiI2U2Mzk0NlwiLCBmaWxsT3BhY2l0eTogMC44IH0pKSxcbiAgICAgIFBsb3QucnVsZVgoWzBdKSxcbiAgICBdXG4gIH0pXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTgiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIGNvbnN0IHJ0U29ydGVkID0gcnQuc2xpY2UoKS5zb3J0KGQzLmFzY2VuZGluZylcbiAgY29uc3QgcnRDdXQgICAgPSBkMy5xdWFudGlsZShydFNvcnRlZCwgMC45OClcbiAgY29uc3QgbG9nUnQgICAgPSBydC5tYXAoTWF0aC5sb2cpXG5cbiAgY29uc3QgcDEgPSBQbG90LnBsb3Qoe1xuICAgIGhlaWdodDogMjQwLCB3aWR0aDogMzgwLFxuICAgIHg6IHsgbGFiZWw6IFwiUmVhY3Rpb24gdGltZSAobXMpXCIsIGRvbWFpbjogWzAsIHJ0Q3V0XSB9LFxuICAgIHk6IHsgbGFiZWw6IFwiJSBvZiB0cmlhbHNcIiwgcGVyY2VudDogdHJ1ZSB9LFxuICAgIG1hcmtzOiBbXG4gICAgICBQbG90LnJlY3RZKHJ0LmZpbHRlcihkID0+IGQgPD0gcnRDdXQpLCBQbG90LmJpblgoeyB5OiBcInByb3BvcnRpb25cIiB9LFxuICAgICAgICB7IHg6IGQgPT4gZCwgdGhyZXNob2xkczogMjAsIGZpbGw6IFwiIzQ1N2I5ZFwiLCBmaWxsT3BhY2l0eTogMC44IH0pKSxcbiAgICAgIFBsb3QucnVsZVgoWzBdKSxcbiAgICBdXG4gIH0pXG4gIGNvbnN0IHAyID0gUGxvdC5wbG90KHtcbiAgICBoZWlnaHQ6IDI0MCwgd2lkdGg6IDM4MCxcbiAgICB4OiB7IGxhYmVsOiBcImxvZyhyZWFjdGlvbiB0aW1lKVwiIH0sXG4gICAgeTogeyBsYWJlbDogXCIlIG9mIHRyaWFsc1wiLCBwZXJjZW50OiB0cnVlIH0sXG4gICAgbWFya3M6IFtcbiAgICAgIFBsb3QucmVjdFkobG9nUnQsIFBsb3QuYmluWCh7IHk6IFwicHJvcG9ydGlvblwiIH0sXG4gICAgICAgIHsgeDogZCA9PiBkLCB0aHJlc2hvbGRzOiAyMCwgZmlsbDogXCIjMmQ2YTRmXCIsIGZpbGxPcGFjaXR5OiAwLjggfSkpLFxuICAgICAgUGxvdC5ydWxlWChbMF0pLFxuICAgIF1cbiAgfSlcblxuICByZXR1cm4gaHRtbGA8ZGl2IHN0eWxlPVwiZGlzcGxheTpmbGV4O2dhcDoyNHB4O2p1c3RpZnktY29udGVudDpjZW50ZXI7XCI+JHtwMX0ke3AyfTwvZGl2PmBcbn1cbiJ9XX0=
     </script>
     <script type="module">
     if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }

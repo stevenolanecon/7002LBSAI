@@ -151,7 +151,6 @@ Results go directly to the class dataset. We will explore them together today an
 
 ---
 
-# Section A {background-color="#2d6a4f"}
 ## Types of variable
 
 ---
@@ -249,7 +248,6 @@ student_data = selected_student
 
 ---
 
-# Section B {background-color="#2d6a4f"}
 ## Format of the dataset
 
 ---
@@ -290,7 +288,6 @@ One student's data = filter by `student_name`. One trial type = filter by `trial
 
 ---
 
-# Section C {background-color="#2d6a4f"}
 ## Visualising distributions
 
 ---
@@ -571,6 +568,24 @@ viewof hist_controls = {
 }
 ```
 
+```{ojs}
+{
+  const box = document.createElement('div')
+  if (hist_controls.show_kde) {
+    box.innerHTML = `<div style="margin-top:10px;background:#eaf5ef;border-left:4px solid #2d6a4f;
+                        border-radius:6px;padding:10px 16px;text-align:left;font-size:0.8em;
+                        color:#333;line-height:1.5;">
+        <strong style="color:#1e3a2f;">What is a KDE?</strong><br>
+        A kernel density estimate smooths the histogram into a continuous curve. Instead of
+        counting values into fixed-width bins, it places a small "bump" over every observation
+        and adds them up — so the shape it shows doesn't depend on a bin-width choice the way
+        the bars do.
+      </div>`
+  }
+  return box
+}
+```
+
 ::: {.fragment}
 Wider bins can smooth away real structure and suggest a more gradual decline than the data actually shows — bin width is a choice, not a neutral default.
 :::
@@ -581,18 +596,37 @@ Wider bins can smooth away real structure and suggest a more gradual decline tha
 ::: {.col}
 **What the histogram tells us**
 
-| Feature | What we see |
-|---------|-------------|
-| **Floor** | ~150 ms minimum |
-| **Tail** | Long tail to the right |
-| **Skew** | Right-skewed |
-| **KDE** | Smoothed shape of the distribution |
+```{ojs}
+html`<table style="width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.85em;">
+  <thead>
+    <tr><th style="padding:6px 10px;text-align:left;">Feature</th><th style="padding:6px 10px;text-align:left;">What we see</th></tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom:1px solid #eee;">
+      <td style="padding:6px 10px;font-weight:600;">Floor</td>
+      <td style="padding:6px 10px;color:#666;">~${pool_min} ms minimum</td>
+    </tr>
+    <tr style="border-bottom:1px solid #eee;">
+      <td style="padding:6px 10px;font-weight:600;">Tail</td>
+      <td style="padding:6px 10px;color:#666;">Long tail to the right</td>
+    </tr>
+    <tr style="border-bottom:1px solid #eee;">
+      <td style="padding:6px 10px;font-weight:600;">Skew</td>
+      <td style="padding:6px 10px;color:#666;">Right-skewed</td>
+    </tr>
+    <tr>
+      <td style="padding:6px 10px;font-weight:600;">KDE</td>
+      <td style="padding:6px 10px;color:#666;">Smoothed shape of the distribution</td>
+    </tr>
+  </tbody>
+</table>`
+```
 
 :::
 ::: {.col .fragment}
 **Outliers**
 
-There is some theoretical minimum - no human can react instantaneously. 
+There is some theoretical minimum - no human can react instantaneously.
 
 There is no ceiling. Distraction, hesitation, accidental clicks — all extend the right tail.
 
@@ -602,6 +636,46 @@ There is no ceiling. Distraction, hesitation, accidental clicks — all extend t
 
 ::: {.fragment}
 **Task** — In Excel: experiment with bin width. Try plotting reaction times split by device and by caffeine group.
+:::
+
+## Spotting the outlier
+
+```{ojs}
+{
+  const vals = data.map(d => d.reaction_time_ms)
+  const maxVal = d3.max(vals)
+  const pad  = Math.max(20, Math.round((d3.max(vals) - d3.min(vals)) * 0.1))
+  const xmin = Math.floor((d3.min(vals) - pad) / 10) * 10
+  const xmax = Math.ceil((maxVal + pad) / 10) * 10
+  const bw   = 30
+
+  const bins = d3.bin().domain([xmin, xmax]).thresholds(d3.range(xmin, xmax + bw, bw))(vals)
+  const maxBinCount = d3.max(bins, b => b.length)
+  const topBin = bins.find(b => maxVal >= b.x0 && maxVal < b.x1) ?? bins[bins.length - 1]
+  const labelY = maxBinCount + Math.max(2, Math.round(maxBinCount * 0.35))
+
+  return Plot.plot({
+    height: 380,
+    marginLeft: 55,
+    marginTop: 55,
+    x: { label: "Reaction time (ms)", domain: [xmin, xmax] },
+    y: { label: "Count" },
+    marks: [
+      Plot.rectY(bins, { x1: "x0", x2: "x1", y: "length", fill: "#457b9d", fillOpacity: 0.75 }),
+      Plot.ruleX([0]),
+      Plot.arrow([{ x1: maxVal, y1: labelY, x2: maxVal, y2: topBin.length + 0.3 }],
+                 { x1: "x1", y1: "y1", x2: "x2", y2: "y2",
+                   stroke: "#e63946", strokeWidth: 2.5, headLength: 10, insetEnd: 2 }),
+      Plot.text([{ x: maxVal, y: labelY, label: `Highest: ${maxVal.toFixed(0)} ms` }],
+                { x: "x", y: "y", text: "label", dy: -10, fill: "#e63946",
+                  fontSize: 13, fontWeight: 600 }),
+    ]
+  })
+}
+```
+
+::: {.fragment}
+This single value is what we now need to decide what to do with.
 :::
 
 ## What do we do with an outlier?
@@ -620,7 +694,6 @@ The decision changes what you're measuring. Dropping every slow trial doesn't ju
 
 ---
 
-# Section D {background-color="#2d6a4f"}
 ## Summary statistics
 
 ---
@@ -688,14 +761,14 @@ viewof centre_student = Inputs.select(students, {
     y: { axis: null, domain: [-1, 1] },
     marks: [
       Plot.dot(jittered, { x: "v", y: "y", fill: "#457b9d", r: 5, fillOpacity: 0.65 }),
-      Plot.ruleX([mu],  { stroke: "#e63946", strokeWidth: 3,
-                          tip: true, title: () => `Mean: ${mu.toFixed(1)} ms` }),
-      Plot.ruleX([med], { stroke: "#f4a261", strokeWidth: 3,
-                          tip: true, title: () => `Median: ${med.toFixed(1)} ms` }),
+      Plot.ruleX([mu],  { stroke: "#e63946", strokeWidth: 3 }),
+      Plot.ruleX([med], { stroke: "#f4a261", strokeWidth: 3 }),
       Plot.text([{ x: mu,  label: `Mean\n${mu.toFixed(1)}`  }],
-                { x: "x", text: "label", dy: -28, fill: "#e63946", fontSize: 13 }),
+                { x: "x", text: "label", dy: -28, fill: "#e63946", fontSize: 14, fontWeight: 700,
+                  stroke: "white", strokeWidth: 4, paintOrder: "stroke" }),
       Plot.text([{ x: med, label: `Median\n${med.toFixed(1)}` }],
-                { x: "x", text: "label", dy: 38,  fill: "#f4a261", fontSize: 13 }),
+                { x: "x", text: "label", dy: 38,  fill: "#f4a261", fontSize: 14, fontWeight: 700,
+                  stroke: "white", strokeWidth: 4, paintOrder: "stroke" }),
     ]
   })
 }
@@ -740,18 +813,60 @@ viewof spread_student = Inputs.select(students, {
 ```
 
 ```{ojs}
-{
-  const sd   = data.filter(d => d.student_name === spread_student)
-  const vals = sd.map(d => d.reaction_time_ms)
-  const mu   = d3.mean(vals)
-  const sig  = d3.deviation(vals)
-  const q1   = d3.quantile(vals.slice().sort((a,b) => a-b), 0.25)
-  const q3   = d3.quantile(vals.slice().sort((a,b) => a-b), 0.75)
+mutable spreadStage = 'none'
+```
 
-  const sPad = Math.max(30, Math.round((d3.max(vals) - d3.min(vals)) * 0.2))
-  const sMin = d3.min(vals) - sPad
-  const sMax = d3.max(vals) + sPad
-  const jittered = vals.map(v => ({ v, y: (Math.random() - 0.5) * 1.0 }))
+```{ojs}
+{
+  // Keep spreadStage in sync with which of this slide's definition fragments
+  // is currently visible, so the chart below can react to it.
+  const stageForId = { 'frag-range': 'range', 'frag-sd': 'sd', 'frag-iqr': 'iqr', 'frag-90-10': '90-10' }
+  const order = ['range', 'sd', 'iqr', '90-10']
+
+  const handler = (event) => {
+    const stage = event.fragment && stageForId[event.fragment.id]
+    if (!stage) return
+    if (event.type === 'fragmentshown') {
+      mutable spreadStage = stage
+    } else {
+      const i = order.indexOf(stage)
+      mutable spreadStage = i > 0 ? order[i - 1] : 'none'
+    }
+  }
+  Reveal.addEventListener('fragmentshown', handler)
+  Reveal.addEventListener('fragmenthidden', handler)
+  invalidation.then(() => {
+    Reveal.removeEventListener('fragmentshown', handler)
+    Reveal.removeEventListener('fragmenthidden', handler)
+  })
+  return html`<span></span>`
+}
+```
+
+```{ojs}
+{
+  const sd     = data.filter(d => d.student_name === spread_student)
+  const vals   = sd.map(d => d.reaction_time_ms)
+  const sorted = vals.slice().sort((a,b) => a-b)
+  const mu     = d3.mean(vals)
+  const sig    = d3.deviation(vals)
+  const q1     = d3.quantile(sorted, 0.25)
+  const q3     = d3.quantile(sorted, 0.75)
+  const p10    = d3.quantile(sorted, 0.10)
+  const p90    = d3.quantile(sorted, 0.90)
+  const rMin   = d3.min(vals)
+  const rMax   = d3.max(vals)
+
+  const sPad = Math.max(30, Math.round((rMax - rMin) * 0.2))
+  const sMin = rMin - sPad
+  const sMax = rMax + sPad
+  // Seeded (not Math.random()) so the jitter doesn't reshuffle every time
+  // spreadStage changes and this cell re-runs — same student, same dots.
+  const seededRandom = (seed) => { const x = Math.sin(seed * 12.9898) * 43758.5453; return x - Math.floor(x) }
+  const jittered = vals.map((v, i) => ({ v, y: (seededRandom(i) - 0.5) * 1.0 }))
+
+  const showSD  = spreadStage === 'sd' || spreadStage === 'iqr'
+  const showIQR = spreadStage === 'iqr'
 
   return Plot.plot({
     height: 220,
@@ -759,32 +874,50 @@ viewof spread_student = Inputs.select(students, {
     x: { label: "Reaction time (ms)", domain: [sMin, sMax] },
     y: { axis: null },
     marks: [
-      Plot.rectX([{ x1: q1, x2: q3 }],
-        { x1: "x1", x2: "x2", y1: -0.6, y2: 0.6, fill: "#f4a261", fillOpacity: 0.25 }),
-      Plot.rectX([{ x1: mu - sig, x2: mu + sig }],
-        { x1: "x1", x2: "x2", y1: -0.6, y2: 0.6, fill: "#e63946", fillOpacity: 0.15 }),
+      spreadStage === 'range' ? Plot.rectX([{ x1: rMin, x2: rMax }],
+        { x1: "x1", x2: "x2", y1: -0.6, y2: 0.6, fill: "#2d6a4f", fillOpacity: 0.15 }) : null,
+      showIQR ? Plot.rectX([{ x1: q1, x2: q3 }],
+        { x1: "x1", x2: "x2", y1: -0.6, y2: 0.6, fill: "#f4a261", fillOpacity: 0.25 }) : null,
+      showSD ? Plot.rectX([{ x1: mu - sig, x2: mu + sig }],
+        { x1: "x1", x2: "x2", y1: -0.6, y2: 0.6, fill: "#e63946", fillOpacity: 0.15 }) : null,
+      spreadStage === '90-10' ? Plot.rectX([{ x1: p10, x2: p90 }],
+        { x1: "x1", x2: "x2", y1: -0.6, y2: 0.6, fill: "#457b9d", fillOpacity: 0.18 }) : null,
       Plot.dot(jittered, { x: "v", y: "y", fill: "#457b9d", r: 5, fillOpacity: 0.7 }),
-      Plot.ruleX([mu], { stroke: "#e63946", strokeWidth: 2.5 }),
-      Plot.text([
+      showSD ? Plot.ruleX([mu], { stroke: "#e63946", strokeWidth: 2.5 }) : null,
+      spreadStage === 'range' ? Plot.text([
+        { x: rMin, label: `Min (${rMin.toFixed(0)})` },
+        { x: rMax, label: `Max (${rMax.toFixed(0)})` },
+      ], { x: "x", text: "label", dy: -32, fill: "#2d6a4f", fontSize: 11 }) : null,
+      showSD ? Plot.text([
         { x: mu,        label: `Mean: ${mu.toFixed(1)}`          },
         { x: mu - sig,  label: `−1 SD (${(mu-sig).toFixed(0)})` },
         { x: mu + sig,  label: `+1 SD (${(mu+sig).toFixed(0)})` },
-      ], { x: "x", text: "label", dy: -32, fill: "#e63946", fontSize: 11 }),
-      Plot.text([
+      ], { x: "x", text: "label", dy: -32, fill: "#e63946", fontSize: 11 }) : null,
+      showIQR ? Plot.text([
         { x: (q1+q3)/2, label: `IQR: ${q1.toFixed(0)}–${q3.toFixed(0)} ms` }
-      ], { x: "x", text: "label", dy: 38, fill: "#f4a261", fontSize: 12 }),
+      ], { x: "x", text: "label", dy: 38, fill: "#f4a261", fontSize: 12 }) : null,
+      spreadStage === '90-10' ? Plot.text([
+        { x: p10, label: `P10 (${p10.toFixed(0)})` },
+        { x: p90, label: `P90 (${p90.toFixed(0)})` },
+      ], { x: "x", text: "label", dy: -32, fill: "#1d3557", fontSize: 11 }) : null,
     ]
   })
 }
 ```
 
-::: {.fragment}
+::: {#frag-range .fragment}
 **Range** = max − min. Simple but dominated by extremes.
+:::
 
+::: {#frag-sd .fragment}
 **SD** = √variance. Same units as the data. Sensitive to outliers.
+:::
 
+::: {#frag-iqr .fragment}
 **IQR** = Q3 − Q1. Spread of the middle 50%. Robust to outliers.
+:::
 
+::: {#frag-90-10 .fragment}
 **90–10 range** = 90th percentile − 10th percentile. A middle ground — trims the most extreme 20% without being as narrow as the IQR.
 :::
 
@@ -1043,7 +1176,6 @@ A single measurement doesn't tell you someone's typical response time. It tells 
 
 ---
 
-# Section E {background-color="#2d6a4f"}
 ## Group differences
 
 - Does reaction time differ by device type?

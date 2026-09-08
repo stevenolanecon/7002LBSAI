@@ -138,21 +138,133 @@ Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Pol
 Source: Békés & Kézdi (2021), Ch. 3 — shapes simulated here to show each family's characteristic silhouette
 :::
 
-## Other common distributions
+## The uniform distribution
 
-Not covered in this chapter of the textbook, but useful to have in view:
+::: {.two-col}
+::: {.col}
+- Flat — every value in a range is equally likely
+- Fully described by two parameters: the minimum and maximum
+- Mean and median sit at the midpoint, but there's no peak — no value is any more "typical" than another
+- Examples: random number generators, rounding error, waiting time within a fixed interval
+:::
+::: {.col}
+```{ojs}
+{
+  const rng = d3.randomUniform(0, 10)
+  const sample = Array.from({ length: 4000 }, rng)
+  return Plot.plot({
+    height: 240,
+    x: { label: "x", domain: [0, 10] },
+    y: { label: "% of draws", percent: true },
+    marks: [
+      Plot.rectY(sample, Plot.binX({ y: "proportion" },
+        { x: d => d, thresholds: 20, fill: "#f4a261", fillOpacity: 0.8 })),
+      Plot.ruleX([0]),
+    ]
+  })
+}
+```
+:::
+:::
 
-| Distribution | Typical shape | Common use |
-|---|---|---|
-| **Uniform** | Flat — all values equally likely | Random number generators |
-| **Bernoulli** | Two outcomes (0 or 1) | Single test: pass/fail, yes/no |
-| **Binomial** | Count of successes in *n* trials | Defects per batch, correct answers |
-| **Poisson** | Count of events in a fixed interval | Arrivals per hour, emails per day |
+## The Bernoulli distribution
+
+::: {.two-col}
+::: {.col}
+- The simplest distribution — a single trial with two possible outcomes
+- Fully described by one parameter: $p$, the probability of success
+- The building block every other distribution on this page is made from
+- Examples: a single coin flip, one pass/fail test, one yes/no question
+:::
+::: {.col}
+```{ojs}
+{
+  const p = 0.3
+  const sample = Array.from({ length: 4000 }, d3.randomBernoulli(p))
+  return Plot.plot({
+    height: 240,
+    x: { label: "Outcome", domain: [-0.5, 1.5], ticks: [0, 1] },
+    y: { label: "% of draws", percent: true },
+    marks: [
+      Plot.rectY(sample, Plot.groupX({ y: "proportion" },
+        { x: d => d, interval: 1, fill: "#1d3557", fillOpacity: 0.8 })),
+      Plot.ruleX([0]),
+    ]
+  })
+}
+```
+:::
+:::
+
+## The binomial distribution
+
+::: {.two-col}
+::: {.col}
+- The number of successes across $n$ independent Bernoulli trials
+- Described by two parameters: $n$ (number of trials) and $p$ (probability of success on each)
+- As $n$ grows, its shape approaches the normal distribution — a preview of why the normal shows up so often
+- Examples: defective items in a batch, correct answers on a multiple-choice test
+:::
+::: {.col}
+```{ojs}
+{
+  const n = 20, p = 0.3
+  const sample = Array.from({ length: 4000 }, d3.randomBinomial(n, p))
+  return Plot.plot({
+    height: 240,
+    x: { label: "Number of successes (out of 20)", domain: [-0.5, n + 0.5] },
+    y: { label: "% of draws", percent: true },
+    marks: [
+      Plot.rectY(sample, Plot.groupX({ y: "proportion" },
+        { x: d => d, interval: 1, fill: "#e9c46a", fillOpacity: 0.8 })),
+      Plot.ruleX([0]),
+    ]
+  })
+}
+```
+:::
+:::
+
+## The Poisson distribution
+
+::: {.two-col}
+::: {.col}
+- The number of events in a fixed interval, given a constant average rate
+- Described by a single parameter: $\lambda$ (lambda), the average rate itself
+- Mean and variance are both exactly $\lambda$ — a distinctive fingerprint of this distribution
+- Examples: customer arrivals per hour, emails per day, typos per page
+:::
+::: {.col}
+```{ojs}
+{
+  const lambda = 4
+  const sample = Array.from({ length: 4000 }, d3.randomPoisson(lambda))
+  return Plot.plot({
+    height: 240,
+    x: { label: "Number of events", domain: [-0.5, 15.5] },
+    y: { label: "% of draws", percent: true },
+    marks: [
+      Plot.rectY(sample, Plot.groupX({ y: "proportion" },
+        { x: d => d, interval: 1, fill: "#e63946", fillOpacity: 0.8 })),
+      Plot.ruleX([0]),
+    ]
+  })
+}
+```
+:::
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:8px;"}
+Not covered in this chapter of the textbook, but useful to have in view.
+:::
 
 ## Our data, and its log
 
-If reaction times are log-normal, the **log** of reaction time should look roughly normal. Let's check, using the class data collected in the workshop.
+If reaction times are log-normal, the **log** of reaction time should look roughly normal.
 
+Let's work through this together in Excel — a histogram of the raw reaction times, then a histogram of their log. Compare the shapes before we look at the answer.
+
+::: {.fragment}
 ```{ojs}
 {
   const rtSorted = rt.slice().sort(d3.ascending)
@@ -184,7 +296,6 @@ If reaction times are log-normal, the **log** of reaction time should look rough
 }
 ```
 
-::: {.fragment}
 Raw reaction times (blue) are right-skewed with a long tail. Their log (green) looks far closer to symmetric and bell-shaped — exactly what the log-normal claim predicts.
 :::
 

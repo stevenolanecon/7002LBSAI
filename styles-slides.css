@@ -62,6 +62,12 @@
 .reveal table { font-size: 0.9em; }
 .reveal table th { background: #f0f4f8; }
 
+/* Tables with their own inline dark header (e.g. OJS-generated tables using
+   background:#1a1a2e/color:white on the thead row) — let that win instead of
+   the light default above, which otherwise paints over each <th> and makes
+   the white header text unreadable. */
+.reveal table thead tr[style*="background"] th { background: inherit; color: inherit; }
+
 /* Callout overrides — make them slightly smaller in slides */
 .reveal .callout { font-size: 0.9em; margin: 0.8em 0; }
 
