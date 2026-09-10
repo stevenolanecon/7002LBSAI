@@ -719,5 +719,110 @@
     "title": "Types of Distribution",
     "section": "The Poisson distribution",
     "text": "The Poisson distribution\n\n\n\nThe number of events in a fixed interval, given a constant average rate\nDescribed by a single parameter: \\(\\lambda\\) (lambda), the average rate itself\nMean and variance are both exactly \\(\\lambda\\) — a distinctive fingerprint of this distribution\nExamples: customer arrivals per hour, emails per day, typos per page\n\n\n\n\n{\n  const lambda = 4\n  const sample = Array.from({ length: 4000 }, d3.randomPoisson(lambda))\n  return accessibleChart(Plot.plot({\n    height: 240,\n    x: { label: \"Number of events\", domain: [-0.5, 15.5] },\n    y: { label: \"% of draws\", percent: true },\n    marks: [\n      Plot.rectY(sample, Plot.groupX({ y: \"proportion\" },\n        { x: d =&gt; d, interval: 1, fill: \"#e63946\", fillOpacity: 0.8 })),\n      Plot.ruleX([0]),\n    ]\n  }), \"Histogram of a simulated Poisson distribution. 4,000 simulated draws from a Poisson distribution with an average rate of 4 events, shown as a histogram. The shape is right-skewed and concentrated on small whole numbers, peaking around 3 to 4 events.\")\n}\n\n\n\n\n\n\n\n\n\nNot covered in this chapter of the textbook, but useful to have in view."
+  },
+  {
+    "objectID": "week0-slides.html#welcome",
+    "href": "week0-slides.html#welcome",
+    "title": "Research Methods in Analytics",
+    "section": "Welcome",
+    "text": "Welcome\n\n\n\n\n\nWelcome to the module. I’m Dr Steve Nolan, a Senior Lecturer in Economics here at the Liverpool Business School, and module leader for Research Methods in Analytics.\nI’m looking forward to meeting you all over the coming weeks. If you’d like to know more about me and my work, my profile page is at profiles.ljmu.ac.uk/16186-steve-nolan.\n\n\n\nThis module is the statistical engine room of your MSc. We’ll build up from the basics of describing and summarising data, through statistical inference and regression, to the two skills that matter most once you’re working with real business data: building a model you can defend, and knowing whether you can actually draw a causal conclusion from it."
+  },
+  {
+    "objectID": "week0-slides.html#learning-outcomes",
+    "href": "week0-slides.html#learning-outcomes",
+    "title": "Research Methods in Analytics",
+    "section": "Learning Outcomes",
+    "text": "Learning Outcomes\nBy the end of this module, you will be able to:\n\nApply and critically appraise core statistical concepts and analytical techniques to interpret business data, draw meaningful insight, and make informed judgements under uncertainty.\nCritically evaluate the suitability and limitations of different analytical approaches, and assess the credibility and robustness of the findings they produce for business decision-making.\nDemonstrate a clear understanding of how causal claims can be established from data, and use structured reasoning to judge when evidence supports a genuine causal effect in a business context.\n\n\nBoth the exam and the portfolio assess all three outcomes — MLO3 (causal reasoning) is the one that most separates a good analysis from a great one."
+  },
+  {
+    "objectID": "week0-slides.html#module-evaluation-survey",
+    "href": "week0-slides.html#module-evaluation-survey",
+    "title": "Research Methods in Analytics",
+    "section": "Module Evaluation Survey",
+    "text": "Module Evaluation Survey\n\nThis is the first delivery of 7002LBSAI, so there’s no “you said, we did” from a previous cohort yet.\n\nWhat that means in practice:\n\nI’ll be asking for your feedback throughout the semester, not just at the end\nYour response to this year’s survey directly shapes next year’s module — you’ll be the “you said” for the next cohort\nIf something isn’t working, tell me before the survey — I’d rather fix it in Week 3 than Week 11"
+  },
+  {
+    "objectID": "week0-slides.html#your-timetable",
+    "href": "week0-slides.html#your-timetable",
+    "title": "Research Methods in Analytics",
+    "section": "Your timetable",
+    "text": "Your timetable\n\n\nWorkshop\nFridays, 1–4pm, Redmonds Building, Room 118\nWe’ll work through that week’s ideas together — building intuition first, often through simulation and hands-on tasks, before we get to the formal statistics.\n\n\nOnline session\nThursdays, 1 hour\nThe following Thursday, we go a bit deeper into the same material.\n\n\n\nToday’s session is a one-off, before teaching starts — that’s why we’re meeting online first. From Week 1 onwards it’s workshop on Friday, online session the following Thursday, every week."
+  },
+  {
+    "objectID": "week0-slides.html#the-semester-at-a-glance",
+    "href": "week0-slides.html#the-semester-at-a-glance",
+    "title": "Research Methods in Analytics",
+    "section": "The semester at a glance",
+    "text": "The semester at a glance\n\n\n\n\n\n\n\n\n\nWk\nTopic\nWorkshop\nOnline session\n\n\n\n\n01\nDistributions and Summarising Data\nFri 25 Sep\nThu 01 Oct\n\n\n02\nInference\nFri 02 Oct\nThu 08 Oct\n\n\n03\nRelationships Between Variables\nFri 09 Oct\nThu 15 Oct\n\n\n04\nRegression I: Fitting the Line\nFri 16 Oct\nThu 22 Oct\n\n\n05\nRegression I: Model Problems & Inference\nFri 23 Oct\nThu 29 Oct\n\n\n06\nRegression II: Multiple Regression\nFri 30 Oct\nThu 19 Nov*\n\n\n07\nCurriculum Enrichment Week\n–\n–\n\n\n08\nOther Models (GLMs)\nFri 13 Nov\nThu 26 Nov\n\n\n09\nCausal Analysis and Experiments\nFri 20 Nov\nThu 03 Dec\n\n\n10\nPrediction\nFri 27 Nov\nThu 10 Dec\n\n\n11\nTime Series\nFri 04 Dec\n–\n\n\n12\nPortfolio Presentations\nFri 11 Dec\n–\n\n\n\n\n*Week 6’s online session moves to Week 8’s slot (19 Nov) — its usual date fell in Curriculum Enrichment Week."
+  },
+  {
+    "objectID": "week0-slides.html#practice-across-the-module",
+    "href": "week0-slides.html#practice-across-the-module",
+    "title": "Research Methods in Analytics",
+    "section": "Practice across the module",
+    "text": "Practice across the module\nCanvas gives you two kinds of practice, running through the semester:\n\nEvery week, a bank of review questions — model answers released the following week\nFrom around Week 4 onwards, a short set of data exercises too — a downloadable Colab notebook, practising on real data you haven’t seen the answer for\n\nLet’s have a look at this together on Canvas now."
+  },
+  {
+    "objectID": "week0-slides.html#how-youre-assessed",
+    "href": "week0-slides.html#how-youre-assessed",
+    "title": "Research Methods in Analytics",
+    "section": "How you’re assessed",
+    "text": "How you’re assessed\n\n\nExam — 40%\nClosed-book, two hours.\nSection A is compulsory (40 marks). Section B gives you a choice of two from four questions (30 marks each).\nUniversity January exam period, 11–21 January — exact date to follow.\n\n\nPortfolio — 60%\nA notebook report (75% of this component): analyse a real-shaped business problem, on a dataset shared across the cohort, in no more than 1,500 words.\nA presentation and viva (25%): your own slides, in the Week 12 workshop — 8 minutes, plus 2 minutes of questions.\nNotebook due 10am, Friday 11 December. Presentation later that same day.\n\n\n\nBoth components assess all three learning outcomes for the module.\n\n\nBoth components also assess the competencies marked ✓ later in this session — and the portfolio’s employee-attrition case study is itself this module’s SDG 8 (Decent Work and Economic Growth) case study."
+  },
+  {
+    "objectID": "week0-slides.html#feedback-you-can-expect",
+    "href": "week0-slides.html#feedback-you-can-expect",
+    "title": "Research Methods in Analytics",
+    "section": "Feedback you can expect",
+    "text": "Feedback you can expect\n\n\nExam\nFormative feedback is provided throughout Weeks 1–11 via in-class workshop tasks, with worked-solution reveals and discussion.\nSummative feedback will be available through Canvas within 15 working days of the exam.\n\n\nPortfolio\nFormative feedback is provided through hands-on tasks across Weeks 1–8 that build the same statistical judgement skills the portfolio assesses. You also get live feedback during the Week 12 presentation itself, ahead of final grading.\nSummative feedback will be available through Canvas within 15 working days of submission."
+  },
+  {
+    "objectID": "week0-slides.html#use-of-ai-on-this-module",
+    "href": "week0-slides.html#use-of-ai-on-this-module",
+    "title": "Research Methods in Analytics",
+    "section": "Use of AI on this module",
+    "text": "Use of AI on this module\nThis module uses two different AI tiers, one per assessment component — you’ll need to know which applies to what you’re working on.\n\n\n\n\nTIER 1 — NO AI USE\n\n\nExam — closed-book, invigilated, two hours.\nNo AI tools are permitted or accessible during the assessment. AI use is not a relevant consideration for this component.\n\n\n\n\n\n\nTIER 2 — ASSISTIVE AI USE\n\n\nPortfolio — technical notebook, presentation and viva.\nStudents can use AI to support in coding — as you would in a real-life setting — but the analysis and statistical reasoning must be your own. You’ll have to defend your choices in the presentation and viva.\n\n\n\n\n\nWhichever tier applies, three things matter:\nProcess — how AI can be used, including which tools and instructions. People — what you add: your own critical thinking and decisions alongside any AI output. Product — the final work: can you be confident it’s your own, and does it follow these guidelines?"
+  },
+  {
+    "objectID": "week0-slides.html#ai-declaration",
+    "href": "week0-slides.html#ai-declaration",
+    "title": "Research Methods in Analytics",
+    "section": "AI Declaration",
+    "text": "AI Declaration\n\nIf your assessment is Tier 2 (the portfolio), include a declaration like this in your submission.\n\n\n\nTemplate\nAcknowledgement of tools used: I acknowledge the use of [AI tool or technology name] [link] to generate…/ I have not used any AI tools or technologies to prepare this assessment.\nHow the tool was used: examples may include “I discussed the topic to develop my argument”, “I generated tables to visualise my data”, “I requested proofreading advice on my grammar”.\nRecords available: a full record of prompts and outputs is available upon request.\n\n\nExample\nI acknowledge the use of Microsoft Copilot to brainstorm my essay argument.\nI prompted the model to ask me clarifying questions about my draft and the flow of my logic. I used the output to refine my central thesis statement and to decide how to order the argument for my essay.\nA full record of prompts and outputs is available upon request."
+  },
+  {
+    "objectID": "week0-slides.html#what-you-can-use-ai-for-in-this-module",
+    "href": "week0-slides.html#what-you-can-use-ai-for-in-this-module",
+    "title": "Research Methods in Analytics",
+    "section": "What you can use AI for in this module",
+    "text": "What you can use AI for in this module\nA general framework for where AI fits into your learning (Zhou and Schofield, 2024):\n\n\n\n\n\n\n\n\n\nKnow & Understand\nUse & Apply\nValue & Create\nAI Ethics\n\n\n\n\nUnderstand\nApply AI for research\nEvaluating data types and quality\nEvaluate clear AI assessment policies\n\n\nExplore\nSystematic literature review\nDataset evaluation\nExplain the ethical implications of Gen AI\n\n\nTake notes\nInformation search\nPractical data manipulation and analysis\nDiscuss AI hallucination\n\n\nBrainstorm\nProblem-solving\nComplex information search\nApply and adopt Gen AI ethically\n\n\nMind mapping\nData visualisation\nAI in evaluating societal challenges\nCo-creating AI ethics\n\n\nWriting, summary\nData analysis\n\n\n\n\n\n\n\nIn 7002LBSAI specifically: AI can support brainstorming, literature/data search, and — for the Tier 2 portfolio only — coding and data visualisation. The statistical reasoning, the judgement calls, and the write-up must be yours. For the Tier 1 exam, none of this applies: no AI, full stop."
+  },
+  {
+    "objectID": "week0-slides.html#your-textbook",
+    "href": "week0-slides.html#your-textbook",
+    "title": "Research Methods in Analytics",
+    "section": "Your textbook",
+    "text": "Your textbook\n\n\n\n\n\nOur primary textbook is Gábor Békés and Gábor Kézdi, Data Analysis for Business, Economics, and Policy (Cambridge University Press, 2021).\nThis module is built around the book, not just referencing it. Békés and Kézdi teach through real case studies rather than starting with formulas, and I’ve taken the same approach here.\nI’d recommend getting a copy.\n\n\n\n\nThe authors have made all the data and code freely available at gabors-data-analysis.com, whether or not you own a copy: raw and cleaned datasets, working Python/R/Stata code for all 47 case studies, and slides, practice questions, and interactive dashboards."
+  },
+  {
+    "objectID": "week0-slides.html#competencies-this-module-builds",
+    "href": "week0-slides.html#competencies-this-module-builds",
+    "title": "Research Methods in Analytics",
+    "section": "Competencies this module builds",
+    "text": "Competencies this module builds\n\n\n\n\n\n\n\n\nCompetency\nIntroduced\nDeveloped\nAssessed\n\n\n\n\nCritical Thinking and Analysis\n✓\n✓\n✓\n\n\nCreativity, Originality, and Initiative\n\n✓\n✓\n\n\nData Analytics and Use of Digital Technology\n✓\n✓\n✓\n\n\nEthical Reasoning and Responsible Business Governance\n\n\n\n\n\nLocal and Global Perspectives\n\n\n\n\n\nProgramme Specific Knowledge\n✓\n✓\n✓\n\n\nProgramme Specific Skills\n✓\n✓\n✓\n\n\n\n\n\n\nIntroduced — the basics of the skill, and how it’s applied. Developed — you get to practise and build on it. Assessed — a learning outcome and a piece of assessment explicitly reference it."
+  },
+  {
+    "objectID": "week0-slides.html#where-this-module-connects-to-the-sdgs",
+    "href": "week0-slides.html#where-this-module-connects-to-the-sdgs",
+    "title": "Research Methods in Analytics",
+    "section": "Where this module connects to the SDGs",
+    "text": "Where this module connects to the SDGs\n\n\n\n\n\nSeveral of our case studies connect to the UN Sustainable Development Goals:\n\nSDG 3 (Good Health and Well-Being) — workshop case studies using international health data: World Bank life expectancy, the SHARE health survey, NHANES food and blood pressure data.\nSDG 5 (Gender Equality) — a full workshop case study on the gender pay gap, using real CPS earnings data (Week 6).\nSDG 8 (Decent Work and Economic Growth) — the assessed portfolio analyses employee attrition and working conditions; a case study looks at a real working-from-home field experiment.\nSDG 7 (Affordable and Clean Energy) — a time-series case study uses real regional electricity demand data."
+  },
+  {
+    "objectID": "week0-slides.html#before-friday",
+    "href": "week0-slides.html#before-friday",
+    "title": "Research Methods in Analytics",
+    "section": "Before Friday",
+    "text": "Before Friday\n\nExplore the module site on Canvas\nGet a copy of the textbook, or bookmark gabors-data-analysis.com\nCome along to the workshop — Redmonds Building, Room 118, 1pm\n\n\nLooking forward to it."
   }
 ]
