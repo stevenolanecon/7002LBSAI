@@ -13,7 +13,7 @@ format:
     include-in-header:
       text: |
         <meta name="robots" content="noindex, nofollow">
-        <link rel="stylesheet" href="styles-slides.css?v=20260914">
+        <link rel="stylesheet" href="styles-slides.css?v=20260914-2">
 execute:
   echo: false
   warning: false
@@ -202,6 +202,36 @@ ojs_define(
 )
 ```
 
+```{ojs}
+//| output: false
+{
+  // Generic "shrink on reveal" wiring, used by every chart wrapped as
+  // `:::: {.shrink-on-reveal data-frag="some-fragment-id" style="--large-height:...;--small-height:...;--shrink-scale:..."}`
+  // (see e.g. the "The sampling distribution of the pair-averages" slide).
+  // Each chart renders large while its named fragment is hidden, then
+  // shrinks smoothly to make room the moment that fragment is revealed.
+  // Sizes live entirely in each wrapper's own inline style — this cell only
+  // handles show/hide, once, for every wrapper on the page, so adding a new
+  // chart to this pattern never means touching this cell.
+  const wrapperFor = (fragId) => document.querySelector(`.shrink-on-reveal[data-frag="${fragId}"]`)
+
+  // Sets each wrapper's correct starting state immediately, including on a
+  // reload or direct navigation to a slide whose fragment is already shown
+  // — matters because this cell (no reactive deps) only runs once, at load.
+  document.querySelectorAll('.shrink-on-reveal[data-frag]').forEach(el => {
+    const frag = document.getElementById(el.dataset.frag)
+    el.classList.toggle('is-small', !!frag?.classList.contains('visible'))
+  })
+
+  Reveal.on('fragmentshown', (event) => {
+    wrapperFor(event.fragment.id)?.classList.add('is-small')
+  })
+  Reveal.on('fragmenthidden', (event) => {
+    wrapperFor(event.fragment.id)?.classList.remove('is-small')
+  })
+}
+```
+
 ## {background-color="#1a1a2e"}
 
 ::: {style="text-align: center; padding-top: 180px;"}
@@ -336,6 +366,8 @@ On paper: write out **every possible pair**, and compute each pair's average.
 
 ## The sampling distribution of the pair-averages
 
+:::: {.shrink-on-reveal data-frag="wk2-pairavg-frag" style="--large-height:520px;--small-height:300px;--shrink-scale:0.5769;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   const shown = live_student_means.slice(0, 5)
@@ -355,7 +387,7 @@ On paper: write out **every possible pair**, and compute each pair's average.
   const xmax = d3.max(pairs, d => d.avg) + pad
 
   return Plot.plot({
-    height: 300,
+    height: 520,
     marginLeft: 55,
     marginBottom: 40,
     x: { label: "Pair average reaction time (ms)", domain: [xmin, xmax] },
@@ -371,8 +403,10 @@ On paper: write out **every possible pair**, and compute each pair's average.
   })
 }
 ```
+:::
+::::
 
-::: {.fragment}
+::: {.fragment #wk2-pairavg-frag}
 Ten possible pairs, ten different averages — some closer to the true mean of all five, some further away. **That spread, from a sample of just two, is the sampling distribution in miniature.**
 :::
 
@@ -380,6 +414,8 @@ Ten possible pairs, ten different averages — some closer to the true mean of a
 
 ## What we measured in Week 1
 
+:::: {.shrink-on-reveal data-frag="wk2-week1recap-frag" style="--large-height:560px;--small-height:340px;--shrink-scale:0.6071;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   const vals  = live_student_means.map(d => d.mean_rt)
@@ -398,7 +434,7 @@ Ten possible pairs, ten different averages — some closer to the true mean of a
   }))
 
   return Plot.plot({
-    height: 340,
+    height: 560,
     marginLeft: 55,
     marginBottom: 36,
     x: { label: "Student average reaction time (ms)", domain: [xmin, xmax] },
@@ -422,8 +458,10 @@ Ten possible pairs, ten different averages — some closer to the true mean of a
   })
 }
 ```
+:::
+::::
 
-::: {.fragment}
+::: {.fragment #wk2-week1recap-frag}
 Each point is one student's own average, from the pairs we were just building by hand — now for the whole class. The red curve is a **Normal(μ, σ)** fitted to it. This is our assumed **data-generating process (DGP)**.
 
 We can now use Python to pretend that we've run last week's test many times, each time drawing a new class from the same distribution.
@@ -484,6 +522,8 @@ html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;font-family
 
 ## A second sample from the same DGP
 
+:::: {.shrink-on-reveal data-frag="wk2-secondsample-frag" style="--large-height:480px;--small-height:310px;--shrink-scale:0.6458;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   const w1   = live_student_means.map(d => d.mean_rt)
@@ -504,7 +544,7 @@ html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;font-family
   ]
 
   return Plot.plot({
-    height: 360,
+    height: 310,
     marginLeft: 80,
     marginRight: 90,
     marginBottom: 36,
@@ -519,8 +559,10 @@ html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;font-family
   })
 }
 ```
+:::
+::::
 
-::: {.fragment}
+::: {.fragment #wk2-secondsample-frag}
 Same *n* both times — a real class of ${n_sample}, and a simulated class of ${n_sample} — so the two panels are directly comparable.
 :::
 
@@ -543,7 +585,7 @@ html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;font-family
 
 ---
 
-## Task
+## Task {.smaller}
 
 ::: {.instructions-box}
 ```{ojs}
@@ -606,7 +648,7 @@ viewof n_shown = {
   const bw     = Math.max(5, Math.round((xmax - xmin) / 20))
 
   return Plot.plot({
-    height: 310,
+    height: 450,
     marginLeft: 60,
     marginBottom: 36,
     x: { label: "Sample mean reaction time (ms)", domain: [xmin, xmax] },
@@ -633,13 +675,15 @@ viewof n_shown = {
 
 **The mean of the sampling distribution equals the true population mean.**
 
+:::: {.shrink-on-reveal data-frag="wk2-unbiased-frag" style="--large-height:520px;--small-height:360px;--shrink-scale:0.6923;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   const n_pts = Math.min(running_mean.length, 1000)
   const pts   = running_mean.slice(0, n_pts).map((y, i) => ({ x: i + 1, y }))
 
   return Plot.plot({
-    height: 360,
+    height: 520,
     marginLeft: 70,
     marginBottom: 36,
     x: { label: "Number of samples", type: "log" },
@@ -655,8 +699,10 @@ viewof n_shown = {
   })
 }
 ```
+:::
+::::
 
-::: {.fragment}
+::: {.fragment #wk2-unbiased-frag}
 **Law of Large Numbers:** as the number of independent draws increases, the sample mean converges to the true mean.
 An estimator whose expected value equals the true parameter is called **unbiased**.
 :::
@@ -667,6 +713,8 @@ An estimator whose expected value equals the true parameter is called **unbiased
 
 **The sampling distribution of the mean approaches normal as sample size grows — regardless of the shape of the population.**
 
+:::: {.shrink-on-reveal data-frag="wk2-clt-frag" style="--large-height:480px;--small-height:340px;--shrink-scale:0.7083;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   const panels = [
@@ -693,7 +741,7 @@ An estimator whose expected value equals the true parameter is called **unbiased
   }
 
   return Plot.plot({
-    height: 340,
+    height: 480,
     marginLeft: 60,
     marginBottom: 36,
     fx: { label: null, padding: 0.1, domain: panels.map(p => p.label) },
@@ -712,8 +760,10 @@ An estimator whose expected value equals the true parameter is called **unbiased
   })
 }
 ```
+:::
+::::
 
-::: {.fragment}
+::: {.fragment #wk2-clt-frag}
 **Central Limit Theorem:** for large enough *n*, the sampling distribution of the mean is approximately Normal(μ, σ²/n), regardless of the population's shape. This is why the normal distribution is everywhere.
 :::
 
@@ -723,13 +773,15 @@ An estimator whose expected value equals the true parameter is called **unbiased
 
 **The standard error shrinks as sample size grows — proportionally to √n.**
 
+:::: {.shrink-on-reveal data-frag="wk2-rootn-frag" style="--large-height:520px;--small-height:340px;--shrink-scale:0.6538;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   const colour = "#457b9d"
   const xmax   = d3.max(se_data, d => d.n) * 1.05
 
   return Plot.plot({
-    height: 340,
+    height: 520,
     marginLeft: 65,
     marginBottom: 40,
     x: { label: "Sample size (n)", domain: [0, xmax] },
@@ -751,8 +803,10 @@ An estimator whose expected value equals the true parameter is called **unbiased
   })
 }
 ```
+:::
+::::
 
-::: {.fragment}
+::: {.fragment #wk2-rootn-frag}
 SE = σ / √n. To **halve** the standard error, you need to **quadruple** the sample size. Precision is expensive.
 :::
 
@@ -986,7 +1040,7 @@ viewof boot_controls = {
   const xmax = d3.max(means) + pad
 
   return Plot.plot({
-    height: 300,
+    height: 450,
     marginLeft: 55,
     marginBottom: 36,
     x: { label: "Bootstrap sample mean (ms)", domain: [xmin, xmax] },
@@ -1118,7 +1172,7 @@ html`<p style="font-family:sans-serif;">You should have found: mean = <strong st
 ```
 :::
 
-## Task — does the bootstrap agree with the formula?
+## Task — does the bootstrap agree with the formula? {.smaller}
 
 ::: {.instructions-box}
 1. **n** starts at our real class sample size, but with only 10 resamples — read off the bootstrap SE.
@@ -1279,6 +1333,8 @@ A commonly used critical value for a t-statistic is **±2** (more precisely 1.96
 - Don't reject $H_0$ if it falls between −2 and +2
 - This corresponds to a **5% chance of a false positive** if $H_0$ is actually true
 
+:::: {.shrink-on-reveal data-frag="wk2-critval-frag" style="--large-height:420px;--small-height:280px;--shrink-scale:0.6667;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   const phi  = x => Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI)
@@ -1291,7 +1347,7 @@ A commonly used critical value for a t-statistic is **±2** (more precisely 1.96
   const tail1R = grid.filter(d => d.x >=  2.576)
 
   return Plot.plot({
-    height: 300,
+    height: 280,
     marginLeft: 20,
     marginBottom: 40,
     x: { label: "t-statistic", domain: [-3.6, 3.6] },
@@ -1317,8 +1373,10 @@ A commonly used critical value for a t-statistic is **±2** (more precisely 1.96
   })
 }
 ```
+:::
+::::
 
-::: {.fragment}
+::: {.fragment #wk2-critval-frag}
 Stricter critical values (±2.6) bring the false-positive rate down to 1% — at the cost of being harder to detect a real effect when one exists. The **dark** tails above are that stricter 1% cutoff; the **light + dark** together are the 5% cutoff we've been using.
 :::
 

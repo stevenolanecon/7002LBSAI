@@ -13,7 +13,7 @@ format:
     include-in-header:
       text: |
         <meta name="robots" content="noindex, nofollow">
-        <link rel="stylesheet" href="styles-slides.css?v=20260914">
+        <link rel="stylesheet" href="styles-slides.css?v=20260914-2-2">
 execute:
   echo: false
   warning: false
@@ -176,12 +176,13 @@ Results go directly to the class dataset. We will explore them together today an
 
 ```{ojs}
 html`<table style="width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;">
+  <caption class="visually-hidden">This table grounds the discussion of variable types in what was actually just collected — name, reaction time, device, and caffeine — showing each one's type and scale.</caption>
   <thead>
     <tr style="background:#1a1a2e;color:white;">
-      <th style="padding:12px 20px;text-align:left;">Variable</th>
-      <th style="padding:12px 20px;text-align:left;">Type</th>
-      <th style="padding:12px 20px;text-align:left;">Scale</th>
-      <th style="padding:12px 20px;text-align:left;">Example values</th>
+      <th scope="col" style="padding:12px 20px;text-align:left;">Variable</th>
+      <th scope="col" style="padding:12px 20px;text-align:left;">Type</th>
+      <th scope="col" style="padding:12px 20px;text-align:left;">Scale</th>
+      <th scope="col" style="padding:12px 20px;text-align:left;">Example values</th>
     </tr>
   </thead>
   <tbody>
@@ -241,8 +242,8 @@ student_data = selected_student
   if (!selected_student) return html`<p style="color:#aaa;text-align:center;margin-top:60px;font-size:1.1em;">Select a student from the dropdown above.</p>`
 
   const th = `<thead><tr style="background:#1a1a2e;color:white;">
-    <th style="padding:11px 40px;text-align:center;font-size:0.95em;">Trial</th>
-    <th style="padding:11px 40px;text-align:center;font-size:0.95em;">Time (ms)</th>
+    <th scope="col" style="padding:11px 40px;text-align:center;font-size:0.95em;">Trial</th>
+    <th scope="col" style="padding:11px 40px;text-align:center;font-size:0.95em;">Time (ms)</th>
   </tr></thead>`
 
   const rows = slice => slice.map(d =>
@@ -253,9 +254,11 @@ student_data = selected_student
 
   return html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;width:75%;margin:24px auto 0;">
     <table style="border-collapse:collapse;font-family:sans-serif;width:100%">
+      <caption class="visually-hidden">This table shows ${selected_student}'s own raw numbers before any summarising happens — trials one to five.</caption>
       ${th}<tbody>${rows(student_data.slice(0,5))}</tbody>
     </table>
     <table style="border-collapse:collapse;font-family:sans-serif;width:100%">
+      <caption class="visually-hidden">This table continues ${selected_student}'s own raw numbers — trials six to ten.</caption>
       ${th}<tbody>${rows(student_data.slice(5,10))}</tbody>
     </table>
   </div>`
@@ -275,13 +278,14 @@ Every row is one **observation**. Every column is one **variable**.
 
 ```{ojs}
 html`<table style="width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.88em;margin-top:16px;">
+  <caption class="visually-hidden">This table shows what tidy format actually looks like — one row per trial, one column per variable — using the first five of ${data.length} real rows.</caption>
   <thead>
     <tr style="background:#1a1a2e;color:white;">
-      <th style="padding:10px 18px;text-align:left;">student_name</th>
-      <th style="padding:10px 18px;text-align:left;">trial</th>
-      <th style="padding:10px 18px;text-align:left;">reaction_time_ms</th>
-      <th style="padding:10px 18px;text-align:left;">device</th>
-      <th style="padding:10px 18px;text-align:left;">caffeine</th>
+      <th scope="col" style="padding:10px 18px;text-align:left;">student_name</th>
+      <th scope="col" style="padding:10px 18px;text-align:left;">trial</th>
+      <th scope="col" style="padding:10px 18px;text-align:left;">reaction_time_ms</th>
+      <th scope="col" style="padding:10px 18px;text-align:left;">device</th>
+      <th scope="col" style="padding:10px 18px;text-align:left;">caffeine</th>
     </tr>
   </thead>
   <tbody>
@@ -330,11 +334,12 @@ html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:
   <div>
     <p style="font-weight:700;margin-bottom:12px;font-family:sans-serif;font-size:1.05em;">Device</p>
     <table style="width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;">
+      <caption class="visually-hidden">This table gives the exact counts needed for the frequency-table task — how many students used each device, and what percentage.</caption>
       <thead>
         <tr style="background:#1a1a2e;color:white;">
-          <th style="padding:10px 16px;text-align:left;">Device</th>
-          <th style="padding:10px 16px;text-align:right;">Count</th>
-          <th style="padding:10px 16px;text-align:right;">%</th>
+          <th scope="col" style="padding:10px 16px;text-align:left;">Device</th>
+          <th scope="col" style="padding:10px 16px;text-align:right;">Count</th>
+          <th scope="col" style="padding:10px 16px;text-align:right;">%</th>
         </tr>
       </thead>
       <tbody>
@@ -350,11 +355,12 @@ html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:
   <div>
     <p style="font-weight:700;margin-bottom:12px;font-family:sans-serif;font-size:1.05em;">Caffeine (last 2 hours)</p>
     <table style="width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;">
+      <caption class="visually-hidden">This table gives the exact counts needed for the same task, for caffeine in the last two hours.</caption>
       <thead>
         <tr style="background:#1a1a2e;color:white;">
-          <th style="padding:10px 16px;text-align:left;">Caffeine</th>
-          <th style="padding:10px 16px;text-align:right;">Count</th>
-          <th style="padding:10px 16px;text-align:right;">%</th>
+          <th scope="col" style="padding:10px 16px;text-align:left;">Caffeine</th>
+          <th scope="col" style="padding:10px 16px;text-align:right;">Count</th>
+          <th scope="col" style="padding:10px 16px;text-align:right;">%</th>
         </tr>
       </thead>
       <tbody>
@@ -425,7 +431,7 @@ student_data_trials = selected_student_trials
   const pad  = Math.max(20, Math.round((hi - lo) * 0.15))
 
   return accessibleChart(Plot.plot({
-    height: 400,
+    height: 550,
     marginLeft: 60,
     marginBottom: 40,
     x: { label: "Trial number", tickFormat: d => d },
@@ -435,7 +441,7 @@ student_data_trials = selected_student_trials
       Plot.dot(student_data_trials,  { x: "trial", y: "reaction_time_ms", fill: "#457b9d", r: 9,
                                 tip: true, title: d => `Trial ${d.trial}: ${d.reaction_time_ms} ms` }),
     ]
-  }), "Line chart of one student's reaction times across their ten trials. Reaction time in milliseconds is plotted against trial number, one to ten, with points connected in trial order to show how much one person's own times vary from trial to trial.")
+  }), "This chart shows that one person's reaction time varies from trial to trial rather than staying fixed. It plots reaction time against trial number, one to ten, for the selected student.")
 }
 ```
 
@@ -449,7 +455,7 @@ student_data_trials = selected_student_trials
   const vals = student_data_trials.map(d => d.reaction_time_ms)
 
   return accessibleChart(Plot.plot({
-    height: 420,
+    height: 580,
     marginLeft: 60,
     marginBottom: 40,
     x: { label: "Reaction time (ms)" },
@@ -458,7 +464,7 @@ student_data_trials = selected_student_trials
       Plot.rectY(vals, Plot.binX({ y: "count" }, { x: d => d, thresholds: 6, fill: "#457b9d" })),
       Plot.ruleY([0]),
     ]
-  }), "Histogram of one student's ten reaction times, grouped into six bins. Even with only ten trials, the values spread across a noticeable range rather than clustering on a single number.")
+  }), "This chart shows that even ten trials from one person spread across a range rather than clustering on one value. It's a histogram of the selected student's ten reaction times, grouped into six bins.")
 }
 ```
 
@@ -526,6 +532,38 @@ viewof hist_controls = {
 ```
 
 ```{ojs}
+//| output: false
+{
+  // Generic "shrink on reveal" wiring, used by every chart wrapped as
+  // `:::: {.shrink-on-reveal data-frag="some-fragment-id" style="--large-height:...;--small-height:...;--shrink-scale:..."}`
+  // (see the Pooled histogram slide below for the first example). Each chart
+  // renders large while its named fragment is hidden, then shrinks smoothly
+  // to make room the moment that fragment is revealed. Sizes live entirely
+  // in each wrapper's own inline style — this cell only handles show/hide,
+  // once, for every wrapper on the page, so adding a new chart to this
+  // pattern never means touching this cell.
+  const wrapperFor = (fragId) => document.querySelector(`.shrink-on-reveal[data-frag="${fragId}"]`)
+
+  // Sets each wrapper's correct starting state immediately, including on a
+  // reload or direct navigation to a slide whose fragment is already shown
+  // — matters because this cell (no reactive deps) only runs once, at load.
+  document.querySelectorAll('.shrink-on-reveal[data-frag]').forEach(el => {
+    const frag = document.getElementById(el.dataset.frag)
+    el.classList.toggle('is-small', !!frag?.classList.contains('visible'))
+  })
+
+  Reveal.on('fragmentshown', (event) => {
+    wrapperFor(event.fragment.id)?.classList.add('is-small')
+  })
+  Reveal.on('fragmenthidden', (event) => {
+    wrapperFor(event.fragment.id)?.classList.remove('is-small')
+  })
+}
+```
+
+:::: {.shrink-on-reveal data-frag="wk1-s20-frag" style="--large-height:480px;--small-height:330px;--shrink-scale:0.6875;"}
+::: {.shrink-on-reveal-inner}
+```{ojs}
 {
   const thr      = hist_controls.threshold
   const thrMax   = Math.ceil(pool_max / 10) * 10 + 10
@@ -554,15 +592,20 @@ viewof hist_controls = {
     return { x, y: pct ? density * bw : density * filtered.length * bw }
   })
 
-  const chartLabel = `Histogram of the whole class's reaction times, in bins ${bw} ms wide` +
+  const chartLabel = `This chart shows how bin width and where you cut off outliers change a histogram's apparent shape. Currently: bins ${bw} ms wide` +
     (excluded > 0 ? `, with ${excluded} value${excluded > 1 ? 's' : ''} above ${thr} ms excluded` : ", with no values excluded") +
-    `. The shape is right-skewed: most values cluster at the low end with a long tail of slower times.` +
+    `. The class's reaction times are right-skewed: most values cluster at the low end with a long tail of slower times.` +
     (hist_controls.show_mean ? ` The mean is ${mu.toFixed(1)} ms.` : "") +
     (hist_controls.show_median ? ` The median is ${med.toFixed(1)} ms.` : "") +
     (hist_controls.show_kde ? " A smoothed density curve is overlaid on the bars." : "")
 
-  return accessibleChart(Plot.plot({
-    height: 330,
+  // 480 = this chart's "large" (fragment-still-hidden) native render size.
+  // The CSS-scaled "small" size (330, matching the chart's original height)
+  // is reached by scaling down by exactly the --shrink-scale set on the
+  // wrapping .shrink-on-reveal div above, so the revealed state looks
+  // identical to how this chart always looked before this pattern existed.
+  const svg = Plot.plot({
+    height: 480,
     marginLeft: 55,
     marginBottom: 32,
     x: { label: "Reaction time (ms)", domain: [xmin, xmax] },
@@ -588,9 +631,13 @@ viewof hist_controls = {
                              x: "x", frameAnchor: "top-right",
                              fill: "#e63946", fontSize: 12, fontStyle: "italic" }) : null,
     ]
-  }), chartLabel)
+  })
+
+  return accessibleChart(svg, chartLabel)
 }
 ```
+:::
+::::
 
 ```{ojs}
 {
@@ -610,7 +657,7 @@ viewof hist_controls = {
 }
 ```
 
-::: {.fragment}
+::: {.fragment #wk1-s20-frag}
 Wider bins can smooth away real structure and suggest a more gradual decline than the data actually shows — bin width is a choice, not a neutral default.
 :::
 
@@ -622,8 +669,9 @@ Wider bins can smooth away real structure and suggest a more gradual decline tha
 
 ```{ojs}
 html`<table style="width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.85em;">
+  <caption class="visually-hidden">This table puts into words what the histogram above shows visually — the floor, tail, skew, and smoothed shape of the distribution.</caption>
   <thead>
-    <tr><th style="padding:6px 10px;text-align:left;">Feature</th><th style="padding:6px 10px;text-align:left;">What we see</th></tr>
+    <tr><th scope="col" style="padding:6px 10px;text-align:left;">Feature</th><th scope="col" style="padding:6px 10px;text-align:left;">What we see</th></tr>
   </thead>
   <tbody>
     <tr style="border-bottom:1px solid #eee;">
@@ -664,6 +712,8 @@ There is no ceiling. Distraction, hesitation, accidental clicks — all extend t
 
 ## Spotting the outlier
 
+:::: {.shrink-on-reveal data-frag="wk1-outlier-frag" style="--large-height:540px;--small-height:380px;--shrink-scale:0.7037;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   const vals = data.map(d => d.reaction_time_ms)
@@ -679,7 +729,7 @@ There is no ceiling. Distraction, hesitation, accidental clicks — all extend t
   const labelY = maxBinCount + Math.max(2, Math.round(maxBinCount * 0.35))
 
   return accessibleChart(Plot.plot({
-    height: 380,
+    height: 540,
     marginLeft: 55,
     marginTop: 55,
     x: { label: "Reaction time (ms)", domain: [xmin, xmax] },
@@ -694,11 +744,13 @@ There is no ceiling. Distraction, hesitation, accidental clicks — all extend t
                 { x: "x", y: "y", text: "label", dy: -10, fill: "#e63946",
                   fontSize: 13, fontWeight: 600 }),
     ]
-  }), `Histogram of all reaction times with the single highest value highlighted: an arrow points to ${maxVal.toFixed(0)} ms, the one extreme point furthest from the rest of the distribution.`)
+  }), `This chart highlights the single most extreme reaction time in the dataset, to set up the question of what to do with it. An arrow points to ${maxVal.toFixed(0)} ms, the point furthest from the rest of the distribution.`)
 }
 ```
+:::
+::::
 
-::: {.fragment}
+::: {.fragment #wk1-outlier-frag}
 This single value is what we now need to decide what to do with.
 :::
 
@@ -794,7 +846,7 @@ viewof centre_student = Inputs.select(students, {
                 { x: "x", text: "label", dy: 38,  fill: "#f4a261", fontSize: 14, fontWeight: 700,
                   stroke: "white", strokeWidth: 4, paintOrder: "stroke" }),
     ]
-  }), `Dot plot of ${centre_student}'s ten reaction times, with a red line marking the mean at ${mu.toFixed(1)} ms and an orange line marking the median at ${med.toFixed(1)} ms — the two sit close together, near the middle of the spread of dots.`)
+  }), `This chart compares where the mean and median fall on the same data, to show how the two measures of centre can differ. Here, on ${centre_student}'s ten reaction times, the mean (${mu.toFixed(1)} ms) and median (${med.toFixed(1)} ms) sit close together, near the middle of the spread of dots.`)
 }
 ```
 
@@ -904,7 +956,14 @@ mutable spreadStage = 'none'
     height: 220,
     marginLeft: 55,
     x: { label: "Reaction time (ms)", domain: [sMin, sMax] },
-    y: { axis: null },
+    // Fixed, explicit domain — without it, Plot auto-computes the y-domain
+    // from whichever marks are present, and the highlight rects (y1/y2 =
+    // -0.6/0.6) are wider than the dots alone (-0.5/0.5). That meant the
+    // very first transition (no highlight -> a highlight appearing) widened
+    // the auto-domain and visibly shifted the dots; every later transition
+    // was stable since a rect was already present. Matching the rects'
+    // extent with a little padding keeps every stage on the same domain.
+    y: { axis: null, domain: [-0.7, 0.7] },
     marks: [
       spreadStage === 'range' ? Plot.rectX([{ x1: rMin, x2: rMax }],
         { x1: "x1", x2: "x2", y1: -0.6, y2: 0.6, fill: "#2d6a4f", fillOpacity: 0.15 }) : null,
@@ -933,7 +992,7 @@ mutable spreadStage = 'none'
         { x: p90, label: `P90 (${p90.toFixed(0)})` },
       ], { x: "x", text: "label", dy: -32, fill: "#1d3557", fontSize: 11 }) : null,
     ]
-  }), `Dot plot of ${spread_student}'s ten reaction times; ${stageDescription}.`)
+  }), `This chart builds up different measures of spread — range, standard deviation, interquartile range, or the 90-10 range — by highlighting each on the same data as it's introduced. Here, on ${spread_student}'s ten reaction times: ${stageDescription}.`)
 }
 ```
 
@@ -978,7 +1037,7 @@ Source: Békés & Kézdi (2021), Ch. 3
 ::: {.two-col}
 ::: {.col}
 ```{=html}
-<div role="img" aria-label="Diagram of box plot anatomy: whiskers extend to the upper and lower adjacent values, a box spans the 25th to 75th percentile with the median marked as a red line inside it, and an outside value is shown as a separate red dot beyond the lower whisker">
+<div role="img" aria-label="This diagram teaches the parts of a box plot before one is used on real data: whiskers extending to the upper and lower adjacent values, a box spanning the 25th to 75th percentile with the median marked as a red line inside it, and an outside value shown as a separate red dot beyond the lower whisker">
 <svg viewBox="0 0 430 380" width="100%" style="max-height:380px;" aria-hidden="true">
   <line x1="110" y1="40"  x2="110" y2="120" stroke="#457b9d" stroke-width="2"/>
   <line x1="110" y1="240" x2="110" y2="320" stroke="#457b9d" stroke-width="2"/>
@@ -1010,7 +1069,7 @@ Source: Békés & Kézdi (2021), Ch. 3
 :::
 ::: {.col}
 ```{=html}
-<div role="img" aria-label="Diagram of violin plot anatomy: the full curved shape shows the density of the distribution, widest where values are most common, with a narrower inner box marking the interquartile range around the median and lighter bands above and below showing the 95% confidence interval">
+<div role="img" aria-label="This diagram teaches the parts of a violin plot before one is used on real data: the full curved shape showing the density of the distribution, widest where values are most common, a narrower inner box marking the interquartile range around the median, and lighter bands above and below showing the 95% confidence interval">
 <svg viewBox="0 0 430 380" width="100%" style="max-height:380px;" aria-hidden="true">
   <path d="M 150.0,40.0 L 155.4,48.0 L 161.4,56.0 L 168.0,64.0 L 176.2,72.0 L 185.2,80.0 L 192.0,88.0
            L 196.6,96.0 L 199.7,104.0 L 198.6,112.0 L 193.4,120.0 L 189.3,128.0 L 186.5,136.0
@@ -1062,6 +1121,8 @@ Compare your box plot against a neighbour's — same data, does it look the same
 
 ## Box plot and violin plot: our data
 
+:::: {.shrink-on-reveal data-frag="wk1-boxviolin-frag" style="--large-height:480px;--small-height:380px;--shrink-scale:0.7917;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   const allVals = data.map(d => d.reaction_time_ms)
@@ -1090,7 +1151,7 @@ Compare your box plot against a neighbour's — same data, does it look the same
   })
 
   return accessibleChart(Plot.plot({
-    height: 190,
+    height: 240,
     marginLeft: 80,
     x: { label: "Reaction time (ms)", domain: [bMin, bMax] },
     y: { label: null, type: "band" },
@@ -1107,7 +1168,7 @@ Compare your box plot against a neighbour's — same data, does it look the same
       Plot.dot(outliers,  { x: "reaction_time_ms", y: "device",
                             stroke: d => colours[d.device], fill: "white", r: 5, strokeWidth: 1.5 }),
     ]
-  }), `Box plot comparing reaction times for phone and laptop users. Two horizontal box plots, one for phone users (median ${grouped[0].q2.toFixed(0)} ms) and one for laptop users (median ${grouped[1].q2.toFixed(0)} ms). Each box spans the interquartile range with the median marked by a white tick and the mean by a diamond, whiskers reach the furthest non-outlier point, and open circles mark outliers beyond that. Individual trial times are also shown as faint jittered dots behind each box.`)
+  }), `This chart introduces the box plot as a compact way to summarise and compare two groups' distributions, using phone versus laptop reaction times as the example. Phone users have a median of ${grouped[0].q2.toFixed(0)} ms and laptop users ${grouped[1].q2.toFixed(0)} ms; each box spans the interquartile range with the median marked by a white tick and the mean by a diamond, whiskers reach the furthest non-outlier point, and open circles mark outliers beyond that.`)
 }
 ```
 
@@ -1139,18 +1200,20 @@ Compare your box plot against a neighbour's — same data, does it look the same
   })
 
   return accessibleChart(Plot.plot({
-    height: 190,
+    height: 240,
     marginLeft: 80,
     x: { label: "Reaction time (ms)", domain: [bMin, bMax] },
     y: { domain: [-0.7, 1.7], ticks: [0, 1],
          tickFormat: v => v === 1 ? "Phone" : v === 0 ? "Laptop" : "", label: null },
     marks: groups.map(g => Plot.areaY(violinData.filter(d => d.group === g),
       { x: "x", y1: "y1", y2: "y2", fill: colours[g], fillOpacity: 0.5, stroke: colours[g], strokeWidth: 1.5 })),
-  }), "Violin plot comparing reaction times for phone and laptop users. The same phone-versus-laptop comparison as the box plot above, shown instead as two mirrored density shapes — the width of each violin at a given reaction time shows how common that value is, giving the full shape of each group's distribution rather than five summary numbers.")
+  }), "This chart shows the same phone-versus-laptop comparison as a full distribution shape rather than five summary numbers, to contrast what a violin plot reveals that a box plot can't. The width of each violin at a given reaction time shows how common that value is.")
 }
 ```
+:::
+::::
 
-::: {.fragment}
+::: {.fragment #wk1-boxviolin-frag}
 Box = IQR · Line = median · Diamond = mean · Whiskers = furthest point within 1.5×IQR of the box · Open circles = outliers beyond that. Violin = the same distribution, shown as its full shape rather than five summary numbers.
 :::
 
@@ -1252,11 +1315,11 @@ viewof show_pts_device = Inputs.toggle({ label: "Show individual points", value:
     return d.reaction_time_ms < g.lo || d.reaction_time_ms > g.hi
   })
 
-  const chartLabel = `Box plot comparing reaction times for phone and laptop users. Two horizontal box plots comparing phone (median ${grouped[0].q2.toFixed(0)} ms) and laptop (median ${grouped[1].q2.toFixed(0)} ms) reaction times — box shows the interquartile range, tick the median, diamond the mean, whiskers reach the furthest non-outlier point, and open circles mark outliers.` +
+  const chartLabel = `This chart applies the box-plot comparison to the workshop's own question: whether reaction time differs between phone and laptop users. Phone users have a median of ${grouped[0].q2.toFixed(0)} ms and laptop users ${grouped[1].q2.toFixed(0)} ms.` +
     (show_pts_device ? " Individual trials are also shown as jittered dots." : "")
 
   return accessibleChart(Plot.plot({
-    height: 280,
+    height: 420,
     marginLeft: 80,
     x: { label: "Reaction time (ms)", domain: [bMin, bMax] },
     y: { label: null, type: "band" },
@@ -1312,11 +1375,11 @@ viewof show_pts_caff = Inputs.toggle({ label: "Show individual points", value: t
     return g && (d.reaction_time_ms < g.lo || d.reaction_time_ms > g.hi)
   })
 
-  const chartLabel = "Box plot comparing reaction times for students who did and didn't have caffeine. Two horizontal box plots comparing reaction times between students who reported caffeine in the last two hours and those who didn't — box shows the interquartile range, tick the median, diamond the mean, whiskers reach the furthest non-outlier point, and open circles mark outliers." +
+  const chartLabel = "This chart applies the same comparison to caffeine: whether reaction time differs between students who did and didn't have caffeine in the last two hours." +
     (show_pts_caff ? " Individual trials are also shown as jittered dots." : "")
 
   return accessibleChart(Plot.plot({
-    height: 280,
+    height: 420,
     marginLeft: 80,
     x: { label: "Reaction time (ms)", domain: [bMin, bMax] },
     y: { label: "Caffeine?", type: "band" },
@@ -1366,16 +1429,17 @@ viewof show_pts_caff = Inputs.toggle({ label: "Show individual points", value: t
   ]
 
   return html`<table style="width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;margin-top:16px;">
+    <caption class="visually-hidden">This table gives the exact figures behind the box-plot comparison above — mean, median, and spread for phone and laptop users, for quoting precise numbers rather than reading them off the chart.</caption>
     <thead>
       <tr style="background:#1a1a2e;color:white;">
-        <th style="padding:10px 16px;text-align:left;">Device</th>
-        <th style="padding:10px 16px;text-align:right;">N</th>
-        <th style="padding:10px 16px;text-align:right;">Mean</th>
-        <th style="padding:10px 16px;text-align:right;">Median</th>
-        <th style="padding:10px 16px;text-align:right;">Min</th>
-        <th style="padding:10px 16px;text-align:right;">Max</th>
-        <th style="padding:10px 16px;text-align:right;">SD</th>
-        <th style="padding:10px 16px;text-align:right;">Skew</th>
+        <th scope="col" style="padding:10px 16px;text-align:left;">Device</th>
+        <th scope="col" style="padding:10px 16px;text-align:right;">N</th>
+        <th scope="col" style="padding:10px 16px;text-align:right;">Mean</th>
+        <th scope="col" style="padding:10px 16px;text-align:right;">Median</th>
+        <th scope="col" style="padding:10px 16px;text-align:right;">Min</th>
+        <th scope="col" style="padding:10px 16px;text-align:right;">Max</th>
+        <th scope="col" style="padding:10px 16px;text-align:right;">SD</th>
+        <th scope="col" style="padding:10px 16px;text-align:right;">Skew</th>
       </tr>
     </thead>
     <tbody>

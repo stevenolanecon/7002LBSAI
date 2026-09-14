@@ -191,3 +191,38 @@
   border: 5px solid #457b9d;
   box-shadow: 0 10px 26px rgba(69, 123, 157, 0.4);
 }
+
+/* "Shrink on reveal" charts: a chart renders larger while a named fragment
+   is still hidden, then shrinks smoothly to make room once that fragment is
+   revealed. Wrap a chart as:
+     :::: {.shrink-on-reveal data-frag="some-fragment-id"
+           style="--large-height:...px;--small-height:...px;--shrink-scale:small/large;"}
+     ::: {.shrink-on-reveal-inner}
+     ```{ojs}
+     ...return Plot.plot({height: <the large value>, ...})   // or accessibleChart(...)
+     ```
+     :::
+     ::::
+   and give the fragment it should react to the matching id, e.g.
+   `::: {.fragment #some-fragment-id}`. The show/hide wiring itself is one
+   shared cell (a `{ojs}` block with `//| output: false` near the top of the
+   deck, registering `Reveal.on('fragmentshown'/'fragmenthidden', ...)`)  —
+   adding a new chart to this pattern only ever means the markup above,
+   never a new wiring cell. Two-layer transition (outer height + inner
+   transform) so the chart's own layout box and its visual scale animate in
+   lockstep — a plain transform:scale() alone wouldn't reflow content below it. */
+.shrink-on-reveal {
+  overflow: hidden;
+  height: var(--large-height);
+  transition: height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.shrink-on-reveal.is-small {
+  height: var(--small-height);
+}
+.shrink-on-reveal-inner {
+  transform-origin: top center;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.shrink-on-reveal.is-small .shrink-on-reveal-inner {
+  transform: scale(var(--shrink-scale));
+}
