@@ -1,0 +1,1409 @@
+---
+title: "Inference: When is a Difference Real?"
+subtitle: "7002LBSAI Research Methods in Analytics — Week 2"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="stylesheet" href="styles-slides.css?v=20260914">
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{python}
+import pandas as pd
+import numpy as np
+
+# ── Live Week 1 class data — the real dataset everything else is anchored to.
+# This is the TEST-DATA deck — always reads the synthetic placeholder, never
+# the live Google Sheet. See week2-live.qmd for the in-class version.
+live_df = pd.read_csv("data/synthetic_reaction_times.csv")
+# live_df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIOZ03GpUJgqvGVmI9cih169mMq0ajLMj6a0VTd2tytB3K5BmX5AUiKQ8FKIL6KUKEcgb-1LR-1eM/pub?gid=0&single=true&output=csv")
+
+if 'name' in live_df.columns and 'student_name' not in live_df.columns:
+    live_df = live_df.rename(columns={'name': 'student_name'})
+if 'caffeine' not in live_df.columns:
+    live_df['caffeine'] = 'Unknown'
+live_df['caffeine'] = live_df['caffeine'].fillna('Unknown')
+
+live_students = sorted(live_df["student_name"].unique().tolist())
+n_students    = len(live_students)   # actual class size — not assumed to be 15
+
+live_student_means = (
+    live_df.groupby("student_name")["reaction_time_ms"].mean().round(1)
+    .reset_index()
+    .rename(columns={"reaction_time_ms": "mean_rt"})
+    .to_dict(orient="records")
+)
+
+live_device_stats = (
+    live_df.groupby("device")["reaction_time_ms"]
+    .agg(mean="mean", sd="std", n="count")
+    .reset_index()
+    .round(2)
+    .to_dict(orient="records")
+)
+
+# NaN (e.g. missing finger_mm on older submissions) is not valid JSON. All
+# ojs_define() values share one JSON payload, so a single stray NaN anywhere
+# breaks every variable in the call — clean before handing over.
+live_df_clean = live_df.astype(object).where(live_df.notna(), None)
+
+ojs_define(
+    live_data         = live_df_clean.to_dict(orient="records"),
+    live_students     = live_students,
+    live_student_means= live_student_means,
+    live_pool_mean    = round(float(live_df["reaction_time_ms"].mean()), 2),
+    live_pool_sd      = round(float(live_df["reaction_time_ms"].std()), 2),
+    live_pool_n       = int(len(live_df)),
+    live_device_stats = live_device_stats,
+)
+```
+
+```{python}
+# ── The assumed DGP — anchored to the real class data, not a separate,
+# unrelated synthetic stand-in ────────────────────────────────────────────────
+# mu_pop / sd_pop are the mean and SD of the 15 (or however many) real
+# per-student averages shown on "What we measured in Week 1" — the exact
+# same numbers, so "the DGP we're assuming" slide actually matches the data
+# it claims to be assuming. Previously these were computed from an entirely
+# separate, independently-seeded synthetic simulation that had no connection
+# to live_df at all — hence the DGP table not matching the previous slide's
+# distribution, the two-sample comparison being 150 obs vs 15, and the
+# "does the formula match?" question not actually holding up when checked.
+N_TRIALS = 10
+N_SIMS   = 1000
+
+_student_mean_vals = np.array([d['mean_rt'] for d in live_student_means])
+mu_pop = float(_student_mean_vals.mean())
+sd_pop = float(_student_mean_vals.std(ddof=1))
+
+# Within-student trial noise and the implied between-student SD, both
+# estimated from the real data. Used only to regenerate a believable
+# trial-by-trial samples.csv for the Task below — everywhere else uses
+# mu_pop/sd_pop directly. Derived so that simulating (between-student noise)
+# + (within-student noise, averaged over N_TRIALS) reproduces sd_pop exactly:
+# between_sd^2 + within_sd^2/N_TRIALS = sd_pop^2.
+within_sd = float(
+    live_df.groupby("student_name")["reaction_time_ms"].std(ddof=1).mean()
+)
+between_sd = float(np.sqrt(max(sd_pop**2 - (within_sd**2 / N_TRIALS), 1.0)))
+
+# Fictional names for the *simulated* samples.csv, deliberately distinct from
+# live_students — these represent hypothetical new classes, not the real
+# students (and for the live deck, real students' names have no business in
+# a fake dataset). Cycled/suffixed so this always covers n_students, however
+# many that turns out to be.
+_name_pool = [
+    "Alice Johnson", "Ben Okafor",    "Chloe Martinez", "David Kim",
+    "Emma Thompson", "Faisal Rahman", "Grace Chen",     "Harry Patel",
+    "Isabel Santos", "Jack Williams", "Kezia Adeyemi",  "Liam O'Brien",
+    "Maya Singh",    "Noah Clarke",   "Priya Sharma",   "Oscar Bennett",
+    "Ravi Kapoor",   "Sofia Lindqvist", "Tariq Hassan",  "Uma Devi",
+]
+sim_student_names = [_name_pool[i % len(_name_pool)] +
+                      (f" {i // len(_name_pool) + 1}" if i >= len(_name_pool) else "")
+                      for i in range(n_students)]
+
+# ── One consistent simulation mechanism, used everywhere below: n iid draws
+# from Normal(mu_pop, sd_pop), averaged. Every empirical SE shown or computed
+# from here on equals sd_pop/sqrt(n) by construction — the same formula the
+# "standard error formula" slide states. ─────────────────────────────────────
+def simulate_means(n, reps):
+    return np.random.normal(mu_pop, sd_pop, (reps, n)).mean(axis=1)
+
+np.random.seed(7)
+sample_means = simulate_means(n_students, N_SIMS)   # 1,000 simulated class means
+running_mean = (np.cumsum(sample_means) / np.arange(1, N_SIMS + 1)).tolist()
+
+# One more simulated class, individual (unaveraged) values — for the
+# "second sample" comparison against live_student_means
+new_sample = np.random.normal(mu_pop, sd_pop, n_students).round(1)
+
+# Sampling distributions at three n values (CLT slide)
+np.random.seed(99)
+clt_n5  = simulate_means(5,  2000).round(1).tolist()
+clt_n15 = simulate_means(15, 2000).round(1).tolist()
+clt_n30 = simulate_means(30, 2000).round(1).tolist()
+
+# SE at increasing n (root-n slide)
+np.random.seed(13)
+se_rows = []
+for n in [5, 10, 15, 20, 30, 50, 100]:
+    obs_se = float(simulate_means(n, 3000).std())
+    se_rows.append({'n': n,
+                    'observed_se':    round(obs_se, 2),
+                    'theoretical_se': round(sd_pop / np.sqrt(n), 2)})
+
+# 100 confidence intervals (CI coverage slide)
+np.random.seed(77)
+ci_rows = []
+for i in range(100):
+    s  = np.random.normal(mu_pop, sd_pop, n_students)
+    m  = float(s.mean())
+    se = float(s.std() / np.sqrt(n_students))
+    ci_rows.append({
+        'i':      i,
+        'mean':   round(m, 1),
+        'lo95':   round(m - 1.96   * se, 1),
+        'hi95':   round(m + 1.96   * se, 1),
+        'lo99':   round(m - 2.576  * se, 1),
+        'hi99':   round(m + 2.576  * se, 1),
+        'covers': bool((m - 1.96 * se) <= mu_pop <= (m + 1.96 * se)),
+    })
+
+# ── Task dataset: N_SIMS simulated replays of a class like ours ─────────────
+# Columns: sample, student_name, trial, reaction_time. Each replay = n new
+# hypothetical students (true means drawn from Normal(mu_pop, between_sd)),
+# each doing N_TRIALS trials (drawn from Normal(their true mean, within_sd)).
+# By construction (see between_sd derivation above), a student correctly
+# averaging trials then averaging students recovers empirical SE ≈
+# sd_pop/sqrt(n) — this is what the later "does the formula match?" task
+# checks, and it now actually holds (verified against real output, not just
+# assumed).
+np.random.seed(99)
+task_rows = []
+for k in range(N_SIMS):
+    sim_true_means = np.random.normal(mu_pop, between_sd, n_students)
+    draws = np.array(
+        [np.random.normal(m, within_sd, N_TRIALS) for m in sim_true_means]
+    ).round(1)   # (n_students, N_TRIALS)
+    for i in range(n_students):
+        for j in range(N_TRIALS):
+            task_rows.append((k + 1, sim_student_names[i], j + 1, float(draws[i, j])))
+
+task_df = pd.DataFrame(task_rows, columns=['sample', 'student_name', 'trial', 'reaction_time'])
+task_df.to_csv('data/samples.csv', index=False)
+
+ojs_define(
+    mu_pop        = round(mu_pop, 1),
+    sd_pop        = round(sd_pop, 1),
+    n_sample      = n_students,
+    n_trials      = N_TRIALS,
+    n_sims        = N_SIMS,
+    new_sample    = new_sample.tolist(),
+    sample_means  = [round(x, 1) for x in sample_means.tolist()],
+    running_mean  = [round(x, 2) for x in running_mean],
+    clt_n5        = clt_n5,
+    clt_n15       = clt_n15,
+    clt_n30       = clt_n30,
+    se_data       = se_rows,
+    ci_data       = ci_rows,
+)
+```
+
+## {background-color="#1a1a2e"}
+
+::: {style="text-align: center; padding-top: 180px;"}
+[**How do we know a difference is real?**]{style="font-size: 2.2em; color: white;"}
+
+[Any sample varies by chance. Today we build the logic for telling a real difference from noise.]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+:::
+
+## Where we left things...
+
+::: {.instructions-box}
+Week 1 ended with a gap between phone and laptop users in our own data — one device looked faster than the other.
+
+```{ojs}
+{
+  const rows = live_device_stats
+  return html`<table style="width:75%;margin:14px auto 2px;border-collapse:collapse;font-family:sans-serif;font-size:0.9em;">
+    <thead><tr style="background:#1a1a2e;color:white;">
+      <th style="padding:7px 16px;text-align:left;">Device</th>
+      <th style="padding:7px 16px;text-align:right;">Mean reaction time (ms)</th>
+      <th style="padding:7px 16px;text-align:right;">n</th>
+    </tr></thead>
+    <tbody>
+      ${rows.map((r,i) => `<tr style="${i%2===1?'background:rgba(69,123,157,0.08);':''}border-bottom:1px solid #dde3ea;">
+        <td style="padding:6px 16px;">${r.device}</td>
+        <td style="padding:6px 16px;text-align:right;font-weight:700;color:#457b9d;">${r.mean.toFixed(1)}</td>
+        <td style="padding:6px 16px;text-align:right;">${r.n}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table>`
+}
+```
+:::
+
+::: {.fragment}
+**Is that difference real — or could it be chance?**
+
+If we repeated last week's trial again today, would the gap look the same? Bigger? Smaller? Could be the sign of the difference be reversed?
+
+Today is about understanding what we can say about this. 
+:::
+
+---
+
+## External validity
+
+Suppose we do establish that the gap in our data is real, not chance. **What exactly are we then entitled to say?**
+
+::: {.fragment}
+Only that it's real for *this* class, on *this* day, using *this* task — not, without more work, anything about phone and laptop users in general.
+:::
+
+::: {.fragment}
+That gap between what our data shows and what we'd like to claim is called **external validity**: whether the pattern in our data is the same as the general pattern we actually care about.
+:::
+
+::: {.fragment}
+**Question:** what do you think external validity means for our own reaction-time gap, specifically?
+:::
+
+---
+
+## Three threats to external validity
+
+Assessing whether our data represents the same general pattern we actually care about.
+
+- **Time** — we have data from the past (or this one session); we care about the future
+- **Space** — our data is one class, in one room, on one day; would the pattern hold elsewhere?
+- **Sub-groups** — our data is this cohort; would it hold for a different group of people?
+
+::: {style="font-size:0.75em;color:#999;margin-top:20px;"}
+Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Policy*, Ch. 5
+:::
+
+## Task — threats to our data
+
+::: {.instructions-box}
+Groups of 3–4, five minutes. Using **Time / Space / Sub-groups**, list the threats to external validity in the reaction-time data we collected.
+
+Be ready to present one threat per category to the room.
+:::
+
+<!-- ::: {.fragment} -->
+<!-- Example prompts: Would today's results hold during exam week? Would they hold for a different degree cohort? Would they hold if collected on paper instead of on a phone? -->
+<!-- ::: -->
+
+---
+
+## The sampling distribution
+
+---
+
+## One sample among many
+
+Our Week 1 data is **one** dataset — one of many that could have been collected. If we ran the exercise again tomorrow, we'd get different numbers, purely by chance.
+
+- Many possible datasets = repeated samples from the same underlying data generating process
+- A **statistic** computed from data (like the mean) therefore has its own distribution — its value differs from sample to sample. 
+  - Today's mean will differ from tomorrows. 
+- That distribution is called the statistic's **sampling distribution**, and it is a different object from the distribution of the variable itself 
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 5
+:::
+
+## Task — enumerate the pairs, by hand
+
+```{ojs}
+{
+  const shown = live_student_means.slice(0, 5)
+  if (shown.length < 2) return html`<p style="color:#aaa;">Need at least two students' data — check back once more of the class has submitted.</p>`
+  return html`<table style="width:60%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;">
+    <thead><tr style="background:#1a1a2e;color:white;">
+      <th style="padding:10px 20px;text-align:left;">Student</th>
+      <th style="padding:10px 20px;text-align:right;">Mean reaction time (ms)</th>
+    </tr></thead>
+    <tbody>
+      ${shown.map((r,i) => `<tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
+        <td style="padding:9px 20px;">${r.student_name}</td>
+        <td style="padding:9px 20px;text-align:right;font-weight:700;color:#457b9d;">${r.mean_rt}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table>`
+}
+```
+
+::: {.instructions-box}
+**Suppose these five students are the entire population we care about.** Their true average reaction time — averaged across all five — is the number we actually want to know. But in this task, we can only ever **sample two of them at a time**.
+
+On paper: write out **every possible pair**, and compute each pair's average.
+:::
+
+## The sampling distribution of the pair-averages
+
+```{ojs}
+{
+  const shown = live_student_means.slice(0, 5)
+  if (shown.length < 5) return html`<p style="color:#aaa;">Need five students' data — check back once more of the class has submitted.</p>`
+  const truth = d3.mean(shown, d => d.mean_rt)
+
+  const pairs = []
+  for (let i = 0; i < shown.length; i++)
+    for (let j = i + 1; j < shown.length; j++)
+      pairs.push({
+        pair: `${shown[i].student_name.split(' ')[0]} & ${shown[j].student_name.split(' ')[0]}`,
+        avg: (shown[i].mean_rt + shown[j].mean_rt) / 2,
+      })
+
+  const pad  = Math.max(10, (d3.max(pairs, d => d.avg) - d3.min(pairs, d => d.avg)) * 0.25)
+  const xmin = d3.min(pairs, d => d.avg) - pad
+  const xmax = d3.max(pairs, d => d.avg) + pad
+
+  return Plot.plot({
+    height: 300,
+    marginLeft: 55,
+    marginBottom: 40,
+    x: { label: "Pair average reaction time (ms)", domain: [xmin, xmax] },
+    y: { axis: null, domain: [-1, 1] },
+    marks: [
+      Plot.dot(pairs, { x: "avg", y: () => (Math.random() - 0.5) * 0.7,
+                        fill: "#457b9d", r: 7, fillOpacity: 0.8,
+                        tip: true, title: d => `${d.pair}: ${d.avg.toFixed(1)} ms` }),
+      Plot.ruleX([truth], { stroke: "#e63946", strokeWidth: 2.5, strokeDasharray: "6,4" }),
+      Plot.text([{ x: truth, label: `True mean of all 5 = ${truth.toFixed(1)} ms` }],
+                { x: "x", text: "label", dy: -110, fill: "#e63946", fontSize: 12 }),
+    ]
+  })
+}
+```
+
+::: {.fragment}
+Ten possible pairs, ten different averages — some closer to the true mean of all five, some further away. **That spread, from a sample of just two, is the sampling distribution in miniature.**
+:::
+
+---
+
+## What we measured in Week 1
+
+```{ojs}
+{
+  const vals  = live_student_means.map(d => d.mean_rt)
+  const mu    = d3.mean(vals)
+  const sigma = d3.deviation(vals)
+  const pad   = Math.max(10, Math.round((d3.max(vals) - d3.min(vals)) * 0.12))
+  const xmin  = Math.floor((d3.min(vals) - pad) / 10) * 10
+  const xmax  = Math.ceil( (d3.max(vals) + pad) / 10) * 10
+  const bw    = 15
+
+  // Fitted normal curve
+  const curve = d3.range(xmin, xmax, 2).map(x => ({
+    x,
+    y: (vals.length * bw) * (1 / (sigma * Math.sqrt(2 * Math.PI))) *
+       Math.exp(-0.5 * ((x - mu) / sigma) ** 2)
+  }))
+
+  return Plot.plot({
+    height: 340,
+    marginLeft: 55,
+    marginBottom: 36,
+    x: { label: "Student average reaction time (ms)", domain: [xmin, xmax] },
+    y: { label: "Count" },
+    marks: [
+      Plot.rectY(vals.map(v => ({x: v})),
+        Plot.binX({ y: "count" },
+          { x: "x", thresholds: d3.range(xmin, xmax + bw, bw),
+            fill: "#457b9d", fillOpacity: 0.65 })),
+      Plot.line(curve, { x: "x", y: "y", stroke: "#e63946", strokeWidth: 2.5 }),
+      Plot.ruleX([mu], { stroke: "#e63946", strokeWidth: 2, strokeDasharray: "5,4" }),
+      Plot.ruleX([mu - sigma], { stroke: "#e63946", strokeWidth: 1, strokeDasharray: "3,4", strokeOpacity: 0.6 }),
+      Plot.ruleX([mu + sigma], { stroke: "#e63946", strokeWidth: 1, strokeDasharray: "3,4", strokeOpacity: 0.6 }),
+      Plot.ruleX([0]),
+      Plot.text([
+        { x: mu,         label: `μ = ${mu.toFixed(1)} ms`     },
+        { x: mu - sigma, label: `μ − σ`                    },
+        { x: mu + sigma, label: `μ + σ`                    },
+      ], { x: "x", text: "label", dy: -14, fill: "#e63946", fontSize: 11 }),
+    ]
+  })
+}
+```
+
+::: {.fragment}
+Each point is one student's own average, from the pairs we were just building by hand — now for the whole class. The red curve is a **Normal(μ, σ)** fitted to it. This is our assumed **data-generating process (DGP)**.
+
+We can now use Python to pretend that we've run last week's test many times, each time drawing a new class from the same distribution.
+:::
+
+---
+
+## The DGP — what we are assuming
+
+```{ojs}
+html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;font-family:sans-serif;">
+
+  <div style="background:#f8f8fa;border-radius:10px;padding:22px 26px;border-left:5px solid #e63946;">
+    <p style="font-weight:700;font-size:1em;margin-bottom:14px;color:#1a1a2e;">DGP parameters (from Week 1)</p>
+    <table style="width:100%;border-collapse:collapse;font-size:0.92em;">
+      <tr style="border-bottom:1px solid #eee;">
+        <td style="padding:8px 0;color:#666;">Distribution</td>
+        <td style="padding:8px 0;font-weight:700;text-align:right;">Normal</td>
+      </tr>
+      <tr style="border-bottom:1px solid #eee;">
+        <td style="padding:8px 0;color:#666;">True mean &nbsp;<em>μ</em></td>
+        <td style="padding:8px 0;font-weight:700;text-align:right;color:#e63946;">${mu_pop} ms</td>
+      </tr>
+      <tr style="border-bottom:1px solid #eee;">
+        <td style="padding:8px 0;color:#666;">True SD &nbsp;<em>σ</em></td>
+        <td style="padding:8px 0;font-weight:700;text-align:right;color:#e63946;">${sd_pop} ms</td>
+      </tr>
+      <tr style="border-bottom:1px solid #eee;">
+        <td style="padding:8px 0;color:#666;">Sample size &nbsp;<em>n</em></td>
+        <td style="padding:8px 0;font-weight:700;text-align:right;">${n_sample} students</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 0;color:#666;">Predicted SE &nbsp;<em>σ/√n</em></td>
+        <td style="padding:8px 0;font-weight:700;text-align:right;color:#457b9d;">${(sd_pop / Math.sqrt(n_sample)).toFixed(1)} ms</td>
+      </tr>
+    </table>
+  </div>
+
+  <div style="background:#f8f8fa;border-radius:10px;padding:22px 26px;border-left:5px solid #457b9d;">
+    <p style="font-weight:700;font-size:1em;margin-bottom:14px;color:#1a1a2e;">What the simulation does</p>
+    <ol style="font-size:0.88em;line-height:2;color:#444;padding-left:18px;">
+      <li>Draw <em>n</em> = ${n_sample} values from Normal(${mu_pop}, ${sd_pop})</li>
+      <li>Compute the sample mean</li>
+      <li>Repeat 1,000 times</li>
+      <li>Plot the distribution of those 1,000 means</li>
+    </ol>
+    <p style="font-size:0.82em;color:#888;margin-top:14px;font-style:italic;">
+      Each repetition = a hypothetical new class of ${n_sample} students running the same experiment.
+      The true μ and σ are <strong>fixed and known</strong> — in the real world they are not.
+      That is exactly why this exercise is useful.
+    </p>
+  </div>
+
+</div>`
+```
+
+---
+
+## A second sample from the same DGP
+
+```{ojs}
+{
+  const w1   = live_student_means.map(d => d.mean_rt)
+  const w2   = new_sample
+  const both = [...w1, ...w2]
+  const pad  = Math.max(10, Math.round((d3.max(both) - d3.min(both)) * 0.12))
+  const xmin = Math.floor((d3.min(both) - pad) / 10) * 10
+  const xmax = Math.ceil( (d3.max(both) + pad) / 10) * 10
+  const bw   = 15
+
+  const panel = (vals, colour, label) => [
+    Plot.rectY(vals.map(v => ({x: v})),
+      Plot.binX({ y: "count" },
+        { x: "x", thresholds: d3.range(xmin, xmax + bw, bw),
+          fill: colour, fillOpacity: 0.7, fy: () => label })),
+    Plot.ruleX([d3.mean(vals)], { stroke: colour, strokeWidth: 2.5,
+                                   strokeDasharray: "6,4", fy: () => label }),
+  ]
+
+  return Plot.plot({
+    height: 360,
+    marginLeft: 80,
+    marginRight: 90,
+    marginBottom: 36,
+    fy: { label: null },
+    x: { label: "Student average reaction time (ms)", domain: [xmin, xmax] },
+    y: { label: "Count" },
+    marks: [
+      ...panel(w1, "#457b9d", "Week 1 class"),
+      ...panel(w2, "#2d6a4f", "Simulated sample 2"),
+      Plot.ruleX([0]),
+    ]
+  })
+}
+```
+
+::: {.fragment}
+Same *n* both times — a real class of ${n_sample}, and a simulated class of ${n_sample} — so the two panels are directly comparable.
+:::
+
+```{ojs}
+html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;font-family:sans-serif;font-size:0.88em;margin-top:4px;">
+  ${[["Week 1 class", live_student_means.map(d => d.mean_rt), "#457b9d"], ["Sample 2", new_sample, "#2d6a4f"]].map(([label, vals, col]) => {
+    const sorted = [...vals].sort((a,b)=>a-b)
+    return `<div style="background:#f8f8fa;border-radius:8px;padding:12px 18px;border-left:4px solid ${col};">
+      <strong style="color:${col};">${label}</strong>
+      <table style="width:100%;margin-top:8px;border-collapse:collapse;">
+        <tr><td style="color:#666;padding:3px 0;">Mean</td><td style="font-weight:700;text-align:right;">${d3.mean(vals).toFixed(1)} ms</td></tr>
+        <tr><td style="color:#666;padding:3px 0;">SD</td><td style="font-weight:700;text-align:right;">${d3.deviation(vals).toFixed(1)} ms</td></tr>
+        <tr><td style="color:#666;padding:3px 0;">Min</td><td style="font-weight:700;text-align:right;">${d3.min(vals).toFixed(0)} ms</td></tr>
+        <tr><td style="color:#666;padding:3px 0;">Max</td><td style="font-weight:700;text-align:right;">${d3.max(vals).toFixed(0)} ms</td></tr>
+      </table>
+    </div>`
+  }).join('')}
+</div>`
+```
+
+---
+
+## Task
+
+::: {.instructions-box}
+```{ojs}
+{
+  const total = (n_sims * n_sample * n_trials).toLocaleString()
+  return html`<p>Download <strong>samples.csv</strong> — ${n_sims} <em>simulated</em> replays of a class like ours, not our actual Week 1 results. Same structure (a class doing the reaction-time trial), regenerated ${n_sims} times.</p>
+<p>The file has ${total} rows and four columns: <code>sample</code> (1&ndash;${n_sims}), <code>student_name</code>, <code>trial</code> (1&ndash;${n_trials}), <code>reaction_time</code>.
+Each sample is one simulated class: ${n_sample} students &times; ${n_trials} trials.</p>
+<ol style="padding-left:22px;">
+<li value="0"><strong>First, check the data</strong>: does the file actually have ${total} rows and those four columns? Do sample IDs run 1&ndash;${n_sims}, with no gaps or duplicates? Any missing values? Don't analyse data you haven't checked.</li>
+<li>For <strong>sample 1</strong> only: compute the <strong>mean reaction time for each student</strong> &mdash; you now have ${n_sample} values. Plot a histogram.</li>
+<li>Repeat for samples 1&ndash;10, then 1&ndash;100, then all ${n_sims}. Produce histograms for each iteration.</li>
+<li>What is the mean of those student means? What is the standard deviation?</li>
+<li>You are not plotting raw reaction times. What are you plotting the distribution <em>of</em>?</li>
+</ol>`
+}
+```
+:::
+
+## The standard error
+::: {.callout-note}
+The standard deviation of the sample means has a name: the **standard error**.
+What happens to it as the number of samples grows? What does it converge to?
+:::
+
+---
+
+## 1,000 samples from the same DGP
+
+Drag the slider to simulate more classes, all drawn from the same DGP as Week 1's — the same thing you just built by hand, now for every sample at once.
+
+```{ojs}
+viewof n_shown = {
+  const f = html`<div style="display:flex;align-items:center;gap:14px;font-size:13px;
+                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;">
+    <span style="color:#666;white-space:nowrap;">Samples shown</span>
+    <input type="range" min="10" max="1000" step="10" value="10"
+           style="width:160px;cursor:pointer;accent-color:#2d6a4f;">
+    <span id="ns-label" style="font-weight:700;min-width:40px;color:#2d6a4f;">10</span>
+  </div>`
+  const slider = f.querySelector('input')
+  const label  = f.querySelector('#ns-label')
+  slider.addEventListener('input', () => {
+    label.textContent = slider.value
+    f.dispatchEvent(new CustomEvent('input'))
+  })
+  Object.defineProperty(f, 'value', { get: () => +slider.value })
+  return f
+}
+```
+
+```{ojs}
+{
+  const shown  = sample_means.slice(0, n_shown)
+  const mu_sm  = d3.mean(shown)
+  const sd_sm  = d3.deviation(shown)
+  const pad    = Math.max(5, Math.round((d3.max(shown) - d3.min(shown)) * 0.1))
+  const xmin   = Math.floor((d3.min(shown) - pad) / 5) * 5
+  const xmax   = Math.ceil( (d3.max(shown) + pad) / 5) * 5
+  const bw     = Math.max(5, Math.round((xmax - xmin) / 20))
+
+  return Plot.plot({
+    height: 310,
+    marginLeft: 60,
+    marginBottom: 36,
+    x: { label: "Sample mean reaction time (ms)", domain: [xmin, xmax] },
+    y: { label: "Count" },
+    marks: [
+      Plot.rectY(shown.map(v => ({x: v})),
+        Plot.binX({ y: "count" },
+          { x: "x", thresholds: d3.range(xmin, xmax + bw, bw),
+            fill: "#2d6a4f", fillOpacity: 0.75 })),
+      Plot.ruleX([0]),
+      Plot.ruleX([mu_sm], { stroke: "#e63946", strokeWidth: 2.5, strokeDasharray: "6,4",
+                            tip: true, title: () => `Mean of means: ${mu_sm.toFixed(1)} ms` }),
+      Plot.ruleX([mu_pop], { stroke: "#1a1a2e", strokeWidth: 1.5, strokeDasharray: "3,3" }),
+      Plot.text([{ x: mu_pop, label: `True μ` }],
+                { x: "x", text: "label", dy: -14, fill: "#1a1a2e", fontSize: 11 }),
+    ]
+  })
+}
+```
+
+---
+
+## 1. Unbiasedness
+
+**The mean of the sampling distribution equals the true population mean.**
+
+```{ojs}
+{
+  const n_pts = Math.min(running_mean.length, 1000)
+  const pts   = running_mean.slice(0, n_pts).map((y, i) => ({ x: i + 1, y }))
+
+  return Plot.plot({
+    height: 360,
+    marginLeft: 70,
+    marginBottom: 36,
+    x: { label: "Number of samples", type: "log" },
+    y: { label: "Running mean of sample means (ms)",
+         domain: [mu_pop - sd_pop * 0.6, mu_pop + sd_pop * 0.6] },
+    marks: [
+      Plot.line(pts, { x: "x", y: "y", stroke: "#457b9d", strokeWidth: 2 }),
+      Plot.ruleY([mu_pop], { stroke: "#e63946", strokeWidth: 2, strokeDasharray: "6,4" }),
+      Plot.text([{ x: 2, y: mu_pop, label: `True μ = ${mu_pop} ms` }],
+                { x: "x", y: "y", text: "label", dy: -12, textAnchor: "start",
+                  fill: "#e63946", fontSize: 12, fontWeight: 700 }),
+    ]
+  })
+}
+```
+
+::: {.fragment}
+**Law of Large Numbers:** as the number of independent draws increases, the sample mean converges to the true mean.
+An estimator whose expected value equals the true parameter is called **unbiased**.
+:::
+
+---
+
+## 2. Asymptotic normality
+
+**The sampling distribution of the mean approaches normal as sample size grows — regardless of the shape of the population.**
+
+```{ojs}
+{
+  const panels = [
+    { label: "n = 5",  vals: clt_n5  },
+    { label: "n = 15", vals: clt_n15 },
+    { label: "n = 30", vals: clt_n30 },
+  ]
+
+  const all  = [...clt_n5, ...clt_n15, ...clt_n30]
+  const xmin = Math.floor((d3.min(all) - 5) / 10) * 10
+  const xmax = Math.ceil( (d3.max(all) + 5) / 10) * 10
+  const bw   = 8
+
+  // Normal curve overlay
+  function normalCurve(vals, n, bw) {
+    const mu  = d3.mean(vals)
+    const sig = d3.deviation(vals)
+    return d3.range(xmin, xmax, 2).map(x => ({
+      x,
+      y: (vals.length * bw) * (1 / (sig * Math.sqrt(2 * Math.PI))) *
+         Math.exp(-0.5 * ((x - mu) / sig) ** 2),
+      label: `n = ${n}`
+    }))
+  }
+
+  return Plot.plot({
+    height: 340,
+    marginLeft: 60,
+    marginBottom: 36,
+    fx: { label: null, padding: 0.1, domain: panels.map(p => p.label) },
+    x:  { label: "Sample mean (ms)", domain: [xmin, xmax] },
+    y:  { label: "Count" },
+    marks: panels.flatMap(({ label, vals }) => [
+      Plot.rectY(vals.map(v => ({ x: v, fx: label })),
+        Plot.binX({ y: "count" },
+          { x: "x", thresholds: d3.range(xmin, xmax + bw, bw),
+            fill: "#2d6a4f", fillOpacity: 0.6, fx: "fx" })),
+      Plot.line(normalCurve(vals, label, bw),
+        { x: "x", y: "y", fx: () => label,
+          stroke: "#e63946", strokeWidth: 2 }),
+      Plot.ruleX([0]),
+    ])
+  })
+}
+```
+
+::: {.fragment}
+**Central Limit Theorem:** for large enough *n*, the sampling distribution of the mean is approximately Normal(μ, σ²/n), regardless of the population's shape. This is why the normal distribution is everywhere.
+:::
+
+---
+
+## 3. Root-*n* convergence
+
+**The standard error shrinks as sample size grows — proportionally to √n.**
+
+```{ojs}
+{
+  const colour = "#457b9d"
+  const xmax   = d3.max(se_data, d => d.n) * 1.05
+
+  return Plot.plot({
+    height: 340,
+    marginLeft: 65,
+    marginBottom: 40,
+    x: { label: "Sample size (n)", domain: [0, xmax] },
+    y: { label: "Standard error (ms)", domain: [0, d3.max(se_data, d => d.observed_se) * 1.15] },
+    marks: [
+      // Theoretical SE = σ/√n as a smooth curve
+      Plot.line(
+        d3.range(2, 110, 1).map(n => ({ n, se: sd_pop / Math.sqrt(n) })),
+        { x: "n", y: "se", stroke: "#e63946", strokeWidth: 2,
+          strokeDasharray: "6,4" }
+      ),
+      // Observed SE dots
+      Plot.dot(se_data, { x: "n", y: "observed_se", fill: colour, r: 7,
+                           tip: true, title: d =>
+                             `n = ${d.n}\nObserved SE: ${d.observed_se} ms\nσ/√n: ${d.theoretical_se} ms` }),
+      Plot.text([{ n: 105, se: sd_pop / Math.sqrt(100) + 3, label: "σ / √n" }],
+                { x: "n", y: "se", text: "label", fill: "#e63946", fontSize: 12 }),
+    ]
+  })
+}
+```
+
+::: {.fragment}
+SE = σ / √n. To **halve** the standard error, you need to **quadruple** the sample size. Precision is expensive.
+:::
+
+---
+
+
+
+
+
+
+
+---
+
+## Estimating uncertainty from real data
+
+---
+
+## But we don't actually know the DGP
+
+Everything so far assumed a known population — Normal(μ, σ) — so we could watch 1,000 simulated samples land around the *true* value.
+
+::: {.fragment}
+In reality, we have **one dataset**: the reaction-time data collected last week. No known μ, no known σ, no ability to simulate 1,000 more classes.
+
+**Two ways forward:** a formula, or a computational trick called the bootstrap.
+:::
+
+## The standard error formula
+
+$$SE(\bar{x}) = \frac{1}{\sqrt{n}} \, SD[x]$$
+
+- Larger when the data is more spread out (`SD[x]` larger)
+- Smaller when the sample is bigger (`n` larger)
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 5
+:::
+
+## Task — does the formula match?
+
+::: {.instructions-box}
+```{ojs}
+{
+  return html`<p>Go back to the standard error you calculated earlier from <strong>samples.csv</strong> — the SD of your ${n_sims} sample means.</p>
+<p>Now use the formula above with the numbers from "The DGP &mdash; what we are assuming": <em>σ</em> = ${sd_pop} ms, <em>n</em> = ${n_sample}.</p>
+<ol style="padding-left:22px;">
+<li>Calculate SE = σ / √n by hand.</li>
+<li>Compare it to the SD you calculated from samples.csv. How close are they?</li>
+<li>Should they match exactly, or only approximately &mdash; and why?</li>
+</ol>`
+}
+```
+:::
+
+::: {.fragment}
+```{ojs}
+html`<p>They should agree closely: σ / √n = ${sd_pop} / √${n_sample} = <strong style="color:#457b9d;">${(sd_pop / Math.sqrt(n_sample)).toFixed(1)} ms</strong> here. Small differences are simulation noise — the formula is genuinely giving the same answer as the resampled data, not a coincidence.</p>`
+```
+:::
+
+## The bootstrap idea
+
+- Take the original dataset and draw repeated samples **from it**, with **replacement**
+- Each draw can be picked more than once; some observations won't be picked at all
+- Compute the statistic (e.g. the mean) on each resample
+- The spread of those resampled statistics approximates the sampling distribution — **without ever needing to know the true DGP**
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 5
+:::
+
+## Bootstrap samples
+
+```{=html}
+<svg viewBox="0 0 1120 440" width="100%" style="max-height:480px;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#888"/>
+    </marker>
+  </defs>
+
+  <!-- Column headers -->
+  <text x="100"  y="24" font-size="15" font-weight="700" fill="#1a1a2e" text-anchor="middle">Original sample</text>
+  <text x="480"  y="24" font-size="15" font-weight="700" fill="#1a1a2e" text-anchor="middle">Bootstrap samples</text>
+  <text x="845"  y="24" font-size="15" font-weight="700" fill="#1a1a2e" text-anchor="middle">Bootstrap statistics</text>
+
+  <!-- Column 1: original sample -->
+  <rect x="45" y="40" width="110" height="320" rx="10" fill="none" stroke="#1a1a2e" stroke-width="1.5"/>
+  <g font-family="sans-serif" font-size="13" fill="white" text-anchor="middle">
+    <circle cx="100" cy="70"  r="17" fill="#457b9d"/><text x="100" y="75">1</text>
+    <circle cx="100" cy="115" r="17" fill="#457b9d"/><text x="100" y="120">2</text>
+    <circle cx="100" cy="160" r="17" fill="#457b9d"/><text x="100" y="165">3</text>
+    <circle cx="100" cy="205" r="17" fill="#457b9d"/><text x="100" y="210">4</text>
+    <circle cx="100" cy="250" r="17" fill="#457b9d"/><text x="100" y="255">5</text>
+    <circle cx="100" cy="295" r="17" fill="#457b9d"/><text x="100" y="300">6</text>
+  </g>
+  <rect x="35" y="385" width="130" height="42" rx="6" fill="none" stroke="#1a1a2e" stroke-width="1.5"/>
+  <text x="100" y="410" font-size="12" font-family="sans-serif" text-anchor="middle" fill="#1a1a2e">Statistic from original</text>
+  <line x1="100" y1="360" x2="100" y2="385" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Resample rows: [values with replacement — repeats and omissions built in] -->
+  <!-- Row 1: 3,1,6,3,4,2  (3 repeated, 5 omitted) -->
+  <!-- Row 2: 2,5,5,1,3,6  (5 repeated, 4 omitted) -->
+  <!-- Row 3: 4,4,6,2,1,4  (4 repeated x3, 3 & 5 omitted) -->
+  <g font-family="sans-serif" font-size="16" font-weight="700" fill="#1a1a2e">
+    <text x="480" y="65"  text-anchor="middle">Sample 1</text>
+    <text x="480" y="205" text-anchor="middle">Sample 2</text>
+    <text x="480" y="345" text-anchor="middle">Sample 3</text>
+  </g>
+
+  <!-- Row 1 -->
+  <rect x="280" y="75" width="400" height="60" rx="10" fill="#f4f6f5" stroke="#2d6a4f" stroke-width="1.5" stroke-dasharray="5,4"/>
+  <g font-family="sans-serif" font-size="13" fill="white" text-anchor="middle">
+    <circle cx="320" cy="105" r="17" fill="#2d6a4f"/><text x="320" y="110">3</text>
+    <circle cx="380" cy="105" r="17" fill="#2d6a4f"/><text x="380" y="110">1</text>
+    <circle cx="440" cy="105" r="17" fill="#2d6a4f"/><text x="440" y="110">6</text>
+    <circle cx="500" cy="105" r="17" fill="#2d6a4f"/><text x="500" y="110">3</text>
+    <circle cx="560" cy="105" r="17" fill="#2d6a4f"/><text x="560" y="110">4</text>
+    <circle cx="620" cy="105" r="17" fill="#2d6a4f"/><text x="620" y="110">2</text>
+  </g>
+
+  <!-- Row 2 -->
+  <rect x="280" y="215" width="400" height="60" rx="10" fill="#f4f6f5" stroke="#2d6a4f" stroke-width="1.5" stroke-dasharray="5,4"/>
+  <g font-family="sans-serif" font-size="13" fill="white" text-anchor="middle">
+    <circle cx="320" cy="245" r="17" fill="#2d6a4f"/><text x="320" y="250">2</text>
+    <circle cx="380" cy="245" r="17" fill="#2d6a4f"/><text x="380" y="250">5</text>
+    <circle cx="440" cy="245" r="17" fill="#2d6a4f"/><text x="440" y="250">5</text>
+    <circle cx="500" cy="245" r="17" fill="#2d6a4f"/><text x="500" y="250">1</text>
+    <circle cx="560" cy="245" r="17" fill="#2d6a4f"/><text x="560" y="250">3</text>
+    <circle cx="620" cy="245" r="17" fill="#2d6a4f"/><text x="620" y="250">6</text>
+  </g>
+
+  <!-- Row 3 -->
+  <rect x="280" y="355" width="400" height="60" rx="10" fill="#f4f6f5" stroke="#2d6a4f" stroke-width="1.5" stroke-dasharray="5,4"/>
+  <g font-family="sans-serif" font-size="13" fill="white" text-anchor="middle">
+    <circle cx="320" cy="385" r="17" fill="#2d6a4f"/><text x="320" y="390">4</text>
+    <circle cx="380" cy="385" r="17" fill="#2d6a4f"/><text x="380" y="390">4</text>
+    <circle cx="440" cy="385" r="17" fill="#2d6a4f"/><text x="440" y="390">6</text>
+    <circle cx="500" cy="385" r="17" fill="#2d6a4f"/><text x="500" y="390">2</text>
+    <circle cx="560" cy="385" r="17" fill="#2d6a4f"/><text x="560" y="390">1</text>
+    <circle cx="620" cy="385" r="17" fill="#2d6a4f"/><text x="620" y="390">4</text>
+  </g>
+
+  <!-- Arrows: original -> each resample row -->
+  <line x1="160" y1="105" x2="270" y2="105" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="160" y1="160" x2="270" y2="245" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="160" y1="215" x2="270" y2="385" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Arrows: each resample row -> its statistic box -->
+  <line x1="685" y1="105" x2="750" y2="105" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="685" y1="245" x2="750" y2="245" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="685" y1="385" x2="750" y2="385" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Column 3: statistic boxes -->
+  <rect x="755" y="80"  width="175" height="50" rx="8" fill="#fdf3e8" stroke="#f4a261" stroke-width="1.5" stroke-dasharray="5,4"/>
+  <text x="842" y="110" font-size="13" font-family="sans-serif" text-anchor="middle" fill="#1a1a2e">Sample statistic 1</text>
+  <rect x="755" y="220" width="175" height="50" rx="8" fill="#fdf3e8" stroke="#f4a261" stroke-width="1.5" stroke-dasharray="5,4"/>
+  <text x="842" y="250" font-size="13" font-family="sans-serif" text-anchor="middle" fill="#1a1a2e">Sample statistic 2</text>
+  <rect x="755" y="360" width="175" height="50" rx="8" fill="#fdf3e8" stroke="#f4a261" stroke-width="1.5" stroke-dasharray="5,4"/>
+  <text x="842" y="390" font-size="13" font-family="sans-serif" text-anchor="middle" fill="#1a1a2e">Sample statistic 3</text>
+
+  <!-- Arrows converging into bootstrap distribution -->
+  <line x1="930" y1="105" x2="1005" y2="230" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="930" y1="245" x2="1005" y2="245" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="930" y1="385" x2="1005" y2="260" stroke="#888" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Column 4: bootstrap distribution -->
+  <rect x="1010" y="180" width="105" height="130" rx="10" fill="#fdecee" stroke="#e63946" stroke-width="2"/>
+  <text x="1062" y="235" font-size="13" font-weight="700" font-family="sans-serif" text-anchor="middle" fill="#1a1a2e">Bootstrap</text>
+  <text x="1062" y="253" font-size="13" font-weight="700" font-family="sans-serif" text-anchor="middle" fill="#1a1a2e">distribution</text>
+  <text x="1062" y="271" font-size="13" font-family="sans-serif" text-anchor="middle" fill="#1a1a2e">of statistic</text>
+</svg>
+```
+
+::: {style="font-size:0.85em;color:#555;margin-top:8px;"}
+Three resamples drawn **with replacement** from the same original sample of 6 — notice item 4 appears three times in Sample 3, while items 3 and 5 never get drawn there at all. The spread across the resulting statistics **is** the bootstrap's estimate of the sampling distribution.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:4px;"}
+Source: Békés & Kézdi (2021), Ch. 5 — recreated schematically (after Fig. 5.4, "Bootstrap samples")
+:::
+
+## Bootstrapping our own data
+
+```{ojs}
+viewof boot_controls = {
+  const f = html`<div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;
+                              font-size:13px;font-family:'Helvetica Neue',sans-serif;
+                              padding:6px 2px;color:#333;">
+    <label style="display:flex;align-items:center;gap:8px;">
+      <span style="color:#666;white-space:nowrap;">Sample size (n)</span>
+      <input type="range" name="n" min="5" max="${Math.max(5, live_pool_n)}" step="5"
+             value="${Math.max(5, live_pool_n)}"
+             style="width:110px;cursor:pointer;accent-color:#457b9d;">
+      <span id="n-label" style="font-weight:600;min-width:34px;color:#457b9d;">${Math.max(5, live_pool_n)}</span>
+    </label>
+    <label style="display:flex;align-items:center;gap:8px;">
+      <span style="color:#2d6a4f;white-space:nowrap;">Resamples (B)</span>
+      <input type="range" name="B" min="10" max="2000" step="10" value="10"
+             style="width:110px;cursor:pointer;accent-color:#2d6a4f;">
+      <span id="B-label" style="font-weight:600;min-width:44px;color:#2d6a4f;">10</span>
+    </label>
+  </div>`
+  const nRange = f.querySelector('[name=n]')
+  const nLabel = f.querySelector('#n-label')
+  const bRange = f.querySelector('[name=B]')
+  const bLabel = f.querySelector('#B-label')
+  nRange.addEventListener('input', () => { nLabel.textContent = nRange.value; f.dispatchEvent(new CustomEvent('input')) })
+  bRange.addEventListener('input', () => { bLabel.textContent = bRange.value; f.dispatchEvent(new CustomEvent('input')) })
+  Object.defineProperty(f, 'value', { get() { return { n: +nRange.value, B: +bRange.value } } })
+  return f
+}
+```
+
+```{ojs}
+{
+  const vals = live_data.map(d => d.reaction_time_ms)
+  if (vals.length < 2) return html`<p style="color:#aaa;">Not enough data yet.</p>`
+  const n = Math.min(boot_controls.n, vals.length)
+  const B = boot_controls.B
+  const means = []
+  for (let b = 0; b < B; b++) {
+    let sum = 0
+    for (let i = 0; i < n; i++) sum += vals[Math.floor(Math.random() * vals.length)]
+    means.push(sum / n)
+  }
+  const mu = d3.mean(means)
+  const se = d3.deviation(means)
+  const pad = Math.max(10, (d3.max(means) - d3.min(means)) * 0.15)
+  const xmin = d3.min(means) - pad
+  const xmax = d3.max(means) + pad
+
+  return Plot.plot({
+    height: 300,
+    marginLeft: 55,
+    marginBottom: 36,
+    x: { label: "Bootstrap sample mean (ms)", domain: [xmin, xmax] },
+    y: { label: "Count" },
+    marks: [
+      Plot.rectY(means, Plot.binX({ y: "count" }, { x: d => d, thresholds: 30, fill: "#457b9d", fillOpacity: 0.75 })),
+      Plot.ruleX([0]),
+      Plot.ruleX([live_pool_mean], { stroke: "#e63946", strokeWidth: 2.5, strokeDasharray: "6,4",
+                                      tip: true, title: () => `Original sample mean: ${live_pool_mean} ms` }),
+      Plot.text([{ x: xmax, y: 0, label: `bootstrap mean = ${mu.toFixed(1)} · bootstrap SE = ${se.toFixed(1)}` }],
+                { x: "x", text: "label", frameAnchor: "top-right", dy: 10, fill: "#333", fontSize: 12 }),
+    ]
+  })
+}
+```
+
+## What is a confidence interval?
+
+A **confidence interval (CI)** is a range where we expect the true value — in the population, or general pattern, that our data represents — to fall, with a probability we choose. Analysts typically pick 95%, sometimes 90% or 99%.
+
+::: {.fragment}
+**From the perspective of a single sample:** there is a 95% chance that the true value lies within *this* interval — and a 5% chance it doesn't. We don't know - we can't know - which case we're in.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 5
+:::
+
+## Building the interval
+
+A CI is a **symmetric range around the estimated value**, built from the SE:
+
+$$CI = \text{statistic} \; \pm \; (\text{critical value} \times SE)$$
+
+| Confidence level | Critical value |
+|---|---|
+| 90% | 1.6 × SE |
+| 95% | 2 × SE |
+| 99% | 2.6 × SE |
+
+::: {.fragment}
+Wider interval → more confident it contains the truth, but less precise about where. There's no free lunch: more confidence costs precision.
+:::
+
+## Confidence intervals
+
+Does that 95% promise actually hold? Let's check: simulate 100 samples from the same DGP, build a 95% CI from each one the way we just described, and see how many actually contain the true mean.
+
+**95% of intervals constructed this way will contain the true mean.**
+
+```{ojs}
+{
+  const data95  = ci_data
+  const covers  = data95.filter(d => d.covers).length
+  const colours = { true: "#2a6f97", false: "#e07a3f" }
+
+  return Plot.plot({
+    height: 420,
+    marginLeft: 40,
+    marginRight: 10,
+    marginBottom: 36,
+    x: { label: "Reaction time (ms)",
+         domain: [d3.min(data95, d => d.lo95) - 5,
+                  d3.max(data95, d => d.hi95) + 5] },
+    y: { axis: null, domain: [-1, 100] },
+    marks: [
+      // CI lines — sorted so the misses (rarer, more important) draw on top
+      Plot.ruleY(data95.slice().sort((a, b) => a.covers - b.covers), {
+        y: "i", x1: "lo95", x2: "hi95",
+        stroke: d => colours[d.covers],
+        strokeWidth: 3, strokeOpacity: 0.85
+      }),
+      // Mean dots — white ring so they read as a distinct point on top of the CI line
+      Plot.dot(data95, {
+        x: "mean", y: "i",
+        fill: d => colours[d.covers], r: 3.5,
+        stroke: "white", strokeWidth: 1
+      }),
+      // True mean
+      Plot.ruleX([mu_pop], { stroke: "#1a1a2e", strokeWidth: 2 }),
+      Plot.text([{ x: mu_pop, y: -0.5, label: `True μ = ${mu_pop}` }],
+                { x: "x", y: "y", text: "label", dy: 0, fill: "#1a1a2e",
+                  fontSize: 11, textAnchor: "middle" }),
+    ]
+  })
+}
+```
+
+```{ojs}
+html`<div style="display:flex;gap:28px;font-family:sans-serif;font-size:0.88em;margin-top:4px;">
+  <span style="color:#2a6f97;font-weight:700;">■ Contains true μ: ${ci_data.filter(d=>d.covers).length} / 100</span>
+  <span style="color:#e07a3f;font-weight:700;">■ Misses true μ: ${ci_data.filter(d=>!d.covers).length} / 100</span>
+  <span style="color:#555;">95% CI = x̄ ± 1.96 × SE &nbsp;|&nbsp; 99% CI = x̄ ± 2.576 × SE</span>
+</div>`
+```
+
+## Task — calculate our CI
+
+::: {.instructions-box}
+Using our own **raw** Week 1 reaction-time data (not a number we hand you): find the **mean**, **SD**, and **n** yourself, then use them to calculate **SE(x̄)** and the **95% CI** for mean reaction time. By hand, in Excel, or in Python.
+:::
+
+::: {.fragment}
+```{ojs}
+html`<p style="font-family:sans-serif;">You should have found: mean = <strong style="color:#457b9d;">${live_pool_mean} ms</strong>,
+   SD = <strong style="color:#457b9d;">${live_pool_sd} ms</strong>, n = <strong style="color:#457b9d;">${live_pool_n}</strong></p>`
+```
+:::
+
+::: {.fragment}
+```{ojs}
+{
+  const se = live_pool_sd / Math.sqrt(live_pool_n)
+  const lo = (live_pool_mean - 2*se).toFixed(1)
+  const hi = (live_pool_mean + 2*se).toFixed(1)
+  return html`<p style="font-family:sans-serif;">SE = ${live_pool_sd} / √${live_pool_n} = <strong>${se.toFixed(2)} ms</strong> &nbsp;→&nbsp; 95% CI = [${lo}, ${hi}] ms</p>`
+}
+```
+:::
+
+::: {.fragment}
+```{ojs}
+{
+  const se = live_pool_sd / Math.sqrt(live_pool_n)
+  const lo = (live_pool_mean - 2*se).toFixed(1)
+  const hi = (live_pool_mean + 2*se).toFixed(1)
+  return html`<div class="instructions-box">In words: in the general pattern our data represents, we can be <strong>95% confident</strong> that the true average reaction time lies between <strong>${lo} and ${hi} ms</strong>.</div>`
+}
+```
+:::
+
+## Task — does the bootstrap agree with the formula?
+
+::: {.instructions-box}
+1. **n** starts at our real class sample size, but with only 10 resamples — read off the bootstrap SE.
+2. Drag **B** (resamples) up towards 2,000. Does the bootstrap SE settle down, or keep jumping around at just 10?
+3. Once it's settled, compare it to the formula SE you calculated on the previous slide. Close?
+4. Now drag **n** down to a small value. What happens to the spread of the histogram? Which property of the sampling distribution does that demonstrate?
+:::
+
+::: {.fragment}
+Under the conditions we need — large enough sample, independent observations — the bootstrap and the formula converge on the same answer. The formula is faster; the bootstrap works even when no formula exists.
+
+Dragging **n** down widens the bootstrap histogram — the same **root-*n* convergence** we saw earlier (SE shrinks as *n* grows), now showing up in a resampled statistic instead of a formula.
+:::
+
+## Quick recap
+
+- We want to generalise from our data — statistical inference
+- Two ways to estimate the uncertainty in a statistic: a **formula** ($SE = SD/\sqrt{n}$) or the **bootstrap** (resample with replacement, look at the spread)
+- Under the conditions the formula needs, the two agree — but the bootstrap keeps working even when no formula exists
+- A **95% CI** is the estimate ± 2 × SE — a range we expect to contain the true value, and 95% of intervals built this way actually do
+- Using the CI, we can now make a statement about the population, or general pattern, that our data represents
+
+---
+
+## Testing a hypothesis
+
+---
+
+## Fisher's tea test
+
+::: {.instructions-box}
+A woman claims she can tell, by taste, whether the milk or the tea was poured into the cup first.
+
+Ronald Fisher didn't just take her word for it — and he didn't dismiss her either. He designed a test: several cups, milk-first and tea-first in random order, unknown to her. She has to identify all of them correctly.
+:::
+
+::: {.fragment}
+If she's just guessing, we can calculate exactly how likely she is to get them all right by chance. If she does far better than chance predicts, that's evidence for her claim.
+
+**This is the entire logic of hypothesis testing**, built from one experiment in 1920s Cambridge.
+:::
+
+## The null is protected
+
+Testing a hypothesis means asking: is there enough evidence in the data to reject a **default, protected** assumption?
+
+::: {.two-col}
+::: {.col}
+**Criminal court**
+
+- Assume innocence
+- Only convict if evidence is strong
+- "Not guilty" ≠ proven innocent — just not enough evidence
+:::
+::: {.col}
+**Hypothesis testing**
+
+- $H_0$ (null): protected, assumed true until shown otherwise
+- $H_A$ (alternative): what we suspect instead
+- Failing to reject $H_0$ ≠ proving it true — just not enough evidence
+:::
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 6
+:::
+
+## Task — state our hypothesis
+
+::: {.instructions-box}
+Write $H_0$ and $H_A$, in words and in symbols, for our own question: does device (phone vs. laptop) affect reaction time?
+:::
+
+::: {.fragment}
+$$H_0: \; \bar{x}_{\text{phone,true}} - \bar{x}_{\text{laptop,true}} = 0$$
+$$H_A: \; \bar{x}_{\text{phone,true}} - \bar{x}_{\text{laptop,true}} \neq 0$$
+
+No true difference in reaction time by device, versus: there is one.
+:::
+
+---
+
+## The t-test
+
+---
+
+## The t-statistic
+
+The test statistic measures how far our estimate is from what $H_0$ predicts, in units of standard error.
+
+$$t = \frac{\hat{s}}{SE(\hat{s})}$$
+
+For a difference between two averages, $\bar{x}_A$ and $\bar{x}_B$:
+
+$$t = \frac{\bar{x}_A - \bar{x}_B}{SE(\bar{x}_A - \bar{x}_B)} \qquad SE(\bar{x}_A - \bar{x}_B) = \sqrt{\frac{SD_A^2}{n_A} + \frac{SD_B^2}{n_B}}$$
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 6
+:::
+
+## Our device data
+
+```{ojs}
+{
+  const rows = live_device_stats.filter(d => d.n >= 2)
+  if (rows.length < 2) {
+    return html`<div class="instructions-box">Need data from both device groups to compute this live — check back once the whole class has submitted. The formulas above still apply once the numbers are in.</div>`
+  }
+  return html`<table style="width:75%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;">
+    <thead><tr style="background:#1a1a2e;color:white;">
+      <th style="padding:10px 20px;text-align:left;">Device</th>
+      <th style="padding:10px 20px;text-align:right;">Mean (ms)</th>
+      <th style="padding:10px 20px;text-align:right;">SD (ms)</th>
+      <th style="padding:10px 20px;text-align:right;">n</th>
+    </tr></thead>
+    <tbody>
+      ${rows.map((r,i) => `<tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
+        <td style="padding:9px 20px;font-weight:600;">${r.device}</td>
+        <td style="padding:9px 20px;text-align:right;">${r.mean}</td>
+        <td style="padding:9px 20px;text-align:right;">${r.sd}</td>
+        <td style="padding:9px 20px;text-align:right;">${r.n}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table>`
+}
+```
+
+## Task — calculate the t-statistic
+
+::: {.instructions-box}
+By hand or in Excel, using the table above: calculate $SE(\bar{x}_A - \bar{x}_B)$, then the t-statistic for the device difference.
+:::
+
+::: {.fragment}
+```{ojs}
+{
+  const rows = live_device_stats.filter(d => d.n >= 2)
+  if (rows.length < 2) return html`<p style="color:#aaa;">Will compute automatically once both groups have data.</p>`
+  const [a, b] = rows
+  const seDiff = Math.sqrt((a.sd ** 2) / a.n + (b.sd ** 2) / b.n)
+  const t = (a.mean - b.mean) / seDiff
+  return html`<p style="font-family:sans-serif;">t = (${a.mean} − ${b.mean}) / ${seDiff.toFixed(2)} = <strong style="color:#e63946;font-size:1.2em;">${t.toFixed(2)}</strong></p>`
+}
+```
+:::
+
+---
+
+## Making a decision
+
+---
+
+## The critical value
+
+A commonly used critical value for a t-statistic is **±2** (more precisely 1.96).
+
+- Reject $H_0$ if the t-statistic is smaller than −2 or larger than +2
+- Don't reject $H_0$ if it falls between −2 and +2
+- This corresponds to a **5% chance of a false positive** if $H_0$ is actually true
+
+```{ojs}
+{
+  const phi  = x => Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI)
+  const grid = d3.range(-3.6, 3.601, 0.02).map(x => ({ x, y: phi(x) }))
+  // Split each tail at x=0 so the area mark never draws a connecting
+  // line across the gap in the middle of the distribution.
+  const tail5L = grid.filter(d => d.x <= -1.96)
+  const tail5R = grid.filter(d => d.x >=  1.96)
+  const tail1L = grid.filter(d => d.x <= -2.576)
+  const tail1R = grid.filter(d => d.x >=  2.576)
+
+  return Plot.plot({
+    height: 300,
+    marginLeft: 20,
+    marginBottom: 40,
+    x: { label: "t-statistic", domain: [-3.6, 3.6] },
+    y: { axis: null },
+    marks: [
+      Plot.areaY(tail5L, { x: "x", y: "y", fill: "#e07a3f", fillOpacity: 0.3 }),
+      Plot.areaY(tail5R, { x: "x", y: "y", fill: "#e07a3f", fillOpacity: 0.3 }),
+      Plot.areaY(tail1L, { x: "x", y: "y", fill: "#e07a3f", fillOpacity: 0.6 }),
+      Plot.areaY(tail1R, { x: "x", y: "y", fill: "#e07a3f", fillOpacity: 0.6 }),
+      Plot.line(grid, { x: "x", y: "y", stroke: "#1a1a2e", strokeWidth: 2 }),
+      Plot.ruleX([1.96, -1.96], { stroke: "#2a6f97", strokeWidth: 1.5, strokeDasharray: "5,4" }),
+      Plot.ruleX([2.576, -2.576], { stroke: "#e07a3f", strokeWidth: 1.5, strokeDasharray: "2,3" }),
+      Plot.text([{ x: 1.96, label: "1.96" }, { x: -1.96, label: "−1.96" }],
+                { x: "x", y: () => phi(1.96) + 0.045, text: "label",
+                  fill: "#2a6f97", fontSize: 11, fontWeight: 700 }),
+      Plot.text([{ x: 2.576, label: "2.576" }, { x: -2.576, label: "−2.576" }],
+                { x: "x", y: () => phi(2.576) + 0.05, text: "label",
+                  fill: "#e07a3f", fontSize: 11, fontWeight: 700 }),
+      Plot.text([{ x: 0, y: 0.18, label: "95%" }], { x: "x", y: "y", text: "label", fontSize: 12, fontWeight: 700 }),
+      Plot.text([{ x: 3.15, y: 0.025, label: "2.5%" }, { x: -3.15, y: 0.025, label: "2.5%" }],
+                { x: "x", y: "y", text: "label", fill: "#e07a3f", fontSize: 10 }),
+    ]
+  })
+}
+```
+
+::: {.fragment}
+Stricter critical values (±2.6) bring the false-positive rate down to 1% — at the cost of being harder to detect a real effect when one exists. The **dark** tails above are that stricter 1% cutoff; the **light + dark** together are the 5% cutoff we've been using.
+:::
+
+## Two ways to be wrong
+
+| | $H_0$ is true | $H_0$ is false |
+|---|---|---|
+| **Don't reject** | True negative | False negative (Type II error) |
+| **Reject** | False positive (Type I error) | True positive |
+
+::: {.fragment}
+The test is designed to make **false positives rare** — the null is protected, so we deliberately make Type I errors less likely than Type II.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 6
+:::
+
+## The p-value
+
+The p-value is the smallest level of significance at which we could still reject $H_0$ — the probability of seeing a test statistic this extreme, or more extreme, if $H_0$ were true.
+
+```{ojs}
+html`<div style="font-family: monospace; font-size: 0.78em; background: #f8f8f8; border-left: 4px solid #457b9d; padding: 14px 20px; border-radius: 4px; line-height: 1.9; width: 60%; margin: 12px auto;">
+coef &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-38.200<br>
+std_err &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;14.900<br>
+t &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-2.564<br>
+p&gt;|t| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.011<br>
+[0.025 &nbsp;0.975] &nbsp;&nbsp;-67.4 &nbsp;-9.0
+</div>`
+```
+
+::: {.fragment}
+A p-value of 0.011 means: if there truly were no device effect, we'd see a gap this large (or larger) only 1.1% of the time by chance. Small p → strong evidence against $H_0$.
+:::
+
+## Task — reject, or not?
+
+::: {.instructions-box}
+Compare the t-statistic you calculated two slides ago to ±2. Reject $H_0$, or not? Write one sentence explaining what your decision means for the original business question — "is a phone-vs-laptop difference real?"
+:::
+
+## What if we had 15,000 students, not 15?
+
+::: {.fragment}
+With a huge sample, almost any difference becomes statistically significant — the CI narrows to nearly nothing, and even a 1ms gap could reject $H_0$.
+:::
+
+::: {.fragment}
+Statistical significance ≠ practical significance. At scale, the question shifts from *"is there a difference?"* to *"is the difference big enough to matter?"* — external validity remains just as important as it was at n=15.
+:::
+
+---
+
+## Online session — Testing pitfalls
+
+Multiple testing and p-hacking (why testing many hypotheses at once inflates false positives), a big-data-and-significance deep dive, and using AI to check your own statistics.
+
+::: {.instructions-box}
+See **week2-online.html** — a short standalone deck for this week's online session.
+:::
+
+---
+
+## Recap — how do we know a difference is real?
+
+- **Sampling distributions**: any statistic computed from a sample has its own distribution across repeated samples from the same DGP — that's *why* a single estimate is never the whole story
+- **Standard error**: a formula ($SE = SD/\sqrt{n}$) or the bootstrap — two ways to estimate how much a statistic would vary from sample to sample
+- **Confidence intervals**: statistic ± critical value × SE — a range built so that, over many samples, it contains the true value a chosen % of the time
+- **Hypothesis testing**: state $H_0$, compute a t-statistic, compare it to a critical value (±1.96 for 5%) or read off the p-value directly
+- **Two ways to be wrong**: false positives (Type I) and false negatives (Type II) — the test is designed to protect against false positives
+- **Statistical ≠ practical significance**: with a big enough sample almost anything is "significant" — effect size and external validity still matter
+
+---
+
+## Coming up: Week 3
+
+::: {style="text-align: center; padding-top: 60px;"}
+[We now have a way to test whether **one** difference is real.]{style="font-size: 1.3em;"}
+
+[But most interesting questions involve the relationship between **two variables**.]{style="font-size: 1.3em; padding-top: 20px; display:block;"}
+
+[**When y met x: correlation and covariance**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
+
+::: {.fragment style="padding-top:40px;"}
+*Conditional probability · covariance · correlation · spurious correlation*
+:::
+:::

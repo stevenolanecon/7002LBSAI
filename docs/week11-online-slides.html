@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/tabby.min.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.7.32">
+
+  <title>7002LBSAI – Forecasting from Time Series Data</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="site_libs/revealjs/dist/theme/quarto-2c1b5f745a11cfad616ebade4a4a7d24.css">
+  <link href="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+  <link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+  
+  <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="styles-slides.css?v=20260914">
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Forecasting from Time Series Data</h1>
+  <p class="subtitle">7002LBSAI Research Methods in Analytics — Week 11 Online Session</p>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section class="slide level2">
+
+<div id="34e0b790" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="ojs-define">{"contents": [{"name": "swim_by_month", "value": [{"label": "Jan", "avg": 21.3}, {"label": "Feb", "avg": 22.7}, {"label": "Mar", "avg": 36.8}, {"label": "Apr", "avg": 37.2}, {"label": "May", "avg": 61.2}, {"label": "Jun", "avg": 143.4}, {"label": "Jul", "avg": 112.9}, {"label": "Aug", "avg": 60.3}, {"label": "Sep", "avg": 24.7}, {"label": "Oct", "avg": 20.2}, {"label": "Nov", "avg": 16.5}, {"label": "Dec", "avg": 16.0}]}, {"name": "swim_by_dow", "value": [{"label": "Mon", "avg": 46.4}, {"label": "Tue", "avg": 50.5}, {"label": "Wed", "avg": 49.3}, {"label": "Thu", "avg": 45.6}, {"label": "Fri", "avg": 32.1}, {"label": "Sat", "avg": 62.0}, {"label": "Sun", "avg": 49.2}]}, {"name": "swim_results", "value": [{"model": "Trend only", "rmse": 48.2}, {"model": "+ month", "rmse": 30.2}, {"model": "+ month + day of week", "rmse": 29.0}]}, {"name": "swim_holdout_chart", "value": [{"date": "2016-01-01", "actual": 0, "predicted": 5.9}, {"date": "2016-01-02", "actual": 16, "predicted": 35.3}, {"date": "2016-01-03", "actual": 32, "predicted": 20.3}, {"date": "2016-01-04", "actual": 19, "predicted": 20.7}, {"date": "2016-01-05", "actual": 14, "predicted": 24.7}, {"date": "2016-01-06", "actual": 18, "predicted": 23.1}, {"date": "2016-01-07", "actual": 17, "predicted": 19.7}, {"date": "2016-01-08", "actual": 3, "predicted": 5.9}, {"date": "2016-01-09", "actual": 28, "predicted": 35.3}, {"date": "2016-01-10", "actual": 29, "predicted": 20.3}, {"date": "2016-01-11", "actual": 13, "predicted": 20.7}, {"date": "2016-01-12", "actual": 12, "predicted": 24.7}, {"date": "2016-01-13", "actual": 20, "predicted": 23.1}, {"date": "2016-01-14", "actual": 20, "predicted": 19.7}, {"date": "2016-01-15", "actual": 6, "predicted": 5.9}, {"date": "2016-01-16", "actual": 45, "predicted": 35.3}, {"date": "2016-01-17", "actual": 49, "predicted": 20.3}, {"date": "2016-01-18", "actual": 15, "predicted": 20.7}, {"date": "2016-01-19", "actual": 15, "predicted": 24.7}, {"date": "2016-01-20", "actual": 14, "predicted": 23.1}, {"date": "2016-01-21", "actual": 10, "predicted": 19.7}, {"date": "2016-01-22", "actual": 7, "predicted": 5.9}, {"date": "2016-01-23", "actual": 69, "predicted": 35.3}, {"date": "2016-01-24", "actual": 75, "predicted": 20.3}, {"date": "2016-01-25", "actual": 14, "predicted": 20.7}, {"date": "2016-01-26", "actual": 20, "predicted": 24.7}, {"date": "2016-01-27", "actual": 22, "predicted": 23.1}, {"date": "2016-01-28", "actual": 18, "predicted": 19.7}, {"date": "2016-01-29", "actual": 4, "predicted": 5.9}, {"date": "2016-01-30", "actual": 27, "predicted": 35.3}, {"date": "2016-01-31", "actual": 47, "predicted": 20.3}, {"date": "2016-02-01", "actual": 19, "predicted": 21.5}, {"date": "2016-02-02", "actual": 17, "predicted": 25.5}, {"date": "2016-02-03", "actual": 25, "predicted": 23.9}, {"date": "2016-02-04", "actual": 17, "predicted": 20.5}, {"date": "2016-02-05", "actual": 8, "predicted": 6.7}, {"date": "2016-02-06", "actual": 46, "predicted": 36.1}, {"date": "2016-02-07", "actual": 34, "predicted": 21.1}, {"date": "2016-02-08", "actual": 21, "predicted": 21.5}, {"date": "2016-02-09", "actual": 20, "predicted": 25.5}, {"date": "2016-02-10", "actual": 21, "predicted": 23.9}, {"date": "2016-02-11", "actual": 20, "predicted": 20.5}, {"date": "2016-02-12", "actual": 3, "predicted": 6.7}, {"date": "2016-02-13", "actual": 34, "predicted": 36.1}, {"date": "2016-02-14", "actual": 43, "predicted": 21.1}, {"date": "2016-02-15", "actual": 28, "predicted": 21.5}, {"date": "2016-02-16", "actual": 33, "predicted": 25.5}, {"date": "2016-02-17", "actual": 40, "predicted": 23.9}, {"date": "2016-02-18", "actual": 16, "predicted": 20.5}, {"date": "2016-02-19", "actual": 4, "predicted": 6.7}, {"date": "2016-02-20", "actual": 45, "predicted": 36.1}, {"date": "2016-02-21", "actual": 86, "predicted": 21.1}, {"date": "2016-02-22", "actual": 16, "predicted": 21.5}, {"date": "2016-02-23", "actual": 11, "predicted": 25.5}, {"date": "2016-02-24", "actual": 13, "predicted": 23.9}, {"date": "2016-02-25", "actual": 30, "predicted": 20.5}, {"date": "2016-02-26", "actual": 5, "predicted": 6.7}, {"date": "2016-02-27", "actual": 55, "predicted": 36.1}, {"date": "2016-02-28", "actual": 58, "predicted": 21.1}, {"date": "2016-02-29", "actual": 33, "predicted": 21.5}, {"date": "2016-03-01", "actual": 37, "predicted": 41.1}, {"date": "2016-03-02", "actual": 15, "predicted": 39.5}, {"date": "2016-03-03", "actual": 21, "predicted": 36.1}, {"date": "2016-03-04", "actual": 9, "predicted": 22.2}, {"date": "2016-03-05", "actual": 54, "predicted": 51.7}, {"date": "2016-03-06", "actual": 68, "predicted": 36.7}, {"date": "2016-03-07", "actual": 42, "predicted": 37.1}, {"date": "2016-03-08", "actual": 42, "predicted": 41.1}, {"date": "2016-03-09", "actual": 26, "predicted": 39.5}, {"date": "2016-03-10", "actual": 22, "predicted": 36.1}, {"date": "2016-03-11", "actual": 3, "predicted": 22.2}, {"date": "2016-03-12", "actual": 19, "predicted": 51.7}, {"date": "2016-03-13", "actual": 63, "predicted": 36.7}, {"date": "2016-03-14", "actual": 24, "predicted": 37.1}, {"date": "2016-03-15", "actual": 27, "predicted": 41.1}, {"date": "2016-03-16", "actual": 18, "predicted": 39.5}, {"date": "2016-03-17", "actual": 29, "predicted": 36.1}, {"date": "2016-03-18", "actual": 5, "predicted": 22.2}, {"date": "2016-03-19", "actual": 43, "predicted": 51.7}, {"date": "2016-03-20", "actual": 69, "predicted": 36.7}, {"date": "2016-03-21", "actual": 37, "predicted": 37.1}, {"date": "2016-03-22", "actual": 32, "predicted": 41.1}, {"date": "2016-03-23", "actual": 30, "predicted": 39.5}, {"date": "2016-03-24", "actual": 29, "predicted": 36.1}, {"date": "2016-03-25", "actual": 7, "predicted": 22.2}, {"date": "2016-03-26", "actual": 16, "predicted": 51.7}, {"date": "2016-03-27", "actual": 0, "predicted": 36.7}, {"date": "2016-03-28", "actual": 49, "predicted": 37.1}, {"date": "2016-03-29", "actual": 39, "predicted": 41.1}, {"date": "2016-03-30", "actual": 73, "predicted": 39.5}, {"date": "2016-03-31", "actual": 57, "predicted": 36.1}, {"date": "2016-04-01", "actual": 8, "predicted": 21.7}, {"date": "2016-04-02", "actual": 79, "predicted": 51.1}, {"date": "2016-04-03", "actual": 91, "predicted": 36.1}, {"date": "2016-04-04", "actual": 27, "predicted": 36.5}, {"date": "2016-04-05", "actual": 25, "predicted": 40.5}, {"date": "2016-04-06", "actual": 52, "predicted": 38.9}, {"date": "2016-04-07", "actual": 20, "predicted": 35.5}, {"date": "2016-04-08", "actual": 9, "predicted": 21.7}, {"date": "2016-04-09", "actual": 68, "predicted": 51.1}, {"date": "2016-04-10", "actual": 67, "predicted": 36.1}, {"date": "2016-04-11", "actual": 53, "predicted": 36.5}, {"date": "2016-04-12", "actual": 22, "predicted": 40.5}, {"date": "2016-04-13", "actual": 37, "predicted": 38.9}, {"date": "2016-04-14", "actual": 46, "predicted": 35.5}, {"date": "2016-04-15", "actual": 7, "predicted": 21.7}, {"date": "2016-04-16", "actual": 39, "predicted": 51.1}, {"date": "2016-04-17", "actual": 61, "predicted": 36.1}, {"date": "2016-04-18", "actual": 28, "predicted": 36.5}, {"date": "2016-04-19", "actual": 29, "predicted": 40.5}, {"date": "2016-04-20", "actual": 42, "predicted": 38.9}, {"date": "2016-04-21", "actual": 17, "predicted": 35.5}, {"date": "2016-04-22", "actual": 6, "predicted": 21.7}, {"date": "2016-04-23", "actual": 55, "predicted": 51.1}, {"date": "2016-04-24", "actual": 132, "predicted": 36.1}, {"date": "2016-04-25", "actual": 28, "predicted": 36.5}, {"date": "2016-04-26", "actual": 24, "predicted": 40.5}, {"date": "2016-04-27", "actual": 26, "predicted": 38.9}, {"date": "2016-04-28", "actual": 18, "predicted": 35.5}, {"date": "2016-04-29", "actual": 9, "predicted": 21.7}, {"date": "2016-04-30", "actual": 68, "predicted": 51.1}, {"date": "2016-05-01", "actual": 70, "predicted": 60.3}, {"date": "2016-05-02", "actual": 8, "predicted": 60.8}, {"date": "2016-05-03", "actual": 44, "predicted": 64.7}, {"date": "2016-05-04", "actual": 25, "predicted": 63.1}, {"date": "2016-05-05", "actual": 32, "predicted": 59.7}, {"date": "2016-05-06", "actual": 7, "predicted": 45.9}, {"date": "2016-05-07", "actual": 83, "predicted": 75.3}, {"date": "2016-05-08", "actual": 34, "predicted": 60.3}, {"date": "2016-05-09", "actual": 30, "predicted": 60.8}, {"date": "2016-05-10", "actual": 41, "predicted": 64.7}, {"date": "2016-05-11", "actual": 32, "predicted": 63.1}, {"date": "2016-05-12", "actual": 21, "predicted": 59.7}, {"date": "2016-05-13", "actual": 2, "predicted": 45.9}, {"date": "2016-05-14", "actual": 118, "predicted": 75.3}, {"date": "2016-05-15", "actual": 127, "predicted": 60.3}, {"date": "2016-05-16", "actual": 50, "predicted": 60.8}, {"date": "2016-05-17", "actual": 26, "predicted": 64.7}, {"date": "2016-05-18", "actual": 34, "predicted": 63.1}, {"date": "2016-05-19", "actual": 28, "predicted": 59.7}, {"date": "2016-05-20", "actual": 7, "predicted": 45.9}, {"date": "2016-05-21", "actual": 118, "predicted": 75.3}, {"date": "2016-05-22", "actual": 234, "predicted": 60.3}, {"date": "2016-05-23", "actual": 56, "predicted": 60.8}, {"date": "2016-05-24", "actual": 57, "predicted": 64.7}, {"date": "2016-05-25", "actual": 100, "predicted": 63.1}, {"date": "2016-05-26", "actual": 105, "predicted": 59.7}, {"date": "2016-05-27", "actual": 5, "predicted": 45.9}, {"date": "2016-05-28", "actual": 102, "predicted": 75.3}, {"date": "2016-05-29", "actual": 116, "predicted": 60.3}, {"date": "2016-05-30", "actual": 131, "predicted": 60.8}, {"date": "2016-05-31", "actual": 77, "predicted": 64.8}, {"date": "2016-06-01", "actual": 106, "predicted": 147.3}, {"date": "2016-06-02", "actual": 159, "predicted": 143.9}, {"date": "2016-06-03", "actual": 154, "predicted": 130.1}, {"date": "2016-06-04", "actual": 104, "predicted": 159.6}, {"date": "2016-06-05", "actual": 79, "predicted": 144.5}, {"date": "2016-06-06", "actual": 144, "predicted": 145.0}, {"date": "2016-06-07", "actual": 225, "predicted": 149.0}, {"date": "2016-06-08", "actual": 190, "predicted": 147.3}, {"date": "2016-06-09", "actual": 173, "predicted": 143.9}, {"date": "2016-06-10", "actual": 182, "predicted": 130.1}, {"date": "2016-06-11", "actual": 94, "predicted": 159.6}, {"date": "2016-06-12", "actual": 75, "predicted": 144.5}, {"date": "2016-06-13", "actual": 123, "predicted": 145.0}, {"date": "2016-06-14", "actual": 185, "predicted": 149.0}, {"date": "2016-06-15", "actual": 111, "predicted": 147.3}, {"date": "2016-06-16", "actual": 126, "predicted": 143.9}, {"date": "2016-06-17", "actual": 147, "predicted": 130.1}, {"date": "2016-06-18", "actual": 110, "predicted": 159.6}, {"date": "2016-06-19", "actual": 45, "predicted": 144.5}, {"date": "2016-06-20", "actual": 153, "predicted": 145.0}, {"date": "2016-06-21", "actual": 173, "predicted": 149.0}, {"date": "2016-06-22", "actual": 149, "predicted": 147.3}, {"date": "2016-06-23", "actual": 124, "predicted": 144.0}, {"date": "2016-06-24", "actual": 142, "predicted": 130.1}, {"date": "2016-06-25", "actual": 107, "predicted": 159.6}, {"date": "2016-06-26", "actual": 45, "predicted": 144.5}, {"date": "2016-06-27", "actual": 159, "predicted": 145.0}, {"date": "2016-06-28", "actual": 135, "predicted": 149.0}, {"date": "2016-06-29", "actual": 149, "predicted": 147.3}, {"date": "2016-06-30", "actual": 67, "predicted": 144.0}, {"date": "2016-07-01", "actual": 106, "predicted": 96.2}, {"date": "2016-07-02", "actual": 98, "predicted": 125.6}, {"date": "2016-07-03", "actual": 49, "predicted": 110.6}, {"date": "2016-07-04", "actual": 61, "predicted": 111.0}, {"date": "2016-07-05", "actual": 98, "predicted": 115.0}, {"date": "2016-07-06", "actual": 159, "predicted": 113.4}, {"date": "2016-07-07", "actual": 183, "predicted": 110.0}, {"date": "2016-07-08", "actual": 116, "predicted": 96.2}, {"date": "2016-07-09", "actual": 142, "predicted": 125.6}, {"date": "2016-07-10", "actual": 80, "predicted": 110.6}, {"date": "2016-07-11", "actual": 161, "predicted": 111.0}, {"date": "2016-07-12", "actual": 169, "predicted": 115.0}, {"date": "2016-07-13", "actual": 134, "predicted": 113.4}, {"date": "2016-07-14", "actual": 138, "predicted": 110.0}, {"date": "2016-07-15", "actual": 190, "predicted": 96.2}, {"date": "2016-07-16", "actual": 152, "predicted": 125.6}, {"date": "2016-07-17", "actual": 65, "predicted": 110.6}, {"date": "2016-07-18", "actual": 110, "predicted": 111.0}, {"date": "2016-07-19", "actual": 134, "predicted": 115.0}, {"date": "2016-07-20", "actual": 104, "predicted": 113.4}, {"date": "2016-07-21", "actual": 127, "predicted": 110.0}, {"date": "2016-07-22", "actual": 118, "predicted": 96.2}, {"date": "2016-07-23", "actual": 158, "predicted": 125.6}, {"date": "2016-07-24", "actual": 53, "predicted": 110.6}, {"date": "2016-07-25", "actual": 120, "predicted": 111.0}, {"date": "2016-07-26", "actual": 134, "predicted": 115.0}, {"date": "2016-07-27", "actual": 123, "predicted": 113.4}, {"date": "2016-07-28", "actual": 159, "predicted": 110.0}, {"date": "2016-07-29", "actual": 136, "predicted": 96.2}, {"date": "2016-07-30", "actual": 144, "predicted": 125.6}, {"date": "2016-07-31", "actual": 64, "predicted": 110.6}, {"date": "2016-08-01", "actual": 130, "predicted": 60.9}, {"date": "2016-08-02", "actual": 86, "predicted": 64.9}, {"date": "2016-08-03", "actual": 121, "predicted": 63.3}, {"date": "2016-08-04", "actual": 79, "predicted": 59.9}, {"date": "2016-08-05", "actual": 85, "predicted": 46.1}, {"date": "2016-08-06", "actual": 76, "predicted": 75.5}, {"date": "2016-08-07", "actual": 47, "predicted": 60.5}, {"date": "2016-08-08", "actual": 37, "predicted": 60.9}, {"date": "2016-08-09", "actual": 51, "predicted": 64.9}, {"date": "2016-08-10", "actual": 36, "predicted": 63.3}, {"date": "2016-08-11", "actual": 20, "predicted": 59.9}, {"date": "2016-08-12", "actual": 7, "predicted": 46.1}, {"date": "2016-08-13", "actual": 132, "predicted": 75.5}, {"date": "2016-08-14", "actual": 137, "predicted": 60.5}, {"date": "2016-08-15", "actual": 29, "predicted": 60.9}, {"date": "2016-08-16", "actual": 21, "predicted": 64.9}, {"date": "2016-08-17", "actual": 45, "predicted": 63.3}, {"date": "2016-08-18", "actual": 26, "predicted": 59.9}, {"date": "2016-08-19", "actual": 9, "predicted": 46.1}, {"date": "2016-08-20", "actual": 98, "predicted": 75.5}, {"date": "2016-08-21", "actual": 86, "predicted": 60.5}, {"date": "2016-08-22", "actual": 12, "predicted": 60.9}, {"date": "2016-08-23", "actual": 18, "predicted": 64.9}, {"date": "2016-08-24", "actual": 36, "predicted": 63.3}, {"date": "2016-08-25", "actual": 35, "predicted": 59.9}, {"date": "2016-08-26", "actual": 8, "predicted": 46.1}, {"date": "2016-08-27", "actual": 68, "predicted": 75.5}, {"date": "2016-08-28", "actual": 80, "predicted": 60.5}, {"date": "2016-08-29", "actual": 31, "predicted": 60.9}, {"date": "2016-08-30", "actual": 23, "predicted": 64.9}, {"date": "2016-08-31", "actual": 13, "predicted": 63.3}, {"date": "2016-09-01", "actual": 19, "predicted": 23.0}, {"date": "2016-09-02", "actual": 7, "predicted": 9.1}, {"date": "2016-09-03", "actual": 79, "predicted": 38.6}, {"date": "2016-09-04", "actual": 79, "predicted": 23.6}, {"date": "2016-09-05", "actual": 8, "predicted": 24.0}, {"date": "2016-09-06", "actual": 11, "predicted": 28.0}, {"date": "2016-09-07", "actual": 13, "predicted": 26.4}, {"date": "2016-09-08", "actual": 22, "predicted": 23.0}, {"date": "2016-09-09", "actual": 6, "predicted": 9.1}, {"date": "2016-09-10", "actual": 47, "predicted": 38.6}, {"date": "2016-09-11", "actual": 78, "predicted": 23.6}, {"date": "2016-09-12", "actual": 2, "predicted": 24.0}, {"date": "2016-09-13", "actual": 17, "predicted": 28.0}, {"date": "2016-09-14", "actual": 23, "predicted": 26.4}, {"date": "2016-09-15", "actual": 16, "predicted": 23.0}, {"date": "2016-09-16", "actual": 4, "predicted": 9.1}, {"date": "2016-09-17", "actual": 60, "predicted": 38.6}, {"date": "2016-09-18", "actual": 55, "predicted": 23.6}, {"date": "2016-09-19", "actual": 19, "predicted": 24.0}, {"date": "2016-09-20", "actual": 11, "predicted": 28.0}, {"date": "2016-09-21", "actual": 14, "predicted": 26.4}, {"date": "2016-09-22", "actual": 18, "predicted": 23.0}, {"date": "2016-09-23", "actual": 10, "predicted": 9.1}, {"date": "2016-09-24", "actual": 37, "predicted": 38.6}, {"date": "2016-09-25", "actual": 44, "predicted": 23.6}, {"date": "2016-09-26", "actual": 17, "predicted": 24.0}, {"date": "2016-09-27", "actual": 22, "predicted": 28.0}, {"date": "2016-09-28", "actual": 27, "predicted": 26.4}, {"date": "2016-09-29", "actual": 26, "predicted": 23.0}, {"date": "2016-09-30", "actual": 5, "predicted": 9.2}, {"date": "2016-10-01", "actual": 31, "predicted": 33.8}, {"date": "2016-10-02", "actual": 68, "predicted": 18.8}, {"date": "2016-10-03", "actual": 14, "predicted": 19.2}, {"date": "2016-10-04", "actual": 17, "predicted": 23.2}, {"date": "2016-10-05", "actual": 19, "predicted": 21.6}, {"date": "2016-10-06", "actual": 9, "predicted": 18.2}, {"date": "2016-10-07", "actual": 6, "predicted": 4.4}, {"date": "2016-10-08", "actual": 31, "predicted": 33.8}, {"date": "2016-10-09", "actual": 46, "predicted": 18.8}, {"date": "2016-10-10", "actual": 17, "predicted": 19.2}, {"date": "2016-10-11", "actual": 8, "predicted": 23.2}, {"date": "2016-10-12", "actual": 21, "predicted": 21.6}, {"date": "2016-10-13", "actual": 8, "predicted": 18.2}, {"date": "2016-10-14", "actual": 4, "predicted": 4.4}, {"date": "2016-10-15", "actual": 53, "predicted": 33.8}, {"date": "2016-10-16", "actual": 80, "predicted": 18.8}, {"date": "2016-10-17", "actual": 6, "predicted": 19.2}, {"date": "2016-10-18", "actual": 14, "predicted": 23.2}, {"date": "2016-10-19", "actual": 16, "predicted": 21.6}, {"date": "2016-10-20", "actual": 12, "predicted": 18.2}, {"date": "2016-10-21", "actual": 1, "predicted": 4.4}, {"date": "2016-10-22", "actual": 38, "predicted": 33.8}, {"date": "2016-10-23", "actual": 55, "predicted": 18.8}, {"date": "2016-10-24", "actual": 14, "predicted": 19.2}, {"date": "2016-10-25", "actual": 11, "predicted": 23.2}, {"date": "2016-10-26", "actual": 8, "predicted": 21.6}, {"date": "2016-10-27", "actual": 11, "predicted": 18.2}, {"date": "2016-10-28", "actual": 4, "predicted": 4.4}, {"date": "2016-10-29", "actual": 65, "predicted": 33.8}, {"date": "2016-10-30", "actual": 62, "predicted": 18.8}, {"date": "2016-10-31", "actual": 3, "predicted": 19.2}, {"date": "2016-11-01", "actual": 18, "predicted": 20.2}, {"date": "2016-11-02", "actual": 11, "predicted": 18.6}, {"date": "2016-11-03", "actual": 10, "predicted": 15.2}, {"date": "2016-11-04", "actual": 2, "predicted": 1.4}, {"date": "2016-11-05", "actual": 38, "predicted": 30.8}, {"date": "2016-11-06", "actual": 31, "predicted": 15.8}, {"date": "2016-11-07", "actual": 10, "predicted": 16.3}, {"date": "2016-11-08", "actual": 13, "predicted": 20.2}, {"date": "2016-11-09", "actual": 14, "predicted": 18.6}, {"date": "2016-11-10", "actual": 7, "predicted": 15.2}, {"date": "2016-11-11", "actual": 11, "predicted": 1.4}, {"date": "2016-11-12", "actual": 33, "predicted": 30.8}, {"date": "2016-11-13", "actual": 38, "predicted": 15.8}, {"date": "2016-11-14", "actual": 8, "predicted": 16.3}, {"date": "2016-11-15", "actual": 6, "predicted": 20.2}, {"date": "2016-11-16", "actual": 34, "predicted": 18.6}, {"date": "2016-11-17", "actual": 7, "predicted": 15.2}, {"date": "2016-11-18", "actual": 5, "predicted": 1.4}, {"date": "2016-11-19", "actual": 33, "predicted": 30.8}, {"date": "2016-11-20", "actual": 25, "predicted": 15.8}, {"date": "2016-11-21", "actual": 2, "predicted": 16.3}, {"date": "2016-11-22", "actual": 14, "predicted": 20.2}, {"date": "2016-11-23", "actual": 14, "predicted": 18.6}, {"date": "2016-11-24", "actual": 0, "predicted": 15.2}, {"date": "2016-11-25", "actual": 6, "predicted": 1.4}, {"date": "2016-11-26", "actual": 28, "predicted": 30.8}, {"date": "2016-11-27", "actual": 43, "predicted": 15.8}, {"date": "2016-11-28", "actual": 2, "predicted": 16.3}, {"date": "2016-11-29", "actual": 15, "predicted": 20.2}, {"date": "2016-11-30", "actual": 4, "predicted": 18.6}, {"date": "2016-12-01", "actual": 7, "predicted": 15.4}, {"date": "2016-12-02", "actual": 3, "predicted": 1.6}, {"date": "2016-12-03", "actual": 8, "predicted": 31.0}, {"date": "2016-12-04", "actual": 28, "predicted": 16.0}, {"date": "2016-12-05", "actual": 10, "predicted": 16.4}, {"date": "2016-12-06", "actual": 13, "predicted": 20.4}, {"date": "2016-12-07", "actual": 4, "predicted": 18.8}, {"date": "2016-12-08", "actual": 4, "predicted": 15.4}, {"date": "2016-12-09", "actual": 3, "predicted": 1.6}, {"date": "2016-12-10", "actual": 21, "predicted": 31.0}, {"date": "2016-12-11", "actual": 29, "predicted": 16.0}, {"date": "2016-12-12", "actual": 1, "predicted": 16.4}, {"date": "2016-12-13", "actual": 11, "predicted": 20.4}, {"date": "2016-12-14", "actual": 13, "predicted": 18.8}, {"date": "2016-12-15", "actual": 6, "predicted": 15.4}, {"date": "2016-12-16", "actual": 3, "predicted": 1.6}, {"date": "2016-12-17", "actual": 14, "predicted": 31.0}, {"date": "2016-12-18", "actual": 28, "predicted": 16.0}, {"date": "2016-12-19", "actual": 2, "predicted": 16.4}, {"date": "2016-12-20", "actual": 15, "predicted": 20.4}, {"date": "2016-12-21", "actual": 10, "predicted": 18.8}, {"date": "2016-12-22", "actual": 10, "predicted": 15.4}, {"date": "2016-12-23", "actual": 25, "predicted": 1.6}, {"date": "2016-12-24", "actual": 0, "predicted": 31.0}, {"date": "2016-12-25", "actual": 0, "predicted": 16.0}, {"date": "2016-12-26", "actual": 11, "predicted": 16.5}, {"date": "2016-12-27", "actual": 12, "predicted": 20.4}, {"date": "2016-12-28", "actual": 17, "predicted": 18.8}, {"date": "2016-12-29", "actual": 27, "predicted": 15.4}, {"date": "2016-12-30", "actual": 3, "predicted": 1.6}, {"date": "2016-12-31", "actual": 0, "predicted": 31.0}]}, {"name": "task_swim_output_text", "value": ">>> m_month_only = smf.ols('tickets ~ C(month)', data=train).fit()\n>>> pred = m_month_only.predict(test)\n>>> rmse = np.sqrt(np.mean((test['tickets'] - pred) ** 2))\n>>> round(rmse, 1)\n30.2"}, {"name": "arima_rows", "value": [{"order": "(1,1,0)", "rmse": 3.35, "aic": 491.2}, {"order": "(2,1,0)", "rmse": 3.18, "aic": 491.9}, {"order": "(1,1,1)", "rmse": 3.19, "aic": 492.0}, {"order": "(2,0,0)", "rmse": 7.88, "aic": 502.7}]}, {"name": "arima_forecast_chart", "value": [{"date": "2015-01-01", "actual": 228.2, "predicted": null, "lo": null, "hi": null}, {"date": "2015-02-01", "actual": 230.3, "predicted": null, "lo": null, "hi": null}, {"date": "2015-03-01", "actual": 231.6, "predicted": null, "lo": null, "hi": null}, {"date": "2015-04-01", "actual": 233.1, "predicted": null, "lo": null, "hi": null}, {"date": "2015-05-01", "actual": 234.2, "predicted": null, "lo": null, "hi": null}, {"date": "2015-06-01", "actual": 235.1, "predicted": null, "lo": null, "hi": null}, {"date": "2015-07-01", "actual": 235.7, "predicted": null, "lo": null, "hi": null}, {"date": "2015-08-01", "actual": 236.2, "predicted": null, "lo": null, "hi": null}, {"date": "2015-09-01", "actual": 237.3, "predicted": null, "lo": null, "hi": null}, {"date": "2015-10-01", "actual": 238.6, "predicted": null, "lo": null, "hi": null}, {"date": "2015-11-01", "actual": 240.1, "predicted": null, "lo": null, "hi": null}, {"date": "2015-12-01", "actual": 241.6, "predicted": null, "lo": null, "hi": null}, {"date": "2016-01-01", "actual": 243.3, "predicted": null, "lo": null, "hi": null}, {"date": "2016-02-01", "actual": 245.2, "predicted": null, "lo": null, "hi": null}, {"date": "2016-03-01", "actual": 245.8, "predicted": null, "lo": null, "hi": null}, {"date": "2016-04-01", "actual": 246.4, "predicted": null, "lo": null, "hi": null}, {"date": "2016-05-01", "actual": 246.9, "predicted": null, "lo": null, "hi": null}, {"date": "2016-06-01", "actual": 247.7, "predicted": null, "lo": null, "hi": null}, {"date": "2016-07-01", "actual": 248.9, "predicted": null, "lo": null, "hi": null}, {"date": "2016-08-01", "actual": 250.1, "predicted": null, "lo": null, "hi": null}, {"date": "2016-09-01", "actual": 251.5, "predicted": null, "lo": null, "hi": null}, {"date": "2016-10-01", "actual": 252.1, "predicted": null, "lo": null, "hi": null}, {"date": "2016-11-01", "actual": 253.2, "predicted": null, "lo": null, "hi": null}, {"date": "2016-12-01", "actual": 254.5, "predicted": null, "lo": null, "hi": null}, {"date": "2017-01-01", "actual": 256.0, "predicted": 255.7, "lo": 254.7, "hi": 256.7}, {"date": "2017-02-01", "actual": 256.9, "predicted": 256.8, "lo": 254.7, "hi": 259.0}, {"date": "2017-03-01", "actual": 258.3, "predicted": 258.0, "lo": 254.4, "hi": 261.5}, {"date": "2017-04-01", "actual": 258.8, "predicted": 259.0, "lo": 254.0, "hi": 264.0}, {"date": "2017-05-01", "actual": 260.7, "predicted": 260.0, "lo": 253.4, "hi": 266.7}, {"date": "2017-06-01", "actual": 261.6, "predicted": 261.0, "lo": 252.6, "hi": 269.4}, {"date": "2017-07-01", "actual": 264.4, "predicted": 261.9, "lo": 251.7, "hi": 272.1}, {"date": "2017-08-01", "actual": 265.5, "predicted": 262.8, "lo": 250.7, "hi": 274.9}, {"date": "2017-09-01", "actual": 267.1, "predicted": 263.7, "lo": 249.6, "hi": 277.7}, {"date": "2017-10-01", "actual": 268.3, "predicted": 264.5, "lo": 248.4, "hi": 280.5}, {"date": "2017-11-01", "actual": 270.8, "predicted": 265.2, "lo": 247.1, "hi": 283.4}, {"date": "2017-12-01", "actual": 273.0, "predicted": 266.0, "lo": 245.8, "hi": 286.2}]}, {"name": "best_arima_label", "value": "ARIMA(2, 1, 0)"}, {"name": "best_arima_rmse_display", "value": 3.18}, {"name": "var_rmse_display", "value": 2.2}]}</script>
+</div>
+</div>
+</section>
+<section id="section" class="slide level2" data-background-color="#1a1a2e">
+<h2></h2>
+<div style="text-align: center; padding-top: 180px;">
+<p><span style="font-size: 2.2em; color: white;"><strong>Forecasting from time series data</strong></span></p>
+<p><span style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;">The workshop found genuine relationships in time series data. This session: using that same data to predict what hasn’t happened yet.</span></p>
+</div>
+</section>
+<section id="planning-next-years-staffing" class="slide level2">
+<h2>Planning next year’s staffing</h2>
+<div class="instructions-box">
+<p><strong>Business question</strong>: a swimming pool operator needs to know roughly how many tickets will sell each day next year, to plan staffing and opening hours.</p>
+</div>
+<div class="fragment">
+<p>Forecasting is a special case of prediction — using only what’s happened up to today to say something about tomorrow. Same discipline as Week 10’s prediction content, applied to data where “the future” has a very literal meaning.</p>
+</div>
+</section>
+<section id="forecast-horizon-and-cross-validation" class="slide level2">
+<h2>Forecast horizon and cross-validation</h2>
+</section>
+<section id="forecast-horizon" class="slide level2">
+<h2>Forecast horizon</h2>
+<ul>
+<li>The length of the live time series data still to come — the <strong>forecast horizon</strong>, <span class="math inline">\(H\)</span></li>
+<li><strong>Short-horizon</strong>: a few periods ahead relative to the data (5 years of monthly data, forecast 3–12 months)</li>
+<li><strong>Long-horizon</strong>: many periods ahead (5 years of daily data, forecast a year out)</li>
+</ul>
+</section>
+<section id="why-you-cant-just-shuffle-and-split" class="slide level2">
+<h2>Why you can’t just shuffle and split</h2>
+<p>Cross-validation with time series is necessary — and genuinely tricky, because a random shuffle destroys the one thing that makes it a time series: order.</p>
+<div class="fragment">
+<p>Two approaches, matched to the horizon:</p>
+<ul>
+<li><strong>Insert test sets</strong> — for long-horizon forecasts, where serial correlation and trend matter less. Use all remaining observations, including those after the test set, as training data.</li>
+<li><strong>Rolling window</strong> — for short-horizon forecasts, where serial correlation matters. Training data always precedes the test set, so nothing “sees the future.”</li>
+</ul>
+</div>
+</section>
+<section id="insert-test-sets-visually" class="slide level2">
+<h2>Insert test sets, visually</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb1" data-startfrom="195" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 194;"><span id="cb1-195"><a></a>{</span>
+<span id="cb1-196"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> <span class="dv">4</span><span class="op">,</span> cols <span class="op">=</span> <span class="dv">20</span><span class="op">;</span></span>
+<span id="cb1-197"><a></a>  <span class="kw">const</span> testStart <span class="op">=</span> [<span class="dv">2</span><span class="op">,</span> <span class="dv">7</span><span class="op">,</span> <span class="dv">12</span><span class="op">,</span> <span class="dv">16</span>]<span class="op">;</span></span>
+<span id="cb1-198"><a></a>  <span class="kw">const</span> rowsHtml <span class="op">=</span> d3<span class="op">.</span><span class="fu">range</span>(rows)<span class="op">.</span><span class="fu">map</span>(r <span class="kw">=&gt;</span> {</span>
+<span id="cb1-199"><a></a>    <span class="kw">const</span> cells <span class="op">=</span> d3<span class="op">.</span><span class="fu">range</span>(cols)<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> {</span>
+<span id="cb1-200"><a></a>      <span class="kw">const</span> inTest <span class="op">=</span> c <span class="op">&gt;=</span> testStart[r] <span class="op">&amp;&amp;</span> c <span class="op">&lt;</span> testStart[r] <span class="op">+</span> <span class="dv">3</span><span class="op">;</span></span>
+<span id="cb1-201"><a></a>      <span class="cf">return</span> <span class="vs">`&lt;div style="width:22px;height:20px;background:</span><span class="sc">${</span>inTest <span class="op">?</span> <span class="st">'#5b7fbd'</span> <span class="op">:</span> <span class="st">'#7fbf7f'</span><span class="sc">}</span><span class="vs">;border:1px solid white;display:inline-block;"&gt;&lt;/div&gt;`</span><span class="op">;</span></span>
+<span id="cb1-202"><a></a>    })<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="op">;</span></span>
+<span id="cb1-203"><a></a>    <span class="cf">return</span> <span class="vs">`&lt;div style="margin-bottom:4px;"&gt;&lt;span style="display:inline-block;width:60px;font-family:sans-serif;font-size:0.75em;"&gt;Set </span><span class="sc">${</span>r<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="vs">&lt;/span&gt;</span><span class="sc">${</span>cells<span class="sc">}</span><span class="vs">&lt;/div&gt;`</span><span class="op">;</span></span>
+<span id="cb1-204"><a></a>  })<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="op">;</span></span>
+<span id="cb1-205"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div&gt;</span><span class="sc">${</span>rowsHtml<span class="sc">}</span><span class="vs">&lt;div style="font-family:sans-serif;font-size:0.75em;color:#555;margin-top:8px;"&gt;</span></span>
+<span id="cb1-206"><a></a><span class="vs">    &lt;span style="color:#2d6a4f;"&gt;■&lt;/span&gt; training &amp;nbsp; &lt;span style="color:#5b7fbd;"&gt;■&lt;/span&gt; test — test sets scattered through the series, training uses everything else</span></span>
+<span id="cb1-207"><a></a><span class="vs">  &lt;/div&gt;&lt;/div&gt;`</span></span>
+<span id="cb1-208"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-1" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</section>
+<section id="rolling-window-visually" class="slide level2">
+<h2>Rolling window, visually</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="214" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 213;"><span id="cb2-214"><a></a>{</span>
+<span id="cb2-215"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> <span class="dv">4</span><span class="op">,</span> cols <span class="op">=</span> <span class="dv">20</span><span class="op">;</span></span>
+<span id="cb2-216"><a></a>  <span class="kw">const</span> trainEnd <span class="op">=</span> [<span class="dv">6</span><span class="op">,</span> <span class="dv">9</span><span class="op">,</span> <span class="dv">12</span><span class="op">,</span> <span class="dv">15</span>]<span class="op">;</span></span>
+<span id="cb2-217"><a></a>  <span class="kw">const</span> rowsHtml <span class="op">=</span> d3<span class="op">.</span><span class="fu">range</span>(rows)<span class="op">.</span><span class="fu">map</span>(r <span class="kw">=&gt;</span> {</span>
+<span id="cb2-218"><a></a>    <span class="kw">const</span> cells <span class="op">=</span> d3<span class="op">.</span><span class="fu">range</span>(cols)<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> {</span>
+<span id="cb2-219"><a></a>      <span class="kw">let</span> color <span class="op">=</span> <span class="st">"#eee"</span><span class="op">;</span></span>
+<span id="cb2-220"><a></a>      <span class="cf">if</span> (c <span class="op">&lt;</span> trainEnd[r]) color <span class="op">=</span> <span class="st">"#2d6a4f"</span><span class="op">;</span></span>
+<span id="cb2-221"><a></a>      <span class="cf">else</span> <span class="cf">if</span> (c <span class="op">&lt;</span> trainEnd[r] <span class="op">+</span> <span class="dv">3</span>) color <span class="op">=</span> <span class="st">"#5b7fbd"</span><span class="op">;</span></span>
+<span id="cb2-222"><a></a>      <span class="cf">return</span> <span class="vs">`&lt;div style="width:22px;height:20px;background:</span><span class="sc">${</span>color<span class="sc">}</span><span class="vs">;border:1px solid white;display:inline-block;"&gt;&lt;/div&gt;`</span><span class="op">;</span></span>
+<span id="cb2-223"><a></a>    })<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="op">;</span></span>
+<span id="cb2-224"><a></a>    <span class="cf">return</span> <span class="vs">`&lt;div style="margin-bottom:4px;"&gt;&lt;span style="display:inline-block;width:60px;font-family:sans-serif;font-size:0.75em;"&gt;Set </span><span class="sc">${</span>r<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="vs">&lt;/span&gt;</span><span class="sc">${</span>cells<span class="sc">}</span><span class="vs">&lt;/div&gt;`</span><span class="op">;</span></span>
+<span id="cb2-225"><a></a>  })<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="op">;</span></span>
+<span id="cb2-226"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div&gt;</span><span class="sc">${</span>rowsHtml<span class="sc">}</span><span class="vs">&lt;div style="font-family:sans-serif;font-size:0.75em;color:#555;margin-top:8px;"&gt;</span></span>
+<span id="cb2-227"><a></a><span class="vs">    &lt;span style="color:#2d6a4f;"&gt;■&lt;/span&gt; training &amp;nbsp; &lt;span style="color:#5b7fbd;"&gt;■&lt;/span&gt; test — training always precedes test, the window rolls forward</span></span>
+<span id="cb2-228"><a></a><span class="vs">  &lt;/div&gt;&lt;/div&gt;`</span></span>
+<span id="cb2-229"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-2" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</section>
+<section id="long-horizon-trend-and-seasonality" class="slide level2">
+<h2>Long-horizon: trend and seasonality</h2>
+</section>
+<section id="two-ways-to-model-a-trend" class="slide level2">
+<h2>Two ways to model a trend</h2>
+<ul>
+<li><strong>Average change</strong>: <span class="math inline">\(\hat y_{T+H} = y_T + H \times \widehat{\Delta y}\)</span> — carries forward from the last observation</li>
+<li><strong>Trend line</strong>: <span class="math inline">\(\hat y_t = \hat\alpha + \hat\delta t\)</span> — assumes <span class="math inline">\(y\)</span> stays close to a fitted line, so one unusual last observation matters less</li>
+<li>Neither is inherently better — depends whether you trust the series to keep going from where it is, or to revert to its long-run pattern</li>
+</ul>
+</section>
+<section id="case-study-swimming-pool-ticket-sales" class="slide level2">
+<h2>Case study: swimming pool ticket sales</h2>
+<ul>
+<li>Daily ticket sales, Albuquerque, 2010–2016 — big data, real transactions</li>
+<li>Business question already on the table: forecast next year’s daily demand</li>
+<li>Clear seasonality: summer months and weekends dominate</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb3" data-startfrom="251" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 250;"><span id="cb3-251"><a></a>{</span>
+<span id="cb3-252"><a></a>  <span class="kw">const</span> monthChart <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb3-253"><a></a>    <span class="dt">width</span><span class="op">:</span> <span class="dv">340</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">260</span><span class="op">,</span></span>
+<span id="cb3-254"><a></a>    <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Month"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> swim_by_month<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">label</span>)}<span class="op">,</span></span>
+<span id="cb3-255"><a></a>    <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Avg. tickets/day"</span>}<span class="op">,</span></span>
+<span id="cb3-256"><a></a>    <span class="dt">marks</span><span class="op">:</span> [Plot<span class="op">.</span><span class="fu">barY</span>(swim_by_month<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"label"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"avg"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#5b7fbd"</span>})<span class="op">,</span> Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>])]</span>
+<span id="cb3-257"><a></a>  })</span>
+<span id="cb3-258"><a></a>  <span class="kw">const</span> dowChart <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb3-259"><a></a>    <span class="dt">width</span><span class="op">:</span> <span class="dv">340</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">260</span><span class="op">,</span></span>
+<span id="cb3-260"><a></a>    <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Day of week"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> swim_by_dow<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">label</span>)}<span class="op">,</span></span>
+<span id="cb3-261"><a></a>    <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Avg. tickets/day"</span>}<span class="op">,</span></span>
+<span id="cb3-262"><a></a>    <span class="dt">marks</span><span class="op">:</span> [Plot<span class="op">.</span><span class="fu">barY</span>(swim_by_dow<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"label"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"avg"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#2d6a4f"</span>})<span class="op">,</span> Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>])]</span>
+<span id="cb3-263"><a></a>  })</span>
+<span id="cb3-264"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div style="display:flex;gap:24px;justify-content:center;"&gt;</span><span class="sc">${</span>monthChart<span class="sc">}${</span>dowChart<span class="sc">}</span><span class="vs">&lt;/div&gt;`</span></span>
+<span id="cb3-265"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-3" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</section>
+<section id="building-up-the-model-on-real-data" class="slide level2">
+<h2>Building up the model, on real data</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a></a>model_specs <span class="op">=</span> {</span>
+<span id="cb4-2"><a></a>    <span class="st">"Trend only"</span>: <span class="st">"tickets ~ t"</span>,</span>
+<span id="cb4-3"><a></a>    <span class="st">"+ month"</span>: <span class="st">"tickets ~ t + C(month)"</span>,</span>
+<span id="cb4-4"><a></a>    <span class="st">"+ month + day of week"</span>: <span class="st">"tickets ~ t + C(month) + C(dow)"</span>,</span>
+<span id="cb4-5"><a></a>}</span>
+<span id="cb4-6"><a></a></span>
+<span id="cb4-7"><a></a>results <span class="op">=</span> []</span>
+<span id="cb4-8"><a></a><span class="cf">for</span> name, formula <span class="kw">in</span> model_specs.items():</span>
+<span id="cb4-9"><a></a>    model <span class="op">=</span> smf.ols(formula, data<span class="op">=</span>train).fit()</span>
+<span id="cb4-10"><a></a>    pred <span class="op">=</span> model.predict(test)</span>
+<span id="cb4-11"><a></a>    rmse <span class="op">=</span> np.sqrt(np.mean((test[<span class="st">"tickets"</span>] <span class="op">-</span> pred) <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb4-12"><a></a>    results.append({<span class="st">"model"</span>: name, <span class="st">"rmse"</span>: <span class="bu">round</span>(rmse, <span class="dv">1</span>)})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb5" data-startfrom="286" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 285;"><span id="cb5-286"><a></a>{</span>
+<span id="cb5-287"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:16px auto 0;font-family:sans-serif;font-size:1.05em;border-collapse:collapse;"&gt;</span></span>
+<span id="cb5-288"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;&lt;th style="padding:6px 26px;"&gt;Model&lt;/th&gt;&lt;th style="padding:6px 26px;"&gt;Holdout RMSE&lt;/th&gt;&lt;/tr&gt;</span></span>
+<span id="cb5-289"><a></a><span class="vs">    </span><span class="sc">${</span>swim_results<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="border-bottom:1px solid #ddd;"&gt;&lt;td style="padding:5px 26px;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">model</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:5px 26px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">rmse</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb5-290"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
+<span id="cb5-291"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-4" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Trained on 2010–2015, tested on 2016 — a genuine holdout the model never saw. Seasonality does almost all of the work; the linear trend barely matters on its own.</p>
+</div>
+</section>
+<section id="actual-vs.-predicted-holdout-year" class="slide level2">
+<h2>Actual vs.&nbsp;predicted, holdout year</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb6" data-startfrom="301" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 300;"><span id="cb6-301"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb6-302"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">700</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">340</span><span class="op">,</span></span>
+<span id="cb6-303"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Date"</span><span class="op">,</span> <span class="dt">type</span><span class="op">:</span> <span class="st">"utc"</span>}<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Daily ticket sales"</span>}<span class="op">,</span></span>
+<span id="cb6-304"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb6-305"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(swim_holdout_chart<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"actual"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#5b7fbd"</span>})<span class="op">,</span></span>
+<span id="cb6-306"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(swim_holdout_chart<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"predicted"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#2d6a4f"</span><span class="op">,</span> <span class="dt">strokeDasharray</span><span class="op">:</span> <span class="st">"3,3"</span>})<span class="op">,</span></span>
+<span id="cb6-307"><a></a>  ]</span>
+<span id="cb6-308"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-5" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<details>
+<summary style="cursor:pointer;color:#2d6a4f;font-size:0.9em;">
+Show the Python syntax
+</summary>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="315" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 314;"><span id="cb7-315"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.6em;line-height:1.4;</span></span>
+<span id="cb7-316"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
+<span id="cb7-317"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;import matplotlib.pyplot as plt</span></span>
+<span id="cb7-318"><a></a></span>
+<span id="cb7-319"><a></a><span class="vs"># best_model = whichever of the three had the lowest holdout RMSE</span></span>
+<span id="cb7-320"><a></a><span class="vs">predicted = best_model.predict(test)</span></span>
+<span id="cb7-321"><a></a></span>
+<span id="cb7-322"><a></a><span class="vs">plt.plot(test["date"], test["tickets"], label="Actual")</span></span>
+<span id="cb7-323"><a></a><span class="vs">plt.plot(test["date"], predicted, linestyle="--", label="Predicted")</span></span>
+<span id="cb7-324"><a></a><span class="vs">plt.ylabel("Daily ticket sales")</span></span>
+<span id="cb7-325"><a></a><span class="vs">plt.legend()</span></span>
+<span id="cb7-326"><a></a><span class="vs">plt.show()&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-6" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</details>
+<p>Blue: what actually happened in 2016. Green: what the model — trained only on 2010–2015 — predicted, before any of 2016 existed yet.</p>
+</section>
+<section id="task-does-trend-even-matter-here" class="slide level2">
+<h2>Task — does trend even matter here?</h2>
+<div class="instructions-box">
+<p><strong>Business question</strong>: is the linear trend term pulling its weight, or is seasonality carrying the whole model?</p>
+<p>Fit <code>tickets ~ C(month)</code> — month dummies only, no trend — on the same training data, and check its RMSE on the same 2016 holdout. How does it compare to the full model above? No further syntax hints.</p>
+</div>
+</section>
+<section id="what-you-should-have-found" class="slide level2">
+<h2>What you should have found</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb8" data-startfrom="344" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 343;"><span id="cb8-344"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.62em;line-height:1.4;</span></span>
+<span id="cb8-345"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
+<span id="cb8-346"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>task_swim_output_text<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-7" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="instructions-box">
+<p>Barely worse than the full model. For this data, over this horizon, seasonality is doing almost everything — a genuinely useful thing to know before building anything more complicated.</p>
+</div>
+</section>
+<section id="short-horizon-ar-and-arima" class="slide level2">
+<h2>Short-horizon: AR and ARIMA</h2>
+</section>
+<section id="autoregressive-models" class="slide level2">
+<h2>Autoregressive models</h2>
+<p><span class="math display">\[y_t^E = \beta_0 + \beta_1 y_{t-1}\]</span></p>
+<ul>
+<li>The simplest <strong>AR(1)</strong> model: today’s value predicted from yesterday’s alone</li>
+<li><span class="math inline">\(\beta_1\)</span> is just the first-order serial correlation coefficient from the workshop, wearing a forecasting hat</li>
+<li><span class="math inline">\(\beta_1 = 1\)</span> is a random walk; <span class="math inline">\(\beta_1 = 0\)</span> is white noise — nothing left to forecast from the series itself</li>
+</ul>
+</section>
+<section id="the-innovation" class="slide level2">
+<h2>The innovation</h2>
+<p><span class="math display">\[e_t = y_t - y_t^E \qquad y_t = y_t^E + e_t\]</span></p>
+<p>The <strong>innovation</strong>: what’s genuinely new in <span class="math inline">\(y_t\)</span>, on top of everything predictable from its own past. Formally the same idea as a prediction error — but now it’s <em>past</em> innovations doing the predicting.</p>
+</section>
+<section id="arima-built-from-three-letters" class="slide level2">
+<h2>ARIMA, built from three letters</h2>
+<ul>
+<li><strong>AR(p)</strong>: predict <span class="math inline">\(y_t\)</span> from up to <span class="math inline">\(p\)</span> of its own lags</li>
+<li><strong>I(d)</strong>: whether the model is written in <span class="math inline">\(y\)</span> itself (<span class="math inline">\(d=0\)</span>) or its <span class="math inline">\(d\)</span>-th difference</li>
+<li><strong>MA(q)</strong>: a linear combination of past innovations, <span class="math inline">\(y_t = e_t + \theta_1 e_{t-1} + \dots + \theta_q e_{t-q}\)</span> — captures serial correlation that drops to zero sharply after a few lags, a different pattern than AR</li>
+<li><strong>ARIMA(p,d,q)</strong> combines all three, flexible enough to approximate almost any serial correlation pattern</li>
+</ul>
+</section>
+<section id="case-study-case-shiller-home-price-index" class="slide level2">
+<h2>Case study: Case-Shiller home price index</h2>
+<ul>
+<li>Monthly home price index, Los Angeles, 2000–2018 (FRED)</li>
+<li>Train on 2000–2016, forecast 12 months into 2017 — a genuine holdout</li>
+<li>Try a few <span class="math inline">\((p,d,q)\)</span> specifications, pick by holdout RMSE — exactly the model-selection discipline from Week 10</li>
+</ul>
+<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a></a><span class="im">from</span> statsmodels.tsa.arima.model <span class="im">import</span> ARIMA</span>
+<span id="cb9-2"><a></a></span>
+<span id="cb9-3"><a></a>model <span class="op">=</span> ARIMA(train, order<span class="op">=</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">0</span>)).fit()</span>
+<span id="cb9-4"><a></a>forecast <span class="op">=</span> model.get_forecast(steps<span class="op">=</span><span class="dv">12</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="real-model-comparison" class="slide level2">
+<h2>Real model comparison</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb10" data-startfrom="396" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 395;"><span id="cb10-396"><a></a>{</span>
+<span id="cb10-397"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:16px auto 0;font-family:sans-serif;font-size:1em;border-collapse:collapse;"&gt;</span></span>
+<span id="cb10-398"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;&lt;th style="padding:6px 26px;"&gt;ARIMA(p,d,q)&lt;/th&gt;&lt;th style="padding:6px 26px;"&gt;Holdout RMSE&lt;/th&gt;&lt;th style="padding:6px 26px;"&gt;AIC&lt;/th&gt;&lt;/tr&gt;</span></span>
+<span id="cb10-399"><a></a><span class="vs">    </span><span class="sc">${</span>arima_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="border-bottom:1px solid #ddd;"&gt;&lt;td style="padding:5px 26px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">order</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:5px 26px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">rmse</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:5px 26px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">aic</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb10-400"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
+<span id="cb10-401"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-8" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p><span class="math inline">\((2,0,0)\)</span> — no differencing, fitted on the level of the index — is clearly the worst. The undifferenced series isn’t stationary, and the forecast pays for it.</p>
+</div>
+</section>
+<section id="forecast-with-uncertainty" class="slide level2">
+<h2>Forecast with uncertainty</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb11" data-startfrom="411" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 410;"><span id="cb11-411"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb11-412"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">700</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">360</span><span class="op">,</span></span>
+<span id="cb11-413"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Date"</span><span class="op">,</span> <span class="dt">type</span><span class="op">:</span> <span class="st">"utc"</span>}<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Case-Shiller price index"</span>}<span class="op">,</span></span>
+<span id="cb11-414"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb11-415"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(arima_forecast_chart<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"actual"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#5b7fbd"</span>})<span class="op">,</span></span>
+<span id="cb11-416"><a></a>    Plot<span class="op">.</span><span class="fu">areaY</span>(arima_forecast_chart<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">lo</span> <span class="op">!==</span> <span class="kw">null</span>)<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y1</span><span class="op">:</span> <span class="st">"lo"</span><span class="op">,</span> <span class="dt">y2</span><span class="op">:</span> <span class="st">"hi"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#2d6a4f"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.15</span>})<span class="op">,</span></span>
+<span id="cb11-417"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(arima_forecast_chart<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"predicted"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#2d6a4f"</span><span class="op">,</span> <span class="dt">strokeDasharray</span><span class="op">:</span> <span class="st">"3,3"</span>})<span class="op">,</span></span>
+<span id="cb11-418"><a></a>  ]</span>
+<span id="cb11-419"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-9" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb12" data-startfrom="423" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 422;"><span id="cb12-423"><a></a><span class="fu">html</span><span class="vs">`&lt;p&gt;Best model: &lt;b&gt;</span><span class="sc">${</span>best_arima_label<span class="sc">}</span><span class="vs">&lt;/b&gt;, holdout RMSE &lt;b&gt;</span><span class="sc">${</span>best_arima_rmse_display<span class="sc">}</span><span class="vs">&lt;/b&gt;. The shaded band is a genuine 80% prediction interval — and it widens the further out the forecast reaches, exactly as Week 10's prediction-interval logic predicts.&lt;/p&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-10" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</section>
+<section id="var-bringing-in-other-variables" class="slide level2">
+<h2>VAR — bringing in other variables</h2>
+</section>
+<section id="forecasting-with-help-from-x" class="slide level2">
+<h2>Forecasting with help from x</h2>
+<ul>
+<li>Short-horizon forecasts often improve with other variables — but now you need <strong>forecasts of those too</strong></li>
+<li><strong>Vector autoregression (VAR)</strong>: a set of time series regressions, one per variable, where every equation’s right-hand side is lags of every variable in the system</li>
+</ul>
+<p><span class="math display">\[y_t^E = \beta_{10} + \beta_{11}y_{t-1} + \beta_{12}x_{t-1} \qquad x_t^E = \beta_{20} + \beta_{21}y_{t-1} + \beta_{22}x_{t-1}\]</span></p>
+<ul>
+<li>More coefficients to estimate means more estimation error — the hope is that <span class="math inline">\(x\)</span> still nets out an improvement</li>
+</ul>
+</section>
+<section id="does-it-help-here" class="slide level2">
+<h2>Does it help here?</h2>
+<p>Adding California’s unemployment rate to a VAR(2), forecasting the same 2017 holdout:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a></a><span class="im">from</span> statsmodels.tsa.api <span class="im">import</span> VAR</span>
+<span id="cb13-2"><a></a></span>
+<span id="cb13-3"><a></a><span class="co"># Both series first-differenced — VAR needs stationary inputs, same logic as Section C</span></span>
+<span id="cb13-4"><a></a>var_train <span class="op">=</span> df[[<span class="st">"price_index_sa"</span>, <span class="st">"unemployment_sa"</span>]].diff().dropna()</span>
+<span id="cb13-5"><a></a></span>
+<span id="cb13-6"><a></a>var_model <span class="op">=</span> VAR(var_train).fit(<span class="dv">2</span>)</span>
+<span id="cb13-7"><a></a>var_forecast_diffs <span class="op">=</span> var_model.forecast(var_train.values[<span class="op">-</span><span class="dv">2</span>:], steps<span class="op">=</span><span class="bu">len</span>(test))</span>
+<span id="cb13-8"><a></a></span>
+<span id="cb13-9"><a></a><span class="co"># Undo the differencing: cumulative sum of forecast differences, added back onto</span></span>
+<span id="cb13-10"><a></a><span class="co"># the last known level</span></span>
+<span id="cb13-11"><a></a>var_levels <span class="op">=</span> train.iloc[<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span> np.cumsum(var_forecast_diffs[:, <span class="dv">0</span>])</span>
+<span id="cb13-12"><a></a>var_rmse <span class="op">=</span> np.sqrt(np.mean((test.values <span class="op">-</span> var_levels) <span class="op">**</span> <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb14" data-startfrom="461" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 460;"><span id="cb14-461"><a></a>{</span>
+<span id="cb14-462"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div style="text-align:center;padding-top:10px;"&gt;</span></span>
+<span id="cb14-463"><a></a><span class="vs">    &lt;table style="margin:0 auto;font-family:sans-serif;font-size:1.1em;border-collapse:collapse;"&gt;</span></span>
+<span id="cb14-464"><a></a><span class="vs">      &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;&lt;th style="padding:6px 26px;"&gt;Model&lt;/th&gt;&lt;th style="padding:6px 26px;"&gt;Holdout RMSE&lt;/th&gt;&lt;/tr&gt;</span></span>
+<span id="cb14-465"><a></a><span class="vs">      &lt;tr style="border-bottom:1px solid #ddd;"&gt;&lt;td style="padding:5px 26px;"&gt;Best ARIMA (&lt;code&gt;</span><span class="sc">${</span>best_arima_label<span class="sc">}</span><span class="vs">&lt;/code&gt;)&lt;/td&gt;&lt;td style="padding:5px 26px;text-align:center;"&gt;</span><span class="sc">${</span>best_arima_rmse_display<span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;/tr&gt;</span></span>
+<span id="cb14-466"><a></a><span class="vs">      &lt;tr&gt;&lt;td style="padding:5px 26px;"&gt;VAR(2) with unemployment&lt;/td&gt;&lt;td style="padding:5px 26px;text-align:center;font-weight:700;"&gt;</span><span class="sc">${</span>var_rmse_display<span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;/tr&gt;</span></span>
+<span id="cb14-467"><a></a><span class="vs">    &lt;/table&gt;</span></span>
+<span id="cb14-468"><a></a><span class="vs">  &lt;/div&gt;`</span></span>
+<span id="cb14-469"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-11" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Here, VAR genuinely improves on the best ARIMA — unemployment carries real information about where home prices are heading. Not guaranteed in general: Gabor &amp; Kézdi’s own version of this case study found VAR <em>didn’t</em> help on their sample window. Same method, different window, different answer — a real lesson about external validity on its own.</p>
+</div>
+</section>
+<section id="external-validity-in-time-series" class="slide level2">
+<h2>External validity in time series</h2>
+</section>
+<section id="the-one-assumption-everything-rests-on" class="slide level2">
+<h2>The one assumption everything rests on</h2>
+<ul>
+<li>External validity in forecasting means <strong>stationarity</strong>: the patterns you learned from the training data — trend, seasonality, correlation structure — have to still hold in the live data</li>
+<li>This is a much bigger risk in time series than in cross-sectional prediction, because forecasting is <em>by design</em> about a period you’ve never observed</li>
+<li>No amount of cross-validation on historical data can fully rule this out — a genuine structural break (a pandemic, a housing crash) breaks every model here equally</li>
+</ul>
+</section>
+<section id="summary" class="slide level2">
+<h2>Summary</h2>
+<ul>
+<li>Forecasting is prediction with a time index — but cross-validation has to respect order: inserted test sets for long horizons, rolling windows for short ones</li>
+<li>Long-horizon forecasts lean on trend and seasonality — often seasonality alone does most of the work</li>
+<li>Short-horizon forecasts lean on serial correlation — AR and ARIMA models capture it directly, chosen by holdout RMSE like any other prediction model</li>
+<li>VAR can improve a forecast by bringing in other variables, at the cost of needing to forecast those too — and whether it actually helps is itself an empirical, not automatic, question</li>
+</ul>
+</section>
+<section id="coming-up" class="slide level2">
+<h2>Coming up</h2>
+<div style="text-align: center; padding-top: 60px;">
+<p><span style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"><strong>Week 12: Assessment Review</strong></span></p>
+<div class="fragment" style="padding-top:40px;">
+<p><em>The module’s final week</em></p>
+</div>
+</div>
+
+
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'fade',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1280,
+
+        height: 720,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 8.0e-2,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script type="ojs-module-contents">
+    eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgY29uc3Qgcm93cyA9IDQsIGNvbHMgPSAyMDtcbiAgY29uc3QgdGVzdFN0YXJ0ID0gWzIsIDcsIDEyLCAxNl07XG4gIGNvbnN0IHJvd3NIdG1sID0gZDMucmFuZ2Uocm93cykubWFwKHIgPT4ge1xuICAgIGNvbnN0IGNlbGxzID0gZDMucmFuZ2UoY29scykubWFwKGMgPT4ge1xuICAgICAgY29uc3QgaW5UZXN0ID0gYyA+PSB0ZXN0U3RhcnRbcl0gJiYgYyA8IHRlc3RTdGFydFtyXSArIDM7XG4gICAgICByZXR1cm4gYDxkaXYgc3R5bGU9XCJ3aWR0aDoyMnB4O2hlaWdodDoyMHB4O2JhY2tncm91bmQ6JHtpblRlc3QgPyAnIzViN2ZiZCcgOiAnIzdmYmY3Zid9O2JvcmRlcjoxcHggc29saWQgd2hpdGU7ZGlzcGxheTppbmxpbmUtYmxvY2s7XCI+PC9kaXY+YDtcbiAgICB9KS5qb2luKCcnKTtcbiAgICByZXR1cm4gYDxkaXYgc3R5bGU9XCJtYXJnaW4tYm90dG9tOjRweDtcIj48c3BhbiBzdHlsZT1cImRpc3BsYXk6aW5saW5lLWJsb2NrO3dpZHRoOjYwcHg7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MC43NWVtO1wiPlNldCAke3IrMX08L3NwYW4+JHtjZWxsc308L2Rpdj5gO1xuICB9KS5qb2luKCcnKTtcbiAgcmV0dXJuIGh0bWxgPGRpdj4ke3Jvd3NIdG1sfTxkaXYgc3R5bGU9XCJmb250LWZhbWlseTpzYW5zLXNlcmlmO2ZvbnQtc2l6ZTowLjc1ZW07Y29sb3I6IzU1NTttYXJnaW4tdG9wOjhweDtcIj5cbiAgICA8c3BhbiBzdHlsZT1cImNvbG9yOiMyZDZhNGY7XCI+4pagPC9zcGFuPiB0cmFpbmluZyAmbmJzcDsgPHNwYW4gc3R5bGU9XCJjb2xvcjojNWI3ZmJkO1wiPuKWoDwvc3Bhbj4gdGVzdCDigJQgdGVzdCBzZXRzIHNjYXR0ZXJlZCB0aHJvdWdoIHRoZSBzZXJpZXMsIHRyYWluaW5nIHVzZXMgZXZlcnl0aGluZyBlbHNlXG4gIDwvZGl2PjwvZGl2PmBcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMiIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgY29uc3Qgcm93cyA9IDQsIGNvbHMgPSAyMDtcbiAgY29uc3QgdHJhaW5FbmQgPSBbNiwgOSwgMTIsIDE1XTtcbiAgY29uc3Qgcm93c0h0bWwgPSBkMy5yYW5nZShyb3dzKS5tYXAociA9PiB7XG4gICAgY29uc3QgY2VsbHMgPSBkMy5yYW5nZShjb2xzKS5tYXAoYyA9PiB7XG4gICAgICBsZXQgY29sb3IgPSBcIiNlZWVcIjtcbiAgICAgIGlmIChjIDwgdHJhaW5FbmRbcl0pIGNvbG9yID0gXCIjMmQ2YTRmXCI7XG4gICAgICBlbHNlIGlmIChjIDwgdHJhaW5FbmRbcl0gKyAzKSBjb2xvciA9IFwiIzViN2ZiZFwiO1xuICAgICAgcmV0dXJuIGA8ZGl2IHN0eWxlPVwid2lkdGg6MjJweDtoZWlnaHQ6MjBweDtiYWNrZ3JvdW5kOiR7Y29sb3J9O2JvcmRlcjoxcHggc29saWQgd2hpdGU7ZGlzcGxheTppbmxpbmUtYmxvY2s7XCI+PC9kaXY+YDtcbiAgICB9KS5qb2luKCcnKTtcbiAgICByZXR1cm4gYDxkaXYgc3R5bGU9XCJtYXJnaW4tYm90dG9tOjRweDtcIj48c3BhbiBzdHlsZT1cImRpc3BsYXk6aW5saW5lLWJsb2NrO3dpZHRoOjYwcHg7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MC43NWVtO1wiPlNldCAke3IrMX08L3NwYW4+JHtjZWxsc308L2Rpdj5gO1xuICB9KS5qb2luKCcnKTtcbiAgcmV0dXJuIGh0bWxgPGRpdj4ke3Jvd3NIdG1sfTxkaXYgc3R5bGU9XCJmb250LWZhbWlseTpzYW5zLXNlcmlmO2ZvbnQtc2l6ZTowLjc1ZW07Y29sb3I6IzU1NTttYXJnaW4tdG9wOjhweDtcIj5cbiAgICA8c3BhbiBzdHlsZT1cImNvbG9yOiMyZDZhNGY7XCI+4pagPC9zcGFuPiB0cmFpbmluZyAmbmJzcDsgPHNwYW4gc3R5bGU9XCJjb2xvcjojNWI3ZmJkO1wiPuKWoDwvc3Bhbj4gdGVzdCDigJQgdHJhaW5pbmcgYWx3YXlzIHByZWNlZGVzIHRlc3QsIHRoZSB3aW5kb3cgcm9sbHMgZm9yd2FyZFxuICA8L2Rpdj48L2Rpdj5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTMiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIGNvbnN0IG1vbnRoQ2hhcnQgPSBQbG90LnBsb3Qoe1xuICAgIHdpZHRoOiAzNDAsIGhlaWdodDogMjYwLFxuICAgIHg6IHtsYWJlbDogXCJNb250aFwiLCBkb21haW46IHN3aW1fYnlfbW9udGgubWFwKGQgPT4gZC5sYWJlbCl9LFxuICAgIHk6IHtsYWJlbDogXCJBdmcuIHRpY2tldHMvZGF5XCJ9LFxuICAgIG1hcmtzOiBbUGxvdC5iYXJZKHN3aW1fYnlfbW9udGgsIHt4OiBcImxhYmVsXCIsIHk6IFwiYXZnXCIsIGZpbGw6IFwiIzViN2ZiZFwifSksIFBsb3QucnVsZVkoWzBdKV1cbiAgfSlcbiAgY29uc3QgZG93Q2hhcnQgPSBQbG90LnBsb3Qoe1xuICAgIHdpZHRoOiAzNDAsIGhlaWdodDogMjYwLFxuICAgIHg6IHtsYWJlbDogXCJEYXkgb2Ygd2Vla1wiLCBkb21haW46IHN3aW1fYnlfZG93Lm1hcChkID0+IGQubGFiZWwpfSxcbiAgICB5OiB7bGFiZWw6IFwiQXZnLiB0aWNrZXRzL2RheVwifSxcbiAgICBtYXJrczogW1Bsb3QuYmFyWShzd2ltX2J5X2Rvdywge3g6IFwibGFiZWxcIiwgeTogXCJhdmdcIiwgZmlsbDogXCIjMmQ2YTRmXCJ9KSwgUGxvdC5ydWxlWShbMF0pXVxuICB9KVxuICByZXR1cm4gaHRtbGA8ZGl2IHN0eWxlPVwiZGlzcGxheTpmbGV4O2dhcDoyNHB4O2p1c3RpZnktY29udGVudDpjZW50ZXI7XCI+JHttb250aENoYXJ0fSR7ZG93Q2hhcnR9PC9kaXY+YFxufVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC00IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICByZXR1cm4gaHRtbGA8dGFibGUgc3R5bGU9XCJtYXJnaW46MTZweCBhdXRvIDA7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MS4wNWVtO2JvcmRlci1jb2xsYXBzZTpjb2xsYXBzZTtcIj5cbiAgICA8dHIgc3R5bGU9XCJib3JkZXItYm90dG9tOjJweCBzb2xpZCAjMWExYTJlO1wiPjx0aCBzdHlsZT1cInBhZGRpbmc6NnB4IDI2cHg7XCI+TW9kZWw8L3RoPjx0aCBzdHlsZT1cInBhZGRpbmc6NnB4IDI2cHg7XCI+SG9sZG91dCBSTVNFPC90aD48L3RyPlxuICAgICR7c3dpbV9yZXN1bHRzLm1hcChkID0+IGA8dHIgc3R5bGU9XCJib3JkZXItYm90dG9tOjFweCBzb2xpZCAjZGRkO1wiPjx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDI2cHg7XCI+JHtkLm1vZGVsfTwvdGQ+PHRkIHN0eWxlPVwicGFkZGluZzo1cHggMjZweDt0ZXh0LWFsaWduOmNlbnRlcjtcIj4ke2Qucm1zZX08L3RkPjwvdHI+YCkuam9pbignJyl9XG4gIDwvdGFibGU+YFxufVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC01IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiUGxvdC5wbG90KHtcbiAgd2lkdGg6IDcwMCwgaGVpZ2h0OiAzNDAsXG4gIHg6IHtsYWJlbDogXCJEYXRlXCIsIHR5cGU6IFwidXRjXCJ9LCB5OiB7bGFiZWw6IFwiRGFpbHkgdGlja2V0IHNhbGVzXCJ9LFxuICBtYXJrczogW1xuICAgIFBsb3QubGluZShzd2ltX2hvbGRvdXRfY2hhcnQsIHt4OiBcImRhdGVcIiwgeTogXCJhY3R1YWxcIiwgc3Ryb2tlOiBcIiM1YjdmYmRcIn0pLFxuICAgIFBsb3QubGluZShzd2ltX2hvbGRvdXRfY2hhcnQsIHt4OiBcImRhdGVcIiwgeTogXCJwcmVkaWN0ZWRcIiwgc3Ryb2tlOiBcIiMyZDZhNGZcIiwgc3Ryb2tlRGFzaGFycmF5OiBcIjMsM1wifSksXG4gIF1cbn0pXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTYiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJodG1sYDxwcmUgc3R5bGU9XCJmb250LWZhbWlseTonU0YgTW9ubycsJ01lbmxvJyxtb25vc3BhY2U7Zm9udC1zaXplOjAuNmVtO2xpbmUtaGVpZ2h0OjEuNDtcbiAgICAgICAgICAgICAgICAgIGJhY2tncm91bmQ6I2Y2ZjZmODtib3JkZXI6MXB4IHNvbGlkICNlMGUwZTY7Ym9yZGVyLXJhZGl1czo2cHg7XG4gICAgICAgICAgICAgICAgICBwYWRkaW5nOjhweCAxNHB4O292ZXJmbG93LXg6YXV0bzt3aGl0ZS1zcGFjZTpwcmU7XCI+aW1wb3J0IG1hdHBsb3RsaWIucHlwbG90IGFzIHBsdFxuXG4jIGJlc3RfbW9kZWwgPSB3aGljaGV2ZXIgb2YgdGhlIHRocmVlIGhhZCB0aGUgbG93ZXN0IGhvbGRvdXQgUk1TRVxucHJlZGljdGVkID0gYmVzdF9tb2RlbC5wcmVkaWN0KHRlc3QpXG5cbnBsdC5wbG90KHRlc3RbXCJkYXRlXCJdLCB0ZXN0W1widGlja2V0c1wiXSwgbGFiZWw9XCJBY3R1YWxcIilcbnBsdC5wbG90KHRlc3RbXCJkYXRlXCJdLCBwcmVkaWN0ZWQsIGxpbmVzdHlsZT1cIi0tXCIsIGxhYmVsPVwiUHJlZGljdGVkXCIpXG5wbHQueWxhYmVsKFwiRGFpbHkgdGlja2V0IHNhbGVzXCIpXG5wbHQubGVnZW5kKClcbnBsdC5zaG93KCk8L3ByZT5gXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTciLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJodG1sYDxwcmUgc3R5bGU9XCJmb250LWZhbWlseTonU0YgTW9ubycsJ01lbmxvJyxtb25vc3BhY2U7Zm9udC1zaXplOjAuNjJlbTtsaW5lLWhlaWdodDoxLjQ7XG4gICAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kOiNmNmY2Zjg7Ym9yZGVyOjFweCBzb2xpZCAjZTBlMGU2O2JvcmRlci1yYWRpdXM6NnB4O1xuICAgICAgICAgICAgICAgICAgcGFkZGluZzo4cHggMTRweDtvdmVyZmxvdy14OmF1dG87d2hpdGUtc3BhY2U6cHJlO1wiPiR7dGFza19zd2ltX291dHB1dF90ZXh0fTwvcHJlPmBcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtOCIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgcmV0dXJuIGh0bWxgPHRhYmxlIHN0eWxlPVwibWFyZ2luOjE2cHggYXV0byAwO2ZvbnQtZmFtaWx5OnNhbnMtc2VyaWY7Zm9udC1zaXplOjFlbTtib3JkZXItY29sbGFwc2U6Y29sbGFwc2U7XCI+XG4gICAgPHRyIHN0eWxlPVwiYm9yZGVyLWJvdHRvbToycHggc29saWQgIzFhMWEyZTtcIj48dGggc3R5bGU9XCJwYWRkaW5nOjZweCAyNnB4O1wiPkFSSU1BKHAsZCxxKTwvdGg+PHRoIHN0eWxlPVwicGFkZGluZzo2cHggMjZweDtcIj5Ib2xkb3V0IFJNU0U8L3RoPjx0aCBzdHlsZT1cInBhZGRpbmc6NnB4IDI2cHg7XCI+QUlDPC90aD48L3RyPlxuICAgICR7YXJpbWFfcm93cy5tYXAoZCA9PiBgPHRyIHN0eWxlPVwiYm9yZGVyLWJvdHRvbToxcHggc29saWQgI2RkZDtcIj48dGQgc3R5bGU9XCJwYWRkaW5nOjVweCAyNnB4O3RleHQtYWxpZ246Y2VudGVyO1wiPiR7ZC5vcmRlcn08L3RkPjx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDI2cHg7dGV4dC1hbGlnbjpjZW50ZXI7XCI+JHtkLnJtc2V9PC90ZD48dGQgc3R5bGU9XCJwYWRkaW5nOjVweCAyNnB4O3RleHQtYWxpZ246Y2VudGVyO1wiPiR7ZC5haWN9PC90ZD48L3RyPmApLmpvaW4oJycpfVxuICA8L3RhYmxlPmBcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtOSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IlBsb3QucGxvdCh7XG4gIHdpZHRoOiA3MDAsIGhlaWdodDogMzYwLFxuICB4OiB7bGFiZWw6IFwiRGF0ZVwiLCB0eXBlOiBcInV0Y1wifSwgeToge2xhYmVsOiBcIkNhc2UtU2hpbGxlciBwcmljZSBpbmRleFwifSxcbiAgbWFya3M6IFtcbiAgICBQbG90LmxpbmUoYXJpbWFfZm9yZWNhc3RfY2hhcnQsIHt4OiBcImRhdGVcIiwgeTogXCJhY3R1YWxcIiwgc3Ryb2tlOiBcIiM1YjdmYmRcIn0pLFxuICAgIFBsb3QuYXJlYVkoYXJpbWFfZm9yZWNhc3RfY2hhcnQuZmlsdGVyKGQgPT4gZC5sbyAhPT0gbnVsbCksIHt4OiBcImRhdGVcIiwgeTE6IFwibG9cIiwgeTI6IFwiaGlcIiwgZmlsbDogXCIjMmQ2YTRmXCIsIGZpbGxPcGFjaXR5OiAwLjE1fSksXG4gICAgUGxvdC5saW5lKGFyaW1hX2ZvcmVjYXN0X2NoYXJ0LCB7eDogXCJkYXRlXCIsIHk6IFwicHJlZGljdGVkXCIsIHN0cm9rZTogXCIjMmQ2YTRmXCIsIHN0cm9rZURhc2hhcnJheTogXCIzLDNcIn0pLFxuICBdXG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC0xMCIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPHA+QmVzdCBtb2RlbDogPGI+JHtiZXN0X2FyaW1hX2xhYmVsfTwvYj4sIGhvbGRvdXQgUk1TRSA8Yj4ke2Jlc3RfYXJpbWFfcm1zZV9kaXNwbGF5fTwvYj4uIFRoZSBzaGFkZWQgYmFuZCBpcyBhIGdlbnVpbmUgODAlIHByZWRpY3Rpb24gaW50ZXJ2YWwg4oCUIGFuZCBpdCB3aWRlbnMgdGhlIGZ1cnRoZXIgb3V0IHRoZSBmb3JlY2FzdCByZWFjaGVzLCBleGFjdGx5IGFzIFdlZWsgMTAncyBwcmVkaWN0aW9uLWludGVydmFsIGxvZ2ljIHByZWRpY3RzLjwvcD5gXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTExIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICByZXR1cm4gaHRtbGA8ZGl2IHN0eWxlPVwidGV4dC1hbGlnbjpjZW50ZXI7cGFkZGluZy10b3A6MTBweDtcIj5cbiAgICA8dGFibGUgc3R5bGU9XCJtYXJnaW46MCBhdXRvO2ZvbnQtZmFtaWx5OnNhbnMtc2VyaWY7Zm9udC1zaXplOjEuMWVtO2JvcmRlci1jb2xsYXBzZTpjb2xsYXBzZTtcIj5cbiAgICAgIDx0ciBzdHlsZT1cImJvcmRlci1ib3R0b206MnB4IHNvbGlkICMxYTFhMmU7XCI+PHRoIHN0eWxlPVwicGFkZGluZzo2cHggMjZweDtcIj5Nb2RlbDwvdGg+PHRoIHN0eWxlPVwicGFkZGluZzo2cHggMjZweDtcIj5Ib2xkb3V0IFJNU0U8L3RoPjwvdHI+XG4gICAgICA8dHIgc3R5bGU9XCJib3JkZXItYm90dG9tOjFweCBzb2xpZCAjZGRkO1wiPjx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDI2cHg7XCI+QmVzdCBBUklNQSAoPGNvZGU+JHtiZXN0X2FyaW1hX2xhYmVsfTwvY29kZT4pPC90ZD48dGQgc3R5bGU9XCJwYWRkaW5nOjVweCAyNnB4O3RleHQtYWxpZ246Y2VudGVyO1wiPiR7YmVzdF9hcmltYV9ybXNlX2Rpc3BsYXl9PC90ZD48L3RyPlxuICAgICAgPHRyPjx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDI2cHg7XCI+VkFSKDIpIHdpdGggdW5lbXBsb3ltZW50PC90ZD48dGQgc3R5bGU9XCJwYWRkaW5nOjVweCAyNnB4O3RleHQtYWxpZ246Y2VudGVyO2ZvbnQtd2VpZ2h0OjcwMDtcIj4ke3Zhcl9ybXNlX2Rpc3BsYXl9PC90ZD48L3RyPlxuICAgIDwvdGFibGU+XG4gIDwvZGl2PmBcbn1cbiJ9XX0=
+    </script>
+    <script type="module">
+    if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+    window._ojs.paths.runtimeToDoc = "../..";
+    window._ojs.paths.runtimeToRoot = "../..";
+    window._ojs.paths.docToRoot = "";
+    window._ojs.selfContained = false;
+    window._ojs.runtime.interpretFromScriptTags();
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
+              }
+            }
+            return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

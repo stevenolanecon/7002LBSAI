@@ -1,0 +1,898 @@
+---
+title: "Simple Regression: The OLS Estimator"
+subtitle: "7002LBSAI Research Methods in Analytics — Week 4"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="stylesheet" href="styles-slides.css?v=20260914">
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{python}
+import pandas as pd
+
+# This is the TEST-DATA deck — always reads the synthetic placeholder, never
+# the live Google Sheet. See week4-live.qmd for the in-class version.
+df = pd.read_csv("data/synthetic_reaction_times.csv")
+# df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIOZ03GpUJgqvGVmI9cih169mMq0ajLMj6a0VTd2tytB3K5BmX5AUiKQ8FKIL6KUKEcgb-1LR-1eM/pub?gid=0&single=true&output=csv")
+
+if 'name' in df.columns and 'student_name' not in df.columns:
+    df = df.rename(columns={'name': 'student_name'})
+if 'finger_mm' not in df.columns:
+    df['finger_mm'] = None
+df['finger_mm'] = pd.to_numeric(df['finger_mm'], errors='coerce')
+
+student_summary = (
+    df.groupby('student_name')
+    .agg(mean_rt=('reaction_time_ms', 'mean'), device=('device', 'first'), finger_mm=('finger_mm', 'first'))
+    .reset_index()
+    .round(1)
+)
+
+device_stats = (
+    df.groupby('device')['reaction_time_ms']
+    .agg(mean='mean', sd='std', n='count')
+    .reset_index()
+    .round(2)
+)
+
+trial_data = df[['reaction_time_ms', 'finger_mm', 'device']].copy()
+
+# NaN is not valid JSON — clean before ojs_define
+student_summary_clean = student_summary.astype(object).where(student_summary.notna(), None)
+device_stats_clean = device_stats.astype(object).where(device_stats.notna(), None)
+trial_data_clean = trial_data.astype(object).where(trial_data.notna(), None)
+
+ojs_define(
+    student_summary = student_summary_clean.to_dict(orient='records'),
+    device_stats     = device_stats_clean.to_dict(orient='records'),
+    trial_data       = trial_data_clean.to_dict(orient='records'),
+)
+```
+
+## {background-color="#1a1a2e"}
+
+::: {style="text-align: center; padding-top: 180px;"}
+[**Simple regression**]{style="font-size: 2.2em; color: white;"}
+
+[Week 3 found a weak correlation. Today: turn that into a model, and be honest about what it's worth.]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+:::
+
+## From correlation to formula
+
+::: {.instructions-box}
+Week 3 found a weak correlation between finger length and reaction time. HR wants to know: can we turn that into an actual formula — a screening tool?
+:::
+
+::: {.fragment}
+**Naive answer:** draw a line through the points, read off the equation, done.
+
+**Why it's not that simple:** which line, by what criterion? What does the slope actually mean? And a weak correlation doesn't become a good predictor just because you fit a line through it.
+:::
+
+---
+
+## What is regression?
+
+---
+
+## Regression: comparing conditional means
+
+Regression uncovers the pattern of association between **y** (the outcome we care about) and **x** — by comparing the *average* value of y across different values of x.
+
+$$E[y \mid x] = f(x) \qquad \text{shorthand: } y^E = f(x)$$
+
+- **Non-parametric regression** — no functional form imposed; flexible, but needs many observations per x value (this is exactly the bin-scatter from Week 3)
+- **Parametric regression** — imposes a functional form (e.g. linear); more restrictive, but interpretable with far less data
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Policy*, Ch. 7
+:::
+
+## Non-parametric regression: LOWESS
+
+Bin-scatter gives one average per bracket. **LOWESS** (locally weighted scatterplot smoothing, "loess") gives a smooth curve instead — a predicted value at *every* x, not just at bin midpoints.
+
+- It's a moving, weighted local average: points near x count a lot, points far from x count little
+- The **bandwidth** controls how "local" — wide = smoother, but can miss real bends; narrow = tracks the pattern closely, but looks rugged
+- Like bin-scatter: great for spotting shape, gives no interpretable number
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 7
+:::
+
+## Try a bandwidth on our own data
+
+```{ojs}
+viewof bandwidth = {
+  const f = html`<div style="display:flex;align-items:center;gap:14px;font-size:13px;
+                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;">
+    <span style="color:#666;white-space:nowrap;">Bandwidth (mm)</span>
+    <input type="range" min="1" max="15" step="0.5" value="4"
+           style="width:200px;cursor:pointer;accent-color:#457b9d;">
+    <span id="bw-label" style="font-weight:700;min-width:36px;color:#457b9d;">4.0</span>
+  </div>`
+  const slider = f.querySelector('input')
+  const label  = f.querySelector('#bw-label')
+  slider.addEventListener('input', () => {
+    label.textContent = (+slider.value).toFixed(1)
+    f.dispatchEvent(new CustomEvent('input'))
+  })
+  Object.defineProperty(f, 'value', { get: () => +slider.value })
+  return f
+}
+```
+
+```{ojs}
+{
+  const rows = trial_data.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 10) return html`<p style="color:#aaa;">Not enough data yet.</p>`
+  const [xmin, xmax] = d3.extent(rows, d => d.finger_mm)
+  const grid = d3.range(xmin, xmax, (xmax - xmin) / 60)
+  const smooth = grid.map(x0 => {
+    const weights = rows.map(d => Math.exp(-0.5 * ((d.finger_mm - x0) / bandwidth) ** 2))
+    const wsum = d3.sum(weights)
+    const yhat = d3.sum(rows.map((d, i) => weights[i] * d.reaction_time_ms)) / wsum
+    return { finger_mm: x0, yhat }
+  })
+  return Plot.plot({
+    height: 380, marginLeft: 60,
+    x: { label: "Finger length (mm)" }, y: { label: "Reaction time (ms)" },
+    marks: [
+      Plot.dot(rows, { x: "finger_mm", y: "reaction_time_ms", fill: "#1a1a2e", r: 2.5, fillOpacity: 0.35 }),
+      Plot.line(smooth, { x: "finger_mm", y: "yhat", stroke: "#e63946", strokeWidth: 2.5 }),
+    ]
+  })
+}
+```
+
+::: {.instructions-box}
+Drag the bandwidth from narrow to wide. At what point does the curve stop looking like noise and start looking like a nearly straight line? What does that tell you about how much curvature is really in this relationship?
+:::
+
+## Two goals, kept separate
+
+- **Predictive analysis** — what to expect of y for a given x. Concerned with the *predicted value*.
+- **Causal analysis** — the effect of x on y. Concerned with a *parameter* — what would y be if we changed x?
+
+::: {.fragment}
+Regression itself doesn't know which goal you have. It's a method of **comparison** either way — the interpretation you're allowed to make is what changes.
+:::
+
+---
+
+## Linear regression
+
+---
+
+## From y to $y^E$ {.smaller}
+
+Every individual observation's y is really:
+
+$$y = \alpha + \beta x + \varepsilon$$
+
+- $\varepsilon$ is everything else affecting y — other factors, individual noise, luck. We never observe it directly.
+- **Key assumption:** $E[\varepsilon \mid x] = 0$ — on average, the error is unrelated to x; x tells us nothing about which way $\varepsilon$ leans.
+
+::: {.fragment}
+Take the expectation of both sides:
+
+$$E[y \mid x] = \alpha + \beta x + \underbrace{E[\varepsilon \mid x]}_{=\,0} = \alpha + \beta x$$
+
+The error term doesn't vanish from reality — it **averages to zero** by assumption. What's left is exactly $y^E$: our shorthand for "the part of y that x explains, once the noise is averaged away."
+:::
+
+::: {.fragment}
+Individual students will still scatter around this line by their own $\varepsilon$ — as the finger length isn't the only thing driving reaction time.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 7
+:::
+
+## Imposing a line
+
+$$y^E = \alpha + \beta x$$
+
+- Linear regression imposes **linearity in the coefficients** — the simplest parametric form
+- Two coefficients: the **intercept** ($\alpha$) and the **slope** ($\beta$)
+- Linearity is an assumption, or an approximation — even if the true pattern curves, a line approximates its *average* slope
+
+::: {.fragment}
+$\alpha$: the average value of y when x is zero —
+
+$$E[y \mid x=0] = \alpha + \beta \times 0 = \alpha$$
+
+$\beta$: the expected difference in y for observations one unit apart in x —
+
+$$E[y \mid x=x_0+1] - E[y \mid x=x_0] = \big(\alpha + \beta(x_0+1)\big) - \big(\alpha + \beta x_0\big) = \beta$$
+:::
+
+## Precise language matters
+
+Good ways to say what $\beta$ means: *"y is higher, on average, by $\beta$ for observations with a one-unit higher x."*
+
+::: {.instructions-box}
+**Avoid** "increases/decreases" — implies something changing over time. **Avoid** "effect" — implies causation. Neither is justified by a regression alone, on observational data.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 7
+:::
+
+## Task — interpret our own regression
+
+```{ojs}
+{
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) return html`<p style="color:#aaa;">Not enough data yet.</p>`
+  const xbar = d3.mean(rows, d => d.finger_mm), ybar = d3.mean(rows, d => d.mean_rt)
+  const cov = d3.mean(rows, d => (d.finger_mm - xbar) * (d.mean_rt - ybar))
+  const varx = d3.mean(rows, d => (d.finger_mm - xbar) ** 2)
+  const beta = cov / varx
+  const alpha = ybar - beta * xbar
+  return html`<p style="font-family:sans-serif;font-size:1.1em;">Fitted line: mean reaction time = <strong>${alpha.toFixed(1)}</strong> + (<strong>${beta.toFixed(2)}</strong>) × finger length</p>`
+}
+```
+
+::: {.instructions-box}
+In your own words: what does the intercept mean here? What does the slope mean? Is either number, on its own, useful to HR?
+:::
+
+## Our regression, visualised
+
+```{ojs}
+{
+  const rows  = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  const trials = trial_data.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) return html`<p style="color:#aaa;">Not enough data yet.</p>`
+  const xbar = d3.mean(rows, d => d.finger_mm), ybar = d3.mean(rows, d => d.mean_rt)
+  const cov = d3.mean(rows, d => (d.finger_mm - xbar) * (d.mean_rt - ybar))
+  const varx = d3.mean(rows, d => (d.finger_mm - xbar) ** 2)
+  const beta = cov / varx
+  const alpha = ybar - beta * xbar
+  const xExtent = d3.extent(rows, d => d.finger_mm)
+  const fitLine = xExtent.map(x => ({finger_mm: x, fit: alpha + beta * x}))
+  return Plot.plot({
+    height: 380, marginLeft: 60,
+    x: {label: "Finger length (mm)"}, y: {label: "Reaction time (ms)"},
+    marks: [
+      Plot.dot(trials, {x: "finger_mm", y: "reaction_time_ms", fill: "#457b9d", r: 2.5, fillOpacity: 0.25}),
+      Plot.dot(rows, {x: "finger_mm", y: "mean_rt", fill: "#1a1a2e", r: 5}),
+      Plot.line(fitLine, {x: "finger_mm", y: "fit", stroke: "#e63946", strokeWidth: 2.5})
+    ]
+  })
+}
+```
+
+::: {.instructions-box}
+```{ojs}
+{
+  const trials = trial_data.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  const rows   = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  return html`<p>Pale blue: every individual trial (${trials.length} raw observations). Dark dots: each student's own average — the actual unit of observation the regression is fit on, and why (see "What has to be true?" shortly). The red line is the fitted regression — the same intercept and slope from the task above, drawn straight through the student-level means it summarises.</p>`
+}
+```
+:::
+
+## Regression on a binary x
+
+Simplest case: x is 0/1 — like device (Laptop = 0, Phone = 1).
+
+- $\alpha$ = average y when x = 0 (average reaction time on Laptop)
+- $\beta$ = difference in average y between x = 1 and x = 0 (Phone minus Laptop)
+- $\alpha + \beta$ = average y when x = 1 (average reaction time on Phone)
+- The regression line is just two points, connected
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 7
+:::
+
+---
+
+## The OLS estimator
+
+---
+
+## The slope formula
+
+$$\hat\beta = \frac{Cov[x,y]}{Var[x]}$$
+
+- The covariance between x and y, **normalised by the variation in x**
+- Measures the covariance *relative to* how spread out x is
+- That's why it can be read as "difference in average y per unit difference in x"
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 7
+:::
+
+## The intercept formula
+
+$$\hat\alpha = \bar y - \hat\beta \bar x$$
+
+- Average y, minus average x scaled by the slope we just found
+- A direct consequence: rearrange it and you get $\bar y = \hat\alpha + \hat\beta \bar x$ — the fitted line **always passes through the point $(\bar x, \bar y)$**, the average of averages
+- Once $\hat\beta$ is fixed, $\hat\alpha$ isn't a second independent choice — it's whatever pins the line through that point
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 7
+:::
+
+## Seeing the covariance
+
+```{ojs}
+{
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) return html`<p style="color:#aaa;">Not enough data yet.</p>`
+  const xbar = d3.mean(rows, d => d.finger_mm), ybar = d3.mean(rows, d => d.mean_rt)
+  const rects = rows.map(d => {
+    const dx = d.finger_mm - xbar, dy = d.mean_rt - ybar
+    return {
+      x1: Math.min(xbar, d.finger_mm), x2: Math.max(xbar, d.finger_mm),
+      y1: Math.min(ybar, d.mean_rt), y2: Math.max(ybar, d.mean_rt),
+      sign: dx * dy >= 0 ? "same direction (+)" : "opposite direction (−)",
+    }
+  })
+  return Plot.plot({
+    height: 340,
+    marginLeft: 60,
+    x: { label: "Finger length (mm)" },
+    y: { label: "Mean reaction time (ms)" },
+    color: { legend: true, domain: ["same direction (+)", "opposite direction (−)"], range: ["#457b9d", "#e63946"] },
+    marks: [
+      Plot.rect(rects, { x1: "x1", x2: "x2", y1: "y1", y2: "y2", fill: "sign", fillOpacity: 0.22, stroke: "sign", strokeOpacity: 0.5 }),
+      Plot.ruleX([xbar], { stroke: "#1a1a2e", strokeDasharray: "4,3" }),
+      Plot.ruleY([ybar], { stroke: "#1a1a2e", strokeDasharray: "4,3" }),
+      Plot.dot(rows, { x: "finger_mm", y: "mean_rt", fill: "#1a1a2e", r: 4 }),
+    ]
+  })
+}
+```
+
+::: {.fragment}
+Every point's rectangle, from the (x̄, ȳ) crosshair to the point, has area $(x_i-\bar x)(y_i-\bar y)$ — exactly the term averaged inside $Cov[x,y]$. Blue rectangles push the covariance positive; red ones pull it negative. **Cov[x,y] is the net signed area.**
+:::
+
+## Var[x] is the same idea, applied to x alone
+
+$Var[x] = Cov[x,x]$ — the identical rectangle idea, but pairing x with itself. Since a number times itself is never negative, every "rectangle" is the same colour: **Var[x] is always positive**, a pure measure of x's own spread.
+
+::: {.fragment}
+$\hat\beta$ = (net signed area between x and y) ÷ (x's own spread) — literally, how much x and y move together, **relative to how much x moves on its own**.
+:::
+
+## Why divide by Var[x] at all?
+
+Imagine measuring finger length in different units (mm → cm is ×0.1). Cov[x,y] and Var[x] would both change, a lot — but should the slope itself?
+
+```{ojs}
+viewof xscale = {
+  const f = html`<div style="display:flex;align-items:center;gap:14px;font-size:13px;
+                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;">
+    <span style="color:#666;white-space:nowrap;">Rescale finger length by ×</span>
+    <input type="range" min="0.1" max="3" step="0.1" value="1"
+           style="width:200px;cursor:pointer;accent-color:#457b9d;">
+    <span id="xs-label" style="font-weight:700;min-width:36px;color:#457b9d;">1.0</span>
+  </div>`
+  const slider = f.querySelector('input')
+  const label  = f.querySelector('#xs-label')
+  slider.addEventListener('input', () => {
+    label.textContent = (+slider.value).toFixed(1)
+    f.dispatchEvent(new CustomEvent('input'))
+  })
+  Object.defineProperty(f, 'value', { get: () => +slider.value })
+  return f
+}
+```
+
+```{ojs}
+{
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) return html`<p style="color:#aaa;">Not enough data yet.</p>`
+  const xs = rows.map(d => d.finger_mm * xscale)
+  const ys = rows.map(d => d.mean_rt)
+  const mx = d3.mean(xs), my = d3.mean(ys)
+  const cov = d3.mean(xs.map((x, i) => (x - mx) * (ys[i] - my)))
+  const varx = d3.mean(xs.map(x => (x - mx) ** 2))
+  const beta = cov / varx
+  return html`<div style="font-family:sans-serif;font-size:1.05em;text-align:center;">
+    <p>Cov[x,y] = <strong style="color:#457b9d;">${cov.toFixed(1)}</strong>
+       &nbsp;·&nbsp; Var[x] = <strong style="color:#457b9d;">${varx.toFixed(1)}</strong>
+       &nbsp;·&nbsp; β̂ = <strong style="color:#e63946;">${beta.toFixed(3)}</strong></p>
+    <p style="color:#666;font-size:0.9em;">β̂ × scale factor ≈ <strong>${(beta * xscale).toFixed(2)}</strong> — the same number every time, in the original mm units.</p>
+  </div>`
+}
+```
+
+::: {.fragment}
+The *slope expressed per original mm* doesn't change. **That's the whole point of dividing by Var[x]** — without it, "the slope" would depend on which ruler you happened to use.
+:::
+
+## Why this particular line?
+
+The **residual** for an observation is the gap between its actual y and what a candidate line predicts: $y_i - (\alpha + \beta x_i)$. OLS chooses $\hat\alpha, \hat\beta$ to **minimise the sum of squared residuals**:
+
+$$\min_{\alpha,\beta} \sum_{i=1}^n (y_i - \alpha - \beta x_i)^2$$
+
+::: {.fragment}
+Solving this with calculus gives exactly the Cov/Var formula — we won't derive it here (see the textbook, U7.1, if you're curious). Instead, let's *watch* it being the minimum.
+:::
+
+## Finding the bottom of the bowl
+
+```{ojs}
+viewof beta_try = {
+  const f = html`<div style="display:flex;align-items:center;gap:14px;font-size:13px;
+                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;">
+    <span style="color:#666;white-space:nowrap;">Try a slope</span>
+    <input type="range" min="-6" max="6" step="0.1" value="0"
+           style="width:200px;cursor:pointer;accent-color:#e63946;">
+    <span id="bt-label" style="font-weight:700;min-width:40px;color:#e63946;">0.0</span>
+  </div>`
+  const slider = f.querySelector('input')
+  const label  = f.querySelector('#bt-label')
+  slider.addEventListener('input', () => {
+    label.textContent = (+slider.value).toFixed(1)
+    f.dispatchEvent(new CustomEvent('input'))
+  })
+  Object.defineProperty(f, 'value', { get: () => +slider.value })
+  return f
+}
+```
+
+```{ojs}
+{
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) return html`<p style="color:#aaa;">Not enough data yet.</p>`
+  const xbar = d3.mean(rows, d => d.finger_mm), ybar = d3.mean(rows, d => d.mean_rt)
+  const cov = d3.mean(rows, d => (d.finger_mm - xbar) * (d.mean_rt - ybar))
+  const varx = d3.mean(rows, d => (d.finger_mm - xbar) ** 2)
+  const trueBeta = cov / varx
+
+  const ssrFor = b => {
+    const a = ybar - b * xbar
+    return d3.sum(rows, d => (d.mean_rt - (a + b * d.finger_mm)) ** 2)
+  }
+  const lo = Math.min(-6, trueBeta - 4), hi = Math.max(6, trueBeta + 4)
+  const curve = d3.range(lo, hi, 0.1).map(b => ({ b, ssr: ssrFor(b) }))
+  const alphaTry = ybar - beta_try * xbar
+
+  const bowl = Plot.plot({
+    height: 280, width: 380,
+    x: { label: "candidate slope" },
+    y: { label: "sum of squared residuals" },
+    marks: [
+      Plot.line(curve, { x: "b", y: "ssr", stroke: "#457b9d", strokeWidth: 2 }),
+      Plot.ruleX([trueBeta], { stroke: "#2d6a4f", strokeDasharray: "4,3" }),
+      Plot.dot([{ b: beta_try, ssr: ssrFor(beta_try) }], { x: "b", y: "ssr", fill: "#e63946", r: 6 }),
+    ]
+  })
+
+  const pad = Math.max(10, (d3.max(rows, d => d.mean_rt) - d3.min(rows, d => d.mean_rt)) * 0.15)
+  const fitted = Plot.plot({
+    height: 280, width: 380,
+    x: { label: "Finger length (mm)" },
+    y: { label: "Mean reaction time (ms)", domain: [d3.min(rows, d => d.mean_rt) - pad, d3.max(rows, d => d.mean_rt) + pad] },
+    marks: [
+      Plot.dot(rows, { x: "finger_mm", y: "mean_rt", fill: "#1a1a2e", r: 4 }),
+      Plot.linearRegressionY(rows, { x: "finger_mm", y: "mean_rt", stroke: "#ccc", strokeOpacity: 0 }),
+      Plot.line([{ x: d3.min(rows, d => d.finger_mm), y: alphaTry + beta_try * d3.min(rows, d => d.finger_mm) },
+                 { x: d3.max(rows, d => d.finger_mm), y: alphaTry + beta_try * d3.max(rows, d => d.finger_mm) }],
+                { x: "x", y: "y", stroke: "#e63946", strokeWidth: 2.5 }),
+    ]
+  })
+
+  return html`<div style="display:flex;gap:20px;justify-content:center;">${fitted}${bowl}</div>`
+}
+```
+
+::: {.fragment}
+The sum of squared residuals is smallest exactly where the red line best fits the scatter, and exactly at $\hat\beta = Cov[x,y]/Var[x]$ (the dashed green line).
+:::
+
+## OLS is BLUE
+
+
+
+::: {.instructions-box}
+**B**est **L**inear **U**nbiased **E**stimator — among every linear, unbiased way of estimating $\beta$, OLS has the smallest variance. "Best" here means most precise, not most correct.
+:::
+
+::: {.fragment}
+That guarantee isn't unconditional — it holds only if a handful of assumptions about the data are true. 
+:::
+
+## What has to be true?
+
+- **Linearity** — a straight line is a reasonable approximation
+- **Independent observations** — one observation's error doesn't leak into another's
+- **Homoskedasticity** — the spread of residuals is roughly constant across the range of x, not fanning out or narrowing
+- **No extreme influence** — no single point is silently dragging the whole line 
+
+
+## Assumptions
+
+```{ojs}
+{
+  const trials = trial_data.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  const rows   = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  return html`<p><strong>Independence, concretely:</strong> this is exactly why our own regression uses one row per <strong>student</strong> (${rows.length} observations, the dark dots two slides ago), not one row per <strong>trial</strong> (${trials.length} rows). A student's own trials aren't independent of each other — they share whatever made that student fast or slow that session. Treating every trial as a separate observation would overstate how much genuinely independent information we have.</p>`
+}
+```
+
+::: {.fragment}
+**Homoskedasticity, concretely:** if slower reactors are also more erratic trial-to-trial — plausible, given reaction time's right skew from Week 1 — the spread of residuals would fan out for higher predicted values instead of staying constant.
+:::
+
+::: {.fragment}
+None of these make OLS *wrong* if violated — but they change how much you should trust the standard errors and the line's precision. Homoskedasticity in particular gets a full treatment next week, when we build confidence intervals for $\hat\beta$ itself. **No extreme influence** — the fourth assumption — gets its own live demonstration later this session, in "Influential observations."
+:::
+
+---
+
+## Prediction and residuals
+
+---
+
+## Fitted values and residuals {.smaller}
+
+$$\hat y_i = \hat\alpha + \hat\beta x_i \qquad e_i = y_i - \hat y_i$$
+
+- The **residual** is the vertical distance between a point and the regression line
+- Positive above the line, negative below
+- Residuals from an OLS fit always sum to zero — the line "balances" through the data
+- A direct consequence: average $\hat y$ equals average $y$
+
+```{ojs}
+{
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) return html`<p style="color:#aaa;">Not enough data yet.</p>`
+  const xbar = d3.mean(rows, d => d.finger_mm), ybar = d3.mean(rows, d => d.mean_rt)
+  const cov = d3.mean(rows, d => (d.finger_mm - xbar) * (d.mean_rt - ybar))
+  const varx = d3.mean(rows, d => (d.finger_mm - xbar) ** 2)
+  const beta = cov / varx
+  const alpha = ybar - beta * xbar
+  const segments = rows.map(d => {
+    const yhat = alpha + beta * d.finger_mm
+    return { x: d.finger_mm, y1: d.mean_rt, y2: yhat, sign: d.mean_rt >= yhat ? "positive residual (above line)" : "negative residual (below line)" }
+  })
+  const xExtent = d3.extent(rows, d => d.finger_mm)
+  const fitLine = xExtent.map(x => ({ finger_mm: x, fit: alpha + beta * x }))
+  return Plot.plot({
+    height: 220, marginLeft: 60,
+    x: { label: "Finger length (mm)" }, y: { label: "Reaction time (ms)" },
+    color: { legend: true, domain: ["positive residual (above line)", "negative residual (below line)"], range: ["#457b9d", "#e63946"] },
+    marks: [
+      Plot.line(fitLine, { x: "finger_mm", y: "fit", stroke: "#1a1a2e", strokeWidth: 2 }),
+      Plot.link(segments, { x1: "x", y1: "y1", x2: "x", y2: "y2", stroke: "sign", strokeWidth: 1.5, strokeDasharray: "3,2" }),
+      Plot.dot(rows, { x: "finger_mm", y: "mean_rt", fill: "#1a1a2e", r: 4 }),
+    ]
+  })
+}
+```
+
+::: {style="font-size:0.65em;color:#999;"}
+Each dashed segment is one student's residual — the gap between their actual mean reaction time and the line's prediction for their finger length.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 7
+:::
+
+## Checking it on our own data
+
+```{ojs}
+{
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) return html`<p style="color:#aaa;">Not enough data yet.</p>`
+  const xbar = d3.mean(rows, d => d.finger_mm), ybar = d3.mean(rows, d => d.mean_rt)
+  const cov = d3.mean(rows, d => (d.finger_mm - xbar) * (d.mean_rt - ybar))
+  const varx = d3.mean(rows, d => (d.finger_mm - xbar) ** 2)
+  const beta = cov / varx
+  const alpha = ybar - beta * xbar
+  const residuals = rows.map(d => d.mean_rt - (alpha + beta * d.finger_mm))
+  const sumResiduals = d3.sum(residuals)
+  const yhatBar = d3.mean(rows, d => alpha + beta * d.finger_mm)
+  return html`<p style="font-family:sans-serif;font-size:1.1em;">
+    Sum of residuals: <strong>${sumResiduals.toExponential(2)}</strong> (zero, up to rounding)
+    &nbsp;·&nbsp; average ŷ = <strong>${yhatBar.toFixed(1)}</strong>
+    &nbsp;·&nbsp; average y = <strong>${ybar.toFixed(1)}</strong></p>`
+}
+```
+
+::: {.instructions-box}
+Not a coincidence — it's a mathematical property of how OLS fits the line. It's true by construction, for *any* data.
+:::
+
+## Interpolation vs. extrapolation
+
+::: {.instructions-box}
+Using the fitted line: predict the mean reaction time for a finger length *within* the range we observed, then for one *far outside* it (e.g. 40mm or 110mm).
+:::
+
+::: {.fragment}
+**Interpolation** — predicting within the range of x we've actually seen — is reasonably safe. **Extrapolation** — predicting beyond it — assumes the same straight-line pattern keeps holding somewhere we've never checked. For a screening tool HR might apply to *any* candidate, that assumption is doing a lot of unexamined work.
+:::
+
+---
+
+## How good is the fit?
+
+---
+
+## R-squared
+
+$$R^2 = \frac{Var[\hat y]}{Var[y]} = 1 - \frac{Var[e]}{Var[y]}$$
+
+Decomposing the total variation in y into what the regression explains and what's left over:
+
+$$Var[y] = Var[\hat y] + Var[e]$$
+
+- $R^2 = 0$: predicted values are just $\bar y$ for everyone — the regression explains nothing
+- $R^2 = 1$: every point sits exactly on the line
+- For simple regression: $R^2 = (Corr[x,y])^2$ — a direct callback to Week 3
+
+## R-squared
+
+
+You'll also see this written as **sums of squares** rather than variances — same identity, just without dividing by $n$. Software output (statsmodels, R, Excel) almost always uses this version:
+
+$$\underbrace{\textstyle\sum(y_i-\bar y)^2}_{TSS} \;=\; \underbrace{\textstyle\sum(\hat y_i-\bar y)^2}_{ESS} \;+\; \underbrace{\textstyle\sum e_i^2}_{RSS} \qquad R^2 = \frac{ESS}{TSS} = 1 - \frac{RSS}{TSS}$$
+
+**TSS** (total), **ESS** (explained), **RSS** (residual) — watch out, some textbooks swap the last two labels (calling the residual part "SSE"). Check what a given source means before trusting the letters alone.
+
+
+## Task — compute our own R²
+
+::: {.instructions-box}
+By hand: using Var[ŷ] and Var[y] from your own regression, compute R².
+:::
+
+::: {.fragment}
+```{ojs}
+{
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) return html`<p style="color:#aaa;">Not enough data yet.</p>`
+  const xbar = d3.mean(rows, d => d.finger_mm), ybar = d3.mean(rows, d => d.mean_rt)
+  const cov = d3.mean(rows, d => (d.finger_mm - xbar) * (d.mean_rt - ybar))
+  const varx = d3.mean(rows, d => (d.finger_mm - xbar) ** 2)
+  const beta = cov / varx, alpha = ybar - beta * xbar
+  const fitted = rows.map(d => alpha + beta * d.finger_mm)
+  const varY = d3.mean(rows, d => (d.mean_rt - ybar) ** 2)
+  const varYhat = d3.mean(fitted, f => (f - ybar) ** 2)
+  const r2 = varYhat / varY
+  return html`<p style="font-family:sans-serif;font-size:1.1em;"><strong>R² = ${r2.toFixed(3)}</strong> — the regression explains about ${(r2*100).toFixed(1)}% of the variation in reaction time.</p>`
+}
+```
+:::
+
+::: {.fragment}
+That number **is the answer to the HR question.** A weak correlation (Week 3) means a low R² here — finger length barely moves the needle on reaction time. The formula exists; whether it's *useful* is a separate question, R² suggested we should be skeptical.
+:::
+
+---
+
+## A second regression: device
+
+---
+
+## Reaction time on device {.smaller}
+
+::: {.instructions-box}
+**Task** — x is binary here: device (Laptop = 0, Phone = 1). Using $\hat\beta = Cov[x,y]/Var[x]$ and $\hat\alpha = \bar y - \hat\beta\bar x$, work out what each one must reduce to when x only ever takes the values 0 and 1.
+:::
+
+::: {.fragment}
+$\hat\alpha$ = average y when x = 0 (average reaction time on Laptop). $\hat\beta$ = average y when x = 1, minus average y when x = 0 (Phone minus Laptop). The "line" is only ever evaluated at x=0 and x=1 — it's really just two averages and their difference, dressed up in regression notation.
+:::
+
+:::: {.fragment}
+::: {.instructions-box}
+**Task (Excel)** — confirm it directly: compute the average reaction time separately for the Phone and Laptop groups from the class data, then check they match $\hat\alpha$ and $\hat\alpha + \hat\beta$ below.
+:::
+::::
+
+::: {.fragment}
+```{ojs}
+{
+  const rows = device_stats.filter(d => d.n >= 2)
+  if (rows.length < 2) return html`<div class="instructions-box">Need data from both device groups — check back once more of the class has submitted.</div>`
+  const laptop = rows.find(d => d.device === "Laptop")
+  const phone = rows.find(d => d.device === "Phone")
+  if (!laptop || !phone) return html`<p style="color:#aaa;">Need both Phone and Laptop groups.</p>`
+  const alpha = laptop.mean
+  const beta = phone.mean - laptop.mean
+  return html`<div style="font-family:sans-serif;">
+    <p>α̂ (average on Laptop) = <strong style="color:#457b9d;">${alpha.toFixed(1)} ms</strong></p>
+    <p>β̂ (Phone − Laptop) = <strong style="color:#e63946;">${beta.toFixed(1)} ms</strong></p>
+    <p>Fitted average on Phone (α̂ + β̂) = <strong>${(alpha+beta).toFixed(1)} ms</strong></p>
+  </div>`
+}
+```
+:::
+
+## Doing this in Python
+
+Everything on the last few slides — by hand, in Excel — collapses to a couple of lines once the data's in a dataframe:
+
+```python
+import statsmodels.formula.api as smf
+
+model = smf.ols('reaction_time_ms ~ device', data=df).fit()
+print(model.params)
+```
+
+```{python}
+#| output: asis
+import statsmodels.formula.api as smf
+
+_device_model = smf.ols('reaction_time_ms ~ device', data=df).fit()
+_p = _device_model.params
+_lines = (
+    f"Intercept&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{_p['Intercept']:.4f}<br>"
+    f"device[T.Phone]&nbsp;&nbsp;{_p['device[T.Phone]']:.4f}"
+)
+print(
+    '::: {style="font-family: monospace; font-size: 0.85em; background: #f8f8f8; '
+    'border-left: 4px solid #457b9d; padding: 14px 20px; border-radius: 4px; line-height: 1.9;"}\n'
+    f'{_lines}\n:::'
+)
+```
+
+::: {.fragment}
+```{ojs}
+{
+  const rows = device_stats.filter(d => d.n >= 2)
+  const laptop = rows.find(d => d.device === "Laptop")
+  const phone = rows.find(d => d.device === "Phone")
+  if (!laptop || !phone) return html`<p>Same numbers we just computed by hand and confirmed in Excel — statsmodels just automates it. <code>device</code> is converted to 0/1 automatically because it's text ("Laptop"/"Phone"); the coefficient is labelled <code>device[T.Phone]</code> to make clear which category is x = 1.</p>`
+  const alpha = laptop.mean, beta = phone.mean - laptop.mean
+  return html`<p>Same ${alpha.toFixed(1)} and ${beta.toFixed(1)} we just computed by hand and confirmed in Excel — statsmodels just automates it. <code>device</code> is converted to 0/1 automatically because it's text ("Laptop"/"Phone"); the coefficient is labelled <code>device[T.Phone]</code> to make clear which category is x = 1.</p>`
+}
+```
+:::
+
+::: {.fragment}
+This `smf.ols(...)` syntax is what we'll use for the rest of the module. Next week: the rest of what it hands back — standard errors, confidence intervals, p-values.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 7 — syntax introduced light-touch here; the full statsmodels workflow builds from Week 6
+:::
+
+---
+
+## Functional form, briefly
+
+---
+
+## Logs, revisited
+
+Week 3's online session logged reaction time because it's skewed. In a regression, which variable you log changes what the slope *means*:
+
+| Model | Interpretation of β |
+|---|---|
+| Level–level | 1-unit x → unit change in y |
+| Log–level | 1-unit x → **%** change in y |
+| Level–log | 1% change in x → unit change in y |
+| Log–log | 1% change in x → % change in y (elasticity) |
+
+::: {.fragment}
+Polynomials and splines can capture curvature a straight line misses — useful when prediction is the goal, but each added flexibility costs interpretability. Simpler is usually better; see the textbook for splines, we won't build them live.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 7 & 8
+:::
+
+---
+
+## Extreme values — and is it causal?
+
+---
+
+## Influential observations
+
+An observation is **influential** if including or excluding it noticeably moves the regression line — not the same as simply being an extreme value.
+
+::: {.fragment}
+Same three-way decision as Week 1's outliers: error → fix or drop; real but irrelevant to the question → drop, with a note; genuine feature of the process → keep. Try a transformation before ever dropping a point.
+:::
+
+## Watch one point move the line
+
+```{ojs}
+viewof add_extreme = Inputs.toggle({ label: "Add one extreme student", value: false })
+```
+
+```{ojs}
+{
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) return html`<p style="color:#aaa;">Not enough data yet.</p>`
+
+  const fit = data => {
+    const xbar = d3.mean(data, d => d.finger_mm), ybar = d3.mean(data, d => d.mean_rt)
+    const cov = d3.mean(data, d => (d.finger_mm - xbar) * (d.mean_rt - ybar))
+    const varx = d3.mean(data, d => (d.finger_mm - xbar) ** 2)
+    const beta = cov / varx
+    return { alpha: ybar - beta * xbar, beta }
+  }
+
+  const xExtentBase = d3.extent(rows, d => d.finger_mm)
+  const extreme = { student_name: "Extreme (hypothetical)", finger_mm: xExtentBase[1] + 8,
+                     mean_rt: d3.min(rows, d => d.mean_rt) - 40 }
+  const withExtreme = add_extreme ? [...rows, extreme] : rows
+
+  const base = fit(rows)
+  const withFit = fit(withExtreme)
+  const xr = d3.extent(withExtreme, d => d.finger_mm)
+  const baseLine = xr.map(x => ({ x, y: base.alpha + base.beta * x }))
+  const withLine = xr.map(x => ({ x, y: withFit.alpha + withFit.beta * x }))
+
+  return html`<div>
+    ${Plot.plot({
+      height: 360, marginLeft: 60,
+      x: { label: "Finger length (mm)" }, y: { label: "Mean reaction time (ms)" },
+      marks: [
+        Plot.dot(rows, { x: "finger_mm", y: "mean_rt", fill: "#1a1a2e", r: 4 }),
+        add_extreme ? Plot.dot([extreme], { x: "finger_mm", y: "mean_rt", fill: "#e63946", r: 7, symbol: "diamond" }) : null,
+        Plot.line(baseLine, { x: "x", y: "y", stroke: "#999", strokeDasharray: "4,3", strokeWidth: 2 }),
+        add_extreme ? Plot.line(withLine, { x: "x", y: "y", stroke: "#e63946", strokeWidth: 2.5 }) : null,
+      ]
+    })}
+    <p style="font-family:sans-serif;text-align:center;">
+      β̂ without: <strong>${base.beta.toFixed(2)}</strong>${add_extreme ? html`&nbsp;→&nbsp;with the extra point: <strong style="color:#e63946;">${withFit.beta.toFixed(2)}</strong>` : ''}
+    </p>
+  </div>`
+}
+```
+
+::: {.fragment}
+One synthetic point — an implausible combination of very long fingers and a very fast reaction time — is enough to swing $\hat\beta$, sometimes even flip its sign. That's leverage: a point far from $\bar x$ has an outsized say in where the line goes, regardless of whether it fits the pattern the rest of the data shows.
+:::
+
+## Is it causal?
+
+The slope isn't zero in our data. Gabor & Kézdi's list of *why*, not mutually exclusive:
+
+- **x causes y** — longer fingers → faster reactions?
+- **y causes x** — implausible here, but always worth ruling out explicitly
+- **A third variable causes both** — hand size, age, or general dexterity could plausibly move both finger length and reaction time together
+
+::: {.fragment}
+"Correlation doesn't imply causation" undersells it. Better: **we should not infer cause and effect from a comparison in observational data** — not because the method is broken, but because nothing about it was designed to rule out the third alternative.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 7
+:::
+
+---
+
+## Online session
+
+See **week4-online.html** — a short standalone deck for this week's online session.
+
+## Coming up: Week 5
+
+::: {style="text-align: center; padding-top: 60px;"}
+[We have a formula. Is it the right shape? What if something's mismeasured? How sure are we, really?]{style="font-size: 1.3em;"}
+
+[**Model problems & inference**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
+
+::: {.fragment style="padding-top:40px;"}
+*Functional form · extreme values · measurement error · confidence intervals for β*
+:::
+:::

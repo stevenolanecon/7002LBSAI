@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/tabby.min.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.7.32">
+
+  <title>7002LBSAI – Prediction</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="site_libs/revealjs/dist/theme/quarto-2c1b5f745a11cfad616ebade4a4a7d24.css">
+  <link href="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+  <link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+  
+  <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="styles-slides.css?v=20260914">
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Prediction</h1>
+  <p class="subtitle">7002LBSAI Research Methods in Analytics — Week 10</p>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section class="slide level2">
+
+<div id="b6c93dc6" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="ojs-define">{"contents": [{"name": "model_stats_markdown", "value": "| Model   |   N vars |   N coef |   R2 |   RMSE |   BIC |\n|:--------|---------:|---------:|-----:|-------:|------:|\n| Model 1 |        1 |        3 | 0.85 |   1755 |  5013 |\n| Model 2 |        2 |        4 | 0.9  |   1434 |  4905 |\n| Model 3 |        5 |        9 | 0.91 |   1323 |  4888 |\n| Model 4 |        6 |       13 | 0.92 |   1270 |  4887 |\n| Model 5 |        6 |       22 | 0.92 |   1238 |  4924 |"}, {"name": "model_stats_rows", "value": [{"Model": "Model 1", "N vars": 1, "N coef": 3, "R2": 0.85, "RMSE": 1755, "BIC": 5013}, {"Model": "Model 2", "N vars": 2, "N coef": 4, "R2": 0.9, "RMSE": 1434, "BIC": 4905}, {"Model": "Model 3", "N vars": 5, "N coef": 9, "R2": 0.91, "RMSE": 1323, "BIC": 4888}, {"Model": "Model 4", "N vars": 6, "N coef": 13, "R2": 0.92, "RMSE": 1270, "BIC": 4887}, {"Model": "Model 5", "N vars": 6, "N coef": 22, "R2": 0.92, "RMSE": 1238, "BIC": 4924}]}, {"name": "cv_stats_markdown", "value": "| Model   |   Fold 1 |   Fold 2 |   Fold 3 |   Fold 4 |   Fold 5 |   Average |\n|:--------|---------:|---------:|---------:|---------:|---------:|----------:|\n| Model 1 |     2078 |     1706 |     2018 |     1541 |     1508 |      1770 |\n| Model 2 |     1625 |     1217 |     1818 |     1191 |     1351 |      1441 |\n| Model 3 |     1447 |     1189 |     1683 |     1057 |     1370 |      1349 |\n| Model 4 |     1338 |     1184 |     1582 |     1184 |     1489 |      1355 |\n| Model 5 |     1378 |     1197 |     1558 |     1265 |     1468 |      1373 |"}, {"name": "cv_stats_rows", "value": [{"Model": "Model 1", "Fold 1": 2078, "Fold 2": 1706, "Fold 3": 2018, "Fold 4": 1541, "Fold 5": 1508, "Average": 1770}, {"Model": "Model 2", "Fold 1": 1625, "Fold 2": 1217, "Fold 3": 1818, "Fold 4": 1191, "Fold 5": 1351, "Average": 1441}, {"Model": "Model 3", "Fold 1": 1447, "Fold 2": 1189, "Fold 3": 1683, "Fold 4": 1057, "Fold 5": 1370, "Average": 1349}, {"Model": "Model 4", "Fold 1": 1338, "Fold 2": 1184, "Fold 3": 1582, "Fold 4": 1184, "Fold 5": 1489, "Average": 1355}, {"Model": "Model 5", "Fold 1": 1378, "Fold 2": 1197, "Fold 3": 1558, "Fold 4": 1265, "Fold 5": 1468, "Average": 1373}]}, {"name": "complexity_data", "value": [{"n_coef": 3, "rmse": 1755, "series": "In-sample RMSE", "model": "Model 1"}, {"n_coef": 3, "rmse": 1770, "series": "Cross-validated RMSE", "model": "Model 1"}, {"n_coef": 4, "rmse": 1434, "series": "In-sample RMSE", "model": "Model 2"}, {"n_coef": 4, "rmse": 1441, "series": "Cross-validated RMSE", "model": "Model 2"}, {"n_coef": 9, "rmse": 1323, "series": "In-sample RMSE", "model": "Model 3"}, {"n_coef": 9, "rmse": 1349, "series": "Cross-validated RMSE", "model": "Model 3"}, {"n_coef": 13, "rmse": 1270, "series": "In-sample RMSE", "model": "Model 4"}, {"n_coef": 13, "rmse": 1355, "series": "Cross-validated RMSE", "model": "Model 4"}, {"n_coef": 22, "rmse": 1238, "series": "In-sample RMSE", "model": "Model 5"}, {"n_coef": 22, "rmse": 1373, "series": "Cross-validated RMSE", "model": "Model 5"}]}, {"name": "model3_summary_text", "value": "                            OLS Regression Results                            \n==============================================================================\nDep. Variable:                  price   R-squared:                       0.913\nModel:                            OLS   Adj. R-squared:                  0.910\nMethod:                 Least Squares   F-statistic:                     356.5\nDate:                Mon, 14 Sep 2026   Prob (F-statistic):          2.19e-139\nTime:                        19:51:59   Log-Likelihood:                -2418.4\nNo. Observations:                 281   AIC:                             4855.\nDf Residuals:                     272   BIC:                             4888.\nDf Model:                           8                                         \nCovariance Type:            nonrobust                                         \n==================================================================================\n                     coef    std err          t      P>|t|      [0.025      0.975]\n----------------------------------------------------------------------------------\nIntercept       1.942e+04    443.520     43.794      0.000    1.86e+04    2.03e+04\nage             -872.7027     75.848    -11.506      0.000   -1022.027    -723.378\nagesq             18.1927      2.670      6.815      0.000      12.937      23.449\nodometer        -778.2356     85.442     -9.108      0.000    -946.447    -610.024\nodometersq        18.7372      3.136      5.974      0.000      12.563      24.912\nLE                -6.5176    211.447     -0.031      0.975    -422.798     409.763\ncond_excellent   177.8462    195.419      0.910      0.364    -206.879     562.572\ncond_good        298.7953    215.459      1.387      0.167    -125.384     722.974\ndealer           573.0297    209.990      2.729      0.007     159.618     986.441\n=============================================================================="}, {"name": "single_split_output_text", "value": ">>> train, test = train_test_split(df, test_size=0.2, random_state=1)\n>>> model3_train = smf.ols('price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer', data=train).fit()\n>>> pred_test = model3_train.predict(test)\n>>> rmse_test = np.sqrt(np.mean((test['price'] - pred_test) ** 2))\n>>> round(rmse_test)\n1319"}, {"name": "split_instability_rows", "value": [{"draw": "Random draw 1", "rmse": 1259}, {"draw": "Random draw 2", "rmse": 1319}, {"draw": "Random draw 3", "rmse": 1298}, {"draw": "Random draw 4", "rmse": 1335}, {"draw": "Random draw 5", "rmse": 1451}]}, {"name": "split_instability_range", "value": "$1259\u2013$1451"}, {"name": "task1_output_text", "value": ">>> model1 = smf.ols('price ~ age + agesq', data=df).fit()\n>>> rmse1 = np.sqrt(np.mean(model1.resid ** 2))\n>>> round(rmse1)\n1755\n\n>>> model3 = smf.ols('price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer', data=df).fit()\n>>> rmse3 = np.sqrt(np.mean(model3.resid ** 2))\n>>> round(rmse3)\n1323"}, {"name": "task2_output_text", "value": ">>> # 5-fold CV, Model 1\n>>> round(cv_rmse_model1)\n1770\n\n>>> # 5-fold CV, Model 3\n>>> round(cv_rmse_model3)\n1349"}, {"name": "point_pred", "value": 6046}, {"name": "pi_lower", "value": 4291}, {"name": "pi_upper", "value": 7802}]}</script>
+</div>
+</div>
+</section>
+<section id="section" class="slide level2" data-background-color="#1a1a2e">
+<h2></h2>
+<div style="text-align: center; padding-top: 180px;">
+<p><span style="font-size: 2.2em; color: white;"><strong>Prediction</strong></span></p>
+<p><span style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;">Every model so far has answered “what’s the relationship?” This week asks a different question: “what’s my best guess for this new observation?”</span></p>
+</div>
+</section>
+<section id="selling-your-car" class="slide level2">
+<h2>Selling your car</h2>
+<div class="instructions-box">
+<p><strong>Business question</strong>: You want to sell your Toyota Camry through an online ad. What price do you put in the listing?</p>
+</div>
+<div class="fragment">
+<p>You have data on hundreds of other Camrys already advertised — their age, mileage, condition, and asking price. Somewhere in that data is the answer.</p>
+</div>
+</section>
+<section id="the-naive-answer" class="slide level2">
+<h2>The naive answer</h2>
+<p><strong>Naive answer:</strong> run a regression of price on the car’s features, read off the coefficients, plug in your car’s numbers.</p>
+<div class="fragment">
+<p><strong>Why it’s not that simple:</strong> which features? How many? A model with more variables always fits the data in front of you better — but does it give a <em>better price for your car</em>, or just a better description of the cars you already have data on?</p>
+</div>
+</section>
+<section id="explanation-and-prediction-are-different-goals" class="slide level2">
+<h2>Explanation and prediction are different goals</h2>
+<p>Every regression so far has asked: <em>what is the relationship, and can we trust the coefficients?</em></p>
+<div class="fragment">
+<p>This week asks something else: <em>given a new car we haven’t seen, what’s our best guess for its price?</em></p>
+<ul>
+<li>We care much less about individual coefficients, or multicollinearity between them</li>
+<li>We care much more about whether <span class="math inline">\(\hat y\)</span> is close to the true <span class="math inline">\(y\)</span> for <strong>new</strong> observations</li>
+<li>The best model for explaining is not always the best model for predicting</li>
+</ul>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 13</p>
+</div>
+</section>
+<section id="what-we-need" class="slide level2">
+<h2>What we need</h2>
+<ul>
+<li>A way to measure how wrong a prediction is, and how much that should matter</li>
+<li>A way to tell whether a model that fits well is actually a <em>good</em> model, or just an <em>overfit</em> one</li>
+<li>A rule for choosing between models that doesn’t just reward complexity</li>
+</ul>
+</section>
+<section id="setting-up-the-problem" class="slide level2">
+<h2>Setting up the problem</h2>
+</section>
+<section id="original-data-and-live-data" class="slide level2">
+<h2>Original data and live data</h2>
+<ul>
+<li><strong>Original data</strong> — what we have: cars with known prices, used to build the model</li>
+<li><strong>Live data</strong> — the observations the model will actually be <em>applied</em> to once it’s built: your car, or the next ad posted tomorrow. We know their <span class="math inline">\(x\)</span>’s, but not yet their <span class="math inline">\(y\)</span> — that’s the whole point of predicting them. The model is only useful if the relationship between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> in the live data matches what it learned from the original data.</li>
+<li><strong>Target variable</strong> <span class="math inline">\(y\)</span> — what we want to predict (price)</li>
+<li><strong>Predictor variables</strong> <span class="math inline">\(x\)</span> — what we use to predict it (age, mileage, condition…)</li>
+</ul>
+<div class="fragment">
+<p><span class="math display">\[\hat y_j = \hat f(x_j)\]</span></p>
+<p>We need a predicted value for target observation <span class="math inline">\(j\)</span> — we know its <span class="math inline">\(x\)</span>’s, we don’t know its <span class="math inline">\(y\)</span>.</p>
+</div>
+</section>
+<section id="the-prediction-error" class="slide level2">
+<h2>The prediction error</h2>
+<p>The <strong>prediction error</strong> is the gap between what the model says and what actually happens — the single number that tells you how wrong a specific prediction was, once you find out:</p>
+<p><span class="math display">\[e_j = \hat y_j - y_j\]</span></p>
+<ul>
+<li><strong>Direction of miss</strong>: positive if we overpredict, negative if we underpredict — whether that matters depends on the decision</li>
+<li><strong>Size of miss</strong>: larger in absolute value the further the prediction is from the truth</li>
+<li>The prediction error is unknown until the actual value is realised — that’s the whole problem</li>
+</ul>
+</section>
+<section id="decomposing-the-prediction-error" class="slide level2">
+<h2>Decomposing the prediction error</h2>
+<p>Three sources, stacked together:</p>
+<ol type="1">
+<li><strong>Estimation error</strong> — we don’t know the true <span class="math inline">\(\beta\)</span>’s, only estimates. Shrinks with a larger sample.</li>
+<li><strong>Model error</strong> — we may not have the best model: wrong functional form, missing an interaction, wrong variables entirely.</li>
+<li><strong>Irreducible (genuine) error</strong> — the part no model could ever capture, even with the truth known exactly.</li>
+</ol>
+<div class="fragment">
+<p>Estimation and model error are the two parts an analyst can actually improve.</p>
+</div>
+</section>
+<section id="point-and-interval-prediction" class="slide level2">
+<h2>Point and interval prediction</h2>
+<ul>
+<li>A <strong>point prediction</strong> is a single number — the price to put in the ad</li>
+<li>An <strong>interval prediction</strong> captures the uncertainty around it</li>
+<li>The 95% prediction interval covers estimation error and irreducible error — but <strong>not model error</strong>. It assumes the model itself is right.</li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 13</p>
+</div>
+</section>
+<section id="the-loss-function" class="slide level2">
+<h2>The loss function</h2>
+</section>
+<section id="turning-errors-into-a-decision" class="slide level2">
+<h2>Turning errors into a decision</h2>
+<p>A loss function attaches a value to a prediction error — how bad is being wrong by this much, in this direction?</p>
+<div class="fragment">
+<p>Two questions decide its shape:</p>
+<ul>
+<li><strong>Symmetric?</strong> Are errors in opposite directions equally bad?</li>
+<li><strong>Convex?</strong> Does an error twice as large cost more than twice as much?</li>
+</ul>
+</div>
+</section>
+<section id="loss-functions-of-various-shapes" class="slide level2">
+<h2>Loss functions of various shapes</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb1" data-startfrom="278" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 277;"><span id="cb1-278"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb1-279"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">640</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">340</span><span class="op">,</span></span>
+<span id="cb1-280"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Prediction error"</span>}<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Loss"</span>}<span class="op">,</span></span>
+<span id="cb1-281"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb1-282"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(d3<span class="op">.</span><span class="fu">range</span>(<span class="op">-</span><span class="dv">10</span><span class="op">,</span> <span class="fl">10.1</span><span class="op">,</span> <span class="fl">0.2</span>)<span class="op">.</span><span class="fu">map</span>(e <span class="kw">=&gt;</span> ({e<span class="op">,</span> <span class="dt">loss</span><span class="op">:</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">abs</span>(e) <span class="op">*</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">series</span><span class="op">:</span> <span class="st">"symmetric, linear"</span>}))<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"e"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"loss"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"series"</span>})<span class="op">,</span></span>
+<span id="cb1-283"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(d3<span class="op">.</span><span class="fu">range</span>(<span class="op">-</span><span class="dv">10</span><span class="op">,</span> <span class="fl">10.1</span><span class="op">,</span> <span class="fl">0.2</span>)<span class="op">.</span><span class="fu">map</span>(e <span class="kw">=&gt;</span> ({e<span class="op">,</span> <span class="dt">loss</span><span class="op">:</span> (e <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> <span class="fl">0.3</span><span class="op">,</span> <span class="dt">series</span><span class="op">:</span> <span class="st">"symmetric, convex"</span>}))<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"e"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"loss"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"series"</span>})<span class="op">,</span></span>
+<span id="cb1-284"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(d3<span class="op">.</span><span class="fu">range</span>(<span class="op">-</span><span class="dv">10</span><span class="op">,</span> <span class="fl">10.1</span><span class="op">,</span> <span class="fl">0.2</span>)<span class="op">.</span><span class="fu">map</span>(e <span class="kw">=&gt;</span> ({e<span class="op">,</span> <span class="dt">loss</span><span class="op">:</span> e <span class="op">&gt;=</span> <span class="dv">0</span> <span class="op">?</span> (e <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> <span class="fl">0.3</span> <span class="op">:</span> (e <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> <span class="fl">0.15</span><span class="op">,</span> <span class="dt">series</span><span class="op">:</span> <span class="st">"asymmetric, convex"</span>}))<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"e"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"loss"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"series"</span>})</span>
+<span id="cb1-285"><a></a>  ]<span class="op">,</span></span>
+<span id="cb1-286"><a></a>  <span class="dt">color</span><span class="op">:</span> {<span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}</span>
+<span id="cb1-287"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-1" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</section>
+<section id="would-either-example-change-your-loss-function" class="slide level2">
+<h2>Would either example change your loss function?</h2>
+<div class="instructions-box">
+<p><strong>Selling your car</strong>: a too-low price sells fast but leaves money on the table; a too-high price means waiting, and maybe revising the price down later. What loss function fits that?</p>
+<p><strong>A bank deciding on a loan</strong>: rejecting a debtor who would have repaid costs a missed opportunity; approving one who defaults costs real money directly. Are those two kinds of error the same size?</p>
+</div>
+</section>
+<section id="mean-squared-error-and-rmse" class="slide level2">
+<h2>Mean squared error and RMSE</h2>
+<p>For <span class="math inline">\(K\)</span> target observations, <span class="math inline">\(\hat y_k\)</span> is the model’s prediction for observation <span class="math inline">\(k\)</span> and <span class="math inline">\(y_k\)</span> its actual value:</p>
+<p><span class="math display">\[MSE = \frac{1}{K}\sum_{k=1}^{K}(\hat y_k - y_k)^2 \qquad RMSE = \sqrt{MSE}\]</span></p>
+<ul>
+<li>Squared loss is symmetric and convex — the most widely used loss function</li>
+<li><span class="math inline">\(MSE\)</span> minimisation is exactly what OLS already does — that’s why the average is the best predictor under squared loss</li>
+<li><span class="math inline">\(RMSE\)</span> is easier to interpret: it’s back in the original units (dollars, not dollars²)</li>
+</ul>
+</section>
+<section id="mse-decomposes-into-bias-and-variance" class="slide level2">
+<h2>MSE decomposes into bias and variance</h2>
+<p><span class="math inline">\(\overline{\hat y} = \frac{1}{K}\sum_k \hat y_k\)</span> — the average prediction across all <span class="math inline">\(K\)</span> target observations, not any one <span class="math inline">\(\hat y_k\)</span> on its own. That lets us write the <strong>bias</strong> compactly: <span class="math inline">\(\bar e = \overline{\hat y} - \bar y\)</span>, the average of the individual prediction errors <span class="math inline">\(e_k = \hat y_k - y_k\)</span>.</p>
+<p><span class="math display">\[MSE = \underbrace{\bar e^{\,2}}_{\text{Bias}^2} \; + \; \underbrace{\frac{1}{K}\sum_k (e_k - \bar e)^2}_{\text{Prediction variance}}\]</span></p>
+<ul>
+<li><strong>Bias</strong> (<span class="math inline">\(\bar e\)</span>): the average prediction error across all <span class="math inline">\(K\)</span> observations. Zero for an unbiased predictor.</li>
+<li><strong>Variance</strong>: how much each error <span class="math inline">\(e_k\)</span> varies around <em>that average</em> — not how much <span class="math inline">\(y\)</span> itself varies.</li>
+<li>OLS is unbiased. Some other methods (LASSO, later this week’s online session) trade a little bias for a lot less variance.</li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 13</p>
+</div>
+</section>
+<section id="meet-the-used-cars-data" class="slide level2">
+<h2>Meet the used-cars data</h2>
+</section>
+<section id="real-data-toyota-camrys-chicago" class="slide level2">
+<h2>Real data: Toyota Camrys, Chicago</h2>
+<ul>
+<li>281 used Camry listings scraped from an online marketplace, already cleaned to a comparable set: gas-fuelled, automatic, non-truck, sensible price and mileage range</li>
+<li>Target: <code>price</code> (US dollars)</li>
+<li>Predictors: <code>age</code>, <code>odometer</code> (×10,000 miles), trim (<code>LE</code>/<code>XLE</code>/<code>SE</code>), condition dummies, <code>dealer</code> vs.&nbsp;private seller</li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), used-cars dataset, osf.io/8tx54</p>
+</div>
+</section>
+<section id="five-models-built-up-by-hand" class="slide level2">
+<h2>Five models, built up by hand</h2>
+<p><span class="math display">\[
+\begin{aligned}
+M_1:\ &amp; price^E = \beta_0 + \beta_1\,age + \beta_2\,age^2 \\
+M_2:\ &amp; M_1 + \beta_3\,odometer \\
+M_3:\ &amp; M_2 + \beta_4\,odometer^2 + \beta_5\,LE + \beta_6\,cond_{exc} + \beta_7\,cond_{good} + \beta_8\,dealer \\
+M_4:\ &amp; M_3 + \beta_9\,XLE + \beta_{10}\,SE + \beta_{11}\,cond_{new} + \beta_{12}\,cylind6 \\
+M_5:\ &amp; M_4 + \big(LE + XLE + SE + cond_{new} + cond_{exc} + cond_{good} + cylind6 + odometer + dealer\big) \times age
+\end{aligned}
+\]</span></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb2-2"><a></a></span>
+<span id="cb2-3"><a></a>model1 <span class="op">=</span> smf.ols(<span class="st">"price ~ age + agesq"</span>, data<span class="op">=</span>df).fit()</span>
+<span id="cb2-4"><a></a>model2 <span class="op">=</span> smf.ols(<span class="st">"price ~ age + agesq + odometer"</span>, data<span class="op">=</span>df).fit()</span>
+<span id="cb2-5"><a></a>model3 <span class="op">=</span> smf.ols(<span class="st">"price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer"</span>, data<span class="op">=</span>df).fit()</span>
+<span id="cb2-6"><a></a>model4 <span class="op">=</span> smf.ols(<span class="st">"price ~ age + agesq + odometer + odometersq + LE + XLE + SE + cond_likenew + cond_excellent + cond_good + cylind6 + dealer"</span>, data<span class="op">=</span>df).fit()</span>
+<span id="cb2-7"><a></a>model5 <span class="op">=</span> smf.ols(<span class="st">"price ~ age + agesq + odometer + odometersq + LE*age + XLE*age + SE*age + cond_likenew*age + cond_excellent*age + cond_good*age + cylind6*age + odometer*age + dealer*age"</span>, data<span class="op">=</span>df).fit()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Each model adds more: mileage, trim, condition, dealer status, and finally full interactions with age.</p>
+</section>
+<section id="reading-real-output-model-3" class="slide level2">
+<h2>Reading real output — Model 3</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb3" data-startfrom="365" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 364;"><span id="cb3-365"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.5em;line-height:1.35;</span></span>
+<span id="cb3-366"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
+<span id="cb3-367"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>model3_summary_text<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-2" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</section>
+<section id="task-fit-model-1-and-model-3-yourself" class="slide level2">
+<h2>Task — fit Model 1 and Model 3 yourself</h2>
+<div class="instructions-box">
+<p><strong>Business question</strong>: how much does adding mileage, trim, and condition actually improve the fit?</p>
+<p>Open the Colab notebook — <code>data_path</code> is already defined for you. Load it into a dataframe and fit Model 1 (<code>price ~ age + agesq</code>) and Model 3 (add <code>odometer</code>, <code>odometersq</code>, <code>LE</code>, <code>cond_excellent</code>, <code>cond_good</code>, <code>dealer</code>) with <code>smf.ols</code>. Compute the <strong>in-sample RMSE</strong> for each from the residuals — don’t use a library shortcut. No further syntax hints.</p>
+</div>
+</section>
+<section id="what-you-should-have-found" class="slide level2">
+<h2>What you should have found</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a></a>model1 <span class="op">=</span> smf.ols(<span class="st">'price ~ age + agesq'</span>, data<span class="op">=</span>df).fit()</span>
+<span id="cb4-2"><a></a>rmse1 <span class="op">=</span> np.sqrt(np.mean(model1.resid <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb4-3"><a></a></span>
+<span id="cb4-4"><a></a>model3 <span class="op">=</span> smf.ols(<span class="st">'price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer'</span>, data<span class="op">=</span>df).fit()</span>
+<span id="cb4-5"><a></a>rmse3 <span class="op">=</span> np.sqrt(np.mean(model3.resid <span class="op">**</span> <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb5" data-startfrom="389" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 388;"><span id="cb5-389"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.62em;line-height:1.4;</span></span>
+<span id="cb5-390"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
+<span id="cb5-391"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>task1_output_text<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-3" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="instructions-box">
+<p>Model 3’s RMSE is noticeably lower than Model 1’s. Does that automatically make Model 3 the better model to actually use? What would you need to know to answer that?</p>
+</div>
+</section>
+<section id="overfitting" class="slide level2">
+<h2>Overfitting</h2>
+</section>
+<section id="underfit-overfit" class="slide level2">
+<h2>Underfit, overfit</h2>
+<p>Comparing two models on the same data:</p>
+<ul>
+<li><strong>Underfitting</strong>: Model A fits worse than Model B, in <em>both</em> the original data and the live data. Simple — build a better model.</li>
+<li><strong>Overfitting</strong>: Model A actually fits <em>better</em> in the original data, but <em>worse</em> in the live data. This is the dangerous one — it looks like the better model until it’s too late to tell.</li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 13</p>
+</div>
+</section>
+<section id="why-overfitting-happens" class="slide level2">
+<h2>Why overfitting happens</h2>
+<p>Typically: a model too complex for the data — too many variables, too many interactions, too flexible a functional form (high-degree polynomials, splines with too many knots).</p>
+<div class="fragment">
+<p>It fits patterns that are:</p>
+<ul>
+<li>specific to <em>this sample</em>, not the general pattern behind it (an internal validity problem), or</li>
+<li>specific to the <em>world of the original data</em>, not the world the live data comes from (an external validity problem)</li>
+</ul>
+</div>
+</section>
+<section id="how-would-we-actually-know" class="slide level2">
+<h2>How would we actually know?</h2>
+<p>In-sample RMSE can’t catch overfitting — it’s measured on the same data the model was fit to, so it rewards complexity by construction.</p>
+<div class="fragment">
+<p>We don’t have live data yet, but we can <em>pretend</em>: hold back some of the original data, fit the model without it, then see how well the model predicts the part it never saw.</p>
+<p>Do that a few times and average the results — that’s what the chart’s <strong>cross-validated RMSE</strong> line means. The full mechanics come shortly.</p>
+</div>
+</section>
+<section id="the-complexity-curve-on-our-own-data" class="slide level2">
+<h2>The complexity curve, on our own data</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb6" data-startfrom="439" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 438;"><span id="cb6-439"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb6-440"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">700</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">380</span><span class="op">,</span></span>
+<span id="cb6-441"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Number of coefficients"</span>}<span class="op">,</span></span>
+<span id="cb6-442"><a></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"RMSE ($)"</span>}<span class="op">,</span></span>
+<span id="cb6-443"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb6-444"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(complexity_data<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"n_coef"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"rmse"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"series"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">2.5</span>})<span class="op">,</span></span>
+<span id="cb6-445"><a></a>    Plot<span class="op">.</span><span class="fu">dot</span>(complexity_data<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"n_coef"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"rmse"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"series"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">4</span>})<span class="op">,</span></span>
+<span id="cb6-446"><a></a>    Plot<span class="op">.</span><span class="fu">text</span>(complexity_data<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">series</span> <span class="op">===</span> <span class="st">"In-sample RMSE"</span>)<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"n_coef"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"rmse"</span><span class="op">,</span> <span class="dt">text</span><span class="op">:</span> <span class="st">"model"</span><span class="op">,</span> <span class="dt">dy</span><span class="op">:</span> <span class="op">-</span><span class="dv">12</span><span class="op">,</span> <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">10</span>})</span>
+<span id="cb6-447"><a></a>  ]<span class="op">,</span></span>
+<span id="cb6-448"><a></a>  <span class="dt">color</span><span class="op">:</span> {<span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}</span>
+<span id="cb6-449"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-4" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>In-sample RMSE falls the whole way to Model 5. Cross-validated RMSE — the held-back-data kind — bottoms out at Model 3–4 and <strong>rises</strong> at Model 5. A real overfitting signal, not a hypothetical one.</p>
+</div>
+</section>
+<section id="finding-the-best-model" class="slide level2">
+<h2>Finding the best model</h2>
+</section>
+<section id="two-ways-to-penalise-complexity" class="slide level2">
+<h2>Two ways to penalise complexity</h2>
+<p><strong>Approach 1 — indirectly.</strong> Fit on all the data, use a fit measure with a built-in penalty for the number of parameters.</p>
+<p><strong>Approach 2 — directly.</strong> Actually hold data back, and see how the model does on data it never saw.</p>
+</section>
+<section id="the-bic-and-aic" class="slide level2">
+<h2>The BIC (and AIC)</h2>
+<p>Both take the same starting point — the model’s log-likelihood — and add a penalty for the number of parameters, <span class="math inline">\(k\)</span>:</p>
+<p><span class="math display">\[AIC = -2 \times \ln(likelihood) + 2 \times k \qquad\qquad BIC = -2 \times \ln(likelihood) + \ln(N) \times k\]</span></p>
+<ul>
+<li>Same idea, different penalty: BIC’s penalty (<span class="math inline">\(\ln N\)</span> per parameter) is heavier than AIC’s (a flat 2 per parameter) once <span class="math inline">\(N &gt; 7\)</span></li>
+<li>No sample splitting needed — useful when data is limited</li>
+<li><strong>The likelihood requires a distributional assumption</strong> — for OLS, that the residuals are normally distributed. Neither AIC nor BIC is free: this is the price for not having to hold data back.</li>
+<li><strong>Don’t</strong> use plain <span class="math inline">\(R^2\)</span> or MSE for model choice — they never penalise complexity, so they always favour the most complex model</li>
+<li>In practice, this course uses <strong>BIC</strong>, not AIC — Gabor &amp; Kézdi’s own recommendation</li>
+</ul>
+</section>
+<section id="bic-on-our-own-data" class="slide level2">
+<h2>BIC on our own data</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="483" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 482;"><span id="cb7-483"><a></a>{</span>
+<span id="cb7-484"><a></a>  <span class="kw">const</span> cols <span class="op">=</span> [<span class="st">"Model"</span><span class="op">,</span> <span class="st">"N vars"</span><span class="op">,</span> <span class="st">"N coef"</span><span class="op">,</span> <span class="st">"R2"</span><span class="op">,</span> <span class="st">"RMSE"</span><span class="op">,</span> <span class="st">"BIC"</span>]<span class="op">;</span></span>
+<span id="cb7-485"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:20px auto 0;font-family:sans-serif;font-size:1.05em;border-collapse:collapse;"&gt;</span></span>
+<span id="cb7-486"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;</span></span>
+<span id="cb7-487"><a></a><span class="vs">      </span><span class="sc">${</span>cols<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> <span class="vs">`&lt;th style="padding:6px 20px;text-align:center;"&gt;</span><span class="sc">${</span>c<span class="sc">}</span><span class="vs">&lt;/th&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb7-488"><a></a><span class="vs">    &lt;/tr&gt;</span></span>
+<span id="cb7-489"><a></a><span class="vs">    </span><span class="sc">${</span>model_stats_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`</span></span>
+<span id="cb7-490"><a></a><span class="vs">      &lt;tr style="border-bottom:1px solid #ddd;"&gt;</span><span class="sc">${</span>cols<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> <span class="vs">`&lt;td style="padding:5px 20px;text-align:center;"&gt;</span><span class="sc">${</span>d[c]<span class="sc">}</span><span class="vs">&lt;/td&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span><span class="vs">&lt;/tr&gt;</span></span>
+<span id="cb7-491"><a></a><span class="vs">    `</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb7-492"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
+<span id="cb7-493"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-5" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>BIC is lowest for <strong>Model 3</strong>. Model 4 is close behind. Model 5 — despite having the lowest in-sample RMSE — has the worst BIC of the five: the extra interactions aren’t worth their complexity penalty.</p>
+</div>
+</section>
+<section id="training-and-test-samples" class="slide level2">
+<h2>Training and test samples</h2>
+<ul>
+<li><strong>Approach 2, directly</strong>: split the data — say 80% <strong>training</strong>, 20% <strong>test</strong></li>
+<li>Estimate every candidate model on the training sample only</li>
+<li>Evaluate each one’s RMSE on the test sample — data it never touched while fitting</li>
+<li>No distributional assumptions needed, unlike BIC</li>
+</ul>
+</section>
+<section id="a-single-split-in-code" class="slide level2">
+<h2>A single split, in code</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb8-2"><a></a></span>
+<span id="cb8-3"><a></a>train, test <span class="op">=</span> train_test_split(df, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb8-4"><a></a>model3_train <span class="op">=</span> smf.ols(<span class="st">'price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer'</span>, data<span class="op">=</span>train).fit()</span>
+<span id="cb8-5"><a></a>pred_test <span class="op">=</span> model3_train.predict(test)</span>
+<span id="cb8-6"><a></a>rmse_test <span class="op">=</span> np.sqrt(np.mean((test[<span class="st">'price'</span>] <span class="op">-</span> pred_test) <span class="op">**</span> <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb9" data-startfrom="519" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 518;"><span id="cb9-519"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.62em;line-height:1.4;</span></span>
+<span id="cb9-520"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
+<span id="cb9-521"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>single_split_output_text<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-6" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<p>Fit on 80% of the cars, predicted the other 20%, measured how far off we were — never touching the test rows while fitting.</p>
+</section>
+<section id="why-one-split-isnt-enough" class="slide level2">
+<h2>Why one split isn’t enough</h2>
+<p>Same code, same model — only the random seed for the split changes:</p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb10" data-startfrom="531" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 530;"><span id="cb10-531"><a></a>{</span>
+<span id="cb10-532"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:16px auto 0;font-family:sans-serif;font-size:1.05em;border-collapse:collapse;"&gt;</span></span>
+<span id="cb10-533"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;&lt;th style="padding:6px 22px;"&gt;Split&lt;/th&gt;&lt;th style="padding:6px 22px;"&gt;Test RMSE&lt;/th&gt;&lt;/tr&gt;</span></span>
+<span id="cb10-534"><a></a><span class="vs">    </span><span class="sc">${</span>split_instability_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="border-bottom:1px solid #ddd;"&gt;&lt;td style="padding:5px 22px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">draw</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:5px 22px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">rmse</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb10-535"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
+<span id="cb10-536"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-7" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Same model, same data, same code — test RMSE still swings from <strong><span><span id="ojs-element-id-1"></span></span></strong> just on which cars happened to land in the test set. A single split is partly luck. We need to average that luck away.</p>
+</div>
+</section>
+<section id="k-fold-cross-validation" class="slide level2">
+<h2>k-fold cross-validation</h2>
+<p>Rather than one split, do it <span class="math inline">\(k\)</span> times:</p>
+<ol type="1">
+<li>Divide the data into <span class="math inline">\(k\)</span> roughly equal folds</li>
+<li>For each fold: train on the other <span class="math inline">\(k-1\)</span> folds, test on this one, record the RMSE</li>
+<li>Average the <span class="math inline">\(k\)</span> RMSEs — this is the cross-validated RMSE</li>
+</ol>
+<div class="fragment">
+<p>Every observation gets used for both training and testing, just never both at once. Less sensitive to which particular split you happened to draw.</p>
+</div>
+</section>
+<section id="fold-cross-validation-visually" class="slide level2">
+<h2>5-fold cross-validation, visually</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb11" data-startfrom="558" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 557;"><span id="cb11-558"><a></a>{</span>
+<span id="cb11-559"><a></a>  <span class="kw">const</span> rowH <span class="op">=</span> <span class="dv">26</span><span class="op">,</span> gap <span class="op">=</span> <span class="dv">6</span><span class="op">,</span> nSets <span class="op">=</span> <span class="dv">5</span><span class="op">,</span> nSeg <span class="op">=</span> <span class="dv">5</span><span class="op">;</span></span>
+<span id="cb11-560"><a></a>  <span class="kw">const</span> segW <span class="op">=</span> <span class="dv">42</span><span class="op">,</span> barX <span class="op">=</span> <span class="dv">90</span><span class="op">,</span> barW <span class="op">=</span> segW <span class="op">*</span> nSeg<span class="op">;</span></span>
+<span id="cb11-561"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> d3<span class="op">.</span><span class="fu">range</span>(nSets)<span class="op">.</span><span class="fu">map</span>(i <span class="kw">=&gt;</span> <span class="fu">html</span><span class="vs">`&lt;div style="display:flex;align-items:center;margin-bottom:</span><span class="sc">${</span>gap<span class="sc">}</span><span class="vs">px;"&gt;</span></span>
+<span id="cb11-562"><a></a><span class="vs">    &lt;div style="width:</span><span class="sc">${</span>barX<span class="sc">}</span><span class="vs">px;font-family:sans-serif;font-size:0.8em;text-align:right;padding-right:10px;"&gt;Set </span><span class="sc">${</span>i<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="vs">&lt;/div&gt;</span></span>
+<span id="cb11-563"><a></a><span class="vs">    &lt;div style="display:flex;"&gt;</span></span>
+<span id="cb11-564"><a></a><span class="vs">      </span><span class="sc">${</span>d3<span class="op">.</span><span class="fu">range</span>(nSeg)<span class="op">.</span><span class="fu">map</span>(j <span class="kw">=&gt;</span> <span class="fu">html</span><span class="vs">`&lt;div style="width:</span><span class="sc">${</span>segW<span class="sc">}</span><span class="vs">px;height:</span><span class="sc">${</span>rowH<span class="sc">}</span><span class="vs">px;background:</span><span class="sc">${</span>j<span class="op">===</span>i <span class="op">?</span> <span class="st">'#c0392b'</span> <span class="op">:</span> <span class="st">'#5b7fbd'</span><span class="sc">}</span><span class="vs">;border:1px solid white;"&gt;&lt;/div&gt;`</span>)<span class="sc">}</span></span>
+<span id="cb11-565"><a></a><span class="vs">    &lt;/div&gt;</span></span>
+<span id="cb11-566"><a></a><span class="vs">    &lt;div style="font-family:sans-serif;font-size:0.75em;padding-left:14px;color:#555;"&gt;→ train on blue, test on red → MSE&lt;sub&gt;</span><span class="sc">${</span>i<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="vs">&lt;/sub&gt;&lt;/div&gt;</span></span>
+<span id="cb11-567"><a></a><span class="vs">  &lt;/div&gt;`</span>)<span class="op">;</span></span>
+<span id="cb11-568"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div style="padding-top:10px;"&gt;</span></span>
+<span id="cb11-569"><a></a><span class="vs">    </span><span class="sc">${</span>rows<span class="sc">}</span></span>
+<span id="cb11-570"><a></a><span class="vs">    &lt;div style="display:flex;margin-top:6px;"&gt;</span></span>
+<span id="cb11-571"><a></a><span class="vs">      &lt;div style="width:</span><span class="sc">${</span>barX<span class="sc">}</span><span class="vs">px;"&gt;&lt;/div&gt;</span></span>
+<span id="cb11-572"><a></a><span class="vs">      &lt;div style="width:</span><span class="sc">${</span>barW<span class="sc">}</span><span class="vs">px;border-top:2px solid #333;text-align:center;font-family:sans-serif;font-size:0.75em;padding-top:4px;color:#333;"&gt;Work set&lt;/div&gt;</span></span>
+<span id="cb11-573"><a></a><span class="vs">    &lt;/div&gt;</span></span>
+<span id="cb11-574"><a></a><span class="vs">    &lt;div style="font-family:sans-serif;font-size:0.9em;padding-top:14px;color:#2d6a4f;font-weight:600;"&gt;Average the 5 MSEs → take the square root → cross-validated RMSE&lt;/div&gt;</span></span>
+<span id="cb11-575"><a></a><span class="vs">  &lt;/div&gt;`</span></span>
+<span id="cb11-576"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-8" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Recreated from Békés &amp; Kézdi (2021), Ch. 13</p>
+</div>
+</section>
+<section id="walking-through-the-syntax" class="slide level2">
+<h2>Walking through the syntax</h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> KFold</span>
+<span id="cb12-2"><a></a></span>
+<span id="cb12-3"><a></a>kf <span class="op">=</span> KFold(n_splits<span class="op">=</span><span class="dv">5</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb12-4"><a></a></span>
+<span id="cb12-5"><a></a>rmses <span class="op">=</span> []</span>
+<span id="cb12-6"><a></a><span class="cf">for</span> train_idx, test_idx <span class="kw">in</span> kf.split(df):</span>
+<span id="cb12-7"><a></a>    train, test <span class="op">=</span> df.iloc[train_idx], df.iloc[test_idx]</span>
+<span id="cb12-8"><a></a>    model <span class="op">=</span> smf.ols(_____, data<span class="op">=</span>train).fit()</span>
+<span id="cb12-9"><a></a>    pred <span class="op">=</span> model.predict(test)</span>
+<span id="cb12-10"><a></a>    fold_rmse <span class="op">=</span> np.sqrt(np.mean((test[<span class="st">'price'</span>] <span class="op">-</span> pred) <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb12-11"><a></a>    rmses.append(fold_rmse)</span>
+<span id="cb12-12"><a></a></span>
+<span id="cb12-13"><a></a>cv_rmse <span class="op">=</span> _____</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="fragment">
+<ul>
+<li><code>kf.split(df)</code> hands back one pair of row-indices per fold — the loop runs 5 times, once per fold</li>
+<li><code>.iloc[train_idx]</code> / <code>.iloc[test_idx]</code> turn those indices into real training/test dataframes</li>
+<li>Everything inside the loop is the single-split code from three slides ago, just repeated automatically</li>
+<li>Two blanks left for you: which model formula, and how five fold RMSEs become one number</li>
+</ul>
+</div>
+</section>
+<section id="task-write-your-own-5-fold-cross-validation" class="slide level2">
+<h2>Task — write your own 5-fold cross-validation</h2>
+<div class="instructions-box">
+<p><strong>Business question</strong>: does Model 3’s advantage over Model 1 survive being tested on data it didn’t train on?</p>
+<p>Using the same notebook, adapt the loop from the last slide. For <strong>Model 1</strong> and <strong>Model 3</strong> separately: fill in the model formula and the final averaging step, run the 5-fold loop, and compare the two cross-validated RMSEs. No further syntax hints beyond what you’ve already seen.</p>
+</div>
+</section>
+<section id="what-you-should-have-found-1" class="slide level2">
+<h2>What you should have found</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb13" data-startfrom="619" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 618;"><span id="cb13-619"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.62em;line-height:1.4;</span></span>
+<span id="cb13-620"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
+<span id="cb13-621"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>task2_output_text<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-9" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="instructions-box">
+<p>Model 3 still wins on cross-validated RMSE — the advantage isn’t just an artefact of fitting the same data twice.</p>
+</div>
+</section>
+<section id="full-cross-validation-table" class="slide level2">
+<h2>Full cross-validation table</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb14" data-startfrom="631" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 630;"><span id="cb14-631"><a></a>{</span>
+<span id="cb14-632"><a></a>  <span class="kw">const</span> cols <span class="op">=</span> [<span class="st">"Model"</span><span class="op">,</span> <span class="st">"Fold 1"</span><span class="op">,</span> <span class="st">"Fold 2"</span><span class="op">,</span> <span class="st">"Fold 3"</span><span class="op">,</span> <span class="st">"Fold 4"</span><span class="op">,</span> <span class="st">"Fold 5"</span><span class="op">,</span> <span class="st">"Average"</span>]<span class="op">;</span></span>
+<span id="cb14-633"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:20px auto 0;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;"&gt;</span></span>
+<span id="cb14-634"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;</span></span>
+<span id="cb14-635"><a></a><span class="vs">      </span><span class="sc">${</span>cols<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> <span class="vs">`&lt;th style="padding:5px 14px;text-align:center;"&gt;</span><span class="sc">${</span>c<span class="sc">}</span><span class="vs">&lt;/th&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb14-636"><a></a><span class="vs">    &lt;/tr&gt;</span></span>
+<span id="cb14-637"><a></a><span class="vs">    </span><span class="sc">${</span>cv_stats_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`</span></span>
+<span id="cb14-638"><a></a><span class="vs">      &lt;tr style="border-bottom:1px solid #ddd;"&gt;</span><span class="sc">${</span>cols<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> <span class="vs">`&lt;td style="padding:4px 14px;text-align:center;</span><span class="sc">${</span>c<span class="op">===</span><span class="st">'Average'</span><span class="op">?</span><span class="st">'font-weight:700;'</span><span class="op">:</span><span class="st">''</span><span class="sc">}</span><span class="vs">"&gt;</span><span class="sc">${</span>d[c]<span class="sc">}</span><span class="vs">&lt;/td&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span><span class="vs">&lt;/tr&gt;</span></span>
+<span id="cb14-639"><a></a><span class="vs">    `</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb14-640"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
+<span id="cb14-641"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-10" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>5-fold cross-validation, same split reused across all five models.</p>
+</div>
+<details>
+<summary style="cursor:pointer;color:#2d6a4f;font-size:0.9em;">
+Show the Python syntax
+</summary>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb15" data-startfrom="652" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 651;"><span id="cb15-652"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.5em;line-height:1.35;</span></span>
+<span id="cb15-653"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
+<span id="cb15-654"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;from sklearn.model_selection import KFold</span></span>
+<span id="cb15-655"><a></a></span>
+<span id="cb15-656"><a></a><span class="vs">model_formulas = {</span></span>
+<span id="cb15-657"><a></a><span class="vs">    "Model 1": "price ~ age + agesq",</span></span>
+<span id="cb15-658"><a></a><span class="vs">    "Model 2": "price ~ age + agesq + odometer",</span></span>
+<span id="cb15-659"><a></a><span class="vs">    "Model 3": "price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer",</span></span>
+<span id="cb15-660"><a></a><span class="vs">    "Model 4": "price ~ age + agesq + odometer + odometersq + LE + XLE + SE + cond_likenew + cond_excellent + cond_good + cylind6 + dealer",</span></span>
+<span id="cb15-661"><a></a><span class="vs">    "Model 5": "price ~ age + agesq + odometer + odometersq + LE*age + XLE*age + SE*age + cond_likenew*age + cond_excellent*age + cond_good*age + cylind6*age + odometer*age + dealer*age",</span></span>
+<span id="cb15-662"><a></a><span class="vs">}</span></span>
+<span id="cb15-663"><a></a></span>
+<span id="cb15-664"><a></a><span class="vs">kf = KFold(n_splits=5, shuffle=True, random_state=1)</span></span>
+<span id="cb15-665"><a></a><span class="vs">cv_results = {name: [] for name in model_formulas}</span></span>
+<span id="cb15-666"><a></a></span>
+<span id="cb15-667"><a></a><span class="vs">for train_idx, test_idx in kf.split(df):</span></span>
+<span id="cb15-668"><a></a><span class="vs">    train, test = df.iloc[train_idx], df.iloc[test_idx]</span></span>
+<span id="cb15-669"><a></a><span class="vs">    for name, formula in model_formulas.items():</span></span>
+<span id="cb15-670"><a></a><span class="vs">        model = smf.ols(formula, data=train).fit()</span></span>
+<span id="cb15-671"><a></a><span class="vs">        pred = model.predict(test)</span></span>
+<span id="cb15-672"><a></a><span class="vs">        fold_rmse = np.sqrt(np.mean((test['price'] - pred) ** 2))</span></span>
+<span id="cb15-673"><a></a><span class="vs">        cv_results[name].append(fold_rmse)</span></span>
+<span id="cb15-674"><a></a></span>
+<span id="cb15-675"><a></a><span class="vs">cv_avg = {name: np.mean(v) for name, v in cv_results.items()}</span></span>
+<span id="cb15-676"><a></a></span>
+<span id="cb15-677"><a></a><span class="vs">cv_table = pd.DataFrame([</span></span>
+<span id="cb15-678"><a></a><span class="vs">    {"Model": name, "Fold 1": round(v[0]), "Fold 2": round(v[1]), "Fold 3": round(v[2]),</span></span>
+<span id="cb15-679"><a></a><span class="vs">     "Fold 4": round(v[3]), "Fold 5": round(v[4]), "Average": round(cv_avg[name])}</span></span>
+<span id="cb15-680"><a></a><span class="vs">    for name, v in cv_results.items()</span></span>
+<span id="cb15-681"><a></a><span class="vs">])&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-11" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</details>
+</section>
+<section id="bic-vs.-cross-validated-rmse" class="slide level2">
+<h2>BIC vs.&nbsp;cross-validated RMSE</h2>
+<ul>
+<li><strong>BIC’s advantage</strong>: no sample splitting, so it’s not a problem in small samples. Quick, and rarely far wrong.</li>
+<li><strong>Test RMSE’s advantage</strong>: makes no distributional assumptions.</li>
+<li>In practice, both approaches agreed here: <strong>Model 3</strong> (or the very similar Model 4) is the one to use. Small sample, simple model.</li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 13</p>
+</div>
+</section>
+<section id="back-to-the-original-question" class="slide level2">
+<h2>Back to the original question</h2>
+</section>
+<section id="what-price-goes-in-the-ad" class="slide level2">
+<h2>What price goes in the ad?</h2>
+<p>Model 3, for a 10-year-old Camry LE, excellent condition, 120,000 miles, sold privately:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a></a>new_car <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb16-2"><a></a>    <span class="st">"age"</span>: [<span class="dv">10</span>], <span class="st">"agesq"</span>: [<span class="dv">100</span>], <span class="st">"odometer"</span>: [<span class="dv">12</span>], <span class="st">"odometersq"</span>: [<span class="dv">144</span>],</span>
+<span id="cb16-3"><a></a>    <span class="st">"LE"</span>: [<span class="dv">1</span>], <span class="st">"cond_excellent"</span>: [<span class="dv">1</span>], <span class="st">"cond_good"</span>: [<span class="dv">0</span>], <span class="st">"dealer"</span>: [<span class="dv">0</span>],</span>
+<span id="cb16-4"><a></a>})</span>
+<span id="cb16-5"><a></a></span>
+<span id="cb16-6"><a></a>pred <span class="op">=</span> model3.get_prediction(new_car).summary_frame(alpha<span class="op">=</span><span class="fl">0.20</span>)</span>
+<span id="cb16-7"><a></a>point_pred <span class="op">=</span> pred[<span class="st">"mean"</span>].iloc[<span class="dv">0</span>]</span>
+<span id="cb16-8"><a></a>pi_lower <span class="op">=</span> pred[<span class="st">"obs_ci_lower"</span>].iloc[<span class="dv">0</span>]</span>
+<span id="cb16-9"><a></a>pi_upper <span class="op">=</span> pred[<span class="st">"obs_ci_upper"</span>].iloc[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>get_prediction()</code> gives both the point forecast (<code>mean</code>) and — via <code>summary_frame(alpha=0.20)</code> — the bounds of an 80% prediction interval, all from the model already fitted.</p>
+</section>
+<section id="the-price" class="slide level2">
+<h2>The price</h2>
+<div class="instructions-box">
+<p>An <strong>80% prediction interval</strong> for <em>this specific car</em>: 80% of cars just like it should have their true price land somewhere in this range. It’s wider than a confidence interval for the <em>average</em> price at these characteristics — it has to cover this one car’s entire prediction error, irreducible noise included, not just the uncertainty in a mean.</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb17" data-startfrom="728" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 727;"><span id="cb17-728"><a></a><span class="fu">html</span><span class="vs">`&lt;div style="text-align:center;padding-top:20px;"&gt;</span></span>
+<span id="cb17-729"><a></a><span class="vs">  &lt;div style="font-size:2.4em;color:#2d6a4f;font-weight:700;"&gt;$</span><span class="sc">${</span>point_pred<span class="sc">}</span><span class="vs">&lt;/div&gt;</span></span>
+<span id="cb17-730"><a></a><span class="vs">  &lt;div style="font-size:1.1em;color:#666;padding-top:10px;"&gt;80% prediction interval: $</span><span class="sc">${</span>pi_lower<span class="sc">}</span><span class="vs"> – $</span><span class="sc">${</span>pi_upper<span class="sc">}</span><span class="vs">&lt;/div&gt;</span></span>
+<span id="cb17-731"><a></a><span class="vs">&lt;/div&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-12" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Even with a good model, the interval is wide. Prediction is genuinely hard — and it’s worth telling whoever’s relying on the number in advance.</p>
+</div>
+</section>
+<section id="stationarity-the-assumption-underneath-everything" class="slide level2">
+<h2>Stationarity — the assumption underneath everything</h2>
+<ul>
+<li>All of this assumes the relationship between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> in the live data is the <strong>same</strong> as in the original data</li>
+<li>If the used-car market shifts — a fuel price shock, a new model year, a different city — the fitted relationship may simply not transfer</li>
+<li>No amount of BIC or cross-validation on the original data can detect this. It has to be reasoned about, not computed.</li>
+</ul>
+</section>
+<section id="summary" class="slide level2">
+<h2>Summary</h2>
+<ul>
+<li>Prediction is a different goal from explanation — coefficients matter less, <span class="math inline">\(\hat y\)</span> for <strong>new</strong> observations matters more</li>
+<li>A loss function turns a prediction error into a number a business decision can use; squared loss (MSE/RMSE) is the default, but not the only option</li>
+<li>More complex models always fit the original data better — that’s exactly why in-sample fit alone is a trap</li>
+<li>BIC and cross-validation both penalise complexity; used properly, they agree</li>
+</ul>
+</section>
+<section id="online-session" class="slide level2">
+<h2>Online session</h2>
+<p>See <strong>week10-online.html</strong> — model building for prediction: feature engineering, LASSO, and post-prediction diagnostics, using a real Airbnb pricing case study.</p>
+</section>
+<section id="coming-up" class="slide level2">
+<h2>Coming up</h2>
+<div style="text-align: center; padding-top: 60px;">
+<p><span style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"><strong>Week 11: Time Series</strong></span></p>
+<div class="fragment" style="padding-top:40px;">
+<p><em>Every model this week assumed each row was independent of the others. What happens when today’s value depends on yesterday’s?</em></p>
+</div>
+</div>
+
+
+<div class="ojs-auto-generated hidden">
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6WyAgeyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiaW5saW5lIjoidHJ1ZSIsInNvdXJjZSI6Imh0bC5odG1sYDxzcGFuPiR7c3BsaXRfaW5zdGFiaWxpdHlfcmFuZ2V9PC9zcGFuPmAiLCAiY2VsbE5hbWUiOiJvanMtZWxlbWVudC1pZC0xIn1dfQ==
+</script>
+</div>
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'fade',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1280,
+
+        height: 720,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 8.0e-2,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script type="ojs-module-contents">
+    eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IlBsb3QucGxvdCh7XG4gIHdpZHRoOiA2NDAsIGhlaWdodDogMzQwLFxuICB4OiB7bGFiZWw6IFwiUHJlZGljdGlvbiBlcnJvclwifSwgeToge2xhYmVsOiBcIkxvc3NcIn0sXG4gIG1hcmtzOiBbXG4gICAgUGxvdC5saW5lKGQzLnJhbmdlKC0xMCwgMTAuMSwgMC4yKS5tYXAoZSA9PiAoe2UsIGxvc3M6IE1hdGguYWJzKGUpICogMSwgc2VyaWVzOiBcInN5bW1ldHJpYywgbGluZWFyXCJ9KSksIHt4OiBcImVcIiwgeTogXCJsb3NzXCIsIHN0cm9rZTogXCJzZXJpZXNcIn0pLFxuICAgIFBsb3QubGluZShkMy5yYW5nZSgtMTAsIDEwLjEsIDAuMikubWFwKGUgPT4gKHtlLCBsb3NzOiAoZSAqKiAyKSAqIDAuMywgc2VyaWVzOiBcInN5bW1ldHJpYywgY29udmV4XCJ9KSksIHt4OiBcImVcIiwgeTogXCJsb3NzXCIsIHN0cm9rZTogXCJzZXJpZXNcIn0pLFxuICAgIFBsb3QubGluZShkMy5yYW5nZSgtMTAsIDEwLjEsIDAuMikubWFwKGUgPT4gKHtlLCBsb3NzOiBlID49IDAgPyAoZSAqKiAyKSAqIDAuMyA6IChlICoqIDIpICogMC4xNSwgc2VyaWVzOiBcImFzeW1tZXRyaWMsIGNvbnZleFwifSkpLCB7eDogXCJlXCIsIHk6IFwibG9zc1wiLCBzdHJva2U6IFwic2VyaWVzXCJ9KVxuICBdLFxuICBjb2xvcjoge2xlZ2VuZDogdHJ1ZX1cbn0pXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJodG1sYDxwcmUgc3R5bGU9XCJmb250LWZhbWlseTonU0YgTW9ubycsJ01lbmxvJyxtb25vc3BhY2U7Zm9udC1zaXplOjAuNWVtO2xpbmUtaGVpZ2h0OjEuMzU7XG4gICAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kOiNmNmY2Zjg7Ym9yZGVyOjFweCBzb2xpZCAjZTBlMGU2O2JvcmRlci1yYWRpdXM6NnB4O1xuICAgICAgICAgICAgICAgICAgcGFkZGluZzo4cHggMTRweDtvdmVyZmxvdy14OmF1dG87d2hpdGUtc3BhY2U6cHJlO1wiPiR7bW9kZWwzX3N1bW1hcnlfdGV4dH08L3ByZT5gXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTMiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJodG1sYDxwcmUgc3R5bGU9XCJmb250LWZhbWlseTonU0YgTW9ubycsJ01lbmxvJyxtb25vc3BhY2U7Zm9udC1zaXplOjAuNjJlbTtsaW5lLWhlaWdodDoxLjQ7XG4gICAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kOiNmNmY2Zjg7Ym9yZGVyOjFweCBzb2xpZCAjZTBlMGU2O2JvcmRlci1yYWRpdXM6NnB4O1xuICAgICAgICAgICAgICAgICAgcGFkZGluZzo4cHggMTRweDtvdmVyZmxvdy14OmF1dG87d2hpdGUtc3BhY2U6cHJlO1wiPiR7dGFzazFfb3V0cHV0X3RleHR9PC9wcmU+YFxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC00IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiUGxvdC5wbG90KHtcbiAgd2lkdGg6IDcwMCwgaGVpZ2h0OiAzODAsXG4gIHg6IHtsYWJlbDogXCJOdW1iZXIgb2YgY29lZmZpY2llbnRzXCJ9LFxuICB5OiB7bGFiZWw6IFwiUk1TRSAoJClcIn0sXG4gIG1hcmtzOiBbXG4gICAgUGxvdC5saW5lKGNvbXBsZXhpdHlfZGF0YSwge3g6IFwibl9jb2VmXCIsIHk6IFwicm1zZVwiLCBzdHJva2U6IFwic2VyaWVzXCIsIHN0cm9rZVdpZHRoOiAyLjV9KSxcbiAgICBQbG90LmRvdChjb21wbGV4aXR5X2RhdGEsIHt4OiBcIm5fY29lZlwiLCB5OiBcInJtc2VcIiwgZmlsbDogXCJzZXJpZXNcIiwgcjogNH0pLFxuICAgIFBsb3QudGV4dChjb21wbGV4aXR5X2RhdGEuZmlsdGVyKGQgPT4gZC5zZXJpZXMgPT09IFwiSW4tc2FtcGxlIFJNU0VcIiksIHt4OiBcIm5fY29lZlwiLCB5OiBcInJtc2VcIiwgdGV4dDogXCJtb2RlbFwiLCBkeTogLTEyLCBmb250U2l6ZTogMTB9KVxuICBdLFxuICBjb2xvcjoge2xlZ2VuZDogdHJ1ZX1cbn0pXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTUiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIGNvbnN0IGNvbHMgPSBbXCJNb2RlbFwiLCBcIk4gdmFyc1wiLCBcIk4gY29lZlwiLCBcIlIyXCIsIFwiUk1TRVwiLCBcIkJJQ1wiXTtcbiAgcmV0dXJuIGh0bWxgPHRhYmxlIHN0eWxlPVwibWFyZ2luOjIwcHggYXV0byAwO2ZvbnQtZmFtaWx5OnNhbnMtc2VyaWY7Zm9udC1zaXplOjEuMDVlbTtib3JkZXItY29sbGFwc2U6Y29sbGFwc2U7XCI+XG4gICAgPHRyIHN0eWxlPVwiYm9yZGVyLWJvdHRvbToycHggc29saWQgIzFhMWEyZTtcIj5cbiAgICAgICR7Y29scy5tYXAoYyA9PiBgPHRoIHN0eWxlPVwicGFkZGluZzo2cHggMjBweDt0ZXh0LWFsaWduOmNlbnRlcjtcIj4ke2N9PC90aD5gKS5qb2luKCcnKX1cbiAgICA8L3RyPlxuICAgICR7bW9kZWxfc3RhdHNfcm93cy5tYXAoZCA9PiBgXG4gICAgICA8dHIgc3R5bGU9XCJib3JkZXItYm90dG9tOjFweCBzb2xpZCAjZGRkO1wiPiR7Y29scy5tYXAoYyA9PiBgPHRkIHN0eWxlPVwicGFkZGluZzo1cHggMjBweDt0ZXh0LWFsaWduOmNlbnRlcjtcIj4ke2RbY119PC90ZD5gKS5qb2luKCcnKX08L3RyPlxuICAgIGApLmpvaW4oJycpfVxuICA8L3RhYmxlPmBcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNiIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPHByZSBzdHlsZT1cImZvbnQtZmFtaWx5OidTRiBNb25vJywnTWVubG8nLG1vbm9zcGFjZTtmb250LXNpemU6MC42MmVtO2xpbmUtaGVpZ2h0OjEuNDtcbiAgICAgICAgICAgICAgICAgIGJhY2tncm91bmQ6I2Y2ZjZmODtib3JkZXI6MXB4IHNvbGlkICNlMGUwZTY7Ym9yZGVyLXJhZGl1czo2cHg7XG4gICAgICAgICAgICAgICAgICBwYWRkaW5nOjhweCAxNHB4O292ZXJmbG93LXg6YXV0bzt3aGl0ZS1zcGFjZTpwcmU7XCI+JHtzaW5nbGVfc3BsaXRfb3V0cHV0X3RleHR9PC9wcmU+YFxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC03IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICByZXR1cm4gaHRtbGA8dGFibGUgc3R5bGU9XCJtYXJnaW46MTZweCBhdXRvIDA7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MS4wNWVtO2JvcmRlci1jb2xsYXBzZTpjb2xsYXBzZTtcIj5cbiAgICA8dHIgc3R5bGU9XCJib3JkZXItYm90dG9tOjJweCBzb2xpZCAjMWExYTJlO1wiPjx0aCBzdHlsZT1cInBhZGRpbmc6NnB4IDIycHg7XCI+U3BsaXQ8L3RoPjx0aCBzdHlsZT1cInBhZGRpbmc6NnB4IDIycHg7XCI+VGVzdCBSTVNFPC90aD48L3RyPlxuICAgICR7c3BsaXRfaW5zdGFiaWxpdHlfcm93cy5tYXAoZCA9PiBgPHRyIHN0eWxlPVwiYm9yZGVyLWJvdHRvbToxcHggc29saWQgI2RkZDtcIj48dGQgc3R5bGU9XCJwYWRkaW5nOjVweCAyMnB4O3RleHQtYWxpZ246Y2VudGVyO1wiPiR7ZC5kcmF3fTwvdGQ+PHRkIHN0eWxlPVwicGFkZGluZzo1cHggMjJweDt0ZXh0LWFsaWduOmNlbnRlcjtcIj4ke2Qucm1zZX08L3RkPjwvdHI+YCkuam9pbignJyl9XG4gIDwvdGFibGU+YFxufVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC04IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICBjb25zdCByb3dIID0gMjYsIGdhcCA9IDYsIG5TZXRzID0gNSwgblNlZyA9IDU7XG4gIGNvbnN0IHNlZ1cgPSA0MiwgYmFyWCA9IDkwLCBiYXJXID0gc2VnVyAqIG5TZWc7XG4gIGNvbnN0IHJvd3MgPSBkMy5yYW5nZShuU2V0cykubWFwKGkgPT4gaHRtbGA8ZGl2IHN0eWxlPVwiZGlzcGxheTpmbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjttYXJnaW4tYm90dG9tOiR7Z2FwfXB4O1wiPlxuICAgIDxkaXYgc3R5bGU9XCJ3aWR0aDoke2Jhclh9cHg7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MC44ZW07dGV4dC1hbGlnbjpyaWdodDtwYWRkaW5nLXJpZ2h0OjEwcHg7XCI+U2V0ICR7aSsxfTwvZGl2PlxuICAgIDxkaXYgc3R5bGU9XCJkaXNwbGF5OmZsZXg7XCI+XG4gICAgICAke2QzLnJhbmdlKG5TZWcpLm1hcChqID0+IGh0bWxgPGRpdiBzdHlsZT1cIndpZHRoOiR7c2VnV31weDtoZWlnaHQ6JHtyb3dIfXB4O2JhY2tncm91bmQ6JHtqPT09aSA/ICcjYzAzOTJiJyA6ICcjNWI3ZmJkJ307Ym9yZGVyOjFweCBzb2xpZCB3aGl0ZTtcIj48L2Rpdj5gKX1cbiAgICA8L2Rpdj5cbiAgICA8ZGl2IHN0eWxlPVwiZm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MC43NWVtO3BhZGRpbmctbGVmdDoxNHB4O2NvbG9yOiM1NTU7XCI+4oaSIHRyYWluIG9uIGJsdWUsIHRlc3Qgb24gcmVkIOKGkiBNU0U8c3ViPiR7aSsxfTwvc3ViPjwvZGl2PlxuICA8L2Rpdj5gKTtcbiAgcmV0dXJuIGh0bWxgPGRpdiBzdHlsZT1cInBhZGRpbmctdG9wOjEwcHg7XCI+XG4gICAgJHtyb3dzfVxuICAgIDxkaXYgc3R5bGU9XCJkaXNwbGF5OmZsZXg7bWFyZ2luLXRvcDo2cHg7XCI+XG4gICAgICA8ZGl2IHN0eWxlPVwid2lkdGg6JHtiYXJYfXB4O1wiPjwvZGl2PlxuICAgICAgPGRpdiBzdHlsZT1cIndpZHRoOiR7YmFyV31weDtib3JkZXItdG9wOjJweCBzb2xpZCAjMzMzO3RleHQtYWxpZ246Y2VudGVyO2ZvbnQtZmFtaWx5OnNhbnMtc2VyaWY7Zm9udC1zaXplOjAuNzVlbTtwYWRkaW5nLXRvcDo0cHg7Y29sb3I6IzMzMztcIj5Xb3JrIHNldDwvZGl2PlxuICAgIDwvZGl2PlxuICAgIDxkaXYgc3R5bGU9XCJmb250LWZhbWlseTpzYW5zLXNlcmlmO2ZvbnQtc2l6ZTowLjllbTtwYWRkaW5nLXRvcDoxNHB4O2NvbG9yOiMyZDZhNGY7Zm9udC13ZWlnaHQ6NjAwO1wiPkF2ZXJhZ2UgdGhlIDUgTVNFcyDihpIgdGFrZSB0aGUgc3F1YXJlIHJvb3Qg4oaSIGNyb3NzLXZhbGlkYXRlZCBSTVNFPC9kaXY+XG4gIDwvZGl2PmBcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtOSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPHByZSBzdHlsZT1cImZvbnQtZmFtaWx5OidTRiBNb25vJywnTWVubG8nLG1vbm9zcGFjZTtmb250LXNpemU6MC42MmVtO2xpbmUtaGVpZ2h0OjEuNDtcbiAgICAgICAgICAgICAgICAgIGJhY2tncm91bmQ6I2Y2ZjZmODtib3JkZXI6MXB4IHNvbGlkICNlMGUwZTY7Ym9yZGVyLXJhZGl1czo2cHg7XG4gICAgICAgICAgICAgICAgICBwYWRkaW5nOjhweCAxNHB4O292ZXJmbG93LXg6YXV0bzt3aGl0ZS1zcGFjZTpwcmU7XCI+JHt0YXNrMl9vdXRwdXRfdGV4dH08L3ByZT5gXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTEwIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICBjb25zdCBjb2xzID0gW1wiTW9kZWxcIiwgXCJGb2xkIDFcIiwgXCJGb2xkIDJcIiwgXCJGb2xkIDNcIiwgXCJGb2xkIDRcIiwgXCJGb2xkIDVcIiwgXCJBdmVyYWdlXCJdO1xuICByZXR1cm4gaHRtbGA8dGFibGUgc3R5bGU9XCJtYXJnaW46MjBweCBhdXRvIDA7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MC44NWVtO2JvcmRlci1jb2xsYXBzZTpjb2xsYXBzZTtcIj5cbiAgICA8dHIgc3R5bGU9XCJib3JkZXItYm90dG9tOjJweCBzb2xpZCAjMWExYTJlO1wiPlxuICAgICAgJHtjb2xzLm1hcChjID0+IGA8dGggc3R5bGU9XCJwYWRkaW5nOjVweCAxNHB4O3RleHQtYWxpZ246Y2VudGVyO1wiPiR7Y308L3RoPmApLmpvaW4oJycpfVxuICAgIDwvdHI+XG4gICAgJHtjdl9zdGF0c19yb3dzLm1hcChkID0+IGBcbiAgICAgIDx0ciBzdHlsZT1cImJvcmRlci1ib3R0b206MXB4IHNvbGlkICNkZGQ7XCI+JHtjb2xzLm1hcChjID0+IGA8dGQgc3R5bGU9XCJwYWRkaW5nOjRweCAxNHB4O3RleHQtYWxpZ246Y2VudGVyOyR7Yz09PSdBdmVyYWdlJz8nZm9udC13ZWlnaHQ6NzAwOyc6Jyd9XCI+JHtkW2NdfTwvdGQ+YCkuam9pbignJyl9PC90cj5cbiAgICBgKS5qb2luKCcnKX1cbiAgPC90YWJsZT5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTExIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8cHJlIHN0eWxlPVwiZm9udC1mYW1pbHk6J1NGIE1vbm8nLCdNZW5sbycsbW9ub3NwYWNlO2ZvbnQtc2l6ZTowLjVlbTtsaW5lLWhlaWdodDoxLjM1O1xuICAgICAgICAgICAgICAgICAgYmFja2dyb3VuZDojZjZmNmY4O2JvcmRlcjoxcHggc29saWQgI2UwZTBlNjtib3JkZXItcmFkaXVzOjZweDtcbiAgICAgICAgICAgICAgICAgIHBhZGRpbmc6OHB4IDE0cHg7b3ZlcmZsb3cteDphdXRvO3doaXRlLXNwYWNlOnByZTtcIj5mcm9tIHNrbGVhcm4ubW9kZWxfc2VsZWN0aW9uIGltcG9ydCBLRm9sZFxuXG5tb2RlbF9mb3JtdWxhcyA9IHtcbiAgICBcIk1vZGVsIDFcIjogXCJwcmljZSB+IGFnZSArIGFnZXNxXCIsXG4gICAgXCJNb2RlbCAyXCI6IFwicHJpY2UgfiBhZ2UgKyBhZ2VzcSArIG9kb21ldGVyXCIsXG4gICAgXCJNb2RlbCAzXCI6IFwicHJpY2UgfiBhZ2UgKyBhZ2VzcSArIG9kb21ldGVyICsgb2RvbWV0ZXJzcSArIExFICsgY29uZF9leGNlbGxlbnQgKyBjb25kX2dvb2QgKyBkZWFsZXJcIixcbiAgICBcIk1vZGVsIDRcIjogXCJwcmljZSB+IGFnZSArIGFnZXNxICsgb2RvbWV0ZXIgKyBvZG9tZXRlcnNxICsgTEUgKyBYTEUgKyBTRSArIGNvbmRfbGlrZW5ldyArIGNvbmRfZXhjZWxsZW50ICsgY29uZF9nb29kICsgY3lsaW5kNiArIGRlYWxlclwiLFxuICAgIFwiTW9kZWwgNVwiOiBcInByaWNlIH4gYWdlICsgYWdlc3EgKyBvZG9tZXRlciArIG9kb21ldGVyc3EgKyBMRSphZ2UgKyBYTEUqYWdlICsgU0UqYWdlICsgY29uZF9saWtlbmV3KmFnZSArIGNvbmRfZXhjZWxsZW50KmFnZSArIGNvbmRfZ29vZCphZ2UgKyBjeWxpbmQ2KmFnZSArIG9kb21ldGVyKmFnZSArIGRlYWxlciphZ2VcIixcbn1cblxua2YgPSBLRm9sZChuX3NwbGl0cz01LCBzaHVmZmxlPVRydWUsIHJhbmRvbV9zdGF0ZT0xKVxuY3ZfcmVzdWx0cyA9IHtuYW1lOiBbXSBmb3IgbmFtZSBpbiBtb2RlbF9mb3JtdWxhc31cblxuZm9yIHRyYWluX2lkeCwgdGVzdF9pZHggaW4ga2Yuc3BsaXQoZGYpOlxuICAgIHRyYWluLCB0ZXN0ID0gZGYuaWxvY1t0cmFpbl9pZHhdLCBkZi5pbG9jW3Rlc3RfaWR4XVxuICAgIGZvciBuYW1lLCBmb3JtdWxhIGluIG1vZGVsX2Zvcm11bGFzLml0ZW1zKCk6XG4gICAgICAgIG1vZGVsID0gc21mLm9scyhmb3JtdWxhLCBkYXRhPXRyYWluKS5maXQoKVxuICAgICAgICBwcmVkID0gbW9kZWwucHJlZGljdCh0ZXN0KVxuICAgICAgICBmb2xkX3Jtc2UgPSBucC5zcXJ0KG5wLm1lYW4oKHRlc3RbJ3ByaWNlJ10gLSBwcmVkKSAqKiAyKSlcbiAgICAgICAgY3ZfcmVzdWx0c1tuYW1lXS5hcHBlbmQoZm9sZF9ybXNlKVxuXG5jdl9hdmcgPSB7bmFtZTogbnAubWVhbih2KSBmb3IgbmFtZSwgdiBpbiBjdl9yZXN1bHRzLml0ZW1zKCl9XG5cbmN2X3RhYmxlID0gcGQuRGF0YUZyYW1lKFtcbiAgICB7XCJNb2RlbFwiOiBuYW1lLCBcIkZvbGQgMVwiOiByb3VuZCh2WzBdKSwgXCJGb2xkIDJcIjogcm91bmQodlsxXSksIFwiRm9sZCAzXCI6IHJvdW5kKHZbMl0pLFxuICAgICBcIkZvbGQgNFwiOiByb3VuZCh2WzNdKSwgXCJGb2xkIDVcIjogcm91bmQodls0XSksIFwiQXZlcmFnZVwiOiByb3VuZChjdl9hdmdbbmFtZV0pfVxuICAgIGZvciBuYW1lLCB2IGluIGN2X3Jlc3VsdHMuaXRlbXMoKVxuXSk8L3ByZT5gXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTEyIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8ZGl2IHN0eWxlPVwidGV4dC1hbGlnbjpjZW50ZXI7cGFkZGluZy10b3A6MjBweDtcIj5cbiAgPGRpdiBzdHlsZT1cImZvbnQtc2l6ZToyLjRlbTtjb2xvcjojMmQ2YTRmO2ZvbnQtd2VpZ2h0OjcwMDtcIj4kJHtwb2ludF9wcmVkfTwvZGl2PlxuICA8ZGl2IHN0eWxlPVwiZm9udC1zaXplOjEuMWVtO2NvbG9yOiM2NjY7cGFkZGluZy10b3A6MTBweDtcIj44MCUgcHJlZGljdGlvbiBpbnRlcnZhbDogJCR7cGlfbG93ZXJ9IOKAkyAkJHtwaV91cHBlcn08L2Rpdj5cbjwvZGl2PmBcbiJ9XX0=
+    </script>
+    <script type="module">
+    if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+    window._ojs.paths.runtimeToDoc = "../..";
+    window._ojs.paths.runtimeToRoot = "../..";
+    window._ojs.paths.docToRoot = "";
+    window._ojs.selfContained = false;
+    window._ojs.runtime.interpretFromScriptTags();
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
+              }
+            }
+            return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

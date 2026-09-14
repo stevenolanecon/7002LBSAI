@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/tabby.min.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.7.32">
+
+  <title>7002LBSAI – GLMs — Count Outcomes</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="site_libs/revealjs/dist/theme/quarto-2c1b5f745a11cfad616ebade4a4a7d24.css">
+  <link href="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+  <link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+  
+  <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="styles-slides.css?v=20260914">
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">GLMs — Count Outcomes</h1>
+  <p class="subtitle">7002LBSAI Research Methods in Analytics — Week 8 Online Session</p>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section class="slide level2">
+
+<div id="4383377d" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="ojs-define">{"contents": [{"name": "irr_rows", "value": [{"variable": "Temperature (\u00b0C)", "irr": "1.036***"}, {"variable": "Working day", "irr": "1.032***"}, {"variable": "Spring (vs. Fall)", "irr": "0.836***"}, {"variable": "Summer (vs. Fall)", "irr": "1.138***"}, {"variable": "Winter (vs. Fall)", "irr": "1.308***"}, {"variable": "Windspeed", "irr": "0.391***"}, {"variable": "Humidity", "irr": "0.428***"}]}, {"name": "temp_irr", "value": 1.036}, {"name": "temp_irr_10c", "value": 1.427}, {"name": "temp_pct_10c", "value": 42.7}, {"name": "poisson_summary_text", "value": "                 Generalized Linear Model Regression Results                  \n==============================================================================\nDep. Variable:                    cnt   No. Observations:                  731\nModel:                            GLM   Df Residuals:                      723\nModel Family:                 Poisson   Df Model:                            7\nLink Function:                    Log   Scale:                          1.0000\nMethod:                          IRLS   Log-Likelihood:            -1.6405e+05\nDate:                Mon, 14 Sep 2026   Deviance:                   3.2070e+05\nTime:                        19:51:31   Pearson chi2:                 3.10e+05\nNo. Iterations:                     5   Pseudo R-squ. (CS):              1.000\nCovariance Type:            nonrobust                                         \n============================================================================================\n                               coef    std err          z      P>|z|      [0.025      0.975]\n--------------------------------------------------------------------------------------------\nIntercept                    8.2690      0.005   1624.352      0.000       8.259       8.279\nC(season_name)[T.Spring]    -0.1795      0.003    -63.626      0.000      -0.185      -0.174\nC(season_name)[T.Summer]     0.1293      0.002     78.097      0.000       0.126       0.133\nC(season_name)[T.Winter]     0.2687      0.002    125.381      0.000       0.265       0.273\ntemp_c                       0.0356      0.000    264.935      0.000       0.035       0.036\nworkingday                   0.0311      0.001     25.948      0.000       0.029       0.033\nwindspeed                   -0.9382      0.008   -118.067      0.000      -0.954      -0.923\nhum                         -0.8480      0.004   -200.154      0.000      -0.856      -0.840\n============================================================================================"}, {"name": "cnt_mean", "value": 4504.0}, {"name": "cnt_var", "value": 3752788.0}, {"name": "overdispersion_ratio", "value": 833.1}, {"name": "nb_alpha", "value": 0.125}, {"name": "overdispersion_rows", "value": [{"variable": "Temperature (\u00b0C)", "poisson_se": "0.0001", "nb_se": "0.0032", "ratio": "24.2x"}, {"variable": "Working day", "poisson_se": "0.0012", "nb_se": "0.0282", "ratio": "23.5x"}, {"variable": "Spring (vs. Fall)", "poisson_se": "0.0028", "nb_se": "0.0622", "ratio": "22.0x"}, {"variable": "Summer (vs. Fall)", "poisson_se": "0.0017", "nb_se": "0.0421", "ratio": "25.4x"}, {"variable": "Winter (vs. Fall)", "poisson_se": "0.0021", "nb_se": "0.0522", "ratio": "24.3x"}, {"variable": "Windspeed", "poisson_se": "0.0079", "nb_se": "0.1821", "ratio": "22.9x"}, {"variable": "Humidity", "poisson_se": "0.0042", "nb_se": "0.1024", "ratio": "24.2x"}]}, {"name": "temp_irr_nb", "value": 1.047}, {"name": "temp_pct_nb_10c", "value": 59.0}]}</script>
+</div>
+</div>
+</section>
+<section id="section" class="slide level2" data-background-color="#1a1a2e">
+<h2></h2>
+<div style="text-align: center; padding-top: 180px;">
+<p><span style="font-size: 2.2em; color: white;"><strong>Count outcomes</strong></span></p>
+<p><span style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;">The workshop covered a 0/1 outcome. What about an outcome that can be 0, 1, 2, 3… with no natural ceiling?</span></p>
+</div>
+</section>
+<section id="how-many-bikes-today" class="slide level2">
+<h2>How many bikes today?</h2>
+<div class="instructions-box">
+<p><strong>Business question</strong>: a bike-share operator needs to plan how many bikes to have available each day. Rentals range from 22 on the worst day to 8,714 on the best — driven by weather, season, and whether it’s a working day.</p>
+</div>
+<div class="fragment">
+<p>This is real UCI data: 731 days, daily rental counts (<code>cnt</code>), temperature, humidity, windspeed, season, and working-day status.</p>
+</div>
+</section>
+<section id="same-logic-new-distribution" class="slide level2">
+<h2>Same logic, new distribution</h2>
+<p>Everything from the workshop still applies — a link function connects a linear index to the outcome, and raw coefficients aren’t directly interpretable.</p>
+<div class="fragment">
+<ul>
+<li>Binary y: link function keeps predictions between 0 and 1 (logistic or normal CDF)</li>
+<li><strong>Count y</strong>: link function needs to keep predictions <strong>non-negative</strong> — no upper bound needed, but never below zero</li>
+<li>The natural choice: <span class="math inline">\(E[y|x] = \exp(\beta_0 + \beta_1 x_1 + \dots)\)</span> — the <strong>log link</strong></li>
+</ul>
+</div>
+</section>
+<section id="poisson-regression" class="slide level2">
+<h2>Poisson regression</h2>
+<p><span class="math display">\[\ln(E[y|x]) = \beta_0 + \beta_1 x_1 + \dots\]</span></p>
+<ul>
+<li>The <strong>Poisson</strong> distribution is the standard choice for count data — same role here as the logistic/normal assumption played for binary y</li>
+<li>Fit by maximum likelihood, same idea as logit and probit</li>
+<li>Because of the log link, coefficients are <strong>additive on the log scale, multiplicative on the count scale</strong></li>
+</ul>
+</section>
+<section id="interpreting-via-the-incidence-rate-ratio" class="slide level2">
+<h2>Interpreting via the incidence rate ratio</h2>
+<p>Exponentiating a coefficient converts it into an <strong>incidence rate ratio (IRR)</strong>:</p>
+<p><span class="math display">\[IRR = \exp(\beta_1)\]</span></p>
+<div class="fragment">
+<p>A one-unit increase in <span class="math inline">\(x_1\)</span> <strong>multiplies</strong> the expected count by <span class="math inline">\(IRR\)</span> — not adds to it. Same underlying logic as an odds ratio from logit, just for counts instead of binary outcomes.</p>
+</div>
+<div class="fragment">
+<ul>
+<li><span class="math inline">\(IRR &gt; 1\)</span>: expected count goes up</li>
+<li><span class="math inline">\(IRR &lt; 1\)</span>: expected count goes down</li>
+<li><span class="math inline">\(IRR = 1\)</span>: no effect</li>
+</ul>
+</div>
+</section>
+<section id="fitting-it-in-code" class="slide level2">
+<h2>Fitting it, in code</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb1-2"><a></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb1-3"><a></a></span>
+<span id="cb1-4"><a></a>poisson_model <span class="op">=</span> smf.glm(</span>
+<span id="cb1-5"><a></a>    <span class="st">"cnt ~ temp_c + workingday + C(season_name) + windspeed + hum"</span>,</span>
+<span id="cb1-6"><a></a>    data<span class="op">=</span>df,</span>
+<span id="cb1-7"><a></a>    family<span class="op">=</span>sm.families.Poisson()</span>
+<span id="cb1-8"><a></a>).fit()</span>
+<span id="cb1-9"><a></a></span>
+<span id="cb1-10"><a></a>irr <span class="op">=</span> np.exp(poisson_model.params)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="real-irrs-on-real-data" class="slide level2">
+<h2>Real IRRs, on real data</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="168" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 167;"><span id="cb2-168"><a></a>{</span>
+<span id="cb2-169"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:16px auto 0;font-family:sans-serif;font-size:1em;border-collapse:collapse;"&gt;</span></span>
+<span id="cb2-170"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;&lt;th style="padding:6px 24px;"&gt;Variable&lt;/th&gt;&lt;th style="padding:6px 24px;"&gt;IRR&lt;/th&gt;&lt;/tr&gt;</span></span>
+<span id="cb2-171"><a></a><span class="vs">    </span><span class="sc">${</span>irr_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="border-bottom:1px solid #ddd;"&gt;&lt;td style="padding:5px 24px;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">variable</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:5px 24px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">irr</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb2-172"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
+<span id="cb2-173"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-1" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Reference category for season: Fall. Source: UCI Bike Sharing dataset</p>
+</div>
+</section>
+<section id="the-temperature-story" class="slide level2">
+<h2>The temperature story</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb3" data-startfrom="183" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 182;"><span id="cb3-183"><a></a><span class="fu">html</span><span class="vs">`&lt;p&gt;Each 1°C warmer day multiplies expected rentals by &lt;b&gt;</span><span class="sc">${</span>temp_irr<span class="sc">}</span><span class="vs">&lt;/b&gt;.&lt;/p&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-2" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb4" data-startfrom="188" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 187;"><span id="cb4-188"><a></a><span class="fu">html</span><span class="vs">`&lt;p&gt;Over a 10°C swing: an IRR of &lt;b&gt;</span><span class="sc">${</span>temp_irr_10c<span class="sc">}</span><span class="vs">&lt;/b&gt; — that's &lt;b&gt;</span><span class="sc">${</span>temp_pct_10c<span class="sc">}</span><span class="vs">% more rentals expected&lt;/b&gt; on a day 10°C warmer, holding season, humidity, windspeed, and working-day status fixed.&lt;/p&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-3" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="task-read-one-irr-yourself" class="slide level2">
+<h2>Task — read one IRR yourself</h2>
+<div class="instructions-box">
+<p><strong>Business question</strong>: how much does a working day actually change expected demand, compared to a weekend or holiday?</p>
+<p>Using the table above, convert the <code>workingday</code> IRR into a plain-English sentence a scheduling manager could act on. What does an IRR just above 1 actually mean here, in percentage terms?</p>
+</div>
+</section>
+<section class="slide level2">
+
+</section>
+<section>
+<section id="a-closer-look" class="title-slide slide level1 center" data-background-color="#2d6a4f">
+<h1>A closer look</h1>
+
+</section>
+<section id="is-poisson-actually-a-good-fit-here" class="slide level2">
+<h2>Is Poisson actually a good fit here?</h2>
+</section>
+<section id="poissons-hidden-assumption" class="slide level2">
+<h2>Poisson’s hidden assumption</h2>
+<p>Poisson regression assumes <strong>equidispersion</strong>: the variance of <span class="math inline">\(y\)</span> equals its mean, <span class="math inline">\(Var(y|x) = E(y|x)\)</span>.</p>
+<div class="fragment">
+<p>On this data:</p>
+<ul>
+<li>Mean daily rentals: <strong><span><span id="ojs-element-id-1"></span></span></strong></li>
+<li>Variance: <strong><span><span id="ojs-element-id-2"></span></span></strong></li>
+<li>Ratio: <strong><span><span id="ojs-element-id-3"></span>×</span></strong></li>
+</ul>
+</div>
+<div class="fragment">
+<p>The variance is nowhere close to the mean — this is <strong>severe overdispersion</strong>. Daily rental counts are the sum of thousands of individual decisions, which naturally vary far more than a simple Poisson process would predict.</p>
+</div>
+</section>
+<section id="why-this-matters" class="slide level2">
+<h2>Why this matters</h2>
+<p>Fitting a plain Poisson model when the data is this overdispersed doesn’t just look untidy — it makes every standard error too small, which makes every result look more certain than it actually is.</p>
+<div class="fragment">
+<p>We need a model that keeps the same log link and the same IRR interpretation, but doesn’t force variance to equal the mean.</p>
+</div>
+</section>
+<section id="negative-binomial-the-fix" class="slide level2">
+<h2>Negative binomial — the fix</h2>
+<ul>
+<li>Same log link, same IRR interpretation — nothing about <em>reading</em> the model changes</li>
+<li>Adds one extra parameter, <strong>α</strong>, that lets the variance exceed the mean instead of forcing them to be equal</li>
+<li>The practical rule: <strong>when the data is this overdispersed, reach for negative binomial, not plain Poisson</strong> — you don’t need to derive why, just recognise the symptom (variance ≫ mean) and know the fix exists</li>
+</ul>
+</section>
+<section id="fitting-it-in-code-1" class="slide level2">
+<h2>Fitting it, in code</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a></a>nb_model <span class="op">=</span> smf.negativebinomial(</span>
+<span id="cb5-2"><a></a>    <span class="st">"cnt ~ temp_c + workingday + C(season_name) + windspeed + hum"</span>,</span>
+<span id="cb5-3"><a></a>    data<span class="op">=</span>df</span>
+<span id="cb5-4"><a></a>).fit()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>α comes out estimated by maximum likelihood, not assumed — here, <strong><span><span id="ojs-element-id-4"></span></span></strong>.</p>
+</section>
+<section id="the-real-consequence" class="slide level2">
+<h2>The real consequence</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb6" data-startfrom="251" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 250;"><span id="cb6-251"><a></a>{</span>
+<span id="cb6-252"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:16px auto 0;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;"&gt;</span></span>
+<span id="cb6-253"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;&lt;th style="padding:5px 16px;"&gt;Variable&lt;/th&gt;&lt;th style="padding:5px 16px;"&gt;Poisson SE&lt;/th&gt;&lt;th style="padding:5px 16px;"&gt;NegBin SE&lt;/th&gt;&lt;th style="padding:5px 16px;"&gt;Ratio&lt;/th&gt;&lt;/tr&gt;</span></span>
+<span id="cb6-254"><a></a><span class="vs">    </span><span class="sc">${</span>overdispersion_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="border-bottom:1px solid #ddd;"&gt;&lt;td style="padding:4px 16px;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">variable</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:4px 16px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">poisson_se</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:4px 16px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">nb_se</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:4px 16px;text-align:center;font-weight:700;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">ratio</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb6-255"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
+<span id="cb6-256"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-4" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Standard errors from the plain Poisson model are roughly <strong>24 times too small</strong>, across every coefficient — not a rounding issue, a fundamentally overconfident model.</p>
+</div>
+</section>
+<section id="the-estimate-itself-shifts-too" class="slide level2">
+<h2>The estimate itself shifts too</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="266" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 265;"><span id="cb7-266"><a></a><span class="fu">html</span><span class="vs">`&lt;ul&gt;</span></span>
+<span id="cb7-267"><a></a><span class="vs">  &lt;li&gt;Temperature IRR under Poisson: </span><span class="sc">${</span>temp_irr<span class="sc">}</span><span class="vs"> (the +10°C story: </span><span class="sc">${</span>temp_pct_10c<span class="sc">}</span><span class="vs">% more rentals)&lt;/li&gt;</span></span>
+<span id="cb7-268"><a></a><span class="vs">  &lt;li&gt;Temperature IRR under Negative Binomial: &lt;b&gt;</span><span class="sc">${</span>temp_irr_nb<span class="sc">}</span><span class="vs">&lt;/b&gt; (the +10°C story: &lt;b&gt;</span><span class="sc">${</span>temp_pct_nb_10c<span class="sc">}</span><span class="vs">% more rentals&lt;/b&gt;)&lt;/li&gt;</span></span>
+<span id="cb7-269"><a></a><span class="vs">&lt;/ul&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-5" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Overdispersion here isn’t just a false-confidence problem — the point estimate itself moves once the model properly accounts for how much more variable the data really is.</p>
+</div>
+</section>
+<section id="other-kinds-of-y-briefly" class="slide level2">
+<h2>Other kinds of y, briefly</h2>
+<ul>
+<li><strong>Ordinal/nominal outcomes</strong> (e.g.&nbsp;satisfaction ratings, product categories) can sometimes be recast as binary — “top box vs.&nbsp;not” — trading some information for a model you already know how to run</li>
+<li><strong>Duration variables</strong> (time until an event) are often censored — you don’t observe the full duration for everyone. Running OLS on censored durations gets the <em>direction</em> right but not the <em>magnitude</em>. Converting to a binary “did the event happen by time T” is often the pragmatic choice</li>
+</ul>
+</section>
+<section id="summary" class="slide level2">
+<h2>Summary</h2>
+<ul>
+<li>A count outcome needs a link function that keeps predictions non-negative — the log link, giving Poisson regression</li>
+<li>Coefficients are read via the <strong>incidence rate ratio</strong>, <span class="math inline">\(\exp(\beta)\)</span> — the same logic as an odds ratio, just multiplicative on counts</li>
+<li>Poisson assumes variance equals the mean — check this before trusting the standard errors, since real data is often far more dispersed than that</li>
+<li>Negative binomial is the standard fix, and it can move both the standard errors and the estimates themselves</li>
+</ul>
+</section>
+<section id="coming-up" class="slide level2">
+<h2>Coming up</h2>
+<div style="text-align: center; padding-top: 60px;">
+<p><span style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"><strong>Week 9: Causal Analysis and Experiments</strong></span></p>
+<div class="fragment" style="padding-top:40px;">
+<p><em>Every model these last two weeks assumed the controls were the right ones. Next week: a formal framework for causal claims, and experiments — the most direct way to get them right.</em></p>
+</div>
+</div>
+
+
+<div class="ojs-auto-generated hidden">
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6WyAgeyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiaW5saW5lIjoidHJ1ZSIsInNvdXJjZSI6Imh0bC5odG1sYDxzcGFuPiR7Y250X21lYW59PC9zcGFuPmAiLCAiY2VsbE5hbWUiOiJvanMtZWxlbWVudC1pZC0xIn0sICB7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJpbmxpbmUiOiJ0cnVlIiwic291cmNlIjoiaHRsLmh0bWxgPHNwYW4+JHtjbnRfdmFyfTwvc3Bhbj5gIiwgImNlbGxOYW1lIjoib2pzLWVsZW1lbnQtaWQtMiJ9LCAgeyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiaW5saW5lIjoidHJ1ZSIsInNvdXJjZSI6Imh0bC5odG1sYDxzcGFuPiR7b3ZlcmRpc3BlcnNpb25fcmF0aW99PC9zcGFuPmAiLCAiY2VsbE5hbWUiOiJvanMtZWxlbWVudC1pZC0zIn0sICB7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJpbmxpbmUiOiJ0cnVlIiwic291cmNlIjoiaHRsLmh0bWxgPHNwYW4+JHtuYl9hbHBoYX08L3NwYW4+YCIsICJjZWxsTmFtZSI6Im9qcy1lbGVtZW50LWlkLTQifV19
+</script>
+</div>
+</section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'fade',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1280,
+
+        height: 720,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 8.0e-2,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script type="ojs-module-contents">
+    eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgcmV0dXJuIGh0bWxgPHRhYmxlIHN0eWxlPVwibWFyZ2luOjE2cHggYXV0byAwO2ZvbnQtZmFtaWx5OnNhbnMtc2VyaWY7Zm9udC1zaXplOjFlbTtib3JkZXItY29sbGFwc2U6Y29sbGFwc2U7XCI+XG4gICAgPHRyIHN0eWxlPVwiYm9yZGVyLWJvdHRvbToycHggc29saWQgIzFhMWEyZTtcIj48dGggc3R5bGU9XCJwYWRkaW5nOjZweCAyNHB4O1wiPlZhcmlhYmxlPC90aD48dGggc3R5bGU9XCJwYWRkaW5nOjZweCAyNHB4O1wiPklSUjwvdGg+PC90cj5cbiAgICAke2lycl9yb3dzLm1hcChkID0+IGA8dHIgc3R5bGU9XCJib3JkZXItYm90dG9tOjFweCBzb2xpZCAjZGRkO1wiPjx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDI0cHg7XCI+JHtkLnZhcmlhYmxlfTwvdGQ+PHRkIHN0eWxlPVwicGFkZGluZzo1cHggMjRweDt0ZXh0LWFsaWduOmNlbnRlcjtcIj4ke2QuaXJyfTwvdGQ+PC90cj5gKS5qb2luKCcnKX1cbiAgPC90YWJsZT5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJodG1sYDxwPkVhY2ggMcKwQyB3YXJtZXIgZGF5IG11bHRpcGxpZXMgZXhwZWN0ZWQgcmVudGFscyBieSA8Yj4ke3RlbXBfaXJyfTwvYj4uPC9wPmBcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMyIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPHA+T3ZlciBhIDEwwrBDIHN3aW5nOiBhbiBJUlIgb2YgPGI+JHt0ZW1wX2lycl8xMGN9PC9iPiDigJQgdGhhdCdzIDxiPiR7dGVtcF9wY3RfMTBjfSUgbW9yZSByZW50YWxzIGV4cGVjdGVkPC9iPiBvbiBhIGRheSAxMMKwQyB3YXJtZXIsIGhvbGRpbmcgc2Vhc29uLCBodW1pZGl0eSwgd2luZHNwZWVkLCBhbmQgd29ya2luZy1kYXkgc3RhdHVzIGZpeGVkLjwvcD5gXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTQiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIHJldHVybiBodG1sYDx0YWJsZSBzdHlsZT1cIm1hcmdpbjoxNnB4IGF1dG8gMDtmb250LWZhbWlseTpzYW5zLXNlcmlmO2ZvbnQtc2l6ZTowLjg1ZW07Ym9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlO1wiPlxuICAgIDx0ciBzdHlsZT1cImJvcmRlci1ib3R0b206MnB4IHNvbGlkICMxYTFhMmU7XCI+PHRoIHN0eWxlPVwicGFkZGluZzo1cHggMTZweDtcIj5WYXJpYWJsZTwvdGg+PHRoIHN0eWxlPVwicGFkZGluZzo1cHggMTZweDtcIj5Qb2lzc29uIFNFPC90aD48dGggc3R5bGU9XCJwYWRkaW5nOjVweCAxNnB4O1wiPk5lZ0JpbiBTRTwvdGg+PHRoIHN0eWxlPVwicGFkZGluZzo1cHggMTZweDtcIj5SYXRpbzwvdGg+PC90cj5cbiAgICAke292ZXJkaXNwZXJzaW9uX3Jvd3MubWFwKGQgPT4gYDx0ciBzdHlsZT1cImJvcmRlci1ib3R0b206MXB4IHNvbGlkICNkZGQ7XCI+PHRkIHN0eWxlPVwicGFkZGluZzo0cHggMTZweDtcIj4ke2QudmFyaWFibGV9PC90ZD48dGQgc3R5bGU9XCJwYWRkaW5nOjRweCAxNnB4O3RleHQtYWxpZ246Y2VudGVyO1wiPiR7ZC5wb2lzc29uX3NlfTwvdGQ+PHRkIHN0eWxlPVwicGFkZGluZzo0cHggMTZweDt0ZXh0LWFsaWduOmNlbnRlcjtcIj4ke2QubmJfc2V9PC90ZD48dGQgc3R5bGU9XCJwYWRkaW5nOjRweCAxNnB4O3RleHQtYWxpZ246Y2VudGVyO2ZvbnQtd2VpZ2h0OjcwMDtcIj4ke2QucmF0aW99PC90ZD48L3RyPmApLmpvaW4oJycpfVxuICA8L3RhYmxlPmBcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPHVsPlxuICA8bGk+VGVtcGVyYXR1cmUgSVJSIHVuZGVyIFBvaXNzb246ICR7dGVtcF9pcnJ9ICh0aGUgKzEwwrBDIHN0b3J5OiAke3RlbXBfcGN0XzEwY30lIG1vcmUgcmVudGFscyk8L2xpPlxuICA8bGk+VGVtcGVyYXR1cmUgSVJSIHVuZGVyIE5lZ2F0aXZlIEJpbm9taWFsOiA8Yj4ke3RlbXBfaXJyX25ifTwvYj4gKHRoZSArMTDCsEMgc3Rvcnk6IDxiPiR7dGVtcF9wY3RfbmJfMTBjfSUgbW9yZSByZW50YWxzPC9iPik8L2xpPlxuPC91bD5gXG4ifV19
+    </script>
+    <script type="module">
+    if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+    window._ojs.paths.runtimeToDoc = "../..";
+    window._ojs.paths.runtimeToRoot = "../..";
+    window._ojs.paths.docToRoot = "";
+    window._ojs.selfContained = false;
+    window._ojs.runtime.interpretFromScriptTags();
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
+              }
+            }
+            return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

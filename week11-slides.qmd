@@ -1,0 +1,683 @@
+---
+title: "Time Series Regression"
+subtitle: "7002LBSAI Research Methods in Analytics — Week 11"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="stylesheet" href="styles-slides.css?v=20260914">
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{python}
+import pandas as pd
+import numpy as np
+import statsmodels.formula.api as smf
+
+# Bekes & Kezdi's Ch.12 case studies, sourced from their own official data repo
+# GitHub raw URLs (once pushed to the student data repo):
+# stocks_df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/stocks_monthly.csv")
+# az_df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/arizona_electricity.csv")
+stocks_df = pd.read_csv("data/stocks_monthly.csv", parse_dates=["date"])
+az_df = pd.read_csv("data/arizona_electricity.csv", parse_dates=["date"])
+
+# --- Case study A: Microsoft & S&P 500 ---
+levels_data = stocks_df[["date", "p_MSFT", "p_SP500"]].copy()
+levels_data["date"] = levels_data["date"].dt.strftime("%Y-%m-%d")
+levels_data = levels_data.to_dict(orient="records")
+
+returns_data = stocks_df[["date", "pct_msft", "pct_sp500"]].copy()
+returns_data["date"] = returns_data["date"].dt.strftime("%Y-%m-%d")
+returns_data = returns_data.round(2).to_dict(orient="records")
+
+stock_model = smf.ols("pct_msft ~ pct_sp500", data=stocks_df).fit(cov_type="HC1")
+stock_alpha = round(stock_model.params["Intercept"], 2)
+stock_beta = round(stock_model.params["pct_sp500"], 2)
+stock_r2 = round(stock_model.rsquared, 2)
+stock_n = int(stock_model.nobs)
+
+scatter_data = stocks_df[["pct_sp500", "pct_msft"]].round(2).to_dict(orient="records")
+
+_stock_lines = stock_model.summary().as_text().splitlines()
+_stock_cut = next(i for i, l in enumerate(_stock_lines) if l.startswith("Omnibus"))
+stock_summary_text = "\n".join(_stock_lines[:_stock_cut]).rstrip()
+
+# --- Random walk simulation, real, for the illustrative chart ---
+# All five start from the same value (0) — y_0 = 0, y_t = y_{t-1} + e_t
+np.random.seed(20260924)
+_T = 100
+random_walks = []
+for series_id in range(5):
+    steps = np.random.normal(0, 1, _T)
+    path = np.concatenate(([0.0], np.cumsum(steps)))
+    for t, v in enumerate(path):
+        random_walks.append({"t": t, "value": round(float(v), 2), "series": f"Walk {series_id+1}"})
+
+# A stationary comparison series (white noise) for contrast — same underlying
+# shocks as their own cumulative sum, so the two panels are directly comparable
+_task_shocks = np.random.normal(0, 1, _T)
+_task_walk = np.cumsum(_task_shocks)
+white_noise = [{"t": t, "value": round(float(v), 2)} for t, v in enumerate(_task_shocks)]
+task_walk_data = [{"t": t, "value": round(float(v), 2)} for t, v in enumerate(_task_walk)]
+
+# --- Case study B: Arizona electricity & temperature ---
+az_model_simple_se = smf.ols("dlnQ ~ dCD + dHD", data=az_df).fit(cov_type="HC1")
+az_model_nw = smf.ols("dlnQ ~ dCD + dHD", data=az_df).fit(cov_type="HAC", cov_kwds={"maxlags": 12})
+
+az_df["dlnQ_lag1"] = az_df["dlnQ"].shift(1)
+az_lagdv = az_df.dropna(subset=["dlnQ_lag1"])
+az_model_lagdv = smf.ols("dlnQ ~ dCD + dHD + dlnQ_lag1", data=az_lagdv).fit(cov_type="HC1")
+
+def _stars(p):
+    return "***" if p < 0.01 else "**" if p < 0.05 else "*" if p < 0.1 else ""
+
+se_compare_rows = [
+    {"variable": "ΔCD",
+     "simple": f"{az_model_simple_se.params['dCD']:.3f}{_stars(az_model_simple_se.pvalues['dCD'])}",
+     "simple_se": f"({az_model_simple_se.bse['dCD']:.3f})",
+     "nw": f"{az_model_nw.params['dCD']:.3f}{_stars(az_model_nw.pvalues['dCD'])}",
+     "nw_se": f"({az_model_nw.bse['dCD']:.3f})",
+     "lagdv": f"{az_model_lagdv.params['dCD']:.3f}{_stars(az_model_lagdv.pvalues['dCD'])}",
+     "lagdv_se": f"({az_model_lagdv.bse['dCD']:.3f})"},
+    {"variable": "ΔHD",
+     "simple": f"{az_model_simple_se.params['dHD']:.3f}{_stars(az_model_simple_se.pvalues['dHD'])}",
+     "simple_se": f"({az_model_simple_se.bse['dHD']:.3f})",
+     "nw": f"{az_model_nw.params['dHD']:.3f}{_stars(az_model_nw.pvalues['dHD'])}",
+     "nw_se": f"({az_model_nw.bse['dHD']:.3f})",
+     "lagdv": f"{az_model_lagdv.params['dHD']:.3f}{_stars(az_model_lagdv.pvalues['dHD'])}",
+     "lagdv_se": f"({az_model_lagdv.bse['dHD']:.3f})"},
+]
+az_n = int(az_model_simple_se.nobs)
+
+# Real captured output — HAC (Newey-West) model, matching the syntax shown on
+# "Case study: electricity and temperature" (the simple/NW/lagged-DV comparison
+# happens on the following slide)
+_az_lines = az_model_nw.summary().as_text().splitlines()
+_az_cut = next(i for i, l in enumerate(_az_lines) if l.startswith("Omnibus"))
+az_summary_text = "\n".join(_az_lines[:_az_cut]).rstrip()
+
+# --- Lags of x ---
+az_df["dCD_lag1"] = az_df["dCD"].shift(1)
+az_df["dCD_lag2"] = az_df["dCD"].shift(2)
+az_df["dHD_lag1"] = az_df["dHD"].shift(1)
+az_df["dHD_lag2"] = az_df["dHD"].shift(2)
+az_lags = az_df.dropna(subset=["dCD_lag1", "dCD_lag2", "dHD_lag1", "dHD_lag2"])
+az_model_lags = smf.ols("dlnQ ~ dCD + dCD_lag1 + dCD_lag2 + dHD + dHD_lag1 + dHD_lag2", data=az_lags).fit(cov_type="HC1")
+
+lag_rows = [
+    {"lag": "Same month", "cd": f"{az_model_lags.params['dCD']:.3f}{_stars(az_model_lags.pvalues['dCD'])}", "hd": f"{az_model_lags.params['dHD']:.3f}{_stars(az_model_lags.pvalues['dHD'])}"},
+    {"lag": "1 month lag", "cd": f"{az_model_lags.params['dCD_lag1']:.3f}{_stars(az_model_lags.pvalues['dCD_lag1'])}", "hd": f"{az_model_lags.params['dHD_lag1']:.3f}{_stars(az_model_lags.pvalues['dHD_lag1'])}"},
+    {"lag": "2 month lag", "cd": f"{az_model_lags.params['dCD_lag2']:.3f}{_stars(az_model_lags.pvalues['dCD_lag2'])}", "hd": f"{az_model_lags.params['dHD_lag2']:.3f}{_stars(az_model_lags.pvalues['dHD_lag2'])}"},
+]
+cd_cumulative = round(az_model_lags.params["dCD"] + az_model_lags.params["dCD_lag1"] + az_model_lags.params["dCD_lag2"], 3)
+
+# Task reveal — absolute vs relative difference on AZ electricity Q
+_az_diff = az_df[["date", "Q"]].copy()
+_az_diff["abs_diff"] = _az_diff["Q"].diff()
+_az_diff["pct_diff"] = _az_diff["Q"].pct_change() * 100
+task_diff_output_text = (
+    ">>> df['abs_diff'] = df['Q'].diff()\n"
+    ">>> df['pct_diff'] = df['Q'].pct_change() * 100\n"
+    ">>> df[['Q', 'abs_diff', 'pct_diff']].head(3)\n"
+    f"{_az_diff.set_index('date')[['Q','abs_diff','pct_diff']].round(2).head(3).to_string()}"
+)
+_az_diff["date"] = _az_diff["date"].dt.strftime("%Y-%m-%d")
+az_diff_chart = _az_diff.dropna().round(2).to_dict(orient="records")
+
+ojs_define(
+    levels_data       = levels_data,
+    returns_data      = returns_data,
+    stock_alpha       = stock_alpha,
+    stock_beta        = stock_beta,
+    stock_r2          = stock_r2,
+    stock_n           = stock_n,
+    scatter_data      = scatter_data,
+    stock_summary_text = stock_summary_text,
+    random_walks      = random_walks,
+    white_noise       = white_noise,
+    task_walk_data    = task_walk_data,
+    se_compare_rows   = se_compare_rows,
+    az_n              = az_n,
+    az_summary_text   = az_summary_text,
+    lag_rows          = lag_rows,
+    cd_cumulative     = cd_cumulative,
+    task_diff_output_text = task_diff_output_text,
+    az_diff_chart     = az_diff_chart,
+)
+```
+
+## {background-color="#1a1a2e"}
+
+::: {style="text-align: center; padding-top: 180px;"}
+[**Time series regression**]{style="font-size: 2.2em; color: white;"}
+
+[Every dataset so far has been a snapshot — many units, one point in time. What changes when it's one unit, followed through time?]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+:::
+
+## How risky is Microsoft stock?
+
+::: {.instructions-box}
+**Business question**: you're considering investing in Microsoft stock. How much does it move when the overall market moves — and how would you even estimate that?
+:::
+
+::: {.fragment}
+We have real daily data on Microsoft's share price and the S&P 500 index, from December 1997 to December 2018.
+:::
+
+## The naive answer
+
+**Naive answer:** regress the Microsoft share price directly on the S&P 500 index level. Read off the slope.
+
+::: {.fragment}
+**Why it's not that simple:** both series have climbed for two decades. Two things that both trend upward will look related whether or not they actually are — and that's before we've even asked whether "same day" is even the right comparison.
+:::
+
+## What we need
+
+- An understanding of what makes time series data different from the cross-sections we've used all module
+- A way to tell a genuine relationship apart from two variables that just happen to drift the same direction
+- The tools to fix it when regression assumptions specific to time series data break down
+
+---
+
+## What's special about time series data
+
+---
+
+## New notation, new opportunities
+
+- Time series data follows **one unit** across many time periods: $y_t,\ t = 1, 2, \dots, T$
+- Ordering matters — this is the key difference from every cross-section this module has used
+- New opportunities: we can ask how $y$ responds to a change in $x$, immediately or with a delay
+- New complications: frequency, gaps, and — the big one — values that aren't independent of their own past
+
+## Trend
+
+$$\Delta y_t = y_t - y_{t-1}$$
+
+- **Positive trend**: $E[\Delta y_t] > 0$ on average. Negative trend is the mirror image.
+- **Linear trend**: the change itself is stable on average
+- **Exponential trend**: the *relative* change is stable on average — common for prices, income, anything that compounds
+
+## Seasonality
+
+- The expected value changes **periodically** — by day of week, month, or hour
+- Can be linear (constant seasonal gaps) or exponential (constant relative gaps)
+- Both trend and seasonality make time series regression genuinely harder than cross-sectional regression
+
+## Stationarity
+
+A **stationary** time series has the same expected value and distribution at every point in time. Stability, full stop.
+
+::: {.fragment}
+**Non-stationary** series break this in one of three ways:
+
+- Has a **trend**
+- Has **seasonality**
+- Has an unstable, ever-widening spread — a **random walk**
+:::
+
+## Random walk
+
+$$y_t = y_{t-1} + e_t$$
+
+- Today's value is yesterday's value, plus a completely random, unpredictable shock
+- Whatever happened last period doesn't influence the *size* of today's shock — but $y_t$ still carries forward everything that came before
+- The spread of possible values **grows** the further out you go — genuinely impossible to predict beyond a drift
+
+## Five simulated random walks
+
+```{ojs}
+Plot.plot({
+  width: 700, height: 380,
+  x: {label: "Time period"}, y: {label: "Value of the simulated variable"},
+  marks: [
+    Plot.line(random_walks, {x: "t", y: "value", stroke: "series"}),
+  ],
+  color: {legend: true}
+})
+```
+
+<details>
+<summary style="cursor:pointer;color:#2d6a4f;font-size:0.9em;">Show the Python syntax</summary>
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.6em;line-height:1.4;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">import numpy as np
+import matplotlib.pyplot as plt
+
+T = 100
+for series_id in range(5):
+    steps = np.random.normal(0, 1, T)
+    path = np.concatenate(([0], np.cumsum(steps)))   # all five start at 0
+    plt.plot(path, label=f"Walk {series_id+1}")
+
+plt.legend()
+plt.show()</pre>`
+```
+
+</details>
+
+::: {.fragment}
+Same random process, five runs, all starting from the same value. Each wanders further from zero as time passes — no reverting, no stable average. Many real business variables (stock prices, market indices) are well approximated by a random walk.
+:::
+
+## Task — simulate a random walk yourself
+
+::: {.instructions-box}
+**Business question**: what does "impossible to predict" actually look like, generated from scratch?
+
+Open the Colab notebook. Using `numpy`, generate 100 random shocks (`np.random.normal`), turn them into a random walk with `np.cumsum`, and plot it with `matplotlib`. Then generate a second series that's just the raw shocks, unsummed, and plot that alongside it. What's different about the two? No further syntax hints.
+:::
+
+## What you should have found
+
+```{.python}
+shocks = np.random.normal(0, 1, 100)   # the raw, unsummed shocks
+walk = np.cumsum(shocks)                # the random walk built from them
+plt.plot(shocks, label="Raw shocks"); plt.plot(walk, label="Random walk")
+plt.axhline(0, color="grey", linewidth=0.8); plt.legend(); plt.show()
+```
+
+```{ojs}
+Plot.plot({
+  width: 640, height: 230,
+  x: {label: "Time period"}, y: {label: "Value"},
+  marks: [
+    Plot.ruleY([0]),
+    Plot.line(white_noise, {x: "t", y: "value", stroke: "#c0392b"}),
+    Plot.line(task_walk_data, {x: "t", y: "value", stroke: "#2d6a4f"}),
+    Plot.text([{t: 95, value: white_noise[white_noise.length-1].value}], {x: "t", y: "value", text: () => "Raw shocks", dy: 12, fill: "#c0392b", fontSize: 10}),
+    Plot.text([{t: 95, value: task_walk_data[task_walk_data.length-1].value}], {x: "t", y: "value", text: () => "Random walk", dy: -10, fill: "#2d6a4f", fontSize: 10}),
+  ]
+})
+```
+
+::: {.instructions-box}
+Same shocks, two views: red is **stationary**, its cumulative sum (green) is **non-stationary** — never reverts.
+:::
+
+---
+
+## Case study: Microsoft and the S&P 500
+
+---
+
+## The trap of levels
+
+```{ojs}
+Plot.plot({
+  width: 700, height: 340,
+  x: {label: "Date", type: "utc", ticks: "5 years", tickFormat: "%Y"},
+  y: {label: "Microsoft price (US$)"},
+  marks: [
+    Plot.line(levels_data, {x: "date", y: "p_MSFT", stroke: "#2d6a4f"}),
+  ],
+})
+```
+
+Microsoft's share price, 1998–2018. Climbing for two decades — exactly the shape that makes a naive levels-on-levels regression dangerous.
+
+## From levels to returns
+
+- Portfolio managers think in **monthly returns**, not price levels — so that's the natural unit here too
+- Take the closing price on the last trading day of each month
+- Compute the percent change month to month
+
+$$pctchange(y_t) = 100 \times \frac{y_t - y_{t-1}}{y_{t-1}}$$
+
+## Monthly returns, both series
+
+Same two series as the last slide — **Microsoft's** monthly return and the **S&P 500's** — now converted from price levels into percent change, month over month:
+
+```{ojs}
+Plot.plot({
+  width: 700, height: 340,
+  x: {label: "Date", type: "utc", ticks: "5 years", tickFormat: "%Y"},
+  y: {label: "Monthly return (%)"},
+  color: {legend: true, domain: ["Microsoft", "S&P 500"], range: ["#2d6a4f", "#5b7fbd"]},
+  marks: [
+    Plot.ruleY([0]),
+    Plot.line(returns_data, {x: "date", y: "pct_msft", stroke: () => "Microsoft"}),
+    Plot.line(returns_data, {x: "date", y: "pct_sp500", stroke: () => "S&P 500"}),
+  ]
+})
+```
+
+<details>
+<summary style="cursor:pointer;color:#2d6a4f;font-size:0.9em;">Show the Python syntax</summary>
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.6em;line-height:1.4;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">import matplotlib.pyplot as plt
+
+plt.axhline(0, color="grey", linewidth=0.8)
+plt.plot(df["date"], df["pct_msft"], color="green", label="Microsoft")
+plt.plot(df["date"], df["pct_sp500"], color="steelblue", label="S&P 500")
+plt.ylabel("Monthly return (%)")
+plt.legend()
+plt.show()</pre>`
+```
+
+</details>
+
+Both series now hover around a stable average — this is what a stationary series looks like.
+
+## The real regression
+
+```{.python}
+import statsmodels.formula.api as smf
+
+stock_model = smf.ols("pct_msft ~ pct_sp500", data=df).fit(cov_type="HC1")
+```
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.52em;line-height:1.35;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">${stock_summary_text}</pre>`
+```
+
+## Reading the result
+
+```{ojs}
+{
+  return html`<div style="text-align:center;padding-top:10px;">
+    <div style="font-size:1.3em;"><b>${stock_beta}</b> — for every 1% the S&P 500 moves, Microsoft moves <b>${stock_beta}%</b></div>
+    <div style="font-size:1em;color:#666;padding-top:10px;">α = ${stock_alpha}, R² = ${stock_r2}, N = ${stock_n} months</div>
+  </div>`
+}
+```
+
+::: {.fragment}
+This is Microsoft's **beta** — exactly the concept finance uses to describe how risky a stock is relative to the market.
+:::
+
+## Scatter and regression line
+
+```{ojs}
+Plot.plot({
+  width: 560, height: 320,
+  x: {label: "S&P 500 monthly return (%)"}, y: {label: "Microsoft monthly return (%)"},
+  marks: [
+    Plot.dot(scatter_data, {x: "pct_sp500", y: "pct_msft", fill: "#5b7fbd", fillOpacity: 0.5, r: 3}),
+    Plot.linearRegressionY(scatter_data, {x: "pct_sp500", y: "pct_msft", stroke: "#2d6a4f"}),
+  ]
+})
+```
+
+<details>
+<summary style="cursor:pointer;color:#2d6a4f;font-size:0.9em;">Show the Python syntax</summary>
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.6em;line-height:1.4;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">import matplotlib.pyplot as plt
+import numpy as np
+
+plt.scatter(df["pct_sp500"], df["pct_msft"], alpha=0.5)
+
+x_grid = np.linspace(df["pct_sp500"].min(), df["pct_sp500"].max(), 100)
+y_grid = stock_model.params["Intercept"] + stock_model.params["pct_sp500"] * x_grid
+plt.plot(x_grid, y_grid, color="green")
+plt.show()</pre>`
+```
+
+</details>
+
+---
+
+## Spurious regression, and fixing it
+
+---
+
+## When correlation is just two trends
+
+::: {.instructions-box}
+Per-capita cheese consumption correlates at 0.947 with the number of people who died getting tangled in their bedsheets (Tyler Vigen, *Spurious Correlations*). Neither causes the other — both simply drifted upward over the same years.
+:::
+
+::: {.fragment}
+Trend and seasonality act like **confounders** — omitted variables that create an association where none exists. The regression can't tell the difference between "these move together because they're related" and "these move together because it's 2015 for both of them."
+:::
+
+## The fix: differencing
+
+- Replace variables in the regression with their **first differences** — this removes the trend and is often enough to make a series stationary
+- Same idea in relative terms: **percent changes**, or their close approximation, **log differences**
+
+$$\Delta y_t^E = \alpha + \beta \Delta x_t$$
+
+::: {.fragment}
+$\alpha$: how much $y$ changes on average when $x$ doesn't change. $\beta$: how much *more* $y$ changes when $x$ changes by one more unit — additional to $\alpha$, not instead of it.
+:::
+
+## The fix: seasonal dummies
+
+- Differencing handles trend. Seasonality needs its own fix — **include a dummy for each season** (month, day of week, whatever the cycle is)
+
+$$y_t^E = \alpha + \beta x_t + \delta_{Jan} + \delta_{Feb} + \dots + \delta_{Nov}$$
+
+- One category held out as reference, exactly like any other categorical variable since Week 6
+
+## Task — absolute vs. relative differences
+
+::: {.instructions-box}
+**Business question**: which transformation actually stabilises a time series — and does it matter which one you pick?
+
+Using the Arizona electricity data, compute both `.diff()` (absolute) and `.pct_change()` (relative, ×100) on `Q`, the monthly consumption. Plot the two transformed series against the raw levels. Does either look more stable? No further syntax hints.
+:::
+
+## What you should have found
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.5em;line-height:1.3;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:6px 12px;overflow-x:auto;white-space:pre;">${task_diff_output_text}</pre>`
+```
+
+::: {.fragment}
+```{ojs}
+{
+  const opts = {x: {type: "utc", ticks: "5 years", tickFormat: "%Y", label: null}};
+  const raw = Plot.plot({...opts, width: 220, height: 150, y: {label: "Q (levels)"},
+    marks: [Plot.line(az_diff_chart, {x: "date", y: "Q", stroke: "#5b7fbd"})]});
+  const abs = Plot.plot({...opts, width: 220, height: 150, y: {label: "Abs. difference"},
+    marks: [Plot.ruleY([0]), Plot.line(az_diff_chart, {x: "date", y: "abs_diff", stroke: "#2d6a4f"})]});
+  const pct = Plot.plot({...opts, width: 220, height: 150, y: {label: "% difference"},
+    marks: [Plot.ruleY([0]), Plot.line(az_diff_chart, {x: "date", y: "pct_diff", stroke: "#c0392b"})]});
+  return html`<div style="display:flex;gap:10px;justify-content:center;">${raw}${abs}${pct}</div>`
+}
+```
+:::
+
+::: {.instructions-box}
+Both transformations remove the trend — you can see it directly: the raw level climbs steadily, both differenced versions hover around zero instead. The choice between them is usually about interpretation (units vs. percent), not which one "works." Gabor's own case study found the difference between percent and log changes was negligible here too.
+:::
+
+---
+
+## Serial correlation
+
+---
+
+## Correlated with its own past
+
+$$\rho_1 = Corr[y_t, y_{t-1}]$$
+
+- **Serial correlation**: a variable correlated with its own lagged values
+- $\rho_1 = 0$ means no serial correlation — "white noise," order doesn't matter, just like cross-sectional data
+- Positive serial correlation: if $y_t$ is above average, $y_{t+1}$ is more likely to be above average too
+
+## Why this breaks the standard errors
+
+- Serial correlation **doesn't bias the coefficient** — but it makes the usual standard errors wrong, often badly so
+- Even heteroskedasticity-robust SEs (the `HC1` we've used since Week 5) don't fix this — a different problem needs a different tool
+
+::: {.fragment}
+Two fixes:
+
+1. **Newey-West standard errors** — built to handle serial correlation directly (and heteroskedasticity too), needs a choice of how many lags to account for. In `statsmodels`, this is `cov_type="HAC"` (Heteroskedasticity- and Autocorrelation-Consistent) with `cov_kwds={"maxlags": ...}` — "HAC" is the library's name for the Newey-West family, not a different thing.
+2. **Include a lagged dependent variable** in the regression itself — usually one lag is enough
+:::
+
+## Case study: electricity and temperature
+
+- Monthly residential electricity consumption in Arizona, and temperature — measured as **cooling degree days** and **heating degree days** — 2001–2018
+- Business question: how much does electricity demand change when temperature changes?
+
+```{.python}
+# cov_type="HAC" is Newey-West standard errors; maxlags is how many lags to account for
+smf.ols("dlnQ ~ dCD + dHD", data=df).fit(cov_type="HAC", cov_kwds={"maxlags": 12})
+```
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.5em;line-height:1.35;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">${az_summary_text}</pre>`
+```
+
+## Comparing standard errors, for real
+
+```{ojs}
+{
+  return html`<table style="margin:16px auto 0;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;">
+    <tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:5px 14px;">Variable</th><th style="padding:5px 14px;" colspan="2">Simple SE</th><th style="padding:5px 14px;" colspan="2">Newey-West</th><th style="padding:5px 14px;" colspan="2">Lagged DV</th></tr>
+    ${se_compare_rows.map(d => `<tr style="border-bottom:1px solid #ddd;">
+      <td style="padding:4px 14px;">${d.variable}</td>
+      <td style="padding:4px 14px;text-align:center;">${d.simple}</td><td style="padding:4px 14px;text-align:center;color:#555;">${d.simple_se}</td>
+      <td style="padding:4px 14px;text-align:center;">${d.nw}</td><td style="padding:4px 14px;text-align:center;color:#555;">${d.nw_se}</td>
+      <td style="padding:4px 14px;text-align:center;">${d.lagdv}</td><td style="padding:4px 14px;text-align:center;color:#555;">${d.lagdv_se}</td>
+    </tr>`).join('')}
+  </table>`
+}
+```
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+N = ${az_n} months. All three approaches agree closely here — a sign the serial correlation in this particular series isn't severe, not that the correction was unnecessary to check.
+:::
+
+---
+
+## Lags of x
+
+---
+
+## When effects take time to arrive
+
+- A **lagged association**: $x$ affects $y$ not immediately, but one or more periods later
+- Useful whenever there's a real-world delay — people don't necessarily change behaviour the moment conditions change
+
+$$\Delta y_t^E = \alpha + \beta_0 \Delta x_t + \beta_1 \Delta x_{t-1} + \beta_2 \Delta x_{t-2}$$
+
+$\beta_0$: same-period effect. $\beta_1$: how much more $y$ changes *next* period after $x$ moved, holding $x$ fixed elsewhere. The **cumulative effect** is $\beta_0 + \beta_1 + \beta_2$.
+
+## Real lagged effects, on real data
+
+```{ojs}
+{
+  return html`<table style="margin:16px auto 0;font-family:sans-serif;font-size:1em;border-collapse:collapse;">
+    <tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:6px 22px;">Timing</th><th style="padding:6px 22px;">ΔCD</th><th style="padding:6px 22px;">ΔHD</th></tr>
+    ${lag_rows.map(d => `<tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 22px;">${d.lag}</td><td style="padding:5px 22px;text-align:center;">${d.cd}</td><td style="padding:5px 22px;text-align:center;">${d.hd}</td></tr>`).join('')}
+  </table>`
+}
+```
+
+<details>
+<summary style="cursor:pointer;color:#2d6a4f;font-size:0.9em;">Show the Python syntax</summary>
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.6em;line-height:1.4;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">df["dCD_lag1"] = df["dCD"].shift(1)
+df["dCD_lag2"] = df["dCD"].shift(2)
+df["dHD_lag1"] = df["dHD"].shift(1)
+df["dHD_lag2"] = df["dHD"].shift(2)
+df_lags = df.dropna(subset=["dCD_lag1", "dCD_lag2", "dHD_lag1", "dHD_lag2"])
+
+model_lags = smf.ols(
+    "dlnQ ~ dCD + dCD_lag1 + dCD_lag2 + dHD + dHD_lag1 + dHD_lag2",
+    data=df_lags
+).fit(cov_type="HC1")
+
+cumulative_effect = (
+    model_lags.params["dCD"] + model_lags.params["dCD_lag1"] + model_lags.params["dCD_lag2"]
+)</pre>`
+```
+
+</details>
+
+::: {.fragment}
+Cumulative effect of ΔCD across all three months: **${cd_cumulative}**. There's a real propagation effect here — people don't fully adjust their electricity use the moment the weather changes.
+:::
+
+---
+
+## Back to the question
+
+---
+
+## So, how risky is Microsoft?
+
+The full workflow, start to finish — levels to returns to beta:
+
+```{.python}
+import pandas as pd
+import statsmodels.formula.api as smf
+
+df = pd.read_csv(data_path)
+df["pct_msft"] = df["p_MSFT"].pct_change() * 100
+df["pct_sp500"] = df["p_SP500"].pct_change() * 100
+
+model = smf.ols("pct_msft ~ pct_sp500", data=df).fit(cov_type="HC1")
+print(model.params)
+```
+
+```{python}
+#| output: asis
+_lines = (
+    f"Intercept&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{stock_alpha}<br>"
+    f"pct_sp500&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{stock_beta}"
+)
+print(
+    '::: {style="font-family: monospace; font-size: 0.85em; background: #f8f8f8; '
+    'border-left: 4px solid #457b9d; padding: 14px 20px; border-radius: 4px; line-height: 1.9;"}\n'
+    f'{_lines}\n:::'
+)
+```
+
+- Once returns replace levels, the spurious-trend problem disappears — the real relationship is a beta of **${stock_beta}**: Microsoft moves noticeably more than the market, in the same direction
+- The Arizona case study shows the same discipline pays off differently — differencing and Newey-West SEs don't change the story much here, but checking mattered
+
+## Summary
+
+- Time series data brings genuine opportunities — same-unit comparisons over time — and genuine hazards: trend, seasonality, and random walk all threaten spurious results
+- First differences (or percent/log changes) are the standard fix for trend; seasonal dummies handle seasonality
+- Serial correlation doesn't bias coefficients, but breaks standard errors — Newey-West SEs or a lagged DV both fix it
+- Effects can arrive with a delay — lags let a regression capture that directly
+
+## Online session
+
+See **week11-online.html** — forecasting from time series data: cross-validation for time series, long- and short-horizon forecasting, ARIMA, and VAR.
+
+## Coming up
+
+::: {style="text-align: center; padding-top: 60px;"}
+[**Week 12: Assessment Review**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
+
+::: {.fragment style="padding-top:40px;"}
+*The module's final week — bringing everything together for the portfolio*
+:::
+:::

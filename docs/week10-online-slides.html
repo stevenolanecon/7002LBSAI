@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/tabby.min.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.7.32">
+
+  <title>7002LBSAI – Model Building for Prediction</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="site_libs/revealjs/dist/theme/quarto-2c1b5f745a11cfad616ebade4a4a7d24.css">
+  <link href="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+  <link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+  
+  <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="styles-slides.css?v=20260914">
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Model Building for Prediction</h1>
+  <p class="subtitle">7002LBSAI Research Methods in Analytics — Week 10 Online Session</p>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section class="slide level2">
+
+<div id="613425e3" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="ojs-define">{"contents": [{"name": "log_level_rows", "value": [{"label": "Point prediction", "log_model": "$5,786", "corrected": "$6,253", "level_model": "$6,569"}]}, {"name": "air_stats_rows", "value": [{"Model": "M1", "N coef": 2, "R2": 0.4, "Training RMSE": 41.3, "CV RMSE": 41.1, "BIC": 45167}, {"Model": "M2", "N coef": 6, "R2": 0.47, "Training RMSE": 38.9, "CV RMSE": 38.8, "BIC": 44690}, {"Model": "M3", "N coef": 10, "R2": 0.48, "Training RMSE": 38.3, "CV RMSE": 38.1, "BIC": 44568}, {"Model": "M4", "N coef": 13, "R2": 0.49, "Training RMSE": 38.0, "CV RMSE": 38.0, "BIC": 44543}, {"Model": "M5", "N coef": 15, "R2": 0.49, "Training RMSE": 38.0, "CV RMSE": 38.0, "BIC": 44544}, {"Model": "M6", "N coef": 65, "R2": 0.53, "Training RMSE": 36.6, "CV RMSE": 37.1, "BIC": 44647}]}, {"name": "air_complexity_data", "value": [{"n_coef": 2, "rmse": 41.3, "series": "Training RMSE", "model": "M1"}, {"n_coef": 2, "rmse": 41.1, "series": "Cross-validated RMSE", "model": "M1"}, {"n_coef": 6, "rmse": 38.9, "series": "Training RMSE", "model": "M2"}, {"n_coef": 6, "rmse": 38.8, "series": "Cross-validated RMSE", "model": "M2"}, {"n_coef": 10, "rmse": 38.3, "series": "Training RMSE", "model": "M3"}, {"n_coef": 10, "rmse": 38.1, "series": "Cross-validated RMSE", "model": "M3"}, {"n_coef": 13, "rmse": 38.0, "series": "Training RMSE", "model": "M4"}, {"n_coef": 13, "rmse": 38.0, "series": "Cross-validated RMSE", "model": "M4"}, {"n_coef": 15, "rmse": 38.0, "series": "Training RMSE", "model": "M5"}, {"n_coef": 15, "rmse": 38.0, "series": "Cross-validated RMSE", "model": "M5"}, {"n_coef": 65, "rmse": 36.6, "series": "Training RMSE", "model": "M6"}, {"n_coef": 65, "rmse": 37.1, "series": "Cross-validated RMSE", "model": "M6"}]}, {"name": "lasso_code_output", "value": ">>> lasso = LassoCV(cv=5).fit(X_scaled, y)\n>>> lasso.alpha_\n0.337\n\n>>> (lasso.coef_ != 0).sum()   # variables kept out of 64\n41\n\n>>> np.sqrt(np.mean((y - lasso.predict(X_scaled))**2))   # in-sample RMSE\n36.7"}, {"name": "lasso_top_rows", "value": [{"variable": "Room type x  Private room", "importance": 18.63}, {"variable": "n_accommodates2", "importance": 18.47}, {"variable": "n_bathrooms", "importance": 6.6}, {"variable": "d_washerdryer", "importance": 3.33}, {"variable": "d_tv", "importance": 2.82}, {"variable": "d_dryer", "importance": 2.58}, {"variable": "d_petsallowed", "importance": 2.46}, {"variable": "Room type x  Shared room", "importance": 2.44}]}, {"name": "lasso_rmse", "value": 36.7}, {"name": "lasso_cv_rmse", "value": 37.0}, {"name": "n_nonzero", "value": 41}, {"name": "n_total", "value": 64}, {"name": "holdout_rmse", "value": 31.4}, {"name": "yyhat_data", "value": [{"actual": 150.0, "predicted": 129.61726902653524}, {"actual": 200.0, "predicted": 164.86222621844107}, {"actual": 29.0, "predicted": 36.23633663488743}, {"actual": 79.0, "predicted": 82.58130821161697}, {"actual": 100.0, "predicted": 100.45622522754707}, {"actual": 69.0, "predicted": 106.27183167849347}, {"actual": 73.0, "predicted": 51.71245069080195}, {"actual": 95.0, "predicted": 99.55360962606096}, {"actual": 60.0, "predicted": 57.79079294514001}, {"actual": 85.0, "predicted": 118.1762320705028}, {"actual": 28.0, "predicted": 51.57130849368975}, {"actual": 30.0, "predicted": 69.40698118506752}, {"actual": 50.0, "predicted": 94.26247564704681}, {"actual": 199.0, "predicted": 158.35808509198594}, {"actual": 43.0, "predicted": 51.26273524824974}, {"actual": 45.0, "predicted": 43.72472040480053}, {"actual": 39.0, "predicted": 56.62554691404037}, {"actual": 25.0, "predicted": 35.006264534546965}, {"actual": 30.0, "predicted": 39.40849994713254}, {"actual": 140.0, "predicted": 182.5114794666881}, {"actual": 35.0, "predicted": 40.88191861706978}, {"actual": 56.0, "predicted": 75.5982269696957}, {"actual": 39.0, "predicted": 37.88802553260673}, {"actual": 73.0, "predicted": 42.596961758237036}, {"actual": 70.0, "predicted": 90.52908706771501}, {"actual": 65.0, "predicted": 27.723025721966934}, {"actual": 98.0, "predicted": 132.9248595796457}, {"actual": 60.0, "predicted": 58.21810588686457}, {"actual": 60.0, "predicted": 60.737321907883555}, {"actual": 90.0, "predicted": 91.57101322592412}, {"actual": 95.0, "predicted": 57.784487183726846}, {"actual": 80.0, "predicted": 165.88029272020952}, {"actual": 55.0, "predicted": 37.75661429833174}, {"actual": 103.0, "predicted": 103.91510952369968}, {"actual": 35.0, "predicted": 58.018408611042965}, {"actual": 120.0, "predicted": 103.22822534184203}, {"actual": 30.0, "predicted": 38.937989576644114}, {"actual": 155.0, "predicted": 140.73777877587645}, {"actual": 45.0, "predicted": 52.90244038799516}, {"actual": 150.0, "predicted": 58.018408611042965}, {"actual": 200.0, "predicted": 22.875618593243132}, {"actual": 253.0, "predicted": 111.63040305451354}, {"actual": 79.0, "predicted": 39.038872518944316}, {"actual": 60.0, "predicted": 53.74652759930949}, {"actual": 100.0, "predicted": 39.42778716748287}, {"actual": 27.0, "predicted": 43.25827229505168}, {"actual": 120.0, "predicted": 104.11979335686273}, {"actual": 55.0, "predicted": 30.963295678775324}, {"actual": 145.0, "predicted": 97.11736061916484}, {"actual": 40.0, "predicted": 45.29440058461097}, {"actual": 30.0, "predicted": 72.40869840812454}, {"actual": 45.0, "predicted": 71.5458750739371}, {"actual": 50.0, "predicted": 53.762282374717714}, {"actual": 60.0, "predicted": 92.15464615234069}, {"actual": 35.0, "predicted": 37.44328423777556}, {"actual": 27.0, "predicted": 41.96715689891258}, {"actual": 29.0, "predicted": 52.36666791481149}, {"actual": 85.0, "predicted": 90.43052621599432}, {"actual": 120.0, "predicted": 84.21851118019798}, {"actual": 65.0, "predicted": 49.52194261035619}, {"actual": 58.0, "predicted": 43.97515485930264}, {"actual": 35.0, "predicted": 34.1008848132717}, {"actual": 58.0, "predicted": 38.52333109721803}, {"actual": 90.0, "predicted": 86.64257424218313}, {"actual": 45.0, "predicted": 28.104939458002953}, {"actual": 150.0, "predicted": 153.13518191868013}, {"actual": 92.0, "predicted": 148.03011823151496}, {"actual": 150.0, "predicted": 39.02630413918483}, {"actual": 30.0, "predicted": 45.9020472305892}, {"actual": 45.0, "predicted": 39.94232439596888}, {"actual": 45.0, "predicted": 54.12358287514726}, {"actual": 45.0, "predicted": 42.16844965773948}, {"actual": 45.0, "predicted": 34.79058852681305}, {"actual": 50.0, "predicted": 51.1243463733705}, {"actual": 175.0, "predicted": 129.18299333892497}, {"actual": 34.0, "predicted": 36.340925045552886}, {"actual": 125.0, "predicted": 105.16424843069632}, {"actual": 145.0, "predicted": 84.53101275114774}, {"actual": 100.0, "predicted": 121.22168738922105}, {"actual": 75.0, "predicted": 119.34338165269118}, {"actual": 120.0, "predicted": 105.03956421571165}, {"actual": 75.0, "predicted": 123.3705344088461}, {"actual": 116.0, "predicted": 152.31485335313448}, {"actual": 61.0, "predicted": 35.09654685685624}, {"actual": 60.0, "predicted": 88.67700442407794}, {"actual": 35.0, "predicted": 47.23680737982858}, {"actual": 120.0, "predicted": 180.31503336361658}, {"actual": 31.0, "predicted": 37.849840276713024}, {"actual": 40.0, "predicted": 42.980266668144644}, {"actual": 120.0, "predicted": 103.86326094727147}, {"actual": 100.0, "predicted": 70.3123172179493}, {"actual": 65.0, "predicted": 66.48871735188999}, {"actual": 75.0, "predicted": 89.08660464104001}, {"actual": 78.0, "predicted": 92.16583549944673}, {"actual": 29.0, "predicted": 41.81752554340903}, {"actual": 181.0, "predicted": 144.21687408803467}, {"actual": 90.0, "predicted": 110.41064815502399}, {"actual": 90.0, "predicted": 54.63861536135008}, {"actual": 80.0, "predicted": 57.46182871589655}, {"actual": 100.0, "predicted": 97.54971559114185}, {"actual": 80.0, "predicted": 86.66483527031393}, {"actual": 38.0, "predicted": 22.60595482375775}, {"actual": 90.0, "predicted": 94.11079897388129}, {"actual": 80.0, "predicted": 111.81857387823621}, {"actual": 165.0, "predicted": 93.42551961755547}, {"actual": 120.0, "predicted": 101.78234198872727}, {"actual": 75.0, "predicted": 127.01125530503154}, {"actual": 120.0, "predicted": 92.09387187947006}, {"actual": 38.0, "predicted": 35.08089592729263}, {"actual": 80.0, "predicted": 98.73870728083942}, {"actual": 99.0, "predicted": 113.37869514216092}, {"actual": 105.0, "predicted": 77.05981154177195}, {"actual": 85.0, "predicted": 117.76351076020927}, {"actual": 100.0, "predicted": 132.37764729625263}, {"actual": 55.0, "predicted": 32.39442358844121}, {"actual": 80.0, "predicted": 88.13335460148343}, {"actual": 27.0, "predicted": 33.18990692884695}, {"actual": 70.0, "predicted": 89.11815859782455}, {"actual": 45.0, "predicted": 74.96075221773742}, {"actual": 150.0, "predicted": 114.22995706844637}, {"actual": 75.0, "predicted": 61.10850120326958}, {"actual": 200.0, "predicted": 131.50812190992494}, {"actual": 50.0, "predicted": 55.75422681303207}, {"actual": 78.0, "predicted": 106.55429253681497}, {"actual": 68.0, "predicted": 75.48544791952416}, {"actual": 67.0, "predicted": 92.80838901743792}, {"actual": 100.0, "predicted": 123.18507733769005}, {"actual": 180.0, "predicted": 151.89521925983593}, {"actual": 45.0, "predicted": 62.748522255957596}, {"actual": 95.0, "predicted": 100.27151424909542}, {"actual": 30.0, "predicted": 53.94876369342893}, {"actual": 50.0, "predicted": 30.633274978282714}, {"actual": 100.0, "predicted": 48.34242472585768}, {"actual": 30.0, "predicted": 45.26064329082963}, {"actual": 150.0, "predicted": 116.60528780197116}, {"actual": 20.0, "predicted": 64.37057985773949}, {"actual": 175.0, "predicted": 147.40922505392663}, {"actual": 150.0, "predicted": 108.60538746591088}, {"actual": 100.0, "predicted": 130.06957677208948}, {"actual": 50.0, "predicted": 100.31452546688405}, {"actual": 75.0, "predicted": 43.22067521203093}, {"actual": 70.0, "predicted": 100.65282137577775}, {"actual": 70.0, "predicted": 99.86465297513566}, {"actual": 65.0, "predicted": 85.89864527864795}, {"actual": 65.0, "predicted": 77.77282707975958}, {"actual": 70.0, "predicted": 117.86976642026404}, {"actual": 80.0, "predicted": 84.75167432299342}, {"actual": 61.0, "predicted": 84.93072601261429}, {"actual": 110.0, "predicted": 105.21030317565797}, {"actual": 156.0, "predicted": 109.95992939081451}, {"actual": 105.0, "predicted": 115.96082300395764}, {"actual": 80.0, "predicted": 121.75528924294699}, {"actual": 150.0, "predicted": 152.61948832509412}, {"actual": 56.0, "predicted": 94.88456572497437}, {"actual": 130.0, "predicted": 149.74030606493378}, {"actual": 185.0, "predicted": 158.5255940594281}, {"actual": 22.0, "predicted": 46.15007076063565}, {"actual": 72.0, "predicted": 84.89886435088285}, {"actual": 80.0, "predicted": 75.73838451151211}, {"actual": 35.0, "predicted": 89.32953007428401}, {"actual": 95.0, "predicted": 126.18269961201385}, {"actual": 100.0, "predicted": 102.31784497751504}, {"actual": 35.0, "predicted": 40.29854536810746}, {"actual": 200.0, "predicted": 197.76807751298347}, {"actual": 140.0, "predicted": 131.10462330062683}, {"actual": 79.0, "predicted": 88.80554875632284}, {"actual": 70.0, "predicted": 118.68179277079807}, {"actual": 65.0, "predicted": 99.23732595053437}, {"actual": 100.0, "predicted": 122.56254061102769}, {"actual": 55.0, "predicted": 71.85807799579808}, {"actual": 69.0, "predicted": 80.00364339990101}, {"actual": 75.0, "predicted": 115.1824380734567}, {"actual": 100.0, "predicted": 102.12449399637003}, {"actual": 91.0, "predicted": 129.94563847351677}, {"actual": 80.0, "predicted": 125.71120334672786}, {"actual": 100.0, "predicted": 92.84608284330928}, {"actual": 79.0, "predicted": 86.96590024099197}, {"actual": 45.0, "predicted": 62.67518739509238}, {"actual": 54.0, "predicted": 52.28128187198007}, {"actual": 117.0, "predicted": 153.0965399842555}, {"actual": 27.0, "predicted": 57.07586174305902}, {"actual": 20.0, "predicted": 57.69152683277579}, {"actual": 130.0, "predicted": 98.25640522006968}, {"actual": 70.0, "predicted": 50.277420390683346}, {"actual": 200.0, "predicted": 109.74942677576894}, {"actual": 75.0, "predicted": 43.2495856965281}, {"actual": 95.0, "predicted": 79.2711326184813}, {"actual": 105.0, "predicted": 85.38310099440804}, {"actual": 50.0, "predicted": 44.37717558567257}, {"actual": 200.0, "predicted": 148.36035333082523}, {"actual": 60.0, "predicted": 35.946029963000306}, {"actual": 100.0, "predicted": 84.70423612049201}, {"actual": 75.0, "predicted": 83.99529519782939}, {"actual": 64.0, "predicted": 52.56031118757388}, {"actual": 45.0, "predicted": 124.56980054767858}, {"actual": 55.0, "predicted": 32.99957193865242}, {"actual": 85.0, "predicted": 116.94720834816668}, {"actual": 114.0, "predicted": 159.16856822080376}, {"actual": 145.0, "predicted": 118.41782322059771}, {"actual": 34.0, "predicted": 49.255548868896426}, {"actual": 95.0, "predicted": 99.40438884151547}, {"actual": 100.0, "predicted": 100.24524445599957}, {"actual": 40.0, "predicted": 34.3231476524131}, {"actual": 52.0, "predicted": 58.7352809738249}, {"actual": 30.0, "predicted": 47.3280116568325}, {"actual": 24.0, "predicted": 36.56844397766677}, {"actual": 89.0, "predicted": 136.25660262424884}, {"actual": 50.0, "predicted": 57.01920995803422}, {"actual": 50.0, "predicted": 98.04254020200719}, {"actual": 38.0, "predicted": 28.211797079294335}, {"actual": 34.0, "predicted": 48.1025221009802}, {"actual": 100.0, "predicted": 87.01133827357837}, {"actual": 40.0, "predicted": 24.874882807886628}, {"actual": 100.0, "predicted": 95.2822281380925}, {"actual": 103.0, "predicted": 130.67696431558826}, {"actual": 35.0, "predicted": 43.91401353785723}, {"actual": 125.0, "predicted": 94.79040877675996}, {"actual": 69.0, "predicted": 31.544721429107454}, {"actual": 30.0, "predicted": 35.02744544745009}, {"actual": 30.0, "predicted": 64.63319519872853}, {"actual": 60.0, "predicted": 42.9378930563051}, {"actual": 50.0, "predicted": 76.92541543391735}, {"actual": 59.0, "predicted": 49.19487762974842}, {"actual": 75.0, "predicted": 93.21002168219533}, {"actual": 35.0, "predicted": 29.657301327494892}, {"actual": 27.0, "predicted": 37.94840732084818}, {"actual": 180.0, "predicted": 101.59751404323369}, {"actual": 36.0, "predicted": 55.38272809038828}, {"actual": 80.0, "predicted": 132.2769418508038}, {"actual": 30.0, "predicted": 43.11471047275329}, {"actual": 35.0, "predicted": 37.10029015707232}, {"actual": 45.0, "predicted": 46.804118275136915}, {"actual": 65.0, "predicted": 28.529754499415517}, {"actual": 70.0, "predicted": 86.32355726779315}, {"actual": 200.0, "predicted": 141.73409734218205}, {"actual": 120.0, "predicted": 95.31170125979088}, {"actual": 30.0, "predicted": 39.8840413149504}, {"actual": 89.0, "predicted": 128.25049712909782}, {"actual": 35.0, "predicted": 57.889694509179314}, {"actual": 62.0, "predicted": 39.01269185328442}, {"actual": 180.0, "predicted": 154.13433856291994}, {"actual": 125.0, "predicted": 123.20546419991851}, {"actual": 50.0, "predicted": 36.66945736518682}, {"actual": 55.0, "predicted": 38.83920341980003}, {"actual": 35.0, "predicted": 43.9340115644023}, {"actual": 45.0, "predicted": 52.2215947695809}, {"actual": 120.0, "predicted": 110.37488426917207}, {"actual": 80.0, "predicted": 73.59549315730524}, {"actual": 120.0, "predicted": 162.02955629592745}, {"actual": 29.0, "predicted": 24.071149984511564}, {"actual": 60.0, "predicted": 24.62184228943542}, {"actual": 52.0, "predicted": 50.245802046483035}, {"actual": 50.0, "predicted": 49.102468550983744}, {"actual": 45.0, "predicted": 42.9002665894638}, {"actual": 77.0, "predicted": 90.59408728420908}, {"actual": 99.0, "predicted": 115.87655268925104}, {"actual": 90.0, "predicted": 112.14361210700665}, {"actual": 100.0, "predicted": 122.1058997176513}, {"actual": 18.0, "predicted": 42.63341939386433}, {"actual": 150.0, "predicted": 110.19979065987476}, {"actual": 200.0, "predicted": 195.99769140504915}, {"actual": 110.0, "predicted": 156.17342556359338}, {"actual": 79.0, "predicted": 144.14795384790145}, {"actual": 105.0, "predicted": 157.37009872653627}, {"actual": 200.0, "predicted": 200.87557197501985}, {"actual": 150.0, "predicted": 129.21530541947055}, {"actual": 120.0, "predicted": 146.63868374656437}, {"actual": 60.0, "predicted": 111.47789346719472}, {"actual": 80.0, "predicted": 112.91708066592945}, {"actual": 50.0, "predicted": 64.26705699845407}, {"actual": 109.0, "predicted": 187.46799297993294}, {"actual": 35.0, "predicted": 44.84444887952533}, {"actual": 150.0, "predicted": 161.50428651590502}, {"actual": 75.0, "predicted": 88.5248497570603}, {"actual": 85.0, "predicted": 83.42836939621728}, {"actual": 82.0, "predicted": 93.05201729268856}, {"actual": 25.0, "predicted": 37.29898656884751}, {"actual": 99.0, "predicted": 110.67166118022432}, {"actual": 78.0, "predicted": 109.10348989109929}, {"actual": 34.0, "predicted": 41.986064564697195}, {"actual": 200.0, "predicted": 105.30064322458014}, {"actual": 79.0, "predicted": 72.80061789308259}, {"actual": 25.0, "predicted": 42.160364117511904}, {"actual": 45.0, "predicted": 54.2503794128541}, {"actual": 90.0, "predicted": 70.97454975602103}, {"actual": 30.0, "predicted": 44.99048864725097}, {"actual": 25.0, "predicted": 21.508813013848666}, {"actual": 50.0, "predicted": 50.31599244042513}, {"actual": 79.0, "predicted": 70.33151974883643}, {"actual": 58.0, "predicted": 54.72854404295511}, {"actual": 80.0, "predicted": 93.85416579193539}, {"actual": 40.0, "predicted": 38.22798206314046}, {"actual": 41.0, "predicted": 82.40693437284925}, {"actual": 65.0, "predicted": 79.75653808382748}, {"actual": 75.0, "predicted": 81.45602146049116}, {"actual": 95.0, "predicted": 72.67136830597036}, {"actual": 90.0, "predicted": 146.4072624699408}, {"actual": 40.0, "predicted": 51.433413931969035}, {"actual": 50.0, "predicted": 42.18173230319051}, {"actual": 45.0, "predicted": 23.29842011205261}, {"actual": 35.0, "predicted": 44.125748568339}, {"actual": 150.0, "predicted": 144.4825407998012}, {"actual": 23.0, "predicted": 26.52089708553259}, {"actual": 199.0, "predicted": 156.57443208011833}, {"actual": 99.0, "predicted": 135.80213920837997}, {"actual": 40.0, "predicted": 48.518210693483496}, {"actual": 30.0, "predicted": 45.37393223473458}, {"actual": 55.0, "predicted": 49.66144834744138}, {"actual": 31.0, "predicted": 34.35174382509392}, {"actual": 65.0, "predicted": 85.34657283832718}, {"actual": 35.0, "predicted": 40.633667169532146}, {"actual": 220.0, "predicted": 117.07831558719148}, {"actual": 90.0, "predicted": 108.66909225212633}, {"actual": 50.0, "predicted": 54.23860271816704}, {"actual": 185.0, "predicted": 138.77504797385052}, {"actual": 65.0, "predicted": 102.17745228097175}, {"actual": 42.0, "predicted": 48.89742579581496}, {"actual": 65.0, "predicted": 75.00644199037524}, {"actual": 75.0, "predicted": 85.1944012648021}, {"actual": 86.0, "predicted": 104.94115180318205}, {"actual": 85.0, "predicted": 99.87113761331554}, {"actual": 43.0, "predicted": 55.31156788102597}, {"actual": 52.0, "predicted": 58.370627999924224}, {"actual": 95.0, "predicted": 120.33372859846808}, {"actual": 80.0, "predicted": 64.05287254872931}, {"actual": 108.0, "predicted": 135.2915411848828}, {"actual": 27.0, "predicted": 53.74590185597266}, {"actual": 30.0, "predicted": 62.65385603093652}, {"actual": 35.0, "predicted": 33.380127929357535}, {"actual": 128.0, "predicted": 69.22313928555269}, {"actual": 35.0, "predicted": 40.161182154660175}, {"actual": 40.0, "predicted": 30.2017940451056}, {"actual": 60.0, "predicted": 100.00774041314318}, {"actual": 80.0, "predicted": 66.39989289377887}, {"actual": 65.0, "predicted": 83.86098162867178}, {"actual": 139.0, "predicted": 112.49274366366235}, {"actual": 35.0, "predicted": 34.98443931299978}, {"actual": 40.0, "predicted": 47.90221465615593}, {"actual": 178.0, "predicted": 149.22655677605135}, {"actual": 65.0, "predicted": 125.25800964300196}, {"actual": 45.0, "predicted": 57.405261251647275}, {"actual": 65.0, "predicted": 88.98678263631018}, {"actual": 80.0, "predicted": 112.82415552183794}, {"actual": 62.0, "predicted": 44.93687686232039}, {"actual": 49.0, "predicted": 65.55222347014681}, {"actual": 55.0, "predicted": 45.13149842042178}, {"actual": 34.0, "predicted": 38.98206684788814}, {"actual": 32.0, "predicted": 43.300881782321994}, {"actual": 110.0, "predicted": 168.9175706337251}, {"actual": 27.0, "predicted": 31.615478698533373}, {"actual": 45.0, "predicted": 33.14531286734074}, {"actual": 160.0, "predicted": 61.19121579503534}, {"actual": 35.0, "predicted": 40.45895618078245}, {"actual": 40.0, "predicted": 55.47479513363506}, {"actual": 37.0, "predicted": 36.48077231121526}, {"actual": 35.0, "predicted": 41.05818868430549}, {"actual": 38.0, "predicted": 27.28536598164594}, {"actual": 100.0, "predicted": 153.88235054471286}, {"actual": 59.0, "predicted": 66.62534780311776}, {"actual": 80.0, "predicted": 100.22991607705913}, {"actual": 39.0, "predicted": 28.97016488388323}, {"actual": 31.0, "predicted": 28.33563263347851}, {"actual": 55.0, "predicted": 53.02715752339364}, {"actual": 70.0, "predicted": 46.886233365253446}, {"actual": 40.0, "predicted": 56.98999955203929}, {"actual": 31.0, "predicted": 40.05997900219081}, {"actual": 40.0, "predicted": 41.34643369466271}, {"actual": 79.0, "predicted": 97.75156193444823}, {"actual": 55.0, "predicted": 59.08030629367063}, {"actual": 25.0, "predicted": 72.9575727436517}, {"actual": 40.0, "predicted": 26.794916106918272}, {"actual": 60.0, "predicted": 49.063734362280385}, {"actual": 58.0, "predicted": 97.53193970205766}, {"actual": 27.0, "predicted": 37.70686955717668}, {"actual": 143.0, "predicted": 144.0751708097622}, {"actual": 43.0, "predicted": 35.77797808610477}, {"actual": 30.0, "predicted": 54.90872484219041}, {"actual": 34.0, "predicted": 54.7903789241195}, {"actual": 200.0, "predicted": 88.45635486018588}, {"actual": 25.0, "predicted": 19.801443261682543}, {"actual": 67.0, "predicted": 79.52328100477352}, {"actual": 65.0, "predicted": 80.0713464815005}, {"actual": 99.0, "predicted": 80.01757491799006}, {"actual": 100.0, "predicted": 171.35380883629932}, {"actual": 55.0, "predicted": 58.018408611042965}, {"actual": 175.0, "predicted": 103.72092876485917}, {"actual": 120.0, "predicted": 134.57065233968825}, {"actual": 52.0, "predicted": 74.39079517940417}, {"actual": 157.0, "predicted": 110.76363744996051}, {"actual": 60.0, "predicted": 60.432614681950916}, {"actual": 206.0, "predicted": 156.24584039286708}, {"actual": 110.0, "predicted": 96.56386545126202}, {"actual": 110.0, "predicted": 109.8407597909629}, {"actual": 139.0, "predicted": 140.4512183628845}, {"actual": 30.0, "predicted": 36.234750869588446}, {"actual": 100.0, "predicted": 103.81761034249718}, {"actual": 20.0, "predicted": 31.04105183517703}, {"actual": 40.0, "predicted": 48.487958398886995}, {"actual": 36.0, "predicted": 25.6766351542026}, {"actual": 80.0, "predicted": 51.4354201700492}, {"actual": 21.0, "predicted": 36.884684174722025}, {"actual": 64.0, "predicted": 49.991927018495446}, {"actual": 200.0, "predicted": 174.256427766206}, {"actual": 150.0, "predicted": 107.2974771695451}, {"actual": 45.0, "predicted": 36.19502414358674}, {"actual": 45.0, "predicted": 74.49132684467376}, {"actual": 74.0, "predicted": 120.16121994096034}, {"actual": 46.0, "predicted": 26.954312019572498}, {"actual": 40.0, "predicted": 21.793979875371548}, {"actual": 75.0, "predicted": 25.50018217655451}, {"actual": 45.0, "predicted": 59.64203000943422}, {"actual": 26.0, "predicted": 32.18268176034247}, {"actual": 55.0, "predicted": 35.05552712980858}, {"actual": 132.0, "predicted": 103.22782461549814}, {"actual": 150.0, "predicted": 157.66753590778507}, {"actual": 53.0, "predicted": 51.98165676575443}, {"actual": 80.0, "predicted": 110.50914479082991}, {"actual": 50.0, "predicted": 49.85197075659802}, {"actual": 75.0, "predicted": 45.020747527132215}, {"actual": 180.0, "predicted": 138.3080091679686}, {"actual": 70.0, "predicted": 60.43080072429915}, {"actual": 135.0, "predicted": 124.98681675886793}, {"actual": 45.0, "predicted": 33.11589670933394}, {"actual": 83.0, "predicted": 62.74883022114934}, {"actual": 50.0, "predicted": 38.79059869786497}, {"actual": 33.0, "predicted": 53.323240630597375}, {"actual": 35.0, "predicted": 32.07715759582635}, {"actual": 50.0, "predicted": 39.41239061054138}, {"actual": 40.0, "predicted": 25.987402566578567}, {"actual": 58.0, "predicted": 42.285456639069785}, {"actual": 61.0, "predicted": 54.14103235627079}, {"actual": 85.0, "predicted": 69.85596045166965}, {"actual": 117.0, "predicted": 70.11771941833139}, {"actual": 121.0, "predicted": 109.07458522340417}, {"actual": 205.0, "predicted": 102.5925880071833}, {"actual": 97.0, "predicted": 116.47882412541043}, {"actual": 110.0, "predicted": 139.3682486460502}, {"actual": 165.0, "predicted": 159.03711721259523}, {"actual": 48.0, "predicted": 47.77369481154289}, {"actual": 35.0, "predicted": 35.00996324700753}, {"actual": 35.0, "predicted": 64.00183229771764}, {"actual": 28.0, "predicted": 40.32917255933295}, {"actual": 35.0, "predicted": 58.24474411920765}, {"actual": 90.0, "predicted": 88.29901830639034}, {"actual": 45.0, "predicted": 46.47765791433044}, {"actual": 90.0, "predicted": 80.66247524304934}, {"actual": 58.0, "predicted": 61.93744017039611}, {"actual": 55.0, "predicted": 41.33936265985913}, {"actual": 75.0, "predicted": 102.03724613848149}, {"actual": 68.0, "predicted": 89.04534073522548}, {"actual": 49.0, "predicted": 40.597432274639566}, {"actual": 105.0, "predicted": 111.07689955580238}, {"actual": 30.0, "predicted": 57.45744619866151}, {"actual": 95.0, "predicted": 110.4854765275384}, {"actual": 275.0, "predicted": 195.70682508813886}, {"actual": 36.0, "predicted": 42.61116703948814}, {"actual": 89.0, "predicted": 98.81053205510878}, {"actual": 26.0, "predicted": 42.151300908268496}, {"actual": 80.0, "predicted": 78.5817976151446}, {"actual": 30.0, "predicted": 31.607655596350682}, {"actual": 27.0, "predicted": 46.42034645194318}, {"actual": 50.0, "predicted": 47.029663779778275}, {"actual": 40.0, "predicted": 63.646004119765664}, {"actual": 39.0, "predicted": 31.891641108006482}, {"actual": 120.0, "predicted": 142.79797734940757}, {"actual": 70.0, "predicted": 85.36767191201992}, {"actual": 60.0, "predicted": 102.46436428210556}, {"actual": 132.0, "predicted": 147.56813104965372}, {"actual": 80.0, "predicted": 165.88029272020952}, {"actual": 48.0, "predicted": 50.21500705938936}, {"actual": 55.0, "predicted": 53.67401529457269}, {"actual": 30.0, "predicted": 35.31284080166511}, {"actual": 80.0, "predicted": 51.658244602125876}, {"actual": 60.0, "predicted": 73.15472303468971}, {"actual": 70.0, "predicted": 54.1957608412671}, {"actual": 30.0, "predicted": 42.981625213397315}, {"actual": 40.0, "predicted": 49.26057279269509}, {"actual": 70.0, "predicted": 38.21621666394471}, {"actual": 39.0, "predicted": 55.096144398570644}, {"actual": 120.0, "predicted": 132.9764783252632}, {"actual": 45.0, "predicted": 92.69747913023764}, {"actual": 62.0, "predicted": 49.73194703397339}, {"actual": 35.0, "predicted": 56.80728198321162}, {"actual": 59.0, "predicted": 96.3886241470531}, {"actual": 27.0, "predicted": 34.31336296983128}, {"actual": 45.0, "predicted": 26.57055804768774}, {"actual": 70.0, "predicted": 119.04997676027864}, {"actual": 100.0, "predicted": 119.76192248113766}, {"actual": 25.0, "predicted": 24.912805970630224}, {"actual": 45.0, "predicted": 34.17842481715585}, {"actual": 72.0, "predicted": 107.08112646699165}, {"actual": 75.0, "predicted": 93.08431315177609}, {"actual": 53.0, "predicted": 53.355426871111945}, {"actual": 40.0, "predicted": 38.3643235977094}, {"actual": 188.0, "predicted": 162.0268516889574}, {"actual": 45.0, "predicted": 31.54930049870611}, {"actual": 20.0, "predicted": 50.022784098674606}, {"actual": 25.0, "predicted": 37.3920077431825}, {"actual": 25.0, "predicted": 31.46909886674549}, {"actual": 40.0, "predicted": 31.941607856956168}, {"actual": 30.0, "predicted": 45.939079701442665}, {"actual": 60.0, "predicted": 36.886590835989495}, {"actual": 100.0, "predicted": 97.0051698064044}, {"actual": 85.0, "predicted": 109.12791866562891}, {"actual": 24.0, "predicted": 37.39413319815602}, {"actual": 70.0, "predicted": 101.9559430107746}, {"actual": 45.0, "predicted": 36.91714323370277}, {"actual": 40.0, "predicted": 59.630415595181475}, {"actual": 70.0, "predicted": 120.27773702654359}, {"actual": 30.0, "predicted": 33.083592748764445}, {"actual": 65.0, "predicted": 76.05057948889235}, {"actual": 65.0, "predicted": 57.392833221121684}, {"actual": 33.0, "predicted": 32.74401477100293}, {"actual": 70.0, "predicted": 56.71835289287748}, {"actual": 30.0, "predicted": 56.018345532598765}, {"actual": 38.0, "predicted": 29.96464600431039}, {"actual": 69.0, "predicted": 55.57585731625696}, {"actual": 34.0, "predicted": 39.10571396898384}, {"actual": 40.0, "predicted": 51.32755815889817}, {"actual": 73.0, "predicted": 101.11229615925969}, {"actual": 125.0, "predicted": 110.97696929775097}, {"actual": 47.0, "predicted": 46.880444490781805}, {"actual": 75.0, "predicted": 81.6567268226236}, {"actual": 75.0, "predicted": 59.51935287668079}, {"actual": 25.0, "predicted": 30.792475763823425}, {"actual": 81.0, "predicted": 124.94008905292432}, {"actual": 39.0, "predicted": 45.32439173814519}, {"actual": 60.0, "predicted": 60.29375468315811}, {"actual": 55.0, "predicted": 42.71260381681208}, {"actual": 30.0, "predicted": 36.560563748606306}, {"actual": 98.0, "predicted": 79.90824165988238}, {"actual": 95.0, "predicted": 84.71247420725699}, {"actual": 100.0, "predicted": 54.13609381600011}, {"actual": 19.0, "predicted": 34.295990527076974}, {"actual": 44.0, "predicted": 29.335536109087798}, {"actual": 55.0, "predicted": 50.06726340771668}, {"actual": 90.0, "predicted": 70.65185691825214}, {"actual": 90.0, "predicted": 78.50604279902778}, {"actual": 40.0, "predicted": 37.3205022889623}, {"actual": 114.0, "predicted": 112.1256071237232}, {"actual": 38.0, "predicted": 75.29220407201952}, {"actual": 55.0, "predicted": 41.34498663460775}, {"actual": 49.0, "predicted": 39.13503161668109}, {"actual": 69.0, "predicted": 89.33274687378369}, {"actual": 82.0, "predicted": 93.6365040587618}, {"actual": 109.0, "predicted": 130.1703521868911}, {"actual": 106.0, "predicted": 95.9227689791593}, {"actual": 65.0, "predicted": 112.72112415986432}, {"actual": 119.0, "predicted": 155.61323903307627}, {"actual": 40.0, "predicted": 54.44407607286948}, {"actual": 75.0, "predicted": 88.60583170065165}, {"actual": 36.0, "predicted": 39.26283028099218}, {"actual": 35.0, "predicted": 46.99871034436633}, {"actual": 149.0, "predicted": 165.44965192254958}, {"actual": 95.0, "predicted": 122.2495383631643}, {"actual": 65.0, "predicted": 52.85055714984269}, {"actual": 70.0, "predicted": 91.57014279582808}, {"actual": 65.0, "predicted": 103.17700032015988}, {"actual": 35.0, "predicted": 33.26924602713898}, {"actual": 69.0, "predicted": 113.55050598222451}, {"actual": 36.0, "predicted": 50.25925351150586}, {"actual": 80.0, "predicted": 101.54730180720291}, {"actual": 48.0, "predicted": 34.705778299654064}, {"actual": 75.0, "predicted": 107.3489375860412}, {"actual": 40.0, "predicted": 25.76344840825901}, {"actual": 73.0, "predicted": 77.10610308931102}, {"actual": 95.0, "predicted": 108.24379612937928}, {"actual": 78.0, "predicted": 100.50159840479601}, {"actual": 80.0, "predicted": 115.58627884697736}, {"actual": 45.0, "predicted": 33.59245318009803}, {"actual": 33.0, "predicted": 42.377132958296095}, {"actual": 39.0, "predicted": 47.54709323329063}, {"actual": 150.0, "predicted": 110.48929374366183}, {"actual": 88.0, "predicted": 100.25708813118777}, {"actual": 150.0, "predicted": 96.50640788811755}, {"actual": 99.0, "predicted": 105.06825199039143}, {"actual": 80.0, "predicted": 149.82122749716046}, {"actual": 100.0, "predicted": 102.46578510531498}, {"actual": 40.0, "predicted": 61.438639347727836}, {"actual": 155.0, "predicted": 148.9201858075698}, {"actual": 60.0, "predicted": 84.5248677964378}, {"actual": 50.0, "predicted": 50.238481987509246}, {"actual": 49.0, "predicted": 54.73262087050919}, {"actual": 70.0, "predicted": 48.91708604405152}, {"actual": 124.0, "predicted": 99.97339664039444}, {"actual": 110.0, "predicted": 96.2969654243162}, {"actual": 28.0, "predicted": 27.104782392442118}, {"actual": 17.0, "predicted": 41.6326055238566}, {"actual": 35.0, "predicted": 54.55626660567827}, {"actual": 38.0, "predicted": 57.59541736341127}, {"actual": 50.0, "predicted": 59.1193995233882}, {"actual": 110.0, "predicted": 118.89342755784506}, {"actual": 75.0, "predicted": 62.214407730495736}, {"actual": 38.0, "predicted": 37.02587733431515}, {"actual": 52.0, "predicted": 27.99716761749677}, {"actual": 40.0, "predicted": 48.438542654893226}, {"actual": 75.0, "predicted": 68.34313288491948}, {"actual": 97.0, "predicted": 107.31272470439764}, {"actual": 89.0, "predicted": 83.99525452509414}, {"actual": 37.0, "predicted": 56.50393671164834}, {"actual": 43.0, "predicted": 43.68298060930008}, {"actual": 20.0, "predicted": 37.0478039727687}, {"actual": 24.0, "predicted": 34.00994095480924}, {"actual": 80.0, "predicted": 101.90069194982274}, {"actual": 210.0, "predicted": 62.85099470243942}, {"actual": 57.0, "predicted": 94.82152072554106}, {"actual": 43.0, "predicted": 54.66860217630253}, {"actual": 70.0, "predicted": 82.4707117925893}, {"actual": 45.0, "predicted": 43.28025709607013}, {"actual": 90.0, "predicted": 83.69975817983006}, {"actual": 56.0, "predicted": 52.26787950632403}, {"actual": 23.0, "predicted": 36.92593184009031}, {"actual": 17.0, "predicted": 40.48706350128651}, {"actual": 220.0, "predicted": 131.15542278104462}, {"actual": 35.0, "predicted": 30.444429990716216}, {"actual": 50.0, "predicted": 46.47163659053952}, {"actual": 99.0, "predicted": 93.10707481010566}, {"actual": 90.0, "predicted": 139.64016870887735}, {"actual": 35.0, "predicted": 33.724057072226486}, {"actual": 29.0, "predicted": 58.43515557635239}, {"actual": 190.0, "predicted": 160.3307271975}, {"actual": 26.0, "predicted": 28.162707019591345}, {"actual": 33.0, "predicted": 35.91876400830893}, {"actual": 95.0, "predicted": 92.9787564575096}, {"actual": 100.0, "predicted": 149.3972894181997}, {"actual": 55.0, "predicted": 91.5716599906714}, {"actual": 41.0, "predicted": 27.54429797775029}, {"actual": 28.0, "predicted": 49.86930120663587}, {"actual": 100.0, "predicted": 83.15252748987933}, {"actual": 49.0, "predicted": 55.196115099314866}, {"actual": 120.0, "predicted": 114.07049650490214}, {"actual": 153.0, "predicted": 116.52759208645523}, {"actual": 40.0, "predicted": 47.49129351896133}, {"actual": 79.0, "predicted": 51.98723438906593}, {"actual": 75.0, "predicted": 88.47930169504431}, {"actual": 140.0, "predicted": 62.03241702043914}, {"actual": 40.0, "predicted": 43.942601357371046}, {"actual": 20.0, "predicted": 36.46544273709858}, {"actual": 65.0, "predicted": 81.2280830201797}, {"actual": 25.0, "predicted": 95.48455284341945}, {"actual": 60.0, "predicted": 55.64920640850794}, {"actual": 120.0, "predicted": 151.31988692074418}, {"actual": 45.0, "predicted": 103.5238980773241}, {"actual": 125.0, "predicted": 129.7494832373799}, {"actual": 60.0, "predicted": 68.87397047377542}, {"actual": 35.0, "predicted": 36.168126079251365}, {"actual": 39.0, "predicted": 35.71483831496808}, {"actual": 65.0, "predicted": 71.49710092847391}, {"actual": 135.0, "predicted": 110.12064699183799}, {"actual": 55.0, "predicted": 61.16275461100835}, {"actual": 150.0, "predicted": 160.22823583580887}, {"actual": 30.0, "predicted": 44.015649003730985}, {"actual": 200.0, "predicted": 160.92654052927787}, {"actual": 95.0, "predicted": 90.49453559262813}, {"actual": 40.0, "predicted": 32.399152713880554}, {"actual": 109.0, "predicted": 82.79279116328885}, {"actual": 33.0, "predicted": 51.77043429110897}, {"actual": 170.0, "predicted": 54.13609381600011}, {"actual": 21.0, "predicted": 33.931316743354955}, {"actual": 80.0, "predicted": 29.473818381656372}, {"actual": 74.0, "predicted": 111.0314523145779}, {"actual": 45.0, "predicted": 58.793914352560996}, {"actual": 93.0, "predicted": 92.64722485638258}, {"actual": 140.0, "predicted": 129.1960371921515}, {"actual": 40.0, "predicted": 49.92078175270467}, {"actual": 100.0, "predicted": 59.20188423345219}, {"actual": 38.0, "predicted": 31.798455289809873}, {"actual": 120.0, "predicted": 143.26605955396167}, {"actual": 95.0, "predicted": 101.59086815356002}, {"actual": 38.0, "predicted": 42.3727232148611}, {"actual": 90.0, "predicted": 121.66230656542209}, {"actual": 33.0, "predicted": 32.787558790047854}, {"actual": 33.0, "predicted": 36.54185932861773}, {"actual": 128.0, "predicted": 170.58849646302974}, {"actual": 46.0, "predicted": 42.29353382716603}, {"actual": 35.0, "predicted": 44.87964144310141}, {"actual": 75.0, "predicted": 82.72215285760524}, {"actual": 65.0, "predicted": 85.12710820119807}, {"actual": 139.0, "predicted": 125.0414850292912}, {"actual": 140.0, "predicted": 159.82293187187193}, {"actual": 28.0, "predicted": 24.461309718348744}, {"actual": 70.0, "predicted": 119.55464414260219}, {"actual": 132.0, "predicted": 131.8201295204761}, {"actual": 40.0, "predicted": 37.056691329168956}, {"actual": 59.0, "predicted": 76.95791160227267}, {"actual": 37.0, "predicted": 54.210735479118945}, {"actual": 114.0, "predicted": 148.20553005758595}, {"actual": 135.0, "predicted": 132.52766291776186}, {"actual": 30.0, "predicted": 57.774586039794045}, {"actual": 65.0, "predicted": 51.635321646562595}, {"actual": 35.0, "predicted": 55.37385217250397}, {"actual": 80.0, "predicted": 97.6323975496365}, {"actual": 70.0, "predicted": 76.39133374875237}, {"actual": 44.0, "predicted": 50.33044192309061}, {"actual": 60.0, "predicted": 32.332293709966855}, {"actual": 85.0, "predicted": 89.80062046774363}, {"actual": 75.0, "predicted": 93.94268219965693}, {"actual": 79.0, "predicted": 99.30241632537832}, {"actual": 88.0, "predicted": 133.05375799619299}, {"actual": 41.0, "predicted": 55.40154738381125}, {"actual": 68.0, "predicted": 81.23493270719895}, {"actual": 30.0, "predicted": 52.34332550194315}, {"actual": 90.0, "predicted": 85.52220190445809}, {"actual": 30.0, "predicted": 34.7294169662241}, {"actual": 25.0, "predicted": 47.4940923961921}, {"actual": 100.0, "predicted": 123.58958809671749}, {"actual": 100.0, "predicted": 129.2943580196039}, {"actual": 89.0, "predicted": 161.65166836008578}, {"actual": 121.0, "predicted": 106.44655749071245}, {"actual": 60.0, "predicted": 52.117847756867725}, {"actual": 35.0, "predicted": 32.55409979735278}, {"actual": 100.0, "predicted": 40.872599573224626}, {"actual": 100.0, "predicted": 94.91818677880144}, {"actual": 70.0, "predicted": 93.06636838662077}, {"actual": 188.0, "predicted": 121.0236956048517}, {"actual": 32.0, "predicted": 54.185223012133406}, {"actual": 99.0, "predicted": 118.9375382668011}, {"actual": 83.0, "predicted": 102.95340008214897}, {"actual": 90.0, "predicted": 92.55752113782479}, {"actual": 200.0, "predicted": 182.33518869780343}, {"actual": 140.0, "predicted": 107.96529370659825}, {"actual": 36.0, "predicted": 60.54906275240622}, {"actual": 40.0, "predicted": 45.73057979659509}, {"actual": 35.0, "predicted": 43.63746191626363}, {"actual": 130.0, "predicted": 127.24289853849045}, {"actual": 70.0, "predicted": 82.05655426649457}, {"actual": 80.0, "predicted": 116.59973705063432}, {"actual": 77.0, "predicted": 92.98113667118889}, {"actual": 65.0, "predicted": 53.84706425176541}, {"actual": 60.0, "predicted": 67.24531304498419}, {"actual": 69.0, "predicted": 80.38892116971675}, {"actual": 30.0, "predicted": 50.289709487968935}, {"actual": 105.0, "predicted": 109.79533864969895}, {"actual": 40.0, "predicted": 51.81047697462453}, {"actual": 40.0, "predicted": 44.09485818473377}, {"actual": 29.0, "predicted": 55.4959529299365}, {"actual": 33.0, "predicted": 56.11368731340083}, {"actual": 40.0, "predicted": 51.84617608181212}, {"actual": 47.0, "predicted": 41.159210026915005}, {"actual": 130.0, "predicted": 90.68268437947467}, {"actual": 27.0, "predicted": 40.38779430824132}, {"actual": 190.0, "predicted": 117.60869824923984}, {"actual": 95.0, "predicted": 92.69474387605746}, {"actual": 85.0, "predicted": 80.7136187008556}, {"actual": 190.0, "predicted": 151.91855318336692}, {"actual": 110.0, "predicted": 107.22219842733651}, {"actual": 120.0, "predicted": 88.58487719234309}, {"actual": 70.0, "predicted": 48.20369943135404}, {"actual": 36.0, "predicted": 22.93859622048123}, {"actual": 128.0, "predicted": 112.34277100789056}, {"actual": 37.0, "predicted": 52.57324645646343}, {"actual": 25.0, "predicted": 25.74721719561036}, {"actual": 60.0, "predicted": 35.75997466554684}, {"actual": 119.0, "predicted": 96.22207481164087}, {"actual": 35.0, "predicted": 32.65425064582778}, {"actual": 35.0, "predicted": 22.95900629651687}, {"actual": 70.0, "predicted": 37.83752583999591}, {"actual": 35.0, "predicted": 34.927770436505156}, {"actual": 130.0, "predicted": 124.80543846692868}, {"actual": 26.0, "predicted": 36.69846509393067}, {"actual": 141.0, "predicted": 109.13617605747336}, {"actual": 65.0, "predicted": 70.79939940170897}, {"actual": 123.0, "predicted": 67.75577826043556}, {"actual": 290.0, "predicted": 145.92762375552255}, {"actual": 30.0, "predicted": 47.07797420342777}, {"actual": 110.0, "predicted": 105.1679566620893}, {"actual": 44.0, "predicted": 30.687651287208375}, {"actual": 58.0, "predicted": 59.40726412189107}, {"actual": 43.0, "predicted": 55.26906999208785}, {"actual": 120.0, "predicted": 130.30302695475183}, {"actual": 50.0, "predicted": 52.675829483455}, {"actual": 26.0, "predicted": 40.420440220202124}, {"actual": 25.0, "predicted": 56.62516422444399}, {"actual": 40.0, "predicted": 96.2924106145598}, {"actual": 49.0, "predicted": 53.851805200261126}, {"actual": 45.0, "predicted": 48.79937106051071}, {"actual": 33.0, "predicted": 41.717863124399}, {"actual": 95.0, "predicted": 106.63776651780947}, {"actual": 80.0, "predicted": 59.78101592712574}, {"actual": 38.0, "predicted": 34.05362502369014}, {"actual": 39.0, "predicted": 63.02611034862584}, {"actual": 20.0, "predicted": 20.968754321017556}, {"actual": 48.0, "predicted": 61.48216871746925}, {"actual": 110.0, "predicted": 39.57908566743262}, {"actual": 200.0, "predicted": 137.40711351494681}, {"actual": 35.0, "predicted": 57.25629926303607}, {"actual": 30.0, "predicted": 41.12692645841105}, {"actual": 40.0, "predicted": 36.733089745936994}, {"actual": 200.0, "predicted": 128.44995368522467}, {"actual": 80.0, "predicted": 114.50173680671848}, {"actual": 50.0, "predicted": 100.35744597134313}, {"actual": 59.0, "predicted": 40.04051087349314}, {"actual": 80.0, "predicted": 46.90223401191045}, {"actual": 135.0, "predicted": 85.19472929966919}, {"actual": 45.0, "predicted": 63.873953495328394}, {"actual": 40.0, "predicted": 50.24035239633976}, {"actual": 30.0, "predicted": 33.973957536077734}, {"actual": 25.0, "predicted": 30.61018095683304}, {"actual": 55.0, "predicted": 49.816198659694784}, {"actual": 29.0, "predicted": 57.31101204540638}, {"actual": 70.0, "predicted": 70.33029571354561}, {"actual": 35.0, "predicted": 21.508210191117428}, {"actual": 95.0, "predicted": 165.15564180305074}, {"actual": 35.0, "predicted": 47.78750377084782}, {"actual": 35.0, "predicted": 45.18232058961493}, {"actual": 30.0, "predicted": 58.57337050934775}, {"actual": 83.0, "predicted": 139.61434673300403}, {"actual": 50.0, "predicted": 48.5381386110551}, {"actual": 103.0, "predicted": 90.42268579453528}, {"actual": 53.0, "predicted": 33.14061387404523}, {"actual": 135.0, "predicted": 151.07480301013499}, {"actual": 30.0, "predicted": 49.12335170908746}, {"actual": 35.0, "predicted": 47.120113482470174}, {"actual": 114.0, "predicted": 104.2684350839387}, {"actual": 60.0, "predicted": 90.76828346756935}, {"actual": 40.0, "predicted": 43.789674756822706}, {"actual": 140.0, "predicted": 140.8367090361821}, {"actual": 85.0, "predicted": 101.75841474533696}, {"actual": 70.0, "predicted": 172.69188918212626}, {"actual": 98.0, "predicted": 105.19688636910605}, {"actual": 209.0, "predicted": 192.90407319906976}, {"actual": 25.0, "predicted": 32.562121254965646}, {"actual": 49.0, "predicted": 37.42535707638783}, {"actual": 107.0, "predicted": 127.63468739142047}, {"actual": 30.0, "predicted": 52.513725820755894}, {"actual": 40.0, "predicted": 55.22500803597685}, {"actual": 30.0, "predicted": 38.116946311842995}, {"actual": 40.0, "predicted": 52.76605527461357}, {"actual": 49.0, "predicted": 72.49616735882444}, {"actual": 104.0, "predicted": 134.22141450584286}, {"actual": 40.0, "predicted": 56.49193565515048}, {"actual": 85.0, "predicted": 81.9677453029949}, {"actual": 67.0, "predicted": 57.874396141017534}, {"actual": 79.0, "predicted": 71.02312146339655}, {"actual": 120.0, "predicted": 109.77888058278666}, {"actual": 48.0, "predicted": 50.51187279525148}, {"actual": 40.0, "predicted": 17.38475956375561}, {"actual": 40.0, "predicted": 51.366176436232735}, {"actual": 89.0, "predicted": 118.41952153268218}, {"actual": 70.0, "predicted": 105.56539749313916}, {"actual": 100.0, "predicted": 120.51698878588482}, {"actual": 70.0, "predicted": 114.74171612941228}, {"actual": 51.0, "predicted": 75.53255697907156}, {"actual": 90.0, "predicted": 74.25717498850834}, {"actual": 135.0, "predicted": 105.0076928681162}, {"actual": 80.0, "predicted": 37.91429576889003}, {"actual": 50.0, "predicted": 82.14994269717883}, {"actual": 189.0, "predicted": 172.89005149417628}, {"actual": 69.0, "predicted": 81.53956829869271}, {"actual": 37.0, "predicted": 31.78412079938427}, {"actual": 90.0, "predicted": 110.26214278393486}, {"actual": 120.0, "predicted": 112.83862588466278}, {"actual": 140.0, "predicted": 123.97376290326346}, {"actual": 59.0, "predicted": 77.87539823169178}, {"actual": 18.0, "predicted": 59.899553958858355}, {"actual": 110.0, "predicted": 119.63370919456779}, {"actual": 25.0, "predicted": 46.22672082763169}, {"actual": 32.0, "predicted": 53.926110910840066}, {"actual": 75.0, "predicted": 96.54008644784507}, {"actual": 69.0, "predicted": 88.41605043306758}]}]}</script>
+</div>
+</div>
+</section>
+<section id="section" class="slide level2" data-background-color="#1a1a2e">
+<h2></h2>
+<div style="text-align: center; padding-top: 180px;">
+<p><span style="font-size: 2.2em; color: white;"><strong>Model building for prediction</strong></span></p>
+<p><span style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;">The workshop built the toolbox on six clean predictors and 281 cars. This session: what happens with dozens of candidate variables — and 4,393 real Airbnb listings.</span></p>
+</div>
+</section>
+<section class="slide level2">
+
+</section>
+<section>
+<section id="label-engineering" class="title-slide slide level1 center" data-background-color="#2d6a4f">
+<h1>Label engineering</h1>
+
+</section>
+<section id="choosing-the-targets-functional-form" class="slide level2">
+<h2>Choosing the target’s functional form</h2>
+</section>
+<section id="log-or-level" class="slide level2">
+<h2>Log or level?</h2>
+<ul>
+<li>When price is the target, its relationship with predictors is often closer to linear once expressed as <span class="math inline">\(\ln(price)\)</span></li>
+<li>Log differences approximate relative (percentage) differences — often more stable across a wide price range</li>
+<li>Technical bonus: log prices are often closer to normally distributed, which helps a linear regression approximate the average well</li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 14</p>
+</div>
+</section>
+<section id="the-correction-thats-easy-to-forget" class="slide level2">
+<h2>The correction that’s easy to forget</h2>
+<p>If the target was modelled in logs, the model predicts <span class="math inline">\(\widehat{\ln y}\)</span> — not <span class="math inline">\(\hat y\)</span>. Simply exponentiating <strong>underestimates</strong> the average:</p>
+<p><span class="math display">\[\hat y_j = e^{\widehat{\ln y}_j} \times e^{\hat\sigma^2/2}\]</span></p>
+<ul>
+<li><span class="math inline">\(e^{\widehat{\ln y}}\)</span> alone recovers the <em>median</em>, not the mean</li>
+<li>The correction term adjusts for the spread of the regression’s residuals — bigger residual variance, bigger correction</li>
+<li>Skipping it silently biases every prediction downward</li>
+</ul>
+</section>
+<section id="on-our-own-data" class="slide level2">
+<h2>On our own data</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a></a>level_model <span class="op">=</span> smf.ols(<span class="st">"price ~ age + agesq"</span>, data<span class="op">=</span>df).fit()</span>
+<span id="cb1-2"><a></a>log_model <span class="op">=</span> smf.ols(<span class="st">"lnprice ~ age + agesq"</span>, data<span class="op">=</span>df).fit()</span>
+<span id="cb1-3"><a></a></span>
+<span id="cb1-4"><a></a>log_pred_raw <span class="op">=</span> np.exp(log_model.predict(car))          <span class="co"># median, not mean</span></span>
+<span id="cb1-5"><a></a>corrected <span class="op">=</span> log_pred_raw <span class="op">*</span> np.exp(sigma2 <span class="op">/</span> <span class="dv">2</span>)           <span class="co"># corrected mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="211" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 210;"><span id="cb2-211"><a></a>{</span>
+<span id="cb2-212"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:20px auto 0;font-family:sans-serif;font-size:1.1em;border-collapse:collapse;"&gt;</span></span>
+<span id="cb2-213"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;&lt;th style="padding:6px 22px;"&gt;&lt;/th&gt;&lt;th style="padding:6px 22px;"&gt;Log model, uncorrected&lt;/th&gt;&lt;th style="padding:6px 22px;"&gt;Log model, corrected&lt;/th&gt;&lt;th style="padding:6px 22px;"&gt;Level model&lt;/th&gt;&lt;/tr&gt;</span></span>
+<span id="cb2-214"><a></a><span class="vs">    </span><span class="sc">${</span>log_level_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`&lt;tr&gt;&lt;td style="padding:5px 22px;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">label</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:5px 22px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">log_model</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:5px 22px;text-align:center;font-weight:700;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">corrected</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:5px 22px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">level_model</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb2-215"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
+<span id="cb2-216"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-1" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>For a 10-year-old Camry, the raw log prediction and the level-model prediction disagree — the correction closes most of that gap.</p>
+</div>
+</section>
+<section class="slide level2">
+
+</section></section>
+<section>
+<section id="feature-engineering" class="title-slide slide level1 center" data-background-color="#2d6a4f">
+<h1>Feature engineering</h1>
+
+</section>
+<section id="building-the-right-hand-side" class="slide level2">
+<h2>Building the right-hand side</h2>
+</section>
+<section id="the-checklist" class="slide level2">
+<h2>The checklist</h2>
+<ol type="1">
+<li><strong>Missing values</strong> — random, or systematic? Impute with a flag column, don’t just drop the observation</li>
+<li><strong>Categorical values</strong> — binary, or a small set of dummies</li>
+<li><strong>Text</strong> — mine it for useful signal (a “seminar” keyword, say), otherwise leave it</li>
+<li><strong>Functional form</strong> — polynomials, splines, logs — the same choices as the workshop, applied to many variables at once</li>
+<li><strong>Interactions</strong> — worth thinking about, expensive to search exhaustively</li>
+</ol>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 14</p>
+</div>
+</section>
+<section id="real-data-airbnb-london" class="slide level2">
+<h2>Real data: Airbnb, London</h2>
+<ul>
+<li>4,393 Hackney-borough listings, March 2017 snapshot</li>
+<li>Target: nightly <code>price</code> (USD)</li>
+<li>~70 predictor candidates: capacity, room and property type, cancellation policy, review scores, and 50 individual amenity dummies (<code>d_tv</code>, <code>d_petsallowed</code>, <code>d_elevatorinbuilding</code>, …)</li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), airbnb dataset, osf.io/qyca8</p>
+</div>
+</section>
+<section id="six-models-built-up-by-hand" class="slide level2">
+<h2>Six models, built up by hand</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a></a>M1 <span class="op">=</span> smf.ols(<span class="st">"price ~ n_accommodates"</span>, data<span class="op">=</span>df).fit()</span>
+<span id="cb3-2"><a></a>M2 <span class="op">=</span> smf.ols(<span class="st">"price ~ n_accommodates + n_beds + C(f_room_type) + C(f_property_type)"</span>, data<span class="op">=</span>df).fit()</span>
+<span id="cb3-3"><a></a>M3 <span class="op">=</span> smf.ols(<span class="st">"price ~ ... + n_bathrooms + C(f_cancellation_policy) + C(f_bed_type)"</span>, data<span class="op">=</span>df).fit()</span>
+<span id="cb3-4"><a></a>M4 <span class="op">=</span> smf.ols(<span class="st">"price ~ ... + n_accommodates2 + n_days_since + n_days_since2"</span>, data<span class="op">=</span>df).fit()</span>
+<span id="cb3-5"><a></a>M5 <span class="op">=</span> smf.ols(<span class="st">"price ~ ... + C(f_room_type)*C(f_property_type)"</span>, data<span class="op">=</span>df).fit()</span>
+<span id="cb3-6"><a></a>M6 <span class="op">=</span> smf.ols(<span class="st">"price ~ ... + "</span> <span class="op">+</span> <span class="st">" + "</span>.join(amenity_dummies), data<span class="op">=</span>df).fit()  <span class="co"># 50 amenities</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Each step adds more: capacity and type, then physical features, then non-linearity and interactions, then every amenity.</p>
+</section>
+<section id="comparing-the-six-models" class="slide level2">
+<h2>Comparing the six models</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb4" data-startfrom="268" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 267;"><span id="cb4-268"><a></a>{</span>
+<span id="cb4-269"><a></a>  <span class="kw">const</span> cols <span class="op">=</span> [<span class="st">"Model"</span><span class="op">,</span> <span class="st">"N coef"</span><span class="op">,</span> <span class="st">"R2"</span><span class="op">,</span> <span class="st">"Training RMSE"</span><span class="op">,</span> <span class="st">"CV RMSE"</span><span class="op">,</span> <span class="st">"BIC"</span>]<span class="op">;</span></span>
+<span id="cb4-270"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:20px auto 0;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;"&gt;</span></span>
+<span id="cb4-271"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;</span><span class="sc">${</span>cols<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> <span class="vs">`&lt;th style="padding:5px 14px;text-align:center;"&gt;</span><span class="sc">${</span>c<span class="sc">}</span><span class="vs">&lt;/th&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span><span class="vs">&lt;/tr&gt;</span></span>
+<span id="cb4-272"><a></a><span class="vs">    </span><span class="sc">${</span>air_stats_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="border-bottom:1px solid #ddd;"&gt;</span><span class="sc">${</span>cols<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> <span class="vs">`&lt;td style="padding:4px 14px;text-align:center;"&gt;</span><span class="sc">${</span>d[c]<span class="sc">}</span><span class="vs">&lt;/td&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span><span class="vs">&lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb4-273"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
+<span id="cb4-274"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-2" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>RMSE keeps improving all the way to M6 — but watch the BIC column.</p>
+</div>
+</section>
+<section id="the-complexity-curve-again" class="slide level2">
+<h2>The complexity curve, again</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb5" data-startfrom="284" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 283;"><span id="cb5-284"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb5-285"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">700</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">380</span><span class="op">,</span></span>
+<span id="cb5-286"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Number of coefficients"</span>}<span class="op">,</span></span>
+<span id="cb5-287"><a></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"RMSE ($)"</span>}<span class="op">,</span></span>
+<span id="cb5-288"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb5-289"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(air_complexity_data<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"n_coef"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"rmse"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"series"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">2.5</span>})<span class="op">,</span></span>
+<span id="cb5-290"><a></a>    Plot<span class="op">.</span><span class="fu">dot</span>(air_complexity_data<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"n_coef"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"rmse"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"series"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">4</span>})<span class="op">,</span></span>
+<span id="cb5-291"><a></a>    Plot<span class="op">.</span><span class="fu">text</span>(air_complexity_data<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">series</span> <span class="op">===</span> <span class="st">"Training RMSE"</span>)<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"n_coef"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"rmse"</span><span class="op">,</span> <span class="dt">text</span><span class="op">:</span> <span class="st">"model"</span><span class="op">,</span> <span class="dt">dy</span><span class="op">:</span> <span class="op">-</span><span class="dv">12</span><span class="op">,</span> <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">10</span>})</span>
+<span id="cb5-292"><a></a>  ]<span class="op">,</span></span>
+<span id="cb5-293"><a></a>  <span class="dt">color</span><span class="op">:</span> {<span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}</span>
+<span id="cb5-294"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-3" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Training and cross-validated RMSE both keep falling here — this dataset is large enough (4,393 rows) that M6 doesn’t visibly overfit on RMSE. But the <strong>BIC</strong> in the table two slides back peaks earlier: it penalises M6’s 65 coefficients even where cross-validated RMSE doesn’t yet complain. Different criteria, different sensitivity to complexity.</p>
+</div>
+</section>
+<section class="slide level2">
+
+</section></section>
+<section>
+<section id="selecting-variables-automatically" class="title-slide slide level1 center" data-background-color="#2d6a4f">
+<h1>Selecting variables automatically</h1>
+
+</section>
+<section id="lasso" class="slide level2">
+<h2>LASSO</h2>
+</section>
+<section id="we-cant-try-every-model" class="slide level2">
+<h2>We can’t try every model</h2>
+<ul>
+<li>With <span class="math inline">\(p\)</span> candidate predictors, the number of possible models explodes — this is an <strong>NP-hard</strong> problem, not just a big one</li>
+<li><strong>By hand</strong>: domain knowledge drives the choice — interpretable, but slow, and impossible with many interactions</li>
+<li><strong>By algorithm</strong>: let the data suggest which variables earn their place</li>
+</ul>
+</section>
+<section id="the-lasso-idea" class="slide level2">
+<h2>The LASSO idea</h2>
+<p>LASSO (Least Absolute Shrinkage and Selection Operator) adds a penalty to the usual OLS minimisation:</p>
+<p><span class="math display">\[\min_\beta \left\{ \sum_{i=1}^{N}\left(y_i - \beta_0 - \sum_{j=1}^{k}\beta_j x_{ij}\right)^2 + \lambda\sum_{j=1}^{k}|\beta_j| \right\}\]</span></p>
+<ul>
+<li>The penalty shrinks coefficients toward zero</li>
+<li>Coefficients whose inclusion barely improves fit get shrunk <strong>all the way</strong> to zero — dropped from the model entirely</li>
+<li><span class="math inline">\(\lambda\)</span> controls how aggressive that is; larger <span class="math inline">\(\lambda\)</span>, fewer surviving variables</li>
+</ul>
+</section>
+<section id="the-cost-bias" class="slide level2">
+<h2>The cost: bias</h2>
+<ul>
+<li>OLS is unbiased. LASSO isn’t — that’s the trade it makes for lower variance</li>
+<li>Unlike OLS, there’s no closed-form solution; an algorithm solves for <span class="math inline">\(\beta\)</span> and <span class="math inline">\(\lambda\)</span> together</li>
+<li><span class="math inline">\(\lambda\)</span> itself is chosen by cross-validation: try many values, pick the one with the best CV RMSE</li>
+</ul>
+<div class="fragment">
+<p>Ridge regression is the same idea with a squared penalty (<span class="math inline">\(\lambda\sum\beta_j^2\)</span>) instead — it shrinks coefficients but never sets them exactly to zero. LASSO is “L1,” Ridge is “L2.”</p>
+</div>
+</section>
+<section id="lasso-on-the-airbnb-data" class="slide level2">
+<h2>LASSO on the Airbnb data</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LassoCV</span>
+<span id="cb6-2"><a></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb6-3"><a></a></span>
+<span id="cb6-4"><a></a>X_scaled <span class="op">=</span> StandardScaler().fit_transform(X)   <span class="co"># LASSO needs standardised features</span></span>
+<span id="cb6-5"><a></a>lasso <span class="op">=</span> LassoCV(cv<span class="op">=</span><span class="dv">5</span>).fit(X_scaled, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="345" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 344;"><span id="cb7-345"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.68em;line-height:1.4;</span></span>
+<span id="cb7-346"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
+<span id="cb7-347"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>lasso_code_output<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-4" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb8" data-startfrom="351" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 350;"><span id="cb8-351"><a></a><span class="fu">html</span><span class="vs">`&lt;div class="instructions-box"&gt;LASSO kept </span><span class="sc">${</span>n_nonzero<span class="sc">}</span><span class="vs"> of </span><span class="sc">${</span>n_total<span class="sc">}</span><span class="vs"> candidate coefficients — automatically — and its cross-validated RMSE (</span><span class="sc">${</span>lasso_cv_rmse<span class="sc">}</span><span class="vs">) lands close to M6's OLS fit, with far fewer moving parts.&lt;/div&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-5" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</section>
+<section id="what-survived" class="slide level2">
+<h2>What survived</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb9" data-startfrom="357" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 356;"><span id="cb9-357"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb9-358"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">680</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">340</span><span class="op">,</span></span>
+<span id="cb9-359"><a></a>  <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">220</span><span class="op">,</span></span>
+<span id="cb9-360"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Standardised coefficient size"</span>}<span class="op">,</span></span>
+<span id="cb9-361"><a></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="kw">null</span>}<span class="op">,</span></span>
+<span id="cb9-362"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb9-363"><a></a>    Plot<span class="op">.</span><span class="fu">barX</span>(lasso_top_rows<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"importance"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"variable"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#2c3e7a"</span><span class="op">,</span> <span class="dt">sort</span><span class="op">:</span> {<span class="dt">y</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span> <span class="dt">reverse</span><span class="op">:</span> <span class="kw">true</span>}})</span>
+<span id="cb9-364"><a></a>  ]</span>
+<span id="cb9-365"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-6" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Room type and capacity dominate — unsurprising — but several individual amenities survive the penalty too.</p>
+</div>
+</section>
+<section class="slide level2">
+
+</section></section>
+<section>
+<section id="post-prediction-diagnostics" class="title-slide slide level1 center" data-background-color="#2d6a4f">
+<h1>Post-prediction diagnostics</h1>
+
+</section>
+<section id="holdout-sets" class="slide level2">
+<h2>Holdout sets</h2>
+</section>
+<section id="one-more-split-before-you-trust-the-number" class="slide level2">
+<h2>One more split before you trust the number</h2>
+<ul>
+<li>Model selection (BIC, cross-validation) already uses the data — repeatedly</li>
+<li>Best practice: carve off a <strong>holdout set</strong> right at the start, and don’t touch it until the very end</li>
+<li><strong>Work set</strong>: model building, model selection, training/test folds — all happen here</li>
+<li><strong>Holdout set</strong>: touched exactly once, to get an honest read on how the chosen model will do on genuinely new data</li>
+</ul>
+</section>
+<section id="the-workflow" class="slide level2">
+<h2>The workflow</h2>
+<ol type="1">
+<li>Split the original data into a work set and a holdout set</li>
+<li>Inside the work set: training/test folds, k-fold CV, model selection</li>
+<li>Re-estimate the winning model on the <em>whole</em> work set</li>
+<li>Apply it to the holdout set — untouched until now</li>
+<li>Evaluate: this is the honest estimate of live-data performance</li>
+</ol>
+</section>
+<section id="predicted-vs.-actual-on-the-holdout-set" class="slide level2">
+<h2>Predicted vs.&nbsp;actual, on the holdout set</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb10" data-startfrom="397" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 396;"><span id="cb10-397"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb10-398"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">620</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">420</span><span class="op">,</span></span>
+<span id="cb10-399"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Predicted price ($)"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">300</span>]}<span class="op">,</span></span>
+<span id="cb10-400"><a></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Actual price ($)"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">300</span>]}<span class="op">,</span></span>
+<span id="cb10-401"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb10-402"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>([{<span class="dt">x</span><span class="op">:</span><span class="dv">0</span><span class="op">,</span><span class="dt">y</span><span class="op">:</span><span class="dv">0</span>}<span class="op">,</span>{<span class="dt">x</span><span class="op">:</span><span class="dv">300</span><span class="op">,</span><span class="dt">y</span><span class="op">:</span><span class="dv">300</span>}]<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"y"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#999"</span><span class="op">,</span> <span class="dt">strokeDasharray</span><span class="op">:</span> <span class="st">"4,4"</span>})<span class="op">,</span></span>
+<span id="cb10-403"><a></a>    Plot<span class="op">.</span><span class="fu">dot</span>(yyhat_data<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"predicted"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"actual"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#2c3e7a"</span><span class="op">,</span> <span class="dt">opacity</span><span class="op">:</span> <span class="fl">0.4</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">3</span>})</span>
+<span id="cb10-404"><a></a>  ]</span>
+<span id="cb10-405"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-7" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb11" data-startfrom="409" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 408;"><span id="cb11-409"><a></a><span class="fu">html</span><span class="vs">`&lt;div class="fragment"&gt;Holdout RMSE: &lt;b&gt;$</span><span class="sc">${</span>holdout_rmse<span class="sc">}</span><span class="vs">&lt;/b&gt;. Points above the dashed line are underpredicted; the model visibly struggles more at the high end — the same pattern Gabor &amp; Kézdi find in their own version of this diagnostic.&lt;/div&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-8" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</section>
+<section id="summary" class="slide level2">
+<h2>Summary</h2>
+<ul>
+<li>Prediction with many candidate variables needs the same discipline as prediction with a few — just automated where hand-picking becomes infeasible</li>
+<li>Log targets need a correction term before converting back — skipping it silently biases predictions down</li>
+<li>LASSO trades a little bias for a lot less variance, and does variable selection as a side effect</li>
+<li>A holdout set, touched only once, is the honest final check — everything before it is negotiable, this isn’t</li>
+</ul>
+</section>
+<section id="coming-up" class="slide level2">
+<h2>Coming up</h2>
+<div style="text-align: center; padding-top: 60px;">
+<p><span style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"><strong>Week 11: Time Series</strong></span></p>
+<div class="fragment" style="padding-top:40px;">
+<p><em>Feature engineering treated every predictor as fixed at a point in time. Next week, one of them is time itself.</em></p>
+</div>
+</div>
+
+
+</section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'fade',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1280,
+
+        height: 720,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 8.0e-2,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script type="ojs-module-contents">
+    eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgcmV0dXJuIGh0bWxgPHRhYmxlIHN0eWxlPVwibWFyZ2luOjIwcHggYXV0byAwO2ZvbnQtZmFtaWx5OnNhbnMtc2VyaWY7Zm9udC1zaXplOjEuMWVtO2JvcmRlci1jb2xsYXBzZTpjb2xsYXBzZTtcIj5cbiAgICA8dHIgc3R5bGU9XCJib3JkZXItYm90dG9tOjJweCBzb2xpZCAjMWExYTJlO1wiPjx0aCBzdHlsZT1cInBhZGRpbmc6NnB4IDIycHg7XCI+PC90aD48dGggc3R5bGU9XCJwYWRkaW5nOjZweCAyMnB4O1wiPkxvZyBtb2RlbCwgdW5jb3JyZWN0ZWQ8L3RoPjx0aCBzdHlsZT1cInBhZGRpbmc6NnB4IDIycHg7XCI+TG9nIG1vZGVsLCBjb3JyZWN0ZWQ8L3RoPjx0aCBzdHlsZT1cInBhZGRpbmc6NnB4IDIycHg7XCI+TGV2ZWwgbW9kZWw8L3RoPjwvdHI+XG4gICAgJHtsb2dfbGV2ZWxfcm93cy5tYXAoZCA9PiBgPHRyPjx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDIycHg7XCI+JHtkLmxhYmVsfTwvdGQ+PHRkIHN0eWxlPVwicGFkZGluZzo1cHggMjJweDt0ZXh0LWFsaWduOmNlbnRlcjtcIj4ke2QubG9nX21vZGVsfTwvdGQ+PHRkIHN0eWxlPVwicGFkZGluZzo1cHggMjJweDt0ZXh0LWFsaWduOmNlbnRlcjtmb250LXdlaWdodDo3MDA7XCI+JHtkLmNvcnJlY3RlZH08L3RkPjx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDIycHg7dGV4dC1hbGlnbjpjZW50ZXI7XCI+JHtkLmxldmVsX21vZGVsfTwvdGQ+PC90cj5gKS5qb2luKCcnKX1cbiAgPC90YWJsZT5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIGNvbnN0IGNvbHMgPSBbXCJNb2RlbFwiLCBcIk4gY29lZlwiLCBcIlIyXCIsIFwiVHJhaW5pbmcgUk1TRVwiLCBcIkNWIFJNU0VcIiwgXCJCSUNcIl07XG4gIHJldHVybiBodG1sYDx0YWJsZSBzdHlsZT1cIm1hcmdpbjoyMHB4IGF1dG8gMDtmb250LWZhbWlseTpzYW5zLXNlcmlmO2ZvbnQtc2l6ZTowLjg1ZW07Ym9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlO1wiPlxuICAgIDx0ciBzdHlsZT1cImJvcmRlci1ib3R0b206MnB4IHNvbGlkICMxYTFhMmU7XCI+JHtjb2xzLm1hcChjID0+IGA8dGggc3R5bGU9XCJwYWRkaW5nOjVweCAxNHB4O3RleHQtYWxpZ246Y2VudGVyO1wiPiR7Y308L3RoPmApLmpvaW4oJycpfTwvdHI+XG4gICAgJHthaXJfc3RhdHNfcm93cy5tYXAoZCA9PiBgPHRyIHN0eWxlPVwiYm9yZGVyLWJvdHRvbToxcHggc29saWQgI2RkZDtcIj4ke2NvbHMubWFwKGMgPT4gYDx0ZCBzdHlsZT1cInBhZGRpbmc6NHB4IDE0cHg7dGV4dC1hbGlnbjpjZW50ZXI7XCI+JHtkW2NdfTwvdGQ+YCkuam9pbignJyl9PC90cj5gKS5qb2luKCcnKX1cbiAgPC90YWJsZT5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTMiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJQbG90LnBsb3Qoe1xuICB3aWR0aDogNzAwLCBoZWlnaHQ6IDM4MCxcbiAgeDoge2xhYmVsOiBcIk51bWJlciBvZiBjb2VmZmljaWVudHNcIn0sXG4gIHk6IHtsYWJlbDogXCJSTVNFICgkKVwifSxcbiAgbWFya3M6IFtcbiAgICBQbG90LmxpbmUoYWlyX2NvbXBsZXhpdHlfZGF0YSwge3g6IFwibl9jb2VmXCIsIHk6IFwicm1zZVwiLCBzdHJva2U6IFwic2VyaWVzXCIsIHN0cm9rZVdpZHRoOiAyLjV9KSxcbiAgICBQbG90LmRvdChhaXJfY29tcGxleGl0eV9kYXRhLCB7eDogXCJuX2NvZWZcIiwgeTogXCJybXNlXCIsIGZpbGw6IFwic2VyaWVzXCIsIHI6IDR9KSxcbiAgICBQbG90LnRleHQoYWlyX2NvbXBsZXhpdHlfZGF0YS5maWx0ZXIoZCA9PiBkLnNlcmllcyA9PT0gXCJUcmFpbmluZyBSTVNFXCIpLCB7eDogXCJuX2NvZWZcIiwgeTogXCJybXNlXCIsIHRleHQ6IFwibW9kZWxcIiwgZHk6IC0xMiwgZm9udFNpemU6IDEwfSlcbiAgXSxcbiAgY29sb3I6IHtsZWdlbmQ6IHRydWV9XG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC00IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8cHJlIHN0eWxlPVwiZm9udC1mYW1pbHk6J1NGIE1vbm8nLCdNZW5sbycsbW9ub3NwYWNlO2ZvbnQtc2l6ZTowLjY4ZW07bGluZS1oZWlnaHQ6MS40O1xuICAgICAgICAgICAgICAgICAgYmFja2dyb3VuZDojZjZmNmY4O2JvcmRlcjoxcHggc29saWQgI2UwZTBlNjtib3JkZXItcmFkaXVzOjZweDtcbiAgICAgICAgICAgICAgICAgIHBhZGRpbmc6OHB4IDE0cHg7b3ZlcmZsb3cteDphdXRvO3doaXRlLXNwYWNlOnByZTtcIj4ke2xhc3NvX2NvZGVfb3V0cHV0fTwvcHJlPmBcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPGRpdiBjbGFzcz1cImluc3RydWN0aW9ucy1ib3hcIj5MQVNTTyBrZXB0ICR7bl9ub256ZXJvfSBvZiAke25fdG90YWx9IGNhbmRpZGF0ZSBjb2VmZmljaWVudHMg4oCUIGF1dG9tYXRpY2FsbHkg4oCUIGFuZCBpdHMgY3Jvc3MtdmFsaWRhdGVkIFJNU0UgKCR7bGFzc29fY3Zfcm1zZX0pIGxhbmRzIGNsb3NlIHRvIE02J3MgT0xTIGZpdCwgd2l0aCBmYXIgZmV3ZXIgbW92aW5nIHBhcnRzLjwvZGl2PmBcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNiIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IlBsb3QucGxvdCh7XG4gIHdpZHRoOiA2ODAsIGhlaWdodDogMzQwLFxuICBtYXJnaW5MZWZ0OiAyMjAsXG4gIHg6IHtsYWJlbDogXCJTdGFuZGFyZGlzZWQgY29lZmZpY2llbnQgc2l6ZVwifSxcbiAgeToge2xhYmVsOiBudWxsfSxcbiAgbWFya3M6IFtcbiAgICBQbG90LmJhclgobGFzc29fdG9wX3Jvd3MsIHt4OiBcImltcG9ydGFuY2VcIiwgeTogXCJ2YXJpYWJsZVwiLCBmaWxsOiBcIiMyYzNlN2FcIiwgc29ydDoge3k6IFwieFwiLCByZXZlcnNlOiB0cnVlfX0pXG4gIF1cbn0pXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTciLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJQbG90LnBsb3Qoe1xuICB3aWR0aDogNjIwLCBoZWlnaHQ6IDQyMCxcbiAgeDoge2xhYmVsOiBcIlByZWRpY3RlZCBwcmljZSAoJClcIiwgZG9tYWluOiBbMCwgMzAwXX0sXG4gIHk6IHtsYWJlbDogXCJBY3R1YWwgcHJpY2UgKCQpXCIsIGRvbWFpbjogWzAsIDMwMF19LFxuICBtYXJrczogW1xuICAgIFBsb3QubGluZShbe3g6MCx5OjB9LHt4OjMwMCx5OjMwMH1dLCB7eDogXCJ4XCIsIHk6IFwieVwiLCBzdHJva2U6IFwiIzk5OVwiLCBzdHJva2VEYXNoYXJyYXk6IFwiNCw0XCJ9KSxcbiAgICBQbG90LmRvdCh5eWhhdF9kYXRhLCB7eDogXCJwcmVkaWN0ZWRcIiwgeTogXCJhY3R1YWxcIiwgZmlsbDogXCIjMmMzZTdhXCIsIG9wYWNpdHk6IDAuNCwgcjogM30pXG4gIF1cbn0pXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTgiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJodG1sYDxkaXYgY2xhc3M9XCJmcmFnbWVudFwiPkhvbGRvdXQgUk1TRTogPGI+JCR7aG9sZG91dF9ybXNlfTwvYj4uIFBvaW50cyBhYm92ZSB0aGUgZGFzaGVkIGxpbmUgYXJlIHVuZGVycHJlZGljdGVkOyB0aGUgbW9kZWwgdmlzaWJseSBzdHJ1Z2dsZXMgbW9yZSBhdCB0aGUgaGlnaCBlbmQg4oCUIHRoZSBzYW1lIHBhdHRlcm4gR2Fib3IgJiBLw6l6ZGkgZmluZCBpbiB0aGVpciBvd24gdmVyc2lvbiBvZiB0aGlzIGRpYWdub3N0aWMuPC9kaXY+YFxuIn1dfQ==
+    </script>
+    <script type="module">
+    if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+    window._ojs.paths.runtimeToDoc = "../..";
+    window._ojs.paths.runtimeToRoot = "../..";
+    window._ojs.paths.docToRoot = "";
+    window._ojs.selfContained = false;
+    window._ojs.runtime.interpretFromScriptTags();
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
+              }
+            }
+            return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

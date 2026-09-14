@@ -1,0 +1,473 @@
+---
+title: "Multiple Regression, Worked Through"
+subtitle: "7002LBSAI Research Methods in Analytics — Week 6 Online Session"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="stylesheet" href="styles-slides.css?v=20260914">
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{python}
+import pandas as pd
+import statsmodels.formula.api as smf
+
+cps_df = pd.read_csv("data/cps_gender_pay_gap.csv")
+```
+
+## {background-color="#1a1a2e"}
+
+::: {style="text-align: center; padding-top: 180px;"}
+[**Multiple regression, worked through**]{style="font-size: 2.2em; color: white;"}
+
+
+:::
+
+---
+
+# Worked example {background-color="#2d6a4f"}
+## The gender pay gap
+
+---
+
+## Understanding the gender difference in earnings
+
+- In the USA (2014), women tend to eanr about 20% less than men
+- Aim 1: Find patterns to better understand the gender gap with a particular focus on the interaction with age. 
+- Aim 2L Think about if there is a causal link from femal to getting paid less. 
+
+## Set up
+
+- 2014 census data
+  - Age between 15 to 65
+  - Self-employed excluded as earning are difficult to measure
+  - Include those who reported 20 hours or more as their usual weekly time worked
+- Employees with a graduate degree
+- Use log hourly earnings (lw) as the dependent variable
+- Use gender and add age as an explanatory variable
+
+## Setting up the question
+
+The simple model of the relation between earnings and gender is: 
+
+$$\ln w^E = \alpha + \beta\, female$$
+
+Let's include age as well: 
+
+$$\ln w^E = \beta_0 + \beta_1 female + \beta_2 age $$
+We can also calculate the correlation between female and age: 
+$$ age^E = \gamma + \delta female$$
+
+## Adding age as a confounder
+
+```{.python}
+smf.ols('ln_wage ~ female + age', data=df).fit(cov_type='HC1')
+```
+
+```{python}
+#| output: asis
+def _stars(p):
+    return "***" if p < 0.01 else "**" if p < 0.05 else "*" if p < 0.1 else ""
+
+_m1  = smf.ols('ln_wage ~ female', data=cps_df).fit(cov_type='HC1')
+_m2  = smf.ols('ln_wage ~ female + age', data=cps_df).fit(cov_type='HC1')
+_aux = smf.ols('age ~ female', data=cps_df).fit(cov_type='HC1')
+
+_rows = [
+    ("female", f"{_m1.params['female']:.3f}{_stars(_m1.pvalues['female'])}",
+               f"{_m2.params['female']:.3f}{_stars(_m2.pvalues['female'])}",
+               f"{_aux.params['female']:.3f}{_stars(_aux.pvalues['female'])}"),
+    ("age", "", f"{_m2.params['age']:.3f}{_stars(_m2.pvalues['age'])}", ""),
+    ("Constant", f"{_m1.params['Intercept']:.3f}{_stars(_m1.pvalues['Intercept'])}",
+                 f"{_m2.params['Intercept']:.3f}{_stars(_m2.pvalues['Intercept'])}",
+                 f"{_aux.params['Intercept']:.3f}{_stars(_aux.pvalues['Intercept'])}"),
+    ("Observations", f"{int(_m1.nobs):,}", f"{int(_m2.nobs):,}", f"{int(_aux.nobs):,}"),
+    ("R²", f"{_m1.rsquared:.3f}", f"{_m2.rsquared:.3f}", f"{_aux.rsquared:.3f}"),
+]
+print("| Variable | (1) ln wage | (2) ln wage | (3) age |")
+print("|---|---|---|---|")
+for label, c1, c2, c3 in _rows:
+    print(f"| {label} | {c1} | {c2} | {c3} |")
+```
+
+Column (3) is the $age$-on-$female$ regression — women in this sample are, on average, younger than men.
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 10
+:::
+
+## Checking the OVB formula
+
+$$\beta-\beta_1=\delta\beta_2$$
+which can be easily calculated
+
+```{python}
+#| output: asis
+_diff = _m1.params['female'] - _m2.params['female']
+_prod = _aux.params['female'] * _m2.params['age']
+print(f"- $\\beta-\\beta_1 = {_m1.params['female']:.3f}-({_m2.params['female']:.3f}) = {_diff:.4f}$")
+print(f"- $\\delta\\beta_2 = {_aux.params['female']:.3f}\\times{_m2.params['age']:.3f} \\approx {_prod:.4f}$")
+```
+
+::: {.fragment}
+**Age is a confounder here — but a weak one.** Women in the data are somewhat younger, and younger employees earn less regardless of gender — so a small slice (about 1 percentage point of the 20%, roughly 5% of the whole gap) is attributable to the age difference, not gender itself.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 10
+:::
+
+## Looking at in the age distribution
+
+
+Let's plot the difference in the age distribution of employees with graduate degrees. 
+
+
+
+```{.python}
+import matplotlib.pyplot as plt
+from scipy.stats import gaussian_kde
+import numpy as np
+
+fig, ax = plt.subplots(figsize=(7, 3))
+colors = {0: '#2d6a4f', 1: '#457b9d'}
+labels = {0: 'Male', 1: 'Female'}
+age_grid = np.linspace(cps_df['age'].min(), cps_df['age'].max(), 200)
+
+for f in [0, 1]:
+    ages = cps_df.loc[cps_df.female == f, 'age']
+    kde = gaussian_kde(ages)
+    ax.plot(age_grid, kde(age_grid), color=colors[f], linewidth=2.5, label=labels[f])
+
+ax.set_xlabel('Age (years)')
+ax.set_ylabel('Density')
+ax.legend(frameon=False)
+plt.show()
+```
+
+## The age distribution, plotted
+
+
+
+```{python}
+import matplotlib.pyplot as plt
+from scipy.stats import gaussian_kde
+import numpy as np
+
+fig, ax = plt.subplots(figsize=(7, 3))
+_colors = {0: '#2d6a4f', 1: '#457b9d'}
+_labels = {0: 'Male', 1: 'Female'}
+_age_grid = np.linspace(cps_df['age'].min(), cps_df['age'].max(), 200)
+
+for _f in [0, 1]:
+    _ages = cps_df.loc[cps_df.female == _f, 'age']
+    _kde = gaussian_kde(_ages)
+    ax.plot(_age_grid, _kde(_age_grid), color=_colors[_f], linewidth=2.5, label=_labels[_f])
+
+ax.set_xlabel('Age (years)')
+ax.set_ylabel('Density')
+ax.legend(frameon=False)
+ax.spines[['top', 'right']].set_visible(False)
+plt.tight_layout()
+plt.show()
+```
+
+Among graduate-degree holders, the proportion of *women* drops noticeably after age 45, and again after 55 — men's age distribution stays close to uniform from 30 to 55.
+
+::: {.instructions-box}
+Two explanations are consistent with this pattern: fewer women completed graduate degrees in earlier decades, or fewer older women are currently employed. 
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 10
+:::
+
+## Should we consider a non-linear relationship?
+
+```{.python}
+smf.ols('ln_wage ~ female + age + I(age**2) + I(age**3) + I(age**4)', data=df).fit(cov_type='HC1')
+```
+
+```{python}
+#| output: asis
+_m3 = smf.ols('ln_wage ~ female + age + I(age**2)', data=cps_df).fit(cov_type='HC1')
+_m4 = smf.ols('ln_wage ~ female + age + I(age**2) + I(age**3) + I(age**4)', data=cps_df).fit(cov_type='HC1')
+
+_female_row = " | ".join(f"{m.params['female']:.3f}{_stars(m.pvalues['female'])}" for m in [_m1,_m2,_m3,_m4])
+_age_row    = " | ".join([""] + [f"{m.params['age']:.3f}{_stars(m.pvalues['age'])}" for m in [_m2,_m3,_m4]])
+_age2_row   = " | ".join(["", ""] + [f"{m.params['I(age ** 2)']:.3f}{_stars(m.pvalues['I(age ** 2)'])}" for m in [_m3,_m4]])
+_age34_row  = " | ".join(["", "", "", f"✓{_stars(min(_m4.pvalues['I(age ** 3)'], _m4.pvalues['I(age ** 4)']))}"])
+
+print("| | (1) | (2) | (3) | (4) |")
+print("|---|---|---|---|---|")
+print(f"| female | {_female_row} |")
+print(f"| age | {_age_row} |")
+print(f"| age² | {_age2_row} |")
+print(f"| age³, age⁴ | {_age34_row} |")
+print(f"| R² | {_m1.rsquared:.3f} | {_m2.rsquared:.3f} | {_m3.rsquared:.3f} | {_m4.rsquared:.3f} |")
+```
+
+::: {.fragment}
+```{python}
+#| output: asis
+_chain = " → ".join(f"{m.params['female']:.3f}" for m in [_m1,_m2,_m3,_m4])
+print(f"The **female** coefficient barely moves at all — {_chain} — while R² keeps climbing with every extra polynomial term. But: **more variables always raise R², but that's not the same as changing the story.** Here, no matter how flexibly age is modelled, the gender gap doesn't budge.")
+```
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 10
+:::
+
+## Does the gap even have the same slope for both?
+
+```{.python}
+smf.ols('ln_wage ~ age * female', data=df).fit(cov_type='HC1')
+```
+
+```{python}
+#| output: asis
+_women = smf.ols('ln_wage ~ age', data=cps_df[cps_df.female==1]).fit(cov_type='HC1')
+_men   = smf.ols('ln_wage ~ age', data=cps_df[cps_df.female==0]).fit(cov_type='HC1')
+_inter = smf.ols('ln_wage ~ age * female', data=cps_df).fit(cov_type='HC1')
+
+print("| | Women only | Men only | Pooled, interacted |")
+print("|---|---|---|---|")
+print(f"| female | | | {_inter.params['female']:.3f}{_stars(_inter.pvalues['female'])} |")
+print(f"| age | {_women.params['age']:.3f}{_stars(_women.pvalues['age'])} | {_men.params['age']:.3f}{_stars(_men.pvalues['age'])} | {_inter.params['age']:.3f}{_stars(_inter.pvalues['age'])} |")
+print(f"| female × age | | | {_inter.params['age:female']:.3f}{_stars(_inter.pvalues['age:female'])} |")
+```
+
+::: {.instructions-box}
+```{python}
+#| output: asis
+print(f"The **female** coefficient in the pooled model is close to zero ({_inter.params['female']:.3f}, not even the whole 20% gap). Does this mean the gender gap has disappeared? What does the interaction term tell you that the dummy alone doesn't?")
+```
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 10
+:::
+
+## Interactions and non-linearities together
+
+Let's consider two models
+
+$$ \ln w^E = \beta_0 + \beta_1 age + \beta_2 female + \beta_3 female \times age $$
+
+and adding age as non-linear
+
+$$ \ln w^E = \beta_0 + \beta_1 age + \beta_2 age^2 + \beta_3 age^3 + \beta_4 age^4 \\ + \beta_5 female + \beta_6 female \times age + \beta_7 female \times age ^2 \\ + \beta_8 female \times age^3 + \beta_9 female \times age^4 $$
+
+## Interactions and non-linearities together
+
+Running the fully flexible version — 4th-order polynomial in age, interacted with gender — reveals the real pattern:
+
+```{python}
+#| output: asis
+import numpy as np
+
+_full = smf.ols(
+    'ln_wage ~ female*age + female:I(age**2) + female:I(age**3) + female:I(age**4) '
+    '+ age + I(age**2) + I(age**3) + I(age**4)', data=cps_df
+).fit(cov_type='HC1')
+
+def _gap_pct(age):
+    p0 = _full.predict(pd.DataFrame({'age': [age], 'female': [0]})).iloc[0]
+    p1 = _full.predict(pd.DataFrame({'age': [age], 'female': [1]})).iloc[0]
+    return (np.exp(p1 - p0) - 1) * 100
+
+_g25, _g30, _g40, _g50, _g60 = (_gap_pct(a) for a in [25, 30, 40, 50, 60])
+
+print(f"- The gap is around **{abs(_g25):.0f}–{abs(_g30):.0f}%** between ages 25–30")
+print(f"- Rises to **{abs(_g40):.0f}%** by 40, and **{abs(_g50):.0f}%** by 50")
+print(f"- {'Tapers slightly' if abs(_g60) < abs(_g50) else 'Keeps rising'} after 60 (**{abs(_g60):.0f}%**)")
+```
+
+::: {.fragment}
+A single "female" coefficient could never have told this story. The gap isn't a fixed number — it **grows through most of a career** and only the full interacted, non-linear model shows that shape.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 10
+:::
+
+## Predicting the gap by age
+
+```{.python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+age_grid = np.linspace(25, 65, 50)
+
+def predict_band(model, ages, female):
+    X = pd.DataFrame({'age': ages, 'female': female})
+    return model.get_prediction(X).summary_frame(alpha=0.05)
+
+fig, axes = plt.subplots(1, 2, figsize=(10, 4), sharey=True)
+panels = [(axes[0], inter, 'Linear interaction'),
+          (axes[1], full, '4th-order polynomial interaction')]
+
+for ax, model, title in panels:
+    for female, color, label in [(0, '#2d6a4f', 'Male'), (1, '#457b9d', 'Female')]:
+        band = predict_band(model, age_grid, female)
+        ax.plot(age_grid, band['mean'], color=color, label=label)
+        ax.fill_between(age_grid, band['mean_ci_lower'], band['mean_ci_upper'], color=color, alpha=0.15)
+    ax.set_xlabel('Age (years)')
+    ax.set_title(title)
+
+axes[0].set_ylabel('ln(earnings per hour)')
+axes[0].legend(frameon=False)
+plt.show()
+```
+
+## The gap by age, plotted
+
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+_age_grid2 = np.linspace(25, 65, 50)
+
+def _predict_band(model, ages, female):
+    X = pd.DataFrame({'age': ages, 'female': female})
+    return model.get_prediction(X).summary_frame(alpha=0.05)
+
+fig, axes = plt.subplots(1, 2, figsize=(10, 4), sharey=True)
+_panels = [(axes[0], _inter, 'Linear interaction'),
+           (axes[1], _full, '4th-order polynomial interaction')]
+
+for ax, model, title in _panels:
+    for female, color, label in [(0, '#2d6a4f', 'Male'), (1, '#457b9d', 'Female')]:
+        band = _predict_band(model, _age_grid2, female)
+        ax.plot(_age_grid2, band['mean'], color=color, label=label)
+        ax.fill_between(_age_grid2, band['mean_ci_lower'], band['mean_ci_upper'], color=color, alpha=0.15)
+    ax.set_xlabel('Age (years)')
+    ax.set_title(title)
+
+axes[0].set_ylabel('ln(earnings per hour)')
+axes[0].legend(frameon=False)
+plt.tight_layout()
+plt.show()
+```
+
+::: {.instructions-box}
+Both panels show predicted ln(earnings) by age and gender, with 95% confidence bands. The linear-interaction panel forces the gap to widen at a constant rate; the polynomial panel lets it curve — women's predicted earnings flatten and dip after around 45, exactly where the age-distribution wrinkle showed fewer women in the data to estimate from precisely.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 10
+:::
+
+## What we still can't say
+
+- Multiple regression got us closer to a fair comparison — same age, same education
+- It **cannot** rule out that broader gender inequality (career interruptions, occupational sorting, negotiation norms) drives part of what's left
+- We can't prove how much of the remaining gap is labour-market discrimination specifically — there's too much unmeasured heterogeneity
+- And we haven't ruled out **selection** or **bad conditioning variables** either
+
+::: {.fragment}
+This is the honest ceiling of conditioning on observables. Getting further needs a different kind of design — which is where the module goes from Week 9 onward.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 10
+:::
+
+---
+
+# A practical detour {background-color="#2d6a4f"}
+## Presenting a regression table
+
+---
+
+## What actually belongs in a table
+
+- **In a presentation**: suppress coefficients nobody's there to discuss — keep the variables that matter for the story
+- **In a paper**: show more, but mainly as a sanity check — do the control-variable coefficients make sense?
+- **Always check N** — if it's supposed to be the same sample across columns, the observation count should match exactly
+- **R² is usually enough.** You don't need every fit statistic software offers by default
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 10
+:::
+
+## A word on curve-fitting
+
+```{=html}
+<div style="text-align:center;">
+  <a href="images/xkcd-curve-fitting.png" target="_blank" style="text-decoration:none;">
+    <img src="images/xkcd-curve-fitting.png" style="max-height:520px;border-radius:6px;box-shadow:0 4px 20px rgba(0,0,0,0.15);cursor:zoom-in;">
+  </a>
+</div>
+```
+
+::: {style="font-size:0.7em;color:#999;text-align:center;margin-top:8px;"}
+XKCD #2048, "Curve Fitting" — Randall Munroe, CC BY-NC 2.5 — click to view full size
+:::
+
+---
+
+# Worked example {background-color="#2d6a4f"}
+## Closing the hotels thread: finding a good deal
+
+---
+
+## Back to Vienna, with everything we now have
+
+Since Week 5's opening motivation — a good hotel deal, close to the centre, not overpriced — we've only ever used one x at a time. The full model:
+
+$$\ln(price)^E = f(\text{distance spline}) + f(\text{rating spline}) + \beta_{3.5\star} + \beta_{4\star}$$
+
+- Distance: piecewise linear spline, knots at 1 and 4 miles
+- Rating: piecewise linear spline, knot at 3.5
+- Stars: dummies for 3.5★ and 4★ (reference: 3★)
+- R² = 0.56 — far better than any single-x version from Week 5
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 10, hotels-vienna dataset
+:::
+
+## Finding the deals: most negative residuals
+
+A negative residual means the hotel costs *less* than the model expects, given its distance, rating, and stars — genuinely underpriced relative to comparable hotels:
+
+| Hotel | Price | Residual (ln price) | Distance | Stars | Rating |
+|---|---|---|---|---|---|
+| 21912 | $60 | −0.565 | 1.1 mi | 4★ | 4.1 |
+| 21975 | $115 | −0.405 | 0.1 mi | 4★ | 4.3 |
+| 22344 | $50 | −0.385 | 3.9 mi | 3★ | 3.9 |
+| 22080 | $54 | −0.338 | 1.1 mi | 3★ | 3.2 |
+| 22184 | $75 | −0.335 | 0.7 mi | 3★ | 4.1 |
+
+::: {.fragment}
+This is the payoff of everything since Week 5: not a single fitted line, but a benchmark good enough to say *which specific hotels* are the outliers worth booking — and why.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 10
+:::
+
+## Coming up
+
+::: {style="text-align: center; padding-top: 60px;"}
+[Week 7 is reading week — no workshop, no online session.]{style="font-size: 1.3em;"}
+
+[**Week 8: GLMs**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
+
+::: {.fragment style="padding-top:40px;"}
+*Logistic and Poisson regression, marginal effects · real named datasets, at last*
+:::
+:::

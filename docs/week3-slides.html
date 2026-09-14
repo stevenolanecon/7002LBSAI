@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/tabby.min.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.7.32">
+
+  <title>7002LBSAI – When y Met x: Correlation and Covariance</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="site_libs/revealjs/dist/theme/quarto-2c1b5f745a11cfad616ebade4a4a7d24.css">
+  <link href="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+  <link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+  
+  <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="styles-slides.css?v=20260914">
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">When y Met x: Correlation and Covariance</h1>
+  <p class="subtitle">7002LBSAI Research Methods in Analytics — Week 3</p>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section class="slide level2">
+
+<div id="d38096b5" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="ojs-define">{"contents": [{"name": "data", "value": [{"student_name": "Parker Silva", "trial": 1, "reaction_time_ms": 267, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:11:00Z", "finger_mm": 73}, {"student_name": "Parker Silva", "trial": 2, "reaction_time_ms": 266, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:11:04Z", "finger_mm": 73}, {"student_name": "Parker Silva", "trial": 3, "reaction_time_ms": 367, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:11:08Z", "finger_mm": 73}, {"student_name": "Parker Silva", "trial": 4, "reaction_time_ms": 341, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:11:12Z", "finger_mm": 73}, {"student_name": "Parker Silva", "trial": 5, "reaction_time_ms": 283, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:11:16Z", "finger_mm": 73}, {"student_name": "Parker Silva", "trial": 6, "reaction_time_ms": 320, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:11:20Z", "finger_mm": 73}, {"student_name": "Parker Silva", "trial": 7, "reaction_time_ms": 329, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:11:24Z", "finger_mm": 73}, {"student_name": "Parker Silva", "trial": 8, "reaction_time_ms": 421, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:11:28Z", "finger_mm": 73}, {"student_name": "Parker Silva", "trial": 9, "reaction_time_ms": 262, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:11:32Z", "finger_mm": 73}, {"student_name": "Parker Silva", "trial": 10, "reaction_time_ms": 328, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:11:36Z", "finger_mm": 73}, {"student_name": "Jules Ito", "trial": 1, "reaction_time_ms": 290, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:32:00Z", "finger_mm": 74}, {"student_name": "Jules Ito", "trial": 2, "reaction_time_ms": 324, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:32:04Z", "finger_mm": 74}, {"student_name": "Jules Ito", "trial": 3, "reaction_time_ms": 222, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:32:08Z", "finger_mm": 74}, {"student_name": "Jules Ito", "trial": 4, "reaction_time_ms": 232, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:32:12Z", "finger_mm": 74}, {"student_name": "Jules Ito", "trial": 5, "reaction_time_ms": 824, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:32:16Z", "finger_mm": 74}, {"student_name": "Jules Ito", "trial": 6, "reaction_time_ms": 208, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:32:20Z", "finger_mm": 74}, {"student_name": "Jules Ito", "trial": 7, "reaction_time_ms": 290, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:32:24Z", "finger_mm": 74}, {"student_name": "Jules Ito", "trial": 8, "reaction_time_ms": 421, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:32:28Z", "finger_mm": 74}, {"student_name": "Jules Ito", "trial": 9, "reaction_time_ms": 209, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:32:32Z", "finger_mm": 74}, {"student_name": "Jules Ito", "trial": 10, "reaction_time_ms": 262, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:32:36Z", "finger_mm": 74}, {"student_name": "Ollie Jensen", "trial": 1, "reaction_time_ms": 834, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:24:00Z", "finger_mm": 74}, {"student_name": "Ollie Jensen", "trial": 2, "reaction_time_ms": 343, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:24:04Z", "finger_mm": 74}, {"student_name": "Ollie Jensen", "trial": 3, "reaction_time_ms": 277, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:24:08Z", "finger_mm": 74}, {"student_name": "Ollie Jensen", "trial": 4, "reaction_time_ms": 306, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:24:12Z", "finger_mm": 74}, {"student_name": "Ollie Jensen", "trial": 5, "reaction_time_ms": 351, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:24:16Z", "finger_mm": 74}, {"student_name": "Ollie Jensen", "trial": 6, "reaction_time_ms": 342, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:24:20Z", "finger_mm": 74}, {"student_name": "Ollie Jensen", "trial": 7, "reaction_time_ms": 305, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:24:24Z", "finger_mm": 74}, {"student_name": "Ollie Jensen", "trial": 8, "reaction_time_ms": 280, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:24:28Z", "finger_mm": 74}, {"student_name": "Ollie Jensen", "trial": 9, "reaction_time_ms": 489, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:24:32Z", "finger_mm": 74}, {"student_name": "Ollie Jensen", "trial": 10, "reaction_time_ms": 388, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:24:36Z", "finger_mm": 74}, {"student_name": "Harper Hussain", "trial": 1, "reaction_time_ms": 365, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:23:00Z", "finger_mm": 68}, {"student_name": "Harper Hussain", "trial": 2, "reaction_time_ms": 300, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:23:04Z", "finger_mm": 68}, {"student_name": "Harper Hussain", "trial": 3, "reaction_time_ms": 275, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:23:08Z", "finger_mm": 68}, {"student_name": "Harper Hussain", "trial": 4, "reaction_time_ms": 285, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:23:12Z", "finger_mm": 68}, {"student_name": "Harper Hussain", "trial": 5, "reaction_time_ms": 246, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:23:16Z", "finger_mm": 68}, {"student_name": "Harper Hussain", "trial": 6, "reaction_time_ms": 411, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:23:20Z", "finger_mm": 68}, {"student_name": "Harper Hussain", "trial": 7, "reaction_time_ms": 303, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:23:24Z", "finger_mm": 68}, {"student_name": "Harper Hussain", "trial": 8, "reaction_time_ms": 391, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:23:28Z", "finger_mm": 68}, {"student_name": "Harper Hussain", "trial": 9, "reaction_time_ms": 287, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:23:32Z", "finger_mm": 68}, {"student_name": "Harper Hussain", "trial": 10, "reaction_time_ms": 334, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:23:36Z", "finger_mm": 68}, {"student_name": "Morgan Evans", "trial": 1, "reaction_time_ms": 228, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:17:00Z", "finger_mm": 68}, {"student_name": "Morgan Evans", "trial": 2, "reaction_time_ms": 383, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:17:04Z", "finger_mm": 68}, {"student_name": "Morgan Evans", "trial": 3, "reaction_time_ms": 276, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:17:08Z", "finger_mm": 68}, {"student_name": "Morgan Evans", "trial": 4, "reaction_time_ms": 370, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:17:12Z", "finger_mm": 68}, {"student_name": "Morgan Evans", "trial": 5, "reaction_time_ms": 367, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:17:16Z", "finger_mm": 68}, {"student_name": "Morgan Evans", "trial": 6, "reaction_time_ms": 320, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:17:20Z", "finger_mm": 68}, {"student_name": "Morgan Evans", "trial": 7, "reaction_time_ms": 284, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:17:24Z", "finger_mm": 68}, {"student_name": "Morgan Evans", "trial": 8, "reaction_time_ms": 302, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:17:28Z", "finger_mm": 68}, {"student_name": "Morgan Evans", "trial": 9, "reaction_time_ms": 289, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:17:32Z", "finger_mm": 68}, {"student_name": "Morgan Evans", "trial": 10, "reaction_time_ms": 197, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:17:36Z", "finger_mm": 68}, {"student_name": "Kai Brooks", "trial": 1, "reaction_time_ms": 262, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:11:00Z", "finger_mm": 74}, {"student_name": "Kai Brooks", "trial": 2, "reaction_time_ms": 260, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:11:04Z", "finger_mm": 74}, {"student_name": "Kai Brooks", "trial": 3, "reaction_time_ms": 359, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:11:08Z", "finger_mm": 74}, {"student_name": "Kai Brooks", "trial": 4, "reaction_time_ms": 306, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:11:12Z", "finger_mm": 74}, {"student_name": "Kai Brooks", "trial": 5, "reaction_time_ms": 333, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:11:16Z", "finger_mm": 74}, {"student_name": "Kai Brooks", "trial": 6, "reaction_time_ms": 287, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:11:20Z", "finger_mm": 74}, {"student_name": "Kai Brooks", "trial": 7, "reaction_time_ms": 336, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:11:24Z", "finger_mm": 74}, {"student_name": "Kai Brooks", "trial": 8, "reaction_time_ms": 296, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:11:28Z", "finger_mm": 74}, {"student_name": "Kai Brooks", "trial": 9, "reaction_time_ms": 293, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:11:32Z", "finger_mm": 74}, {"student_name": "Kai Brooks", "trial": 10, "reaction_time_ms": 315, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:11:36Z", "finger_mm": 74}, {"student_name": "Gray Gupta", "trial": 1, "reaction_time_ms": 313, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:32:00Z", "finger_mm": 69}, {"student_name": "Gray Gupta", "trial": 2, "reaction_time_ms": 421, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:32:04Z", "finger_mm": 69}, {"student_name": "Gray Gupta", "trial": 3, "reaction_time_ms": 285, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:32:08Z", "finger_mm": 69}, {"student_name": "Gray Gupta", "trial": 4, "reaction_time_ms": 522, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:32:12Z", "finger_mm": 69}, {"student_name": "Gray Gupta", "trial": 5, "reaction_time_ms": 264, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:32:16Z", "finger_mm": 69}, {"student_name": "Gray Gupta", "trial": 6, "reaction_time_ms": 204, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:32:20Z", "finger_mm": 69}, {"student_name": "Gray Gupta", "trial": 7, "reaction_time_ms": 248, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:32:24Z", "finger_mm": 69}, {"student_name": "Gray Gupta", "trial": 8, "reaction_time_ms": 447, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:32:28Z", "finger_mm": 69}, {"student_name": "Gray Gupta", "trial": 9, "reaction_time_ms": 257, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:32:32Z", "finger_mm": 69}, {"student_name": "Gray Gupta", "trial": 10, "reaction_time_ms": 219, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:32:36Z", "finger_mm": 69}, {"student_name": "Taylor Lopez", "trial": 1, "reaction_time_ms": 515, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:06:00Z", "finger_mm": 64}, {"student_name": "Taylor Lopez", "trial": 2, "reaction_time_ms": 288, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:06:04Z", "finger_mm": 64}, {"student_name": "Taylor Lopez", "trial": 3, "reaction_time_ms": 593, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:06:08Z", "finger_mm": 64}, {"student_name": "Taylor Lopez", "trial": 4, "reaction_time_ms": 329, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:06:12Z", "finger_mm": 64}, {"student_name": "Taylor Lopez", "trial": 5, "reaction_time_ms": 480, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:06:16Z", "finger_mm": 64}, {"student_name": "Taylor Lopez", "trial": 6, "reaction_time_ms": 336, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:06:20Z", "finger_mm": 64}, {"student_name": "Taylor Lopez", "trial": 7, "reaction_time_ms": 380, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:06:24Z", "finger_mm": 64}, {"student_name": "Taylor Lopez", "trial": 8, "reaction_time_ms": 343, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:06:28Z", "finger_mm": 64}, {"student_name": "Taylor Lopez", "trial": 9, "reaction_time_ms": 337, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:06:32Z", "finger_mm": 64}, {"student_name": "Taylor Lopez", "trial": 10, "reaction_time_ms": 366, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:06:36Z", "finger_mm": 64}, {"student_name": "Drew Farrell", "trial": 1, "reaction_time_ms": 352, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:19:00Z", "finger_mm": 64}, {"student_name": "Drew Farrell", "trial": 2, "reaction_time_ms": 312, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:19:04Z", "finger_mm": 64}, {"student_name": "Drew Farrell", "trial": 3, "reaction_time_ms": 293, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:19:08Z", "finger_mm": 64}, {"student_name": "Drew Farrell", "trial": 4, "reaction_time_ms": 310, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:19:12Z", "finger_mm": 64}, {"student_name": "Drew Farrell", "trial": 5, "reaction_time_ms": 486, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:19:16Z", "finger_mm": 64}, {"student_name": "Drew Farrell", "trial": 6, "reaction_time_ms": 389, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:19:20Z", "finger_mm": 64}, {"student_name": "Drew Farrell", "trial": 7, "reaction_time_ms": 255, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:19:24Z", "finger_mm": 64}, {"student_name": "Drew Farrell", "trial": 8, "reaction_time_ms": 307, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:19:28Z", "finger_mm": 64}, {"student_name": "Drew Farrell", "trial": 9, "reaction_time_ms": 363, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:19:32Z", "finger_mm": 64}, {"student_name": "Drew Farrell", "trial": 10, "reaction_time_ms": 319, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:19:36Z", "finger_mm": 64}, {"student_name": "Alex Patel", "trial": 1, "reaction_time_ms": 334, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:26:00Z", "finger_mm": 65}, {"student_name": "Alex Patel", "trial": 2, "reaction_time_ms": 231, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:26:04Z", "finger_mm": 65}, {"student_name": "Alex Patel", "trial": 3, "reaction_time_ms": 296, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:26:08Z", "finger_mm": 65}, {"student_name": "Alex Patel", "trial": 4, "reaction_time_ms": 268, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:26:12Z", "finger_mm": 65}, {"student_name": "Alex Patel", "trial": 5, "reaction_time_ms": 270, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:26:16Z", "finger_mm": 65}, {"student_name": "Alex Patel", "trial": 6, "reaction_time_ms": 368, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:26:20Z", "finger_mm": 65}, {"student_name": "Alex Patel", "trial": 7, "reaction_time_ms": 271, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:26:24Z", "finger_mm": 65}, {"student_name": "Alex Patel", "trial": 8, "reaction_time_ms": 298, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:26:28Z", "finger_mm": 65}, {"student_name": "Alex Patel", "trial": 9, "reaction_time_ms": 206, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:26:32Z", "finger_mm": 65}, {"student_name": "Alex Patel", "trial": 10, "reaction_time_ms": 385, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:26:36Z", "finger_mm": 65}, {"student_name": "Quinn Adeyemi", "trial": 1, "reaction_time_ms": 308, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:22:00Z", "finger_mm": 72}, {"student_name": "Quinn Adeyemi", "trial": 2, "reaction_time_ms": 270, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:22:04Z", "finger_mm": 72}, {"student_name": "Quinn Adeyemi", "trial": 3, "reaction_time_ms": 412, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:22:08Z", "finger_mm": 72}, {"student_name": "Quinn Adeyemi", "trial": 4, "reaction_time_ms": 446, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:22:12Z", "finger_mm": 72}, {"student_name": "Quinn Adeyemi", "trial": 5, "reaction_time_ms": 353, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:22:16Z", "finger_mm": 72}, {"student_name": "Quinn Adeyemi", "trial": 6, "reaction_time_ms": 353, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:22:20Z", "finger_mm": 72}, {"student_name": "Quinn Adeyemi", "trial": 7, "reaction_time_ms": 309, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:22:24Z", "finger_mm": 72}, {"student_name": "Quinn Adeyemi", "trial": 8, "reaction_time_ms": 288, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:22:28Z", "finger_mm": 72}, {"student_name": "Quinn Adeyemi", "trial": 9, "reaction_time_ms": 264, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:22:32Z", "finger_mm": 72}, {"student_name": "Quinn Adeyemi", "trial": 10, "reaction_time_ms": 315, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:22:36Z", "finger_mm": 72}, {"student_name": "Finley Martins", "trial": 1, "reaction_time_ms": 292, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:16:00Z", "finger_mm": 71}, {"student_name": "Finley Martins", "trial": 2, "reaction_time_ms": 291, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:16:04Z", "finger_mm": 71}, {"student_name": "Finley Martins", "trial": 3, "reaction_time_ms": 252, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:16:08Z", "finger_mm": 71}, {"student_name": "Finley Martins", "trial": 4, "reaction_time_ms": 233, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:16:12Z", "finger_mm": 71}, {"student_name": "Finley Martins", "trial": 5, "reaction_time_ms": 287, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:16:16Z", "finger_mm": 71}, {"student_name": "Finley Martins", "trial": 6, "reaction_time_ms": 213, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:16:20Z", "finger_mm": 71}, {"student_name": "Finley Martins", "trial": 7, "reaction_time_ms": 205, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:16:24Z", "finger_mm": 71}, {"student_name": "Finley Martins", "trial": 8, "reaction_time_ms": 270, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:16:28Z", "finger_mm": 71}, {"student_name": "Finley Martins", "trial": 9, "reaction_time_ms": 285, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:16:32Z", "finger_mm": 71}, {"student_name": "Finley Martins", "trial": 10, "reaction_time_ms": 270, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:16:36Z", "finger_mm": 71}, {"student_name": "Logan Turner", "trial": 1, "reaction_time_ms": 339, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:41:00Z", "finger_mm": 73}, {"student_name": "Logan Turner", "trial": 2, "reaction_time_ms": 228, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:41:04Z", "finger_mm": 73}, {"student_name": "Logan Turner", "trial": 3, "reaction_time_ms": 191, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:41:08Z", "finger_mm": 73}, {"student_name": "Logan Turner", "trial": 4, "reaction_time_ms": 271, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:41:12Z", "finger_mm": 73}, {"student_name": "Logan Turner", "trial": 5, "reaction_time_ms": 229, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:41:16Z", "finger_mm": 73}, {"student_name": "Logan Turner", "trial": 6, "reaction_time_ms": 307, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:41:20Z", "finger_mm": 73}, {"student_name": "Logan Turner", "trial": 7, "reaction_time_ms": 265, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:41:24Z", "finger_mm": 73}, {"student_name": "Logan Turner", "trial": 8, "reaction_time_ms": 217, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:41:28Z", "finger_mm": 73}, {"student_name": "Logan Turner", "trial": 9, "reaction_time_ms": 247, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:41:32Z", "finger_mm": 73}, {"student_name": "Logan Turner", "trial": 10, "reaction_time_ms": 304, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:41:36Z", "finger_mm": 73}, {"student_name": "Sage Chen", "trial": 1, "reaction_time_ms": 259, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:35:00Z", "finger_mm": 68}, {"student_name": "Sage Chen", "trial": 2, "reaction_time_ms": 232, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:35:04Z", "finger_mm": 68}, {"student_name": "Sage Chen", "trial": 3, "reaction_time_ms": 275, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:35:08Z", "finger_mm": 68}, {"student_name": "Sage Chen", "trial": 4, "reaction_time_ms": 266, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:35:12Z", "finger_mm": 68}, {"student_name": "Sage Chen", "trial": 5, "reaction_time_ms": 310, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:35:16Z", "finger_mm": 68}, {"student_name": "Sage Chen", "trial": 6, "reaction_time_ms": 293, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:35:20Z", "finger_mm": 68}, {"student_name": "Sage Chen", "trial": 7, "reaction_time_ms": 256, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:35:24Z", "finger_mm": 68}, {"student_name": "Sage Chen", "trial": 8, "reaction_time_ms": 354, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:35:28Z", "finger_mm": 68}, {"student_name": "Sage Chen", "trial": 9, "reaction_time_ms": 271, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:35:32Z", "finger_mm": 68}, {"student_name": "Sage Chen", "trial": 10, "reaction_time_ms": 199, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-15T09:35:36Z", "finger_mm": 68}, {"student_name": "Casey O'Connor", "trial": 1, "reaction_time_ms": 220, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:43:00Z", "finger_mm": 71}, {"student_name": "Casey O'Connor", "trial": 2, "reaction_time_ms": 279, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:43:04Z", "finger_mm": 71}, {"student_name": "Casey O'Connor", "trial": 3, "reaction_time_ms": 197, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:43:08Z", "finger_mm": 71}, {"student_name": "Casey O'Connor", "trial": 4, "reaction_time_ms": 256, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:43:12Z", "finger_mm": 71}, {"student_name": "Casey O'Connor", "trial": 5, "reaction_time_ms": 276, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:43:16Z", "finger_mm": 71}, {"student_name": "Casey O'Connor", "trial": 6, "reaction_time_ms": 260, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:43:20Z", "finger_mm": 71}, {"student_name": "Casey O'Connor", "trial": 7, "reaction_time_ms": 552, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:43:24Z", "finger_mm": 71}, {"student_name": "Casey O'Connor", "trial": 8, "reaction_time_ms": 246, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:43:28Z", "finger_mm": 71}, {"student_name": "Casey O'Connor", "trial": 9, "reaction_time_ms": 294, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:43:32Z", "finger_mm": 71}, {"student_name": "Casey O'Connor", "trial": 10, "reaction_time_ms": 503, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:43:36Z", "finger_mm": 71}, {"student_name": "Ellis Quraishi", "trial": 1, "reaction_time_ms": 368, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:20:00Z", "finger_mm": 73}, {"student_name": "Ellis Quraishi", "trial": 2, "reaction_time_ms": 251, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:20:04Z", "finger_mm": 73}, {"student_name": "Ellis Quraishi", "trial": 3, "reaction_time_ms": 208, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:20:08Z", "finger_mm": 73}, {"student_name": "Ellis Quraishi", "trial": 4, "reaction_time_ms": 362, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:20:12Z", "finger_mm": 73}, {"student_name": "Ellis Quraishi", "trial": 5, "reaction_time_ms": 328, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:20:16Z", "finger_mm": 73}, {"student_name": "Ellis Quraishi", "trial": 6, "reaction_time_ms": 821, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:20:20Z", "finger_mm": 73}, {"student_name": "Ellis Quraishi", "trial": 7, "reaction_time_ms": 404, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:20:24Z", "finger_mm": 73}, {"student_name": "Ellis Quraishi", "trial": 8, "reaction_time_ms": 272, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:20:28Z", "finger_mm": 73}, {"student_name": "Ellis Quraishi", "trial": 9, "reaction_time_ms": 243, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:20:32Z", "finger_mm": 73}, {"student_name": "Ellis Quraishi", "trial": 10, "reaction_time_ms": 297, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:20:36Z", "finger_mm": 73}, {"student_name": "Reese Khan", "trial": 1, "reaction_time_ms": 199, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:23:00Z", "finger_mm": 68}, {"student_name": "Reese Khan", "trial": 2, "reaction_time_ms": 605, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:23:04Z", "finger_mm": 68}, {"student_name": "Reese Khan", "trial": 3, "reaction_time_ms": 183, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:23:08Z", "finger_mm": 68}, {"student_name": "Reese Khan", "trial": 4, "reaction_time_ms": 229, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:23:12Z", "finger_mm": 68}, {"student_name": "Reese Khan", "trial": 5, "reaction_time_ms": 210, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:23:16Z", "finger_mm": 68}, {"student_name": "Reese Khan", "trial": 6, "reaction_time_ms": 275, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:23:20Z", "finger_mm": 68}, {"student_name": "Reese Khan", "trial": 7, "reaction_time_ms": 271, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:23:24Z", "finger_mm": 68}, {"student_name": "Reese Khan", "trial": 8, "reaction_time_ms": 323, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:23:28Z", "finger_mm": 68}, {"student_name": "Reese Khan", "trial": 9, "reaction_time_ms": 195, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:23:32Z", "finger_mm": 68}, {"student_name": "Reese Khan", "trial": 10, "reaction_time_ms": 240, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-15T09:23:36Z", "finger_mm": 68}, {"student_name": "Bailey Davies", "trial": 1, "reaction_time_ms": 308, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:44:00Z", "finger_mm": 72}, {"student_name": "Bailey Davies", "trial": 2, "reaction_time_ms": 306, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:44:04Z", "finger_mm": 72}, {"student_name": "Bailey Davies", "trial": 3, "reaction_time_ms": 418, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:44:08Z", "finger_mm": 72}, {"student_name": "Bailey Davies", "trial": 4, "reaction_time_ms": 296, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:44:12Z", "finger_mm": 72}, {"student_name": "Bailey Davies", "trial": 5, "reaction_time_ms": 247, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:44:16Z", "finger_mm": 72}, {"student_name": "Bailey Davies", "trial": 6, "reaction_time_ms": 287, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:44:20Z", "finger_mm": 72}, {"student_name": "Bailey Davies", "trial": 7, "reaction_time_ms": 248, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:44:24Z", "finger_mm": 72}, {"student_name": "Bailey Davies", "trial": 8, "reaction_time_ms": 198, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:44:28Z", "finger_mm": 72}, {"student_name": "Bailey Davies", "trial": 9, "reaction_time_ms": 265, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:44:32Z", "finger_mm": 72}, {"student_name": "Bailey Davies", "trial": 10, "reaction_time_ms": 408, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:44:36Z", "finger_mm": 72}, {"student_name": "Noor Nguyen", "trial": 1, "reaction_time_ms": 406, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:04:00Z", "finger_mm": 67}, {"student_name": "Noor Nguyen", "trial": 2, "reaction_time_ms": 362, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:04:04Z", "finger_mm": 67}, {"student_name": "Noor Nguyen", "trial": 3, "reaction_time_ms": 426, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:04:08Z", "finger_mm": 67}, {"student_name": "Noor Nguyen", "trial": 4, "reaction_time_ms": 462, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:04:12Z", "finger_mm": 67}, {"student_name": "Noor Nguyen", "trial": 5, "reaction_time_ms": 382, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:04:16Z", "finger_mm": 67}, {"student_name": "Noor Nguyen", "trial": 6, "reaction_time_ms": 397, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:04:20Z", "finger_mm": 67}, {"student_name": "Noor Nguyen", "trial": 7, "reaction_time_ms": 388, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:04:24Z", "finger_mm": 67}, {"student_name": "Noor Nguyen", "trial": 8, "reaction_time_ms": 377, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:04:28Z", "finger_mm": 67}, {"student_name": "Noor Nguyen", "trial": 9, "reaction_time_ms": 331, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:04:32Z", "finger_mm": 67}, {"student_name": "Noor Nguyen", "trial": 10, "reaction_time_ms": 327, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-15T09:04:36Z", "finger_mm": 67}, {"student_name": "Indigo Rossi", "trial": 1, "reaction_time_ms": 320, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:25:00Z", "finger_mm": 68}, {"student_name": "Indigo Rossi", "trial": 2, "reaction_time_ms": 348, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:25:04Z", "finger_mm": 68}, {"student_name": "Indigo Rossi", "trial": 3, "reaction_time_ms": 272, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:25:08Z", "finger_mm": 68}, {"student_name": "Indigo Rossi", "trial": 4, "reaction_time_ms": 271, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:25:12Z", "finger_mm": 68}, {"student_name": "Indigo Rossi", "trial": 5, "reaction_time_ms": 575, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:25:16Z", "finger_mm": 68}, {"student_name": "Indigo Rossi", "trial": 6, "reaction_time_ms": 219, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:25:20Z", "finger_mm": 68}, {"student_name": "Indigo Rossi", "trial": 7, "reaction_time_ms": 336, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:25:24Z", "finger_mm": 68}, {"student_name": "Indigo Rossi", "trial": 8, "reaction_time_ms": 218, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:25:28Z", "finger_mm": 68}, {"student_name": "Indigo Rossi", "trial": 9, "reaction_time_ms": 260, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:25:32Z", "finger_mm": 68}, {"student_name": "Indigo Rossi", "trial": 10, "reaction_time_ms": 310, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-15T09:25:36Z", "finger_mm": 68}]}, {"name": "students", "value": ["Alex Patel", "Bailey Davies", "Casey O'Connor", "Drew Farrell", "Ellis Quraishi", "Finley Martins", "Gray Gupta", "Harper Hussain", "Indigo Rossi", "Jules Ito", "Kai Brooks", "Logan Turner", "Morgan Evans", "Noor Nguyen", "Ollie Jensen", "Parker Silva", "Quinn Adeyemi", "Reese Khan", "Sage Chen", "Taylor Lopez"]}, {"name": "student_summary", "value": [{"student_name": "Alex Patel", "mean_rt": 292.7, "device": "Laptop", "caffeine": "No", "finger_mm": 65}, {"student_name": "Bailey Davies", "mean_rt": 298.1, "device": "Laptop", "caffeine": "No", "finger_mm": 72}, {"student_name": "Casey O'Connor", "mean_rt": 308.3, "device": "Laptop", "caffeine": "Yes", "finger_mm": 71}, {"student_name": "Drew Farrell", "mean_rt": 338.6, "device": "Laptop", "caffeine": "No", "finger_mm": 64}, {"student_name": "Ellis Quraishi", "mean_rt": 355.4, "device": "Laptop", "caffeine": "No", "finger_mm": 73}, {"student_name": "Finley Martins", "mean_rt": 259.8, "device": "Phone", "caffeine": "Yes", "finger_mm": 71}, {"student_name": "Gray Gupta", "mean_rt": 318.0, "device": "Laptop", "caffeine": "Yes", "finger_mm": 69}, {"student_name": "Harper Hussain", "mean_rt": 319.7, "device": "Phone", "caffeine": "No", "finger_mm": 68}, {"student_name": "Indigo Rossi", "mean_rt": 312.9, "device": "Laptop", "caffeine": "No", "finger_mm": 68}, {"student_name": "Jules Ito", "mean_rt": 328.2, "device": "Laptop", "caffeine": "Yes", "finger_mm": 74}, {"student_name": "Kai Brooks", "mean_rt": 304.7, "device": "Laptop", "caffeine": "Yes", "finger_mm": 74}, {"student_name": "Logan Turner", "mean_rt": 259.8, "device": "Laptop", "caffeine": "No", "finger_mm": 73}, {"student_name": "Morgan Evans", "mean_rt": 301.6, "device": "Laptop", "caffeine": "Yes", "finger_mm": 68}, {"student_name": "Noor Nguyen", "mean_rt": 385.8, "device": "Phone", "caffeine": "No", "finger_mm": 67}, {"student_name": "Ollie Jensen", "mean_rt": 391.5, "device": "Phone", "caffeine": "Yes", "finger_mm": 74}, {"student_name": "Parker Silva", "mean_rt": 318.4, "device": "Phone", "caffeine": "No", "finger_mm": 73}, {"student_name": "Quinn Adeyemi", "mean_rt": 331.8, "device": "Phone", "caffeine": "No", "finger_mm": 72}, {"student_name": "Reese Khan", "mean_rt": 273.0, "device": "Laptop", "caffeine": "Yes", "finger_mm": 68}, {"student_name": "Sage Chen", "mean_rt": 271.5, "device": "Phone", "caffeine": "Yes", "finger_mm": 68}, {"student_name": "Taylor Lopez", "mean_rt": 396.7, "device": "Phone", "caffeine": "No", "finger_mm": 64}]}, {"name": "joint_table", "value": [{"device": "Laptop", "caffeine": "No", "count": 6}, {"device": "Laptop", "caffeine": "Yes", "count": 6}, {"device": "Phone", "caffeine": "No", "count": 5}, {"device": "Phone", "caffeine": "Yes", "count": 3}]}]}</script>
+</div>
+</div>
+<div id="92ae76df" class="cell" data-execution_count="2">
+<div class="cell-output cell-output-display">
+<script type="ojs-define">{"contents": [{"name": "sleep_scatter_data", "value": [{"sleep_hours": 4.3, "reaction_time_ms": 255.3}, {"sleep_hours": 5.6, "reaction_time_ms": 263.0}, {"sleep_hours": 8.0, "reaction_time_ms": 192.7}, {"sleep_hours": 4.1, "reaction_time_ms": 280.6}, {"sleep_hours": 5.1, "reaction_time_ms": 235.5}, {"sleep_hours": 4.3, "reaction_time_ms": 252.8}, {"sleep_hours": 5.7, "reaction_time_ms": 223.2}, {"sleep_hours": 7.7, "reaction_time_ms": 206.9}, {"sleep_hours": 5.7, "reaction_time_ms": 222.2}, {"sleep_hours": 7.2, "reaction_time_ms": 199.0}, {"sleep_hours": 4.4, "reaction_time_ms": 281.9}, {"sleep_hours": 8.8, "reaction_time_ms": 180.7}, {"sleep_hours": 4.7, "reaction_time_ms": 246.6}, {"sleep_hours": 5.0, "reaction_time_ms": 250.0}, {"sleep_hours": 6.7, "reaction_time_ms": 189.0}, {"sleep_hours": 8.8, "reaction_time_ms": 155.2}, {"sleep_hours": 8.2, "reaction_time_ms": 189.5}, {"sleep_hours": 9.3, "reaction_time_ms": 204.3}, {"sleep_hours": 8.2, "reaction_time_ms": 213.3}, {"sleep_hours": 6.1, "reaction_time_ms": 267.7}, {"sleep_hours": 6.2, "reaction_time_ms": 229.2}, {"sleep_hours": 7.9, "reaction_time_ms": 181.2}, {"sleep_hours": 5.5, "reaction_time_ms": 253.4}, {"sleep_hours": 8.7, "reaction_time_ms": 160.4}, {"sleep_hours": 9.0, "reaction_time_ms": 150.0}, {"sleep_hours": 8.2, "reaction_time_ms": 189.4}, {"sleep_hours": 6.8, "reaction_time_ms": 224.9}, {"sleep_hours": 4.9, "reaction_time_ms": 260.3}, {"sleep_hours": 5.6, "reaction_time_ms": 260.4}, {"sleep_hours": 5.6, "reaction_time_ms": 245.5}, {"sleep_hours": 5.8, "reaction_time_ms": 233.7}, {"sleep_hours": 6.5, "reaction_time_ms": 197.5}, {"sleep_hours": 7.0, "reaction_time_ms": 202.4}, {"sleep_hours": 5.2, "reaction_time_ms": 219.9}, {"sleep_hours": 8.4, "reaction_time_ms": 175.3}, {"sleep_hours": 8.0, "reaction_time_ms": 215.4}, {"sleep_hours": 8.7, "reaction_time_ms": 178.2}, {"sleep_hours": 5.5, "reaction_time_ms": 240.6}, {"sleep_hours": 7.4, "reaction_time_ms": 187.2}, {"sleep_hours": 7.6, "reaction_time_ms": 235.4}, {"sleep_hours": 6.1, "reaction_time_ms": 191.0}, {"sleep_hours": 6.3, "reaction_time_ms": 203.1}, {"sleep_hours": 8.5, "reaction_time_ms": 191.7}, {"sleep_hours": 7.3, "reaction_time_ms": 188.0}, {"sleep_hours": 8.9, "reaction_time_ms": 162.3}, {"sleep_hours": 6.7, "reaction_time_ms": 218.1}, {"sleep_hours": 8.6, "reaction_time_ms": 187.2}, {"sleep_hours": 8.7, "reaction_time_ms": 184.6}, {"sleep_hours": 8.3, "reaction_time_ms": 170.5}, {"sleep_hours": 8.9, "reaction_time_ms": 182.3}, {"sleep_hours": 7.8, "reaction_time_ms": 173.7}, {"sleep_hours": 6.5, "reaction_time_ms": 199.6}, {"sleep_hours": 5.7, "reaction_time_ms": 213.2}, {"sleep_hours": 8.5, "reaction_time_ms": 183.0}, {"sleep_hours": 4.8, "reaction_time_ms": 242.6}, {"sleep_hours": 6.2, "reaction_time_ms": 204.5}, {"sleep_hours": 5.3, "reaction_time_ms": 238.7}, {"sleep_hours": 7.2, "reaction_time_ms": 185.9}, {"sleep_hours": 8.9, "reaction_time_ms": 165.9}, {"sleep_hours": 5.8, "reaction_time_ms": 222.4}, {"sleep_hours": 8.4, "reaction_time_ms": 172.7}, {"sleep_hours": 8.4, "reaction_time_ms": 167.1}, {"sleep_hours": 7.7, "reaction_time_ms": 174.8}, {"sleep_hours": 5.3, "reaction_time_ms": 258.6}, {"sleep_hours": 8.5, "reaction_time_ms": 152.9}, {"sleep_hours": 6.6, "reaction_time_ms": 216.7}, {"sleep_hours": 5.7, "reaction_time_ms": 721.5}, {"sleep_hours": 8.5, "reaction_time_ms": 663.5}, {"sleep_hours": 5.6, "reaction_time_ms": 745.8}]}]}</script>
+</div>
+</div>
+</section>
+<section id="section" class="slide level2" data-background-color="#1a1a2e">
+<h2></h2>
+<div style="text-align: center; padding-top: 180px;">
+<p><span style="font-size: 2.2em; color: white;"><strong>When y met x</strong></span></p>
+<p><span style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;">Weeks 1–2 looked at one variable at a time. Today: how do two variables move together — and when should we trust that?</span></p>
+</div>
+</section>
+<section id="a-shortcut-for-hr" class="slide level2">
+<h2>A shortcut for HR</h2>
+<div class="instructions-box">
+<p>The reaction-time test works, but it takes ten trials per person to administer. HR wants something faster: <strong>“find us a quick physical measurement that predicts reaction time, and we’ll screen candidates on that instead.”</strong></p>
+</div>
+<div class="fragment">
+<p>That’s why we collected <strong>index finger length</strong> back in Week 1.</p>
+<p>Is it a fast, reliable stand-in for the real test? Today gives us the tools to answer that properly — and the discipline not to answer it too quickly.</p>
+</div>
+</section>
+<section id="when-y-met-x" class="slide level2">
+<h2>When y met x</h2>
+</section>
+<section id="the-y-and-the-x" class="slide level2">
+<h2>The y and the x</h2>
+<p>Much of data analysis is about comparing values of a <strong>y</strong> variable across values of an <strong>x</strong> variable — uncovering patterns of association.</p>
+<ul>
+<li>By convention, <strong>y</strong> is the variable we’re interested in; <strong>x</strong> is what we compare across</li>
+<li><strong>Goal 1 — prediction:</strong> use x to predict y, without needing to know <em>why</em></li>
+<li><strong>Goal 2 — causal effect:</strong> learn what would happen to y if we <em>changed</em> x</li>
+</ul>
+<div class="fragment">
+<p>HR’s proxy-test idea is a <strong>prediction</strong> goal, dressed up as if it were free of that distinction. Keep watching for where the two goals get blurred.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), <em>Data Analysis for Business, Economics, and Policy</em>, Ch. 4</p>
+</div>
+</section>
+<section id="conditional-probability" class="slide level2">
+<h2>Conditional probability</h2>
+</section>
+<section id="conditioning-on-x" class="slide level2">
+<h2>Conditioning on x</h2>
+<ul>
+<li><strong>Comparison → conditioning.</strong> Comparing y by values of x means we <strong>condition</strong> y on x</li>
+<li>x is the <strong>conditioning variable</strong>; y is the <strong>outcome variable</strong></li>
+<li><strong>Conditional probability:</strong> <span class="math inline">\(P(A \mid B) = \dfrac{P(A \text{ and } B)}{P(B)}\)</span></li>
+<li><strong>Joint probability:</strong> <span class="math inline">\(P(A \text{ and } B) = P(A) \times P(B)\)</span> — <em>if A and B are independent</em></li>
+<li><strong>Independence:</strong> <span class="math inline">\(P(A \mid B) = P(A)\)</span> and <span class="math inline">\(P(B \mid A) = P(B)\)</span></li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 4</p>
+</div>
+</section>
+<section id="device-and-caffeine-our-own-joint-table" class="slide level2">
+<h2>Device and caffeine: our own joint table</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb1" data-startfrom="182" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 181;"><span id="cb1-182"><a></a>{</span>
+<span id="cb1-183"><a></a>  <span class="cf">if</span> (<span class="op">!</span>joint_table<span class="op">.</span><span class="at">length</span>) <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;p style="color:#aaa;"&gt;Not enough data yet.&lt;/p&gt;`</span></span>
+<span id="cb1-184"><a></a>  <span class="kw">const</span> devices <span class="op">=</span> [<span class="op">...</span><span class="kw">new</span> <span class="bu">Set</span>(joint_table<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">device</span>))]</span>
+<span id="cb1-185"><a></a>  <span class="kw">const</span> caffs <span class="op">=</span> [<span class="op">...</span><span class="kw">new</span> <span class="bu">Set</span>(joint_table<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">caffeine</span>))]</span>
+<span id="cb1-186"><a></a>  <span class="kw">const</span> grandTotal <span class="op">=</span> d3<span class="op">.</span><span class="fu">sum</span>(joint_table<span class="op">,</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">count</span>)</span>
+<span id="cb1-187"><a></a>  <span class="kw">const</span> cell <span class="op">=</span> (dev<span class="op">,</span> caf) <span class="kw">=&gt;</span> joint_table<span class="op">.</span><span class="fu">find</span>(r <span class="kw">=&gt;</span> r<span class="op">.</span><span class="at">device</span> <span class="op">===</span> dev <span class="op">&amp;&amp;</span> r<span class="op">.</span><span class="at">caffeine</span> <span class="op">===</span> caf)<span class="op">?.</span><span class="at">count</span> <span class="op">??</span> <span class="dv">0</span></span>
+<span id="cb1-188"><a></a>  <span class="kw">const</span> rowTotal <span class="op">=</span> dev <span class="kw">=&gt;</span> d3<span class="op">.</span><span class="fu">sum</span>(caffs<span class="op">,</span> c <span class="kw">=&gt;</span> <span class="fu">cell</span>(dev<span class="op">,</span> c))</span>
+<span id="cb1-189"><a></a>  <span class="kw">const</span> colTotal <span class="op">=</span> caf <span class="kw">=&gt;</span> d3<span class="op">.</span><span class="fu">sum</span>(devices<span class="op">,</span> d <span class="kw">=&gt;</span> <span class="fu">cell</span>(d<span class="op">,</span> caf))</span>
+<span id="cb1-190"><a></a></span>
+<span id="cb1-191"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="width:80%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;"&gt;</span></span>
+<span id="cb1-192"><a></a><span class="vs">    &lt;thead&gt;&lt;tr style="background:#1a1a2e;color:white;"&gt;</span></span>
+<span id="cb1-193"><a></a><span class="vs">      &lt;th style="padding:10px 18px;text-align:left;"&gt;Device </span><span class="sc">\\</span><span class="vs"> Caffeine&lt;/th&gt;</span></span>
+<span id="cb1-194"><a></a><span class="vs">      </span><span class="sc">${</span>caffs<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> <span class="vs">`&lt;th style="padding:10px 18px;text-align:right;"&gt;</span><span class="sc">${</span>c<span class="sc">}</span><span class="vs">&lt;/th&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb1-195"><a></a><span class="vs">      &lt;th style="padding:10px 18px;text-align:right;background:#2d6a4f;"&gt;Total&lt;/th&gt;</span></span>
+<span id="cb1-196"><a></a><span class="vs">    &lt;/tr&gt;&lt;/thead&gt;</span></span>
+<span id="cb1-197"><a></a><span class="vs">    &lt;tbody&gt;</span></span>
+<span id="cb1-198"><a></a><span class="vs">      </span><span class="sc">${</span>devices<span class="op">.</span><span class="fu">map</span>((dev<span class="op">,</span>i) <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="</span><span class="sc">${</span>i<span class="op">%</span><span class="dv">2</span><span class="op">===</span><span class="dv">1</span><span class="op">?</span><span class="st">'background:#fafafa;'</span><span class="op">:</span><span class="st">''</span><span class="sc">}</span><span class="vs">border-bottom:1px solid #eee;"&gt;</span></span>
+<span id="cb1-199"><a></a><span class="vs">        &lt;td style="padding:9px 18px;font-weight:700;"&gt;</span><span class="sc">${</span>dev<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb1-200"><a></a><span class="vs">        </span><span class="sc">${</span>caffs<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> <span class="vs">`&lt;td style="padding:9px 18px;text-align:right;color:#457b9d;"&gt;</span><span class="sc">${</span><span class="fu">cell</span>(dev<span class="op">,</span>c)<span class="sc">}</span><span class="vs">&lt;/td&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb1-201"><a></a><span class="vs">        &lt;td style="padding:9px 18px;text-align:right;font-weight:700;background:#f0f4f8;"&gt;</span><span class="sc">${</span><span class="fu">rowTotal</span>(dev)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb1-202"><a></a><span class="vs">      &lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb1-203"><a></a><span class="vs">      &lt;tr style="border-top:2px solid #1a1a2e;"&gt;</span></span>
+<span id="cb1-204"><a></a><span class="vs">        &lt;td style="padding:9px 18px;font-weight:700;background:#f0f4f8;"&gt;Total&lt;/td&gt;</span></span>
+<span id="cb1-205"><a></a><span class="vs">        </span><span class="sc">${</span>caffs<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> <span class="vs">`&lt;td style="padding:9px 18px;text-align:right;font-weight:700;background:#f0f4f8;"&gt;</span><span class="sc">${</span><span class="fu">colTotal</span>(c)<span class="sc">}</span><span class="vs">&lt;/td&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb1-206"><a></a><span class="vs">        &lt;td style="padding:9px 18px;text-align:right;font-weight:700;background:#e9edf1;"&gt;</span><span class="sc">${</span>grandTotal<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb1-207"><a></a><span class="vs">      &lt;/tr&gt;</span></span>
+<span id="cb1-208"><a></a><span class="vs">    &lt;/tbody&gt;</span></span>
+<span id="cb1-209"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
+<span id="cb1-210"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-1" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Row and column <strong>totals</strong> give you the marginals directly — no need to derive <span class="math inline">\(P(\text{Device})\)</span> or <span class="math inline">\(P(\text{Caffeine})\)</span> yourself before you can condition.</p>
+</div>
+</section>
+<section id="task-condition-on-our-own-data" class="slide level2">
+<h2>Task — condition on our own data</h2>
+<div class="instructions-box">
+<p>On paper, using the table above: what is <span class="math inline">\(P(\text{Caffeine} = \text{Yes} \mid \text{Device} = \text{Phone})\)</span>?</p>
+<p>Does knowing someone’s device change your guess about their caffeine use? How much would you trust that conclusion, given how many observations it’s based on?</p>
+</div>
+<div class="fragment">
+<p><strong>Independence is not a yes/no question you can answer from a table this small.</strong> Any real sample will show <em>some</em> numerical gap between the conditional and marginal probabilities, purely by chance — even when the true population relationship is independence. Telling a real pattern from sampling noise is exactly what Week 2’s tools (standard errors, hypothesis tests) are for. With this few observations, “we can’t tell yet” is the honest answer, not a verdict either way.</p>
+</div>
+</section>
+<section id="visualising-with-a-stacked-bar-chart" class="slide level2">
+<h2>Visualising with a stacked bar chart</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="232" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 231;"><span id="cb2-232"><a></a>stacked_data <span class="op">=</span> {</span>
+<span id="cb2-233"><a></a>  <span class="cf">if</span> (<span class="op">!</span>joint_table<span class="op">.</span><span class="at">length</span>) <span class="cf">return</span> []</span>
+<span id="cb2-234"><a></a>  <span class="kw">const</span> devices <span class="op">=</span> [<span class="op">...</span><span class="kw">new</span> <span class="bu">Set</span>(joint_table<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">device</span>))]</span>
+<span id="cb2-235"><a></a>  <span class="cf">return</span> devices<span class="op">.</span><span class="fu">flatMap</span>(dev <span class="kw">=&gt;</span> {</span>
+<span id="cb2-236"><a></a>    <span class="kw">const</span> rows <span class="op">=</span> joint_table<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">device</span> <span class="op">===</span> dev)</span>
+<span id="cb2-237"><a></a>    <span class="kw">const</span> tot <span class="op">=</span> d3<span class="op">.</span><span class="fu">sum</span>(rows<span class="op">,</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">count</span>)</span>
+<span id="cb2-238"><a></a>    <span class="cf">return</span> rows<span class="op">.</span><span class="fu">map</span>(r <span class="kw">=&gt;</span> ({ <span class="op">...</span>r<span class="op">,</span> <span class="dt">pct</span><span class="op">:</span> r<span class="op">.</span><span class="at">count</span> <span class="op">/</span> tot }))</span>
+<span id="cb2-239"><a></a>  })</span>
+<span id="cb2-240"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb3" data-startfrom="244" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 243;"><span id="cb3-244"><a></a>{</span>
+<span id="cb3-245"><a></a>  <span class="cf">if</span> (<span class="op">!</span>stacked_data<span class="op">.</span><span class="at">length</span>) <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;p style="color:#aaa;"&gt;Not enough data yet.&lt;/p&gt;`</span></span>
+<span id="cb3-246"><a></a>  <span class="cf">return</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb3-247"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">280</span><span class="op">,</span></span>
+<span id="cb3-248"><a></a>    <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">60</span><span class="op">,</span></span>
+<span id="cb3-249"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Device"</span> }<span class="op">,</span></span>
+<span id="cb3-250"><a></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"% within device"</span><span class="op">,</span> <span class="dt">percent</span><span class="op">:</span> <span class="kw">true</span> }<span class="op">,</span></span>
+<span id="cb3-251"><a></a>    <span class="dt">color</span><span class="op">:</span> { <span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="st">"Yes"</span><span class="op">,</span><span class="st">"No"</span><span class="op">,</span><span class="st">"Unknown"</span>]<span class="op">,</span> <span class="dt">range</span><span class="op">:</span> [<span class="st">"#e63946"</span><span class="op">,</span><span class="st">"#457b9d"</span><span class="op">,</span><span class="st">"#ccc"</span>] }<span class="op">,</span></span>
+<span id="cb3-252"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb3-253"><a></a>      Plot<span class="op">.</span><span class="fu">barY</span>(stacked_data<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"device"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"pct"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"caffeine"</span><span class="op">,</span> <span class="dt">order</span><span class="op">:</span> <span class="st">"caffeine"</span> })<span class="op">,</span></span>
+<span id="cb3-254"><a></a>      Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb3-255"><a></a>    ]</span>
+<span id="cb3-256"><a></a>  })</span>
+<span id="cb3-257"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-3" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Stacked to 100% within each device — this shows <span class="math inline">\(P(\text{Caffeine} \mid \text{Device})\)</span> directly, not the raw counts.</p>
+</div>
+</section>
+<section id="conditional-distribution-and-expectation" class="slide level2">
+<h2>Conditional distribution and expectation</h2>
+</section>
+<section id="the-conditional-mean" class="slide level2">
+<h2>The conditional mean</h2>
+<p>The <strong>conditional expectation</strong> of y for a given value of x:</p>
+<p><span class="math display">\[E[y \mid x]\]</span></p>
+<ul>
+<li>The mean of y, computed separately for each value (or group) of x</li>
+<li>With few x values, a histogram or box plot per group works well (Week 1)</li>
+<li>With <strong>many</strong> x values — like finger length in mm — group into <strong>bins</strong> first</li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 4</p>
+</div>
+</section>
+<section id="task-compute-the-conditional-mean-by-hand" class="slide level2">
+<h2>Task — compute the conditional mean, by hand</h2>
+<div class="instructions-box">
+<p>Using the class’s finger-length and reaction-time data: split students into three roughly equal-sized groups by finger length (short / medium / long), then compute the mean reaction time within each group. Compare to the chart on the next slide.</p>
+</div>
+</section>
+<section id="binning-finger-length" class="slide level2">
+<h2>Binning finger length</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb4" data-startfrom="293" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 292;"><span id="cb4-293"><a></a>{</span>
+<span id="cb4-294"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> student_summary<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">finger_mm</span> <span class="op">!=</span> <span class="kw">null</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="pp">isNaN</span>(d<span class="op">.</span><span class="at">finger_mm</span>))</span>
+<span id="cb4-295"><a></a>  <span class="cf">if</span> (rows<span class="op">.</span><span class="at">length</span> <span class="op">&lt;</span> <span class="dv">3</span>) {</span>
+<span id="cb4-296"><a></a>    <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div class="instructions-box"&gt;Not enough finger-length data yet to bin — this will populate once more of the class has submitted through the updated tool.&lt;/div&gt;`</span></span>
+<span id="cb4-297"><a></a>  }</span>
+<span id="cb4-298"><a></a>  <span class="kw">const</span> vals <span class="op">=</span> rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">finger_mm</span>)<span class="op">.</span><span class="fu">sort</span>((a<span class="op">,</span>b) <span class="kw">=&gt;</span> a<span class="op">-</span>b)</span>
+<span id="cb4-299"><a></a>  <span class="kw">const</span> q1 <span class="op">=</span> d3<span class="op">.</span><span class="fu">quantile</span>(vals<span class="op">,</span> <span class="dv">1</span><span class="op">/</span><span class="dv">3</span>)<span class="op">,</span> q2 <span class="op">=</span> d3<span class="op">.</span><span class="fu">quantile</span>(vals<span class="op">,</span> <span class="dv">2</span><span class="op">/</span><span class="dv">3</span>)</span>
+<span id="cb4-300"><a></a>  <span class="kw">const</span> binOf <span class="op">=</span> f <span class="kw">=&gt;</span> f <span class="op">&lt;=</span> q1 <span class="op">?</span> <span class="st">"Short"</span> <span class="op">:</span> f <span class="op">&lt;=</span> q2 <span class="op">?</span> <span class="st">"Medium"</span> <span class="op">:</span> <span class="st">"Long"</span></span>
+<span id="cb4-301"><a></a>  <span class="kw">const</span> binned <span class="op">=</span> rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> ({ <span class="op">...</span>d<span class="op">,</span> <span class="dt">bin</span><span class="op">:</span> <span class="fu">binOf</span>(d<span class="op">.</span><span class="at">finger_mm</span>) }))</span>
+<span id="cb4-302"><a></a>  <span class="kw">const</span> grouped <span class="op">=</span> [<span class="st">"Short"</span><span class="op">,</span><span class="st">"Medium"</span><span class="op">,</span><span class="st">"Long"</span>]<span class="op">.</span><span class="fu">map</span>(b <span class="kw">=&gt;</span> {</span>
+<span id="cb4-303"><a></a>    <span class="kw">const</span> g <span class="op">=</span> binned<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">bin</span> <span class="op">===</span> b)</span>
+<span id="cb4-304"><a></a>    <span class="cf">return</span> { <span class="dt">bin</span><span class="op">:</span> b<span class="op">,</span> <span class="dt">n</span><span class="op">:</span> g<span class="op">.</span><span class="at">length</span><span class="op">,</span> <span class="dt">mean_rt</span><span class="op">:</span> g<span class="op">.</span><span class="at">length</span> <span class="op">?</span> d3<span class="op">.</span><span class="fu">mean</span>(g<span class="op">,</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">mean_rt</span>) <span class="op">:</span> <span class="kw">null</span> }</span>
+<span id="cb4-305"><a></a>  })<span class="op">.</span><span class="fu">filter</span>(g <span class="kw">=&gt;</span> g<span class="op">.</span><span class="at">n</span> <span class="op">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb4-306"><a></a></span>
+<span id="cb4-307"><a></a>  <span class="cf">return</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb4-308"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">300</span><span class="op">,</span></span>
+<span id="cb4-309"><a></a>    <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">60</span><span class="op">,</span></span>
+<span id="cb4-310"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Finger length bin"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="st">"Short"</span><span class="op">,</span><span class="st">"Medium"</span><span class="op">,</span><span class="st">"Long"</span>] }<span class="op">,</span></span>
+<span id="cb4-311"><a></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"E[reaction time | bin] (ms)"</span> }<span class="op">,</span></span>
+<span id="cb4-312"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb4-313"><a></a>      Plot<span class="op">.</span><span class="fu">barY</span>(grouped<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"bin"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"mean_rt"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#457b9d"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.8</span> })<span class="op">,</span></span>
+<span id="cb4-314"><a></a>      Plot<span class="op">.</span><span class="fu">text</span>(grouped<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"bin"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"mean_rt"</span><span class="op">,</span> <span class="dt">text</span><span class="op">:</span> d <span class="kw">=&gt;</span> <span class="vs">`n=</span><span class="sc">${</span>d<span class="op">.</span><span class="at">n</span><span class="sc">}</span><span class="vs">`</span><span class="op">,</span> <span class="dt">dy</span><span class="op">:</span> <span class="op">-</span><span class="dv">10</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#333"</span><span class="op">,</span> <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">12</span> })<span class="op">,</span></span>
+<span id="cb4-315"><a></a>      Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb4-316"><a></a>    ]</span>
+<span id="cb4-317"><a></a>  })</span>
+<span id="cb4-318"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-4" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</section>
+<section id="scatter-covariance-correlation" class="slide level2">
+<h2>Scatter, covariance, correlation</h2>
+</section>
+<section id="scatterplot-and-bin-scatter" class="slide level2 smaller">
+<h2>Scatterplot and bin-scatter</h2>
+<p>A <strong>scatterplot</strong> puts two variables on two axes, one dot per observation. It’s one of the most powerful ways to see whether a relationship exists between two variables — no formula required, just look.</p>
+<div class="fragment">
+<p>Not finger length this time — you’ll build that scatter yourselves shortly. Here it’s a separate illustrative case: <strong>hours of sleep the night before</strong>, against reaction time, for 69 trials.</p>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb5" data-startfrom="336" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 335;"><span id="cb5-336"><a></a>{</span>
+<span id="cb5-337"><a></a>  <span class="cf">return</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb5-338"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">300</span><span class="op">,</span></span>
+<span id="cb5-339"><a></a>    <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">60</span><span class="op">,</span></span>
+<span id="cb5-340"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Sleep the night before (hours)"</span> }<span class="op">,</span></span>
+<span id="cb5-341"><a></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Reaction time (ms)"</span> }<span class="op">,</span></span>
+<span id="cb5-342"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb5-343"><a></a>      Plot<span class="op">.</span><span class="fu">dot</span>(sleep_scatter_data<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"sleep_hours"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"reaction_time_ms"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#457b9d"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">5</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.75</span><span class="op">,</span></span>
+<span id="cb5-344"><a></a>                       <span class="dt">tip</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">title</span><span class="op">:</span> d <span class="kw">=&gt;</span> <span class="vs">`</span><span class="sc">${</span>d<span class="op">.</span><span class="at">sleep_hours</span><span class="sc">}</span><span class="vs">h sleep, </span><span class="sc">${</span>d<span class="op">.</span><span class="at">reaction_time_ms</span><span class="sc">}</span><span class="vs">ms`</span> })<span class="op">,</span></span>
+<span id="cb5-345"><a></a>    ]</span>
+<span id="cb5-346"><a></a>  })</span>
+<span id="cb5-347"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-5" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Every dot is one trial. There’s a real pattern here, but a handful of slow “attention lapse” trials — everyone has them, however well-rested — stretch the top of the scale and make it hard to see. Often with more data this will struggle to fit on a scatter. In those cases, a <strong>bin-scatter</strong> can reveal the pattern without the clutter.</p>
+</div>
+</section>
+<section id="the-bin-scatter" class="slide level2">
+<h2>The bin-scatter</h2>
+<p>The <strong>conditional mean per bin</strong> — one dot per observed sleep value, not a wide bucket like “Short / Medium / Long” on the finger-length slide.</p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb6" data-startfrom="359" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 358;"><span id="cb6-359"><a></a>{</span>
+<span id="cb6-360"><a></a>  <span class="kw">const</span> grouped <span class="op">=</span> d3<span class="op">.</span><span class="fu">rollups</span>(sleep_scatter_data<span class="op">,</span> v <span class="kw">=&gt;</span> d3<span class="op">.</span><span class="fu">mean</span>(v<span class="op">,</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">reaction_time_ms</span>)<span class="op">,</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">sleep_hours</span>)</span>
+<span id="cb6-361"><a></a>    <span class="op">.</span><span class="fu">map</span>(([sleep_hours<span class="op">,</span> mean_rt]) <span class="kw">=&gt;</span> ({ sleep_hours<span class="op">,</span> mean_rt }))</span>
+<span id="cb6-362"><a></a>    <span class="op">.</span><span class="fu">sort</span>((a<span class="op">,</span> b) <span class="kw">=&gt;</span> a<span class="op">.</span><span class="at">sleep_hours</span> <span class="op">-</span> b<span class="op">.</span><span class="at">sleep_hours</span>)</span>
+<span id="cb6-363"><a></a></span>
+<span id="cb6-364"><a></a>  <span class="cf">return</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb6-365"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">340</span><span class="op">,</span></span>
+<span id="cb6-366"><a></a>    <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">60</span><span class="op">,</span></span>
+<span id="cb6-367"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Sleep the night before (hours)"</span> }<span class="op">,</span></span>
+<span id="cb6-368"><a></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"E[reaction time | sleep hours] (ms)"</span> }<span class="op">,</span></span>
+<span id="cb6-369"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb6-370"><a></a>      Plot<span class="op">.</span><span class="fu">dot</span>(grouped<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"sleep_hours"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"mean_rt"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#2d6a4f"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">5</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.85</span><span class="op">,</span></span>
+<span id="cb6-371"><a></a>                       <span class="dt">tip</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">title</span><span class="op">:</span> d <span class="kw">=&gt;</span> <span class="vs">`</span><span class="sc">${</span>d<span class="op">.</span><span class="at">sleep_hours</span><span class="sc">}</span><span class="vs">h: </span><span class="sc">${</span>d<span class="op">.</span><span class="at">mean_rt</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">0</span>)<span class="sc">}</span><span class="vs">ms`</span> })<span class="op">,</span></span>
+<span id="cb6-372"><a></a>    ]</span>
+<span id="cb6-373"><a></a>  })</span>
+<span id="cb6-374"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-6" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>The lapses still show — a few bins still sit high — but the underlying downward trend reads far more clearly than in the raw scatter.</p>
+</div>
+</section>
+<section id="does-logging-reaction-time-help" class="slide level2 smaller">
+<h2>Does logging reaction time help?</h2>
+<p>Week 1 found reaction time is closer to log-normal than normal — a floor, no ceiling, long right tail. Gabor’s own case study logs a skewed variable for exactly this reason: it stretches out the crowded end and compresses the tail, so a pattern against x is easier to read.</p>
+<div class="two-col">
+<div class="col">
+<p><strong>Logged</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="390" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 389;"><span id="cb7-390"><a></a>{</span>
+<span id="cb7-391"><a></a>  <span class="cf">return</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb7-392"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">340</span><span class="op">,</span></span>
+<span id="cb7-393"><a></a>    <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">55</span><span class="op">,</span></span>
+<span id="cb7-394"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Sleep the night before (hours)"</span> }<span class="op">,</span></span>
+<span id="cb7-395"><a></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"ln(reaction time)"</span> }<span class="op">,</span></span>
+<span id="cb7-396"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb7-397"><a></a>      Plot<span class="op">.</span><span class="fu">dot</span>(sleep_scatter_data<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"sleep_hours"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> d <span class="kw">=&gt;</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">log</span>(d<span class="op">.</span><span class="at">reaction_time_ms</span>)<span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#2d6a4f"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">5</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.75</span><span class="op">,</span></span>
+<span id="cb7-398"><a></a>                       <span class="dt">tip</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">title</span><span class="op">:</span> d <span class="kw">=&gt;</span> <span class="vs">`</span><span class="sc">${</span>d<span class="op">.</span><span class="at">sleep_hours</span><span class="sc">}</span><span class="vs">h sleep, </span><span class="sc">${</span>d<span class="op">.</span><span class="at">reaction_time_ms</span><span class="sc">}</span><span class="vs">ms`</span> })<span class="op">,</span></span>
+<span id="cb7-399"><a></a>    ]</span>
+<span id="cb7-400"><a></a>  })</span>
+<span id="cb7-401"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-7" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+<div class="col fragment" data-fragment-index="1">
+<p><strong>Raw scale</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb8" data-startfrom="408" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 407;"><span id="cb8-408"><a></a>{</span>
+<span id="cb8-409"><a></a>  <span class="cf">return</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb8-410"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">340</span><span class="op">,</span></span>
+<span id="cb8-411"><a></a>    <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">55</span><span class="op">,</span></span>
+<span id="cb8-412"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Sleep the night before (hours)"</span> }<span class="op">,</span></span>
+<span id="cb8-413"><a></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Reaction time (ms)"</span> }<span class="op">,</span></span>
+<span id="cb8-414"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb8-415"><a></a>      Plot<span class="op">.</span><span class="fu">dot</span>(sleep_scatter_data<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"sleep_hours"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"reaction_time_ms"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#457b9d"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">5</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.75</span><span class="op">,</span></span>
+<span id="cb8-416"><a></a>                       <span class="dt">tip</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">title</span><span class="op">:</span> d <span class="kw">=&gt;</span> <span class="vs">`</span><span class="sc">${</span>d<span class="op">.</span><span class="at">sleep_hours</span><span class="sc">}</span><span class="vs">h sleep, </span><span class="sc">${</span>d<span class="op">.</span><span class="at">reaction_time_ms</span><span class="sc">}</span><span class="vs">ms`</span> })<span class="op">,</span></span>
+<span id="cb8-417"><a></a>    ]</span>
+<span id="cb8-418"><a></a>  })</span>
+<span id="cb8-419"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-8" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment" data-fragment-index="1">
+<p>Same data, side by side. The lapse trials are still there — logging doesn’t delete them — but on the raw scale they dominate the axis; logged, they no longer do, and the downward trend is much easier to see. Logging a skewed variable is a tool, not a rule: it helps here only because it actually makes the pattern clearer, and the online session goes further into why.</p>
+</div>
+</section>
+<section id="covariance" class="slide level2">
+<h2>Covariance</h2>
+<p>In plain language: <strong>covariance</strong> asks whether x and y tend to move together — when one is above its own average, is the other usually above its average too?</p>
+<div class="fragment">
+<p><span class="math display">\[Cov[x,y] = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{n}\]</span></p>
+<ul>
+<li>Multiplies each observation’s deviation from the x-mean by its deviation from the y-mean, and averages</li>
+<li>Positive when x and y tend to deviate from their means <strong>in the same direction</strong></li>
+<li>Can be any positive or negative number — units depend on the units of x and y</li>
+</ul>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 4</p>
+</div>
+</section>
+<section id="task-calculate-the-covariance" class="slide level2">
+<h2>Task — calculate the covariance</h2>
+<div class="instructions-box">
+<p>By hand or in Excel, using the class’s (finger length, mean reaction time) pairs: calculate <span class="math inline">\(Cov[\text{finger length}, \text{reaction time}]\)</span>.</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb9" data-startfrom="452" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 451;"><span id="cb9-452"><a></a>{</span>
+<span id="cb9-453"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> student_summary<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">finger_mm</span> <span class="op">!=</span> <span class="kw">null</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="pp">isNaN</span>(d<span class="op">.</span><span class="at">finger_mm</span>))</span>
+<span id="cb9-454"><a></a>  <span class="cf">if</span> (rows<span class="op">.</span><span class="at">length</span> <span class="op">&lt;</span> <span class="dv">3</span>) <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;p style="color:#aaa;"&gt;Will compute automatically once enough data is in.&lt;/p&gt;`</span></span>
+<span id="cb9-455"><a></a>  <span class="kw">const</span> xs <span class="op">=</span> rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">finger_mm</span>)<span class="op">,</span> ys <span class="op">=</span> rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">mean_rt</span>)</span>
+<span id="cb9-456"><a></a>  <span class="kw">const</span> mx <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(xs)<span class="op">,</span> my <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(ys)</span>
+<span id="cb9-457"><a></a>  <span class="kw">const</span> cov <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(xs<span class="op">.</span><span class="fu">map</span>((x<span class="op">,</span>i) <span class="kw">=&gt;</span> (x <span class="op">-</span> mx) <span class="op">*</span> (ys[i] <span class="op">-</span> my)))</span>
+<span id="cb9-458"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;p style="font-family:sans-serif;"&gt;Cov[finger length, reaction time] = &lt;strong style="color:#e63946;font-size:1.2em;"&gt;</span><span class="sc">${</span>cov<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>)<span class="sc">}</span><span class="vs">&lt;/strong&gt;&lt;/p&gt;`</span></span>
+<span id="cb9-459"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-9" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="correlation" class="slide level2">
+<h2>Correlation</h2>
+<p>In plain language: <strong>correlation</strong> asks the same question as covariance — do x and y move together — but reports the answer on a fixed scale from −1 to 1, so it’s comparable no matter what units x and y are measured in.</p>
+<p>The standardised version of the covariance — divide by the product of the standard deviations:</p>
+<p><span class="math display">\[Corr[x,y] = \frac{Cov[x,y]}{SD[x] \, SD[y]} \qquad -1 \leq Corr[x,y] \leq 1\]</span></p>
+<p>Rough guide: below 0.2 is weak, above 0.7 is generally strong.</p>
+</section>
+<section id="task-calculate-the-correlation" class="slide level2">
+<h2>Task — calculate the correlation</h2>
+<div class="instructions-box">
+<p>Using your covariance from two slides ago, and the SD of each variable: calculate the correlation coefficient.</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb10" data-startfrom="481" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 480;"><span id="cb10-481"><a></a>{</span>
+<span id="cb10-482"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> student_summary<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">finger_mm</span> <span class="op">!=</span> <span class="kw">null</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="pp">isNaN</span>(d<span class="op">.</span><span class="at">finger_mm</span>))</span>
+<span id="cb10-483"><a></a>  <span class="cf">if</span> (rows<span class="op">.</span><span class="at">length</span> <span class="op">&lt;</span> <span class="dv">3</span>) <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;p style="color:#aaa;"&gt;Will compute automatically once enough data is in.&lt;/p&gt;`</span></span>
+<span id="cb10-484"><a></a>  <span class="kw">const</span> xs <span class="op">=</span> rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">finger_mm</span>)<span class="op">,</span> ys <span class="op">=</span> rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">mean_rt</span>)</span>
+<span id="cb10-485"><a></a>  <span class="kw">const</span> mx <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(xs)<span class="op">,</span> my <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(ys)</span>
+<span id="cb10-486"><a></a>  <span class="kw">const</span> cov <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(xs<span class="op">.</span><span class="fu">map</span>((x<span class="op">,</span>i) <span class="kw">=&gt;</span> (x <span class="op">-</span> mx) <span class="op">*</span> (ys[i] <span class="op">-</span> my)))</span>
+<span id="cb10-487"><a></a>  <span class="kw">const</span> corr <span class="op">=</span> cov <span class="op">/</span> (d3<span class="op">.</span><span class="fu">deviation</span>(xs) <span class="op">*</span> d3<span class="op">.</span><span class="fu">deviation</span>(ys))</span>
+<span id="cb10-488"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;p style="font-family:sans-serif;"&gt;Corr[finger length, reaction time] = &lt;strong style="color:#e63946;font-size:1.2em;"&gt;</span><span class="sc">${</span>corr<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">2</span>)<span class="sc">}</span><span class="vs">&lt;/strong&gt;&lt;/p&gt;`</span></span>
+<span id="cb10-489"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-10" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Whatever number comes back — is it strong enough, on its own, to justify HR replacing the real test with a ruler?</p>
+</div>
+</section>
+<section id="is-it-causal" class="slide level2">
+<h2>Is it causal?</h2>
+</section>
+<section id="where-does-the-variation-in-x-come-from" class="slide level2">
+<h2>Where does the variation in x come from?</h2>
+<p>Comparison requires <strong>variation</strong> in the conditioning variable — and where that variation comes from matters enormously.</p>
+<div class="two-col">
+<div class="col">
+<p><strong>Experimental data</strong></p>
+<ul>
+<li>A treatment is assigned, often randomly</li>
+<li>Differences in y are attributable to the treatment alone</li>
+<li>e.g.&nbsp;randomly assign aspirin vs.&nbsp;placebo</li>
+</ul>
+</div>
+<div class="col">
+<p><strong>Observational data</strong></p>
+<ul>
+<li>x varies because of people’s own choices, circumstances, history</li>
+<li>Many other things may differ alongside x</li>
+<li>e.g.&nbsp;people who already take aspirin routinely may do so <em>because</em> of prior health risk</li>
+</ul>
+</div>
+</div>
+<div class="fragment">
+<p>Almost everything in business analytics is observational. Finger length is one of the few genuinely fixed, “as-if-random” variables we’re likely to find — most x’s we’ll meet from here on are not.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 4</p>
+</div>
+</section>
+<section id="task-find-a-spurious-correlation" class="slide level2">
+<h2>Task — find a spurious correlation</h2>
+<div class="instructions-box">
+<p>Go to <strong>tylervigen.com/spurious-correlations</strong>. Find one example. In one sentence, explain why the two variables move together despite having no plausible causal link.</p>
+</div>
+<div class="fragment">
+<p>Correlation, on its own, never tells you which of these is true: <strong>x causes y</strong>, <strong>y causes x</strong>, <strong>both are caused by something else</strong>, or <strong>coincidence</strong>.</p>
+</div>
+</section>
+<section id="measuring-what-you-cant-observe-directly" class="slide level2">
+<h2>Measuring what you can’t observe directly</h2>
+</section>
+<section id="latent-variables" class="slide level2">
+<h2>Latent variables</h2>
+<p>Some concepts — attitude, ability, management quality — can’t be measured with a single variable. They’re <strong>latent</strong>: real, but only indirectly observable through several proxies at once.</p>
+<ul>
+<li><strong>Use one variable</strong> — simple, but throws away information</li>
+<li><strong>Average several (as z-scores)</strong> — standardise first, then average; simple and transparent</li>
+<li><strong>PCA</strong> — weights each variable by how well it captures the shared pattern; typically close to the simple average in practice</li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 4</p>
+</div>
+</section>
+<section id="use-one-variable" class="slide level2">
+<h2>Use one variable</h2>
+<p>The simplest approach: pick a single observable variable and treat it as a stand-in for the thing you can’t measure directly.</p>
+<ul>
+<li><strong>Postcode</strong> as a proxy for socioeconomic background</li>
+<li><strong>Job tenure</strong> as a proxy for “experience”</li>
+<li><strong>Finger length</strong> as a proxy for manual dexterity — this module’s own opening example</li>
+</ul>
+<div class="fragment">
+<p>It’s simple, and sometimes good enough. But a single proxy only ever captures <strong>part</strong> of the underlying concept — whatever it misses is thrown away, and if the proxy is a weak one, most of the concept goes with it.</p>
+</div>
+<div class="fragment">
+<div class="instructions-box">
+<p><strong>Task</strong> — our own reaction times aren’t purely mechanical. What latent variables might actually be driving them — alertness, familiarity with the device, motivation on the day? What proxies do we already have sitting in our own data for any of these?</p>
+</div>
+</div>
+</section>
+<section id="average-several-as-z-scores" class="slide level2 smaller">
+<h2>Average several (as z-scores)</h2>
+<p>Suppose we want one “alertness” score for six people, from three imperfect proxies: hours of sleep, self-rated energy (1–10), and grip strength (kg).</p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb11" data-startfrom="583" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 582;"><span id="cb11-583"><a></a>{</span>
+<span id="cb11-584"><a></a>  <span class="kw">const</span> people <span class="op">=</span> [</span>
+<span id="cb11-585"><a></a>    { <span class="dt">name</span><span class="op">:</span> <span class="st">"Amara"</span><span class="op">,</span> <span class="dt">sleep</span><span class="op">:</span> <span class="fl">8.5</span><span class="op">,</span> <span class="dt">energy</span><span class="op">:</span> <span class="dv">9</span><span class="op">,</span> <span class="dt">grip</span><span class="op">:</span> <span class="dv">33</span> }<span class="op">,</span></span>
+<span id="cb11-586"><a></a>    { <span class="dt">name</span><span class="op">:</span> <span class="st">"Ben"</span><span class="op">,</span>    <span class="dt">sleep</span><span class="op">:</span> <span class="fl">5.0</span><span class="op">,</span> <span class="dt">energy</span><span class="op">:</span> <span class="dv">4</span><span class="op">,</span> <span class="dt">grip</span><span class="op">:</span> <span class="dv">32</span> }<span class="op">,</span></span>
+<span id="cb11-587"><a></a>    { <span class="dt">name</span><span class="op">:</span> <span class="st">"Chidi"</span><span class="op">,</span>  <span class="dt">sleep</span><span class="op">:</span> <span class="fl">7.0</span><span class="op">,</span> <span class="dt">energy</span><span class="op">:</span> <span class="dv">6</span><span class="op">,</span> <span class="dt">grip</span><span class="op">:</span> <span class="dv">35</span> }<span class="op">,</span></span>
+<span id="cb11-588"><a></a>    { <span class="dt">name</span><span class="op">:</span> <span class="st">"Dana"</span><span class="op">,</span>   <span class="dt">sleep</span><span class="op">:</span> <span class="fl">4.5</span><span class="op">,</span> <span class="dt">energy</span><span class="op">:</span> <span class="dv">3</span><span class="op">,</span> <span class="dt">grip</span><span class="op">:</span> <span class="dv">30</span> }<span class="op">,</span></span>
+<span id="cb11-589"><a></a>    { <span class="dt">name</span><span class="op">:</span> <span class="st">"Elin"</span><span class="op">,</span>   <span class="dt">sleep</span><span class="op">:</span> <span class="fl">9.0</span><span class="op">,</span> <span class="dt">energy</span><span class="op">:</span> <span class="dv">8</span><span class="op">,</span> <span class="dt">grip</span><span class="op">:</span> <span class="dv">31</span> }<span class="op">,</span></span>
+<span id="cb11-590"><a></a>    { <span class="dt">name</span><span class="op">:</span> <span class="st">"Femi"</span><span class="op">,</span>   <span class="dt">sleep</span><span class="op">:</span> <span class="fl">6.0</span><span class="op">,</span> <span class="dt">energy</span><span class="op">:</span> <span class="dv">5</span><span class="op">,</span> <span class="dt">grip</span><span class="op">:</span> <span class="dv">34</span> }<span class="op">,</span></span>
+<span id="cb11-591"><a></a>  ]</span>
+<span id="cb11-592"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="width:80%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.85em;"&gt;</span></span>
+<span id="cb11-593"><a></a><span class="vs">    &lt;thead&gt;&lt;tr style="background:#1a1a2e;color:white;"&gt;</span></span>
+<span id="cb11-594"><a></a><span class="vs">      &lt;th style="padding:7px 16px;text-align:left;"&gt;Person&lt;/th&gt;</span></span>
+<span id="cb11-595"><a></a><span class="vs">      &lt;th style="padding:7px 16px;text-align:right;"&gt;Sleep (h)&lt;/th&gt;</span></span>
+<span id="cb11-596"><a></a><span class="vs">      &lt;th style="padding:7px 16px;text-align:right;"&gt;Energy (1&amp;ndash;10)&lt;/th&gt;</span></span>
+<span id="cb11-597"><a></a><span class="vs">      &lt;th style="padding:7px 16px;text-align:right;"&gt;Grip (kg)&lt;/th&gt;</span></span>
+<span id="cb11-598"><a></a><span class="vs">    &lt;/tr&gt;&lt;/thead&gt;</span></span>
+<span id="cb11-599"><a></a><span class="vs">    &lt;tbody&gt;</span></span>
+<span id="cb11-600"><a></a><span class="vs">      </span><span class="sc">${</span>people<span class="op">.</span><span class="fu">map</span>((p<span class="op">,</span>i) <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="</span><span class="sc">${</span>i<span class="op">%</span><span class="dv">2</span><span class="op">===</span><span class="dv">1</span><span class="op">?</span><span class="st">'background:#fafafa;'</span><span class="op">:</span><span class="st">''</span><span class="sc">}</span><span class="vs">border-bottom:1px solid #eee;"&gt;</span></span>
+<span id="cb11-601"><a></a><span class="vs">        &lt;td style="padding:6px 16px;"&gt;</span><span class="sc">${</span>p<span class="op">.</span><span class="at">name</span><span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb11-602"><a></a><span class="vs">        &lt;td style="padding:6px 16px;text-align:right;"&gt;</span><span class="sc">${</span>p<span class="op">.</span><span class="at">sleep</span><span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb11-603"><a></a><span class="vs">        &lt;td style="padding:6px 16px;text-align:right;"&gt;</span><span class="sc">${</span>p<span class="op">.</span><span class="at">energy</span><span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb11-604"><a></a><span class="vs">        &lt;td style="padding:6px 16px;text-align:right;"&gt;</span><span class="sc">${</span>p<span class="op">.</span><span class="at">grip</span><span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb11-605"><a></a><span class="vs">      &lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb11-606"><a></a><span class="vs">    &lt;/tbody&gt;</span></span>
+<span id="cb11-607"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
+<span id="cb11-608"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-11" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Different units, different scales — can’t just add them. <strong>Standardise each to a z-score first</strong>, <span class="math inline">\(z = (x - \bar{x}) / SD[x]\)</span>, then average the three z-scores per person.</p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb12" data-startfrom="615" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 614;"><span id="cb12-615"><a></a>{</span>
+<span id="cb12-616"><a></a>  <span class="kw">const</span> people <span class="op">=</span> [</span>
+<span id="cb12-617"><a></a>    { <span class="dt">name</span><span class="op">:</span> <span class="st">"Amara"</span><span class="op">,</span> <span class="dt">sleep</span><span class="op">:</span> <span class="fl">8.5</span><span class="op">,</span> <span class="dt">energy</span><span class="op">:</span> <span class="dv">9</span><span class="op">,</span> <span class="dt">grip</span><span class="op">:</span> <span class="dv">33</span> }<span class="op">,</span></span>
+<span id="cb12-618"><a></a>    { <span class="dt">name</span><span class="op">:</span> <span class="st">"Ben"</span><span class="op">,</span>    <span class="dt">sleep</span><span class="op">:</span> <span class="fl">5.0</span><span class="op">,</span> <span class="dt">energy</span><span class="op">:</span> <span class="dv">4</span><span class="op">,</span> <span class="dt">grip</span><span class="op">:</span> <span class="dv">32</span> }<span class="op">,</span></span>
+<span id="cb12-619"><a></a>    { <span class="dt">name</span><span class="op">:</span> <span class="st">"Chidi"</span><span class="op">,</span>  <span class="dt">sleep</span><span class="op">:</span> <span class="fl">7.0</span><span class="op">,</span> <span class="dt">energy</span><span class="op">:</span> <span class="dv">6</span><span class="op">,</span> <span class="dt">grip</span><span class="op">:</span> <span class="dv">35</span> }<span class="op">,</span></span>
+<span id="cb12-620"><a></a>    { <span class="dt">name</span><span class="op">:</span> <span class="st">"Dana"</span><span class="op">,</span>   <span class="dt">sleep</span><span class="op">:</span> <span class="fl">4.5</span><span class="op">,</span> <span class="dt">energy</span><span class="op">:</span> <span class="dv">3</span><span class="op">,</span> <span class="dt">grip</span><span class="op">:</span> <span class="dv">30</span> }<span class="op">,</span></span>
+<span id="cb12-621"><a></a>    { <span class="dt">name</span><span class="op">:</span> <span class="st">"Elin"</span><span class="op">,</span>   <span class="dt">sleep</span><span class="op">:</span> <span class="fl">9.0</span><span class="op">,</span> <span class="dt">energy</span><span class="op">:</span> <span class="dv">8</span><span class="op">,</span> <span class="dt">grip</span><span class="op">:</span> <span class="dv">31</span> }<span class="op">,</span></span>
+<span id="cb12-622"><a></a>    { <span class="dt">name</span><span class="op">:</span> <span class="st">"Femi"</span><span class="op">,</span>   <span class="dt">sleep</span><span class="op">:</span> <span class="fl">6.0</span><span class="op">,</span> <span class="dt">energy</span><span class="op">:</span> <span class="dv">5</span><span class="op">,</span> <span class="dt">grip</span><span class="op">:</span> <span class="dv">34</span> }<span class="op">,</span></span>
+<span id="cb12-623"><a></a>  ]</span>
+<span id="cb12-624"><a></a>  <span class="kw">const</span> z <span class="op">=</span> vals <span class="kw">=&gt;</span> { <span class="kw">const</span> m <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(vals)<span class="op">,</span> s <span class="op">=</span> d3<span class="op">.</span><span class="fu">deviation</span>(vals) <span class="op">*</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sqrt</span>((vals<span class="op">.</span><span class="at">length</span><span class="op">-</span><span class="dv">1</span>)<span class="op">/</span>vals<span class="op">.</span><span class="at">length</span>)<span class="op">;</span> <span class="cf">return</span> vals<span class="op">.</span><span class="fu">map</span>(v <span class="kw">=&gt;</span> (v <span class="op">-</span> m) <span class="op">/</span> s) }</span>
+<span id="cb12-625"><a></a>  <span class="kw">const</span> zs <span class="op">=</span> <span class="fu">z</span>(people<span class="op">.</span><span class="fu">map</span>(p <span class="kw">=&gt;</span> p<span class="op">.</span><span class="at">sleep</span>))<span class="op">,</span> ze <span class="op">=</span> <span class="fu">z</span>(people<span class="op">.</span><span class="fu">map</span>(p <span class="kw">=&gt;</span> p<span class="op">.</span><span class="at">energy</span>))<span class="op">,</span> zg <span class="op">=</span> <span class="fu">z</span>(people<span class="op">.</span><span class="fu">map</span>(p <span class="kw">=&gt;</span> p<span class="op">.</span><span class="at">grip</span>))</span>
+<span id="cb12-626"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> people<span class="op">.</span><span class="fu">map</span>((p<span class="op">,</span>i) <span class="kw">=&gt;</span> ({ <span class="dt">name</span><span class="op">:</span> p<span class="op">.</span><span class="at">name</span><span class="op">,</span> <span class="dt">zs</span><span class="op">:</span> zs[i]<span class="op">,</span> <span class="dt">ze</span><span class="op">:</span> ze[i]<span class="op">,</span> <span class="dt">zg</span><span class="op">:</span> zg[i]<span class="op">,</span> <span class="dt">avg</span><span class="op">:</span> (zs[i]<span class="op">+</span>ze[i]<span class="op">+</span>zg[i])<span class="op">/</span><span class="dv">3</span> }))</span>
+<span id="cb12-627"><a></a></span>
+<span id="cb12-628"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="width:85%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.85em;"&gt;</span></span>
+<span id="cb12-629"><a></a><span class="vs">    &lt;thead&gt;&lt;tr style="background:#1a1a2e;color:white;"&gt;</span></span>
+<span id="cb12-630"><a></a><span class="vs">      &lt;th style="padding:7px 16px;text-align:left;"&gt;Person&lt;/th&gt;</span></span>
+<span id="cb12-631"><a></a><span class="vs">      &lt;th style="padding:7px 16px;text-align:right;"&gt;z(sleep)&lt;/th&gt;</span></span>
+<span id="cb12-632"><a></a><span class="vs">      &lt;th style="padding:7px 16px;text-align:right;"&gt;z(energy)&lt;/th&gt;</span></span>
+<span id="cb12-633"><a></a><span class="vs">      &lt;th style="padding:7px 16px;text-align:right;"&gt;z(grip)&lt;/th&gt;</span></span>
+<span id="cb12-634"><a></a><span class="vs">      &lt;th style="padding:7px 16px;text-align:right;background:#2d6a4f;"&gt;Average z&lt;/th&gt;</span></span>
+<span id="cb12-635"><a></a><span class="vs">    &lt;/tr&gt;&lt;/thead&gt;</span></span>
+<span id="cb12-636"><a></a><span class="vs">    &lt;tbody&gt;</span></span>
+<span id="cb12-637"><a></a><span class="vs">      </span><span class="sc">${</span>rows<span class="op">.</span><span class="fu">map</span>((r<span class="op">,</span>i) <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="</span><span class="sc">${</span>i<span class="op">%</span><span class="dv">2</span><span class="op">===</span><span class="dv">1</span><span class="op">?</span><span class="st">'background:#fafafa;'</span><span class="op">:</span><span class="st">''</span><span class="sc">}</span><span class="vs">border-bottom:1px solid #eee;"&gt;</span></span>
+<span id="cb12-638"><a></a><span class="vs">        &lt;td style="padding:6px 16px;"&gt;</span><span class="sc">${</span>r<span class="op">.</span><span class="at">name</span><span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb12-639"><a></a><span class="vs">        &lt;td style="padding:6px 16px;text-align:right;"&gt;</span><span class="sc">${</span>r<span class="op">.</span><span class="at">zs</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">2</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb12-640"><a></a><span class="vs">        &lt;td style="padding:6px 16px;text-align:right;"&gt;</span><span class="sc">${</span>r<span class="op">.</span><span class="at">ze</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">2</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb12-641"><a></a><span class="vs">        &lt;td style="padding:6px 16px;text-align:right;"&gt;</span><span class="sc">${</span>r<span class="op">.</span><span class="at">zg</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">2</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb12-642"><a></a><span class="vs">        &lt;td style="padding:6px 16px;text-align:right;font-weight:700;background:#f0f4f8;color:#2d6a4f;"&gt;</span><span class="sc">${</span>r<span class="op">.</span><span class="at">avg</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">2</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb12-643"><a></a><span class="vs">      &lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb12-644"><a></a><span class="vs">    &lt;/tbody&gt;</span></span>
+<span id="cb12-645"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
+<span id="cb12-646"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-12" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="pca" class="slide level2 smaller">
+<h2>PCA</h2>
+<p>Same six people, same three proxies. Instead of weighting every variable equally, <strong>PCA looks at how the variables correlate with each other</strong>, and finds the one weighted combination that captures as much of their <em>shared</em> variation as possible.</p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb13" data-startfrom="655" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 654;"><span id="cb13-655"><a></a>{</span>
+<span id="cb13-656"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> [</span>
+<span id="cb13-657"><a></a>    { <span class="dt">v</span><span class="op">:</span> <span class="st">"Sleep"</span><span class="op">,</span>  <span class="dt">sleep</span><span class="op">:</span> <span class="fl">1.00</span><span class="op">,</span> <span class="dt">energy</span><span class="op">:</span> <span class="fl">0.97</span><span class="op">,</span> <span class="dt">grip</span><span class="op">:</span> <span class="fl">0.20</span> }<span class="op">,</span></span>
+<span id="cb13-658"><a></a>    { <span class="dt">v</span><span class="op">:</span> <span class="st">"Energy"</span><span class="op">,</span> <span class="dt">sleep</span><span class="op">:</span> <span class="fl">0.97</span><span class="op">,</span> <span class="dt">energy</span><span class="op">:</span> <span class="fl">1.00</span><span class="op">,</span> <span class="dt">grip</span><span class="op">:</span> <span class="fl">0.25</span> }<span class="op">,</span></span>
+<span id="cb13-659"><a></a>    { <span class="dt">v</span><span class="op">:</span> <span class="st">"Grip"</span><span class="op">,</span>   <span class="dt">sleep</span><span class="op">:</span> <span class="fl">0.20</span><span class="op">,</span> <span class="dt">energy</span><span class="op">:</span> <span class="fl">0.25</span><span class="op">,</span> <span class="dt">grip</span><span class="op">:</span> <span class="fl">1.00</span> }<span class="op">,</span></span>
+<span id="cb13-660"><a></a>  ]</span>
+<span id="cb13-661"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="width:60%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.9em;"&gt;</span></span>
+<span id="cb13-662"><a></a><span class="vs">    &lt;thead&gt;&lt;tr style="background:#1a1a2e;color:white;"&gt;</span></span>
+<span id="cb13-663"><a></a><span class="vs">      &lt;th style="padding:8px 16px;text-align:left;"&gt;Correlation&lt;/th&gt;</span></span>
+<span id="cb13-664"><a></a><span class="vs">      &lt;th style="padding:8px 16px;text-align:right;"&gt;Sleep&lt;/th&gt;</span></span>
+<span id="cb13-665"><a></a><span class="vs">      &lt;th style="padding:8px 16px;text-align:right;"&gt;Energy&lt;/th&gt;</span></span>
+<span id="cb13-666"><a></a><span class="vs">      &lt;th style="padding:8px 16px;text-align:right;"&gt;Grip&lt;/th&gt;</span></span>
+<span id="cb13-667"><a></a><span class="vs">    &lt;/tr&gt;&lt;/thead&gt;</span></span>
+<span id="cb13-668"><a></a><span class="vs">    &lt;tbody&gt;</span></span>
+<span id="cb13-669"><a></a><span class="vs">      </span><span class="sc">${</span>rows<span class="op">.</span><span class="fu">map</span>((r<span class="op">,</span>i) <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="</span><span class="sc">${</span>i<span class="op">%</span><span class="dv">2</span><span class="op">===</span><span class="dv">1</span><span class="op">?</span><span class="st">'background:#fafafa;'</span><span class="op">:</span><span class="st">''</span><span class="sc">}</span><span class="vs">border-bottom:1px solid #eee;"&gt;</span></span>
+<span id="cb13-670"><a></a><span class="vs">        &lt;td style="padding:7px 16px;font-weight:700;"&gt;</span><span class="sc">${</span>r<span class="op">.</span><span class="at">v</span><span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb13-671"><a></a><span class="vs">        &lt;td style="padding:7px 16px;text-align:right;"&gt;</span><span class="sc">${</span>r<span class="op">.</span><span class="at">sleep</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">2</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb13-672"><a></a><span class="vs">        &lt;td style="padding:7px 16px;text-align:right;"&gt;</span><span class="sc">${</span>r<span class="op">.</span><span class="at">energy</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">2</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb13-673"><a></a><span class="vs">        &lt;td style="padding:7px 16px;text-align:right;"&gt;</span><span class="sc">${</span>r<span class="op">.</span><span class="at">grip</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">2</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb13-674"><a></a><span class="vs">      &lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb13-675"><a></a><span class="vs">    &lt;/tbody&gt;</span></span>
+<span id="cb13-676"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
+<span id="cb13-677"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-13" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Sleep and energy move together closely (0.97); grip strength barely tracks either (0.20–0.25) — a noisier signal for the same underlying “alertness.”</p>
+</div>
+<div class="fragment">
+<p>PCA notices this automatically:</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th style="text-align: right;">Equal-weight average</th>
+<th style="text-align: right;">PCA weight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Sleep</td>
+<td style="text-align: right;">0.33</td>
+<td style="text-align: right;">0.41</td>
+</tr>
+<tr class="even">
+<td>Energy</td>
+<td style="text-align: right;">0.33</td>
+<td style="text-align: right;">0.41</td>
+</tr>
+<tr class="odd">
+<td>Grip</td>
+<td style="text-align: right;">0.33</td>
+<td style="text-align: right;"><strong>0.18</strong></td>
+</tr>
+</tbody>
+</table>
+<p>It down-weights the noisier proxy — something a simple average, by construction, can’t do.</p>
+</div>
+<div class="fragment">
+<p>The two composite scores still end up highly correlated (≈0.98 here) — usually true in practice. That’s exactly why <strong>Gabor &amp; Kézdi recommend the z-score average for everyday use</strong>, and treat PCA as a robustness check rather than a first choice.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 4</p>
+</div>
+</section>
+<section id="ai-and-finding-patterns" class="slide level2">
+<h2>AI and finding patterns</h2>
+<p>GenAI is genuinely useful for a first pass over a new dataset — spotting candidate patterns quickly, the way a quick script or profiler would.</p>
+<div class="fragment">
+<p>Where it’s weaker: <strong>judging</strong> whether a correlation is meaningfully weak or strong, and knowing <em>which</em> pattern is worth pursuing in the first place. That judgment is still yours.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 4</p>
+</div>
+</section>
+<section id="online-session-functional-form" class="slide level2">
+<h2>Online session — Functional form</h2>
+<p>A closer look at log transformations: why they approximate percentage differences, and where that approximation breaks down.</p>
+<div class="instructions-box">
+<p>See <strong>week3-online.html</strong> — a short standalone deck for this week’s online session.</p>
+</div>
+</section>
+<section id="coming-up-week-4" class="slide level2">
+<h2>Coming up: Week 4</h2>
+<div style="text-align: center; padding-top: 60px;">
+<p><span style="font-size: 1.3em;">We can now describe a relationship between two variables.</span></p>
+<p><span style="font-size: 1.3em; padding-top: 20px; display:block;">Next: turn that relationship into a <strong>model</strong> we can use to predict and interpret.</span></p>
+<p><span style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"><strong>Simple regression: the OLS estimator</strong></span></p>
+<div class="fragment" style="padding-top:40px;">
+<p><em>Linear regression · fitting a line · interpreting the slope</em></p>
+</div>
+</div>
+
+
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'fade',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1280,
+
+        height: 720,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 8.0e-2,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script type="ojs-module-contents">
+    eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgaWYgKCFqb2ludF90YWJsZS5sZW5ndGgpIHJldHVybiBodG1sYDxwIHN0eWxlPVwiY29sb3I6I2FhYTtcIj5Ob3QgZW5vdWdoIGRhdGEgeWV0LjwvcD5gXG4gIGNvbnN0IGRldmljZXMgPSBbLi4ubmV3IFNldChqb2ludF90YWJsZS5tYXAoZCA9PiBkLmRldmljZSkpXVxuICBjb25zdCBjYWZmcyA9IFsuLi5uZXcgU2V0KGpvaW50X3RhYmxlLm1hcChkID0+IGQuY2FmZmVpbmUpKV1cbiAgY29uc3QgZ3JhbmRUb3RhbCA9IGQzLnN1bShqb2ludF90YWJsZSwgZCA9PiBkLmNvdW50KVxuICBjb25zdCBjZWxsID0gKGRldiwgY2FmKSA9PiBqb2ludF90YWJsZS5maW5kKHIgPT4gci5kZXZpY2UgPT09IGRldiAmJiByLmNhZmZlaW5lID09PSBjYWYpPy5jb3VudCA/PyAwXG4gIGNvbnN0IHJvd1RvdGFsID0gZGV2ID0+IGQzLnN1bShjYWZmcywgYyA9PiBjZWxsKGRldiwgYykpXG4gIGNvbnN0IGNvbFRvdGFsID0gY2FmID0+IGQzLnN1bShkZXZpY2VzLCBkID0+IGNlbGwoZCwgY2FmKSlcblxuICByZXR1cm4gaHRtbGA8dGFibGUgc3R5bGU9XCJ3aWR0aDo4MCU7bWFyZ2luOjAgYXV0bztib3JkZXItY29sbGFwc2U6Y29sbGFwc2U7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MC45NWVtO1wiPlxuICAgIDx0aGVhZD48dHIgc3R5bGU9XCJiYWNrZ3JvdW5kOiMxYTFhMmU7Y29sb3I6d2hpdGU7XCI+XG4gICAgICA8dGggc3R5bGU9XCJwYWRkaW5nOjEwcHggMThweDt0ZXh0LWFsaWduOmxlZnQ7XCI+RGV2aWNlIFxcXFwgQ2FmZmVpbmU8L3RoPlxuICAgICAgJHtjYWZmcy5tYXAoYyA9PiBgPHRoIHN0eWxlPVwicGFkZGluZzoxMHB4IDE4cHg7dGV4dC1hbGlnbjpyaWdodDtcIj4ke2N9PC90aD5gKS5qb2luKCcnKX1cbiAgICAgIDx0aCBzdHlsZT1cInBhZGRpbmc6MTBweCAxOHB4O3RleHQtYWxpZ246cmlnaHQ7YmFja2dyb3VuZDojMmQ2YTRmO1wiPlRvdGFsPC90aD5cbiAgICA8L3RyPjwvdGhlYWQ+XG4gICAgPHRib2R5PlxuICAgICAgJHtkZXZpY2VzLm1hcCgoZGV2LGkpID0+IGA8dHIgc3R5bGU9XCIke2klMj09PTE/J2JhY2tncm91bmQ6I2ZhZmFmYTsnOicnfWJvcmRlci1ib3R0b206MXB4IHNvbGlkICNlZWU7XCI+XG4gICAgICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6OXB4IDE4cHg7Zm9udC13ZWlnaHQ6NzAwO1wiPiR7ZGV2fTwvdGQ+XG4gICAgICAgICR7Y2FmZnMubWFwKGMgPT4gYDx0ZCBzdHlsZT1cInBhZGRpbmc6OXB4IDE4cHg7dGV4dC1hbGlnbjpyaWdodDtjb2xvcjojNDU3YjlkO1wiPiR7Y2VsbChkZXYsYyl9PC90ZD5gKS5qb2luKCcnKX1cbiAgICAgICAgPHRkIHN0eWxlPVwicGFkZGluZzo5cHggMThweDt0ZXh0LWFsaWduOnJpZ2h0O2ZvbnQtd2VpZ2h0OjcwMDtiYWNrZ3JvdW5kOiNmMGY0Zjg7XCI+JHtyb3dUb3RhbChkZXYpfTwvdGQ+XG4gICAgICA8L3RyPmApLmpvaW4oJycpfVxuICAgICAgPHRyIHN0eWxlPVwiYm9yZGVyLXRvcDoycHggc29saWQgIzFhMWEyZTtcIj5cbiAgICAgICAgPHRkIHN0eWxlPVwicGFkZGluZzo5cHggMThweDtmb250LXdlaWdodDo3MDA7YmFja2dyb3VuZDojZjBmNGY4O1wiPlRvdGFsPC90ZD5cbiAgICAgICAgJHtjYWZmcy5tYXAoYyA9PiBgPHRkIHN0eWxlPVwicGFkZGluZzo5cHggMThweDt0ZXh0LWFsaWduOnJpZ2h0O2ZvbnQtd2VpZ2h0OjcwMDtiYWNrZ3JvdW5kOiNmMGY0Zjg7XCI+JHtjb2xUb3RhbChjKX08L3RkPmApLmpvaW4oJycpfVxuICAgICAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjlweCAxOHB4O3RleHQtYWxpZ246cmlnaHQ7Zm9udC13ZWlnaHQ6NzAwO2JhY2tncm91bmQ6I2U5ZWRmMTtcIj4ke2dyYW5kVG90YWx9PC90ZD5cbiAgICAgIDwvdHI+XG4gICAgPC90Ym9keT5cbiAgPC90YWJsZT5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJzdGFja2VkX2RhdGEgPSB7XG4gIGlmICgham9pbnRfdGFibGUubGVuZ3RoKSByZXR1cm4gW11cbiAgY29uc3QgZGV2aWNlcyA9IFsuLi5uZXcgU2V0KGpvaW50X3RhYmxlLm1hcChkID0+IGQuZGV2aWNlKSldXG4gIHJldHVybiBkZXZpY2VzLmZsYXRNYXAoZGV2ID0+IHtcbiAgICBjb25zdCByb3dzID0gam9pbnRfdGFibGUuZmlsdGVyKGQgPT4gZC5kZXZpY2UgPT09IGRldilcbiAgICBjb25zdCB0b3QgPSBkMy5zdW0ocm93cywgZCA9PiBkLmNvdW50KVxuICAgIHJldHVybiByb3dzLm1hcChyID0+ICh7IC4uLnIsIHBjdDogci5jb3VudCAvIHRvdCB9KSlcbiAgfSlcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMyIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgaWYgKCFzdGFja2VkX2RhdGEubGVuZ3RoKSByZXR1cm4gaHRtbGA8cCBzdHlsZT1cImNvbG9yOiNhYWE7XCI+Tm90IGVub3VnaCBkYXRhIHlldC48L3A+YFxuICByZXR1cm4gUGxvdC5wbG90KHtcbiAgICBoZWlnaHQ6IDI4MCxcbiAgICBtYXJnaW5MZWZ0OiA2MCxcbiAgICB4OiB7IGxhYmVsOiBcIkRldmljZVwiIH0sXG4gICAgeTogeyBsYWJlbDogXCIlIHdpdGhpbiBkZXZpY2VcIiwgcGVyY2VudDogdHJ1ZSB9LFxuICAgIGNvbG9yOiB7IGxlZ2VuZDogdHJ1ZSwgZG9tYWluOiBbXCJZZXNcIixcIk5vXCIsXCJVbmtub3duXCJdLCByYW5nZTogW1wiI2U2Mzk0NlwiLFwiIzQ1N2I5ZFwiLFwiI2NjY1wiXSB9LFxuICAgIG1hcmtzOiBbXG4gICAgICBQbG90LmJhclkoc3RhY2tlZF9kYXRhLCB7IHg6IFwiZGV2aWNlXCIsIHk6IFwicGN0XCIsIGZpbGw6IFwiY2FmZmVpbmVcIiwgb3JkZXI6IFwiY2FmZmVpbmVcIiB9KSxcbiAgICAgIFBsb3QucnVsZVkoWzBdKSxcbiAgICBdXG4gIH0pXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTQiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIGNvbnN0IHJvd3MgPSBzdHVkZW50X3N1bW1hcnkuZmlsdGVyKGQgPT4gZC5maW5nZXJfbW0gIT0gbnVsbCAmJiAhaXNOYU4oZC5maW5nZXJfbW0pKVxuICBpZiAocm93cy5sZW5ndGggPCAzKSB7XG4gICAgcmV0dXJuIGh0bWxgPGRpdiBjbGFzcz1cImluc3RydWN0aW9ucy1ib3hcIj5Ob3QgZW5vdWdoIGZpbmdlci1sZW5ndGggZGF0YSB5ZXQgdG8gYmluIOKAlCB0aGlzIHdpbGwgcG9wdWxhdGUgb25jZSBtb3JlIG9mIHRoZSBjbGFzcyBoYXMgc3VibWl0dGVkIHRocm91Z2ggdGhlIHVwZGF0ZWQgdG9vbC48L2Rpdj5gXG4gIH1cbiAgY29uc3QgdmFscyA9IHJvd3MubWFwKGQgPT4gZC5maW5nZXJfbW0pLnNvcnQoKGEsYikgPT4gYS1iKVxuICBjb25zdCBxMSA9IGQzLnF1YW50aWxlKHZhbHMsIDEvMyksIHEyID0gZDMucXVhbnRpbGUodmFscywgMi8zKVxuICBjb25zdCBiaW5PZiA9IGYgPT4gZiA8PSBxMSA/IFwiU2hvcnRcIiA6IGYgPD0gcTIgPyBcIk1lZGl1bVwiIDogXCJMb25nXCJcbiAgY29uc3QgYmlubmVkID0gcm93cy5tYXAoZCA9PiAoeyAuLi5kLCBiaW46IGJpbk9mKGQuZmluZ2VyX21tKSB9KSlcbiAgY29uc3QgZ3JvdXBlZCA9IFtcIlNob3J0XCIsXCJNZWRpdW1cIixcIkxvbmdcIl0ubWFwKGIgPT4ge1xuICAgIGNvbnN0IGcgPSBiaW5uZWQuZmlsdGVyKGQgPT4gZC5iaW4gPT09IGIpXG4gICAgcmV0dXJuIHsgYmluOiBiLCBuOiBnLmxlbmd0aCwgbWVhbl9ydDogZy5sZW5ndGggPyBkMy5tZWFuKGcsIGQgPT4gZC5tZWFuX3J0KSA6IG51bGwgfVxuICB9KS5maWx0ZXIoZyA9PiBnLm4gPiAwKVxuXG4gIHJldHVybiBQbG90LnBsb3Qoe1xuICAgIGhlaWdodDogMzAwLFxuICAgIG1hcmdpbkxlZnQ6IDYwLFxuICAgIHg6IHsgbGFiZWw6IFwiRmluZ2VyIGxlbmd0aCBiaW5cIiwgZG9tYWluOiBbXCJTaG9ydFwiLFwiTWVkaXVtXCIsXCJMb25nXCJdIH0sXG4gICAgeTogeyBsYWJlbDogXCJFW3JlYWN0aW9uIHRpbWUgfCBiaW5dIChtcylcIiB9LFxuICAgIG1hcmtzOiBbXG4gICAgICBQbG90LmJhclkoZ3JvdXBlZCwgeyB4OiBcImJpblwiLCB5OiBcIm1lYW5fcnRcIiwgZmlsbDogXCIjNDU3YjlkXCIsIGZpbGxPcGFjaXR5OiAwLjggfSksXG4gICAgICBQbG90LnRleHQoZ3JvdXBlZCwgeyB4OiBcImJpblwiLCB5OiBcIm1lYW5fcnRcIiwgdGV4dDogZCA9PiBgbj0ke2Qubn1gLCBkeTogLTEwLCBmaWxsOiBcIiMzMzNcIiwgZm9udFNpemU6IDEyIH0pLFxuICAgICAgUGxvdC5ydWxlWShbMF0pLFxuICAgIF1cbiAgfSlcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgcmV0dXJuIFBsb3QucGxvdCh7XG4gICAgaGVpZ2h0OiAzMDAsXG4gICAgbWFyZ2luTGVmdDogNjAsXG4gICAgeDogeyBsYWJlbDogXCJTbGVlcCB0aGUgbmlnaHQgYmVmb3JlIChob3VycylcIiB9LFxuICAgIHk6IHsgbGFiZWw6IFwiUmVhY3Rpb24gdGltZSAobXMpXCIgfSxcbiAgICBtYXJrczogW1xuICAgICAgUGxvdC5kb3Qoc2xlZXBfc2NhdHRlcl9kYXRhLCB7IHg6IFwic2xlZXBfaG91cnNcIiwgeTogXCJyZWFjdGlvbl90aW1lX21zXCIsIGZpbGw6IFwiIzQ1N2I5ZFwiLCByOiA1LCBmaWxsT3BhY2l0eTogMC43NSxcbiAgICAgICAgICAgICAgICAgICAgICAgdGlwOiB0cnVlLCB0aXRsZTogZCA9PiBgJHtkLnNsZWVwX2hvdXJzfWggc2xlZXAsICR7ZC5yZWFjdGlvbl90aW1lX21zfW1zYCB9KSxcbiAgICBdXG4gIH0pXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTYiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIGNvbnN0IGdyb3VwZWQgPSBkMy5yb2xsdXBzKHNsZWVwX3NjYXR0ZXJfZGF0YSwgdiA9PiBkMy5tZWFuKHYsIGQgPT4gZC5yZWFjdGlvbl90aW1lX21zKSwgZCA9PiBkLnNsZWVwX2hvdXJzKVxuICAgIC5tYXAoKFtzbGVlcF9ob3VycywgbWVhbl9ydF0pID0+ICh7IHNsZWVwX2hvdXJzLCBtZWFuX3J0IH0pKVxuICAgIC5zb3J0KChhLCBiKSA9PiBhLnNsZWVwX2hvdXJzIC0gYi5zbGVlcF9ob3VycylcblxuICByZXR1cm4gUGxvdC5wbG90KHtcbiAgICBoZWlnaHQ6IDM0MCxcbiAgICBtYXJnaW5MZWZ0OiA2MCxcbiAgICB4OiB7IGxhYmVsOiBcIlNsZWVwIHRoZSBuaWdodCBiZWZvcmUgKGhvdXJzKVwiIH0sXG4gICAgeTogeyBsYWJlbDogXCJFW3JlYWN0aW9uIHRpbWUgfCBzbGVlcCBob3Vyc10gKG1zKVwiIH0sXG4gICAgbWFya3M6IFtcbiAgICAgIFBsb3QuZG90KGdyb3VwZWQsIHsgeDogXCJzbGVlcF9ob3Vyc1wiLCB5OiBcIm1lYW5fcnRcIiwgZmlsbDogXCIjMmQ2YTRmXCIsIHI6IDUsIGZpbGxPcGFjaXR5OiAwLjg1LFxuICAgICAgICAgICAgICAgICAgICAgICB0aXA6IHRydWUsIHRpdGxlOiBkID0+IGAke2Quc2xlZXBfaG91cnN9aDogJHtkLm1lYW5fcnQudG9GaXhlZCgwKX1tc2AgfSksXG4gICAgXVxuICB9KVxufVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC03IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICByZXR1cm4gUGxvdC5wbG90KHtcbiAgICBoZWlnaHQ6IDM0MCxcbiAgICBtYXJnaW5MZWZ0OiA1NSxcbiAgICB4OiB7IGxhYmVsOiBcIlNsZWVwIHRoZSBuaWdodCBiZWZvcmUgKGhvdXJzKVwiIH0sXG4gICAgeTogeyBsYWJlbDogXCJsbihyZWFjdGlvbiB0aW1lKVwiIH0sXG4gICAgbWFya3M6IFtcbiAgICAgIFBsb3QuZG90KHNsZWVwX3NjYXR0ZXJfZGF0YSwgeyB4OiBcInNsZWVwX2hvdXJzXCIsIHk6IGQgPT4gTWF0aC5sb2coZC5yZWFjdGlvbl90aW1lX21zKSwgZmlsbDogXCIjMmQ2YTRmXCIsIHI6IDUsIGZpbGxPcGFjaXR5OiAwLjc1LFxuICAgICAgICAgICAgICAgICAgICAgICB0aXA6IHRydWUsIHRpdGxlOiBkID0+IGAke2Quc2xlZXBfaG91cnN9aCBzbGVlcCwgJHtkLnJlYWN0aW9uX3RpbWVfbXN9bXNgIH0pLFxuICAgIF1cbiAgfSlcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtOCIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgcmV0dXJuIFBsb3QucGxvdCh7XG4gICAgaGVpZ2h0OiAzNDAsXG4gICAgbWFyZ2luTGVmdDogNTUsXG4gICAgeDogeyBsYWJlbDogXCJTbGVlcCB0aGUgbmlnaHQgYmVmb3JlIChob3VycylcIiB9LFxuICAgIHk6IHsgbGFiZWw6IFwiUmVhY3Rpb24gdGltZSAobXMpXCIgfSxcbiAgICBtYXJrczogW1xuICAgICAgUGxvdC5kb3Qoc2xlZXBfc2NhdHRlcl9kYXRhLCB7IHg6IFwic2xlZXBfaG91cnNcIiwgeTogXCJyZWFjdGlvbl90aW1lX21zXCIsIGZpbGw6IFwiIzQ1N2I5ZFwiLCByOiA1LCBmaWxsT3BhY2l0eTogMC43NSxcbiAgICAgICAgICAgICAgICAgICAgICAgdGlwOiB0cnVlLCB0aXRsZTogZCA9PiBgJHtkLnNsZWVwX2hvdXJzfWggc2xlZXAsICR7ZC5yZWFjdGlvbl90aW1lX21zfW1zYCB9KSxcbiAgICBdXG4gIH0pXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTkiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIGNvbnN0IHJvd3MgPSBzdHVkZW50X3N1bW1hcnkuZmlsdGVyKGQgPT4gZC5maW5nZXJfbW0gIT0gbnVsbCAmJiAhaXNOYU4oZC5maW5nZXJfbW0pKVxuICBpZiAocm93cy5sZW5ndGggPCAzKSByZXR1cm4gaHRtbGA8cCBzdHlsZT1cImNvbG9yOiNhYWE7XCI+V2lsbCBjb21wdXRlIGF1dG9tYXRpY2FsbHkgb25jZSBlbm91Z2ggZGF0YSBpcyBpbi48L3A+YFxuICBjb25zdCB4cyA9IHJvd3MubWFwKGQgPT4gZC5maW5nZXJfbW0pLCB5cyA9IHJvd3MubWFwKGQgPT4gZC5tZWFuX3J0KVxuICBjb25zdCBteCA9IGQzLm1lYW4oeHMpLCBteSA9IGQzLm1lYW4oeXMpXG4gIGNvbnN0IGNvdiA9IGQzLm1lYW4oeHMubWFwKCh4LGkpID0+ICh4IC0gbXgpICogKHlzW2ldIC0gbXkpKSlcbiAgcmV0dXJuIGh0bWxgPHAgc3R5bGU9XCJmb250LWZhbWlseTpzYW5zLXNlcmlmO1wiPkNvdltmaW5nZXIgbGVuZ3RoLCByZWFjdGlvbiB0aW1lXSA9IDxzdHJvbmcgc3R5bGU9XCJjb2xvcjojZTYzOTQ2O2ZvbnQtc2l6ZToxLjJlbTtcIj4ke2Nvdi50b0ZpeGVkKDEpfTwvc3Ryb25nPjwvcD5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTEwIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICBjb25zdCByb3dzID0gc3R1ZGVudF9zdW1tYXJ5LmZpbHRlcihkID0+IGQuZmluZ2VyX21tICE9IG51bGwgJiYgIWlzTmFOKGQuZmluZ2VyX21tKSlcbiAgaWYgKHJvd3MubGVuZ3RoIDwgMykgcmV0dXJuIGh0bWxgPHAgc3R5bGU9XCJjb2xvcjojYWFhO1wiPldpbGwgY29tcHV0ZSBhdXRvbWF0aWNhbGx5IG9uY2UgZW5vdWdoIGRhdGEgaXMgaW4uPC9wPmBcbiAgY29uc3QgeHMgPSByb3dzLm1hcChkID0+IGQuZmluZ2VyX21tKSwgeXMgPSByb3dzLm1hcChkID0+IGQubWVhbl9ydClcbiAgY29uc3QgbXggPSBkMy5tZWFuKHhzKSwgbXkgPSBkMy5tZWFuKHlzKVxuICBjb25zdCBjb3YgPSBkMy5tZWFuKHhzLm1hcCgoeCxpKSA9PiAoeCAtIG14KSAqICh5c1tpXSAtIG15KSkpXG4gIGNvbnN0IGNvcnIgPSBjb3YgLyAoZDMuZGV2aWF0aW9uKHhzKSAqIGQzLmRldmlhdGlvbih5cykpXG4gIHJldHVybiBodG1sYDxwIHN0eWxlPVwiZm9udC1mYW1pbHk6c2Fucy1zZXJpZjtcIj5Db3JyW2ZpbmdlciBsZW5ndGgsIHJlYWN0aW9uIHRpbWVdID0gPHN0cm9uZyBzdHlsZT1cImNvbG9yOiNlNjM5NDY7Zm9udC1zaXplOjEuMmVtO1wiPiR7Y29yci50b0ZpeGVkKDIpfTwvc3Ryb25nPjwvcD5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTExIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICBjb25zdCBwZW9wbGUgPSBbXG4gICAgeyBuYW1lOiBcIkFtYXJhXCIsIHNsZWVwOiA4LjUsIGVuZXJneTogOSwgZ3JpcDogMzMgfSxcbiAgICB7IG5hbWU6IFwiQmVuXCIsICAgIHNsZWVwOiA1LjAsIGVuZXJneTogNCwgZ3JpcDogMzIgfSxcbiAgICB7IG5hbWU6IFwiQ2hpZGlcIiwgIHNsZWVwOiA3LjAsIGVuZXJneTogNiwgZ3JpcDogMzUgfSxcbiAgICB7IG5hbWU6IFwiRGFuYVwiLCAgIHNsZWVwOiA0LjUsIGVuZXJneTogMywgZ3JpcDogMzAgfSxcbiAgICB7IG5hbWU6IFwiRWxpblwiLCAgIHNsZWVwOiA5LjAsIGVuZXJneTogOCwgZ3JpcDogMzEgfSxcbiAgICB7IG5hbWU6IFwiRmVtaVwiLCAgIHNsZWVwOiA2LjAsIGVuZXJneTogNSwgZ3JpcDogMzQgfSxcbiAgXVxuICByZXR1cm4gaHRtbGA8dGFibGUgc3R5bGU9XCJ3aWR0aDo4MCU7bWFyZ2luOjAgYXV0bztib3JkZXItY29sbGFwc2U6Y29sbGFwc2U7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MC44NWVtO1wiPlxuICAgIDx0aGVhZD48dHIgc3R5bGU9XCJiYWNrZ3JvdW5kOiMxYTFhMmU7Y29sb3I6d2hpdGU7XCI+XG4gICAgICA8dGggc3R5bGU9XCJwYWRkaW5nOjdweCAxNnB4O3RleHQtYWxpZ246bGVmdDtcIj5QZXJzb248L3RoPlxuICAgICAgPHRoIHN0eWxlPVwicGFkZGluZzo3cHggMTZweDt0ZXh0LWFsaWduOnJpZ2h0O1wiPlNsZWVwIChoKTwvdGg+XG4gICAgICA8dGggc3R5bGU9XCJwYWRkaW5nOjdweCAxNnB4O3RleHQtYWxpZ246cmlnaHQ7XCI+RW5lcmd5ICgxJm5kYXNoOzEwKTwvdGg+XG4gICAgICA8dGggc3R5bGU9XCJwYWRkaW5nOjdweCAxNnB4O3RleHQtYWxpZ246cmlnaHQ7XCI+R3JpcCAoa2cpPC90aD5cbiAgICA8L3RyPjwvdGhlYWQ+XG4gICAgPHRib2R5PlxuICAgICAgJHtwZW9wbGUubWFwKChwLGkpID0+IGA8dHIgc3R5bGU9XCIke2klMj09PTE/J2JhY2tncm91bmQ6I2ZhZmFmYTsnOicnfWJvcmRlci1ib3R0b206MXB4IHNvbGlkICNlZWU7XCI+XG4gICAgICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6NnB4IDE2cHg7XCI+JHtwLm5hbWV9PC90ZD5cbiAgICAgICAgPHRkIHN0eWxlPVwicGFkZGluZzo2cHggMTZweDt0ZXh0LWFsaWduOnJpZ2h0O1wiPiR7cC5zbGVlcH08L3RkPlxuICAgICAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjZweCAxNnB4O3RleHQtYWxpZ246cmlnaHQ7XCI+JHtwLmVuZXJneX08L3RkPlxuICAgICAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjZweCAxNnB4O3RleHQtYWxpZ246cmlnaHQ7XCI+JHtwLmdyaXB9PC90ZD5cbiAgICAgIDwvdHI+YCkuam9pbignJyl9XG4gICAgPC90Ym9keT5cbiAgPC90YWJsZT5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTEyIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICBjb25zdCBwZW9wbGUgPSBbXG4gICAgeyBuYW1lOiBcIkFtYXJhXCIsIHNsZWVwOiA4LjUsIGVuZXJneTogOSwgZ3JpcDogMzMgfSxcbiAgICB7IG5hbWU6IFwiQmVuXCIsICAgIHNsZWVwOiA1LjAsIGVuZXJneTogNCwgZ3JpcDogMzIgfSxcbiAgICB7IG5hbWU6IFwiQ2hpZGlcIiwgIHNsZWVwOiA3LjAsIGVuZXJneTogNiwgZ3JpcDogMzUgfSxcbiAgICB7IG5hbWU6IFwiRGFuYVwiLCAgIHNsZWVwOiA0LjUsIGVuZXJneTogMywgZ3JpcDogMzAgfSxcbiAgICB7IG5hbWU6IFwiRWxpblwiLCAgIHNsZWVwOiA5LjAsIGVuZXJneTogOCwgZ3JpcDogMzEgfSxcbiAgICB7IG5hbWU6IFwiRmVtaVwiLCAgIHNsZWVwOiA2LjAsIGVuZXJneTogNSwgZ3JpcDogMzQgfSxcbiAgXVxuICBjb25zdCB6ID0gdmFscyA9PiB7IGNvbnN0IG0gPSBkMy5tZWFuKHZhbHMpLCBzID0gZDMuZGV2aWF0aW9uKHZhbHMpICogTWF0aC5zcXJ0KCh2YWxzLmxlbmd0aC0xKS92YWxzLmxlbmd0aCk7IHJldHVybiB2YWxzLm1hcCh2ID0+ICh2IC0gbSkgLyBzKSB9XG4gIGNvbnN0IHpzID0geihwZW9wbGUubWFwKHAgPT4gcC5zbGVlcCkpLCB6ZSA9IHoocGVvcGxlLm1hcChwID0+IHAuZW5lcmd5KSksIHpnID0geihwZW9wbGUubWFwKHAgPT4gcC5ncmlwKSlcbiAgY29uc3Qgcm93cyA9IHBlb3BsZS5tYXAoKHAsaSkgPT4gKHsgbmFtZTogcC5uYW1lLCB6czogenNbaV0sIHplOiB6ZVtpXSwgemc6IHpnW2ldLCBhdmc6ICh6c1tpXSt6ZVtpXSt6Z1tpXSkvMyB9KSlcblxuICByZXR1cm4gaHRtbGA8dGFibGUgc3R5bGU9XCJ3aWR0aDo4NSU7bWFyZ2luOjAgYXV0bztib3JkZXItY29sbGFwc2U6Y29sbGFwc2U7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MC44NWVtO1wiPlxuICAgIDx0aGVhZD48dHIgc3R5bGU9XCJiYWNrZ3JvdW5kOiMxYTFhMmU7Y29sb3I6d2hpdGU7XCI+XG4gICAgICA8dGggc3R5bGU9XCJwYWRkaW5nOjdweCAxNnB4O3RleHQtYWxpZ246bGVmdDtcIj5QZXJzb248L3RoPlxuICAgICAgPHRoIHN0eWxlPVwicGFkZGluZzo3cHggMTZweDt0ZXh0LWFsaWduOnJpZ2h0O1wiPnooc2xlZXApPC90aD5cbiAgICAgIDx0aCBzdHlsZT1cInBhZGRpbmc6N3B4IDE2cHg7dGV4dC1hbGlnbjpyaWdodDtcIj56KGVuZXJneSk8L3RoPlxuICAgICAgPHRoIHN0eWxlPVwicGFkZGluZzo3cHggMTZweDt0ZXh0LWFsaWduOnJpZ2h0O1wiPnooZ3JpcCk8L3RoPlxuICAgICAgPHRoIHN0eWxlPVwicGFkZGluZzo3cHggMTZweDt0ZXh0LWFsaWduOnJpZ2h0O2JhY2tncm91bmQ6IzJkNmE0ZjtcIj5BdmVyYWdlIHo8L3RoPlxuICAgIDwvdHI+PC90aGVhZD5cbiAgICA8dGJvZHk+XG4gICAgICAke3Jvd3MubWFwKChyLGkpID0+IGA8dHIgc3R5bGU9XCIke2klMj09PTE/J2JhY2tncm91bmQ6I2ZhZmFmYTsnOicnfWJvcmRlci1ib3R0b206MXB4IHNvbGlkICNlZWU7XCI+XG4gICAgICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6NnB4IDE2cHg7XCI+JHtyLm5hbWV9PC90ZD5cbiAgICAgICAgPHRkIHN0eWxlPVwicGFkZGluZzo2cHggMTZweDt0ZXh0LWFsaWduOnJpZ2h0O1wiPiR7ci56cy50b0ZpeGVkKDIpfTwvdGQ+XG4gICAgICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6NnB4IDE2cHg7dGV4dC1hbGlnbjpyaWdodDtcIj4ke3IuemUudG9GaXhlZCgyKX08L3RkPlxuICAgICAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjZweCAxNnB4O3RleHQtYWxpZ246cmlnaHQ7XCI+JHtyLnpnLnRvRml4ZWQoMil9PC90ZD5cbiAgICAgICAgPHRkIHN0eWxlPVwicGFkZGluZzo2cHggMTZweDt0ZXh0LWFsaWduOnJpZ2h0O2ZvbnQtd2VpZ2h0OjcwMDtiYWNrZ3JvdW5kOiNmMGY0Zjg7Y29sb3I6IzJkNmE0ZjtcIj4ke3IuYXZnLnRvRml4ZWQoMil9PC90ZD5cbiAgICAgIDwvdHI+YCkuam9pbignJyl9XG4gICAgPC90Ym9keT5cbiAgPC90YWJsZT5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTEzIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICBjb25zdCByb3dzID0gW1xuICAgIHsgdjogXCJTbGVlcFwiLCAgc2xlZXA6IDEuMDAsIGVuZXJneTogMC45NywgZ3JpcDogMC4yMCB9LFxuICAgIHsgdjogXCJFbmVyZ3lcIiwgc2xlZXA6IDAuOTcsIGVuZXJneTogMS4wMCwgZ3JpcDogMC4yNSB9LFxuICAgIHsgdjogXCJHcmlwXCIsICAgc2xlZXA6IDAuMjAsIGVuZXJneTogMC4yNSwgZ3JpcDogMS4wMCB9LFxuICBdXG4gIHJldHVybiBodG1sYDx0YWJsZSBzdHlsZT1cIndpZHRoOjYwJTttYXJnaW46MCBhdXRvO2JvcmRlci1jb2xsYXBzZTpjb2xsYXBzZTtmb250LWZhbWlseTpzYW5zLXNlcmlmO2ZvbnQtc2l6ZTowLjllbTtcIj5cbiAgICA8dGhlYWQ+PHRyIHN0eWxlPVwiYmFja2dyb3VuZDojMWExYTJlO2NvbG9yOndoaXRlO1wiPlxuICAgICAgPHRoIHN0eWxlPVwicGFkZGluZzo4cHggMTZweDt0ZXh0LWFsaWduOmxlZnQ7XCI+Q29ycmVsYXRpb248L3RoPlxuICAgICAgPHRoIHN0eWxlPVwicGFkZGluZzo4cHggMTZweDt0ZXh0LWFsaWduOnJpZ2h0O1wiPlNsZWVwPC90aD5cbiAgICAgIDx0aCBzdHlsZT1cInBhZGRpbmc6OHB4IDE2cHg7dGV4dC1hbGlnbjpyaWdodDtcIj5FbmVyZ3k8L3RoPlxuICAgICAgPHRoIHN0eWxlPVwicGFkZGluZzo4cHggMTZweDt0ZXh0LWFsaWduOnJpZ2h0O1wiPkdyaXA8L3RoPlxuICAgIDwvdHI+PC90aGVhZD5cbiAgICA8dGJvZHk+XG4gICAgICAke3Jvd3MubWFwKChyLGkpID0+IGA8dHIgc3R5bGU9XCIke2klMj09PTE/J2JhY2tncm91bmQ6I2ZhZmFmYTsnOicnfWJvcmRlci1ib3R0b206MXB4IHNvbGlkICNlZWU7XCI+XG4gICAgICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6N3B4IDE2cHg7Zm9udC13ZWlnaHQ6NzAwO1wiPiR7ci52fTwvdGQ+XG4gICAgICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6N3B4IDE2cHg7dGV4dC1hbGlnbjpyaWdodDtcIj4ke3Iuc2xlZXAudG9GaXhlZCgyKX08L3RkPlxuICAgICAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjdweCAxNnB4O3RleHQtYWxpZ246cmlnaHQ7XCI+JHtyLmVuZXJneS50b0ZpeGVkKDIpfTwvdGQ+XG4gICAgICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6N3B4IDE2cHg7dGV4dC1hbGlnbjpyaWdodDtcIj4ke3IuZ3JpcC50b0ZpeGVkKDIpfTwvdGQ+XG4gICAgICA8L3RyPmApLmpvaW4oJycpfVxuICAgIDwvdGJvZHk+XG4gIDwvdGFibGU+YFxufVxuIn1dfQ==
+    </script>
+    <script type="module">
+    if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+    window._ojs.paths.runtimeToDoc = "../..";
+    window._ojs.paths.runtimeToRoot = "../..";
+    window._ojs.paths.docToRoot = "";
+    window._ojs.selfContained = false;
+    window._ojs.runtime.interpretFromScriptTags();
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
+              }
+            }
+            return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

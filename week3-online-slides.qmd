@@ -1,0 +1,242 @@
+---
+title: "Functional Form: Why We Log"
+subtitle: "7002LBSAI Research Methods in Analytics — Week 3 Online Session"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="stylesheet" href="styles-slides.css?v=20260914">
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{python}
+import pandas as pd
+
+# This is the TEST-DATA deck — always reads the synthetic placeholder, never
+# the live Google Sheet. See week3-online-live.qmd for the in-class version.
+df = pd.read_csv("data/synthetic_reaction_times.csv")
+# df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIOZ03GpUJgqvGVmI9cih169mMq0ajLMj6a0VTd2tytB3K5BmX5AUiKQ8FKIL6KUKEcgb-1LR-1eM/pub?gid=0&single=true&output=csv")
+
+if 'name' in df.columns and 'student_name' not in df.columns:
+    df = df.rename(columns={'name': 'student_name'})
+if 'finger_mm' not in df.columns:
+    df['finger_mm'] = None
+df['finger_mm'] = pd.to_numeric(df['finger_mm'], errors='coerce')
+
+student_summary = (
+    df.groupby('student_name')
+    .agg(mean_rt=('reaction_time_ms', 'mean'), finger_mm=('finger_mm', 'first'))
+    .reset_index()
+    .round(1)
+)
+
+# NaN is not valid JSON — clean before ojs_define
+student_summary_clean = student_summary.astype(object).where(student_summary.notna(), None)
+
+ojs_define(
+    student_summary = student_summary_clean.to_dict(orient='records'),
+)
+```
+
+## {background-color="#1a1a2e"}
+
+::: {style="text-align: center; padding-top: 180px;"}
+[**Why we log**]{style="font-size: 2.2em; color: white;"}
+
+[The workshop used the log of reaction time to see a pattern more clearly. This session looks at why that works — and when it stops working.]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+:::
+
+## Why transform at all?
+
+A "% change" needs a **baseline** — a "before" to measure against. Time series has one built in: this year's GDP vs. last year's.
+
+::: {.fragment}
+Cross-sectional data doesn't. Student A's finger length isn't "before" Student B's — there's no natural reference point to build a percentage difference from.
+:::
+
+::: {.fragment}
+The natural logarithm sidesteps the problem: on a log scale, the difference between **any** two values approximates their percentage difference — no designated baseline required. It has a second payoff too: frequent nonlinear patterns are often far better approximated once we look at **relative differences** instead of raw ones.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Policy*, Ch. 4
+:::
+
+## What ln(x) actually buys you
+
+- $\ln(x)$ = the natural logarithm of $x$ — $x$ must be a positive number: $\ln(0)$ and $\ln(\text{negative})$ don't exist, so a variable with zeros (e.g. income including the unemployed) can't be logged as-is
+- The **claim**: differences in natural logs approximate **relative (percentage) differences**
+
+$$\ln(x + \Delta x) - \ln(x) \approx \frac{\Delta x}{x}$$
+
+::: {.fragment}
+Numerically: $\ln(1.01) = 0.0099 \approx 0.01$ — a 1% increase. $\ln(1.1) = 0.095 \approx 0.1$ — close to a 10% increase, already a little off.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 4
+:::
+
+## Where it comes from
+
+From calculus: the derivative of $\ln(x)$ is $\dfrac{1}{x}$.
+
+$$\frac{d\ln(x)}{dx} = \frac{1}{x} \quad\Rightarrow\quad \ln(x+\Delta x) - \ln(x) \approx \frac{1}{x}\Delta x = \frac{\Delta x}{x}$$
+
+::: {.fragment}
+That's the whole trick: a log difference is approximately a relative difference, **for small changes**. The approximation is a straight line touching the curve — it only stays close nearby.
+:::
+
+## Read the gap yourself
+
+```{ojs}
+viewof relx = {
+  const f = html`<div style="display:flex;align-items:center;gap:14px;font-size:13px;
+                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;">
+    <span style="color:#666;white-space:nowrap;">Relative change (Δx / x)</span>
+    <input type="range" min="0.01" max="1.5" step="0.01" value="0.1"
+           style="width:220px;cursor:pointer;accent-color:#457b9d;">
+    <span id="relx-label" style="font-weight:700;min-width:50px;color:#457b9d;">10%</span>
+  </div>`
+  const slider = f.querySelector('input')
+  const label  = f.querySelector('#relx-label')
+  slider.addEventListener('input', () => {
+    label.textContent = (slider.value * 100).toFixed(0) + '%'
+    f.dispatchEvent(new CustomEvent('input'))
+  })
+  Object.defineProperty(f, 'value', { get: () => +slider.value })
+  return f
+}
+```
+
+```{ojs}
+{
+  const actual = Math.log(1 + relx)
+  const approx = relx
+  const pctError = Math.abs(actual - approx) / actual * 100
+
+  const xs = d3.range(0, 1.51, 0.01)
+  const lineData = xs.map(x => ({ x, y: x, series: "Δx / x (the approximation)" }))
+  const curveData = xs.map(x => ({ x, y: Math.log(1 + x), series: "ln(1 + x) (the actual value)" }))
+
+  return html`<div>
+    ${Plot.plot({
+      height: 300,
+      marginLeft: 55,
+      x: { label: "x" },
+      y: { label: "value" },
+      color: { legend: true, range: ["#e63946", "#2d6a4f"] },
+      marks: [
+        Plot.line(lineData, { x: "x", y: "y", stroke: "series", strokeDasharray: "4,3" }),
+        Plot.line(curveData, { x: "x", y: "y", stroke: "series" }),
+        Plot.ruleX([relx], { stroke: "#999", strokeDasharray: "2,2" }),
+        Plot.dot([{ x: relx, y: relx }], { x: "x", y: "y", fill: "#e63946", r: 5 }),
+        Plot.dot([{ x: relx, y: Math.log(1+relx) }], { x: "x", y: "y", fill: "#2d6a4f", r: 5 }),
+      ]
+    })}
+    <p style="font-family:sans-serif;text-align:center;">
+      At Δx/x = ${(relx*100).toFixed(0)}%: approximation = ${approx.toFixed(3)}, actual ln(1+x) = ${actual.toFixed(3)}
+      — off by <strong style="color:${pctError > 10 ? '#e63946' : '#2d6a4f'}">${pctError.toFixed(1)}%</strong>
+    </p>
+  </div>`
+}
+```
+
+::: {.fragment}
+Below about 0.3 (30%) the approximation is close. Beyond that, the gap grows — for a 100% increase, the log difference (0.69) badly understates the true relative change.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:4px;"}
+Pattern after Békés & Kézdi (2021), Ch. 4
+:::
+
+## Beyond the approximation: the exact conversion {.smaller}
+
+For an exact percentage change instead of the approximation, invert the log:
+
+$$\%\Delta x = e^{\,\ln(x_2) - \ln(x_1)} - 1$$
+
+```{ojs}
+{
+  const diffs = [0.1, 0.3, 0.5, 1.0, -0.1, -0.3, -0.5, -1.0]
+  const rows = diffs.map(d => ({ diff: d, approx: d, exact: Math.exp(d) - 1 }))
+
+  return html`<table style="width:75%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;">
+    <thead><tr style="background:#1a1a2e;color:white;">
+      <th style="padding:10px 20px;text-align:right;">Log difference</th>
+      <th style="padding:10px 20px;text-align:right;">Approximation (Δx / x)</th>
+      <th style="padding:10px 20px;text-align:right;">Exact % change</th>
+    </tr></thead>
+    <tbody>
+      ${rows.map((r,i) => `<tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
+        <td style="padding:8px 20px;text-align:right;">${r.diff > 0 ? '+' : ''}${r.diff.toFixed(1)}</td>
+        <td style="padding:8px 20px;text-align:right;color:#999;">${r.approx > 0 ? '+' : ''}${(r.approx*100).toFixed(0)}%</td>
+        <td style="padding:8px 20px;text-align:right;font-weight:700;color:${Math.abs(r.exact - r.approx) > 0.05 ? '#e63946' : '#2d6a4f'};">${r.exact > 0 ? '+' : ''}${(r.exact*100).toFixed(0)}%</td>
+      </tr>`).join('')}
+    </tbody>
+  </table>`
+}
+```
+
+::: {.fragment}
+The approximation isn't just imprecise for large differences — it's **also asymmetric**. A log difference of +1.0 is a **+172%** change, not +100%. A log difference of −1.0 is only **−63%**, not −100%: log differences are bounded below by −1 no matter how close x gets to zero, but unbounded above. The scale itself is lopsided.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:4px;"}
+Source: Békés & Kézdi (2021), Ch. 4
+:::
+
+## Bringing it back to our own data
+
+The workshop logged reaction time when scattering it against finger length, because Week 1 found it's skewed — logging stretches out the crowded low end and compresses the long right tail, making the pattern easier to see. 
+```{ojs}
+{
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) {
+    return html`<div class="instructions-box">Not enough finger-length data yet to demonstrate this live — check back once more of the class has submitted.</div>`
+  }
+  const p1 = Plot.plot({
+    height: 260, width: 380,
+    x: { label: "Finger length (mm)" },
+    y: { label: "Mean reaction time (ms)" },
+    marks: [ Plot.dot(rows, { x: "finger_mm", y: "mean_rt", fill: "#457b9d", r: 6 }) ]
+  })
+  const p2 = Plot.plot({
+    height: 260, width: 380,
+    x: { label: "Finger length (mm)" },
+    y: { label: "ln(mean reaction time)" },
+    marks: [ Plot.dot(rows, { x: "finger_mm", y: d => Math.log(d.mean_rt), fill: "#2d6a4f", r: 6 }) ]
+  })
+  return html`<div style="display:flex;gap:24px;justify-content:center;">${p1}${p2}</div>`
+}
+```
+
+::: {.fragment}
+Whether logging *our* y variable actually helps depends on whether reaction time is skewed enough to matter here — recall Week 1's online session found it's closer to log-normal than normal. The same logic, a different variable.
+:::
+
+
+## Coming up: Week 4
+
+::: {style="text-align: center; padding-top: 60px;"}
+[We can now describe a relationship between two variables.]{style="font-size: 1.3em;"}
+
+[Next: turn that relationship into a **model** we can use to predict and interpret.]{style="font-size: 1.3em; padding-top: 20px; display:block;"}
+
+[**Simple regression: the OLS estimator**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
+
+::: {.fragment style="padding-top:40px;"}
+*Linear regression · fitting a line · interpreting the slope*
+:::
+:::

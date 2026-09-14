@@ -1,0 +1,320 @@
+---
+title: "When You Can't Randomise"
+subtitle: "7002LBSAI Research Methods in Analytics — Week 9 Online Session"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="stylesheet" href="styles-slides.css?v=20260914">
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{python}
+import pandas as pd
+import numpy as np
+import statsmodels.formula.api as smf
+
+# Bekes & Kezdi Ch.19's own case study for the causal framework — food and
+# health (NHANES data): does eating more fruit and vegetables lower blood
+# pressure, and what confounds that comparison?
+# GitHub raw URL (once pushed to the student data repo):
+# food = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/food_health.csv")
+food = pd.read_csv("data/food_health.csv")
+food = food[(food["age"] >= 30) & (food["age"] < 60)].copy()
+food["fv"] = food["veggies_n_fruits_gr"]
+food["bp"] = food["blood_pressure"]
+food = food[food["fv"] < 3200].dropna(subset=["bp"])
+food_n = len(food)
+
+food_reg = smf.ols("bp ~ fv", data=food).fit(cov_type="HC1")
+food_coef = round(food_reg.params["fv"], 4)
+food_p = "<0.001" if food_reg.pvalues["fv"] < 0.001 else str(round(food_reg.pvalues["fv"], 4))
+
+_food_lines = food_reg.summary().as_text().splitlines()
+_food_cut = next(i for i, l in enumerate(_food_lines) if l.startswith("Omnibus"))
+food_summary_text = "\n".join(_food_lines[:_food_cut]).rstrip()
+
+food["lninc"] = np.log(food["hh_income_percap"])
+inc_corr = round(food[["fv", "lninc"]].dropna().corr().iloc[0, 1], 2)
+
+food["pchips"] = food["gr_potato_chips"]
+food_reg_chips = smf.ols("bp ~ fv + pchips", data=food).fit(cov_type="HC1")
+food_coef_chips = round(food_reg_chips.params["fv"], 4)
+
+ojs_define(
+    food_n            = food_n,
+    food_coef         = food_coef,
+    food_p            = food_p,
+    food_summary_text = food_summary_text,
+    inc_corr          = inc_corr,
+    food_coef_chips   = food_coef_chips,
+)
+```
+
+## {background-color="#1a1a2e"}
+
+::: {style="text-align: center; padding-top: 180px;"}
+[**When you can't randomise**]{style="font-size: 2.2em; color: white;"}
+
+[The workshop showed the gold standard. Most of the time, you won't have it — the portfolio project almost certainly won't. This session: the reasoning tools for observational data, and their honest limits.]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+:::
+
+---
+
+## Recap: why experiments are the gold standard
+
+- Random assignment makes variation in the causal variable **exogenous** — independent of potential outcomes — which is exactly what makes the simple group comparison trustworthy
+- Most business questions can't be experimented on: it's too slow, too expensive, unethical, or the decision has already been made and you only have the data left over
+- **This is the normal situation, not the exception.** The rest of this module's regression toolkit exists because of it
+
+## The honest fallback
+
+::: {.instructions-box}
+Without random assignment, we can't create exogenous variation — we can only try to **condition** it into existence, by controlling for everything endogenous we can measure.
+
+Week 6 called this the difference between omitted variable bias and multicollinearity. This session gives it a proper diagram.
+:::
+
+---
+
+## Naming the confounders
+
+---
+
+## Three ways a variable can confound
+
+- **Common-cause confounder**: one variable drives both $x$ and $y$ — the classic case, and the one Week 6's OVB formula was built for
+- **Reverse-causality confounder**: what looks like $x \to y$ is partly $y \to x$ — the direction of the arrow itself is in question
+- **Unwanted-mechanism confounder**: $x$ affects $y$ through a route that has nothing to do with the causal story you actually care about
+
+## Common cause
+
+```{ojs}
+html`<div style="text-align:center;padding-top:10px;">
+  <svg width="460" height="180">
+    <text x="80" y="150" font-size="18" text-anchor="middle" font-family="sans-serif">X</text>
+    <text x="380" y="150" font-size="18" text-anchor="middle" font-family="sans-serif">Y</text>
+    <text x="230" y="35" font-size="18" text-anchor="middle" font-family="sans-serif">Z</text>
+    <line x1="95" y1="140" x2="365" y2="140" stroke="#c0392b" stroke-width="2" marker-end="url(#a1)"/>
+    <line x1="215" y1="45" x2="100" y2="130" stroke="#2d6a4f" stroke-width="2" marker-end="url(#a1)"/>
+    <line x1="245" y1="45" x2="365" y2="130" stroke="#2d6a4f" stroke-width="2" marker-end="url(#a1)"/>
+    <defs><marker id="a1" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2d6a4f"/></marker></defs>
+  </svg>
+</div>`
+```
+
+$Z$ affects both $X$ and $Y$ — leave it out, and part of $Z$'s effect on $Y$ gets misread as $X$'s. This is Week 6's OVB, drawn.
+
+## Case study: food and health
+
+::: {.instructions-box}
+Does eating more fruit and vegetables lower blood pressure?
+:::
+
+```{.python}
+import statsmodels.formula.api as smf
+
+reg = smf.ols("bp ~ fv", data=food).fit(cov_type="HC1")
+```
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.52em;line-height:1.35;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">${food_summary_text}</pre>`
+```
+
+::: {.fragment}
+```{ojs}
+html`<p>N = <strong>${food_n}</strong> adults aged 30–59 (NHANES). Each extra gram of fruit and veg per day is associated with <strong>${food_coef}</strong> lower blood pressure (p ${food_p}) — small per gram, but real and statistically significant.</p>`
+```
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 19, food-health (NHANES) dataset
+:::
+
+## Is this causal?
+
+- People who eat more fruit and veg aren't a random sample of the population — they may also earn more, exercise more, smoke less
+- Gabor's own version of this question: **household income** is a plausible common-cause confounder — richer households can afford better diets, *and* income affects blood pressure through completely different channels (stress, healthcare access, housing)
+
+```{ojs}
+html`<p>In this data, fruit-and-veg intake correlates with log household income at <strong>r = ${inc_corr}</strong> — modest, but real. Exactly the kind of endogenous source of variation Section C warns about.</p>`
+```
+
+## Task — should we condition on crisps?
+
+::: {.instructions-box}
+**Business question**: should we control for how many crisps someone eats, when estimating the effect of fruit-and-veg intake on blood pressure?
+
+Think about it as a DAG question before running anything: does crisp-eating sit upstream of fruit-and-veg intake (a confounder), downstream of it (a bad control), or somewhere else entirely? No further syntax hints.
+:::
+
+## What you should have found
+
+::: {.instructions-box}
+Gabor's own answer: yes, condition on it — crisp-eating is a signal of an unhealthy diet more broadly, a plausible common cause of both low fruit-and-veg intake and (via other channels) blood pressure.
+:::
+
+```{ojs}
+html`<p>In this reproduction, adding crisps as a control barely moves the fruit-and-veg coefficient (<strong>${food_coef}</strong> → <strong>${food_coef_chips}</strong>) — a real, honest result. Confounders don't always move the number by much; the discipline is in checking, not in expecting a dramatic swing every time.</p>`
+```
+
+## Reverse causality
+
+```{ojs}
+html`<div style="text-align:center;padding-top:20px;">
+  <svg width="420" height="120">
+    <text x="60" y="65" font-size="18" text-anchor="middle" font-family="sans-serif">X</text>
+    <text x="360" y="65" font-size="18" text-anchor="middle" font-family="sans-serif">Y</text>
+    <path d="M 90,50 Q 210,10 330,50" stroke="#2d6a4f" stroke-width="2" fill="none" marker-end="url(#a2)"/>
+    <path d="M 330,75 Q 210,110 90,75" stroke="#c0392b" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#a2)"/>
+    <defs><marker id="a2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2d6a4f"/></marker></defs>
+  </svg>
+</div>`
+```
+
+Firms that sell more might advertise more *because* they're doing well — not the other way round. No control variable fixes this; it's a question about which arrow is real.
+
+## Unwanted mechanism
+
+```{ojs}
+html`<div style="text-align:center;padding-top:10px;">
+  <svg width="480" height="150">
+    <text x="60" y="80" font-size="18" text-anchor="middle" font-family="sans-serif">X</text>
+    <text x="420" y="80" font-size="18" text-anchor="middle" font-family="sans-serif">Y</text>
+    <text x="240" y="35" font-size="16" text-anchor="middle" font-family="sans-serif">wanted route</text>
+    <text x="240" y="130" font-size="16" text-anchor="middle" font-family="sans-serif">unwanted route</text>
+    <path d="M 80,68 Q 240,10 400,68" stroke="#2d6a4f" stroke-width="2" fill="none" marker-end="url(#a3)"/>
+    <path d="M 80,90 Q 240,145 400,90" stroke="#c0392b" stroke-width="2" fill="none" marker-end="url(#a3)"/>
+    <defs><marker id="a3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#333"/></marker></defs>
+  </svg>
+</div>`
+```
+
+A price rise might cut sales through the "too expensive" route you care about, and *also* through an unrelated route (say, a promotion that always runs alongside price changes). The measured effect bundles both together.
+
+## Task — spot the confounder type
+
+::: {.instructions-box}
+**Business question**: pick a variable pair from a dataset you've already worked with this module — the reaction-time data, or the HR Attrition data.
+
+Which of the three types of confounding is the biggest threat to a causal reading of that relationship? Write one sentence justifying your answer. No further syntax hints — this is a reasoning task, not a coding one.
+:::
+
+---
+
+## Latent variables
+
+---
+
+## The confounder you can't measure
+
+- A **latent variable** is a confounder that lives in your reasoning but not in your data — "ability," "motivation," "management quality"
+- If it's correlated with $x$, leaving it out is still omitted variable bias — the fact that you *can't* measure it doesn't make the bias go away
+- Sometimes a rough **proxy** is available (years of education for ability, a past sales figure for motivation) — imperfect, but better than nothing
+
+::: {.fragment}
+This is precisely the ceiling Week 6's worked example (the gender pay gap) hit — multiple regression closes the gap between naive and adjusted estimates, but only for what's actually in the data.
+:::
+
+---
+
+## Bad controls
+
+---
+
+## Not every correlated variable belongs
+
+Week 6 first raised this with the TV-advertising example. Three specific shapes are worth naming:
+
+- **Exogenous-source variable**: unaffected by $x$, unrelated to $y$ except by chance — controlling for it does no harm, but doesn't help either
+- **Mechanism (mediator) variable**: sits *on* the causal path from $x$ to $y$ — controlling for it removes part of the very effect you're trying to measure
+- **Collider variable**: caused by *both* $x$ and $y$ — controlling for it can create a spurious association where none existed
+
+## The collider, specifically
+
+```{ojs}
+html`<div style="text-align:center;padding-top:10px;">
+  <svg width="460" height="180">
+    <text x="80" y="150" font-size="18" text-anchor="middle" font-family="sans-serif">X</text>
+    <text x="380" y="150" font-size="18" text-anchor="middle" font-family="sans-serif">Y</text>
+    <text x="230" y="35" font-size="18" text-anchor="middle" font-family="sans-serif">C</text>
+    <line x1="100" y1="130" x2="215" y2="50" stroke="#2d6a4f" stroke-width="2" marker-end="url(#a4)"/>
+    <line x1="365" y1="130" x2="245" y2="50" stroke="#2d6a4f" stroke-width="2" marker-end="url(#a4)"/>
+    <defs><marker id="a4" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2d6a4f"/></marker></defs>
+  </svg>
+</div>`
+```
+
+- $C$ is a *collision* of two arrowheads — both $X$ and $Y$ cause it, neither causes the other
+- $X$ and $Y$ can be genuinely unrelated. But condition on $C$ (e.g. restrict to a subgroup defined by it), and a fake association between $X$ and $Y$ appears — because within any fixed value of $C$, knowing $X$ tells you something about $Y$
+- Famous example: talent and looks might be unrelated in the general population, but conditioning on "being a celebrity" (caused by both) makes them look negatively correlated
+
+## Telling them apart is genuinely hard
+
+::: {.instructions-box}
+There's no shortcut that avoids thinking about the DAG. The question to ask of every control variable: **does this sit upstream of $x$ (a legitimate confounder to include), or downstream / on the path (a bad control to exclude)?**
+
+If you can't draw the arrow with confidence, that's a sign to say so explicitly in your write-up, not to guess.
+:::
+
+---
+
+## Task — auditing a model for omitted variables
+
+---
+
+## Back to a dataset you know
+
+::: {.instructions-box}
+**Business question**: take a regression you've already built this module — from the reaction-time data, or your own portfolio dataset.
+
+List every variable you can think of that plausibly affects $y$ but isn't in your model. For each one, classify it: common-cause confounder, reverse-causality risk, latent/unmeasurable, or bad control if you were tempted to add it. No further syntax hints.
+:::
+
+## What you should have found
+
+::: {.instructions-box}
+There's no single correct list here — the point is the discipline of naming each omitted variable's *type*, not just noting "there might be other factors." A vague acknowledgment doesn't tell a reader whether you understand the direction or size of the risk; a typed list does.
+:::
+
+---
+
+## A middle ground, briefly
+
+---
+
+## Natural experiments
+
+- Occasionally, real-world events create variation that behaves *as if* it were randomly assigned — a policy change, a lottery, a sharp eligibility cutoff — without the analyst designing anything
+- These sit between pure observation and a controlled experiment, and support genuinely credible causal claims when the "as-if-random" story holds up
+- **This module doesn't go further into the specific designs** (difference-in-differences, regression discontinuity) — worth knowing the name exists, and worth reading about if your own portfolio project stumbles across a setting where one might apply, but it's out of scope here
+
+## Summary
+
+- Confounders come in three shapes: common cause, reverse causality, unwanted mechanism — and only the first is what Week 6's OVB formula directly targets
+- Latent variables are confounders you can't measure — they don't stop being confounders for being invisible
+- Bad controls (mechanism variables, colliders) can make a model *worse* even though they're correlated with $y$ — more controls isn't automatically better
+- When you can't randomise, the honest move is naming what you couldn't control for, not pretending the model closes every gap
+
+## Coming up
+
+::: {style="text-align: center; padding-top: 60px;"}
+[**Week 10: Prediction**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
+
+::: {.fragment style="padding-top:40px;"}
+*A different goal again — not explaining the past, but forecasting what comes next*
+:::
+:::

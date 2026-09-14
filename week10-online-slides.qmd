@@ -1,0 +1,428 @@
+---
+title: "Model Building for Prediction"
+subtitle: "7002LBSAI Research Methods in Analytics — Week 10 Online Session"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="stylesheet" href="styles-slides.css?v=20260914">
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{python}
+import pandas as pd
+import numpy as np
+import statsmodels.formula.api as smf
+from sklearn.model_selection import KFold
+from sklearn.linear_model import LassoCV
+from sklearn.preprocessing import StandardScaler
+import patsy
+
+# --- Log vs level illustration, reusing the workshop's used-cars data ---
+# GitHub raw URL (once pushed to the student data repo):
+# cars_df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/used_cars_chicago.csv")
+cars_df = pd.read_csv("data/used_cars_chicago.csv")
+
+level_model = smf.ols("price ~ age + agesq", data=cars_df).fit()
+log_model = smf.ols("lnprice ~ age + agesq", data=cars_df).fit()
+
+_pred_car = pd.DataFrame({"age": [10], "agesq": [100]})
+level_pred = float(level_model.predict(_pred_car).iloc[0])
+log_pred_raw = float(np.exp(log_model.predict(_pred_car).iloc[0]))
+sigma2 = float(np.var(log_model.resid, ddof=log_model.df_model + 1))
+log_pred_corrected = log_pred_raw * np.exp(sigma2 / 2)
+
+log_level_rows = [
+    {"label": "Point prediction", "log_model": f"${log_pred_raw:,.0f}", "corrected": f"${log_pred_corrected:,.0f}", "level_model": f"${level_pred:,.0f}"},
+]
+
+# --- Airbnb Hackney case study ---
+# Source: Bekes & Kezdi's public airbnb dataset, osf.io/qyca8, filtered to the Hackney
+# borough workfile and matched to their published N=4,393 case study sample.
+# GitHub raw URL (once pushed to the student data repo):
+# air_df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/airbnb_hackney.csv")
+air_df = pd.read_csv("data/airbnb_hackney.csv")
+air_df = air_df.loc[:, ~air_df.columns.duplicated()]
+amenity_cols = [c for c in air_df.columns if c.startswith("d_")]
+air_df["n_accommodates2"] = air_df["n_accommodates"] ** 2
+air_df["n_days_since2"] = air_df["n_days_since"] ** 2
+
+air_formulas = {
+    "M1": "price ~ n_accommodates",
+    "M2": "price ~ n_accommodates + n_beds + C(f_room_type) + C(f_property_type)",
+    "M3": "price ~ n_accommodates + n_beds + C(f_room_type) + C(f_property_type) + n_bathrooms + C(f_cancellation_policy) + C(f_bed_type)",
+    "M4": "price ~ n_accommodates + n_accommodates2 + n_beds + C(f_room_type) + C(f_property_type) + n_bathrooms + C(f_cancellation_policy) + C(f_bed_type) + n_days_since + n_days_since2",
+    "M5": "price ~ n_accommodates + n_accommodates2 + n_beds + C(f_room_type)*C(f_property_type) + n_bathrooms + C(f_cancellation_policy) + C(f_bed_type) + n_days_since + n_days_since2",
+}
+air_formulas["M6"] = air_formulas["M5"] + " + " + " + ".join(amenity_cols)
+
+air_fitted = {name: smf.ols(f, data=air_df).fit() for name, f in air_formulas.items()}
+
+def _rmse(m):
+    return float(np.sqrt(np.mean(m.resid ** 2)))
+
+air_kf = KFold(n_splits=5, shuffle=True, random_state=20260921)
+air_cv = {name: [] for name in air_formulas}
+for tr_idx, te_idx in air_kf.split(air_df):
+    train, test = air_df.iloc[tr_idx], air_df.iloc[te_idx]
+    for name, f in air_formulas.items():
+        m = smf.ols(f, data=train).fit()
+        pred = m.predict(test)
+        air_cv[name].append(float(np.sqrt(np.mean((test["price"] - pred) ** 2))))
+air_cv_avg = {name: float(np.mean(v)) for name, v in air_cv.items()}
+
+air_stats_rows = [
+    {"Model": name, "N coef": len(air_fitted[name].params), "R2": round(air_fitted[name].rsquared, 2),
+     "Training RMSE": round(_rmse(air_fitted[name]), 1), "CV RMSE": round(air_cv_avg[name], 1),
+     "BIC": int(round(air_fitted[name].bic))}
+    for name in air_formulas
+]
+
+air_complexity_data = []
+for name in air_formulas:
+    ncoef = len(air_fitted[name].params)
+    air_complexity_data.append({"n_coef": ncoef, "rmse": round(_rmse(air_fitted[name]), 1), "series": "Training RMSE", "model": name})
+    air_complexity_data.append({"n_coef": ncoef, "rmse": round(air_cv_avg[name], 1), "series": "Cross-validated RMSE", "model": name})
+
+# --- LASSO on the M6 feature set ---
+y, X = patsy.dmatrices(air_formulas["M6"], data=air_df, return_type="dataframe")
+y = y.values.ravel()
+X = X.drop(columns=["Intercept"])
+scaler = StandardScaler()
+Xs = scaler.fit_transform(X)
+lasso = LassoCV(cv=5, random_state=20260921, max_iter=20000).fit(Xs, y)
+lasso_pred = lasso.predict(Xs)
+lasso_rmse = float(np.sqrt(np.mean((y - lasso_pred) ** 2)))
+n_nonzero = int(np.sum(lasso.coef_ != 0))
+n_total = len(lasso.coef_)
+
+lasso_kf = KFold(n_splits=5, shuffle=True, random_state=20260921)
+lasso_cv_rmses = []
+for tr_idx, te_idx in lasso_kf.split(Xs):
+    lm = LassoCV(cv=5, random_state=20260921, max_iter=20000).fit(Xs[tr_idx], y[tr_idx])
+    pred = lm.predict(Xs[te_idx])
+    lasso_cv_rmses.append(float(np.sqrt(np.mean((y[te_idx] - pred) ** 2))))
+lasso_cv_rmse = float(np.mean(lasso_cv_rmses))
+
+top_coefs = (
+    pd.Series(lasso.coef_, index=X.columns)
+    .loc[lambda s: s != 0]
+    .abs()
+    .sort_values(ascending=False)
+    .head(8)
+)
+_coef_labels = {c: c.replace("C(f_room_type)", "Room type").replace("C(f_property_type)", "Property type")
+                  .replace("[T.", ": ").replace("]", "").replace(":", " x ") for c in top_coefs.index}
+lasso_top_rows = [{"variable": _coef_labels.get(name, name), "importance": round(val, 2)} for name, val in top_coefs.items()]
+
+lasso_code_output = (
+    ">>> lasso = LassoCV(cv=5).fit(X_scaled, y)\n"
+    f">>> lasso.alpha_\n{lasso.alpha_:.3f}\n\n"
+    f">>> (lasso.coef_ != 0).sum()   # variables kept out of {n_total}\n{n_nonzero}\n\n"
+    f">>> np.sqrt(np.mean((y - lasso.predict(X_scaled))**2))   # in-sample RMSE\n{lasso_rmse:.1f}"
+)
+
+# --- Holdout diagnostics: predicted vs actual on held-out data, best OLS model (M6) ---
+_rng = np.random.RandomState(20260921)
+_holdout_mask = _rng.rand(len(air_df)) < 0.2
+work_df = air_df.loc[~_holdout_mask].copy()
+holdout_df = air_df.loc[_holdout_mask].copy()
+m6_work = smf.ols(air_formulas["M6"], data=work_df).fit()
+holdout_pred = m6_work.predict(holdout_df)
+holdout_rmse = float(np.sqrt(np.mean((holdout_df["price"] - holdout_pred) ** 2)))
+
+yyhat_data = [
+    {"actual": float(a), "predicted": float(p)}
+    for a, p in zip(holdout_df["price"], holdout_pred)
+    if a < 300 and p < 300
+]
+
+ojs_define(
+    log_level_rows      = log_level_rows,
+    air_stats_rows       = air_stats_rows,
+    air_complexity_data  = air_complexity_data,
+    lasso_code_output    = lasso_code_output,
+    lasso_top_rows       = lasso_top_rows,
+    lasso_rmse           = round(lasso_rmse, 1),
+    lasso_cv_rmse        = round(lasso_cv_rmse, 1),
+    n_nonzero            = n_nonzero,
+    n_total              = n_total,
+    holdout_rmse         = round(holdout_rmse, 1),
+    yyhat_data           = yyhat_data,
+)
+```
+
+## {background-color="#1a1a2e"}
+
+::: {style="text-align: center; padding-top: 180px;"}
+[**Model building for prediction**]{style="font-size: 2.2em; color: white;"}
+
+[The workshop built the toolbox on six clean predictors and 281 cars. This session: what happens with dozens of candidate variables — and 4,393 real Airbnb listings.]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+:::
+
+---
+
+# Label engineering {background-color="#2d6a4f"}
+## Choosing the target's functional form
+
+---
+
+## Log or level?
+
+- When price is the target, its relationship with predictors is often closer to linear once expressed as $\ln(price)$
+- Log differences approximate relative (percentage) differences — often more stable across a wide price range
+- Technical bonus: log prices are often closer to normally distributed, which helps a linear regression approximate the average well
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 14
+:::
+
+## The correction that's easy to forget
+
+If the target was modelled in logs, the model predicts $\widehat{\ln y}$ — not $\hat y$. Simply exponentiating **underestimates** the average:
+
+$$\hat y_j = e^{\widehat{\ln y}_j} \times e^{\hat\sigma^2/2}$$
+
+- $e^{\widehat{\ln y}}$ alone recovers the *median*, not the mean
+- The correction term adjusts for the spread of the regression's residuals — bigger residual variance, bigger correction
+- Skipping it silently biases every prediction downward
+
+## On our own data
+
+```{.python}
+level_model = smf.ols("price ~ age + agesq", data=df).fit()
+log_model = smf.ols("lnprice ~ age + agesq", data=df).fit()
+
+log_pred_raw = np.exp(log_model.predict(car))          # median, not mean
+corrected = log_pred_raw * np.exp(sigma2 / 2)           # corrected mean
+```
+
+```{ojs}
+{
+  return html`<table style="margin:20px auto 0;font-family:sans-serif;font-size:1.1em;border-collapse:collapse;">
+    <tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:6px 22px;"></th><th style="padding:6px 22px;">Log model, uncorrected</th><th style="padding:6px 22px;">Log model, corrected</th><th style="padding:6px 22px;">Level model</th></tr>
+    ${log_level_rows.map(d => `<tr><td style="padding:5px 22px;">${d.label}</td><td style="padding:5px 22px;text-align:center;">${d.log_model}</td><td style="padding:5px 22px;text-align:center;font-weight:700;">${d.corrected}</td><td style="padding:5px 22px;text-align:center;">${d.level_model}</td></tr>`).join('')}
+  </table>`
+}
+```
+
+::: {.fragment}
+For a 10-year-old Camry, the raw log prediction and the level-model prediction disagree — the correction closes most of that gap.
+:::
+
+---
+
+# Feature engineering {background-color="#2d6a4f"}
+## Building the right-hand side
+
+---
+
+## The checklist
+
+1. **Missing values** — random, or systematic? Impute with a flag column, don't just drop the observation
+2. **Categorical values** — binary, or a small set of dummies
+3. **Text** — mine it for useful signal (a "seminar" keyword, say), otherwise leave it
+4. **Functional form** — polynomials, splines, logs — the same choices as the workshop, applied to many variables at once
+5. **Interactions** — worth thinking about, expensive to search exhaustively
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 14
+:::
+
+## Real data: Airbnb, London
+
+- 4,393 Hackney-borough listings, March 2017 snapshot
+- Target: nightly `price` (USD)
+- ~70 predictor candidates: capacity, room and property type, cancellation policy, review scores, and 50 individual amenity dummies (`d_tv`, `d_petsallowed`, `d_elevatorinbuilding`, ...)
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), airbnb dataset, osf.io/qyca8
+:::
+
+## Six models, built up by hand
+
+```{.python}
+M1 = smf.ols("price ~ n_accommodates", data=df).fit()
+M2 = smf.ols("price ~ n_accommodates + n_beds + C(f_room_type) + C(f_property_type)", data=df).fit()
+M3 = smf.ols("price ~ ... + n_bathrooms + C(f_cancellation_policy) + C(f_bed_type)", data=df).fit()
+M4 = smf.ols("price ~ ... + n_accommodates2 + n_days_since + n_days_since2", data=df).fit()
+M5 = smf.ols("price ~ ... + C(f_room_type)*C(f_property_type)", data=df).fit()
+M6 = smf.ols("price ~ ... + " + " + ".join(amenity_dummies), data=df).fit()  # 50 amenities
+```
+
+Each step adds more: capacity and type, then physical features, then non-linearity and interactions, then every amenity.
+
+## Comparing the six models
+
+```{ojs}
+{
+  const cols = ["Model", "N coef", "R2", "Training RMSE", "CV RMSE", "BIC"];
+  return html`<table style="margin:20px auto 0;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;">
+    <tr style="border-bottom:2px solid #1a1a2e;">${cols.map(c => `<th style="padding:5px 14px;text-align:center;">${c}</th>`).join('')}</tr>
+    ${air_stats_rows.map(d => `<tr style="border-bottom:1px solid #ddd;">${cols.map(c => `<td style="padding:4px 14px;text-align:center;">${d[c]}</td>`).join('')}</tr>`).join('')}
+  </table>`
+}
+```
+
+::: {.fragment}
+RMSE keeps improving all the way to M6 — but watch the BIC column.
+:::
+
+## The complexity curve, again
+
+```{ojs}
+Plot.plot({
+  width: 700, height: 380,
+  x: {label: "Number of coefficients"},
+  y: {label: "RMSE ($)"},
+  marks: [
+    Plot.line(air_complexity_data, {x: "n_coef", y: "rmse", stroke: "series", strokeWidth: 2.5}),
+    Plot.dot(air_complexity_data, {x: "n_coef", y: "rmse", fill: "series", r: 4}),
+    Plot.text(air_complexity_data.filter(d => d.series === "Training RMSE"), {x: "n_coef", y: "rmse", text: "model", dy: -12, fontSize: 10})
+  ],
+  color: {legend: true}
+})
+```
+
+::: {.fragment}
+Training and cross-validated RMSE both keep falling here — this dataset is large enough (4,393 rows) that M6 doesn't visibly overfit on RMSE. But the **BIC** in the table two slides back peaks earlier: it penalises M6's 65 coefficients even where cross-validated RMSE doesn't yet complain. Different criteria, different sensitivity to complexity.
+:::
+
+---
+
+# Selecting variables automatically {background-color="#2d6a4f"}
+## LASSO
+
+---
+
+## We can't try every model
+
+- With $p$ candidate predictors, the number of possible models explodes — this is an **NP-hard** problem, not just a big one
+- **By hand**: domain knowledge drives the choice — interpretable, but slow, and impossible with many interactions
+- **By algorithm**: let the data suggest which variables earn their place
+
+## The LASSO idea
+
+LASSO (Least Absolute Shrinkage and Selection Operator) adds a penalty to the usual OLS minimisation:
+
+$$\min_\beta \left\{ \sum_{i=1}^{N}\left(y_i - \beta_0 - \sum_{j=1}^{k}\beta_j x_{ij}\right)^2 + \lambda\sum_{j=1}^{k}|\beta_j| \right\}$$
+
+- The penalty shrinks coefficients toward zero
+- Coefficients whose inclusion barely improves fit get shrunk **all the way** to zero — dropped from the model entirely
+- $\lambda$ controls how aggressive that is; larger $\lambda$, fewer surviving variables
+
+## The cost: bias
+
+- OLS is unbiased. LASSO isn't — that's the trade it makes for lower variance
+- Unlike OLS, there's no closed-form solution; an algorithm solves for $\beta$ and $\lambda$ together
+- $\lambda$ itself is chosen by cross-validation: try many values, pick the one with the best CV RMSE
+
+::: {.fragment}
+Ridge regression is the same idea with a squared penalty ($\lambda\sum\beta_j^2$) instead — it shrinks coefficients but never sets them exactly to zero. LASSO is "L1," Ridge is "L2."
+:::
+
+## LASSO on the Airbnb data
+
+```{.python}
+from sklearn.linear_model import LassoCV
+from sklearn.preprocessing import StandardScaler
+
+X_scaled = StandardScaler().fit_transform(X)   # LASSO needs standardised features
+lasso = LassoCV(cv=5).fit(X_scaled, y)
+```
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.68em;line-height:1.4;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">${lasso_code_output}</pre>`
+```
+
+```{ojs}
+html`<div class="instructions-box">LASSO kept ${n_nonzero} of ${n_total} candidate coefficients — automatically — and its cross-validated RMSE (${lasso_cv_rmse}) lands close to M6's OLS fit, with far fewer moving parts.</div>`
+```
+
+## What survived
+
+```{ojs}
+Plot.plot({
+  width: 680, height: 340,
+  marginLeft: 220,
+  x: {label: "Standardised coefficient size"},
+  y: {label: null},
+  marks: [
+    Plot.barX(lasso_top_rows, {x: "importance", y: "variable", fill: "#2c3e7a", sort: {y: "x", reverse: true}})
+  ]
+})
+```
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Room type and capacity dominate — unsurprising — but several individual amenities survive the penalty too.
+:::
+
+---
+
+# Post-prediction diagnostics {background-color="#2d6a4f"}
+## Holdout sets
+
+---
+
+## One more split before you trust the number
+
+- Model selection (BIC, cross-validation) already uses the data — repeatedly
+- Best practice: carve off a **holdout set** right at the start, and don't touch it until the very end
+- **Work set**: model building, model selection, training/test folds — all happen here
+- **Holdout set**: touched exactly once, to get an honest read on how the chosen model will do on genuinely new data
+
+## The workflow
+
+1. Split the original data into a work set and a holdout set
+2. Inside the work set: training/test folds, k-fold CV, model selection
+3. Re-estimate the winning model on the *whole* work set
+4. Apply it to the holdout set — untouched until now
+5. Evaluate: this is the honest estimate of live-data performance
+
+## Predicted vs. actual, on the holdout set
+
+```{ojs}
+Plot.plot({
+  width: 620, height: 420,
+  x: {label: "Predicted price ($)", domain: [0, 300]},
+  y: {label: "Actual price ($)", domain: [0, 300]},
+  marks: [
+    Plot.line([{x:0,y:0},{x:300,y:300}], {x: "x", y: "y", stroke: "#999", strokeDasharray: "4,4"}),
+    Plot.dot(yyhat_data, {x: "predicted", y: "actual", fill: "#2c3e7a", opacity: 0.4, r: 3})
+  ]
+})
+```
+
+```{ojs}
+html`<div class="fragment">Holdout RMSE: <b>$${holdout_rmse}</b>. Points above the dashed line are underpredicted; the model visibly struggles more at the high end — the same pattern Gabor & Kézdi find in their own version of this diagnostic.</div>`
+```
+
+## Summary
+
+- Prediction with many candidate variables needs the same discipline as prediction with a few — just automated where hand-picking becomes infeasible
+- Log targets need a correction term before converting back — skipping it silently biases predictions down
+- LASSO trades a little bias for a lot less variance, and does variable selection as a side effect
+- A holdout set, touched only once, is the honest final check — everything before it is negotiable, this isn't
+
+## Coming up
+
+::: {style="text-align: center; padding-top: 60px;"}
+[**Week 11: Time Series**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
+
+::: {.fragment style="padding-top:40px;"}
+*Feature engineering treated every predictor as fixed at a point in time. Next week, one of them is time itself.*
+:::
+:::

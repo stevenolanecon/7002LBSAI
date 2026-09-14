@@ -1,0 +1,255 @@
+---
+title: "Testing Pitfalls"
+subtitle: "7002LBSAI Research Methods in Analytics — Week 2 Online Session"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="stylesheet" href="styles-slides.css?v=20260914">
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+## {background-color="#1a1a2e"}
+
+::: {style="text-align: center; padding-top: 180px;"}
+[**Testing pitfalls**]{style="font-size: 2.2em; color: white;"}
+
+[The workshop built the t-test. This session covers how it's misused — and how to pick your thresholds properly.]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+:::
+
+## One-sided vs. two-sided tests
+
+So far we've tested $H_0: s_{true} = 0$ against $H_A: s_{true} \neq 0$ — a **two-sided** test, since we don't care about the direction of the difference.
+
+::: {.fragment}
+**Example:** *does device affect reaction time?* We had no prior reason to expect phones faster than laptops, or vice versa — either direction would be a meaningful finding, so both tails count as evidence against $H_0$.
+
+**Reject $H_0$ if** $|t| > c$ — the t-statistic is extreme in *either* direction. For a 5% test, $c \approx 1.96$: this is the same $\pm 2$ rule from the workshop, with the 5% split across both tails (2.5% each).
+:::
+
+::: {.fragment}
+A **one-sided** test focuses on one direction only:
+
+$$H_0: s_{true} \leq 0 \quad \text{vs.} \quad H_A: s_{true} > 0$$
+
+**Example:** *does caffeine reduce reaction time?* Caffeine is a stimulant — we have a specific directional prediction going in, so only a large effect in that one predicted direction counts as evidence against $H_0$.
+
+**Reject $H_0$ if** $t > c$ — extreme in the predicted direction only. For a 5% test, $c \approx 1.645$: smaller than the two-sided threshold, because all 5% sits in one tail instead of being split.
+:::
+
+::: {.fragment}
+Same overall false-positive rate (5%) either way — but the one-sided test is more powerful for an effect in the predicted direction (a smaller $t$ clears the lower bar), at the cost of **zero power** to detect an effect in the other direction, however large.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 6
+:::
+
+## What p-value threshold should you pick?
+
+There's no universal answer — it's a trade-off, and it depends on what's at stake.
+
+| Scenario | Suggested threshold |
+|---|---|
+| "Guilty beyond reasonable doubt" — a costly, hard-to-reverse decision | Conservative: 1% or lower |
+| "Proof of concept" — deciding whether to investigate further | Looser: 10–15% is often fine |
+
+::: {.fragment}
+A result significant at 10–15% is still informative — it's much more likely to be real than not. It just means: worth another look, more data, more experimentation, before betting the business on it.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 6
+:::
+
+## Size and power
+
+**Size** of the test — under $H_0$: the probability of a false positive. We fix this in advance (usually 5% or 1%) — the **level of significance**.
+
+**Power** of the test — under $H_A$: the probability of *avoiding* a false negative.
+
+::: {.fragment}
+Power is higher when:
+
+- the sample is larger
+- the dispersion (SD) is smaller
+- the true effect is further from the null
+:::
+
+## Visualising size and power
+
+```{ojs}
+viewof effect_size = {
+  const f = html`<div style="display:flex;align-items:center;gap:14px;font-size:13px;
+                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;">
+    <span style="color:#666;white-space:nowrap;">True effect (in SE units)</span>
+    <input type="range" min="0" max="5" step="0.25" value="2.5"
+           style="width:180px;cursor:pointer;accent-color:#457b9d;">
+    <span id="es-label" style="font-weight:700;min-width:32px;color:#457b9d;">2.5</span>
+  </div>`
+  const slider = f.querySelector('input')
+  const label  = f.querySelector('#es-label')
+  slider.addEventListener('input', () => {
+    label.textContent = slider.value
+    f.dispatchEvent(new CustomEvent('input'))
+  })
+  Object.defineProperty(f, 'value', { get: () => +slider.value })
+  return f
+}
+```
+
+```{ojs}
+{
+  const mu0 = 0, mu1 = effect_size, sigma = 1, crit = 2
+  const xs = d3.range(-5, 7.51, 0.05)
+  const pdf = (x, mu) => (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * ((x - mu) / sigma) ** 2)
+  const nullCurve = xs.map(x => ({ x, y: pdf(x, mu0) }))
+  const altCurve  = xs.map(x => ({ x, y: pdf(x, mu1) }))
+  const nullReject = xs.filter(x => x > crit).map(x => ({ x, y: pdf(x, mu0) }))
+  const altMiss     = xs.filter(x => x < crit).map(x => ({ x, y: pdf(x, mu1) }))
+  const altHit       = xs.filter(x => x > crit).map(x => ({ x, y: pdf(x, mu1) }))
+
+  const power = 1 - jStat_norm_cdf(crit - mu1)
+  function jStat_norm_cdf(z) {
+    return 0.5 * (1 + erf(z / Math.SQRT2))
+  }
+  function erf(x) {
+    const sign = x < 0 ? -1 : 1
+    x = Math.abs(x)
+    const a1=0.254829592, a2=-0.284496736, a3=1.421413741, a4=-1.453152027, a5=1.061405429, p=0.3275911
+    const t = 1/(1+p*x)
+    const y = 1 - (((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x)
+    return sign*y
+  }
+
+  return Plot.plot({
+    height: 320,
+    marginLeft: 50,
+    marginBottom: 34,
+    x: { label: "t-statistic", domain: [-5, 7.5] },
+    y: { label: "density" },
+    marks: [
+      Plot.areaY(nullReject, { x: "x", y: "y", fill: "#e63946", fillOpacity: 0.55 }),
+      Plot.areaY(altMiss,    { x: "x", y: "y", fill: "#f4a261", fillOpacity: 0.45 }),
+      Plot.areaY(altHit,     { x: "x", y: "y", fill: "#2d6a4f", fillOpacity: 0.35 }),
+      Plot.line(nullCurve, { x: "x", y: "y", stroke: "#1a1a2e", strokeWidth: 2 }),
+      Plot.line(altCurve,  { x: "x", y: "y", stroke: "#457b9d", strokeWidth: 2 }),
+      Plot.ruleX([crit, -crit], { stroke: "#666", strokeWidth: 1, strokeDasharray: "4,3" }),
+      Plot.ruleY([0]),
+      Plot.text([{ x: -5, y: pdf(0,0)*1.05, label: `Power ≈ ${(power*100).toFixed(0)}%` }],
+                { x: "x", y: "y", text: "label", textAnchor: "start", fill: "#2d6a4f", fontSize: 13, fontWeight: 700 }),
+    ]
+  })
+}
+```
+
+::: {.fragment}
+Black = null distribution. Blue = alternative (true effect). Red = Type I error (false positive) region. Orange = Type II error (false negative, missed). Green = power. Drag the slider to 0 and watch the curves merge — no true effect means no power, only the 5% false-positive rate remains.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:4px;"}
+Pattern after Békés & Kézdi (2021), Ch. 6
+:::
+
+## Multiple testing: the motivation
+
+A medical dataset: 400 patients, a heart-disease indicator, and 100 lifestyle features — diet, exercise, income, sleep, dozens more.
+
+::: {.fragment}
+Test each feature against heart disease, one by one, at 5% significance. You find six with a "significant" link.
+
+**Is that a discovery?**
+:::
+
+## Simply by chance
+
+If **all 100** null hypotheses were actually true — no real links exist anywhere — a 5% false-positive rate means we'd still expect to reject **5 of them**, purely by chance.
+
+::: {.fragment}
+Picking out those five and writing them up as findings is exactly backwards: we started by assuming none of them were real.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 6
+:::
+
+## The jelly bean problem
+
+```{=html}
+<div style="text-align:center;">
+  <a href="images/xkcd-significant.png" target="_blank" style="text-decoration:none;">
+    <img src="images/xkcd-significant.png" style="max-height:580px;border-radius:6px;box-shadow:0 4px 20px rgba(0,0,0,0.15);cursor:zoom-in;">
+  </a>
+</div>
+```
+
+::: {style="font-size:0.7em;color:#999;text-align:center;margin-top:8px;"}
+XKCD #882, "Significant" — Randall Munroe, CC BY-NC 2.5 — click to view full size
+:::
+
+## Fixing it
+
+Testing many hypotheses at once needs a stricter bar than testing one.
+
+- **Simple fix:** for a few dozen tests, use a much stricter threshold — 0.1–0.5% instead of 5%
+- **Bonferroni correction:** divide your target p-value by the number of tests. Aiming for 5% across 20 hypotheses → reject only below 0.05/20 = 0.0025
+- Often criticised as **too strict** — but a reasonable default when you don't know better
+
+::: {.fragment}
+**p-hacking**: running many tests (or many versions of one test) and reporting only the ones that "worked." The jelly-bean comic, deliberately.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 6
+:::
+
+## Testing when the data is huge
+
+With millions of observations, statistical inference starts to lose relevance — confidence intervals become vanishingly narrow, and almost **any** difference becomes "statistically significant," including ones too small to matter economically.
+
+::: {.fragment}
+The question shifts from *"is there a difference?"* to *"is the difference big enough to matter?"* — look at the size of the effect, not just whether it clears a p-value bar.
+
+External validity remains just as important at scale as it was with 15 observations.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 5 & 6
+:::
+
+## AI: asking for a formula
+
+Gabor & Kézdi tried asking an AI for the two-sample t-test formula. It came back mostly right — but "mostly" is the operative word.
+
+::: {.fragment}
+AI tools are good at explaining concepts, deriving formulas, and calculating statistics from data you give them. Use them that way — but **check the output**, the same way you'd check a classmate's working. Wrong formulas read just as fluently as right ones.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 5 & 6
+:::
+
+## Coming up: Week 3
+
+::: {style="text-align: center; padding-top: 60px;"}
+[We now have a way to test whether **one** difference is real.]{style="font-size: 1.3em;"}
+
+[But most interesting questions involve the relationship between **two variables**.]{style="font-size: 1.3em; padding-top: 20px; display:block;"}
+
+[**When y met x: correlation and covariance**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
+
+::: {.fragment style="padding-top:40px;"}
+*Conditional probability · covariance · correlation · spurious correlation*
+:::
+:::

@@ -1,0 +1,651 @@
+---
+title: "Causal Analysis and Experiments"
+subtitle: "7002LBSAI Research Methods in Analytics — Week 9"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="stylesheet" href="styles-slides.css?v=20260914">
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{python}
+import pandas as pd
+import numpy as np
+import statsmodels.formula.api as smf
+from statsmodels.stats.power import NormalIndPower
+from statsmodels.stats.proportion import proportion_effectsize
+
+# Main case study: Bekes & Kezdi Ch.20's own worked example — the "Working from
+# Home" field experiment (Bloom et al.'s Ctrip RCT, 249 qualified employees)
+# GitHub raw URL (once pushed to the student data repo):
+# wfh = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/wfh_person.csv")
+wfh = pd.read_csv("data/wfh_person.csv")
+wfh_n = len(wfh)
+wfh_treat_n = int((wfh["treatment"] == 1).sum())
+wfh_control_n = int((wfh["treatment"] == 0).sum())
+
+quit_means = (wfh.groupby("treatment")["quitjob"].mean() * 100).round(1)
+control_quit_rate = quit_means[0]
+treatment_quit_rate = quit_means[1]
+
+quit_model = smf.ols("quitjob ~ treatment", data=wfh).fit(cov_type="HC1")
+quit_effect = round(quit_model.params["treatment"] * 100, 1)
+quit_p = round(quit_model.pvalues["treatment"], 4)
+
+_quit_lines = quit_model.summary().as_text().splitlines()
+_quit_cut = next(i for i, l in enumerate(_quit_lines) if l.startswith("Omnibus"))
+quit_summary_text = "\n".join(_quit_lines[:_quit_cut]).rstrip()
+
+ordertakers = wfh[wfh["ordertaker"] == True]
+phone_model = smf.ols("phonecalls1 ~ treatment", data=ordertakers).fit(cov_type="HC1")
+phone_effect = round(phone_model.params["treatment"], 2)
+phone_p = "<0.001" if phone_model.pvalues["treatment"] < 0.001 else str(round(phone_model.pvalues["treatment"], 4))
+phone_n = int(phone_model.nobs)
+
+# Covariate balance on real pre-treatment characteristics
+_bal_vars = [("age", "Age"), ("married", "Married"), ("children", "Has children"),
+             ("tenure", "Tenure (months)"), ("internet", "Home internet")]
+balance_rows = []
+for col, label in _bal_vars:
+    b = smf.ols(f"{col} ~ treatment", data=wfh).fit(cov_type="HC1")
+    balance_rows.append({
+        "covariate": label,
+        "treat": round(wfh.loc[wfh.treatment == 1, col].mean(), 2),
+        "control": round(wfh.loc[wfh.treatment == 0, col].mean(), 2),
+        "p": round(b.pvalues["treatment"], 3),
+    })
+
+# Case study B: Gabor's own "Fine-Tuning Social Media Advertising" A/B test —
+# the CEU MS in Business Analytics ad, used here for the power-calc mechanics
+# GitHub raw URL (once pushed to the student data repo):
+# social_df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/ab_test_social_media.csv")
+social_df = pd.read_csv("data/ab_test_social_media.csv")
+social_df["rate"] = social_df["action"] / social_df["show"] * 100
+social_rows = social_df.round(4).to_dict(orient="records")
+social_total_shows = int(social_df["show"].sum())
+social_total_clicks = int(social_df["clicks"].sum())
+social_total_actions = int(social_df["action"].sum())
+
+# Power calculation — Gabor's own planning assumption for this case: ~1% CTR
+planning_ctr = 0.01
+_effect_size = proportion_effectsize(planning_ctr, planning_ctr * 2)
+n_needed = int(np.ceil(NormalIndPower().solve_power(effect_size=abs(_effect_size), alpha=0.05, power=0.8, ratio=1)))
+
+# Task reveal — power calculation for a more modest 50% relative lift
+_effect_size_half = proportion_effectsize(planning_ctr, planning_ctr * 1.5)
+n_needed_half = int(np.ceil(NormalIndPower().solve_power(effect_size=abs(_effect_size_half), alpha=0.05, power=0.8, ratio=1)))
+task_power_output_text = (
+    ">>> from statsmodels.stats.proportion import proportion_effectsize\n"
+    ">>> from statsmodels.stats.power import NormalIndPower\n"
+    ">>> effect_size = proportion_effectsize(0.01, 0.015)  # a 50% relative lift\n"
+    ">>> NormalIndPower().solve_power(effect_size=abs(effect_size), alpha=0.05, power=0.8, ratio=1)\n"
+    f"{n_needed_half}"
+)
+
+ojs_define(
+    wfh_n               = wfh_n,
+    wfh_treat_n         = wfh_treat_n,
+    wfh_control_n       = wfh_control_n,
+    control_quit_rate   = control_quit_rate,
+    treatment_quit_rate = treatment_quit_rate,
+    quit_effect         = quit_effect,
+    quit_p              = quit_p,
+    quit_summary_text   = quit_summary_text,
+    phone_effect        = phone_effect,
+    phone_p             = phone_p,
+    phone_n             = phone_n,
+    balance_rows        = balance_rows,
+    social_rows         = social_rows,
+    social_total_shows  = social_total_shows,
+    social_total_clicks = social_total_clicks,
+    social_total_actions = social_total_actions,
+    planning_ctr        = planning_ctr * 100,
+    n_needed            = n_needed,
+    task_power_output_text = task_power_output_text,
+)
+```
+
+## {background-color="#1a1a2e"}
+
+::: {style="text-align: center; padding-top: 180px;"}
+[**Causal analysis and experiments**]{style="font-size: 2.2em; color: white;"}
+
+[Every regression this module has described association carefully, and stopped short of claiming an effect. This week: a formal framework for when you're allowed to make that claim.]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+:::
+
+## Does working from home change who quits?
+
+::: {.instructions-box}
+**Business question**: you're deciding whether to let staff work from home. Would it actually change how many people quit — or is it just a perk that changes nothing?
+:::
+
+::: {.fragment}
+We have real data: a company that ran this as an actual experiment on 249 of its own employees.
+:::
+
+## The naive answer
+
+**Naive answer:** compare the quit rate of employees who already work from home to those who don't.
+
+::: {.fragment}
+**Why it's not that simple:** people who already work from home chose to. They might have longer commutes, different family situations, different tenure — any of which could explain a lower quit rate on its own. This is exactly the naive comparison Week 6 taught us to distrust.
+:::
+
+## What we need
+
+- A formal definition of what "the effect of X" actually means
+- A way to know, not just hope, that two groups are comparable
+- The tools to work with data collected this way — an experiment — properly
+
+---
+
+## The potential outcomes framework
+
+---
+
+## What makes a question causal
+
+- Causality requires two things: an **intervention** that's at least conceptually possible, and **variation** in it across subjects
+- "Do vitamins have a beneficial health effect?" — intervention: taking vitamins or not
+- "Does better management yield greater revenue?" — intervention: replacing or training managers
+- "Does a major industrial investment affect nearby house prices?" — intervention: the investment itself
+- If neither an intervention nor variation is conceivable, the question isn't answerable causally — it might still be worth describing, just not with this toolkit
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 19
+:::
+
+## Treatment, subjects, outcome
+
+- The **causal variable** — usually an intervention: a price change, an ad, a policy change. Also called the **treatment**
+- The **subjects** — who or what receives it. Some are **treated**, some are **untreated**; both groups matter equally
+- The **outcome** — what might be affected
+- A precise causal question names both: what's $Y$? What's $X$?
+
+## Two states of the world
+
+Every subject has **two potential outcomes**:
+
+$$y_i^1 \text{ — what happens if treated} \qquad y_i^0 \text{ — what happens if not}$$
+
+::: {.fragment}
+Before the intervention happens, both exist — hypothetically, for every subject, whether or not they'll actually end up treated.
+:::
+
+## What assignment reveals
+
+- Once a subject is **assigned** — treated or not — one potential outcome becomes real and observable
+- The other stops being knowable. It isn't hidden somewhere in the data; it never gets realised at all
+- **Treated subject**: observed outcome = their treated outcome $y_i^1$
+- **Untreated subject**: observed outcome = their untreated outcome $y_i^0$
+
+::: {.fragment}
+The unobserved one is the **counterfactual** — what would have happened in the universe where this subject's treatment status was flipped. It never exists in any dataset, no matter how good.
+:::
+
+## The individual treatment effect
+
+$$te_i = y_i^1 - y_i^0$$
+
+::: {.fragment}
+**This can never be measured.** Not "hard to measure" — impossible, for anyone, ever, from data alone. We only ever see one of the two potential outcomes per subject. This is a missing-data problem with no fix.
+:::
+
+## A worked example
+
+- Outcome: did the subject convert (1) or not (0)?
+- $te_i$ can only take three values: $+1$ (converted *because* of treatment), $-1$ (converted *despite not being* treated — treatment would have stopped it), or $0$ (same outcome either way)
+- For any specific person, we will never know which of the three is true — only ever one of $y_i^1, y_i^0$ is observed for them
+
+## Heterogeneous treatment effects
+
+- Individual effects vary, of course — by subgroup, by circumstance, by person
+- Men vs. women, small markets vs. large ones, new employees vs. long-tenured ones
+- The possibility that effects differ across subjects is the **normal case**, not an edge case worth ignoring
+
+::: {.fragment}
+We can't recover the full distribution of $te_i$. But we can recover its average.
+:::
+
+## The average treatment effect
+
+$$ATE = E[y_i^1] - E[y_i^0]$$
+
+- The average, across everyone, of the individual effects — even though we can't see any individual one
+- Multiply by population size to get the total effect of rolling something out
+
+## Averages of differences = differences of averages
+
+$$ATE = E[te_i] = E[y_i^1 - y_i^0] = E[y_i^1] - E[y_i^0]$$
+
+::: {.fragment}
+This identity is what rescues the whole framework. We can't average something we can't observe ($te_i$, person by person). But we *can* separately average the treated group's outcomes and the untreated group's outcomes — and their difference equals the same thing.
+:::
+
+## ATE can hide heterogeneity
+
+::: {.instructions-box}
+If $ATE = 0$, did the intervention genuinely do nothing?
+:::
+
+::: {.fragment}
+Not necessarily. $ATE = 0$ is consistent with *every* individual effect being exactly zero — or with the intervention helping half the subjects and hurting the other half by equal amounts. The average alone can't tell these apart.
+:::
+
+## Subgroups and ATET
+
+- ATE can be calculated for any subgroup, not just the whole population
+- One especially useful subgroup: **the treated group itself**
+- $ATET$ — average treatment effect **on the treated** — answers "was this decision worth it, for the people it was actually applied to?" rather than "what would it do to a randomly chosen person?"
+
+::: {.fragment}
+Under random assignment, $ATE = ATET$ — Section C explains why.
+:::
+
+## When X isn't just on or off
+
+- Not every intervention is binary. Examples: **prices**, **advertising budgets**, **dosages**, **days per week working from home**
+- These are **quantitative causal variables** — the intervention doesn't just happen or not, its *size* varies too
+
+## A series of individual effects, not one
+
+- With a quantitative $x$, there's no single $te_i$ — the effect depends on *how much* $x$ changes, and where you start from
+- Before we can even average, we need an extra step: define the effect **per unit change** in $x$, for each subject
+- Everything else — heterogeneity, ATE, the same "average of differences = difference of averages" identity — carries over once that per-unit effect is defined
+
+::: {.fragment}
+Our case study today is binary (WFH: yes or no) precisely because it keeps this first pass simple. The same logic extends to "how many days" — just with one extra step.
+:::
+
+## Ceteris paribus, formalised
+
+- "All else equal" has been this module's working principle since Week 4. Potential outcomes is the same idea, made precise: the difference between $y_i^1$ and $y_i^0$ is the intervention **and only the intervention** — nothing else about the subject is allowed to differ
+- The question of *what needs to stay fixed and what's allowed to vary* is exactly the causal question — there's no way to answer it from the data alone
+
+## Ceteris paribus vs. multivariate regression
+
+Recall Week 6's regression:
+
+$$y^E = \beta_0 + \beta_1 x + \beta_2 z$$
+
+- In regression, we **condition on** $z$: compare two observations with the same $z$ but different $x$
+- That comparison is exactly what ceteris paribus means — holding $z$ fixed, letting only $x$ vary
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 19
+:::
+
+## Can regression actually deliver it?
+
+::: {.instructions-box}
+Can we condition on *every* potential confounder in a regression?
+:::
+
+::: {.fragment}
+Probably not. We can only include what we actually observed in the data — and ceteris paribus, strictly, means holding *everything* fixed, measured or not. This is the honest gap between the theoretical ideal and any real regression, no matter how many controls it has.
+:::
+
+## What to do?
+
+- $te_i$ can never be calculated or averaged directly, and true ceteris paribus is a theoretical concept we can only approximate — **how to get a good estimate of ATE is the central technical problem this module keeps returning to**
+- Everything from here is about closing that gap as much as the data allows
+
+---
+
+## Mapping it with DAGs
+
+---
+
+## Causal maps
+
+A **DAG** (directed acyclic graph) is a diagram of assumptions: nodes are variables, arrows are effects.
+
+```{ojs}
+html`<div style="text-align:center;padding-top:20px;">
+  <svg width="420" height="120">
+    <text x="60" y="65" font-size="18" text-anchor="middle" font-family="sans-serif">X</text>
+    <text x="360" y="65" font-size="18" text-anchor="middle" font-family="sans-serif">Y</text>
+    <line x1="80" y1="60" x2="335" y2="60" stroke="#2d6a4f" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="200" y="45" font-size="20" text-anchor="middle" fill="#c0392b" font-family="sans-serif">?</text>
+    <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2d6a4f"/></marker></defs>
+  </svg>
+</div>`
+```
+
+The causal question, drawn as simply as possible: does $X$ affect $Y$? The arrow with a question mark is what the rest of this week tries to resolve.
+
+## Why draw the map at all?
+
+- A causal map's job is to **summarise your assumptions** about how variables affect each other — assumptions you're making anyway, every time you choose what goes into a regression
+- Once the map is drawn, deciding what belongs in the model **stops being guesswork**
+- Every "control for X" decision this module has made since Week 6 was implicitly assuming a DAG. This section makes that assumption explicit — and gives you a rule, not a gut feeling
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 19
+:::
+
+## Case one: a confounder
+
+```{ojs}
+html`<div style="text-align:center;padding-top:10px;">
+  <svg width="460" height="180">
+    <text x="80" y="150" font-size="18" text-anchor="middle" font-family="sans-serif">X</text>
+    <text x="380" y="150" font-size="18" text-anchor="middle" font-family="sans-serif">Y</text>
+    <text x="230" y="35" font-size="18" text-anchor="middle" font-family="sans-serif">Z</text>
+    <line x1="95" y1="140" x2="365" y2="140" stroke="#c0392b" stroke-width="2" marker-end="url(#a5)"/>
+    <line x1="215" y1="45" x2="100" y2="130" stroke="#2d6a4f" stroke-width="2" marker-end="url(#a5)"/>
+    <line x1="245" y1="45" x2="365" y2="130" stroke="#2d6a4f" stroke-width="2" marker-end="url(#a5)"/>
+    <defs><marker id="a5" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2d6a4f"/></marker></defs>
+  </svg>
+</div>`
+```
+
+$Z$ sits **upstream** of $X$ — it causes both $X$ and $Y$. Leave it out, and part of $Z$'s effect on $Y$ gets misread as $X$'s.
+
+::: {.fragment}
+**The rule: control for it.** This is Week 6's omitted variable bias, drawn as a picture instead of a formula.
+:::
+
+## Case two: a mediator
+
+```{ojs}
+html`<div style="text-align:center;padding-top:20px;">
+  <svg width="480" height="140">
+    <text x="50" y="75" font-size="18" text-anchor="middle" font-family="sans-serif">X</text>
+    <text x="240" y="35" font-size="16" text-anchor="middle" font-family="sans-serif">M</text>
+    <text x="430" y="75" font-size="18" text-anchor="middle" font-family="sans-serif">Y</text>
+    <line x1="65" y1="65" x2="225" y2="40" stroke="#2d6a4f" stroke-width="2" marker-end="url(#arrow2)"/>
+    <line x1="255" y1="40" x2="415" y2="65" stroke="#2d6a4f" stroke-width="2" marker-end="url(#arrow2)"/>
+    <line x1="70" y1="75" x2="410" y2="75" stroke="#999" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow3)"/>
+    <defs>
+      <marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2d6a4f"/></marker>
+      <marker id="arrow3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#999"/></marker>
+    </defs>
+  </svg>
+</div>`
+```
+
+$M$ sits **downstream** of $X$, on the path to $Y$ — the mechanism through which the effect happens, not a separate cause of it.
+
+::: {.fragment}
+**The rule: do not control for it.** Controlling for $M$ removes part of the very effect you're trying to measure — this is a **bad control**: $M$ itself could be the dependent variable were we interested in the casual impact of $X$ on $M$. 
+:::
+
+## Confounder or mediator — which is it here?
+
+::: {.instructions-box}
+Back to working from home. Suppose it reduces commute stress, and commute stress affects whether someone quits. Is commute stress a **confounder** of the WFH → quit relationship, or a **mediator**?
+:::
+
+::: {.fragment}
+A mediator — it sits downstream of the treatment, part of *how* WFH works, not a pre-existing difference between the groups. This is exactly why Section D's regression compared quit rates by **assignment alone**, with no other controls: random assignment already handles the confounders, and there's no mediator sitting between assignment and outcome to accidentally control away.
+:::
+
+## Task — draw your own
+
+::: {.instructions-box}
+**Business question**: what does your own causal question actually look like, drawn out?
+
+Take a model you've already built this module (the HR attrition data, or our own class data). Sketch — on paper or in the notebook as a comment — the DAG for one variable's effect on another. Find at least one plausible **confounder** (control for it) and one plausible **mediator** (don't). No further syntax hints, this one's conceptual.
+:::
+
+---
+
+## Random assignment — the solution
+
+---
+
+## Why random assignment works
+
+- If treatment is assigned **independently of potential outcomes** — for a reason that has nothing to do with what would have happened either way — then the treated and untreated groups are, on average, identical except for treatment
+- Under random assignment, the simple difference in observed averages **is** a good estimate of the ATE
+- This is a theoretical guarantee, not something you can verify directly in any one dataset — there's no test that proves assignment was random, only reasons to believe it
+
+## Experimenting versus conditioning
+
+- **Experimental data**: variation in $x$ is controlled by the experimenter — deliberately made exogenous
+- **Observational data**: variation in $x$ comes from wherever it comes from — some of it exogenous, some of it tangled up with $y$ itself. The best we can do is *condition* on what we can measure, exactly as Weeks 4–8 have been doing
+- A controlled experiment is the most direct way to get exogenous variation in $x$. Everything else is a second-best attempt at the same goal
+
+::: {.fragment}
+This is why the rest of this session focuses on running experiments well — and why the online session comes back to what's left when you can't.
+:::
+
+---
+
+## Designing and running the experiment
+
+---
+
+## The experiment family
+
+- **Field experiments** — as close to the real decision environment as possible. Our case study today: a real firm, its own employees
+- **Lab experiments** — controlled but artificial; higher control, lower realism
+- **A/B tests** — a specific kind of field experiment, comparing versions of the same product (a page, an ad, an email). Easy to scale, large N
+
+::: {.fragment}
+Most firms still don't experiment, even though the potential is huge — internet firms are the biggest exception, running randomised tests on their own customers constantly. 
+:::
+
+## Case study: working from home
+
+::: {.instructions-box}
+Real firm, real employees. Working from home four days a week — does it change whether staff quit, and how they perform?
+:::
+
+- 503 employees volunteered; **249 qualified** (over six months' tenure, broadband at home)
+- Randomly assigned to work from home or stay in the office:
+
+```{ojs}
+html`<p style="margin-left:1.2em;"><strong>${wfh_treat_n}</strong> to work from home, <strong>${wfh_control_n}</strong> to stay in the office</p>`
+```
+
+- Two outcomes tracked: whether they quit, and phone-call volume (for the subset whose job is order-taking)
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 20, working-from-home dataset (Bloom et al.'s Ctrip field experiment)
+:::
+
+## Reading the real output
+
+```{.python}
+import statsmodels.formula.api as smf
+
+quit_model = smf.ols("quitjob ~ treatment", data=wfh).fit(cov_type="HC1")
+```
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.52em;line-height:1.35;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">${quit_summary_text}</pre>`
+```
+
+::: {.fragment}
+```{ojs}
+html`<p>Control group quits at <strong>${control_quit_rate}%</strong>, treatment group at <strong>${treatment_quit_rate}%</strong> — working from home cuts the quit rate by <strong>${Math.abs(quit_effect)} percentage points</strong> (p = ${quit_p}). A real, significant effect.</p>`
+```
+:::
+
+## A second outcome: performance
+
+Among staff whose job is answering calls (N=${phone_n}), performance is measured directly:
+
+```{ojs}
+html`<p>Working from home also <strong>increases</strong> phone-call volume by <strong>${phone_effect} thousand calls</strong> per employee (p = ${phone_p}) — the effect isn't just fewer people leaving, it's better performance from those who stay.</p>`
+```
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 20 — matches the book's own published Table, reproduced here from the raw data
+:::
+
+---
+
+## Making it rigorous
+
+---
+
+## How many subjects do you need?
+
+- Sample size depends on: significance level, the **power** you want (chance of detecting a real effect if it exists), and the **minimum effect size** worth detecting
+- Smaller effects need bigger samples — precision doesn't come free
+- Gabor's own worked example for this: **fine-tuning social media advertising** — a CEU business school choosing between two versions of an ad
+
+```{.python}
+from statsmodels.stats.proportion import proportion_effectsize
+from statsmodels.stats.power import NormalIndPower
+
+effect_size = proportion_effectsize(0.01, 0.02)  # planning assumption: 1% CTR, want to detect a doubling
+n_needed = NormalIndPower().solve_power(effect_size=abs(effect_size), alpha=0.05, power=0.8, ratio=1)
+```
+
+::: {.fragment}
+```{ojs}
+html`<p>Planning assumption: a <strong>${planning_ctr}%</strong> click-through rate. To detect a doubling of that rate at 80% power: <strong>${n_needed.toLocaleString()}</strong> visitors per arm.</p>`
+```
+:::
+
+## What actually happened
+
+```{ojs}
+{
+  return html`<table style="margin:16px auto 0;font-family:sans-serif;font-size:1.05em;border-collapse:collapse;">
+    <tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:6px 22px;">Version</th><th style="padding:6px 22px;">Shown</th><th style="padding:6px 22px;">Clicked</th><th style="padding:6px 22px;">Converted</th><th style="padding:6px 22px;">Rate</th></tr>
+    ${social_rows.map(d => `<tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 22px;">${d.action_type}</td><td style="padding:5px 22px;text-align:center;">${d.show.toLocaleString()}</td><td style="padding:5px 22px;text-align:center;">${d.clicks.toLocaleString()}</td><td style="padding:5px 22px;text-align:center;">${d.action}</td><td style="padding:5px 22px;text-align:center;">${d.rate.toFixed(4)}%</td></tr>`).join('')}
+  </table>`
+}
+```
+
+::: {.fragment}
+```{ojs}
+html`<p>${social_total_shows.toLocaleString()} impressions, ${social_total_clicks.toLocaleString()} clicks, ${social_total_actions} actual conversions — a small difference between the two ads. Take-home message: pick "A," but the test itself was too small to be sure of much more than that.</p>`
+```
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 20, "Fine-Tuning Social Media Advertising" case study
+:::
+
+## Task — what if the effect is smaller?
+
+::: {.instructions-box}
+**Business question**: what if you only care about detecting a more modest 50% relative lift (1% → 1.5%) rather than a doubling — how much more data would that take?
+
+Rerun the power calculation with a 1.5% target instead of 2%. How much does the required sample size change? No further syntax hints.
+:::
+
+## What you should have found
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.62em;line-height:1.4;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">${task_power_output_text}</pre>`
+```
+
+::: {.instructions-box}
+Roughly three and a half times the sample size for a smaller lift — detecting smaller effects gets expensive fast, not linearly.
+:::
+
+## Covariate balance
+
+Back to working from home: random assignment should mean the two groups look alike on everything measured **before** treatment.
+
+```{ojs}
+{
+  return html`<table style="margin:16px auto 0;font-family:sans-serif;font-size:1em;border-collapse:collapse;">
+    <tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:6px 22px;">Covariate</th><th style="padding:6px 22px;">Treatment</th><th style="padding:6px 22px;">Control</th><th style="padding:6px 22px;">p-value</th></tr>
+    ${balance_rows.map(d => `<tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 22px;">${d.covariate}</td><td style="padding:5px 22px;text-align:center;">${d.treat}</td><td style="padding:5px 22px;text-align:center;">${d.control}</td><td style="padding:5px 22px;text-align:center;">${d.p}</td></tr>`).join('')}
+  </table>`
+}
+```
+
+::: {.fragment}
+Mostly balanced — one covariate ("has children") comes out with a low p-value. With five covariates checked, one false positive at conventional significance is exactly what chance predicts. Worth noting, not worth panicking over.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 20 — real balance check, reproduced from the raw data
+:::
+
+---
+
+## Complications
+
+---
+
+## Imperfect compliance
+
+::: {.instructions-box}
+Gabor's own account of this experiment: fewer than 20% of the treatment group had to be reassigned back to the office, because of changes in their personal circumstances.
+:::
+
+- **Assignment** (what a subject is told to do) and **treatment** (what they actually do) don't always match
+- With small non-compliance like this, the effect we measured — comparing by *assignment* — is a reasonable stand-in for the effect of *actual* treatment
+- With **substantial** non-compliance, that stops being true, and the honest move is to say so rather than report a number that's no longer trustworthy
+
+## ITT versus the treatment effect
+
+- What we measured above compares people **by assignment**, regardless of what they actually did — this is the **intent-to-treat (ITT)** effect
+- ITT answers a genuinely useful question on its own: "if we rolled this out and got this level of compliance, what would happen?" — often the more *decision-relevant* number anyway
+- The **LATE** (local average treatment effect) — the effect specifically on those who comply with their assignment — is what you'd need instead if non-compliance were large
+
+## Being observed changes behaviour
+
+- **Hawthorne effect**: both treated and untreated subjects change their behaviour simply because they know they're being watched — not because of the treatment itself
+- **John Henry effect**: the *control* group works harder than usual, specifically because they know they're the comparison — the opposite problem, and just as real
+- **Spillovers**: one subject's treatment can affect another's outcome directly — breaks the clean comparison entirely. Good design keeps treatment and control apart where possible
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 20
+:::
+
+## Internal and external validity
+
+- **Internal validity here**: assignment was random, and non-compliance was small and concentrated in the treatment group only — Gabor judges internal validity as strong for this study
+- **External validity**: this firm changed its actual management practice off the back of this result — real impact. But would the same effect hold at a different firm, a different job type, a different country? That's a judgement call, not something the data itself can answer
+
+---
+
+## Back to the question
+
+---
+
+## So, does working from home change who quits?
+
+```{ojs}
+html`<p>With <strong>${wfh_n}</strong> employees, randomly assigned, and reasonably balanced — the honest answer is <strong>yes</strong>: quit rates fall by roughly <strong>${Math.abs(quit_effect)} percentage points</strong>, and performance among those who stay improves too.</p>`
+```
+
+- This is what a trustworthy causal claim looks like: a real intervention, real random assignment, and a result that would have been just as credible if it had come out null
+
+## Summary
+
+- Potential outcomes formalise what "an effect" even means — and confirm the individual effect is permanently unobservable, only the average is reachable
+- DAGs make the causal question, and the assumptions behind it, explicit
+- Random assignment is what makes the simple group comparison trustworthy — everything else this module has done with observational data is a second-best attempt at the same goal
+- Real experiments still need care: enough power, checked balance, and an honest reckoning with imperfect compliance
+
+## Online session
+
+See **week9-online.html** — what to do when you can't randomise: confounders, latent variables, and bad controls.
+
+## Coming up
+
+::: {style="text-align: center; padding-top: 60px;"}
+[**Week 10: Prediction**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
+
+::: {.fragment style="padding-top:40px;"}
+*A different goal entirely — not "what caused this," but "what comes next"*
+:::
+:::

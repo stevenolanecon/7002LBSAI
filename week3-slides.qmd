@@ -1,0 +1,739 @@
+---
+title: "When y Met x: Correlation and Covariance"
+subtitle: "7002LBSAI Research Methods in Analytics — Week 3"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="stylesheet" href="styles-slides.css?v=20260914">
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{python}
+import pandas as pd
+
+# This is the TEST-DATA deck — always reads the synthetic placeholder, never
+# the live Google Sheet. See week3-live.qmd for the in-class version.
+df = pd.read_csv("data/synthetic_reaction_times.csv")
+# df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIOZ03GpUJgqvGVmI9cih169mMq0ajLMj6a0VTd2tytB3K5BmX5AUiKQ8FKIL6KUKEcgb-1LR-1eM/pub?gid=0&single=true&output=csv")
+
+if 'name' in df.columns and 'student_name' not in df.columns:
+    df = df.rename(columns={'name': 'student_name'})
+if 'caffeine' not in df.columns:
+    df['caffeine'] = 'Unknown'
+df['caffeine'] = df['caffeine'].fillna('Unknown')
+
+# finger_mm may not exist on older submissions — coerce and tolerate absence
+if 'finger_mm' not in df.columns:
+    df['finger_mm'] = None
+df['finger_mm'] = pd.to_numeric(df['finger_mm'], errors='coerce')
+
+students = sorted(df['student_name'].unique().tolist())
+
+# One row per student: mean reaction time, device, caffeine, finger length
+student_summary = (
+    df.groupby('student_name')
+    .agg(mean_rt=('reaction_time_ms', 'mean'),
+         device=('device', 'first'),
+         caffeine=('caffeine', 'first'),
+         finger_mm=('finger_mm', 'first'))
+    .reset_index()
+    .round(1)
+)
+
+# Joint device x caffeine counts, one row per student (not per trial)
+students_df = df.drop_duplicates('student_name')
+joint_table = (
+    students_df.groupby(['device', 'caffeine']).size()
+    .reset_index(name='count')
+)
+
+# NaN (e.g. missing finger_mm) is not valid JSON. All ojs_define() values share
+# one JSON payload, so a single stray NaN anywhere breaks every variable in the
+# call — clean each one before handing it over.
+df_clean = df.astype(object).where(df.notna(), None)
+student_summary_clean = student_summary.astype(object).where(student_summary.notna(), None)
+joint_table_clean = joint_table.astype(object).where(joint_table.notna(), None)
+
+ojs_define(
+    data            = df_clean.to_dict(orient='records'),
+    students        = students,
+    student_summary = student_summary_clean.to_dict(orient='records'),
+    joint_table     = joint_table_clean.to_dict(orient='records'),
+)
+```
+
+```{python}
+import numpy as np
+
+# ── A second, separate illustrative dataset for the scatter / bin-scatter /
+# log-transform teaching sequence ("Scatterplot and bin-scatter", "Does
+# logging reaction time help?"). Deliberately NOT finger length -- students
+# are set a task later to build exactly that scatter themselves, so the
+# worked example here uses a different x (a plausible, separate driver of
+# reaction time: hours of sleep the night before), generated to reliably
+# show what logging is *for*. First version used a handful of moderately
+# slow trials -- the resulting raw/log contrast was real but too subtle to
+# read at a glance (R^2 improved only ~1.8x, main cluster still occupied
+# ~60% of either axis). Rebuilt with a few *severe* "very bad day" outliers
+# instead: the main cluster now occupies only ~22% of the raw axis (crushed
+# by the outliers stretching it) vs ~39% of the log axis -- a genuinely
+# visible difference in how much of the chart the actual pattern gets to
+# use, not just a marginally-better R^2. Verified numerically before
+# committing: skew 3.85, log-linear R^2 (~0.24) still roughly 2.4x the raw
+# fit's (~0.10).
+np.random.seed(21)
+n_sleep = 66
+sleep_hours = np.round(np.random.uniform(4, 9.5, n_sleep), 1)
+_a, _b, _sigma = 5.95, 0.09, 0.075
+_log_rt = _a - _b * sleep_hours + np.random.normal(0, _sigma, n_sleep)
+sleep_rt = np.clip(np.exp(_log_rt), 150, None).round(1)
+
+# A few severe "very bad day" trials -- the real-world reason reaction time
+# has a long right tail, deliberately extreme here so the raw-vs-logged
+# contrast is unmistakable rather than subtle
+_rng = np.random.default_rng(5)
+_n_out = 3
+_idx_out = _rng.choice(n_sleep, _n_out, replace=False)
+sleep_hours = np.concatenate([sleep_hours, sleep_hours[_idx_out]])
+sleep_rt    = np.concatenate([sleep_rt, _rng.uniform(650, 900, _n_out).round(1)])
+
+sleep_scatter_data = [
+    {'sleep_hours': float(sleep_hours[i]), 'reaction_time_ms': float(sleep_rt[i])}
+    for i in range(len(sleep_hours))
+]
+
+ojs_define(sleep_scatter_data = sleep_scatter_data)
+```
+
+## {background-color="#1a1a2e"}
+
+::: {style="text-align: center; padding-top: 180px;"}
+[**When y met x**]{style="font-size: 2.2em; color: white;"}
+
+[Weeks 1–2 looked at one variable at a time. Today: how do two variables move together — and when should we trust that?]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+:::
+
+## A shortcut for HR
+
+::: {.instructions-box}
+The reaction-time test works, but it takes ten trials per person to administer. HR wants something faster: **"find us a quick physical measurement that predicts reaction time, and we'll screen candidates on that instead."**
+:::
+
+::: {.fragment}
+That's why we collected **index finger length** back in Week 1.
+
+Is it a fast, reliable stand-in for the real test? Today gives us the tools to answer that properly — and the discipline not to answer it too quickly.
+:::
+
+---
+
+## When y met x
+
+---
+
+## The y and the x
+
+Much of data analysis is about comparing values of a **y** variable across values of an **x** variable — uncovering patterns of association.
+
+- By convention, **y** is the variable we're interested in; **x** is what we compare across
+- **Goal 1 — prediction:** use x to predict y, without needing to know *why*
+- **Goal 2 — causal effect:** learn what would happen to y if we *changed* x
+
+::: {.fragment}
+HR's proxy-test idea is a **prediction** goal, dressed up as if it were free of that distinction. Keep watching for where the two goals get blurred.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Policy*, Ch. 4
+:::
+
+---
+
+## Conditional probability
+
+---
+
+## Conditioning on x
+
+- **Comparison → conditioning.** Comparing y by values of x means we **condition** y on x
+- x is the **conditioning variable**; y is the **outcome variable**
+- **Conditional probability:** $P(A \mid B) = \dfrac{P(A \text{ and } B)}{P(B)}$
+- **Joint probability:** $P(A \text{ and } B) = P(A) \times P(B)$ — *if A and B are independent*
+- **Independence:** $P(A \mid B) = P(A)$ and $P(B \mid A) = P(B)$
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 4
+:::
+
+## Device and caffeine: our own joint table
+
+```{ojs}
+{
+  if (!joint_table.length) return html`<p style="color:#aaa;">Not enough data yet.</p>`
+  const devices = [...new Set(joint_table.map(d => d.device))]
+  const caffs = [...new Set(joint_table.map(d => d.caffeine))]
+  const grandTotal = d3.sum(joint_table, d => d.count)
+  const cell = (dev, caf) => joint_table.find(r => r.device === dev && r.caffeine === caf)?.count ?? 0
+  const rowTotal = dev => d3.sum(caffs, c => cell(dev, c))
+  const colTotal = caf => d3.sum(devices, d => cell(d, caf))
+
+  return html`<table style="width:80%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;">
+    <thead><tr style="background:#1a1a2e;color:white;">
+      <th style="padding:10px 18px;text-align:left;">Device \\ Caffeine</th>
+      ${caffs.map(c => `<th style="padding:10px 18px;text-align:right;">${c}</th>`).join('')}
+      <th style="padding:10px 18px;text-align:right;background:#2d6a4f;">Total</th>
+    </tr></thead>
+    <tbody>
+      ${devices.map((dev,i) => `<tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
+        <td style="padding:9px 18px;font-weight:700;">${dev}</td>
+        ${caffs.map(c => `<td style="padding:9px 18px;text-align:right;color:#457b9d;">${cell(dev,c)}</td>`).join('')}
+        <td style="padding:9px 18px;text-align:right;font-weight:700;background:#f0f4f8;">${rowTotal(dev)}</td>
+      </tr>`).join('')}
+      <tr style="border-top:2px solid #1a1a2e;">
+        <td style="padding:9px 18px;font-weight:700;background:#f0f4f8;">Total</td>
+        ${caffs.map(c => `<td style="padding:9px 18px;text-align:right;font-weight:700;background:#f0f4f8;">${colTotal(c)}</td>`).join('')}
+        <td style="padding:9px 18px;text-align:right;font-weight:700;background:#e9edf1;">${grandTotal}</td>
+      </tr>
+    </tbody>
+  </table>`
+}
+```
+
+::: {.fragment}
+Row and column **totals** give you the marginals directly — no need to derive $P(\text{Device})$ or $P(\text{Caffeine})$ yourself before you can condition.
+:::
+
+## Task — condition on our own data
+
+::: {.instructions-box}
+On paper, using the table above: what is $P(\text{Caffeine} = \text{Yes} \mid \text{Device} = \text{Phone})$?
+
+Does knowing someone's device change your guess about their caffeine use? How much would you trust that conclusion, given how many observations it's based on?
+:::
+
+::: {.fragment}
+**Independence is not a yes/no question you can answer from a table this small.** Any real sample will show *some* numerical gap between the conditional and marginal probabilities, purely by chance — even when the true population relationship is independence. Telling a real pattern from sampling noise is exactly what Week 2's tools (standard errors, hypothesis tests) are for. With this few observations, "we can't tell yet" is the honest answer, not a verdict either way.
+:::
+
+## Visualising with a stacked bar chart
+
+```{ojs}
+stacked_data = {
+  if (!joint_table.length) return []
+  const devices = [...new Set(joint_table.map(d => d.device))]
+  return devices.flatMap(dev => {
+    const rows = joint_table.filter(d => d.device === dev)
+    const tot = d3.sum(rows, d => d.count)
+    return rows.map(r => ({ ...r, pct: r.count / tot }))
+  })
+}
+```
+
+```{ojs}
+{
+  if (!stacked_data.length) return html`<p style="color:#aaa;">Not enough data yet.</p>`
+  return Plot.plot({
+    height: 280,
+    marginLeft: 60,
+    x: { label: "Device" },
+    y: { label: "% within device", percent: true },
+    color: { legend: true, domain: ["Yes","No","Unknown"], range: ["#e63946","#457b9d","#ccc"] },
+    marks: [
+      Plot.barY(stacked_data, { x: "device", y: "pct", fill: "caffeine", order: "caffeine" }),
+      Plot.ruleY([0]),
+    ]
+  })
+}
+```
+
+::: {.fragment}
+Stacked to 100% within each device — this shows $P(\text{Caffeine} \mid \text{Device})$ directly, not the raw counts.
+:::
+
+---
+
+## Conditional distribution and expectation
+
+---
+
+## The conditional mean
+
+The **conditional expectation** of y for a given value of x:
+
+$$E[y \mid x]$$
+
+- The mean of y, computed separately for each value (or group) of x
+- With few x values, a histogram or box plot per group works well (Week 1)
+- With **many** x values — like finger length in mm — group into **bins** first
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 4
+:::
+
+## Task — compute the conditional mean, by hand
+
+::: {.instructions-box}
+Using the class's finger-length and reaction-time data: split students into three roughly equal-sized groups by finger length (short / medium / long), then compute the mean reaction time within each group. Compare to the chart on the next slide.
+:::
+
+## Binning finger length
+
+```{ojs}
+{
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) {
+    return html`<div class="instructions-box">Not enough finger-length data yet to bin — this will populate once more of the class has submitted through the updated tool.</div>`
+  }
+  const vals = rows.map(d => d.finger_mm).sort((a,b) => a-b)
+  const q1 = d3.quantile(vals, 1/3), q2 = d3.quantile(vals, 2/3)
+  const binOf = f => f <= q1 ? "Short" : f <= q2 ? "Medium" : "Long"
+  const binned = rows.map(d => ({ ...d, bin: binOf(d.finger_mm) }))
+  const grouped = ["Short","Medium","Long"].map(b => {
+    const g = binned.filter(d => d.bin === b)
+    return { bin: b, n: g.length, mean_rt: g.length ? d3.mean(g, d => d.mean_rt) : null }
+  }).filter(g => g.n > 0)
+
+  return Plot.plot({
+    height: 300,
+    marginLeft: 60,
+    x: { label: "Finger length bin", domain: ["Short","Medium","Long"] },
+    y: { label: "E[reaction time | bin] (ms)" },
+    marks: [
+      Plot.barY(grouped, { x: "bin", y: "mean_rt", fill: "#457b9d", fillOpacity: 0.8 }),
+      Plot.text(grouped, { x: "bin", y: "mean_rt", text: d => `n=${d.n}`, dy: -10, fill: "#333", fontSize: 12 }),
+      Plot.ruleY([0]),
+    ]
+  })
+}
+```
+
+---
+
+## Scatter, covariance, correlation
+
+---
+
+## Scatterplot and bin-scatter {.smaller}
+
+A **scatterplot** puts two variables on two axes, one dot per observation. It's one of the most powerful ways to see whether a relationship exists between two variables — no formula required, just look.
+
+::: {.fragment}
+Not finger length this time — you'll build that scatter yourselves shortly. Here it's a separate illustrative case: **hours of sleep the night before**, against reaction time, for 69 trials.
+:::
+
+```{ojs}
+{
+  return Plot.plot({
+    height: 300,
+    marginLeft: 60,
+    x: { label: "Sleep the night before (hours)" },
+    y: { label: "Reaction time (ms)" },
+    marks: [
+      Plot.dot(sleep_scatter_data, { x: "sleep_hours", y: "reaction_time_ms", fill: "#457b9d", r: 5, fillOpacity: 0.75,
+                       tip: true, title: d => `${d.sleep_hours}h sleep, ${d.reaction_time_ms}ms` }),
+    ]
+  })
+}
+```
+
+::: {.fragment}
+Every dot is one trial. There's a real pattern here, but a handful of slow "attention lapse" trials — everyone has them, however well-rested — stretch the top of the scale and make it hard to see. Often with more data this will struggle to fit on a scatter. In those cases, a **bin-scatter** can reveal the pattern without the clutter.
+:::
+
+## The bin-scatter
+
+The **conditional mean per bin** — one dot per observed sleep value, not a wide bucket like "Short / Medium / Long" on the finger-length slide.
+
+```{ojs}
+{
+  const grouped = d3.rollups(sleep_scatter_data, v => d3.mean(v, d => d.reaction_time_ms), d => d.sleep_hours)
+    .map(([sleep_hours, mean_rt]) => ({ sleep_hours, mean_rt }))
+    .sort((a, b) => a.sleep_hours - b.sleep_hours)
+
+  return Plot.plot({
+    height: 340,
+    marginLeft: 60,
+    x: { label: "Sleep the night before (hours)" },
+    y: { label: "E[reaction time | sleep hours] (ms)" },
+    marks: [
+      Plot.dot(grouped, { x: "sleep_hours", y: "mean_rt", fill: "#2d6a4f", r: 5, fillOpacity: 0.85,
+                       tip: true, title: d => `${d.sleep_hours}h: ${d.mean_rt.toFixed(0)}ms` }),
+    ]
+  })
+}
+```
+
+::: {.fragment}
+The lapses still show — a few bins still sit high — but the underlying downward trend reads far more clearly than in the raw scatter.
+:::
+
+## Does logging reaction time help? {.smaller}
+
+Week 1 found reaction time is closer to log-normal than normal — a floor, no ceiling, long right tail. Gabor's own case study logs a skewed variable for exactly this reason: it stretches out the crowded end and compresses the tail, so a pattern against x is easier to read.
+
+::: {.two-col}
+::: {.col}
+**Logged**
+
+```{ojs}
+{
+  return Plot.plot({
+    height: 340,
+    marginLeft: 55,
+    x: { label: "Sleep the night before (hours)" },
+    y: { label: "ln(reaction time)" },
+    marks: [
+      Plot.dot(sleep_scatter_data, { x: "sleep_hours", y: d => Math.log(d.reaction_time_ms), fill: "#2d6a4f", r: 5, fillOpacity: 0.75,
+                       tip: true, title: d => `${d.sleep_hours}h sleep, ${d.reaction_time_ms}ms` }),
+    ]
+  })
+}
+```
+:::
+::: {.col .fragment data-fragment-index="1"}
+**Raw scale**
+
+```{ojs}
+{
+  return Plot.plot({
+    height: 340,
+    marginLeft: 55,
+    x: { label: "Sleep the night before (hours)" },
+    y: { label: "Reaction time (ms)" },
+    marks: [
+      Plot.dot(sleep_scatter_data, { x: "sleep_hours", y: "reaction_time_ms", fill: "#457b9d", r: 5, fillOpacity: 0.75,
+                       tip: true, title: d => `${d.sleep_hours}h sleep, ${d.reaction_time_ms}ms` }),
+    ]
+  })
+}
+```
+:::
+:::
+
+::: {.fragment data-fragment-index="1"}
+Same data, side by side. The lapse trials are still there — logging doesn't delete them — but on the raw scale they dominate the axis; logged, they no longer do, and the downward trend is much easier to see. Logging a skewed variable is a tool, not a rule: it helps here only because it actually makes the pattern clearer, and the online session goes further into why.
+:::
+
+## Covariance
+
+In plain language: **covariance** asks whether x and y tend to move together — when one is above its own average, is the other usually above its average too?
+
+::: {.fragment}
+$$Cov[x,y] = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{n}$$
+
+- Multiplies each observation's deviation from the x-mean by its deviation from the y-mean, and averages
+- Positive when x and y tend to deviate from their means **in the same direction**
+- Can be any positive or negative number — units depend on the units of x and y
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 4
+:::
+
+## Task — calculate the covariance
+
+::: {.instructions-box}
+By hand or in Excel, using the class's (finger length, mean reaction time) pairs: calculate $Cov[\text{finger length}, \text{reaction time}]$.
+:::
+
+::: {.fragment}
+```{ojs}
+{
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) return html`<p style="color:#aaa;">Will compute automatically once enough data is in.</p>`
+  const xs = rows.map(d => d.finger_mm), ys = rows.map(d => d.mean_rt)
+  const mx = d3.mean(xs), my = d3.mean(ys)
+  const cov = d3.mean(xs.map((x,i) => (x - mx) * (ys[i] - my)))
+  return html`<p style="font-family:sans-serif;">Cov[finger length, reaction time] = <strong style="color:#e63946;font-size:1.2em;">${cov.toFixed(1)}</strong></p>`
+}
+```
+:::
+
+## Correlation
+
+In plain language: **correlation** asks the same question as covariance — do x and y move together — but reports the answer on a fixed scale from −1 to 1, so it's comparable no matter what units x and y are measured in.
+
+The standardised version of the covariance — divide by the product of the standard deviations:
+
+$$Corr[x,y] = \frac{Cov[x,y]}{SD[x] \, SD[y]} \qquad -1 \leq Corr[x,y] \leq 1$$
+
+Rough guide: below 0.2 is weak, above 0.7 is generally strong.
+
+## Task — calculate the correlation
+
+::: {.instructions-box}
+Using your covariance from two slides ago, and the SD of each variable: calculate the correlation coefficient.
+:::
+
+::: {.fragment}
+```{ojs}
+{
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) return html`<p style="color:#aaa;">Will compute automatically once enough data is in.</p>`
+  const xs = rows.map(d => d.finger_mm), ys = rows.map(d => d.mean_rt)
+  const mx = d3.mean(xs), my = d3.mean(ys)
+  const cov = d3.mean(xs.map((x,i) => (x - mx) * (ys[i] - my)))
+  const corr = cov / (d3.deviation(xs) * d3.deviation(ys))
+  return html`<p style="font-family:sans-serif;">Corr[finger length, reaction time] = <strong style="color:#e63946;font-size:1.2em;">${corr.toFixed(2)}</strong></p>`
+}
+```
+:::
+
+::: {.fragment}
+Whatever number comes back — is it strong enough, on its own, to justify HR replacing the real test with a ruler?
+:::
+
+---
+
+## Is it causal?
+
+---
+
+## Where does the variation in x come from?
+
+Comparison requires **variation** in the conditioning variable — and where that variation comes from matters enormously.
+
+::: {.two-col}
+::: {.col}
+**Experimental data**
+
+- A treatment is assigned, often randomly
+- Differences in y are attributable to the treatment alone
+- e.g. randomly assign aspirin vs. placebo
+:::
+::: {.col}
+**Observational data**
+
+- x varies because of people's own choices, circumstances, history
+- Many other things may differ alongside x
+- e.g. people who already take aspirin routinely may do so *because* of prior health risk
+:::
+:::
+
+::: {.fragment}
+Almost everything in business analytics is observational. Finger length is one of the few genuinely fixed, "as-if-random" variables we're likely to find — most x's we'll meet from here on are not.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 4
+:::
+
+## Task — find a spurious correlation
+
+::: {.instructions-box}
+Go to **tylervigen.com/spurious-correlations**. Find one example. In one sentence, explain why the two variables move together despite having no plausible causal link.
+:::
+
+::: {.fragment}
+Correlation, on its own, never tells you which of these is true: **x causes y**, **y causes x**, **both are caused by something else**, or **coincidence**.
+:::
+
+---
+
+## Measuring what you can't observe directly
+
+---
+
+## Latent variables
+
+Some concepts — attitude, ability, management quality — can't be measured with a single variable. They're **latent**: real, but only indirectly observable through several proxies at once.
+
+- **Use one variable** — simple, but throws away information
+- **Average several (as z-scores)** — standardise first, then average; simple and transparent
+- **PCA** — weights each variable by how well it captures the shared pattern; typically close to the simple average in practice
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 4
+:::
+
+## Use one variable
+
+The simplest approach: pick a single observable variable and treat it as a stand-in for the thing you can't measure directly.
+
+- **Postcode** as a proxy for socioeconomic background
+- **Job tenure** as a proxy for "experience"
+- **Finger length** as a proxy for manual dexterity — this module's own opening example
+
+::: {.fragment}
+It's simple, and sometimes good enough. But a single proxy only ever captures **part** of the underlying concept — whatever it misses is thrown away, and if the proxy is a weak one, most of the concept goes with it.
+:::
+
+::: {.fragment}
+::: {.instructions-box}
+**Task** — our own reaction times aren't purely mechanical. What latent variables might actually be driving them — alertness, familiarity with the device, motivation on the day? What proxies do we already have sitting in our own data for any of these?
+:::
+:::
+
+## Average several (as z-scores) {.smaller}
+
+Suppose we want one "alertness" score for six people, from three imperfect proxies: hours of sleep, self-rated energy (1–10), and grip strength (kg).
+
+```{ojs}
+{
+  const people = [
+    { name: "Amara", sleep: 8.5, energy: 9, grip: 33 },
+    { name: "Ben",    sleep: 5.0, energy: 4, grip: 32 },
+    { name: "Chidi",  sleep: 7.0, energy: 6, grip: 35 },
+    { name: "Dana",   sleep: 4.5, energy: 3, grip: 30 },
+    { name: "Elin",   sleep: 9.0, energy: 8, grip: 31 },
+    { name: "Femi",   sleep: 6.0, energy: 5, grip: 34 },
+  ]
+  return html`<table style="width:80%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.85em;">
+    <thead><tr style="background:#1a1a2e;color:white;">
+      <th style="padding:7px 16px;text-align:left;">Person</th>
+      <th style="padding:7px 16px;text-align:right;">Sleep (h)</th>
+      <th style="padding:7px 16px;text-align:right;">Energy (1&ndash;10)</th>
+      <th style="padding:7px 16px;text-align:right;">Grip (kg)</th>
+    </tr></thead>
+    <tbody>
+      ${people.map((p,i) => `<tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
+        <td style="padding:6px 16px;">${p.name}</td>
+        <td style="padding:6px 16px;text-align:right;">${p.sleep}</td>
+        <td style="padding:6px 16px;text-align:right;">${p.energy}</td>
+        <td style="padding:6px 16px;text-align:right;">${p.grip}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table>`
+}
+```
+
+::: {.fragment}
+Different units, different scales — can't just add them. **Standardise each to a z-score first**, $z = (x - \bar{x}) / SD[x]$, then average the three z-scores per person.
+
+```{ojs}
+{
+  const people = [
+    { name: "Amara", sleep: 8.5, energy: 9, grip: 33 },
+    { name: "Ben",    sleep: 5.0, energy: 4, grip: 32 },
+    { name: "Chidi",  sleep: 7.0, energy: 6, grip: 35 },
+    { name: "Dana",   sleep: 4.5, energy: 3, grip: 30 },
+    { name: "Elin",   sleep: 9.0, energy: 8, grip: 31 },
+    { name: "Femi",   sleep: 6.0, energy: 5, grip: 34 },
+  ]
+  const z = vals => { const m = d3.mean(vals), s = d3.deviation(vals) * Math.sqrt((vals.length-1)/vals.length); return vals.map(v => (v - m) / s) }
+  const zs = z(people.map(p => p.sleep)), ze = z(people.map(p => p.energy)), zg = z(people.map(p => p.grip))
+  const rows = people.map((p,i) => ({ name: p.name, zs: zs[i], ze: ze[i], zg: zg[i], avg: (zs[i]+ze[i]+zg[i])/3 }))
+
+  return html`<table style="width:85%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.85em;">
+    <thead><tr style="background:#1a1a2e;color:white;">
+      <th style="padding:7px 16px;text-align:left;">Person</th>
+      <th style="padding:7px 16px;text-align:right;">z(sleep)</th>
+      <th style="padding:7px 16px;text-align:right;">z(energy)</th>
+      <th style="padding:7px 16px;text-align:right;">z(grip)</th>
+      <th style="padding:7px 16px;text-align:right;background:#2d6a4f;">Average z</th>
+    </tr></thead>
+    <tbody>
+      ${rows.map((r,i) => `<tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
+        <td style="padding:6px 16px;">${r.name}</td>
+        <td style="padding:6px 16px;text-align:right;">${r.zs.toFixed(2)}</td>
+        <td style="padding:6px 16px;text-align:right;">${r.ze.toFixed(2)}</td>
+        <td style="padding:6px 16px;text-align:right;">${r.zg.toFixed(2)}</td>
+        <td style="padding:6px 16px;text-align:right;font-weight:700;background:#f0f4f8;color:#2d6a4f;">${r.avg.toFixed(2)}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table>`
+}
+```
+:::
+
+## PCA {.smaller}
+
+Same six people, same three proxies. Instead of weighting every variable equally, **PCA looks at how the variables correlate with each other**, and finds the one weighted combination that captures as much of their *shared* variation as possible.
+
+```{ojs}
+{
+  const rows = [
+    { v: "Sleep",  sleep: 1.00, energy: 0.97, grip: 0.20 },
+    { v: "Energy", sleep: 0.97, energy: 1.00, grip: 0.25 },
+    { v: "Grip",   sleep: 0.20, energy: 0.25, grip: 1.00 },
+  ]
+  return html`<table style="width:60%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.9em;">
+    <thead><tr style="background:#1a1a2e;color:white;">
+      <th style="padding:8px 16px;text-align:left;">Correlation</th>
+      <th style="padding:8px 16px;text-align:right;">Sleep</th>
+      <th style="padding:8px 16px;text-align:right;">Energy</th>
+      <th style="padding:8px 16px;text-align:right;">Grip</th>
+    </tr></thead>
+    <tbody>
+      ${rows.map((r,i) => `<tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
+        <td style="padding:7px 16px;font-weight:700;">${r.v}</td>
+        <td style="padding:7px 16px;text-align:right;">${r.sleep.toFixed(2)}</td>
+        <td style="padding:7px 16px;text-align:right;">${r.energy.toFixed(2)}</td>
+        <td style="padding:7px 16px;text-align:right;">${r.grip.toFixed(2)}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table>`
+}
+```
+
+::: {.fragment}
+Sleep and energy move together closely (0.97); grip strength barely tracks either (0.20–0.25) — a noisier signal for the same underlying "alertness."
+:::
+
+::: {.fragment}
+PCA notices this automatically:
+
+| Variable | Equal-weight average | PCA weight |
+|---|---:|---:|
+| Sleep | 0.33 | 0.41 |
+| Energy | 0.33 | 0.41 |
+| Grip | 0.33 | **0.18** |
+
+It down-weights the noisier proxy — something a simple average, by construction, can't do.
+:::
+
+::: {.fragment}
+The two composite scores still end up highly correlated (≈0.98 here) — usually true in practice. That's exactly why **Gabor & Kézdi recommend the z-score average for everyday use**, and treat PCA as a robustness check rather than a first choice.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 4
+:::
+
+---
+
+## AI and finding patterns
+
+GenAI is genuinely useful for a first pass over a new dataset — spotting candidate patterns quickly, the way a quick script or profiler would.
+
+::: {.fragment}
+Where it's weaker: **judging** whether a correlation is meaningfully weak or strong, and knowing *which* pattern is worth pursuing in the first place. That judgment is still yours.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 4
+:::
+
+## Online session — Functional form
+
+A closer look at log transformations: why they approximate percentage differences, and where that approximation breaks down.
+
+::: {.instructions-box}
+See **week3-online.html** — a short standalone deck for this week's online session.
+:::
+
+## Coming up: Week 4
+
+::: {style="text-align: center; padding-top: 60px;"}
+[We can now describe a relationship between two variables.]{style="font-size: 1.3em;"}
+
+[Next: turn that relationship into a **model** we can use to predict and interpret.]{style="font-size: 1.3em; padding-top: 20px; display:block;"}
+
+[**Simple regression: the OLS estimator**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
+
+::: {.fragment style="padding-top:40px;"}
+*Linear regression · fitting a line · interpreting the slope*
+:::
+:::

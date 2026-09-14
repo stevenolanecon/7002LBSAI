@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/tabby.min.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.7.32">
+
+  <title>7002LBSAI – Time Series Regression</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="site_libs/revealjs/dist/theme/quarto-2c1b5f745a11cfad616ebade4a4a7d24.css">
+  <link href="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+  <link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+  
+  <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="styles-slides.css?v=20260914">
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Time Series Regression</h1>
+  <p class="subtitle">7002LBSAI Research Methods in Analytics — Week 11</p>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section class="slide level2">
+
+<div id="6f4be75c" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="ojs-define">{"contents": [{"name": "levels_data", "value": [{"date": "1998-01-30", "p_MSFT": 18.648438, "p_SP500": 980.280029}, {"date": "1998-02-27", "p_MSFT": 21.1875, "p_SP500": 1049.339966}, {"date": "1998-03-31", "p_MSFT": 22.375, "p_SP500": 1101.75}, {"date": "1998-04-30", "p_MSFT": 22.53125, "p_SP500": 1111.75}, {"date": "1998-05-29", "p_MSFT": 21.203125, "p_SP500": 1090.819946}, {"date": "1998-06-30", "p_MSFT": 27.09375, "p_SP500": 1133.839966}, {"date": "1998-07-31", "p_MSFT": 27.484375, "p_SP500": 1120.670044}, {"date": "1998-08-31", "p_MSFT": 23.984375, "p_SP500": 957.280029}, {"date": "1998-09-30", "p_MSFT": 27.515625, "p_SP500": 1017.01001}, {"date": "1998-10-30", "p_MSFT": 26.46875, "p_SP500": 1098.670044}, {"date": "1998-11-30", "p_MSFT": 30.5, "p_SP500": 1163.630005}, {"date": "1998-12-31", "p_MSFT": 34.671875, "p_SP500": 1229.22998}, {"date": "1999-01-29", "p_MSFT": 43.75, "p_SP500": 1279.640015}, {"date": "1999-02-26", "p_MSFT": 37.53125, "p_SP500": 1238.329956}, {"date": "1999-03-31", "p_MSFT": 44.8125, "p_SP500": 1286.369995}, {"date": "1999-04-30", "p_MSFT": 40.65625, "p_SP500": 1335.180054}, {"date": "1999-05-28", "p_MSFT": 40.34375, "p_SP500": 1301.839966}, {"date": "1999-06-30", "p_MSFT": 45.09375, "p_SP500": 1372.709961}, {"date": "1999-07-30", "p_MSFT": 42.90625, "p_SP500": 1328.719971}, {"date": "1999-08-31", "p_MSFT": 46.28125, "p_SP500": 1320.410034}, {"date": "1999-09-30", "p_MSFT": 45.28125, "p_SP500": 1282.709961}, {"date": "1999-10-29", "p_MSFT": 46.28125, "p_SP500": 1362.930054}, {"date": "1999-11-30", "p_MSFT": 45.523438, "p_SP500": 1388.910034}, {"date": "1999-12-31", "p_MSFT": 58.375, "p_SP500": 1469.25}, {"date": "2000-01-31", "p_MSFT": 48.9375, "p_SP500": 1394.459961}, {"date": "2000-02-29", "p_MSFT": 44.6875, "p_SP500": 1366.420044}, {"date": "2000-03-31", "p_MSFT": 53.125, "p_SP500": 1498.579956}, {"date": "2000-04-28", "p_MSFT": 34.875, "p_SP500": 1452.430054}, {"date": "2000-05-31", "p_MSFT": 31.28125, "p_SP500": 1420.599976}, {"date": "2000-06-30", "p_MSFT": 40.0, "p_SP500": 1454.599976}, {"date": "2000-07-31", "p_MSFT": 34.90625, "p_SP500": 1430.829956}, {"date": "2000-08-31", "p_MSFT": 34.90625, "p_SP500": 1517.680054}, {"date": "2000-09-29", "p_MSFT": 30.15625, "p_SP500": 1436.51001}, {"date": "2000-10-31", "p_MSFT": 34.4375, "p_SP500": 1429.400024}, {"date": "2000-11-30", "p_MSFT": 28.6875, "p_SP500": 1314.949951}, {"date": "2000-12-29", "p_MSFT": 21.6875, "p_SP500": 1320.280029}, {"date": "2001-01-31", "p_MSFT": 30.53125, "p_SP500": 1366.01001}, {"date": "2001-02-28", "p_MSFT": 29.5, "p_SP500": 1239.939941}, {"date": "2001-03-30", "p_MSFT": 27.34375, "p_SP500": 1160.329956}, {"date": "2001-04-30", "p_MSFT": 33.875, "p_SP500": 1249.459961}, {"date": "2001-05-31", "p_MSFT": 34.59, "p_SP500": 1255.819946}, {"date": "2001-06-29", "p_MSFT": 36.5, "p_SP500": 1224.380005}, {"date": "2001-07-31", "p_MSFT": 33.095001, "p_SP500": 1211.22998}, {"date": "2001-08-31", "p_MSFT": 28.525, "p_SP500": 1133.579956}, {"date": "2001-09-28", "p_MSFT": 25.584999, "p_SP500": 1040.939941}, {"date": "2001-10-31", "p_MSFT": 29.075001, "p_SP500": 1059.780029}, {"date": "2001-11-30", "p_MSFT": 32.105, "p_SP500": 1139.449951}, {"date": "2001-12-31", "p_MSFT": 33.125, "p_SP500": 1148.079956}, {"date": "2002-01-31", "p_MSFT": 31.855, "p_SP500": 1130.199951}, {"date": "2002-02-28", "p_MSFT": 29.17, "p_SP500": 1106.72998}, {"date": "2002-03-28", "p_MSFT": 30.155001, "p_SP500": 1147.390015}, {"date": "2002-04-30", "p_MSFT": 26.129999, "p_SP500": 1076.920044}, {"date": "2002-05-31", "p_MSFT": 25.455, "p_SP500": 1067.140015}, {"date": "2002-06-28", "p_MSFT": 27.35, "p_SP500": 989.820007}, {"date": "2002-07-31", "p_MSFT": 23.99, "p_SP500": 911.619995}, {"date": "2002-08-30", "p_MSFT": 24.540001, "p_SP500": 916.070007}, {"date": "2002-09-30", "p_MSFT": 21.870001, "p_SP500": 815.280029}, {"date": "2002-10-31", "p_MSFT": 26.735001, "p_SP500": 885.76001}, {"date": "2002-11-29", "p_MSFT": 28.84, "p_SP500": 936.309998}, {"date": "2002-12-31", "p_MSFT": 25.85, "p_SP500": 879.820007}, {"date": "2003-01-31", "p_MSFT": 23.73, "p_SP500": 855.700012}, {"date": "2003-02-28", "p_MSFT": 23.700001, "p_SP500": 841.150024}, {"date": "2003-03-31", "p_MSFT": 24.209999, "p_SP500": 848.179993}, {"date": "2003-04-30", "p_MSFT": 25.57, "p_SP500": 916.919983}, {"date": "2003-05-30", "p_MSFT": 24.610001, "p_SP500": 963.590027}, {"date": "2003-06-30", "p_MSFT": 25.639999, "p_SP500": 974.5}, {"date": "2003-07-31", "p_MSFT": 26.41, "p_SP500": 990.309998}, {"date": "2003-08-29", "p_MSFT": 26.52, "p_SP500": 1008.01001}, {"date": "2003-09-30", "p_MSFT": 27.799999, "p_SP500": 995.969971}, {"date": "2003-10-31", "p_MSFT": 26.139999, "p_SP500": 1050.709961}, {"date": "2003-11-28", "p_MSFT": 25.709999, "p_SP500": 1058.199951}, {"date": "2003-12-31", "p_MSFT": 27.370001, "p_SP500": 1111.920044}, {"date": "2004-01-30", "p_MSFT": 27.65, "p_SP500": 1131.130005}, {"date": "2004-02-27", "p_MSFT": 26.530001, "p_SP500": 1144.939941}, {"date": "2004-03-31", "p_MSFT": 24.93, "p_SP500": 1126.209961}, {"date": "2004-04-30", "p_MSFT": 26.129999, "p_SP500": 1107.300049}, {"date": "2004-05-28", "p_MSFT": 26.23, "p_SP500": 1120.680054}, {"date": "2004-06-30", "p_MSFT": 28.559999, "p_SP500": 1140.839966}, {"date": "2004-07-30", "p_MSFT": 28.49, "p_SP500": 1101.719971}, {"date": "2004-08-31", "p_MSFT": 27.299999, "p_SP500": 1104.23999}, {"date": "2004-09-30", "p_MSFT": 27.65, "p_SP500": 1114.579956}, {"date": "2004-10-29", "p_MSFT": 27.969999, "p_SP500": 1130.199951}, {"date": "2004-11-30", "p_MSFT": 26.809999, "p_SP500": 1173.819946}, {"date": "2004-12-31", "p_MSFT": 26.719999, "p_SP500": 1211.920044}, {"date": "2005-01-31", "p_MSFT": 26.280001, "p_SP500": 1181.27002}, {"date": "2005-02-28", "p_MSFT": 25.16, "p_SP500": 1203.599976}, {"date": "2005-03-31", "p_MSFT": 24.17, "p_SP500": 1180.589966}, {"date": "2005-04-29", "p_MSFT": 25.299999, "p_SP500": 1156.849976}, {"date": "2005-05-31", "p_MSFT": 25.799999, "p_SP500": 1191.5}, {"date": "2005-06-30", "p_MSFT": 24.84, "p_SP500": 1191.329956}, {"date": "2005-07-29", "p_MSFT": 25.610001, "p_SP500": 1234.180054}, {"date": "2005-08-31", "p_MSFT": 27.379999, "p_SP500": 1220.329956}, {"date": "2005-09-30", "p_MSFT": 25.73, "p_SP500": 1228.810059}, {"date": "2005-10-31", "p_MSFT": 25.700001, "p_SP500": 1207.01001}, {"date": "2005-11-30", "p_MSFT": 27.68, "p_SP500": 1249.47998}, {"date": "2005-12-30", "p_MSFT": 26.15, "p_SP500": 1248.290039}, {"date": "2006-01-31", "p_MSFT": 28.15, "p_SP500": 1280.079956}, {"date": "2006-02-28", "p_MSFT": 26.870001, "p_SP500": 1280.660034}, {"date": "2006-03-31", "p_MSFT": 27.209999, "p_SP500": 1294.869995}, {"date": "2006-04-28", "p_MSFT": 24.15, "p_SP500": 1310.609985}, {"date": "2006-05-31", "p_MSFT": 22.65, "p_SP500": 1270.089966}, {"date": "2006-06-30", "p_MSFT": 23.299999, "p_SP500": 1270.199951}, {"date": "2006-07-31", "p_MSFT": 24.059999, "p_SP500": 1276.660034}, {"date": "2006-08-31", "p_MSFT": 25.700001, "p_SP500": 1303.819946}, {"date": "2006-09-29", "p_MSFT": 27.35, "p_SP500": 1335.849976}, {"date": "2006-10-31", "p_MSFT": 28.709999, "p_SP500": 1377.939941}, {"date": "2006-11-30", "p_MSFT": 29.360001, "p_SP500": 1400.630005}, {"date": "2006-12-29", "p_MSFT": 29.860001, "p_SP500": 1418.300049}, {"date": "2007-01-31", "p_MSFT": 30.860001, "p_SP500": 1438.23999}, {"date": "2007-02-28", "p_MSFT": 28.17, "p_SP500": 1406.819946}, {"date": "2007-03-30", "p_MSFT": 27.870001, "p_SP500": 1420.859985}, {"date": "2007-04-30", "p_MSFT": 29.940001, "p_SP500": 1482.369995}, {"date": "2007-05-31", "p_MSFT": 30.690001, "p_SP500": 1530.619995}, {"date": "2007-06-29", "p_MSFT": 29.469999, "p_SP500": 1503.349976}, {"date": "2007-07-31", "p_MSFT": 28.99, "p_SP500": 1455.27002}, {"date": "2007-08-31", "p_MSFT": 28.73, "p_SP500": 1473.98999}, {"date": "2007-09-28", "p_MSFT": 29.459999, "p_SP500": 1526.75}, {"date": "2007-10-31", "p_MSFT": 36.810001, "p_SP500": 1549.380005}, {"date": "2007-11-30", "p_MSFT": 33.599998, "p_SP500": 1481.140015}, {"date": "2007-12-31", "p_MSFT": 35.599998, "p_SP500": 1468.359985}, {"date": "2008-01-31", "p_MSFT": 32.599998, "p_SP500": 1378.550049}, {"date": "2008-02-29", "p_MSFT": 27.200001, "p_SP500": 1330.630005}, {"date": "2008-03-31", "p_MSFT": 28.379999, "p_SP500": 1322.699951}, {"date": "2008-04-30", "p_MSFT": 28.52, "p_SP500": 1385.589966}, {"date": "2008-05-30", "p_MSFT": 28.32, "p_SP500": 1400.380005}, {"date": "2008-06-30", "p_MSFT": 27.51, "p_SP500": 1280.0}, {"date": "2008-07-31", "p_MSFT": 25.719999, "p_SP500": 1267.380005}, {"date": "2008-08-29", "p_MSFT": 27.290001, "p_SP500": 1282.829956}, {"date": "2008-09-30", "p_MSFT": 26.690001, "p_SP500": 1166.359985}, {"date": "2008-10-31", "p_MSFT": 22.33, "p_SP500": 968.75}, {"date": "2008-11-28", "p_MSFT": 20.219999, "p_SP500": 896.23999}, {"date": "2008-12-31", "p_MSFT": 19.440001, "p_SP500": 903.25}, {"date": "2009-01-30", "p_MSFT": 17.1, "p_SP500": 825.880005}, {"date": "2009-02-27", "p_MSFT": 16.15, "p_SP500": 735.090027}, {"date": "2009-03-31", "p_MSFT": 18.370001, "p_SP500": 797.869995}, {"date": "2009-04-30", "p_MSFT": 20.26, "p_SP500": 872.809998}, {"date": "2009-05-29", "p_MSFT": 20.889999, "p_SP500": 919.140015}, {"date": "2009-06-30", "p_MSFT": 23.77, "p_SP500": 919.320007}, {"date": "2009-07-31", "p_MSFT": 23.52, "p_SP500": 987.47998}, {"date": "2009-08-31", "p_MSFT": 24.65, "p_SP500": 1020.619995}, {"date": "2009-09-30", "p_MSFT": 25.719999, "p_SP500": 1057.079956}, {"date": "2009-10-30", "p_MSFT": 27.73, "p_SP500": 1036.189941}, {"date": "2009-11-30", "p_MSFT": 29.41, "p_SP500": 1095.630005}, {"date": "2009-12-31", "p_MSFT": 30.48, "p_SP500": 1115.099976}, {"date": "2010-01-29", "p_MSFT": 28.18, "p_SP500": 1073.869995}, {"date": "2010-02-26", "p_MSFT": 28.67, "p_SP500": 1104.48999}, {"date": "2010-03-31", "p_MSFT": 29.290001, "p_SP500": 1169.430054}, {"date": "2010-04-30", "p_MSFT": 30.540001, "p_SP500": 1186.689941}, {"date": "2010-05-28", "p_MSFT": 25.799999, "p_SP500": 1089.410034}, {"date": "2010-06-30", "p_MSFT": 23.01, "p_SP500": 1030.709961}, {"date": "2010-07-30", "p_MSFT": 25.809999, "p_SP500": 1101.599976}, {"date": "2010-08-31", "p_MSFT": 23.469999, "p_SP500": 1049.329956}, {"date": "2010-09-30", "p_MSFT": 24.49, "p_SP500": 1141.199951}, {"date": "2010-10-29", "p_MSFT": 26.67, "p_SP500": 1183.26001}, {"date": "2010-11-30", "p_MSFT": 25.26, "p_SP500": 1180.550049}, {"date": "2010-12-31", "p_MSFT": 27.91, "p_SP500": 1257.640015}, {"date": "2011-01-31", "p_MSFT": 27.73, "p_SP500": 1286.119995}, {"date": "2011-02-28", "p_MSFT": 26.58, "p_SP500": 1327.219971}, {"date": "2011-03-31", "p_MSFT": 25.389999, "p_SP500": 1325.829956}, {"date": "2011-04-29", "p_MSFT": 25.92, "p_SP500": 1363.609985}, {"date": "2011-05-31", "p_MSFT": 25.01, "p_SP500": 1345.199951}, {"date": "2011-06-30", "p_MSFT": 26.0, "p_SP500": 1320.640015}, {"date": "2011-07-29", "p_MSFT": 27.4, "p_SP500": 1292.280029}, {"date": "2011-08-31", "p_MSFT": 26.6, "p_SP500": 1218.890015}, {"date": "2011-09-30", "p_MSFT": 24.889999, "p_SP500": 1131.420044}, {"date": "2011-10-31", "p_MSFT": 26.629999, "p_SP500": 1253.300049}, {"date": "2011-11-30", "p_MSFT": 25.58, "p_SP500": 1246.959961}, {"date": "2011-12-30", "p_MSFT": 25.959999, "p_SP500": 1257.599976}, {"date": "2012-01-31", "p_MSFT": 29.530001, "p_SP500": 1312.410034}, {"date": "2012-02-29", "p_MSFT": 31.74, "p_SP500": 1365.680054}, {"date": "2012-03-30", "p_MSFT": 32.259998, "p_SP500": 1408.469971}, {"date": "2012-04-30", "p_MSFT": 32.02, "p_SP500": 1397.910034}, {"date": "2012-05-31", "p_MSFT": 29.190001, "p_SP500": 1310.329956}, {"date": "2012-06-29", "p_MSFT": 30.59, "p_SP500": 1362.160034}, {"date": "2012-07-31", "p_MSFT": 29.469999, "p_SP500": 1379.319946}, {"date": "2012-08-31", "p_MSFT": 30.82, "p_SP500": 1406.579956}, {"date": "2012-09-28", "p_MSFT": 29.76, "p_SP500": 1440.670044}, {"date": "2012-10-31", "p_MSFT": 28.540001, "p_SP500": 1412.160034}, {"date": "2012-11-30", "p_MSFT": 26.620001, "p_SP500": 1416.180054}, {"date": "2012-12-31", "p_MSFT": 26.709999, "p_SP500": 1426.189941}, {"date": "2013-01-31", "p_MSFT": 27.450001, "p_SP500": 1498.109985}, {"date": "2013-02-28", "p_MSFT": 27.799999, "p_SP500": 1514.680054}, {"date": "2013-03-28", "p_MSFT": 28.610001, "p_SP500": 1569.189941}, {"date": "2013-04-30", "p_MSFT": 33.099998, "p_SP500": 1597.569946}, {"date": "2013-05-31", "p_MSFT": 34.900002, "p_SP500": 1630.73999}, {"date": "2013-06-28", "p_MSFT": 34.540001, "p_SP500": 1606.280029}, {"date": "2013-07-31", "p_MSFT": 31.84, "p_SP500": 1685.72998}, {"date": "2013-08-30", "p_MSFT": 33.400002, "p_SP500": 1632.969971}, {"date": "2013-09-30", "p_MSFT": 33.279999, "p_SP500": 1681.550049}, {"date": "2013-10-31", "p_MSFT": 35.41, "p_SP500": 1756.540039}, {"date": "2013-11-29", "p_MSFT": 38.130001, "p_SP500": 1805.810059}, {"date": "2013-12-31", "p_MSFT": 37.41, "p_SP500": 1848.359985}, {"date": "2014-01-31", "p_MSFT": 37.84, "p_SP500": 1782.589966}, {"date": "2014-02-28", "p_MSFT": 38.310001, "p_SP500": 1859.449951}, {"date": "2014-03-31", "p_MSFT": 40.990002, "p_SP500": 1872.339966}, {"date": "2014-04-30", "p_MSFT": 40.400002, "p_SP500": 1883.949951}, {"date": "2014-05-30", "p_MSFT": 40.939999, "p_SP500": 1923.569946}, {"date": "2014-06-30", "p_MSFT": 41.700001, "p_SP500": 1960.22998}, {"date": "2014-07-31", "p_MSFT": 43.16, "p_SP500": 1930.670044}, {"date": "2014-08-29", "p_MSFT": 45.43, "p_SP500": 2003.369995}, {"date": "2014-09-30", "p_MSFT": 46.360001, "p_SP500": 1972.290039}, {"date": "2014-10-31", "p_MSFT": 46.950001, "p_SP500": 2018.050049}, {"date": "2014-11-28", "p_MSFT": 47.810001, "p_SP500": 2067.560059}, {"date": "2014-12-31", "p_MSFT": 46.450001, "p_SP500": 2058.899902}, {"date": "2015-01-30", "p_MSFT": 40.400002, "p_SP500": 1994.98999}, {"date": "2015-02-27", "p_MSFT": 43.849998, "p_SP500": 2104.5}, {"date": "2015-03-31", "p_MSFT": 40.66, "p_SP500": 2067.889893}, {"date": "2015-04-30", "p_MSFT": 48.639999, "p_SP500": 2085.51001}, {"date": "2015-05-29", "p_MSFT": 46.860001, "p_SP500": 2107.389893}, {"date": "2015-06-30", "p_MSFT": 44.150002, "p_SP500": 2063.110107}, {"date": "2015-07-31", "p_MSFT": 46.700001, "p_SP500": 2103.840088}, {"date": "2015-08-31", "p_MSFT": 43.52, "p_SP500": 1972.180054}, {"date": "2015-09-30", "p_MSFT": 44.259998, "p_SP500": 1920.030029}, {"date": "2015-10-30", "p_MSFT": 52.639999, "p_SP500": 2079.360107}, {"date": "2015-11-30", "p_MSFT": 54.349998, "p_SP500": 2080.409912}, {"date": "2015-12-31", "p_MSFT": 55.48, "p_SP500": 2043.939941}, {"date": "2016-01-29", "p_MSFT": 55.09, "p_SP500": 1940.23999}, {"date": "2016-02-29", "p_MSFT": 50.880001, "p_SP500": 1932.22998}, {"date": "2016-03-31", "p_MSFT": 55.23, "p_SP500": 2059.73999}, {"date": "2016-04-29", "p_MSFT": 49.869999, "p_SP500": 2065.300049}, {"date": "2016-05-31", "p_MSFT": 53.0, "p_SP500": 2096.949951}, {"date": "2016-06-30", "p_MSFT": 51.169998, "p_SP500": 2098.860107}, {"date": "2016-07-29", "p_MSFT": 56.68, "p_SP500": 2173.600098}, {"date": "2016-08-31", "p_MSFT": 57.459999, "p_SP500": 2170.949951}, {"date": "2016-09-30", "p_MSFT": 57.599998, "p_SP500": 2168.27002}, {"date": "2016-10-31", "p_MSFT": 59.919998, "p_SP500": 2126.149902}, {"date": "2016-11-30", "p_MSFT": 60.259998, "p_SP500": 2198.810059}, {"date": "2016-12-30", "p_MSFT": 62.139999, "p_SP500": 2238.830078}, {"date": "2017-01-31", "p_MSFT": 64.650002, "p_SP500": 2278.870117}, {"date": "2017-02-28", "p_MSFT": 63.98, "p_SP500": 2363.639893}, {"date": "2017-03-31", "p_MSFT": 65.860001, "p_SP500": 2362.719971}, {"date": "2017-04-28", "p_MSFT": 68.459999, "p_SP500": 2384.199951}, {"date": "2017-05-31", "p_MSFT": 69.839996, "p_SP500": 2411.800049}, {"date": "2017-06-30", "p_MSFT": 68.93, "p_SP500": 2423.409912}, {"date": "2017-07-31", "p_MSFT": 72.699997, "p_SP500": 2470.300049}, {"date": "2017-08-31", "p_MSFT": 74.769997, "p_SP500": 2471.649902}, {"date": "2017-09-29", "p_MSFT": 74.489998, "p_SP500": 2519.360107}, {"date": "2017-10-31", "p_MSFT": 83.18, "p_SP500": 2575.26001}, {"date": "2017-11-30", "p_MSFT": 84.169998, "p_SP500": 2647.580078}, {"date": "2017-12-29", "p_MSFT": 85.540001, "p_SP500": 2673.610107}, {"date": "2018-01-31", "p_MSFT": 95.010002, "p_SP500": 2823.810059}, {"date": "2018-02-28", "p_MSFT": 93.769997, "p_SP500": 2713.830078}, {"date": "2018-03-29", "p_MSFT": 91.269997, "p_SP500": 2640.870117}, {"date": "2018-04-30", "p_MSFT": 93.519997, "p_SP500": 2648.050049}, {"date": "2018-05-31", "p_MSFT": 98.839996, "p_SP500": 2705.27002}, {"date": "2018-06-29", "p_MSFT": 98.610001, "p_SP500": 2718.370117}, {"date": "2018-07-31", "p_MSFT": 106.080002, "p_SP500": 2816.290039}, {"date": "2018-08-31", "p_MSFT": 112.330002, "p_SP500": 2901.52002}, {"date": "2018-09-28", "p_MSFT": 114.370003, "p_SP500": 2913.97998}, {"date": "2018-10-31", "p_MSFT": 106.809998, "p_SP500": 2711.73999}, {"date": "2018-11-30", "p_MSFT": 110.889999, "p_SP500": 2760.169922}, {"date": "2018-12-31", "p_MSFT": 101.57, "p_SP500": 2506.850098}]}, {"name": "returns_data", "value": [{"date": "1998-01-30", "pct_msft": 15.43, "pct_sp500": 1.02}, {"date": "1998-02-27", "pct_msft": 13.62, "pct_sp500": 7.04}, {"date": "1998-03-31", "pct_msft": 5.6, "pct_sp500": 4.99}, {"date": "1998-04-30", "pct_msft": 0.7, "pct_sp500": 0.91}, {"date": "1998-05-29", "pct_msft": -5.89, "pct_sp500": -1.88}, {"date": "1998-06-30", "pct_msft": 27.78, "pct_sp500": 3.94}, {"date": "1998-07-31", "pct_msft": 1.44, "pct_sp500": -1.16}, {"date": "1998-08-31", "pct_msft": -12.73, "pct_sp500": -14.58}, {"date": "1998-09-30", "pct_msft": 14.72, "pct_sp500": 6.24}, {"date": "1998-10-30", "pct_msft": -3.8, "pct_sp500": 8.03}, {"date": "1998-11-30", "pct_msft": 15.23, "pct_sp500": 5.91}, {"date": "1998-12-31", "pct_msft": 13.68, "pct_sp500": 5.64}, {"date": "1999-01-29", "pct_msft": 26.18, "pct_sp500": 4.1}, {"date": "1999-02-26", "pct_msft": -14.21, "pct_sp500": -3.23}, {"date": "1999-03-31", "pct_msft": 19.4, "pct_sp500": 3.88}, {"date": "1999-04-30", "pct_msft": -9.27, "pct_sp500": 3.79}, {"date": "1999-05-28", "pct_msft": -0.77, "pct_sp500": -2.5}, {"date": "1999-06-30", "pct_msft": 11.77, "pct_sp500": 5.44}, {"date": "1999-07-30", "pct_msft": -4.85, "pct_sp500": -3.2}, {"date": "1999-08-31", "pct_msft": 7.87, "pct_sp500": -0.63}, {"date": "1999-09-30", "pct_msft": -2.16, "pct_sp500": -2.86}, {"date": "1999-10-29", "pct_msft": 2.21, "pct_sp500": 6.25}, {"date": "1999-11-30", "pct_msft": -1.64, "pct_sp500": 1.91}, {"date": "1999-12-31", "pct_msft": 28.23, "pct_sp500": 5.78}, {"date": "2000-01-31", "pct_msft": -16.17, "pct_sp500": -5.09}, {"date": "2000-02-29", "pct_msft": -8.68, "pct_sp500": -2.01}, {"date": "2000-03-31", "pct_msft": 18.88, "pct_sp500": 9.67}, {"date": "2000-04-28", "pct_msft": -34.35, "pct_sp500": -3.08}, {"date": "2000-05-31", "pct_msft": -10.3, "pct_sp500": -2.19}, {"date": "2000-06-30", "pct_msft": 27.87, "pct_sp500": 2.39}, {"date": "2000-07-31", "pct_msft": -12.73, "pct_sp500": -1.63}, {"date": "2000-08-31", "pct_msft": 0.0, "pct_sp500": 6.07}, {"date": "2000-09-29", "pct_msft": -13.61, "pct_sp500": -5.35}, {"date": "2000-10-31", "pct_msft": 14.2, "pct_sp500": -0.49}, {"date": "2000-11-30", "pct_msft": -16.7, "pct_sp500": -8.01}, {"date": "2000-12-29", "pct_msft": -24.4, "pct_sp500": 0.41}, {"date": "2001-01-31", "pct_msft": 40.78, "pct_sp500": 3.46}, {"date": "2001-02-28", "pct_msft": -3.38, "pct_sp500": -9.23}, {"date": "2001-03-30", "pct_msft": -7.31, "pct_sp500": -6.42}, {"date": "2001-04-30", "pct_msft": 23.89, "pct_sp500": 7.68}, {"date": "2001-05-31", "pct_msft": 2.11, "pct_sp500": 0.51}, {"date": "2001-06-29", "pct_msft": 5.52, "pct_sp500": -2.5}, {"date": "2001-07-31", "pct_msft": -9.33, "pct_sp500": -1.07}, {"date": "2001-08-31", "pct_msft": -13.81, "pct_sp500": -6.41}, {"date": "2001-09-28", "pct_msft": -10.31, "pct_sp500": -8.17}, {"date": "2001-10-31", "pct_msft": 13.64, "pct_sp500": 1.81}, {"date": "2001-11-30", "pct_msft": 10.42, "pct_sp500": 7.52}, {"date": "2001-12-31", "pct_msft": 3.18, "pct_sp500": 0.76}, {"date": "2002-01-31", "pct_msft": -3.83, "pct_sp500": -1.56}, {"date": "2002-02-28", "pct_msft": -8.43, "pct_sp500": -2.08}, {"date": "2002-03-28", "pct_msft": 3.38, "pct_sp500": 3.67}, {"date": "2002-04-30", "pct_msft": -13.35, "pct_sp500": -6.14}, {"date": "2002-05-31", "pct_msft": -2.58, "pct_sp500": -0.91}, {"date": "2002-06-28", "pct_msft": 7.44, "pct_sp500": -7.25}, {"date": "2002-07-31", "pct_msft": -12.29, "pct_sp500": -7.9}, {"date": "2002-08-30", "pct_msft": 2.29, "pct_sp500": 0.49}, {"date": "2002-09-30", "pct_msft": -10.88, "pct_sp500": -11.0}, {"date": "2002-10-31", "pct_msft": 22.25, "pct_sp500": 8.64}, {"date": "2002-11-29", "pct_msft": 7.87, "pct_sp500": 5.71}, {"date": "2002-12-31", "pct_msft": -10.37, "pct_sp500": -6.03}, {"date": "2003-01-31", "pct_msft": -8.2, "pct_sp500": -2.74}, {"date": "2003-02-28", "pct_msft": -0.13, "pct_sp500": -1.7}, {"date": "2003-03-31", "pct_msft": 2.15, "pct_sp500": 0.84}, {"date": "2003-04-30", "pct_msft": 5.62, "pct_sp500": 8.1}, {"date": "2003-05-30", "pct_msft": -3.75, "pct_sp500": 5.09}, {"date": "2003-06-30", "pct_msft": 4.19, "pct_sp500": 1.13}, {"date": "2003-07-31", "pct_msft": 3.0, "pct_sp500": 1.62}, {"date": "2003-08-29", "pct_msft": 0.42, "pct_sp500": 1.79}, {"date": "2003-09-30", "pct_msft": 4.83, "pct_sp500": -1.19}, {"date": "2003-10-31", "pct_msft": -5.97, "pct_sp500": 5.5}, {"date": "2003-11-28", "pct_msft": -1.64, "pct_sp500": 0.71}, {"date": "2003-12-31", "pct_msft": 6.46, "pct_sp500": 5.08}, {"date": "2004-01-30", "pct_msft": 1.02, "pct_sp500": 1.73}, {"date": "2004-02-27", "pct_msft": -4.05, "pct_sp500": 1.22}, {"date": "2004-03-31", "pct_msft": -6.03, "pct_sp500": -1.64}, {"date": "2004-04-30", "pct_msft": 4.81, "pct_sp500": -1.68}, {"date": "2004-05-28", "pct_msft": 0.38, "pct_sp500": 1.21}, {"date": "2004-06-30", "pct_msft": 8.88, "pct_sp500": 1.8}, {"date": "2004-07-30", "pct_msft": -0.25, "pct_sp500": -3.43}, {"date": "2004-08-31", "pct_msft": -4.18, "pct_sp500": 0.23}, {"date": "2004-09-30", "pct_msft": 1.28, "pct_sp500": 0.94}, {"date": "2004-10-29", "pct_msft": 1.16, "pct_sp500": 1.4}, {"date": "2004-11-30", "pct_msft": -4.15, "pct_sp500": 3.86}, {"date": "2004-12-31", "pct_msft": -0.34, "pct_sp500": 3.25}, {"date": "2005-01-31", "pct_msft": -1.65, "pct_sp500": -2.53}, {"date": "2005-02-28", "pct_msft": -4.26, "pct_sp500": 1.89}, {"date": "2005-03-31", "pct_msft": -3.93, "pct_sp500": -1.91}, {"date": "2005-04-29", "pct_msft": 4.68, "pct_sp500": -2.01}, {"date": "2005-05-31", "pct_msft": 1.98, "pct_sp500": 3.0}, {"date": "2005-06-30", "pct_msft": -3.72, "pct_sp500": -0.01}, {"date": "2005-07-29", "pct_msft": 3.1, "pct_sp500": 3.6}, {"date": "2005-08-31", "pct_msft": 6.91, "pct_sp500": -1.12}, {"date": "2005-09-30", "pct_msft": -6.03, "pct_sp500": 0.69}, {"date": "2005-10-31", "pct_msft": -0.12, "pct_sp500": -1.77}, {"date": "2005-11-30", "pct_msft": 7.7, "pct_sp500": 3.52}, {"date": "2005-12-30", "pct_msft": -5.53, "pct_sp500": -0.1}, {"date": "2006-01-31", "pct_msft": 7.65, "pct_sp500": 2.55}, {"date": "2006-02-28", "pct_msft": -4.55, "pct_sp500": 0.05}, {"date": "2006-03-31", "pct_msft": 1.27, "pct_sp500": 1.11}, {"date": "2006-04-28", "pct_msft": -11.25, "pct_sp500": 1.22}, {"date": "2006-05-31", "pct_msft": -6.21, "pct_sp500": -3.09}, {"date": "2006-06-30", "pct_msft": 2.87, "pct_sp500": 0.01}, {"date": "2006-07-31", "pct_msft": 3.26, "pct_sp500": 0.51}, {"date": "2006-08-31", "pct_msft": 6.82, "pct_sp500": 2.13}, {"date": "2006-09-29", "pct_msft": 6.42, "pct_sp500": 2.46}, {"date": "2006-10-31", "pct_msft": 4.97, "pct_sp500": 3.15}, {"date": "2006-11-30", "pct_msft": 2.26, "pct_sp500": 1.65}, {"date": "2006-12-29", "pct_msft": 1.7, "pct_sp500": 1.26}, {"date": "2007-01-31", "pct_msft": 3.35, "pct_sp500": 1.41}, {"date": "2007-02-28", "pct_msft": -8.72, "pct_sp500": -2.18}, {"date": "2007-03-30", "pct_msft": -1.06, "pct_sp500": 1.0}, {"date": "2007-04-30", "pct_msft": 7.43, "pct_sp500": 4.33}, {"date": "2007-05-31", "pct_msft": 2.51, "pct_sp500": 3.25}, {"date": "2007-06-29", "pct_msft": -3.98, "pct_sp500": -1.78}, {"date": "2007-07-31", "pct_msft": -1.63, "pct_sp500": -3.2}, {"date": "2007-08-31", "pct_msft": -0.9, "pct_sp500": 1.29}, {"date": "2007-09-28", "pct_msft": 2.54, "pct_sp500": 3.58}, {"date": "2007-10-31", "pct_msft": 24.95, "pct_sp500": 1.48}, {"date": "2007-11-30", "pct_msft": -8.72, "pct_sp500": -4.4}, {"date": "2007-12-31", "pct_msft": 5.95, "pct_sp500": -0.86}, {"date": "2008-01-31", "pct_msft": -8.43, "pct_sp500": -6.12}, {"date": "2008-02-29", "pct_msft": -16.56, "pct_sp500": -3.48}, {"date": "2008-03-31", "pct_msft": 4.34, "pct_sp500": -0.6}, {"date": "2008-04-30", "pct_msft": 0.49, "pct_sp500": 4.75}, {"date": "2008-05-30", "pct_msft": -0.7, "pct_sp500": 1.07}, {"date": "2008-06-30", "pct_msft": -2.86, "pct_sp500": -8.6}, {"date": "2008-07-31", "pct_msft": -6.51, "pct_sp500": -0.99}, {"date": "2008-08-29", "pct_msft": 6.1, "pct_sp500": 1.22}, {"date": "2008-09-30", "pct_msft": -2.2, "pct_sp500": -9.08}, {"date": "2008-10-31", "pct_msft": -16.34, "pct_sp500": -16.94}, {"date": "2008-11-28", "pct_msft": -9.45, "pct_sp500": -7.48}, {"date": "2008-12-31", "pct_msft": -3.86, "pct_sp500": 0.78}, {"date": "2009-01-30", "pct_msft": -12.04, "pct_sp500": -8.57}, {"date": "2009-02-27", "pct_msft": -5.56, "pct_sp500": -10.99}, {"date": "2009-03-31", "pct_msft": 13.75, "pct_sp500": 8.54}, {"date": "2009-04-30", "pct_msft": 10.29, "pct_sp500": 9.39}, {"date": "2009-05-29", "pct_msft": 3.11, "pct_sp500": 5.31}, {"date": "2009-06-30", "pct_msft": 13.79, "pct_sp500": 0.02}, {"date": "2009-07-31", "pct_msft": -1.05, "pct_sp500": 7.41}, {"date": "2009-08-31", "pct_msft": 4.8, "pct_sp500": 3.36}, {"date": "2009-09-30", "pct_msft": 4.34, "pct_sp500": 3.57}, {"date": "2009-10-30", "pct_msft": 7.81, "pct_sp500": -1.98}, {"date": "2009-11-30", "pct_msft": 6.06, "pct_sp500": 5.74}, {"date": "2009-12-31", "pct_msft": 3.64, "pct_sp500": 1.78}, {"date": "2010-01-29", "pct_msft": -7.55, "pct_sp500": -3.7}, {"date": "2010-02-26", "pct_msft": 1.74, "pct_sp500": 2.85}, {"date": "2010-03-31", "pct_msft": 2.16, "pct_sp500": 5.88}, {"date": "2010-04-30", "pct_msft": 4.27, "pct_sp500": 1.48}, {"date": "2010-05-28", "pct_msft": -15.52, "pct_sp500": -8.2}, {"date": "2010-06-30", "pct_msft": -10.81, "pct_sp500": -5.39}, {"date": "2010-07-30", "pct_msft": 12.17, "pct_sp500": 6.88}, {"date": "2010-08-31", "pct_msft": -9.07, "pct_sp500": -4.74}, {"date": "2010-09-30", "pct_msft": 4.35, "pct_sp500": 8.76}, {"date": "2010-10-29", "pct_msft": 8.9, "pct_sp500": 3.69}, {"date": "2010-11-30", "pct_msft": -5.29, "pct_sp500": -0.23}, {"date": "2010-12-31", "pct_msft": 10.49, "pct_sp500": 6.53}, {"date": "2011-01-31", "pct_msft": -0.64, "pct_sp500": 2.26}, {"date": "2011-02-28", "pct_msft": -4.15, "pct_sp500": 3.2}, {"date": "2011-03-31", "pct_msft": -4.48, "pct_sp500": -0.1}, {"date": "2011-04-29", "pct_msft": 2.09, "pct_sp500": 2.85}, {"date": "2011-05-31", "pct_msft": -3.51, "pct_sp500": -1.35}, {"date": "2011-06-30", "pct_msft": 3.96, "pct_sp500": -1.83}, {"date": "2011-07-29", "pct_msft": 5.38, "pct_sp500": -2.15}, {"date": "2011-08-31", "pct_msft": -2.92, "pct_sp500": -5.68}, {"date": "2011-09-30", "pct_msft": -6.43, "pct_sp500": -7.18}, {"date": "2011-10-31", "pct_msft": 6.99, "pct_sp500": 10.77}, {"date": "2011-11-30", "pct_msft": -3.94, "pct_sp500": -0.51}, {"date": "2011-12-30", "pct_msft": 1.49, "pct_sp500": 0.85}, {"date": "2012-01-31", "pct_msft": 13.75, "pct_sp500": 4.36}, {"date": "2012-02-29", "pct_msft": 7.48, "pct_sp500": 4.06}, {"date": "2012-03-30", "pct_msft": 1.64, "pct_sp500": 3.13}, {"date": "2012-04-30", "pct_msft": -0.74, "pct_sp500": -0.75}, {"date": "2012-05-31", "pct_msft": -8.84, "pct_sp500": -6.27}, {"date": "2012-06-29", "pct_msft": 4.8, "pct_sp500": 3.96}, {"date": "2012-07-31", "pct_msft": -3.66, "pct_sp500": 1.26}, {"date": "2012-08-31", "pct_msft": 4.58, "pct_sp500": 1.98}, {"date": "2012-09-28", "pct_msft": -3.44, "pct_sp500": 2.42}, {"date": "2012-10-31", "pct_msft": -4.1, "pct_sp500": -1.98}, {"date": "2012-11-30", "pct_msft": -6.73, "pct_sp500": 0.28}, {"date": "2012-12-31", "pct_msft": 0.34, "pct_sp500": 0.71}, {"date": "2013-01-31", "pct_msft": 2.77, "pct_sp500": 5.04}, {"date": "2013-02-28", "pct_msft": 1.28, "pct_sp500": 1.11}, {"date": "2013-03-28", "pct_msft": 2.91, "pct_sp500": 3.6}, {"date": "2013-04-30", "pct_msft": 15.69, "pct_sp500": 1.81}, {"date": "2013-05-31", "pct_msft": 5.44, "pct_sp500": 2.08}, {"date": "2013-06-28", "pct_msft": -1.03, "pct_sp500": -1.5}, {"date": "2013-07-31", "pct_msft": -7.82, "pct_sp500": 4.95}, {"date": "2013-08-30", "pct_msft": 4.9, "pct_sp500": -3.13}, {"date": "2013-09-30", "pct_msft": -0.36, "pct_sp500": 2.97}, {"date": "2013-10-31", "pct_msft": 6.4, "pct_sp500": 4.46}, {"date": "2013-11-29", "pct_msft": 7.68, "pct_sp500": 2.8}, {"date": "2013-12-31", "pct_msft": -1.89, "pct_sp500": 2.36}, {"date": "2014-01-31", "pct_msft": 1.15, "pct_sp500": -3.56}, {"date": "2014-02-28", "pct_msft": 1.24, "pct_sp500": 4.31}, {"date": "2014-03-31", "pct_msft": 7.0, "pct_sp500": 0.69}, {"date": "2014-04-30", "pct_msft": -1.44, "pct_sp500": 0.62}, {"date": "2014-05-30", "pct_msft": 1.34, "pct_sp500": 2.1}, {"date": "2014-06-30", "pct_msft": 1.86, "pct_sp500": 1.91}, {"date": "2014-07-31", "pct_msft": 3.5, "pct_sp500": -1.51}, {"date": "2014-08-29", "pct_msft": 5.26, "pct_sp500": 3.77}, {"date": "2014-09-30", "pct_msft": 2.05, "pct_sp500": -1.55}, {"date": "2014-10-31", "pct_msft": 1.27, "pct_sp500": 2.32}, {"date": "2014-11-28", "pct_msft": 1.83, "pct_sp500": 2.45}, {"date": "2014-12-31", "pct_msft": -2.84, "pct_sp500": -0.42}, {"date": "2015-01-30", "pct_msft": -13.02, "pct_sp500": -3.1}, {"date": "2015-02-27", "pct_msft": 8.54, "pct_sp500": 5.49}, {"date": "2015-03-31", "pct_msft": -7.27, "pct_sp500": -1.74}, {"date": "2015-04-30", "pct_msft": 19.63, "pct_sp500": 0.85}, {"date": "2015-05-29", "pct_msft": -3.66, "pct_sp500": 1.05}, {"date": "2015-06-30", "pct_msft": -5.78, "pct_sp500": -2.1}, {"date": "2015-07-31", "pct_msft": 5.78, "pct_sp500": 1.97}, {"date": "2015-08-31", "pct_msft": -6.81, "pct_sp500": -6.26}, {"date": "2015-09-30", "pct_msft": 1.7, "pct_sp500": -2.64}, {"date": "2015-10-30", "pct_msft": 18.93, "pct_sp500": 8.3}, {"date": "2015-11-30", "pct_msft": 3.25, "pct_sp500": 0.05}, {"date": "2015-12-31", "pct_msft": 2.08, "pct_sp500": -1.75}, {"date": "2016-01-29", "pct_msft": -0.7, "pct_sp500": -5.07}, {"date": "2016-02-29", "pct_msft": -7.64, "pct_sp500": -0.41}, {"date": "2016-03-31", "pct_msft": 8.55, "pct_sp500": 6.6}, {"date": "2016-04-29", "pct_msft": -9.7, "pct_sp500": 0.27}, {"date": "2016-05-31", "pct_msft": 6.28, "pct_sp500": 1.53}, {"date": "2016-06-30", "pct_msft": -3.45, "pct_sp500": 0.09}, {"date": "2016-07-29", "pct_msft": 10.77, "pct_sp500": 3.56}, {"date": "2016-08-31", "pct_msft": 1.38, "pct_sp500": -0.12}, {"date": "2016-09-30", "pct_msft": 0.24, "pct_sp500": -0.12}, {"date": "2016-10-31", "pct_msft": 4.03, "pct_sp500": -1.94}, {"date": "2016-11-30", "pct_msft": 0.57, "pct_sp500": 3.42}, {"date": "2016-12-30", "pct_msft": 3.12, "pct_sp500": 1.82}, {"date": "2017-01-31", "pct_msft": 4.04, "pct_sp500": 1.79}, {"date": "2017-02-28", "pct_msft": -1.04, "pct_sp500": 3.72}, {"date": "2017-03-31", "pct_msft": 2.94, "pct_sp500": -0.04}, {"date": "2017-04-28", "pct_msft": 3.95, "pct_sp500": 0.91}, {"date": "2017-05-31", "pct_msft": 2.02, "pct_sp500": 1.16}, {"date": "2017-06-30", "pct_msft": -1.3, "pct_sp500": 0.48}, {"date": "2017-07-31", "pct_msft": 5.47, "pct_sp500": 1.93}, {"date": "2017-08-31", "pct_msft": 2.85, "pct_sp500": 0.05}, {"date": "2017-09-29", "pct_msft": -0.37, "pct_sp500": 1.93}, {"date": "2017-10-31", "pct_msft": 11.67, "pct_sp500": 2.22}, {"date": "2017-11-30", "pct_msft": 1.19, "pct_sp500": 2.81}, {"date": "2017-12-29", "pct_msft": 1.63, "pct_sp500": 0.98}, {"date": "2018-01-31", "pct_msft": 11.07, "pct_sp500": 5.62}, {"date": "2018-02-28", "pct_msft": -1.31, "pct_sp500": -3.89}, {"date": "2018-03-29", "pct_msft": -2.67, "pct_sp500": -2.69}, {"date": "2018-04-30", "pct_msft": 2.47, "pct_sp500": 0.27}, {"date": "2018-05-31", "pct_msft": 5.69, "pct_sp500": 2.16}, {"date": "2018-06-29", "pct_msft": -0.23, "pct_sp500": 0.48}, {"date": "2018-07-31", "pct_msft": 7.58, "pct_sp500": 3.6}, {"date": "2018-08-31", "pct_msft": 5.89, "pct_sp500": 3.03}, {"date": "2018-09-28", "pct_msft": 1.82, "pct_sp500": 0.43}, {"date": "2018-10-31", "pct_msft": -6.61, "pct_sp500": -6.94}, {"date": "2018-11-30", "pct_msft": 3.82, "pct_sp500": 1.79}, {"date": "2018-12-31", "pct_msft": -8.4, "pct_sp500": -9.18}]}, {"name": "stock_alpha", "value": 0.54}, {"name": "stock_beta", "value": 1.26}, {"name": "stock_r2", "value": 0.36}, {"name": "stock_n", "value": 252}, {"name": "scatter_data", "value": [{"pct_sp500": 1.02, "pct_msft": 15.43}, {"pct_sp500": 7.04, "pct_msft": 13.62}, {"pct_sp500": 4.99, "pct_msft": 5.6}, {"pct_sp500": 0.91, "pct_msft": 0.7}, {"pct_sp500": -1.88, "pct_msft": -5.89}, {"pct_sp500": 3.94, "pct_msft": 27.78}, {"pct_sp500": -1.16, "pct_msft": 1.44}, {"pct_sp500": -14.58, "pct_msft": -12.73}, {"pct_sp500": 6.24, "pct_msft": 14.72}, {"pct_sp500": 8.03, "pct_msft": -3.8}, {"pct_sp500": 5.91, "pct_msft": 15.23}, {"pct_sp500": 5.64, "pct_msft": 13.68}, {"pct_sp500": 4.1, "pct_msft": 26.18}, {"pct_sp500": -3.23, "pct_msft": -14.21}, {"pct_sp500": 3.88, "pct_msft": 19.4}, {"pct_sp500": 3.79, "pct_msft": -9.27}, {"pct_sp500": -2.5, "pct_msft": -0.77}, {"pct_sp500": 5.44, "pct_msft": 11.77}, {"pct_sp500": -3.2, "pct_msft": -4.85}, {"pct_sp500": -0.63, "pct_msft": 7.87}, {"pct_sp500": -2.86, "pct_msft": -2.16}, {"pct_sp500": 6.25, "pct_msft": 2.21}, {"pct_sp500": 1.91, "pct_msft": -1.64}, {"pct_sp500": 5.78, "pct_msft": 28.23}, {"pct_sp500": -5.09, "pct_msft": -16.17}, {"pct_sp500": -2.01, "pct_msft": -8.68}, {"pct_sp500": 9.67, "pct_msft": 18.88}, {"pct_sp500": -3.08, "pct_msft": -34.35}, {"pct_sp500": -2.19, "pct_msft": -10.3}, {"pct_sp500": 2.39, "pct_msft": 27.87}, {"pct_sp500": -1.63, "pct_msft": -12.73}, {"pct_sp500": 6.07, "pct_msft": 0.0}, {"pct_sp500": -5.35, "pct_msft": -13.61}, {"pct_sp500": -0.49, "pct_msft": 14.2}, {"pct_sp500": -8.01, "pct_msft": -16.7}, {"pct_sp500": 0.41, "pct_msft": -24.4}, {"pct_sp500": 3.46, "pct_msft": 40.78}, {"pct_sp500": -9.23, "pct_msft": -3.38}, {"pct_sp500": -6.42, "pct_msft": -7.31}, {"pct_sp500": 7.68, "pct_msft": 23.89}, {"pct_sp500": 0.51, "pct_msft": 2.11}, {"pct_sp500": -2.5, "pct_msft": 5.52}, {"pct_sp500": -1.07, "pct_msft": -9.33}, {"pct_sp500": -6.41, "pct_msft": -13.81}, {"pct_sp500": -8.17, "pct_msft": -10.31}, {"pct_sp500": 1.81, "pct_msft": 13.64}, {"pct_sp500": 7.52, "pct_msft": 10.42}, {"pct_sp500": 0.76, "pct_msft": 3.18}, {"pct_sp500": -1.56, "pct_msft": -3.83}, {"pct_sp500": -2.08, "pct_msft": -8.43}, {"pct_sp500": 3.67, "pct_msft": 3.38}, {"pct_sp500": -6.14, "pct_msft": -13.35}, {"pct_sp500": -0.91, "pct_msft": -2.58}, {"pct_sp500": -7.25, "pct_msft": 7.44}, {"pct_sp500": -7.9, "pct_msft": -12.29}, {"pct_sp500": 0.49, "pct_msft": 2.29}, {"pct_sp500": -11.0, "pct_msft": -10.88}, {"pct_sp500": 8.64, "pct_msft": 22.25}, {"pct_sp500": 5.71, "pct_msft": 7.87}, {"pct_sp500": -6.03, "pct_msft": -10.37}, {"pct_sp500": -2.74, "pct_msft": -8.2}, {"pct_sp500": -1.7, "pct_msft": -0.13}, {"pct_sp500": 0.84, "pct_msft": 2.15}, {"pct_sp500": 8.1, "pct_msft": 5.62}, {"pct_sp500": 5.09, "pct_msft": -3.75}, {"pct_sp500": 1.13, "pct_msft": 4.19}, {"pct_sp500": 1.62, "pct_msft": 3.0}, {"pct_sp500": 1.79, "pct_msft": 0.42}, {"pct_sp500": -1.19, "pct_msft": 4.83}, {"pct_sp500": 5.5, "pct_msft": -5.97}, {"pct_sp500": 0.71, "pct_msft": -1.64}, {"pct_sp500": 5.08, "pct_msft": 6.46}, {"pct_sp500": 1.73, "pct_msft": 1.02}, {"pct_sp500": 1.22, "pct_msft": -4.05}, {"pct_sp500": -1.64, "pct_msft": -6.03}, {"pct_sp500": -1.68, "pct_msft": 4.81}, {"pct_sp500": 1.21, "pct_msft": 0.38}, {"pct_sp500": 1.8, "pct_msft": 8.88}, {"pct_sp500": -3.43, "pct_msft": -0.25}, {"pct_sp500": 0.23, "pct_msft": -4.18}, {"pct_sp500": 0.94, "pct_msft": 1.28}, {"pct_sp500": 1.4, "pct_msft": 1.16}, {"pct_sp500": 3.86, "pct_msft": -4.15}, {"pct_sp500": 3.25, "pct_msft": -0.34}, {"pct_sp500": -2.53, "pct_msft": -1.65}, {"pct_sp500": 1.89, "pct_msft": -4.26}, {"pct_sp500": -1.91, "pct_msft": -3.93}, {"pct_sp500": -2.01, "pct_msft": 4.68}, {"pct_sp500": 3.0, "pct_msft": 1.98}, {"pct_sp500": -0.01, "pct_msft": -3.72}, {"pct_sp500": 3.6, "pct_msft": 3.1}, {"pct_sp500": -1.12, "pct_msft": 6.91}, {"pct_sp500": 0.69, "pct_msft": -6.03}, {"pct_sp500": -1.77, "pct_msft": -0.12}, {"pct_sp500": 3.52, "pct_msft": 7.7}, {"pct_sp500": -0.1, "pct_msft": -5.53}, {"pct_sp500": 2.55, "pct_msft": 7.65}, {"pct_sp500": 0.05, "pct_msft": -4.55}, {"pct_sp500": 1.11, "pct_msft": 1.27}, {"pct_sp500": 1.22, "pct_msft": -11.25}, {"pct_sp500": -3.09, "pct_msft": -6.21}, {"pct_sp500": 0.01, "pct_msft": 2.87}, {"pct_sp500": 0.51, "pct_msft": 3.26}, {"pct_sp500": 2.13, "pct_msft": 6.82}, {"pct_sp500": 2.46, "pct_msft": 6.42}, {"pct_sp500": 3.15, "pct_msft": 4.97}, {"pct_sp500": 1.65, "pct_msft": 2.26}, {"pct_sp500": 1.26, "pct_msft": 1.7}, {"pct_sp500": 1.41, "pct_msft": 3.35}, {"pct_sp500": -2.18, "pct_msft": -8.72}, {"pct_sp500": 1.0, "pct_msft": -1.06}, {"pct_sp500": 4.33, "pct_msft": 7.43}, {"pct_sp500": 3.25, "pct_msft": 2.51}, {"pct_sp500": -1.78, "pct_msft": -3.98}, {"pct_sp500": -3.2, "pct_msft": -1.63}, {"pct_sp500": 1.29, "pct_msft": -0.9}, {"pct_sp500": 3.58, "pct_msft": 2.54}, {"pct_sp500": 1.48, "pct_msft": 24.95}, {"pct_sp500": -4.4, "pct_msft": -8.72}, {"pct_sp500": -0.86, "pct_msft": 5.95}, {"pct_sp500": -6.12, "pct_msft": -8.43}, {"pct_sp500": -3.48, "pct_msft": -16.56}, {"pct_sp500": -0.6, "pct_msft": 4.34}, {"pct_sp500": 4.75, "pct_msft": 0.49}, {"pct_sp500": 1.07, "pct_msft": -0.7}, {"pct_sp500": -8.6, "pct_msft": -2.86}, {"pct_sp500": -0.99, "pct_msft": -6.51}, {"pct_sp500": 1.22, "pct_msft": 6.1}, {"pct_sp500": -9.08, "pct_msft": -2.2}, {"pct_sp500": -16.94, "pct_msft": -16.34}, {"pct_sp500": -7.48, "pct_msft": -9.45}, {"pct_sp500": 0.78, "pct_msft": -3.86}, {"pct_sp500": -8.57, "pct_msft": -12.04}, {"pct_sp500": -10.99, "pct_msft": -5.56}, {"pct_sp500": 8.54, "pct_msft": 13.75}, {"pct_sp500": 9.39, "pct_msft": 10.29}, {"pct_sp500": 5.31, "pct_msft": 3.11}, {"pct_sp500": 0.02, "pct_msft": 13.79}, {"pct_sp500": 7.41, "pct_msft": -1.05}, {"pct_sp500": 3.36, "pct_msft": 4.8}, {"pct_sp500": 3.57, "pct_msft": 4.34}, {"pct_sp500": -1.98, "pct_msft": 7.81}, {"pct_sp500": 5.74, "pct_msft": 6.06}, {"pct_sp500": 1.78, "pct_msft": 3.64}, {"pct_sp500": -3.7, "pct_msft": -7.55}, {"pct_sp500": 2.85, "pct_msft": 1.74}, {"pct_sp500": 5.88, "pct_msft": 2.16}, {"pct_sp500": 1.48, "pct_msft": 4.27}, {"pct_sp500": -8.2, "pct_msft": -15.52}, {"pct_sp500": -5.39, "pct_msft": -10.81}, {"pct_sp500": 6.88, "pct_msft": 12.17}, {"pct_sp500": -4.74, "pct_msft": -9.07}, {"pct_sp500": 8.76, "pct_msft": 4.35}, {"pct_sp500": 3.69, "pct_msft": 8.9}, {"pct_sp500": -0.23, "pct_msft": -5.29}, {"pct_sp500": 6.53, "pct_msft": 10.49}, {"pct_sp500": 2.26, "pct_msft": -0.64}, {"pct_sp500": 3.2, "pct_msft": -4.15}, {"pct_sp500": -0.1, "pct_msft": -4.48}, {"pct_sp500": 2.85, "pct_msft": 2.09}, {"pct_sp500": -1.35, "pct_msft": -3.51}, {"pct_sp500": -1.83, "pct_msft": 3.96}, {"pct_sp500": -2.15, "pct_msft": 5.38}, {"pct_sp500": -5.68, "pct_msft": -2.92}, {"pct_sp500": -7.18, "pct_msft": -6.43}, {"pct_sp500": 10.77, "pct_msft": 6.99}, {"pct_sp500": -0.51, "pct_msft": -3.94}, {"pct_sp500": 0.85, "pct_msft": 1.49}, {"pct_sp500": 4.36, "pct_msft": 13.75}, {"pct_sp500": 4.06, "pct_msft": 7.48}, {"pct_sp500": 3.13, "pct_msft": 1.64}, {"pct_sp500": -0.75, "pct_msft": -0.74}, {"pct_sp500": -6.27, "pct_msft": -8.84}, {"pct_sp500": 3.96, "pct_msft": 4.8}, {"pct_sp500": 1.26, "pct_msft": -3.66}, {"pct_sp500": 1.98, "pct_msft": 4.58}, {"pct_sp500": 2.42, "pct_msft": -3.44}, {"pct_sp500": -1.98, "pct_msft": -4.1}, {"pct_sp500": 0.28, "pct_msft": -6.73}, {"pct_sp500": 0.71, "pct_msft": 0.34}, {"pct_sp500": 5.04, "pct_msft": 2.77}, {"pct_sp500": 1.11, "pct_msft": 1.28}, {"pct_sp500": 3.6, "pct_msft": 2.91}, {"pct_sp500": 1.81, "pct_msft": 15.69}, {"pct_sp500": 2.08, "pct_msft": 5.44}, {"pct_sp500": -1.5, "pct_msft": -1.03}, {"pct_sp500": 4.95, "pct_msft": -7.82}, {"pct_sp500": -3.13, "pct_msft": 4.9}, {"pct_sp500": 2.97, "pct_msft": -0.36}, {"pct_sp500": 4.46, "pct_msft": 6.4}, {"pct_sp500": 2.8, "pct_msft": 7.68}, {"pct_sp500": 2.36, "pct_msft": -1.89}, {"pct_sp500": -3.56, "pct_msft": 1.15}, {"pct_sp500": 4.31, "pct_msft": 1.24}, {"pct_sp500": 0.69, "pct_msft": 7.0}, {"pct_sp500": 0.62, "pct_msft": -1.44}, {"pct_sp500": 2.1, "pct_msft": 1.34}, {"pct_sp500": 1.91, "pct_msft": 1.86}, {"pct_sp500": -1.51, "pct_msft": 3.5}, {"pct_sp500": 3.77, "pct_msft": 5.26}, {"pct_sp500": -1.55, "pct_msft": 2.05}, {"pct_sp500": 2.32, "pct_msft": 1.27}, {"pct_sp500": 2.45, "pct_msft": 1.83}, {"pct_sp500": -0.42, "pct_msft": -2.84}, {"pct_sp500": -3.1, "pct_msft": -13.02}, {"pct_sp500": 5.49, "pct_msft": 8.54}, {"pct_sp500": -1.74, "pct_msft": -7.27}, {"pct_sp500": 0.85, "pct_msft": 19.63}, {"pct_sp500": 1.05, "pct_msft": -3.66}, {"pct_sp500": -2.1, "pct_msft": -5.78}, {"pct_sp500": 1.97, "pct_msft": 5.78}, {"pct_sp500": -6.26, "pct_msft": -6.81}, {"pct_sp500": -2.64, "pct_msft": 1.7}, {"pct_sp500": 8.3, "pct_msft": 18.93}, {"pct_sp500": 0.05, "pct_msft": 3.25}, {"pct_sp500": -1.75, "pct_msft": 2.08}, {"pct_sp500": -5.07, "pct_msft": -0.7}, {"pct_sp500": -0.41, "pct_msft": -7.64}, {"pct_sp500": 6.6, "pct_msft": 8.55}, {"pct_sp500": 0.27, "pct_msft": -9.7}, {"pct_sp500": 1.53, "pct_msft": 6.28}, {"pct_sp500": 0.09, "pct_msft": -3.45}, {"pct_sp500": 3.56, "pct_msft": 10.77}, {"pct_sp500": -0.12, "pct_msft": 1.38}, {"pct_sp500": -0.12, "pct_msft": 0.24}, {"pct_sp500": -1.94, "pct_msft": 4.03}, {"pct_sp500": 3.42, "pct_msft": 0.57}, {"pct_sp500": 1.82, "pct_msft": 3.12}, {"pct_sp500": 1.79, "pct_msft": 4.04}, {"pct_sp500": 3.72, "pct_msft": -1.04}, {"pct_sp500": -0.04, "pct_msft": 2.94}, {"pct_sp500": 0.91, "pct_msft": 3.95}, {"pct_sp500": 1.16, "pct_msft": 2.02}, {"pct_sp500": 0.48, "pct_msft": -1.3}, {"pct_sp500": 1.93, "pct_msft": 5.47}, {"pct_sp500": 0.05, "pct_msft": 2.85}, {"pct_sp500": 1.93, "pct_msft": -0.37}, {"pct_sp500": 2.22, "pct_msft": 11.67}, {"pct_sp500": 2.81, "pct_msft": 1.19}, {"pct_sp500": 0.98, "pct_msft": 1.63}, {"pct_sp500": 5.62, "pct_msft": 11.07}, {"pct_sp500": -3.89, "pct_msft": -1.31}, {"pct_sp500": -2.69, "pct_msft": -2.67}, {"pct_sp500": 0.27, "pct_msft": 2.47}, {"pct_sp500": 2.16, "pct_msft": 5.69}, {"pct_sp500": 0.48, "pct_msft": -0.23}, {"pct_sp500": 3.6, "pct_msft": 7.58}, {"pct_sp500": 3.03, "pct_msft": 5.89}, {"pct_sp500": 0.43, "pct_msft": 1.82}, {"pct_sp500": -6.94, "pct_msft": -6.61}, {"pct_sp500": 1.79, "pct_msft": 3.82}, {"pct_sp500": -9.18, "pct_msft": -8.4}]}, {"name": "stock_summary_text", "value": "                            OLS Regression Results                            \n==============================================================================\nDep. Variable:               pct_msft   R-squared:                       0.357\nModel:                            OLS   Adj. R-squared:                  0.355\nMethod:                 Least Squares   F-statistic:                     150.5\nDate:                Mon, 14 Sep 2026   Prob (F-statistic):           2.14e-27\nTime:                        19:52:17   Log-Likelihood:                -857.14\nNo. Observations:                 252   AIC:                             1718.\nDf Residuals:                     250   BIC:                             1725.\nDf Model:                           1                                         \nCovariance Type:                  HC1                                         \n==============================================================================\n                 coef    std err          z      P>|z|      [0.025      0.975]\n------------------------------------------------------------------------------\nIntercept      0.5396      0.453      1.191      0.234      -0.348       1.427\npct_sp500      1.2636      0.103     12.268      0.000       1.062       1.465\n=============================================================================="}, {"name": "random_walks", "value": [{"t": 0, "value": 0.0, "series": "Walk 1"}, {"t": 1, "value": 1.91, "series": "Walk 1"}, {"t": 2, "value": 2.2, "series": "Walk 1"}, {"t": 3, "value": 2.63, "series": "Walk 1"}, {"t": 4, "value": 3.27, "series": "Walk 1"}, {"t": 5, "value": 3.05, "series": "Walk 1"}, {"t": 6, "value": 3.54, "series": "Walk 1"}, {"t": 7, "value": 3.56, "series": "Walk 1"}, {"t": 8, "value": 4.16, "series": "Walk 1"}, {"t": 9, "value": 4.72, "series": "Walk 1"}, {"t": 10, "value": 4.76, "series": "Walk 1"}, {"t": 11, "value": 4.92, "series": "Walk 1"}, {"t": 12, "value": 4.19, "series": "Walk 1"}, {"t": 13, "value": 3.59, "series": "Walk 1"}, {"t": 14, "value": 4.51, "series": "Walk 1"}, {"t": 15, "value": 3.43, "series": "Walk 1"}, {"t": 16, "value": 4.54, "series": "Walk 1"}, {"t": 17, "value": 3.11, "series": "Walk 1"}, {"t": 18, "value": 3.14, "series": "Walk 1"}, {"t": 19, "value": 3.63, "series": "Walk 1"}, {"t": 20, "value": 4.45, "series": "Walk 1"}, {"t": 21, "value": 3.86, "series": "Walk 1"}, {"t": 22, "value": 3.87, "series": "Walk 1"}, {"t": 23, "value": 2.78, "series": "Walk 1"}, {"t": 24, "value": 4.21, "series": "Walk 1"}, {"t": 25, "value": 4.9, "series": "Walk 1"}, {"t": 26, "value": 4.15, "series": "Walk 1"}, {"t": 27, "value": 3.35, "series": "Walk 1"}, {"t": 28, "value": 4.12, "series": "Walk 1"}, {"t": 29, "value": 5.54, "series": "Walk 1"}, {"t": 30, "value": 5.48, "series": "Walk 1"}, {"t": 31, "value": 5.55, "series": "Walk 1"}, {"t": 32, "value": 2.8, "series": "Walk 1"}, {"t": 33, "value": 3.11, "series": "Walk 1"}, {"t": 34, "value": 4.49, "series": "Walk 1"}, {"t": 35, "value": 3.69, "series": "Walk 1"}, {"t": 36, "value": 3.7, "series": "Walk 1"}, {"t": 37, "value": 5.03, "series": "Walk 1"}, {"t": 38, "value": 6.13, "series": "Walk 1"}, {"t": 39, "value": 6.62, "series": "Walk 1"}, {"t": 40, "value": 6.62, "series": "Walk 1"}, {"t": 41, "value": 7.6, "series": "Walk 1"}, {"t": 42, "value": 6.34, "series": "Walk 1"}, {"t": 43, "value": 6.23, "series": "Walk 1"}, {"t": 44, "value": 6.86, "series": "Walk 1"}, {"t": 45, "value": 6.98, "series": "Walk 1"}, {"t": 46, "value": 7.14, "series": "Walk 1"}, {"t": 47, "value": 6.84, "series": "Walk 1"}, {"t": 48, "value": 7.48, "series": "Walk 1"}, {"t": 49, "value": 7.36, "series": "Walk 1"}, {"t": 50, "value": 7.62, "series": "Walk 1"}, {"t": 51, "value": 9.01, "series": "Walk 1"}, {"t": 52, "value": 11.08, "series": "Walk 1"}, {"t": 53, "value": 12.47, "series": "Walk 1"}, {"t": 54, "value": 12.27, "series": "Walk 1"}, {"t": 55, "value": 12.41, "series": "Walk 1"}, {"t": 56, "value": 12.28, "series": "Walk 1"}, {"t": 57, "value": 11.41, "series": "Walk 1"}, {"t": 58, "value": 9.65, "series": "Walk 1"}, {"t": 59, "value": 11.01, "series": "Walk 1"}, {"t": 60, "value": 11.52, "series": "Walk 1"}, {"t": 61, "value": 10.59, "series": "Walk 1"}, {"t": 62, "value": 10.74, "series": "Walk 1"}, {"t": 63, "value": 8.98, "series": "Walk 1"}, {"t": 64, "value": 8.62, "series": "Walk 1"}, {"t": 65, "value": 7.9, "series": "Walk 1"}, {"t": 66, "value": 8.25, "series": "Walk 1"}, {"t": 67, "value": 7.17, "series": "Walk 1"}, {"t": 68, "value": 8.5, "series": "Walk 1"}, {"t": 69, "value": 8.63, "series": "Walk 1"}, {"t": 70, "value": 8.45, "series": "Walk 1"}, {"t": 71, "value": 8.82, "series": "Walk 1"}, {"t": 72, "value": 9.21, "series": "Walk 1"}, {"t": 73, "value": 9.97, "series": "Walk 1"}, {"t": 74, "value": 10.3, "series": "Walk 1"}, {"t": 75, "value": 10.87, "series": "Walk 1"}, {"t": 76, "value": 10.9, "series": "Walk 1"}, {"t": 77, "value": 9.5, "series": "Walk 1"}, {"t": 78, "value": 9.84, "series": "Walk 1"}, {"t": 79, "value": 11.17, "series": "Walk 1"}, {"t": 80, "value": 10.58, "series": "Walk 1"}, {"t": 81, "value": 10.16, "series": "Walk 1"}, {"t": 82, "value": 9.01, "series": "Walk 1"}, {"t": 83, "value": 9.13, "series": "Walk 1"}, {"t": 84, "value": 8.47, "series": "Walk 1"}, {"t": 85, "value": 9.6, "series": "Walk 1"}, {"t": 86, "value": 11.61, "series": "Walk 1"}, {"t": 87, "value": 11.48, "series": "Walk 1"}, {"t": 88, "value": 9.83, "series": "Walk 1"}, {"t": 89, "value": 9.85, "series": "Walk 1"}, {"t": 90, "value": 9.16, "series": "Walk 1"}, {"t": 91, "value": 9.88, "series": "Walk 1"}, {"t": 92, "value": 11.29, "series": "Walk 1"}, {"t": 93, "value": 10.87, "series": "Walk 1"}, {"t": 94, "value": 10.85, "series": "Walk 1"}, {"t": 95, "value": 9.19, "series": "Walk 1"}, {"t": 96, "value": 8.25, "series": "Walk 1"}, {"t": 97, "value": 8.73, "series": "Walk 1"}, {"t": 98, "value": 8.63, "series": "Walk 1"}, {"t": 99, "value": 9.35, "series": "Walk 1"}, {"t": 100, "value": 9.58, "series": "Walk 1"}, {"t": 0, "value": 0.0, "series": "Walk 2"}, {"t": 1, "value": 0.09, "series": "Walk 2"}, {"t": 2, "value": -0.64, "series": "Walk 2"}, {"t": 3, "value": 0.61, "series": "Walk 2"}, {"t": 4, "value": 1.18, "series": "Walk 2"}, {"t": 5, "value": 0.86, "series": "Walk 2"}, {"t": 6, "value": -0.91, "series": "Walk 2"}, {"t": 7, "value": -1.18, "series": "Walk 2"}, {"t": 8, "value": -0.47, "series": "Walk 2"}, {"t": 9, "value": 0.88, "series": "Walk 2"}, {"t": 10, "value": 0.24, "series": "Walk 2"}, {"t": 11, "value": -0.15, "series": "Walk 2"}, {"t": 12, "value": -1.02, "series": "Walk 2"}, {"t": 13, "value": 0.12, "series": "Walk 2"}, {"t": 14, "value": -0.51, "series": "Walk 2"}, {"t": 15, "value": -1.33, "series": "Walk 2"}, {"t": 16, "value": -1.39, "series": "Walk 2"}, {"t": 17, "value": -1.62, "series": "Walk 2"}, {"t": 18, "value": -2.88, "series": "Walk 2"}, {"t": 19, "value": -2.63, "series": "Walk 2"}, {"t": 20, "value": -4.04, "series": "Walk 2"}, {"t": 21, "value": -2.92, "series": "Walk 2"}, {"t": 22, "value": -3.26, "series": "Walk 2"}, {"t": 23, "value": -2.16, "series": "Walk 2"}, {"t": 24, "value": -2.2, "series": "Walk 2"}, {"t": 25, "value": -2.61, "series": "Walk 2"}, {"t": 26, "value": -2.4, "series": "Walk 2"}, {"t": 27, "value": -1.98, "series": "Walk 2"}, {"t": 28, "value": -2.25, "series": "Walk 2"}, {"t": 29, "value": -1.8, "series": "Walk 2"}, {"t": 30, "value": -1.4, "series": "Walk 2"}, {"t": 31, "value": -0.72, "series": "Walk 2"}, {"t": 32, "value": -1.23, "series": "Walk 2"}, {"t": 33, "value": -0.93, "series": "Walk 2"}, {"t": 34, "value": -0.36, "series": "Walk 2"}, {"t": 35, "value": 0.03, "series": "Walk 2"}, {"t": 36, "value": 0.38, "series": "Walk 2"}, {"t": 37, "value": 0.93, "series": "Walk 2"}, {"t": 38, "value": 1.44, "series": "Walk 2"}, {"t": 39, "value": 0.37, "series": "Walk 2"}, {"t": 40, "value": 1.9, "series": "Walk 2"}, {"t": 41, "value": 2.02, "series": "Walk 2"}, {"t": 42, "value": 0.51, "series": "Walk 2"}, {"t": 43, "value": -0.44, "series": "Walk 2"}, {"t": 44, "value": -0.57, "series": "Walk 2"}, {"t": 45, "value": 2.24, "series": "Walk 2"}, {"t": 46, "value": 0.93, "series": "Walk 2"}, {"t": 47, "value": 1.18, "series": "Walk 2"}, {"t": 48, "value": 1.0, "series": "Walk 2"}, {"t": 49, "value": 1.78, "series": "Walk 2"}, {"t": 50, "value": 2.21, "series": "Walk 2"}, {"t": 51, "value": 1.55, "series": "Walk 2"}, {"t": 52, "value": 0.87, "series": "Walk 2"}, {"t": 53, "value": 0.64, "series": "Walk 2"}, {"t": 54, "value": 0.51, "series": "Walk 2"}, {"t": 55, "value": -0.38, "series": "Walk 2"}, {"t": 56, "value": -1.41, "series": "Walk 2"}, {"t": 57, "value": -1.31, "series": "Walk 2"}, {"t": 58, "value": -3.08, "series": "Walk 2"}, {"t": 59, "value": -2.67, "series": "Walk 2"}, {"t": 60, "value": -3.56, "series": "Walk 2"}, {"t": 61, "value": -5.2, "series": "Walk 2"}, {"t": 62, "value": -4.48, "series": "Walk 2"}, {"t": 63, "value": -3.44, "series": "Walk 2"}, {"t": 64, "value": -5.34, "series": "Walk 2"}, {"t": 65, "value": -7.48, "series": "Walk 2"}, {"t": 66, "value": -6.79, "series": "Walk 2"}, {"t": 67, "value": -7.32, "series": "Walk 2"}, {"t": 68, "value": -7.75, "series": "Walk 2"}, {"t": 69, "value": -8.21, "series": "Walk 2"}, {"t": 70, "value": -8.17, "series": "Walk 2"}, {"t": 71, "value": -7.9, "series": "Walk 2"}, {"t": 72, "value": -6.57, "series": "Walk 2"}, {"t": 73, "value": -5.4, "series": "Walk 2"}, {"t": 74, "value": -6.74, "series": "Walk 2"}, {"t": 75, "value": -7.03, "series": "Walk 2"}, {"t": 76, "value": -6.82, "series": "Walk 2"}, {"t": 77, "value": -6.03, "series": "Walk 2"}, {"t": 78, "value": -4.98, "series": "Walk 2"}, {"t": 79, "value": -4.21, "series": "Walk 2"}, {"t": 80, "value": -4.45, "series": "Walk 2"}, {"t": 81, "value": -4.86, "series": "Walk 2"}, {"t": 82, "value": -4.93, "series": "Walk 2"}, {"t": 83, "value": -4.92, "series": "Walk 2"}, {"t": 84, "value": -4.13, "series": "Walk 2"}, {"t": 85, "value": -3.43, "series": "Walk 2"}, {"t": 86, "value": -2.85, "series": "Walk 2"}, {"t": 87, "value": -2.66, "series": "Walk 2"}, {"t": 88, "value": -2.32, "series": "Walk 2"}, {"t": 89, "value": -1.61, "series": "Walk 2"}, {"t": 90, "value": -2.98, "series": "Walk 2"}, {"t": 91, "value": -2.59, "series": "Walk 2"}, {"t": 92, "value": -2.24, "series": "Walk 2"}, {"t": 93, "value": -3.03, "series": "Walk 2"}, {"t": 94, "value": -1.78, "series": "Walk 2"}, {"t": 95, "value": -0.51, "series": "Walk 2"}, {"t": 96, "value": -0.0, "series": "Walk 2"}, {"t": 97, "value": -0.05, "series": "Walk 2"}, {"t": 98, "value": 0.99, "series": "Walk 2"}, {"t": 99, "value": 0.63, "series": "Walk 2"}, {"t": 100, "value": 0.62, "series": "Walk 2"}, {"t": 0, "value": 0.0, "series": "Walk 3"}, {"t": 1, "value": 0.36, "series": "Walk 3"}, {"t": 2, "value": 0.99, "series": "Walk 3"}, {"t": 3, "value": 0.79, "series": "Walk 3"}, {"t": 4, "value": 0.4, "series": "Walk 3"}, {"t": 5, "value": 1.82, "series": "Walk 3"}, {"t": 6, "value": 4.11, "series": "Walk 3"}, {"t": 7, "value": 6.67, "series": "Walk 3"}, {"t": 8, "value": 7.9, "series": "Walk 3"}, {"t": 9, "value": 8.99, "series": "Walk 3"}, {"t": 10, "value": 8.25, "series": "Walk 3"}, {"t": 11, "value": 6.98, "series": "Walk 3"}, {"t": 12, "value": 7.09, "series": "Walk 3"}, {"t": 13, "value": 5.47, "series": "Walk 3"}, {"t": 14, "value": 3.42, "series": "Walk 3"}, {"t": 15, "value": 1.85, "series": "Walk 3"}, {"t": 16, "value": 2.32, "series": "Walk 3"}, {"t": 17, "value": 2.62, "series": "Walk 3"}, {"t": 18, "value": 3.36, "series": "Walk 3"}, {"t": 19, "value": 2.3, "series": "Walk 3"}, {"t": 20, "value": 2.34, "series": "Walk 3"}, {"t": 21, "value": 1.21, "series": "Walk 3"}, {"t": 22, "value": 1.65, "series": "Walk 3"}, {"t": 23, "value": 2.82, "series": "Walk 3"}, {"t": 24, "value": 3.08, "series": "Walk 3"}, {"t": 25, "value": 2.95, "series": "Walk 3"}, {"t": 26, "value": 3.43, "series": "Walk 3"}, {"t": 27, "value": 3.72, "series": "Walk 3"}, {"t": 28, "value": 3.02, "series": "Walk 3"}, {"t": 29, "value": 3.43, "series": "Walk 3"}, {"t": 30, "value": 3.7, "series": "Walk 3"}, {"t": 31, "value": 2.98, "series": "Walk 3"}, {"t": 32, "value": 0.93, "series": "Walk 3"}, {"t": 33, "value": 1.96, "series": "Walk 3"}, {"t": 34, "value": 2.54, "series": "Walk 3"}, {"t": 35, "value": 1.75, "series": "Walk 3"}, {"t": 36, "value": 3.83, "series": "Walk 3"}, {"t": 37, "value": 3.33, "series": "Walk 3"}, {"t": 38, "value": 2.75, "series": "Walk 3"}, {"t": 39, "value": 2.51, "series": "Walk 3"}, {"t": 40, "value": 2.43, "series": "Walk 3"}, {"t": 41, "value": 3.21, "series": "Walk 3"}, {"t": 42, "value": 4.47, "series": "Walk 3"}, {"t": 43, "value": 4.71, "series": "Walk 3"}, {"t": 44, "value": 5.18, "series": "Walk 3"}, {"t": 45, "value": 5.35, "series": "Walk 3"}, {"t": 46, "value": 5.06, "series": "Walk 3"}, {"t": 47, "value": 5.43, "series": "Walk 3"}, {"t": 48, "value": 6.43, "series": "Walk 3"}, {"t": 49, "value": 5.93, "series": "Walk 3"}, {"t": 50, "value": 6.97, "series": "Walk 3"}, {"t": 51, "value": 5.81, "series": "Walk 3"}, {"t": 52, "value": 5.45, "series": "Walk 3"}, {"t": 53, "value": 4.49, "series": "Walk 3"}, {"t": 54, "value": 6.08, "series": "Walk 3"}, {"t": 55, "value": 5.76, "series": "Walk 3"}, {"t": 56, "value": 5.99, "series": "Walk 3"}, {"t": 57, "value": 6.57, "series": "Walk 3"}, {"t": 58, "value": 6.37, "series": "Walk 3"}, {"t": 59, "value": 7.37, "series": "Walk 3"}, {"t": 60, "value": 7.85, "series": "Walk 3"}, {"t": 61, "value": 7.61, "series": "Walk 3"}, {"t": 62, "value": 7.45, "series": "Walk 3"}, {"t": 63, "value": 8.7, "series": "Walk 3"}, {"t": 64, "value": 7.99, "series": "Walk 3"}, {"t": 65, "value": 7.82, "series": "Walk 3"}, {"t": 66, "value": 8.49, "series": "Walk 3"}, {"t": 67, "value": 9.43, "series": "Walk 3"}, {"t": 68, "value": 9.35, "series": "Walk 3"}, {"t": 69, "value": 9.87, "series": "Walk 3"}, {"t": 70, "value": 8.64, "series": "Walk 3"}, {"t": 71, "value": 9.81, "series": "Walk 3"}, {"t": 72, "value": 12.08, "series": "Walk 3"}, {"t": 73, "value": 13.04, "series": "Walk 3"}, {"t": 74, "value": 11.99, "series": "Walk 3"}, {"t": 75, "value": 12.74, "series": "Walk 3"}, {"t": 76, "value": 11.98, "series": "Walk 3"}, {"t": 77, "value": 12.74, "series": "Walk 3"}, {"t": 78, "value": 13.97, "series": "Walk 3"}, {"t": 79, "value": 13.9, "series": "Walk 3"}, {"t": 80, "value": 12.55, "series": "Walk 3"}, {"t": 81, "value": 13.21, "series": "Walk 3"}, {"t": 82, "value": 13.68, "series": "Walk 3"}, {"t": 83, "value": 12.13, "series": "Walk 3"}, {"t": 84, "value": 11.67, "series": "Walk 3"}, {"t": 85, "value": 11.54, "series": "Walk 3"}, {"t": 86, "value": 11.53, "series": "Walk 3"}, {"t": 87, "value": 12.91, "series": "Walk 3"}, {"t": 88, "value": 13.14, "series": "Walk 3"}, {"t": 89, "value": 12.82, "series": "Walk 3"}, {"t": 90, "value": 13.11, "series": "Walk 3"}, {"t": 91, "value": 14.86, "series": "Walk 3"}, {"t": 92, "value": 16.22, "series": "Walk 3"}, {"t": 93, "value": 17.48, "series": "Walk 3"}, {"t": 94, "value": 15.6, "series": "Walk 3"}, {"t": 95, "value": 15.52, "series": "Walk 3"}, {"t": 96, "value": 14.99, "series": "Walk 3"}, {"t": 97, "value": 15.93, "series": "Walk 3"}, {"t": 98, "value": 16.2, "series": "Walk 3"}, {"t": 99, "value": 16.48, "series": "Walk 3"}, {"t": 100, "value": 16.66, "series": "Walk 3"}, {"t": 0, "value": 0.0, "series": "Walk 4"}, {"t": 1, "value": -1.97, "series": "Walk 4"}, {"t": 2, "value": -1.98, "series": "Walk 4"}, {"t": 3, "value": -2.59, "series": "Walk 4"}, {"t": 4, "value": -1.61, "series": "Walk 4"}, {"t": 5, "value": -1.25, "series": "Walk 4"}, {"t": 6, "value": -2.59, "series": "Walk 4"}, {"t": 7, "value": -1.94, "series": "Walk 4"}, {"t": 8, "value": -1.12, "series": "Walk 4"}, {"t": 9, "value": -1.7, "series": "Walk 4"}, {"t": 10, "value": -1.85, "series": "Walk 4"}, {"t": 11, "value": -1.04, "series": "Walk 4"}, {"t": 12, "value": -1.68, "series": "Walk 4"}, {"t": 13, "value": -2.01, "series": "Walk 4"}, {"t": 14, "value": -1.02, "series": "Walk 4"}, {"t": 15, "value": -0.93, "series": "Walk 4"}, {"t": 16, "value": -1.96, "series": "Walk 4"}, {"t": 17, "value": -3.11, "series": "Walk 4"}, {"t": 18, "value": -2.91, "series": "Walk 4"}, {"t": 19, "value": -2.3, "series": "Walk 4"}, {"t": 20, "value": -3.78, "series": "Walk 4"}, {"t": 21, "value": -4.24, "series": "Walk 4"}, {"t": 22, "value": -5.09, "series": "Walk 4"}, {"t": 23, "value": -6.3, "series": "Walk 4"}, {"t": 24, "value": -6.73, "series": "Walk 4"}, {"t": 25, "value": -6.2, "series": "Walk 4"}, {"t": 26, "value": -5.73, "series": "Walk 4"}, {"t": 27, "value": -5.84, "series": "Walk 4"}, {"t": 28, "value": -6.33, "series": "Walk 4"}, {"t": 29, "value": -5.67, "series": "Walk 4"}, {"t": 30, "value": -6.31, "series": "Walk 4"}, {"t": 31, "value": -6.52, "series": "Walk 4"}, {"t": 32, "value": -5.9, "series": "Walk 4"}, {"t": 33, "value": -6.29, "series": "Walk 4"}, {"t": 34, "value": -5.64, "series": "Walk 4"}, {"t": 35, "value": -4.79, "series": "Walk 4"}, {"t": 36, "value": -4.11, "series": "Walk 4"}, {"t": 37, "value": -3.25, "series": "Walk 4"}, {"t": 38, "value": -2.44, "series": "Walk 4"}, {"t": 39, "value": -3.46, "series": "Walk 4"}, {"t": 40, "value": -4.49, "series": "Walk 4"}, {"t": 41, "value": -5.46, "series": "Walk 4"}, {"t": 42, "value": -5.56, "series": "Walk 4"}, {"t": 43, "value": -5.31, "series": "Walk 4"}, {"t": 44, "value": -5.14, "series": "Walk 4"}, {"t": 45, "value": -5.56, "series": "Walk 4"}, {"t": 46, "value": -4.6, "series": "Walk 4"}, {"t": 47, "value": -1.82, "series": "Walk 4"}, {"t": 48, "value": -1.48, "series": "Walk 4"}, {"t": 49, "value": -1.51, "series": "Walk 4"}, {"t": 50, "value": -2.82, "series": "Walk 4"}, {"t": 51, "value": -2.42, "series": "Walk 4"}, {"t": 52, "value": -2.16, "series": "Walk 4"}, {"t": 53, "value": -2.18, "series": "Walk 4"}, {"t": 54, "value": -1.26, "series": "Walk 4"}, {"t": 55, "value": -1.54, "series": "Walk 4"}, {"t": 56, "value": -0.22, "series": "Walk 4"}, {"t": 57, "value": -1.24, "series": "Walk 4"}, {"t": 58, "value": -2.09, "series": "Walk 4"}, {"t": 59, "value": -2.05, "series": "Walk 4"}, {"t": 60, "value": -1.27, "series": "Walk 4"}, {"t": 61, "value": -0.76, "series": "Walk 4"}, {"t": 62, "value": -0.48, "series": "Walk 4"}, {"t": 63, "value": -1.8, "series": "Walk 4"}, {"t": 64, "value": 0.15, "series": "Walk 4"}, {"t": 65, "value": 0.87, "series": "Walk 4"}, {"t": 66, "value": 0.77, "series": "Walk 4"}, {"t": 67, "value": 1.06, "series": "Walk 4"}, {"t": 68, "value": 0.1, "series": "Walk 4"}, {"t": 69, "value": -0.64, "series": "Walk 4"}, {"t": 70, "value": -1.08, "series": "Walk 4"}, {"t": 71, "value": -1.87, "series": "Walk 4"}, {"t": 72, "value": -2.83, "series": "Walk 4"}, {"t": 73, "value": -2.83, "series": "Walk 4"}, {"t": 74, "value": -2.33, "series": "Walk 4"}, {"t": 75, "value": -1.95, "series": "Walk 4"}, {"t": 76, "value": -2.58, "series": "Walk 4"}, {"t": 77, "value": -1.73, "series": "Walk 4"}, {"t": 78, "value": -1.6, "series": "Walk 4"}, {"t": 79, "value": -3.23, "series": "Walk 4"}, {"t": 80, "value": -2.03, "series": "Walk 4"}, {"t": 81, "value": -2.54, "series": "Walk 4"}, {"t": 82, "value": -4.03, "series": "Walk 4"}, {"t": 83, "value": -4.03, "series": "Walk 4"}, {"t": 84, "value": -4.22, "series": "Walk 4"}, {"t": 85, "value": -3.68, "series": "Walk 4"}, {"t": 86, "value": -3.44, "series": "Walk 4"}, {"t": 87, "value": -2.48, "series": "Walk 4"}, {"t": 88, "value": -1.51, "series": "Walk 4"}, {"t": 89, "value": -0.73, "series": "Walk 4"}, {"t": 90, "value": -2.22, "series": "Walk 4"}, {"t": 91, "value": -2.96, "series": "Walk 4"}, {"t": 92, "value": -4.02, "series": "Walk 4"}, {"t": 93, "value": -3.51, "series": "Walk 4"}, {"t": 94, "value": -1.25, "series": "Walk 4"}, {"t": 95, "value": -0.67, "series": "Walk 4"}, {"t": 96, "value": 0.76, "series": "Walk 4"}, {"t": 97, "value": 0.29, "series": "Walk 4"}, {"t": 98, "value": -0.21, "series": "Walk 4"}, {"t": 99, "value": -0.59, "series": "Walk 4"}, {"t": 100, "value": -0.53, "series": "Walk 4"}, {"t": 0, "value": 0.0, "series": "Walk 5"}, {"t": 1, "value": 0.33, "series": "Walk 5"}, {"t": 2, "value": -0.27, "series": "Walk 5"}, {"t": 3, "value": -1.2, "series": "Walk 5"}, {"t": 4, "value": -0.98, "series": "Walk 5"}, {"t": 5, "value": -0.06, "series": "Walk 5"}, {"t": 6, "value": 0.39, "series": "Walk 5"}, {"t": 7, "value": 1.25, "series": "Walk 5"}, {"t": 8, "value": 1.26, "series": "Walk 5"}, {"t": 9, "value": 1.7, "series": "Walk 5"}, {"t": 10, "value": 0.88, "series": "Walk 5"}, {"t": 11, "value": -0.36, "series": "Walk 5"}, {"t": 12, "value": -0.31, "series": "Walk 5"}, {"t": 13, "value": 0.05, "series": "Walk 5"}, {"t": 14, "value": 0.63, "series": "Walk 5"}, {"t": 15, "value": -0.13, "series": "Walk 5"}, {"t": 16, "value": 0.48, "series": "Walk 5"}, {"t": 17, "value": -1.46, "series": "Walk 5"}, {"t": 18, "value": -2.19, "series": "Walk 5"}, {"t": 19, "value": -1.83, "series": "Walk 5"}, {"t": 20, "value": -0.74, "series": "Walk 5"}, {"t": 21, "value": -1.41, "series": "Walk 5"}, {"t": 22, "value": -1.44, "series": "Walk 5"}, {"t": 23, "value": -0.95, "series": "Walk 5"}, {"t": 24, "value": -2.23, "series": "Walk 5"}, {"t": 25, "value": -2.73, "series": "Walk 5"}, {"t": 26, "value": -1.68, "series": "Walk 5"}, {"t": 27, "value": -1.95, "series": "Walk 5"}, {"t": 28, "value": -2.71, "series": "Walk 5"}, {"t": 29, "value": -1.89, "series": "Walk 5"}, {"t": 30, "value": -2.6, "series": "Walk 5"}, {"t": 31, "value": -4.94, "series": "Walk 5"}, {"t": 32, "value": -5.75, "series": "Walk 5"}, {"t": 33, "value": -5.77, "series": "Walk 5"}, {"t": 34, "value": -4.75, "series": "Walk 5"}, {"t": 35, "value": -3.93, "series": "Walk 5"}, {"t": 36, "value": -3.41, "series": "Walk 5"}, {"t": 37, "value": -5.23, "series": "Walk 5"}, {"t": 38, "value": -5.57, "series": "Walk 5"}, {"t": 39, "value": -7.26, "series": "Walk 5"}, {"t": 40, "value": -7.04, "series": "Walk 5"}, {"t": 41, "value": -7.61, "series": "Walk 5"}, {"t": 42, "value": -7.35, "series": "Walk 5"}, {"t": 43, "value": -8.11, "series": "Walk 5"}, {"t": 44, "value": -6.13, "series": "Walk 5"}, {"t": 45, "value": -5.69, "series": "Walk 5"}, {"t": 46, "value": -6.45, "series": "Walk 5"}, {"t": 47, "value": -6.03, "series": "Walk 5"}, {"t": 48, "value": -7.0, "series": "Walk 5"}, {"t": 49, "value": -4.23, "series": "Walk 5"}, {"t": 50, "value": -2.89, "series": "Walk 5"}, {"t": 51, "value": -3.3, "series": "Walk 5"}, {"t": 52, "value": -2.46, "series": "Walk 5"}, {"t": 53, "value": -1.41, "series": "Walk 5"}, {"t": 54, "value": 0.54, "series": "Walk 5"}, {"t": 55, "value": 0.49, "series": "Walk 5"}, {"t": 56, "value": 0.84, "series": "Walk 5"}, {"t": 57, "value": 1.02, "series": "Walk 5"}, {"t": 58, "value": 0.78, "series": "Walk 5"}, {"t": 59, "value": 2.05, "series": "Walk 5"}, {"t": 60, "value": 2.18, "series": "Walk 5"}, {"t": 61, "value": 1.02, "series": "Walk 5"}, {"t": 62, "value": 1.34, "series": "Walk 5"}, {"t": 63, "value": -0.43, "series": "Walk 5"}, {"t": 64, "value": 1.13, "series": "Walk 5"}, {"t": 65, "value": -0.46, "series": "Walk 5"}, {"t": 66, "value": 0.34, "series": "Walk 5"}, {"t": 67, "value": -1.07, "series": "Walk 5"}, {"t": 68, "value": -2.34, "series": "Walk 5"}, {"t": 69, "value": -3.3, "series": "Walk 5"}, {"t": 70, "value": -3.92, "series": "Walk 5"}, {"t": 71, "value": -5.4, "series": "Walk 5"}, {"t": 72, "value": -6.18, "series": "Walk 5"}, {"t": 73, "value": -5.87, "series": "Walk 5"}, {"t": 74, "value": -4.81, "series": "Walk 5"}, {"t": 75, "value": -4.34, "series": "Walk 5"}, {"t": 76, "value": -4.24, "series": "Walk 5"}, {"t": 77, "value": -3.82, "series": "Walk 5"}, {"t": 78, "value": -2.26, "series": "Walk 5"}, {"t": 79, "value": -3.24, "series": "Walk 5"}, {"t": 80, "value": -4.09, "series": "Walk 5"}, {"t": 81, "value": -4.77, "series": "Walk 5"}, {"t": 82, "value": -2.75, "series": "Walk 5"}, {"t": 83, "value": -1.47, "series": "Walk 5"}, {"t": 84, "value": -1.88, "series": "Walk 5"}, {"t": 85, "value": -1.49, "series": "Walk 5"}, {"t": 86, "value": -2.68, "series": "Walk 5"}, {"t": 87, "value": -4.06, "series": "Walk 5"}, {"t": 88, "value": -2.49, "series": "Walk 5"}, {"t": 89, "value": -2.91, "series": "Walk 5"}, {"t": 90, "value": -5.19, "series": "Walk 5"}, {"t": 91, "value": -7.6, "series": "Walk 5"}, {"t": 92, "value": -8.7, "series": "Walk 5"}, {"t": 93, "value": -7.3, "series": "Walk 5"}, {"t": 94, "value": -6.89, "series": "Walk 5"}, {"t": 95, "value": -6.09, "series": "Walk 5"}, {"t": 96, "value": -8.27, "series": "Walk 5"}, {"t": 97, "value": -8.35, "series": "Walk 5"}, {"t": 98, "value": -8.03, "series": "Walk 5"}, {"t": 99, "value": -8.41, "series": "Walk 5"}, {"t": 100, "value": -9.83, "series": "Walk 5"}]}, {"name": "white_noise", "value": [{"t": 0, "value": -1.12}, {"t": 1, "value": 0.05}, {"t": 2, "value": -2.83}, {"t": 3, "value": -0.27}, {"t": 4, "value": 0.02}, {"t": 5, "value": -1.33}, {"t": 6, "value": 0.78}, {"t": 7, "value": 0.12}, {"t": 8, "value": 1.89}, {"t": 9, "value": -0.04}, {"t": 10, "value": 0.26}, {"t": 11, "value": -1.11}, {"t": 12, "value": 0.07}, {"t": 13, "value": -1.17}, {"t": 14, "value": 1.14}, {"t": 15, "value": -0.6}, {"t": 16, "value": 1.75}, {"t": 17, "value": -0.08}, {"t": 18, "value": 0.09}, {"t": 19, "value": -1.56}, {"t": 20, "value": 0.01}, {"t": 21, "value": -0.21}, {"t": 22, "value": 1.01}, {"t": 23, "value": 0.42}, {"t": 24, "value": 0.77}, {"t": 25, "value": 0.5}, {"t": 26, "value": 0.55}, {"t": 27, "value": 1.32}, {"t": 28, "value": 0.16}, {"t": 29, "value": -1.3}, {"t": 30, "value": 0.4}, {"t": 31, "value": -1.82}, {"t": 32, "value": -1.03}, {"t": 33, "value": -1.48}, {"t": 34, "value": 0.68}, {"t": 35, "value": -1.35}, {"t": 36, "value": 0.74}, {"t": 37, "value": -1.42}, {"t": 38, "value": 0.05}, {"t": 39, "value": -1.99}, {"t": 40, "value": 0.71}, {"t": 41, "value": -0.46}, {"t": 42, "value": -0.82}, {"t": 43, "value": 0.61}, {"t": 44, "value": -1.75}, {"t": 45, "value": -0.45}, {"t": 46, "value": -0.52}, {"t": 47, "value": 1.49}, {"t": 48, "value": -1.19}, {"t": 49, "value": -1.77}, {"t": 50, "value": 0.4}, {"t": 51, "value": 0.97}, {"t": 52, "value": -0.83}, {"t": 53, "value": 0.32}, {"t": 54, "value": 0.3}, {"t": 55, "value": -0.66}, {"t": 56, "value": -2.12}, {"t": 57, "value": -0.7}, {"t": 58, "value": -0.06}, {"t": 59, "value": -0.58}, {"t": 60, "value": 1.56}, {"t": 61, "value": 0.64}, {"t": 62, "value": -0.46}, {"t": 63, "value": -3.06}, {"t": 64, "value": -0.58}, {"t": 65, "value": -0.99}, {"t": 66, "value": 0.32}, {"t": 67, "value": -0.47}, {"t": 68, "value": -0.18}, {"t": 69, "value": 0.12}, {"t": 70, "value": -0.89}, {"t": 71, "value": -0.11}, {"t": 72, "value": 1.36}, {"t": 73, "value": 1.62}, {"t": 74, "value": -2.11}, {"t": 75, "value": -0.65}, {"t": 76, "value": 0.94}, {"t": 77, "value": -0.82}, {"t": 78, "value": 0.58}, {"t": 79, "value": 0.69}, {"t": 80, "value": -0.16}, {"t": 81, "value": -0.89}, {"t": 82, "value": 0.53}, {"t": 83, "value": 0.91}, {"t": 84, "value": -0.03}, {"t": 85, "value": 0.36}, {"t": 86, "value": -0.84}, {"t": 87, "value": 1.74}, {"t": 88, "value": -0.05}, {"t": 89, "value": -1.33}, {"t": 90, "value": -1.2}, {"t": 91, "value": -1.54}, {"t": 92, "value": -0.59}, {"t": 93, "value": 1.43}, {"t": 94, "value": -0.38}, {"t": 95, "value": -0.83}, {"t": 96, "value": -2.41}, {"t": 97, "value": -2.44}, {"t": 98, "value": -0.43}, {"t": 99, "value": 0.09}]}, {"name": "task_walk_data", "value": [{"t": 0, "value": -1.12}, {"t": 1, "value": -1.07}, {"t": 2, "value": -3.9}, {"t": 3, "value": -4.18}, {"t": 4, "value": -4.16}, {"t": 5, "value": -5.49}, {"t": 6, "value": -4.71}, {"t": 7, "value": -4.59}, {"t": 8, "value": -2.7}, {"t": 9, "value": -2.74}, {"t": 10, "value": -2.48}, {"t": 11, "value": -3.59}, {"t": 12, "value": -3.52}, {"t": 13, "value": -4.69}, {"t": 14, "value": -3.55}, {"t": 15, "value": -4.15}, {"t": 16, "value": -2.4}, {"t": 17, "value": -2.48}, {"t": 18, "value": -2.39}, {"t": 19, "value": -3.95}, {"t": 20, "value": -3.94}, {"t": 21, "value": -4.15}, {"t": 22, "value": -3.14}, {"t": 23, "value": -2.72}, {"t": 24, "value": -1.95}, {"t": 25, "value": -1.45}, {"t": 26, "value": -0.9}, {"t": 27, "value": 0.42}, {"t": 28, "value": 0.59}, {"t": 29, "value": -0.72}, {"t": 30, "value": -0.32}, {"t": 31, "value": -2.14}, {"t": 32, "value": -3.17}, {"t": 33, "value": -4.65}, {"t": 34, "value": -3.97}, {"t": 35, "value": -5.32}, {"t": 36, "value": -4.58}, {"t": 37, "value": -6.0}, {"t": 38, "value": -5.96}, {"t": 39, "value": -7.95}, {"t": 40, "value": -7.24}, {"t": 41, "value": -7.7}, {"t": 42, "value": -8.51}, {"t": 43, "value": -7.9}, {"t": 44, "value": -9.65}, {"t": 45, "value": -10.1}, {"t": 46, "value": -10.62}, {"t": 47, "value": -9.12}, {"t": 48, "value": -10.31}, {"t": 49, "value": -12.08}, {"t": 50, "value": -11.68}, {"t": 51, "value": -10.71}, {"t": 52, "value": -11.54}, {"t": 53, "value": -11.22}, {"t": 54, "value": -10.92}, {"t": 55, "value": -11.58}, {"t": 56, "value": -13.7}, {"t": 57, "value": -14.4}, {"t": 58, "value": -14.46}, {"t": 59, "value": -15.04}, {"t": 60, "value": -13.48}, {"t": 61, "value": -12.84}, {"t": 62, "value": -13.3}, {"t": 63, "value": -16.36}, {"t": 64, "value": -16.95}, {"t": 65, "value": -17.94}, {"t": 66, "value": -17.61}, {"t": 67, "value": -18.08}, {"t": 68, "value": -18.26}, {"t": 69, "value": -18.14}, {"t": 70, "value": -19.03}, {"t": 71, "value": -19.14}, {"t": 72, "value": -17.79}, {"t": 73, "value": -16.16}, {"t": 74, "value": -18.27}, {"t": 75, "value": -18.92}, {"t": 76, "value": -17.98}, {"t": 77, "value": -18.8}, {"t": 78, "value": -18.22}, {"t": 79, "value": -17.53}, {"t": 80, "value": -17.68}, {"t": 81, "value": -18.57}, {"t": 82, "value": -18.05}, {"t": 83, "value": -17.14}, {"t": 84, "value": -17.16}, {"t": 85, "value": -16.81}, {"t": 86, "value": -17.65}, {"t": 87, "value": -15.91}, {"t": 88, "value": -15.96}, {"t": 89, "value": -17.29}, {"t": 90, "value": -18.48}, {"t": 91, "value": -20.02}, {"t": 92, "value": -20.61}, {"t": 93, "value": -19.18}, {"t": 94, "value": -19.56}, {"t": 95, "value": -20.38}, {"t": 96, "value": -22.79}, {"t": 97, "value": -25.23}, {"t": 98, "value": -25.66}, {"t": 99, "value": -25.57}]}, {"name": "se_compare_rows", "value": [{"variable": "\u0394CD", "simple": "0.031***", "simple_se": "(0.001)", "nw": "0.031***", "nw_se": "(0.001)", "lagdv": "0.028***", "lagdv_se": "(0.001)"}, {"variable": "\u0394HD", "simple": "0.036***", "simple_se": "(0.002)", "nw": "0.036***", "nw_se": "(0.003)", "lagdv": "0.039***", "lagdv_se": "(0.003)"}]}, {"name": "az_n", "value": 206}, {"name": "az_summary_text", "value": "                            OLS Regression Results                            \n==============================================================================\nDep. Variable:                   dlnQ   R-squared:                       0.804\nModel:                            OLS   Adj. R-squared:                  0.802\nMethod:                 Least Squares   F-statistic:                     1319.\nDate:                Mon, 14 Sep 2026   Prob (F-statistic):          4.88e-117\nTime:                        19:52:17   Log-Likelihood:                 184.84\nNo. Observations:                 206   AIC:                            -363.7\nDf Residuals:                     203   BIC:                            -353.7\nDf Model:                           2                                         \nCovariance Type:                  HAC                                         \n==============================================================================\n                 coef    std err          z      P>|z|      [0.025      0.975]\n------------------------------------------------------------------------------\nIntercept      0.0011      0.002      0.517      0.605      -0.003       0.005\ndCD            0.0306      0.001     38.388      0.000       0.029       0.032\ndHD            0.0363      0.003     11.802      0.000       0.030       0.042\n=============================================================================="}, {"name": "lag_rows", "value": [{"lag": "Same month", "cd": "0.027***", "hd": "0.037***"}, {"lag": "1 month lag", "cd": "0.008***", "hd": "0.023***"}, {"lag": "2 month lag", "cd": "-0.000", "hd": "-0.007***"}]}, {"name": "cd_cumulative", "value": 0.035}, {"name": "task_diff_output_text", "value": ">>> df['abs_diff'] = df['Q'].diff()\n>>> df['pct_diff'] = df['Q'].pct_change() * 100\n>>> df[['Q', 'abs_diff', 'pct_diff']].head(3)\n               Q  abs_diff  pct_diff\ndate                                \n2001-02-01  1790       NaN       NaN\n2001-03-01  1690    -100.0     -5.59\n2001-04-01  1404    -286.0    -16.92"}, {"name": "az_diff_chart", "value": [{"date": "2001-03-01", "Q": 1690, "abs_diff": -100.0, "pct_diff": -5.59}, {"date": "2001-04-01", "Q": 1404, "abs_diff": -286.0, "pct_diff": -16.92}, {"date": "2001-05-01", "Q": 1984, "abs_diff": 580.0, "pct_diff": 41.31}, {"date": "2001-06-01", "Q": 2572, "abs_diff": 588.0, "pct_diff": 29.64}, {"date": "2001-07-01", "Q": 3052, "abs_diff": 480.0, "pct_diff": 18.66}, {"date": "2001-08-01", "Q": 3116, "abs_diff": 64.0, "pct_diff": 2.1}, {"date": "2001-09-01", "Q": 2837, "abs_diff": -279.0, "pct_diff": -8.95}, {"date": "2001-10-01", "Q": 2220, "abs_diff": -617.0, "pct_diff": -21.75}, {"date": "2001-11-01", "Q": 1584, "abs_diff": -636.0, "pct_diff": -28.65}, {"date": "2001-12-01", "Q": 1888, "abs_diff": 304.0, "pct_diff": 19.19}, {"date": "2002-01-01", "Q": 2153, "abs_diff": 265.0, "pct_diff": 14.04}, {"date": "2002-02-01", "Q": 1811, "abs_diff": -342.0, "pct_diff": -15.88}, {"date": "2002-03-01", "Q": 1642, "abs_diff": -169.0, "pct_diff": -9.33}, {"date": "2002-04-01", "Q": 1521, "abs_diff": -121.0, "pct_diff": -7.37}, {"date": "2002-05-01", "Q": 1859, "abs_diff": 338.0, "pct_diff": 22.22}, {"date": "2002-06-01", "Q": 2562, "abs_diff": 703.0, "pct_diff": 37.82}, {"date": "2002-07-01", "Q": 3297, "abs_diff": 735.0, "pct_diff": 28.69}, {"date": "2002-08-01", "Q": 3287, "abs_diff": -10.0, "pct_diff": -0.3}, {"date": "2002-09-01", "Q": 2867, "abs_diff": -420.0, "pct_diff": -12.78}, {"date": "2002-10-01", "Q": 2097, "abs_diff": -770.0, "pct_diff": -26.86}, {"date": "2002-11-01", "Q": 1508, "abs_diff": -589.0, "pct_diff": -28.09}, {"date": "2002-12-01", "Q": 1809, "abs_diff": 301.0, "pct_diff": 19.96}, {"date": "2003-01-01", "Q": 2004, "abs_diff": 195.0, "pct_diff": 10.78}, {"date": "2003-02-01", "Q": 1595, "abs_diff": -409.0, "pct_diff": -20.41}, {"date": "2003-03-01", "Q": 1662, "abs_diff": 67.0, "pct_diff": 4.2}, {"date": "2003-04-01", "Q": 1457, "abs_diff": -205.0, "pct_diff": -12.33}, {"date": "2003-05-01", "Q": 1827, "abs_diff": 370.0, "pct_diff": 25.39}, {"date": "2003-06-01", "Q": 2743, "abs_diff": 916.0, "pct_diff": 50.14}, {"date": "2003-07-01", "Q": 3493, "abs_diff": 750.0, "pct_diff": 27.34}, {"date": "2003-08-01", "Q": 3574, "abs_diff": 81.0, "pct_diff": 2.32}, {"date": "2003-09-01", "Q": 3192, "abs_diff": -382.0, "pct_diff": -10.69}, {"date": "2003-10-01", "Q": 2474, "abs_diff": -718.0, "pct_diff": -22.49}, {"date": "2003-11-01", "Q": 1714, "abs_diff": -760.0, "pct_diff": -30.72}, {"date": "2003-12-01", "Q": 2007, "abs_diff": 293.0, "pct_diff": 17.09}, {"date": "2004-01-01", "Q": 2164, "abs_diff": 157.0, "pct_diff": 7.82}, {"date": "2004-02-01", "Q": 1939, "abs_diff": -225.0, "pct_diff": -10.4}, {"date": "2004-03-01", "Q": 1879, "abs_diff": -60.0, "pct_diff": -3.09}, {"date": "2004-04-01", "Q": 1730, "abs_diff": -149.0, "pct_diff": -7.93}, {"date": "2004-05-01", "Q": 2162, "abs_diff": 432.0, "pct_diff": 24.97}, {"date": "2004-06-01", "Q": 2850, "abs_diff": 688.0, "pct_diff": 31.82}, {"date": "2004-07-01", "Q": 3466, "abs_diff": 616.0, "pct_diff": 21.61}, {"date": "2004-08-01", "Q": 3599, "abs_diff": 133.0, "pct_diff": 3.84}, {"date": "2004-09-01", "Q": 3078, "abs_diff": -521.0, "pct_diff": -14.48}, {"date": "2004-10-01", "Q": 2183, "abs_diff": -895.0, "pct_diff": -29.08}, {"date": "2004-11-01", "Q": 1680, "abs_diff": -503.0, "pct_diff": -23.04}, {"date": "2004-12-01", "Q": 2190, "abs_diff": 510.0, "pct_diff": 30.36}, {"date": "2005-01-01", "Q": 2286, "abs_diff": 96.0, "pct_diff": 4.38}, {"date": "2005-02-01", "Q": 1814, "abs_diff": -472.0, "pct_diff": -20.65}, {"date": "2005-03-01", "Q": 1739, "abs_diff": -75.0, "pct_diff": -4.13}, {"date": "2005-04-01", "Q": 1684, "abs_diff": -55.0, "pct_diff": -3.16}, {"date": "2005-05-01", "Q": 2170, "abs_diff": 486.0, "pct_diff": 28.86}, {"date": "2005-06-01", "Q": 3136, "abs_diff": 966.0, "pct_diff": 44.52}, {"date": "2005-07-01", "Q": 4006, "abs_diff": 870.0, "pct_diff": 27.74}, {"date": "2005-08-01", "Q": 3830, "abs_diff": -176.0, "pct_diff": -4.39}, {"date": "2005-09-01", "Q": 3466, "abs_diff": -364.0, "pct_diff": -9.5}, {"date": "2005-10-01", "Q": 2487, "abs_diff": -979.0, "pct_diff": -28.25}, {"date": "2005-11-01", "Q": 1745, "abs_diff": -742.0, "pct_diff": -29.84}, {"date": "2005-12-01", "Q": 2181, "abs_diff": 436.0, "pct_diff": 24.99}, {"date": "2006-01-01", "Q": 2275, "abs_diff": 94.0, "pct_diff": 4.31}, {"date": "2006-02-01", "Q": 1895, "abs_diff": -380.0, "pct_diff": -16.7}, {"date": "2006-03-01", "Q": 1896, "abs_diff": 1.0, "pct_diff": 0.05}, {"date": "2006-04-01", "Q": 1827, "abs_diff": -69.0, "pct_diff": -3.64}, {"date": "2006-05-01", "Q": 2511, "abs_diff": 684.0, "pct_diff": 37.44}, {"date": "2006-06-01", "Q": 3557, "abs_diff": 1046.0, "pct_diff": 41.66}, {"date": "2006-07-01", "Q": 4298, "abs_diff": 741.0, "pct_diff": 20.83}, {"date": "2006-08-01", "Q": 4093, "abs_diff": -205.0, "pct_diff": -4.77}, {"date": "2006-09-01", "Q": 3391, "abs_diff": -702.0, "pct_diff": -17.15}, {"date": "2006-10-01", "Q": 2422, "abs_diff": -969.0, "pct_diff": -28.58}, {"date": "2006-11-01", "Q": 1878, "abs_diff": -544.0, "pct_diff": -22.46}, {"date": "2006-12-01", "Q": 2325, "abs_diff": 447.0, "pct_diff": 23.8}, {"date": "2007-01-01", "Q": 2741, "abs_diff": 416.0, "pct_diff": 17.89}, {"date": "2007-02-01", "Q": 2150, "abs_diff": -591.0, "pct_diff": -21.56}, {"date": "2007-03-01", "Q": 1952, "abs_diff": -198.0, "pct_diff": -9.21}, {"date": "2007-04-01", "Q": 1858, "abs_diff": -94.0, "pct_diff": -4.82}, {"date": "2007-05-01", "Q": 2641, "abs_diff": 783.0, "pct_diff": 42.14}, {"date": "2007-06-01", "Q": 3436, "abs_diff": 795.0, "pct_diff": 30.1}, {"date": "2007-07-01", "Q": 4399, "abs_diff": 963.0, "pct_diff": 28.03}, {"date": "2007-08-01", "Q": 4277, "abs_diff": -122.0, "pct_diff": -2.77}, {"date": "2007-09-01", "Q": 4055, "abs_diff": -222.0, "pct_diff": -5.19}, {"date": "2007-10-01", "Q": 2574, "abs_diff": -1481.0, "pct_diff": -36.52}, {"date": "2007-11-01", "Q": 1999, "abs_diff": -575.0, "pct_diff": -22.34}, {"date": "2007-12-01", "Q": 2352, "abs_diff": 353.0, "pct_diff": 17.66}, {"date": "2008-01-01", "Q": 2632, "abs_diff": 280.0, "pct_diff": 11.9}, {"date": "2008-02-01", "Q": 2306, "abs_diff": -326.0, "pct_diff": -12.39}, {"date": "2008-03-01", "Q": 1995, "abs_diff": -311.0, "pct_diff": -13.49}, {"date": "2008-04-01", "Q": 1854, "abs_diff": -141.0, "pct_diff": -7.07}, {"date": "2008-05-01", "Q": 2307, "abs_diff": 453.0, "pct_diff": 24.43}, {"date": "2008-06-01", "Q": 3291, "abs_diff": 984.0, "pct_diff": 42.65}, {"date": "2008-07-01", "Q": 4276, "abs_diff": 985.0, "pct_diff": 29.93}, {"date": "2008-08-01", "Q": 4264, "abs_diff": -12.0, "pct_diff": -0.28}, {"date": "2008-09-01", "Q": 3614, "abs_diff": -650.0, "pct_diff": -15.24}, {"date": "2008-10-01", "Q": 2603, "abs_diff": -1011.0, "pct_diff": -27.97}, {"date": "2008-11-01", "Q": 1920, "abs_diff": -683.0, "pct_diff": -26.24}, {"date": "2008-12-01", "Q": 2174, "abs_diff": 254.0, "pct_diff": 13.23}, {"date": "2009-01-01", "Q": 2422, "abs_diff": 248.0, "pct_diff": 11.41}, {"date": "2009-02-01", "Q": 1936, "abs_diff": -486.0, "pct_diff": -20.07}, {"date": "2009-03-01", "Q": 1947, "abs_diff": 11.0, "pct_diff": 0.57}, {"date": "2009-04-01", "Q": 1779, "abs_diff": -168.0, "pct_diff": -8.63}, {"date": "2009-05-01", "Q": 2765, "abs_diff": 986.0, "pct_diff": 55.42}, {"date": "2009-06-01", "Q": 3106, "abs_diff": 341.0, "pct_diff": 12.33}, {"date": "2009-07-01", "Q": 4313, "abs_diff": 1207.0, "pct_diff": 38.86}, {"date": "2009-08-01", "Q": 4340, "abs_diff": 27.0, "pct_diff": 0.63}, {"date": "2009-09-01", "Q": 3629, "abs_diff": -711.0, "pct_diff": -16.38}, {"date": "2009-10-01", "Q": 2441, "abs_diff": -1188.0, "pct_diff": -32.74}, {"date": "2009-11-01", "Q": 1884, "abs_diff": -557.0, "pct_diff": -22.82}, {"date": "2009-12-01", "Q": 2285, "abs_diff": 401.0, "pct_diff": 21.28}, {"date": "2010-01-01", "Q": 2447, "abs_diff": 162.0, "pct_diff": 7.09}, {"date": "2010-02-01", "Q": 1981, "abs_diff": -466.0, "pct_diff": -19.04}, {"date": "2010-03-01", "Q": 1982, "abs_diff": 1.0, "pct_diff": 0.05}, {"date": "2010-04-01", "Q": 1821, "abs_diff": -161.0, "pct_diff": -8.12}, {"date": "2010-05-01", "Q": 2248, "abs_diff": 427.0, "pct_diff": 23.45}, {"date": "2010-06-01", "Q": 3356, "abs_diff": 1108.0, "pct_diff": 49.29}, {"date": "2010-07-01", "Q": 4439, "abs_diff": 1083.0, "pct_diff": 32.27}, {"date": "2010-08-01", "Q": 4123, "abs_diff": -316.0, "pct_diff": -7.12}, {"date": "2010-09-01", "Q": 3576, "abs_diff": -547.0, "pct_diff": -13.27}, {"date": "2010-10-01", "Q": 2442, "abs_diff": -1134.0, "pct_diff": -31.71}, {"date": "2010-11-01", "Q": 1833, "abs_diff": -609.0, "pct_diff": -24.94}, {"date": "2010-12-01", "Q": 2201, "abs_diff": 368.0, "pct_diff": 20.08}, {"date": "2011-01-01", "Q": 2461, "abs_diff": 260.0, "pct_diff": 11.81}, {"date": "2011-02-01", "Q": 2144, "abs_diff": -317.0, "pct_diff": -12.88}, {"date": "2011-03-01", "Q": 1891, "abs_diff": -253.0, "pct_diff": -11.8}, {"date": "2011-04-01", "Q": 1964, "abs_diff": 73.0, "pct_diff": 3.86}, {"date": "2011-05-01", "Q": 2295, "abs_diff": 331.0, "pct_diff": 16.85}, {"date": "2011-06-01", "Q": 3300, "abs_diff": 1005.0, "pct_diff": 43.79}, {"date": "2011-07-01", "Q": 4308, "abs_diff": 1008.0, "pct_diff": 30.55}, {"date": "2011-08-01", "Q": 4480, "abs_diff": 172.0, "pct_diff": 3.99}, {"date": "2011-09-01", "Q": 3607, "abs_diff": -873.0, "pct_diff": -19.49}, {"date": "2011-10-01", "Q": 2392, "abs_diff": -1215.0, "pct_diff": -33.68}, {"date": "2011-11-01", "Q": 1793, "abs_diff": -599.0, "pct_diff": -25.04}, {"date": "2011-12-01", "Q": 2445, "abs_diff": 652.0, "pct_diff": 36.36}, {"date": "2012-01-01", "Q": 2356, "abs_diff": -89.0, "pct_diff": -3.64}, {"date": "2012-02-01", "Q": 1906, "abs_diff": -450.0, "pct_diff": -19.1}, {"date": "2012-03-01", "Q": 1903, "abs_diff": -3.0, "pct_diff": -0.16}, {"date": "2012-04-01", "Q": 2017, "abs_diff": 114.0, "pct_diff": 5.99}, {"date": "2012-05-01", "Q": 2738, "abs_diff": 721.0, "pct_diff": 35.75}, {"date": "2012-06-01", "Q": 3726, "abs_diff": 988.0, "pct_diff": 36.08}, {"date": "2012-07-01", "Q": 4137, "abs_diff": 411.0, "pct_diff": 11.03}, {"date": "2012-08-01", "Q": 4304, "abs_diff": 167.0, "pct_diff": 4.04}, {"date": "2012-09-01", "Q": 3393, "abs_diff": -911.0, "pct_diff": -21.17}, {"date": "2012-10-01", "Q": 2399, "abs_diff": -994.0, "pct_diff": -29.3}, {"date": "2012-11-01", "Q": 1837, "abs_diff": -562.0, "pct_diff": -23.43}, {"date": "2012-12-01", "Q": 2207, "abs_diff": 370.0, "pct_diff": 20.14}, {"date": "2013-01-01", "Q": 2684, "abs_diff": 477.0, "pct_diff": 21.61}, {"date": "2013-02-01", "Q": 2068, "abs_diff": -616.0, "pct_diff": -22.95}, {"date": "2013-03-01", "Q": 1940, "abs_diff": -128.0, "pct_diff": -6.19}, {"date": "2013-04-01", "Q": 1966, "abs_diff": 26.0, "pct_diff": 1.34}, {"date": "2013-05-01", "Q": 2684, "abs_diff": 718.0, "pct_diff": 36.52}, {"date": "2013-06-01", "Q": 3812, "abs_diff": 1128.0, "pct_diff": 42.03}, {"date": "2013-07-01", "Q": 4371, "abs_diff": 559.0, "pct_diff": 14.66}, {"date": "2013-08-01", "Q": 4076, "abs_diff": -295.0, "pct_diff": -6.75}, {"date": "2013-09-01", "Q": 3339, "abs_diff": -737.0, "pct_diff": -18.08}, {"date": "2013-10-01", "Q": 2063, "abs_diff": -1276.0, "pct_diff": -38.22}, {"date": "2013-11-01", "Q": 1766, "abs_diff": -297.0, "pct_diff": -14.4}, {"date": "2013-12-01", "Q": 2334, "abs_diff": 568.0, "pct_diff": 32.16}, {"date": "2014-01-01", "Q": 2300, "abs_diff": -34.0, "pct_diff": -1.46}, {"date": "2014-02-01", "Q": 1804, "abs_diff": -496.0, "pct_diff": -21.57}, {"date": "2014-03-01", "Q": 1791, "abs_diff": -13.0, "pct_diff": -0.72}, {"date": "2014-04-01", "Q": 1931, "abs_diff": 140.0, "pct_diff": 7.82}, {"date": "2014-05-01", "Q": 2574, "abs_diff": 643.0, "pct_diff": 33.3}, {"date": "2014-06-01", "Q": 3705, "abs_diff": 1131.0, "pct_diff": 43.94}, {"date": "2014-07-01", "Q": 4377, "abs_diff": 672.0, "pct_diff": 18.14}, {"date": "2014-08-01", "Q": 3913, "abs_diff": -464.0, "pct_diff": -10.6}, {"date": "2014-09-01", "Q": 3434, "abs_diff": -479.0, "pct_diff": -12.24}, {"date": "2014-10-01", "Q": 2431, "abs_diff": -1003.0, "pct_diff": -29.21}, {"date": "2014-11-01", "Q": 1842, "abs_diff": -589.0, "pct_diff": -24.23}, {"date": "2014-12-01", "Q": 2242, "abs_diff": 400.0, "pct_diff": 21.72}, {"date": "2015-01-01", "Q": 2343, "abs_diff": 101.0, "pct_diff": 4.5}, {"date": "2015-02-01", "Q": 1703, "abs_diff": -640.0, "pct_diff": -27.32}, {"date": "2015-03-01", "Q": 1976, "abs_diff": 273.0, "pct_diff": 16.03}, {"date": "2015-04-01", "Q": 1961, "abs_diff": -15.0, "pct_diff": -0.76}, {"date": "2015-05-01", "Q": 2313, "abs_diff": 352.0, "pct_diff": 17.95}, {"date": "2015-06-01", "Q": 3750, "abs_diff": 1437.0, "pct_diff": 62.13}, {"date": "2015-07-01", "Q": 4223, "abs_diff": 473.0, "pct_diff": 12.61}, {"date": "2015-08-01", "Q": 4412, "abs_diff": 189.0, "pct_diff": 4.48}, {"date": "2015-09-01", "Q": 3529, "abs_diff": -883.0, "pct_diff": -20.01}, {"date": "2015-10-01", "Q": 2556, "abs_diff": -973.0, "pct_diff": -27.57}, {"date": "2015-11-01", "Q": 1869, "abs_diff": -687.0, "pct_diff": -26.88}, {"date": "2015-12-01", "Q": 2533, "abs_diff": 664.0, "pct_diff": 35.53}, {"date": "2016-01-01", "Q": 2516, "abs_diff": -17.0, "pct_diff": -0.67}, {"date": "2016-02-01", "Q": 1954, "abs_diff": -562.0, "pct_diff": -22.34}, {"date": "2016-03-01", "Q": 1854, "abs_diff": -100.0, "pct_diff": -5.12}, {"date": "2016-04-01", "Q": 1961, "abs_diff": 107.0, "pct_diff": 5.77}, {"date": "2016-05-01", "Q": 2511, "abs_diff": 550.0, "pct_diff": 28.05}, {"date": "2016-06-01", "Q": 4026, "abs_diff": 1515.0, "pct_diff": 60.33}, {"date": "2016-07-01", "Q": 4674, "abs_diff": 648.0, "pct_diff": 16.1}, {"date": "2016-08-01", "Q": 4210, "abs_diff": -464.0, "pct_diff": -9.93}, {"date": "2016-09-01", "Q": 3216, "abs_diff": -994.0, "pct_diff": -23.61}, {"date": "2016-10-01", "Q": 2596, "abs_diff": -620.0, "pct_diff": -19.28}, {"date": "2016-11-01", "Q": 1919, "abs_diff": -677.0, "pct_diff": -26.08}, {"date": "2016-12-01", "Q": 2253, "abs_diff": 334.0, "pct_diff": 17.4}, {"date": "2017-01-01", "Q": 2390, "abs_diff": 137.0, "pct_diff": 6.08}, {"date": "2017-02-01", "Q": 1850, "abs_diff": -540.0, "pct_diff": -22.59}, {"date": "2017-03-01", "Q": 2042, "abs_diff": 192.0, "pct_diff": 10.38}, {"date": "2017-04-01", "Q": 2121, "abs_diff": 79.0, "pct_diff": 3.87}, {"date": "2017-05-01", "Q": 2739, "abs_diff": 618.0, "pct_diff": 29.14}, {"date": "2017-06-01", "Q": 4119, "abs_diff": 1380.0, "pct_diff": 50.38}, {"date": "2017-07-01", "Q": 4645, "abs_diff": 526.0, "pct_diff": 12.77}, {"date": "2017-08-01", "Q": 4303, "abs_diff": -342.0, "pct_diff": -7.36}, {"date": "2017-09-01", "Q": 3470, "abs_diff": -833.0, "pct_diff": -19.36}, {"date": "2017-10-01", "Q": 2557, "abs_diff": -913.0, "pct_diff": -26.31}, {"date": "2017-11-01", "Q": 1929, "abs_diff": -628.0, "pct_diff": -24.56}, {"date": "2017-12-01", "Q": 2198, "abs_diff": 269.0, "pct_diff": 13.95}, {"date": "2018-01-01", "Q": 2170, "abs_diff": -28.0, "pct_diff": -1.27}, {"date": "2018-02-01", "Q": 1897, "abs_diff": -273.0, "pct_diff": -12.58}, {"date": "2018-03-01", "Q": 1983, "abs_diff": 86.0, "pct_diff": 4.53}]}]}</script>
+</div>
+</div>
+</section>
+<section id="section" class="slide level2" data-background-color="#1a1a2e">
+<h2></h2>
+<div style="text-align: center; padding-top: 180px;">
+<p><span style="font-size: 2.2em; color: white;"><strong>Time series regression</strong></span></p>
+<p><span style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;">Every dataset so far has been a snapshot — many units, one point in time. What changes when it’s one unit, followed through time?</span></p>
+</div>
+</section>
+<section id="how-risky-is-microsoft-stock" class="slide level2">
+<h2>How risky is Microsoft stock?</h2>
+<div class="instructions-box">
+<p><strong>Business question</strong>: you’re considering investing in Microsoft stock. How much does it move when the overall market moves — and how would you even estimate that?</p>
+</div>
+<div class="fragment">
+<p>We have real daily data on Microsoft’s share price and the S&amp;P 500 index, from December 1997 to December 2018.</p>
+</div>
+</section>
+<section id="the-naive-answer" class="slide level2">
+<h2>The naive answer</h2>
+<p><strong>Naive answer:</strong> regress the Microsoft share price directly on the S&amp;P 500 index level. Read off the slope.</p>
+<div class="fragment">
+<p><strong>Why it’s not that simple:</strong> both series have climbed for two decades. Two things that both trend upward will look related whether or not they actually are — and that’s before we’ve even asked whether “same day” is even the right comparison.</p>
+</div>
+</section>
+<section id="what-we-need" class="slide level2">
+<h2>What we need</h2>
+<ul>
+<li>An understanding of what makes time series data different from the cross-sections we’ve used all module</li>
+<li>A way to tell a genuine relationship apart from two variables that just happen to drift the same direction</li>
+<li>The tools to fix it when regression assumptions specific to time series data break down</li>
+</ul>
+</section>
+<section id="whats-special-about-time-series-data" class="slide level2">
+<h2>What’s special about time series data</h2>
+</section>
+<section id="new-notation-new-opportunities" class="slide level2">
+<h2>New notation, new opportunities</h2>
+<ul>
+<li>Time series data follows <strong>one unit</strong> across many time periods: <span class="math inline">\(y_t,\ t = 1, 2, \dots, T\)</span></li>
+<li>Ordering matters — this is the key difference from every cross-section this module has used</li>
+<li>New opportunities: we can ask how <span class="math inline">\(y\)</span> responds to a change in <span class="math inline">\(x\)</span>, immediately or with a delay</li>
+<li>New complications: frequency, gaps, and — the big one — values that aren’t independent of their own past</li>
+</ul>
+</section>
+<section id="trend" class="slide level2">
+<h2>Trend</h2>
+<p><span class="math display">\[\Delta y_t = y_t - y_{t-1}\]</span></p>
+<ul>
+<li><strong>Positive trend</strong>: <span class="math inline">\(E[\Delta y_t] &gt; 0\)</span> on average. Negative trend is the mirror image.</li>
+<li><strong>Linear trend</strong>: the change itself is stable on average</li>
+<li><strong>Exponential trend</strong>: the <em>relative</em> change is stable on average — common for prices, income, anything that compounds</li>
+</ul>
+</section>
+<section id="seasonality" class="slide level2">
+<h2>Seasonality</h2>
+<ul>
+<li>The expected value changes <strong>periodically</strong> — by day of week, month, or hour</li>
+<li>Can be linear (constant seasonal gaps) or exponential (constant relative gaps)</li>
+<li>Both trend and seasonality make time series regression genuinely harder than cross-sectional regression</li>
+</ul>
+</section>
+<section id="stationarity" class="slide level2">
+<h2>Stationarity</h2>
+<p>A <strong>stationary</strong> time series has the same expected value and distribution at every point in time. Stability, full stop.</p>
+<div class="fragment">
+<p><strong>Non-stationary</strong> series break this in one of three ways:</p>
+<ul>
+<li>Has a <strong>trend</strong></li>
+<li>Has <strong>seasonality</strong></li>
+<li>Has an unstable, ever-widening spread — a <strong>random walk</strong></li>
+</ul>
+</div>
+</section>
+<section id="random-walk" class="slide level2">
+<h2>Random walk</h2>
+<p><span class="math display">\[y_t = y_{t-1} + e_t\]</span></p>
+<ul>
+<li>Today’s value is yesterday’s value, plus a completely random, unpredictable shock</li>
+<li>Whatever happened last period doesn’t influence the <em>size</em> of today’s shock — but <span class="math inline">\(y_t\)</span> still carries forward everything that came before</li>
+<li>The spread of possible values <strong>grows</strong> the further out you go — genuinely impossible to predict beyond a drift</li>
+</ul>
+</section>
+<section id="five-simulated-random-walks" class="slide level2">
+<h2>Five simulated random walks</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb1" data-startfrom="241" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 240;"><span id="cb1-241"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb1-242"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">700</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">380</span><span class="op">,</span></span>
+<span id="cb1-243"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Time period"</span>}<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Value of the simulated variable"</span>}<span class="op">,</span></span>
+<span id="cb1-244"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb1-245"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(random_walks<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"t"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"value"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"series"</span>})<span class="op">,</span></span>
+<span id="cb1-246"><a></a>  ]<span class="op">,</span></span>
+<span id="cb1-247"><a></a>  <span class="dt">color</span><span class="op">:</span> {<span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}</span>
+<span id="cb1-248"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-1" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<details>
+<summary style="cursor:pointer;color:#2d6a4f;font-size:0.9em;">
+Show the Python syntax
+</summary>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="255" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 254;"><span id="cb2-255"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.6em;line-height:1.4;</span></span>
+<span id="cb2-256"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
+<span id="cb2-257"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;import numpy as np</span></span>
+<span id="cb2-258"><a></a><span class="vs">import matplotlib.pyplot as plt</span></span>
+<span id="cb2-259"><a></a></span>
+<span id="cb2-260"><a></a><span class="vs">T = 100</span></span>
+<span id="cb2-261"><a></a><span class="vs">for series_id in range(5):</span></span>
+<span id="cb2-262"><a></a><span class="vs">    steps = np.random.normal(0, 1, T)</span></span>
+<span id="cb2-263"><a></a><span class="vs">    path = np.concatenate(([0], np.cumsum(steps)))   # all five start at 0</span></span>
+<span id="cb2-264"><a></a><span class="vs">    plt.plot(path, label=f"Walk {series_id+1}")</span></span>
+<span id="cb2-265"><a></a></span>
+<span id="cb2-266"><a></a><span class="vs">plt.legend()</span></span>
+<span id="cb2-267"><a></a><span class="vs">plt.show()&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-2" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</details>
+<div class="fragment">
+<p>Same random process, five runs, all starting from the same value. Each wanders further from zero as time passes — no reverting, no stable average. Many real business variables (stock prices, market indices) are well approximated by a random walk.</p>
+</div>
+</section>
+<section id="task-simulate-a-random-walk-yourself" class="slide level2">
+<h2>Task — simulate a random walk yourself</h2>
+<div class="instructions-box">
+<p><strong>Business question</strong>: what does “impossible to predict” actually look like, generated from scratch?</p>
+<p>Open the Colab notebook. Using <code>numpy</code>, generate 100 random shocks (<code>np.random.normal</code>), turn them into a random walk with <code>np.cumsum</code>, and plot it with <code>matplotlib</code>. Then generate a second series that’s just the raw shocks, unsummed, and plot that alongside it. What’s different about the two? No further syntax hints.</p>
+</div>
+</section>
+<section id="what-you-should-have-found" class="slide level2">
+<h2>What you should have found</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a></a>shocks <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">100</span>)   <span class="co"># the raw, unsummed shocks</span></span>
+<span id="cb3-2"><a></a>walk <span class="op">=</span> np.cumsum(shocks)                <span class="co"># the random walk built from them</span></span>
+<span id="cb3-3"><a></a>plt.plot(shocks, label<span class="op">=</span><span class="st">"Raw shocks"</span>)<span class="op">;</span> plt.plot(walk, label<span class="op">=</span><span class="st">"Random walk"</span>)</span>
+<span id="cb3-4"><a></a>plt.axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"grey"</span>, linewidth<span class="op">=</span><span class="fl">0.8</span>)<span class="op">;</span> plt.legend()<span class="op">;</span> plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb4" data-startfrom="294" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 293;"><span id="cb4-294"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb4-295"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">640</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">230</span><span class="op">,</span></span>
+<span id="cb4-296"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Time period"</span>}<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Value"</span>}<span class="op">,</span></span>
+<span id="cb4-297"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb4-298"><a></a>    Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb4-299"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(white_noise<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"t"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"value"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#c0392b"</span>})<span class="op">,</span></span>
+<span id="cb4-300"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(task_walk_data<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"t"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"value"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#2d6a4f"</span>})<span class="op">,</span></span>
+<span id="cb4-301"><a></a>    Plot<span class="op">.</span><span class="fu">text</span>([{<span class="dt">t</span><span class="op">:</span> <span class="dv">95</span><span class="op">,</span> <span class="dt">value</span><span class="op">:</span> white_noise[white_noise<span class="op">.</span><span class="at">length</span><span class="op">-</span><span class="dv">1</span>]<span class="op">.</span><span class="at">value</span>}]<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"t"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"value"</span><span class="op">,</span> <span class="dt">text</span><span class="op">:</span> () <span class="kw">=&gt;</span> <span class="st">"Raw shocks"</span><span class="op">,</span> <span class="dt">dy</span><span class="op">:</span> <span class="dv">12</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#c0392b"</span><span class="op">,</span> <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">10</span>})<span class="op">,</span></span>
+<span id="cb4-302"><a></a>    Plot<span class="op">.</span><span class="fu">text</span>([{<span class="dt">t</span><span class="op">:</span> <span class="dv">95</span><span class="op">,</span> <span class="dt">value</span><span class="op">:</span> task_walk_data[task_walk_data<span class="op">.</span><span class="at">length</span><span class="op">-</span><span class="dv">1</span>]<span class="op">.</span><span class="at">value</span>}]<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"t"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"value"</span><span class="op">,</span> <span class="dt">text</span><span class="op">:</span> () <span class="kw">=&gt;</span> <span class="st">"Random walk"</span><span class="op">,</span> <span class="dt">dy</span><span class="op">:</span> <span class="op">-</span><span class="dv">10</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#2d6a4f"</span><span class="op">,</span> <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">10</span>})<span class="op">,</span></span>
+<span id="cb4-303"><a></a>  ]</span>
+<span id="cb4-304"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-3" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="instructions-box">
+<p>Same shocks, two views: red is <strong>stationary</strong>, its cumulative sum (green) is <strong>non-stationary</strong> — never reverts.</p>
+</div>
+</section>
+<section id="case-study-microsoft-and-the-sp-500" class="slide level2">
+<h2>Case study: Microsoft and the S&amp;P 500</h2>
+</section>
+<section id="the-trap-of-levels" class="slide level2">
+<h2>The trap of levels</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb5" data-startfrom="320" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 319;"><span id="cb5-320"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb5-321"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">700</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">340</span><span class="op">,</span></span>
+<span id="cb5-322"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Date"</span><span class="op">,</span> <span class="dt">type</span><span class="op">:</span> <span class="st">"utc"</span><span class="op">,</span> <span class="dt">ticks</span><span class="op">:</span> <span class="st">"5 years"</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> <span class="st">"%Y"</span>}<span class="op">,</span></span>
+<span id="cb5-323"><a></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Microsoft price (US$)"</span>}<span class="op">,</span></span>
+<span id="cb5-324"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb5-325"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(levels_data<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"p_MSFT"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#2d6a4f"</span>})<span class="op">,</span></span>
+<span id="cb5-326"><a></a>  ]<span class="op">,</span></span>
+<span id="cb5-327"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-4" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<p>Microsoft’s share price, 1998–2018. Climbing for two decades — exactly the shape that makes a naive levels-on-levels regression dangerous.</p>
+</section>
+<section id="from-levels-to-returns" class="slide level2">
+<h2>From levels to returns</h2>
+<ul>
+<li>Portfolio managers think in <strong>monthly returns</strong>, not price levels — so that’s the natural unit here too</li>
+<li>Take the closing price on the last trading day of each month</li>
+<li>Compute the percent change month to month</li>
+</ul>
+<p><span class="math display">\[pctchange(y_t) = 100 \times \frac{y_t - y_{t-1}}{y_{t-1}}\]</span></p>
+</section>
+<section id="monthly-returns-both-series" class="slide level2">
+<h2>Monthly returns, both series</h2>
+<p>Same two series as the last slide — <strong>Microsoft’s</strong> monthly return and the <strong>S&amp;P 500’s</strong> — now converted from price levels into percent change, month over month:</p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb6" data-startfrom="345" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 344;"><span id="cb6-345"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb6-346"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">700</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">340</span><span class="op">,</span></span>
+<span id="cb6-347"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Date"</span><span class="op">,</span> <span class="dt">type</span><span class="op">:</span> <span class="st">"utc"</span><span class="op">,</span> <span class="dt">ticks</span><span class="op">:</span> <span class="st">"5 years"</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> <span class="st">"%Y"</span>}<span class="op">,</span></span>
+<span id="cb6-348"><a></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Monthly return (%)"</span>}<span class="op">,</span></span>
+<span id="cb6-349"><a></a>  <span class="dt">color</span><span class="op">:</span> {<span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="st">"Microsoft"</span><span class="op">,</span> <span class="st">"S&amp;P 500"</span>]<span class="op">,</span> <span class="dt">range</span><span class="op">:</span> [<span class="st">"#2d6a4f"</span><span class="op">,</span> <span class="st">"#5b7fbd"</span>]}<span class="op">,</span></span>
+<span id="cb6-350"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb6-351"><a></a>    Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb6-352"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(returns_data<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"pct_msft"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> () <span class="kw">=&gt;</span> <span class="st">"Microsoft"</span>})<span class="op">,</span></span>
+<span id="cb6-353"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(returns_data<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"pct_sp500"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> () <span class="kw">=&gt;</span> <span class="st">"S&amp;P 500"</span>})<span class="op">,</span></span>
+<span id="cb6-354"><a></a>  ]</span>
+<span id="cb6-355"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-5" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<details>
+<summary style="cursor:pointer;color:#2d6a4f;font-size:0.9em;">
+Show the Python syntax
+</summary>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="362" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 361;"><span id="cb7-362"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.6em;line-height:1.4;</span></span>
+<span id="cb7-363"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
+<span id="cb7-364"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;import matplotlib.pyplot as plt</span></span>
+<span id="cb7-365"><a></a></span>
+<span id="cb7-366"><a></a><span class="vs">plt.axhline(0, color="grey", linewidth=0.8)</span></span>
+<span id="cb7-367"><a></a><span class="vs">plt.plot(df["date"], df["pct_msft"], color="green", label="Microsoft")</span></span>
+<span id="cb7-368"><a></a><span class="vs">plt.plot(df["date"], df["pct_sp500"], color="steelblue", label="S&amp;P 500")</span></span>
+<span id="cb7-369"><a></a><span class="vs">plt.ylabel("Monthly return (%)")</span></span>
+<span id="cb7-370"><a></a><span class="vs">plt.legend()</span></span>
+<span id="cb7-371"><a></a><span class="vs">plt.show()&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-6" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</details>
+<p>Both series now hover around a stable average — this is what a stationary series looks like.</p>
+</section>
+<section id="the-real-regression" class="slide level2">
+<h2>The real regression</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb8-2"><a></a></span>
+<span id="cb8-3"><a></a>stock_model <span class="op">=</span> smf.ols(<span class="st">"pct_msft ~ pct_sp500"</span>, data<span class="op">=</span>df).fit(cov_type<span class="op">=</span><span class="st">"HC1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb9" data-startfrom="387" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 386;"><span id="cb9-387"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.52em;line-height:1.35;</span></span>
+<span id="cb9-388"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
+<span id="cb9-389"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>stock_summary_text<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-7" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</section>
+<section id="reading-the-result" class="slide level2">
+<h2>Reading the result</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb10" data-startfrom="395" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 394;"><span id="cb10-395"><a></a>{</span>
+<span id="cb10-396"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div style="text-align:center;padding-top:10px;"&gt;</span></span>
+<span id="cb10-397"><a></a><span class="vs">    &lt;div style="font-size:1.3em;"&gt;&lt;b&gt;</span><span class="sc">${</span>stock_beta<span class="sc">}</span><span class="vs">&lt;/b&gt; — for every 1% the S&amp;P 500 moves, Microsoft moves &lt;b&gt;</span><span class="sc">${</span>stock_beta<span class="sc">}</span><span class="vs">%&lt;/b&gt;&lt;/div&gt;</span></span>
+<span id="cb10-398"><a></a><span class="vs">    &lt;div style="font-size:1em;color:#666;padding-top:10px;"&gt;α = </span><span class="sc">${</span>stock_alpha<span class="sc">}</span><span class="vs">, R² = </span><span class="sc">${</span>stock_r2<span class="sc">}</span><span class="vs">, N = </span><span class="sc">${</span>stock_n<span class="sc">}</span><span class="vs"> months&lt;/div&gt;</span></span>
+<span id="cb10-399"><a></a><span class="vs">  &lt;/div&gt;`</span></span>
+<span id="cb10-400"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-8" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>This is Microsoft’s <strong>beta</strong> — exactly the concept finance uses to describe how risky a stock is relative to the market.</p>
+</div>
+</section>
+<section id="scatter-and-regression-line" class="slide level2">
+<h2>Scatter and regression line</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb11" data-startfrom="410" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 409;"><span id="cb11-410"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb11-411"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">560</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">320</span><span class="op">,</span></span>
+<span id="cb11-412"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"S&amp;P 500 monthly return (%)"</span>}<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Microsoft monthly return (%)"</span>}<span class="op">,</span></span>
+<span id="cb11-413"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb11-414"><a></a>    Plot<span class="op">.</span><span class="fu">dot</span>(scatter_data<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"pct_sp500"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"pct_msft"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#5b7fbd"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.5</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">3</span>})<span class="op">,</span></span>
+<span id="cb11-415"><a></a>    Plot<span class="op">.</span><span class="fu">linearRegressionY</span>(scatter_data<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"pct_sp500"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"pct_msft"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#2d6a4f"</span>})<span class="op">,</span></span>
+<span id="cb11-416"><a></a>  ]</span>
+<span id="cb11-417"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-9" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<details>
+<summary style="cursor:pointer;color:#2d6a4f;font-size:0.9em;">
+Show the Python syntax
+</summary>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb12" data-startfrom="424" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 423;"><span id="cb12-424"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.6em;line-height:1.4;</span></span>
+<span id="cb12-425"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
+<span id="cb12-426"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;import matplotlib.pyplot as plt</span></span>
+<span id="cb12-427"><a></a><span class="vs">import numpy as np</span></span>
+<span id="cb12-428"><a></a></span>
+<span id="cb12-429"><a></a><span class="vs">plt.scatter(df["pct_sp500"], df["pct_msft"], alpha=0.5)</span></span>
+<span id="cb12-430"><a></a></span>
+<span id="cb12-431"><a></a><span class="vs">x_grid = np.linspace(df["pct_sp500"].min(), df["pct_sp500"].max(), 100)</span></span>
+<span id="cb12-432"><a></a><span class="vs">y_grid = stock_model.params["Intercept"] + stock_model.params["pct_sp500"] * x_grid</span></span>
+<span id="cb12-433"><a></a><span class="vs">plt.plot(x_grid, y_grid, color="green")</span></span>
+<span id="cb12-434"><a></a><span class="vs">plt.show()&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-10" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</details>
+</section>
+<section id="spurious-regression-and-fixing-it" class="slide level2">
+<h2>Spurious regression, and fixing it</h2>
+</section>
+<section id="when-correlation-is-just-two-trends" class="slide level2">
+<h2>When correlation is just two trends</h2>
+<div class="instructions-box">
+<p>Per-capita cheese consumption correlates at 0.947 with the number of people who died getting tangled in their bedsheets (Tyler Vigen, <em>Spurious Correlations</em>). Neither causes the other — both simply drifted upward over the same years.</p>
+</div>
+<div class="fragment">
+<p>Trend and seasonality act like <strong>confounders</strong> — omitted variables that create an association where none exists. The regression can’t tell the difference between “these move together because they’re related” and “these move together because it’s 2015 for both of them.”</p>
+</div>
+</section>
+<section id="the-fix-differencing" class="slide level2">
+<h2>The fix: differencing</h2>
+<ul>
+<li>Replace variables in the regression with their <strong>first differences</strong> — this removes the trend and is often enough to make a series stationary</li>
+<li>Same idea in relative terms: <strong>percent changes</strong>, or their close approximation, <strong>log differences</strong></li>
+</ul>
+<p><span class="math display">\[\Delta y_t^E = \alpha + \beta \Delta x_t\]</span></p>
+<div class="fragment">
+<p><span class="math inline">\(\alpha\)</span>: how much <span class="math inline">\(y\)</span> changes on average when <span class="math inline">\(x\)</span> doesn’t change. <span class="math inline">\(\beta\)</span>: how much <em>more</em> <span class="math inline">\(y\)</span> changes when <span class="math inline">\(x\)</span> changes by one more unit — additional to <span class="math inline">\(\alpha\)</span>, not instead of it.</p>
+</div>
+</section>
+<section id="the-fix-seasonal-dummies" class="slide level2">
+<h2>The fix: seasonal dummies</h2>
+<ul>
+<li>Differencing handles trend. Seasonality needs its own fix — <strong>include a dummy for each season</strong> (month, day of week, whatever the cycle is)</li>
+</ul>
+<p><span class="math display">\[y_t^E = \alpha + \beta x_t + \delta_{Jan} + \delta_{Feb} + \dots + \delta_{Nov}\]</span></p>
+<ul>
+<li>One category held out as reference, exactly like any other categorical variable since Week 6</li>
+</ul>
+</section>
+<section id="task-absolute-vs.-relative-differences" class="slide level2">
+<h2>Task — absolute vs.&nbsp;relative differences</h2>
+<div class="instructions-box">
+<p><strong>Business question</strong>: which transformation actually stabilises a time series — and does it matter which one you pick?</p>
+<p>Using the Arizona electricity data, compute both <code>.diff()</code> (absolute) and <code>.pct_change()</code> (relative, ×100) on <code>Q</code>, the monthly consumption. Plot the two transformed series against the raw levels. Does either look more stable? No further syntax hints.</p>
+</div>
+</section>
+<section id="what-you-should-have-found-1" class="slide level2">
+<h2>What you should have found</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb13" data-startfrom="485" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 484;"><span id="cb13-485"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.5em;line-height:1.3;</span></span>
+<span id="cb13-486"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
+<span id="cb13-487"><a></a><span class="vs">                  padding:6px 12px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>task_diff_output_text<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-11" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb14" data-startfrom="492" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 491;"><span id="cb14-492"><a></a>{</span>
+<span id="cb14-493"><a></a>  <span class="kw">const</span> opts <span class="op">=</span> {<span class="dt">x</span><span class="op">:</span> {<span class="dt">type</span><span class="op">:</span> <span class="st">"utc"</span><span class="op">,</span> <span class="dt">ticks</span><span class="op">:</span> <span class="st">"5 years"</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> <span class="st">"%Y"</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="kw">null</span>}}<span class="op">;</span></span>
+<span id="cb14-494"><a></a>  <span class="kw">const</span> raw <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({<span class="op">...</span>opts<span class="op">,</span> <span class="dt">width</span><span class="op">:</span> <span class="dv">220</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">150</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Q (levels)"</span>}<span class="op">,</span></span>
+<span id="cb14-495"><a></a>    <span class="dt">marks</span><span class="op">:</span> [Plot<span class="op">.</span><span class="fu">line</span>(az_diff_chart<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"Q"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#5b7fbd"</span>})]})<span class="op">;</span></span>
+<span id="cb14-496"><a></a>  <span class="kw">const</span> abs <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({<span class="op">...</span>opts<span class="op">,</span> <span class="dt">width</span><span class="op">:</span> <span class="dv">220</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">150</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Abs. difference"</span>}<span class="op">,</span></span>
+<span id="cb14-497"><a></a>    <span class="dt">marks</span><span class="op">:</span> [Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>])<span class="op">,</span> Plot<span class="op">.</span><span class="fu">line</span>(az_diff_chart<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"abs_diff"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#2d6a4f"</span>})]})<span class="op">;</span></span>
+<span id="cb14-498"><a></a>  <span class="kw">const</span> pct <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({<span class="op">...</span>opts<span class="op">,</span> <span class="dt">width</span><span class="op">:</span> <span class="dv">220</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">150</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"% difference"</span>}<span class="op">,</span></span>
+<span id="cb14-499"><a></a>    <span class="dt">marks</span><span class="op">:</span> [Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>])<span class="op">,</span> Plot<span class="op">.</span><span class="fu">line</span>(az_diff_chart<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"date"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"pct_diff"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#c0392b"</span>})]})<span class="op">;</span></span>
+<span id="cb14-500"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div style="display:flex;gap:10px;justify-content:center;"&gt;</span><span class="sc">${</span>raw<span class="sc">}${</span>abs<span class="sc">}${</span>pct<span class="sc">}</span><span class="vs">&lt;/div&gt;`</span></span>
+<span id="cb14-501"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-12" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+<div class="instructions-box">
+<p>Both transformations remove the trend — you can see it directly: the raw level climbs steadily, both differenced versions hover around zero instead. The choice between them is usually about interpretation (units vs.&nbsp;percent), not which one “works.” Gabor’s own case study found the difference between percent and log changes was negligible here too.</p>
+</div>
+</section>
+<section id="serial-correlation" class="slide level2">
+<h2>Serial correlation</h2>
+</section>
+<section id="correlated-with-its-own-past" class="slide level2">
+<h2>Correlated with its own past</h2>
+<p><span class="math display">\[\rho_1 = Corr[y_t, y_{t-1}]\]</span></p>
+<ul>
+<li><strong>Serial correlation</strong>: a variable correlated with its own lagged values</li>
+<li><span class="math inline">\(\rho_1 = 0\)</span> means no serial correlation — “white noise,” order doesn’t matter, just like cross-sectional data</li>
+<li>Positive serial correlation: if <span class="math inline">\(y_t\)</span> is above average, <span class="math inline">\(y_{t+1}\)</span> is more likely to be above average too</li>
+</ul>
+</section>
+<section id="why-this-breaks-the-standard-errors" class="slide level2">
+<h2>Why this breaks the standard errors</h2>
+<ul>
+<li>Serial correlation <strong>doesn’t bias the coefficient</strong> — but it makes the usual standard errors wrong, often badly so</li>
+<li>Even heteroskedasticity-robust SEs (the <code>HC1</code> we’ve used since Week 5) don’t fix this — a different problem needs a different tool</li>
+</ul>
+<div class="fragment">
+<p>Two fixes:</p>
+<ol type="1">
+<li><strong>Newey-West standard errors</strong> — built to handle serial correlation directly (and heteroskedasticity too), needs a choice of how many lags to account for. In <code>statsmodels</code>, this is <code>cov_type="HAC"</code> (Heteroskedasticity- and Autocorrelation-Consistent) with <code>cov_kwds={"maxlags": ...}</code> — “HAC” is the library’s name for the Newey-West family, not a different thing.</li>
+<li><strong>Include a lagged dependent variable</strong> in the regression itself — usually one lag is enough</li>
+</ol>
+</div>
+</section>
+<section id="case-study-electricity-and-temperature" class="slide level2">
+<h2>Case study: electricity and temperature</h2>
+<ul>
+<li>Monthly residential electricity consumption in Arizona, and temperature — measured as <strong>cooling degree days</strong> and <strong>heating degree days</strong> — 2001–2018</li>
+<li>Business question: how much does electricity demand change when temperature changes?</li>
+</ul>
+<div class="sourceCode" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a></a><span class="co"># cov_type="HAC" is Newey-West standard errors; maxlags is how many lags to account for</span></span>
+<span id="cb15-2"><a></a>smf.ols(<span class="st">"dlnQ ~ dCD + dHD"</span>, data<span class="op">=</span>df).fit(cov_type<span class="op">=</span><span class="st">"HAC"</span>, cov_kwds<span class="op">=</span>{<span class="st">"maxlags"</span>: <span class="dv">12</span>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb16" data-startfrom="546" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 545;"><span id="cb16-546"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.5em;line-height:1.35;</span></span>
+<span id="cb16-547"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
+<span id="cb16-548"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>az_summary_text<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-13" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</section>
+<section id="comparing-standard-errors-for-real" class="slide level2">
+<h2>Comparing standard errors, for real</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb17" data-startfrom="554" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 553;"><span id="cb17-554"><a></a>{</span>
+<span id="cb17-555"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:16px auto 0;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;"&gt;</span></span>
+<span id="cb17-556"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;&lt;th style="padding:5px 14px;"&gt;Variable&lt;/th&gt;&lt;th style="padding:5px 14px;" colspan="2"&gt;Simple SE&lt;/th&gt;&lt;th style="padding:5px 14px;" colspan="2"&gt;Newey-West&lt;/th&gt;&lt;th style="padding:5px 14px;" colspan="2"&gt;Lagged DV&lt;/th&gt;&lt;/tr&gt;</span></span>
+<span id="cb17-557"><a></a><span class="vs">    </span><span class="sc">${</span>se_compare_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="border-bottom:1px solid #ddd;"&gt;</span></span>
+<span id="cb17-558"><a></a><span class="vs">      &lt;td style="padding:4px 14px;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">variable</span><span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb17-559"><a></a><span class="vs">      &lt;td style="padding:4px 14px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">simple</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:4px 14px;text-align:center;color:#555;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">simple_se</span><span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb17-560"><a></a><span class="vs">      &lt;td style="padding:4px 14px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">nw</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:4px 14px;text-align:center;color:#555;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">nw_se</span><span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb17-561"><a></a><span class="vs">      &lt;td style="padding:4px 14px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">lagdv</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:4px 14px;text-align:center;color:#555;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">lagdv_se</span><span class="sc">}</span><span class="vs">&lt;/td&gt;</span></span>
+<span id="cb17-562"><a></a><span class="vs">    &lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb17-563"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
+<span id="cb17-564"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-14" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>N = <span><span id="ojs-element-id-1"></span></span> months. All three approaches agree closely here — a sign the serial correlation in this particular series isn’t severe, not that the correction was unnecessary to check.</p>
+</div>
+</section>
+<section id="lags-of-x" class="slide level2">
+<h2>Lags of x</h2>
+</section>
+<section id="when-effects-take-time-to-arrive" class="slide level2">
+<h2>When effects take time to arrive</h2>
+<ul>
+<li>A <strong>lagged association</strong>: <span class="math inline">\(x\)</span> affects <span class="math inline">\(y\)</span> not immediately, but one or more periods later</li>
+<li>Useful whenever there’s a real-world delay — people don’t necessarily change behaviour the moment conditions change</li>
+</ul>
+<p><span class="math display">\[\Delta y_t^E = \alpha + \beta_0 \Delta x_t + \beta_1 \Delta x_{t-1} + \beta_2 \Delta x_{t-2}\]</span></p>
+<p><span class="math inline">\(\beta_0\)</span>: same-period effect. <span class="math inline">\(\beta_1\)</span>: how much more <span class="math inline">\(y\)</span> changes <em>next</em> period after <span class="math inline">\(x\)</span> moved, holding <span class="math inline">\(x\)</span> fixed elsewhere. The <strong>cumulative effect</strong> is <span class="math inline">\(\beta_0 + \beta_1 + \beta_2\)</span>.</p>
+</section>
+<section id="real-lagged-effects-on-real-data" class="slide level2">
+<h2>Real lagged effects, on real data</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb18" data-startfrom="589" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 588;"><span id="cb18-589"><a></a>{</span>
+<span id="cb18-590"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:16px auto 0;font-family:sans-serif;font-size:1em;border-collapse:collapse;"&gt;</span></span>
+<span id="cb18-591"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;&lt;th style="padding:6px 22px;"&gt;Timing&lt;/th&gt;&lt;th style="padding:6px 22px;"&gt;ΔCD&lt;/th&gt;&lt;th style="padding:6px 22px;"&gt;ΔHD&lt;/th&gt;&lt;/tr&gt;</span></span>
+<span id="cb18-592"><a></a><span class="vs">    </span><span class="sc">${</span>lag_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="border-bottom:1px solid #ddd;"&gt;&lt;td style="padding:5px 22px;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">lag</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:5px 22px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">cd</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:5px 22px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">hd</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb18-593"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
+<span id="cb18-594"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-15" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<details>
+<summary style="cursor:pointer;color:#2d6a4f;font-size:0.9em;">
+Show the Python syntax
+</summary>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb19" data-startfrom="601" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 600;"><span id="cb19-601"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.6em;line-height:1.4;</span></span>
+<span id="cb19-602"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
+<span id="cb19-603"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;df["dCD_lag1"] = df["dCD"].shift(1)</span></span>
+<span id="cb19-604"><a></a><span class="vs">df["dCD_lag2"] = df["dCD"].shift(2)</span></span>
+<span id="cb19-605"><a></a><span class="vs">df["dHD_lag1"] = df["dHD"].shift(1)</span></span>
+<span id="cb19-606"><a></a><span class="vs">df["dHD_lag2"] = df["dHD"].shift(2)</span></span>
+<span id="cb19-607"><a></a><span class="vs">df_lags = df.dropna(subset=["dCD_lag1", "dCD_lag2", "dHD_lag1", "dHD_lag2"])</span></span>
+<span id="cb19-608"><a></a></span>
+<span id="cb19-609"><a></a><span class="vs">model_lags = smf.ols(</span></span>
+<span id="cb19-610"><a></a><span class="vs">    "dlnQ ~ dCD + dCD_lag1 + dCD_lag2 + dHD + dHD_lag1 + dHD_lag2",</span></span>
+<span id="cb19-611"><a></a><span class="vs">    data=df_lags</span></span>
+<span id="cb19-612"><a></a><span class="vs">).fit(cov_type="HC1")</span></span>
+<span id="cb19-613"><a></a></span>
+<span id="cb19-614"><a></a><span class="vs">cumulative_effect = (</span></span>
+<span id="cb19-615"><a></a><span class="vs">    model_lags.params["dCD"] + model_lags.params["dCD_lag1"] + model_lags.params["dCD_lag2"]</span></span>
+<span id="cb19-616"><a></a><span class="vs">)&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-16" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</details>
+<div class="fragment">
+<p>Cumulative effect of ΔCD across all three months: <strong><span><span id="ojs-element-id-2"></span></span></strong>. There’s a real propagation effect here — people don’t fully adjust their electricity use the moment the weather changes.</p>
+</div>
+</section>
+<section id="back-to-the-question" class="slide level2">
+<h2>Back to the question</h2>
+</section>
+<section id="so-how-risky-is-microsoft" class="slide level2">
+<h2>So, how risky is Microsoft?</h2>
+<p>The full workflow, start to finish — levels to returns to beta:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb20-2"><a></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb20-3"><a></a></span>
+<span id="cb20-4"><a></a>df <span class="op">=</span> pd.read_csv(data_path)</span>
+<span id="cb20-5"><a></a>df[<span class="st">"pct_msft"</span>] <span class="op">=</span> df[<span class="st">"p_MSFT"</span>].pct_change() <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb20-6"><a></a>df[<span class="st">"pct_sp500"</span>] <span class="op">=</span> df[<span class="st">"p_SP500"</span>].pct_change() <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb20-7"><a></a></span>
+<span id="cb20-8"><a></a>model <span class="op">=</span> smf.ols(<span class="st">"pct_msft ~ pct_sp500"</span>, data<span class="op">=</span>df).fit(cov_type<span class="op">=</span><span class="st">"HC1"</span>)</span>
+<span id="cb20-9"><a></a><span class="bu">print</span>(model.params)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div style="font-family: monospace; font-size: 0.85em; background: #f8f8f8; border-left: 4px solid #457b9d; padding: 14px 20px; border-radius: 4px; line-height: 1.9;">
+<p>Intercept&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.54<br>pct_sp500&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.26</p>
+</div>
+<ul>
+<li>Once returns replace levels, the spurious-trend problem disappears — the real relationship is a beta of <strong><span><span id="ojs-element-id-3"></span></span></strong>: Microsoft moves noticeably more than the market, in the same direction</li>
+<li>The Arizona case study shows the same discipline pays off differently — differencing and Newey-West SEs don’t change the story much here, but checking mattered</li>
+</ul>
+</section>
+<section id="summary" class="slide level2">
+<h2>Summary</h2>
+<ul>
+<li>Time series data brings genuine opportunities — same-unit comparisons over time — and genuine hazards: trend, seasonality, and random walk all threaten spurious results</li>
+<li>First differences (or percent/log changes) are the standard fix for trend; seasonal dummies handle seasonality</li>
+<li>Serial correlation doesn’t bias coefficients, but breaks standard errors — Newey-West SEs or a lagged DV both fix it</li>
+<li>Effects can arrive with a delay — lags let a regression capture that directly</li>
+</ul>
+</section>
+<section id="online-session" class="slide level2">
+<h2>Online session</h2>
+<p>See <strong>week11-online.html</strong> — forecasting from time series data: cross-validation for time series, long- and short-horizon forecasting, ARIMA, and VAR.</p>
+</section>
+<section id="coming-up" class="slide level2">
+<h2>Coming up</h2>
+<div style="text-align: center; padding-top: 60px;">
+<p><span style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"><strong>Week 12: Assessment Review</strong></span></p>
+<div class="fragment" style="padding-top:40px;">
+<p><em>The module’s final week — bringing everything together for the portfolio</em></p>
+</div>
+</div>
+
+
+<div class="ojs-auto-generated hidden">
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6WyAgeyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiaW5saW5lIjoidHJ1ZSIsInNvdXJjZSI6Imh0bC5odG1sYDxzcGFuPiR7YXpfbn08L3NwYW4+YCIsICJjZWxsTmFtZSI6Im9qcy1lbGVtZW50LWlkLTEifSwgIHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImlubGluZSI6InRydWUiLCJzb3VyY2UiOiJodGwuaHRtbGA8c3Bhbj4ke2NkX2N1bXVsYXRpdmV9PC9zcGFuPmAiLCAiY2VsbE5hbWUiOiJvanMtZWxlbWVudC1pZC0yIn0sICB7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJpbmxpbmUiOiJ0cnVlIiwic291cmNlIjoiaHRsLmh0bWxgPHNwYW4+JHtzdG9ja19iZXRhfTwvc3Bhbj5gIiwgImNlbGxOYW1lIjoib2pzLWVsZW1lbnQtaWQtMyJ9XX0=
+</script>
+</div>
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'fade',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1280,
+
+        height: 720,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 8.0e-2,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script type="ojs-module-contents">
+    eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IlBsb3QucGxvdCh7XG4gIHdpZHRoOiA3MDAsIGhlaWdodDogMzgwLFxuICB4OiB7bGFiZWw6IFwiVGltZSBwZXJpb2RcIn0sIHk6IHtsYWJlbDogXCJWYWx1ZSBvZiB0aGUgc2ltdWxhdGVkIHZhcmlhYmxlXCJ9LFxuICBtYXJrczogW1xuICAgIFBsb3QubGluZShyYW5kb21fd2Fsa3MsIHt4OiBcInRcIiwgeTogXCJ2YWx1ZVwiLCBzdHJva2U6IFwic2VyaWVzXCJ9KSxcbiAgXSxcbiAgY29sb3I6IHtsZWdlbmQ6IHRydWV9XG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC0yIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8cHJlIHN0eWxlPVwiZm9udC1mYW1pbHk6J1NGIE1vbm8nLCdNZW5sbycsbW9ub3NwYWNlO2ZvbnQtc2l6ZTowLjZlbTtsaW5lLWhlaWdodDoxLjQ7XG4gICAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kOiNmNmY2Zjg7Ym9yZGVyOjFweCBzb2xpZCAjZTBlMGU2O2JvcmRlci1yYWRpdXM6NnB4O1xuICAgICAgICAgICAgICAgICAgcGFkZGluZzo4cHggMTRweDtvdmVyZmxvdy14OmF1dG87d2hpdGUtc3BhY2U6cHJlO1wiPmltcG9ydCBudW1weSBhcyBucFxuaW1wb3J0IG1hdHBsb3RsaWIucHlwbG90IGFzIHBsdFxuXG5UID0gMTAwXG5mb3Igc2VyaWVzX2lkIGluIHJhbmdlKDUpOlxuICAgIHN0ZXBzID0gbnAucmFuZG9tLm5vcm1hbCgwLCAxLCBUKVxuICAgIHBhdGggPSBucC5jb25jYXRlbmF0ZSgoWzBdLCBucC5jdW1zdW0oc3RlcHMpKSkgICAjIGFsbCBmaXZlIHN0YXJ0IGF0IDBcbiAgICBwbHQucGxvdChwYXRoLCBsYWJlbD1mXCJXYWxrIHtzZXJpZXNfaWQrMX1cIilcblxucGx0LmxlZ2VuZCgpXG5wbHQuc2hvdygpPC9wcmU+YFxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC0zIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiUGxvdC5wbG90KHtcbiAgd2lkdGg6IDY0MCwgaGVpZ2h0OiAyMzAsXG4gIHg6IHtsYWJlbDogXCJUaW1lIHBlcmlvZFwifSwgeToge2xhYmVsOiBcIlZhbHVlXCJ9LFxuICBtYXJrczogW1xuICAgIFBsb3QucnVsZVkoWzBdKSxcbiAgICBQbG90LmxpbmUod2hpdGVfbm9pc2UsIHt4OiBcInRcIiwgeTogXCJ2YWx1ZVwiLCBzdHJva2U6IFwiI2MwMzkyYlwifSksXG4gICAgUGxvdC5saW5lKHRhc2tfd2Fsa19kYXRhLCB7eDogXCJ0XCIsIHk6IFwidmFsdWVcIiwgc3Ryb2tlOiBcIiMyZDZhNGZcIn0pLFxuICAgIFBsb3QudGV4dChbe3Q6IDk1LCB2YWx1ZTogd2hpdGVfbm9pc2Vbd2hpdGVfbm9pc2UubGVuZ3RoLTFdLnZhbHVlfV0sIHt4OiBcInRcIiwgeTogXCJ2YWx1ZVwiLCB0ZXh0OiAoKSA9PiBcIlJhdyBzaG9ja3NcIiwgZHk6IDEyLCBmaWxsOiBcIiNjMDM5MmJcIiwgZm9udFNpemU6IDEwfSksXG4gICAgUGxvdC50ZXh0KFt7dDogOTUsIHZhbHVlOiB0YXNrX3dhbGtfZGF0YVt0YXNrX3dhbGtfZGF0YS5sZW5ndGgtMV0udmFsdWV9XSwge3g6IFwidFwiLCB5OiBcInZhbHVlXCIsIHRleHQ6ICgpID0+IFwiUmFuZG9tIHdhbGtcIiwgZHk6IC0xMCwgZmlsbDogXCIjMmQ2YTRmXCIsIGZvbnRTaXplOiAxMH0pLFxuICBdXG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC00IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiUGxvdC5wbG90KHtcbiAgd2lkdGg6IDcwMCwgaGVpZ2h0OiAzNDAsXG4gIHg6IHtsYWJlbDogXCJEYXRlXCIsIHR5cGU6IFwidXRjXCIsIHRpY2tzOiBcIjUgeWVhcnNcIiwgdGlja0Zvcm1hdDogXCIlWVwifSxcbiAgeToge2xhYmVsOiBcIk1pY3Jvc29mdCBwcmljZSAoVVMkKVwifSxcbiAgbWFya3M6IFtcbiAgICBQbG90LmxpbmUobGV2ZWxzX2RhdGEsIHt4OiBcImRhdGVcIiwgeTogXCJwX01TRlRcIiwgc3Ryb2tlOiBcIiMyZDZhNGZcIn0pLFxuICBdLFxufSlcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IlBsb3QucGxvdCh7XG4gIHdpZHRoOiA3MDAsIGhlaWdodDogMzQwLFxuICB4OiB7bGFiZWw6IFwiRGF0ZVwiLCB0eXBlOiBcInV0Y1wiLCB0aWNrczogXCI1IHllYXJzXCIsIHRpY2tGb3JtYXQ6IFwiJVlcIn0sXG4gIHk6IHtsYWJlbDogXCJNb250aGx5IHJldHVybiAoJSlcIn0sXG4gIGNvbG9yOiB7bGVnZW5kOiB0cnVlLCBkb21haW46IFtcIk1pY3Jvc29mdFwiLCBcIlMmUCA1MDBcIl0sIHJhbmdlOiBbXCIjMmQ2YTRmXCIsIFwiIzViN2ZiZFwiXX0sXG4gIG1hcmtzOiBbXG4gICAgUGxvdC5ydWxlWShbMF0pLFxuICAgIFBsb3QubGluZShyZXR1cm5zX2RhdGEsIHt4OiBcImRhdGVcIiwgeTogXCJwY3RfbXNmdFwiLCBzdHJva2U6ICgpID0+IFwiTWljcm9zb2Z0XCJ9KSxcbiAgICBQbG90LmxpbmUocmV0dXJuc19kYXRhLCB7eDogXCJkYXRlXCIsIHk6IFwicGN0X3NwNTAwXCIsIHN0cm9rZTogKCkgPT4gXCJTJlAgNTAwXCJ9KSxcbiAgXVxufSlcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNiIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPHByZSBzdHlsZT1cImZvbnQtZmFtaWx5OidTRiBNb25vJywnTWVubG8nLG1vbm9zcGFjZTtmb250LXNpemU6MC42ZW07bGluZS1oZWlnaHQ6MS40O1xuICAgICAgICAgICAgICAgICAgYmFja2dyb3VuZDojZjZmNmY4O2JvcmRlcjoxcHggc29saWQgI2UwZTBlNjtib3JkZXItcmFkaXVzOjZweDtcbiAgICAgICAgICAgICAgICAgIHBhZGRpbmc6OHB4IDE0cHg7b3ZlcmZsb3cteDphdXRvO3doaXRlLXNwYWNlOnByZTtcIj5pbXBvcnQgbWF0cGxvdGxpYi5weXBsb3QgYXMgcGx0XG5cbnBsdC5heGhsaW5lKDAsIGNvbG9yPVwiZ3JleVwiLCBsaW5ld2lkdGg9MC44KVxucGx0LnBsb3QoZGZbXCJkYXRlXCJdLCBkZltcInBjdF9tc2Z0XCJdLCBjb2xvcj1cImdyZWVuXCIsIGxhYmVsPVwiTWljcm9zb2Z0XCIpXG5wbHQucGxvdChkZltcImRhdGVcIl0sIGRmW1wicGN0X3NwNTAwXCJdLCBjb2xvcj1cInN0ZWVsYmx1ZVwiLCBsYWJlbD1cIlMmUCA1MDBcIilcbnBsdC55bGFiZWwoXCJNb250aGx5IHJldHVybiAoJSlcIilcbnBsdC5sZWdlbmQoKVxucGx0LnNob3coKTwvcHJlPmBcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNyIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPHByZSBzdHlsZT1cImZvbnQtZmFtaWx5OidTRiBNb25vJywnTWVubG8nLG1vbm9zcGFjZTtmb250LXNpemU6MC41MmVtO2xpbmUtaGVpZ2h0OjEuMzU7XG4gICAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kOiNmNmY2Zjg7Ym9yZGVyOjFweCBzb2xpZCAjZTBlMGU2O2JvcmRlci1yYWRpdXM6NnB4O1xuICAgICAgICAgICAgICAgICAgcGFkZGluZzo4cHggMTRweDtvdmVyZmxvdy14OmF1dG87d2hpdGUtc3BhY2U6cHJlO1wiPiR7c3RvY2tfc3VtbWFyeV90ZXh0fTwvcHJlPmBcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtOCIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgcmV0dXJuIGh0bWxgPGRpdiBzdHlsZT1cInRleHQtYWxpZ246Y2VudGVyO3BhZGRpbmctdG9wOjEwcHg7XCI+XG4gICAgPGRpdiBzdHlsZT1cImZvbnQtc2l6ZToxLjNlbTtcIj48Yj4ke3N0b2NrX2JldGF9PC9iPiDigJQgZm9yIGV2ZXJ5IDElIHRoZSBTJlAgNTAwIG1vdmVzLCBNaWNyb3NvZnQgbW92ZXMgPGI+JHtzdG9ja19iZXRhfSU8L2I+PC9kaXY+XG4gICAgPGRpdiBzdHlsZT1cImZvbnQtc2l6ZToxZW07Y29sb3I6IzY2NjtwYWRkaW5nLXRvcDoxMHB4O1wiPs6xID0gJHtzdG9ja19hbHBoYX0sIFLCsiA9ICR7c3RvY2tfcjJ9LCBOID0gJHtzdG9ja19ufSBtb250aHM8L2Rpdj5cbiAgPC9kaXY+YFxufVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC05IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiUGxvdC5wbG90KHtcbiAgd2lkdGg6IDU2MCwgaGVpZ2h0OiAzMjAsXG4gIHg6IHtsYWJlbDogXCJTJlAgNTAwIG1vbnRobHkgcmV0dXJuICglKVwifSwgeToge2xhYmVsOiBcIk1pY3Jvc29mdCBtb250aGx5IHJldHVybiAoJSlcIn0sXG4gIG1hcmtzOiBbXG4gICAgUGxvdC5kb3Qoc2NhdHRlcl9kYXRhLCB7eDogXCJwY3Rfc3A1MDBcIiwgeTogXCJwY3RfbXNmdFwiLCBmaWxsOiBcIiM1YjdmYmRcIiwgZmlsbE9wYWNpdHk6IDAuNSwgcjogM30pLFxuICAgIFBsb3QubGluZWFyUmVncmVzc2lvblkoc2NhdHRlcl9kYXRhLCB7eDogXCJwY3Rfc3A1MDBcIiwgeTogXCJwY3RfbXNmdFwiLCBzdHJva2U6IFwiIzJkNmE0ZlwifSksXG4gIF1cbn0pXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTEwIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8cHJlIHN0eWxlPVwiZm9udC1mYW1pbHk6J1NGIE1vbm8nLCdNZW5sbycsbW9ub3NwYWNlO2ZvbnQtc2l6ZTowLjZlbTtsaW5lLWhlaWdodDoxLjQ7XG4gICAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kOiNmNmY2Zjg7Ym9yZGVyOjFweCBzb2xpZCAjZTBlMGU2O2JvcmRlci1yYWRpdXM6NnB4O1xuICAgICAgICAgICAgICAgICAgcGFkZGluZzo4cHggMTRweDtvdmVyZmxvdy14OmF1dG87d2hpdGUtc3BhY2U6cHJlO1wiPmltcG9ydCBtYXRwbG90bGliLnB5cGxvdCBhcyBwbHRcbmltcG9ydCBudW1weSBhcyBucFxuXG5wbHQuc2NhdHRlcihkZltcInBjdF9zcDUwMFwiXSwgZGZbXCJwY3RfbXNmdFwiXSwgYWxwaGE9MC41KVxuXG54X2dyaWQgPSBucC5saW5zcGFjZShkZltcInBjdF9zcDUwMFwiXS5taW4oKSwgZGZbXCJwY3Rfc3A1MDBcIl0ubWF4KCksIDEwMClcbnlfZ3JpZCA9IHN0b2NrX21vZGVsLnBhcmFtc1tcIkludGVyY2VwdFwiXSArIHN0b2NrX21vZGVsLnBhcmFtc1tcInBjdF9zcDUwMFwiXSAqIHhfZ3JpZFxucGx0LnBsb3QoeF9ncmlkLCB5X2dyaWQsIGNvbG9yPVwiZ3JlZW5cIilcbnBsdC5zaG93KCk8L3ByZT5gXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTExIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8cHJlIHN0eWxlPVwiZm9udC1mYW1pbHk6J1NGIE1vbm8nLCdNZW5sbycsbW9ub3NwYWNlO2ZvbnQtc2l6ZTowLjVlbTtsaW5lLWhlaWdodDoxLjM7XG4gICAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kOiNmNmY2Zjg7Ym9yZGVyOjFweCBzb2xpZCAjZTBlMGU2O2JvcmRlci1yYWRpdXM6NnB4O1xuICAgICAgICAgICAgICAgICAgcGFkZGluZzo2cHggMTJweDtvdmVyZmxvdy14OmF1dG87d2hpdGUtc3BhY2U6cHJlO1wiPiR7dGFza19kaWZmX291dHB1dF90ZXh0fTwvcHJlPmBcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIGNvbnN0IG9wdHMgPSB7eDoge3R5cGU6IFwidXRjXCIsIHRpY2tzOiBcIjUgeWVhcnNcIiwgdGlja0Zvcm1hdDogXCIlWVwiLCBsYWJlbDogbnVsbH19O1xuICBjb25zdCByYXcgPSBQbG90LnBsb3Qoey4uLm9wdHMsIHdpZHRoOiAyMjAsIGhlaWdodDogMTUwLCB5OiB7bGFiZWw6IFwiUSAobGV2ZWxzKVwifSxcbiAgICBtYXJrczogW1Bsb3QubGluZShhel9kaWZmX2NoYXJ0LCB7eDogXCJkYXRlXCIsIHk6IFwiUVwiLCBzdHJva2U6IFwiIzViN2ZiZFwifSldfSk7XG4gIGNvbnN0IGFicyA9IFBsb3QucGxvdCh7Li4ub3B0cywgd2lkdGg6IDIyMCwgaGVpZ2h0OiAxNTAsIHk6IHtsYWJlbDogXCJBYnMuIGRpZmZlcmVuY2VcIn0sXG4gICAgbWFya3M6IFtQbG90LnJ1bGVZKFswXSksIFBsb3QubGluZShhel9kaWZmX2NoYXJ0LCB7eDogXCJkYXRlXCIsIHk6IFwiYWJzX2RpZmZcIiwgc3Ryb2tlOiBcIiMyZDZhNGZcIn0pXX0pO1xuICBjb25zdCBwY3QgPSBQbG90LnBsb3Qoey4uLm9wdHMsIHdpZHRoOiAyMjAsIGhlaWdodDogMTUwLCB5OiB7bGFiZWw6IFwiJSBkaWZmZXJlbmNlXCJ9LFxuICAgIG1hcmtzOiBbUGxvdC5ydWxlWShbMF0pLCBQbG90LmxpbmUoYXpfZGlmZl9jaGFydCwge3g6IFwiZGF0ZVwiLCB5OiBcInBjdF9kaWZmXCIsIHN0cm9rZTogXCIjYzAzOTJiXCJ9KV19KTtcbiAgcmV0dXJuIGh0bWxgPGRpdiBzdHlsZT1cImRpc3BsYXk6ZmxleDtnYXA6MTBweDtqdXN0aWZ5LWNvbnRlbnQ6Y2VudGVyO1wiPiR7cmF3fSR7YWJzfSR7cGN0fTwvZGl2PmBcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMTMiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJodG1sYDxwcmUgc3R5bGU9XCJmb250LWZhbWlseTonU0YgTW9ubycsJ01lbmxvJyxtb25vc3BhY2U7Zm9udC1zaXplOjAuNWVtO2xpbmUtaGVpZ2h0OjEuMzU7XG4gICAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kOiNmNmY2Zjg7Ym9yZGVyOjFweCBzb2xpZCAjZTBlMGU2O2JvcmRlci1yYWRpdXM6NnB4O1xuICAgICAgICAgICAgICAgICAgcGFkZGluZzo4cHggMTRweDtvdmVyZmxvdy14OmF1dG87d2hpdGUtc3BhY2U6cHJlO1wiPiR7YXpfc3VtbWFyeV90ZXh0fTwvcHJlPmBcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMTQiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIHJldHVybiBodG1sYDx0YWJsZSBzdHlsZT1cIm1hcmdpbjoxNnB4IGF1dG8gMDtmb250LWZhbWlseTpzYW5zLXNlcmlmO2ZvbnQtc2l6ZTowLjg1ZW07Ym9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlO1wiPlxuICAgIDx0ciBzdHlsZT1cImJvcmRlci1ib3R0b206MnB4IHNvbGlkICMxYTFhMmU7XCI+PHRoIHN0eWxlPVwicGFkZGluZzo1cHggMTRweDtcIj5WYXJpYWJsZTwvdGg+PHRoIHN0eWxlPVwicGFkZGluZzo1cHggMTRweDtcIiBjb2xzcGFuPVwiMlwiPlNpbXBsZSBTRTwvdGg+PHRoIHN0eWxlPVwicGFkZGluZzo1cHggMTRweDtcIiBjb2xzcGFuPVwiMlwiPk5ld2V5LVdlc3Q8L3RoPjx0aCBzdHlsZT1cInBhZGRpbmc6NXB4IDE0cHg7XCIgY29sc3Bhbj1cIjJcIj5MYWdnZWQgRFY8L3RoPjwvdHI+XG4gICAgJHtzZV9jb21wYXJlX3Jvd3MubWFwKGQgPT4gYDx0ciBzdHlsZT1cImJvcmRlci1ib3R0b206MXB4IHNvbGlkICNkZGQ7XCI+XG4gICAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjRweCAxNHB4O1wiPiR7ZC52YXJpYWJsZX08L3RkPlxuICAgICAgPHRkIHN0eWxlPVwicGFkZGluZzo0cHggMTRweDt0ZXh0LWFsaWduOmNlbnRlcjtcIj4ke2Quc2ltcGxlfTwvdGQ+PHRkIHN0eWxlPVwicGFkZGluZzo0cHggMTRweDt0ZXh0LWFsaWduOmNlbnRlcjtjb2xvcjojNTU1O1wiPiR7ZC5zaW1wbGVfc2V9PC90ZD5cbiAgICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6NHB4IDE0cHg7dGV4dC1hbGlnbjpjZW50ZXI7XCI+JHtkLm53fTwvdGQ+PHRkIHN0eWxlPVwicGFkZGluZzo0cHggMTRweDt0ZXh0LWFsaWduOmNlbnRlcjtjb2xvcjojNTU1O1wiPiR7ZC5ud19zZX08L3RkPlxuICAgICAgPHRkIHN0eWxlPVwicGFkZGluZzo0cHggMTRweDt0ZXh0LWFsaWduOmNlbnRlcjtcIj4ke2QubGFnZHZ9PC90ZD48dGQgc3R5bGU9XCJwYWRkaW5nOjRweCAxNHB4O3RleHQtYWxpZ246Y2VudGVyO2NvbG9yOiM1NTU7XCI+JHtkLmxhZ2R2X3NlfTwvdGQ+XG4gICAgPC90cj5gKS5qb2luKCcnKX1cbiAgPC90YWJsZT5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTE1IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICByZXR1cm4gaHRtbGA8dGFibGUgc3R5bGU9XCJtYXJnaW46MTZweCBhdXRvIDA7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MWVtO2JvcmRlci1jb2xsYXBzZTpjb2xsYXBzZTtcIj5cbiAgICA8dHIgc3R5bGU9XCJib3JkZXItYm90dG9tOjJweCBzb2xpZCAjMWExYTJlO1wiPjx0aCBzdHlsZT1cInBhZGRpbmc6NnB4IDIycHg7XCI+VGltaW5nPC90aD48dGggc3R5bGU9XCJwYWRkaW5nOjZweCAyMnB4O1wiPs6UQ0Q8L3RoPjx0aCBzdHlsZT1cInBhZGRpbmc6NnB4IDIycHg7XCI+zpRIRDwvdGg+PC90cj5cbiAgICAke2xhZ19yb3dzLm1hcChkID0+IGA8dHIgc3R5bGU9XCJib3JkZXItYm90dG9tOjFweCBzb2xpZCAjZGRkO1wiPjx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDIycHg7XCI+JHtkLmxhZ308L3RkPjx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDIycHg7dGV4dC1hbGlnbjpjZW50ZXI7XCI+JHtkLmNkfTwvdGQ+PHRkIHN0eWxlPVwicGFkZGluZzo1cHggMjJweDt0ZXh0LWFsaWduOmNlbnRlcjtcIj4ke2QuaGR9PC90ZD48L3RyPmApLmpvaW4oJycpfVxuICA8L3RhYmxlPmBcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMTYiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJodG1sYDxwcmUgc3R5bGU9XCJmb250LWZhbWlseTonU0YgTW9ubycsJ01lbmxvJyxtb25vc3BhY2U7Zm9udC1zaXplOjAuNmVtO2xpbmUtaGVpZ2h0OjEuNDtcbiAgICAgICAgICAgICAgICAgIGJhY2tncm91bmQ6I2Y2ZjZmODtib3JkZXI6MXB4IHNvbGlkICNlMGUwZTY7Ym9yZGVyLXJhZGl1czo2cHg7XG4gICAgICAgICAgICAgICAgICBwYWRkaW5nOjhweCAxNHB4O292ZXJmbG93LXg6YXV0bzt3aGl0ZS1zcGFjZTpwcmU7XCI+ZGZbXCJkQ0RfbGFnMVwiXSA9IGRmW1wiZENEXCJdLnNoaWZ0KDEpXG5kZltcImRDRF9sYWcyXCJdID0gZGZbXCJkQ0RcIl0uc2hpZnQoMilcbmRmW1wiZEhEX2xhZzFcIl0gPSBkZltcImRIRFwiXS5zaGlmdCgxKVxuZGZbXCJkSERfbGFnMlwiXSA9IGRmW1wiZEhEXCJdLnNoaWZ0KDIpXG5kZl9sYWdzID0gZGYuZHJvcG5hKHN1YnNldD1bXCJkQ0RfbGFnMVwiLCBcImRDRF9sYWcyXCIsIFwiZEhEX2xhZzFcIiwgXCJkSERfbGFnMlwiXSlcblxubW9kZWxfbGFncyA9IHNtZi5vbHMoXG4gICAgXCJkbG5RIH4gZENEICsgZENEX2xhZzEgKyBkQ0RfbGFnMiArIGRIRCArIGRIRF9sYWcxICsgZEhEX2xhZzJcIixcbiAgICBkYXRhPWRmX2xhZ3NcbikuZml0KGNvdl90eXBlPVwiSEMxXCIpXG5cbmN1bXVsYXRpdmVfZWZmZWN0ID0gKFxuICAgIG1vZGVsX2xhZ3MucGFyYW1zW1wiZENEXCJdICsgbW9kZWxfbGFncy5wYXJhbXNbXCJkQ0RfbGFnMVwiXSArIG1vZGVsX2xhZ3MucGFyYW1zW1wiZENEX2xhZzJcIl1cbik8L3ByZT5gXG4ifV19
+    </script>
+    <script type="module">
+    if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+    window._ojs.paths.runtimeToDoc = "../..";
+    window._ojs.paths.runtimeToRoot = "../..";
+    window._ojs.paths.docToRoot = "";
+    window._ojs.selfContained = false;
+    window._ojs.runtime.interpretFromScriptTags();
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
+              }
+            }
+            return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

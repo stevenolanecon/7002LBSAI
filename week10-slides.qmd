@@ -1,0 +1,765 @@
+---
+title: "Prediction"
+subtitle: "7002LBSAI Research Methods in Analytics — Week 10"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="stylesheet" href="styles-slides.css?v=20260914">
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{python}
+import pandas as pd
+import numpy as np
+import statsmodels.formula.api as smf
+from sklearn.model_selection import KFold, train_test_split
+
+# Bekes & Kezdi's used-cars case study, Chicago, filtered to their exact published
+# sample (281 cars) per their own ch13-used-cars-reg case-study code.
+# Source: https://osf.io/8tx54/ (their public data repo), filtered offline.
+# GitHub raw URL (once pushed to the student data repo):
+# cars_df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/used_cars_chicago.csv")
+cars_df = pd.read_csv("data/used_cars_chicago.csv")
+
+model_formulas = {
+    "Model 1": "price ~ age + agesq",
+    "Model 2": "price ~ age + agesq + odometer",
+    "Model 3": "price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer",
+    "Model 4": "price ~ age + agesq + odometer + odometersq + LE + XLE + SE + cond_likenew + cond_excellent + cond_good + cylind6 + dealer",
+    "Model 5": "price ~ age + agesq + odometer + odometersq + LE*age + XLE*age + SE*age + cond_likenew*age + cond_excellent*age + cond_good*age + cylind6*age + odometer*age + dealer*age",
+}
+n_vars = {"Model 1": 1, "Model 2": 2, "Model 3": 5, "Model 4": 6, "Model 5": 6}
+
+fitted_models = {name: smf.ols(f, data=cars_df).fit() for name, f in model_formulas.items()}
+
+def _rmse(m):
+    return float(np.sqrt(np.mean(m.resid ** 2)))
+
+model_stats_df = pd.DataFrame([
+    {"Model": name, "N vars": n_vars[name], "N coef": len(m.params), "R2": round(m.rsquared, 2),
+     "RMSE": int(round(_rmse(m))), "BIC": int(round(m.bic))}
+    for name, m in fitted_models.items()
+])
+model_stats_markdown = model_stats_df.to_markdown(index=False)
+model_stats_rows = model_stats_df.to_dict(orient="records")
+
+# 5-fold cross-validation, same split reused across all five models
+kf = KFold(n_splits=5, shuffle=True, random_state=20260921)
+cv_results = {name: [] for name in model_formulas}
+for tr_idx, te_idx in kf.split(cars_df):
+    train, test = cars_df.iloc[tr_idx], cars_df.iloc[te_idx]
+    for name, f in model_formulas.items():
+        m = smf.ols(f, data=train).fit()
+        pred = m.predict(test)
+        cv_results[name].append(float(np.sqrt(np.mean((test["price"] - pred) ** 2))))
+cv_avg = {name: float(np.mean(v)) for name, v in cv_results.items()}
+
+cv_stats_df = pd.DataFrame([
+    {"Model": name, "Fold 1": round(v[0]), "Fold 2": round(v[1]), "Fold 3": round(v[2]),
+     "Fold 4": round(v[3]), "Fold 5": round(v[4]), "Average": round(cv_avg[name])}
+    for name, v in cv_results.items()
+])
+cv_stats_markdown = cv_stats_df.to_markdown(index=False)
+cv_stats_rows = cv_stats_df.to_dict(orient="records")
+
+# A single 80/20 split, Model 3 — the worked example shown before the CV task
+train, test = train_test_split(cars_df, test_size=0.2, random_state=1)
+m3_train = smf.ols(model_formulas["Model 3"], data=train).fit()
+pred_test = m3_train.predict(test)
+single_split_rmse = float(np.sqrt(np.mean((test["price"] - pred_test) ** 2)))
+single_split_output_text = (
+    ">>> train, test = train_test_split(df, test_size=0.2, random_state=1)\n"
+    ">>> model3_train = smf.ols('price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer', data=train).fit()\n"
+    ">>> pred_test = model3_train.predict(test)\n"
+    ">>> rmse_test = np.sqrt(np.mean((test['price'] - pred_test) ** 2))\n"
+    f">>> round(rmse_test)\n{round(single_split_rmse)}"
+)
+
+# Same split procedure, five different random draws — shows real instability in the single-split RMSE
+_split_rmses = []
+for _seed in range(5):
+    _train, _test = train_test_split(cars_df, test_size=0.2, random_state=_seed)
+    _m = smf.ols(model_formulas["Model 3"], data=_train).fit()
+    _pred = _m.predict(_test)
+    _split_rmses.append(float(np.sqrt(np.mean((_test["price"] - _pred) ** 2))))
+split_instability_rows = [
+    {"draw": f"Random draw {i+1}", "rmse": round(v)} for i, v in enumerate(_split_rmses)
+]
+split_instability_range = f"${round(min(_split_rmses))}–${round(max(_split_rmses))}"
+
+# Complexity-curve data: in-sample RMSE keeps falling, cross-validated RMSE bottoms out then rises
+complexity_data = []
+for name in model_formulas:
+    ncoef = len(fitted_models[name].params)
+    complexity_data.append({"n_coef": ncoef, "rmse": round(_rmse(fitted_models[name])), "series": "In-sample RMSE", "model": name})
+    complexity_data.append({"n_coef": ncoef, "rmse": round(cv_avg[name]), "series": "Cross-validated RMSE", "model": name})
+
+# Real regression printout for Model 3 — the model the workshop lands on
+model3 = fitted_models["Model 3"]
+_lines = model3.summary().as_text().splitlines()
+_cut = next(i for i, l in enumerate(_lines) if l.startswith("Omnibus"))
+model3_summary_text = "\n".join(_lines[:_cut]).rstrip()
+
+# Task 1 reveal — Model 1 vs Model 3 in-sample RMSE, computed by hand from residuals
+task1_output_text = (
+    ">>> model1 = smf.ols('price ~ age + agesq', data=df).fit()\n"
+    ">>> rmse1 = np.sqrt(np.mean(model1.resid ** 2))\n"
+    f">>> round(rmse1)\n{round(_rmse(fitted_models['Model 1']))}\n\n"
+    ">>> model3 = smf.ols('price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer', data=df).fit()\n"
+    ">>> rmse3 = np.sqrt(np.mean(model3.resid ** 2))\n"
+    f">>> round(rmse3)\n{round(_rmse(fitted_models['Model 3']))}"
+)
+
+# Task 2 reveal — student's own 5-fold CV loop, Model 1 vs Model 3
+task2_output_text = (
+    f">>> # 5-fold CV, Model 1\n>>> round(cv_rmse_model1)\n{round(cv_avg['Model 1'])}\n\n"
+    f">>> # 5-fold CV, Model 3\n>>> round(cv_rmse_model3)\n{round(cv_avg['Model 3'])}"
+)
+
+# Closing payoff — predict a specific car, back to the opening business question
+# age=10, odometer=12 (x10,000 miles), LE type, excellent condition, private seller
+pred_input = pd.DataFrame({
+    "age": [10], "agesq": [100], "odometer": [12], "odometersq": [144],
+    "LE": [1], "cond_excellent": [1], "cond_good": [0], "dealer": [0],
+})
+pred_frame = model3.get_prediction(pred_input).summary_frame(alpha=0.20)
+point_pred = int(round(pred_frame["mean"].iloc[0]))
+pi_lower = int(round(pred_frame["obs_ci_lower"].iloc[0]))
+pi_upper = int(round(pred_frame["obs_ci_upper"].iloc[0]))
+
+ojs_define(
+    model_stats_markdown = model_stats_markdown,
+    model_stats_rows     = model_stats_rows,
+    cv_stats_markdown     = cv_stats_markdown,
+    cv_stats_rows          = cv_stats_rows,
+    complexity_data       = complexity_data,
+    model3_summary_text   = model3_summary_text,
+    single_split_output_text  = single_split_output_text,
+    split_instability_rows    = split_instability_rows,
+    split_instability_range   = split_instability_range,
+    task1_output_text     = task1_output_text,
+    task2_output_text     = task2_output_text,
+    point_pred            = point_pred,
+    pi_lower              = pi_lower,
+    pi_upper              = pi_upper,
+)
+```
+
+## {background-color="#1a1a2e"}
+
+::: {style="text-align: center; padding-top: 180px;"}
+[**Prediction**]{style="font-size: 2.2em; color: white;"}
+
+[Every model so far has answered "what's the relationship?" This week asks a different question: "what's my best guess for this new observation?"]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+:::
+
+## Selling your car
+
+::: {.instructions-box}
+**Business question**: You want to sell your Toyota Camry through an online ad. What price do you put in the listing?
+:::
+
+::: {.fragment}
+You have data on hundreds of other Camrys already advertised — their age, mileage, condition, and asking price. Somewhere in that data is the answer.
+:::
+
+## The naive answer
+
+**Naive answer:** run a regression of price on the car's features, read off the coefficients, plug in your car's numbers.
+
+::: {.fragment}
+**Why it's not that simple:** which features? How many? A model with more variables always fits the data in front of you better — but does it give a *better price for your car*, or just a better description of the cars you already have data on?
+:::
+
+## Explanation and prediction are different goals
+
+Every regression so far has asked: *what is the relationship, and can we trust the coefficients?*
+
+::: {.fragment}
+This week asks something else: *given a new car we haven't seen, what's our best guess for its price?*
+
+- We care much less about individual coefficients, or multicollinearity between them
+- We care much more about whether $\hat y$ is close to the true $y$ for **new** observations
+- The best model for explaining is not always the best model for predicting
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 13
+:::
+
+## What we need
+
+- A way to measure how wrong a prediction is, and how much that should matter
+- A way to tell whether a model that fits well is actually a *good* model, or just an *overfit* one
+- A rule for choosing between models that doesn't just reward complexity
+
+---
+
+## Setting up the problem
+
+---
+
+## Original data and live data
+
+- **Original data** — what we have: cars with known prices, used to build the model
+- **Live data** — the observations the model will actually be *applied* to once it's built: your car, or the next ad posted tomorrow. We know their $x$'s, but not yet their $y$ — that's the whole point of predicting them. The model is only useful if the relationship between $x$ and $y$ in the live data matches what it learned from the original data.
+- **Target variable** $y$ — what we want to predict (price)
+- **Predictor variables** $x$ — what we use to predict it (age, mileage, condition...)
+
+::: {.fragment}
+$$\hat y_j = \hat f(x_j)$$
+
+We need a predicted value for target observation $j$ — we know its $x$'s, we don't know its $y$.
+:::
+
+## The prediction error
+
+The **prediction error** is the gap between what the model says and what actually happens — the single number that tells you how wrong a specific prediction was, once you find out:
+
+$$e_j = \hat y_j - y_j$$
+
+- **Direction of miss**: positive if we overpredict, negative if we underpredict — whether that matters depends on the decision
+- **Size of miss**: larger in absolute value the further the prediction is from the truth
+- The prediction error is unknown until the actual value is realised — that's the whole problem
+
+## Decomposing the prediction error
+
+Three sources, stacked together:
+
+1. **Estimation error** — we don't know the true $\beta$'s, only estimates. Shrinks with a larger sample.
+2. **Model error** — we may not have the best model: wrong functional form, missing an interaction, wrong variables entirely.
+3. **Irreducible (genuine) error** — the part no model could ever capture, even with the truth known exactly.
+
+::: {.fragment}
+Estimation and model error are the two parts an analyst can actually improve.
+:::
+
+## Point and interval prediction
+
+- A **point prediction** is a single number — the price to put in the ad
+- An **interval prediction** captures the uncertainty around it
+- The 95% prediction interval covers estimation error and irreducible error — but **not model error**. It assumes the model itself is right.
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 13
+:::
+
+---
+
+## The loss function
+
+---
+
+## Turning errors into a decision
+
+A loss function attaches a value to a prediction error — how bad is being wrong by this much, in this direction?
+
+::: {.fragment}
+Two questions decide its shape:
+
+- **Symmetric?** Are errors in opposite directions equally bad?
+- **Convex?** Does an error twice as large cost more than twice as much?
+:::
+
+## Loss functions of various shapes
+
+```{ojs}
+Plot.plot({
+  width: 640, height: 340,
+  x: {label: "Prediction error"}, y: {label: "Loss"},
+  marks: [
+    Plot.line(d3.range(-10, 10.1, 0.2).map(e => ({e, loss: Math.abs(e) * 1, series: "symmetric, linear"})), {x: "e", y: "loss", stroke: "series"}),
+    Plot.line(d3.range(-10, 10.1, 0.2).map(e => ({e, loss: (e ** 2) * 0.3, series: "symmetric, convex"})), {x: "e", y: "loss", stroke: "series"}),
+    Plot.line(d3.range(-10, 10.1, 0.2).map(e => ({e, loss: e >= 0 ? (e ** 2) * 0.3 : (e ** 2) * 0.15, series: "asymmetric, convex"})), {x: "e", y: "loss", stroke: "series"})
+  ],
+  color: {legend: true}
+})
+```
+
+## Would either example change your loss function?
+
+::: {.instructions-box}
+**Selling your car**: a too-low price sells fast but leaves money on the table; a too-high price means waiting, and maybe revising the price down later. What loss function fits that?
+
+**A bank deciding on a loan**: rejecting a debtor who would have repaid costs a missed opportunity; approving one who defaults costs real money directly. Are those two kinds of error the same size?
+:::
+
+## Mean squared error and RMSE
+
+For $K$ target observations, $\hat y_k$ is the model's prediction for observation $k$ and $y_k$ its actual value:
+
+$$MSE = \frac{1}{K}\sum_{k=1}^{K}(\hat y_k - y_k)^2 \qquad RMSE = \sqrt{MSE}$$
+
+- Squared loss is symmetric and convex — the most widely used loss function
+- $MSE$ minimisation is exactly what OLS already does — that's why the average is the best predictor under squared loss
+- $RMSE$ is easier to interpret: it's back in the original units (dollars, not dollars²)
+
+## MSE decomposes into bias and variance
+
+$\overline{\hat y} = \frac{1}{K}\sum_k \hat y_k$ — the average prediction across all $K$ target observations, not any one $\hat y_k$ on its own. That lets us write the **bias** compactly: $\bar e = \overline{\hat y} - \bar y$, the average of the individual prediction errors $e_k = \hat y_k - y_k$.
+
+$$MSE = \underbrace{\bar e^{\,2}}_{\text{Bias}^2} \; + \; \underbrace{\frac{1}{K}\sum_k (e_k - \bar e)^2}_{\text{Prediction variance}}$$
+
+- **Bias** ($\bar e$): the average prediction error across all $K$ observations. Zero for an unbiased predictor.
+- **Variance**: how much each error $e_k$ varies around *that average* — not how much $y$ itself varies.
+- OLS is unbiased. Some other methods (LASSO, later this week's online session) trade a little bias for a lot less variance.
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 13
+:::
+
+---
+
+## Meet the used-cars data
+
+---
+
+## Real data: Toyota Camrys, Chicago
+
+- 281 used Camry listings scraped from an online marketplace, already cleaned to a comparable set: gas-fuelled, automatic, non-truck, sensible price and mileage range
+- Target: `price` (US dollars)
+- Predictors: `age`, `odometer` (×10,000 miles), trim (`LE`/`XLE`/`SE`), condition dummies, `dealer` vs. private seller
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), used-cars dataset, osf.io/8tx54
+:::
+
+## Five models, built up by hand
+
+$$
+\begin{aligned}
+M_1:\ & price^E = \beta_0 + \beta_1\,age + \beta_2\,age^2 \\
+M_2:\ & M_1 + \beta_3\,odometer \\
+M_3:\ & M_2 + \beta_4\,odometer^2 + \beta_5\,LE + \beta_6\,cond_{exc} + \beta_7\,cond_{good} + \beta_8\,dealer \\
+M_4:\ & M_3 + \beta_9\,XLE + \beta_{10}\,SE + \beta_{11}\,cond_{new} + \beta_{12}\,cylind6 \\
+M_5:\ & M_4 + \big(LE + XLE + SE + cond_{new} + cond_{exc} + cond_{good} + cylind6 + odometer + dealer\big) \times age
+\end{aligned}
+$$
+
+```{.python}
+import statsmodels.formula.api as smf
+
+model1 = smf.ols("price ~ age + agesq", data=df).fit()
+model2 = smf.ols("price ~ age + agesq + odometer", data=df).fit()
+model3 = smf.ols("price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer", data=df).fit()
+model4 = smf.ols("price ~ age + agesq + odometer + odometersq + LE + XLE + SE + cond_likenew + cond_excellent + cond_good + cylind6 + dealer", data=df).fit()
+model5 = smf.ols("price ~ age + agesq + odometer + odometersq + LE*age + XLE*age + SE*age + cond_likenew*age + cond_excellent*age + cond_good*age + cylind6*age + odometer*age + dealer*age", data=df).fit()
+```
+
+Each model adds more: mileage, trim, condition, dealer status, and finally full interactions with age.
+
+## Reading real output — Model 3
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.5em;line-height:1.35;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">${model3_summary_text}</pre>`
+```
+
+## Task — fit Model 1 and Model 3 yourself
+
+::: {.instructions-box}
+**Business question**: how much does adding mileage, trim, and condition actually improve the fit?
+
+Open the Colab notebook — `data_path` is already defined for you. Load it into a dataframe and fit Model 1 (`price ~ age + agesq`) and Model 3 (add `odometer`, `odometersq`, `LE`, `cond_excellent`, `cond_good`, `dealer`) with `smf.ols`. Compute the **in-sample RMSE** for each from the residuals — don't use a library shortcut. No further syntax hints.
+:::
+
+## What you should have found
+
+```{.python}
+model1 = smf.ols('price ~ age + agesq', data=df).fit()
+rmse1 = np.sqrt(np.mean(model1.resid ** 2))
+
+model3 = smf.ols('price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer', data=df).fit()
+rmse3 = np.sqrt(np.mean(model3.resid ** 2))
+```
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.62em;line-height:1.4;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">${task1_output_text}</pre>`
+```
+
+::: {.instructions-box}
+Model 3's RMSE is noticeably lower than Model 1's. Does that automatically make Model 3 the better model to actually use? What would you need to know to answer that?
+:::
+
+---
+
+## Overfitting
+
+---
+
+## Underfit, overfit
+
+Comparing two models on the same data:
+
+- **Underfitting**: Model A fits worse than Model B, in *both* the original data and the live data. Simple — build a better model.
+- **Overfitting**: Model A actually fits *better* in the original data, but *worse* in the live data. This is the dangerous one — it looks like the better model until it's too late to tell.
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 13
+:::
+
+## Why overfitting happens
+
+Typically: a model too complex for the data — too many variables, too many interactions, too flexible a functional form (high-degree polynomials, splines with too many knots).
+
+::: {.fragment}
+It fits patterns that are:
+
+- specific to *this sample*, not the general pattern behind it (an internal validity problem), or
+- specific to the *world of the original data*, not the world the live data comes from (an external validity problem)
+:::
+
+## How would we actually know?
+
+In-sample RMSE can't catch overfitting — it's measured on the same data the model was fit to, so it rewards complexity by construction.
+
+::: {.fragment}
+We don't have live data yet, but we can *pretend*: hold back some of the original data, fit the model without it, then see how well the model predicts the part it never saw.
+
+Do that a few times and average the results — that's what the chart's **cross-validated RMSE** line means. The full mechanics come shortly.
+:::
+
+## The complexity curve, on our own data
+
+```{ojs}
+Plot.plot({
+  width: 700, height: 380,
+  x: {label: "Number of coefficients"},
+  y: {label: "RMSE ($)"},
+  marks: [
+    Plot.line(complexity_data, {x: "n_coef", y: "rmse", stroke: "series", strokeWidth: 2.5}),
+    Plot.dot(complexity_data, {x: "n_coef", y: "rmse", fill: "series", r: 4}),
+    Plot.text(complexity_data.filter(d => d.series === "In-sample RMSE"), {x: "n_coef", y: "rmse", text: "model", dy: -12, fontSize: 10})
+  ],
+  color: {legend: true}
+})
+```
+
+::: {.fragment}
+In-sample RMSE falls the whole way to Model 5. Cross-validated RMSE — the held-back-data kind — bottoms out at Model 3–4 and **rises** at Model 5. A real overfitting signal, not a hypothetical one.
+:::
+
+---
+
+## Finding the best model
+
+---
+
+## Two ways to penalise complexity
+
+**Approach 1 — indirectly.** Fit on all the data, use a fit measure with a built-in penalty for the number of parameters.
+
+**Approach 2 — directly.** Actually hold data back, and see how the model does on data it never saw.
+
+## The BIC (and AIC)
+
+Both take the same starting point — the model's log-likelihood — and add a penalty for the number of parameters, $k$:
+
+$$AIC = -2 \times \ln(likelihood) + 2 \times k \qquad\qquad BIC = -2 \times \ln(likelihood) + \ln(N) \times k$$
+
+- Same idea, different penalty: BIC's penalty ($\ln N$ per parameter) is heavier than AIC's (a flat 2 per parameter) once $N > 7$
+- No sample splitting needed — useful when data is limited
+- **The likelihood requires a distributional assumption** — for OLS, that the residuals are normally distributed. Neither AIC nor BIC is free: this is the price for not having to hold data back.
+- **Don't** use plain $R^2$ or MSE for model choice — they never penalise complexity, so they always favour the most complex model
+- In practice, this course uses **BIC**, not AIC — Gabor & Kézdi's own recommendation
+
+## BIC on our own data
+
+```{ojs}
+{
+  const cols = ["Model", "N vars", "N coef", "R2", "RMSE", "BIC"];
+  return html`<table style="margin:20px auto 0;font-family:sans-serif;font-size:1.05em;border-collapse:collapse;">
+    <tr style="border-bottom:2px solid #1a1a2e;">
+      ${cols.map(c => `<th style="padding:6px 20px;text-align:center;">${c}</th>`).join('')}
+    </tr>
+    ${model_stats_rows.map(d => `
+      <tr style="border-bottom:1px solid #ddd;">${cols.map(c => `<td style="padding:5px 20px;text-align:center;">${d[c]}</td>`).join('')}</tr>
+    `).join('')}
+  </table>`
+}
+```
+
+::: {.fragment}
+BIC is lowest for **Model 3**. Model 4 is close behind. Model 5 — despite having the lowest in-sample RMSE — has the worst BIC of the five: the extra interactions aren't worth their complexity penalty.
+:::
+
+## Training and test samples
+
+- **Approach 2, directly**: split the data — say 80% **training**, 20% **test**
+- Estimate every candidate model on the training sample only
+- Evaluate each one's RMSE on the test sample — data it never touched while fitting
+- No distributional assumptions needed, unlike BIC
+
+## A single split, in code
+
+```{.python}
+from sklearn.model_selection import train_test_split
+
+train, test = train_test_split(df, test_size=0.2, random_state=1)
+model3_train = smf.ols('price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer', data=train).fit()
+pred_test = model3_train.predict(test)
+rmse_test = np.sqrt(np.mean((test['price'] - pred_test) ** 2))
+```
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.62em;line-height:1.4;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">${single_split_output_text}</pre>`
+```
+
+Fit on 80% of the cars, predicted the other 20%, measured how far off we were — never touching the test rows while fitting.
+
+## Why one split isn't enough
+
+Same code, same model — only the random seed for the split changes:
+
+```{ojs}
+{
+  return html`<table style="margin:16px auto 0;font-family:sans-serif;font-size:1.05em;border-collapse:collapse;">
+    <tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:6px 22px;">Split</th><th style="padding:6px 22px;">Test RMSE</th></tr>
+    ${split_instability_rows.map(d => `<tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 22px;text-align:center;">${d.draw}</td><td style="padding:5px 22px;text-align:center;">${d.rmse}</td></tr>`).join('')}
+  </table>`
+}
+```
+
+::: {.fragment}
+Same model, same data, same code — test RMSE still swings from **${split_instability_range}** just on which cars happened to land in the test set. A single split is partly luck. We need to average that luck away.
+:::
+
+## k-fold cross-validation
+
+Rather than one split, do it $k$ times:
+
+1. Divide the data into $k$ roughly equal folds
+2. For each fold: train on the other $k-1$ folds, test on this one, record the RMSE
+3. Average the $k$ RMSEs — this is the cross-validated RMSE
+
+::: {.fragment}
+Every observation gets used for both training and testing, just never both at once. Less sensitive to which particular split you happened to draw.
+:::
+
+## 5-fold cross-validation, visually
+
+```{ojs}
+{
+  const rowH = 26, gap = 6, nSets = 5, nSeg = 5;
+  const segW = 42, barX = 90, barW = segW * nSeg;
+  const rows = d3.range(nSets).map(i => html`<div style="display:flex;align-items:center;margin-bottom:${gap}px;">
+    <div style="width:${barX}px;font-family:sans-serif;font-size:0.8em;text-align:right;padding-right:10px;">Set ${i+1}</div>
+    <div style="display:flex;">
+      ${d3.range(nSeg).map(j => html`<div style="width:${segW}px;height:${rowH}px;background:${j===i ? '#c0392b' : '#5b7fbd'};border:1px solid white;"></div>`)}
+    </div>
+    <div style="font-family:sans-serif;font-size:0.75em;padding-left:14px;color:#555;">→ train on blue, test on red → MSE<sub>${i+1}</sub></div>
+  </div>`);
+  return html`<div style="padding-top:10px;">
+    ${rows}
+    <div style="display:flex;margin-top:6px;">
+      <div style="width:${barX}px;"></div>
+      <div style="width:${barW}px;border-top:2px solid #333;text-align:center;font-family:sans-serif;font-size:0.75em;padding-top:4px;color:#333;">Work set</div>
+    </div>
+    <div style="font-family:sans-serif;font-size:0.9em;padding-top:14px;color:#2d6a4f;font-weight:600;">Average the 5 MSEs → take the square root → cross-validated RMSE</div>
+  </div>`
+}
+```
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Recreated from Békés & Kézdi (2021), Ch. 13
+:::
+
+## Walking through the syntax
+
+```{.python}
+from sklearn.model_selection import KFold
+
+kf = KFold(n_splits=5, shuffle=True, random_state=1)
+
+rmses = []
+for train_idx, test_idx in kf.split(df):
+    train, test = df.iloc[train_idx], df.iloc[test_idx]
+    model = smf.ols(_____, data=train).fit()
+    pred = model.predict(test)
+    fold_rmse = np.sqrt(np.mean((test['price'] - pred) ** 2))
+    rmses.append(fold_rmse)
+
+cv_rmse = _____
+```
+
+::: {.fragment}
+- `kf.split(df)` hands back one pair of row-indices per fold — the loop runs 5 times, once per fold
+- `.iloc[train_idx]` / `.iloc[test_idx]` turn those indices into real training/test dataframes
+- Everything inside the loop is the single-split code from three slides ago, just repeated automatically
+- Two blanks left for you: which model formula, and how five fold RMSEs become one number
+:::
+
+## Task — write your own 5-fold cross-validation
+
+::: {.instructions-box}
+**Business question**: does Model 3's advantage over Model 1 survive being tested on data it didn't train on?
+
+Using the same notebook, adapt the loop from the last slide. For **Model 1** and **Model 3** separately: fill in the model formula and the final averaging step, run the 5-fold loop, and compare the two cross-validated RMSEs. No further syntax hints beyond what you've already seen.
+:::
+
+## What you should have found
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.62em;line-height:1.4;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">${task2_output_text}</pre>`
+```
+
+::: {.instructions-box}
+Model 3 still wins on cross-validated RMSE — the advantage isn't just an artefact of fitting the same data twice.
+:::
+
+## Full cross-validation table
+
+```{ojs}
+{
+  const cols = ["Model", "Fold 1", "Fold 2", "Fold 3", "Fold 4", "Fold 5", "Average"];
+  return html`<table style="margin:20px auto 0;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;">
+    <tr style="border-bottom:2px solid #1a1a2e;">
+      ${cols.map(c => `<th style="padding:5px 14px;text-align:center;">${c}</th>`).join('')}
+    </tr>
+    ${cv_stats_rows.map(d => `
+      <tr style="border-bottom:1px solid #ddd;">${cols.map(c => `<td style="padding:4px 14px;text-align:center;${c==='Average'?'font-weight:700;':''}">${d[c]}</td>`).join('')}</tr>
+    `).join('')}
+  </table>`
+}
+```
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+5-fold cross-validation, same split reused across all five models.
+:::
+
+<details>
+<summary style="cursor:pointer;color:#2d6a4f;font-size:0.9em;">Show the Python syntax</summary>
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.5em;line-height:1.35;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">from sklearn.model_selection import KFold
+
+model_formulas = {
+    "Model 1": "price ~ age + agesq",
+    "Model 2": "price ~ age + agesq + odometer",
+    "Model 3": "price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer",
+    "Model 4": "price ~ age + agesq + odometer + odometersq + LE + XLE + SE + cond_likenew + cond_excellent + cond_good + cylind6 + dealer",
+    "Model 5": "price ~ age + agesq + odometer + odometersq + LE*age + XLE*age + SE*age + cond_likenew*age + cond_excellent*age + cond_good*age + cylind6*age + odometer*age + dealer*age",
+}
+
+kf = KFold(n_splits=5, shuffle=True, random_state=1)
+cv_results = {name: [] for name in model_formulas}
+
+for train_idx, test_idx in kf.split(df):
+    train, test = df.iloc[train_idx], df.iloc[test_idx]
+    for name, formula in model_formulas.items():
+        model = smf.ols(formula, data=train).fit()
+        pred = model.predict(test)
+        fold_rmse = np.sqrt(np.mean((test['price'] - pred) ** 2))
+        cv_results[name].append(fold_rmse)
+
+cv_avg = {name: np.mean(v) for name, v in cv_results.items()}
+
+cv_table = pd.DataFrame([
+    {"Model": name, "Fold 1": round(v[0]), "Fold 2": round(v[1]), "Fold 3": round(v[2]),
+     "Fold 4": round(v[3]), "Fold 5": round(v[4]), "Average": round(cv_avg[name])}
+    for name, v in cv_results.items()
+])</pre>`
+```
+
+</details>
+
+## BIC vs. cross-validated RMSE
+
+- **BIC's advantage**: no sample splitting, so it's not a problem in small samples. Quick, and rarely far wrong.
+- **Test RMSE's advantage**: makes no distributional assumptions.
+- In practice, both approaches agreed here: **Model 3** (or the very similar Model 4) is the one to use. Small sample, simple model.
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 13
+:::
+
+---
+
+## Back to the original question
+
+---
+
+## What price goes in the ad?
+
+Model 3, for a 10-year-old Camry LE, excellent condition, 120,000 miles, sold privately:
+
+```{.python}
+new_car = pd.DataFrame({
+    "age": [10], "agesq": [100], "odometer": [12], "odometersq": [144],
+    "LE": [1], "cond_excellent": [1], "cond_good": [0], "dealer": [0],
+})
+
+pred = model3.get_prediction(new_car).summary_frame(alpha=0.20)
+point_pred = pred["mean"].iloc[0]
+pi_lower = pred["obs_ci_lower"].iloc[0]
+pi_upper = pred["obs_ci_upper"].iloc[0]
+```
+
+`get_prediction()` gives both the point forecast (`mean`) and — via `summary_frame(alpha=0.20)` — the bounds of an 80% prediction interval, all from the model already fitted.
+
+## The price
+
+::: {.instructions-box}
+An **80% prediction interval** for *this specific car*: 80% of cars just like it should have their true price land somewhere in this range. It's wider than a confidence interval for the *average* price at these characteristics — it has to cover this one car's entire prediction error, irreducible noise included, not just the uncertainty in a mean.
+:::
+
+::: {.fragment}
+```{ojs}
+html`<div style="text-align:center;padding-top:20px;">
+  <div style="font-size:2.4em;color:#2d6a4f;font-weight:700;">$${point_pred}</div>
+  <div style="font-size:1.1em;color:#666;padding-top:10px;">80% prediction interval: $${pi_lower} – $${pi_upper}</div>
+</div>`
+```
+:::
+
+::: {.fragment}
+Even with a good model, the interval is wide. Prediction is genuinely hard — and it's worth telling whoever's relying on the number in advance.
+:::
+
+## Stationarity — the assumption underneath everything
+
+- All of this assumes the relationship between $x$ and $y$ in the live data is the **same** as in the original data
+- If the used-car market shifts — a fuel price shock, a new model year, a different city — the fitted relationship may simply not transfer
+- No amount of BIC or cross-validation on the original data can detect this. It has to be reasoned about, not computed.
+
+## Summary
+
+- Prediction is a different goal from explanation — coefficients matter less, $\hat y$ for **new** observations matters more
+- A loss function turns a prediction error into a number a business decision can use; squared loss (MSE/RMSE) is the default, but not the only option
+- More complex models always fit the original data better — that's exactly why in-sample fit alone is a trap
+- BIC and cross-validation both penalise complexity; used properly, they agree
+
+## Online session
+
+See **week10-online.html** — model building for prediction: feature engineering, LASSO, and post-prediction diagnostics, using a real Airbnb pricing case study.
+
+## Coming up
+
+::: {style="text-align: center; padding-top: 60px;"}
+[**Week 11: Time Series**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
+
+::: {.fragment style="padding-top:40px;"}
+*Every model this week assumed each row was independent of the others. What happens when today's value depends on yesterday's?*
+:::
+:::

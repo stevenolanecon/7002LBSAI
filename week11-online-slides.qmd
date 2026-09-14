@@ -1,0 +1,504 @@
+---
+title: "Forecasting from Time Series Data"
+subtitle: "7002LBSAI Research Methods in Analytics — Week 11 Online Session"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="stylesheet" href="styles-slides.css?v=20260914">
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{python}
+import pandas as pd
+import numpy as np
+import statsmodels.formula.api as smf
+from statsmodels.tsa.arima.model import ARIMA
+from statsmodels.tsa.api import VAR
+import warnings
+warnings.filterwarnings("ignore")
+
+# Bekes & Kezdi's Ch.18 case studies, sourced from their own official data repo
+# GitHub raw URLs (once pushed to the student data repo):
+# swim_df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/swim_tickets.csv")
+# cs_df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/case_shiller_la.csv")
+swim_df = pd.read_csv("data/swim_tickets.csv", parse_dates=["date"])
+cs_df = pd.read_csv("data/case_shiller_la.csv", parse_dates=["date"])
+
+# --- Case study A: ABQ swimming pool ticket sales ---
+swim_df["month"] = swim_df["date"].dt.month
+swim_df["dow"] = swim_df["date"].dt.dayofweek
+swim_df["t"] = range(len(swim_df))
+swim_train = swim_df[swim_df.date < "2016-01-01"]
+swim_test = swim_df[swim_df.date >= "2016-01-01"]
+
+# Seasonality, visually — average tickets by month and by day of week
+_month_names = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+_dow_names = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+swim_by_month = [
+    {"label": _month_names[m-1], "avg": round(v, 1)}
+    for m, v in swim_df.groupby("month")["tickets"].mean().items()
+]
+swim_by_dow = [
+    {"label": _dow_names[d], "avg": round(v, 1)}
+    for d, v in swim_df.groupby("dow")["tickets"].mean().items()
+]
+
+swim_model_specs = {
+    "Trend only": "tickets ~ t",
+    "+ month": "tickets ~ t + C(month)",
+    "+ month + day of week": "tickets ~ t + C(month) + C(dow)",
+}
+swim_results = []
+_best_pred = None
+_best_rmse = np.inf
+for name, f in swim_model_specs.items():
+    m = smf.ols(f, data=swim_train).fit()
+    pred = m.predict(swim_test)
+    rmse = float(np.sqrt(np.mean((swim_test["tickets"] - pred) ** 2)))
+    swim_results.append({"model": name, "rmse": round(rmse, 1)})
+    if rmse < _best_rmse:
+        _best_rmse = rmse
+        _best_pred = pred
+
+swim_holdout_chart = pd.DataFrame({
+    "date": swim_test["date"].dt.strftime("%Y-%m-%d"),
+    "actual": swim_test["tickets"],
+    "predicted": _best_pred.round(1),
+}).to_dict(orient="records")
+
+# Task reveal — month-only vs trend+month
+m_month_only = smf.ols("tickets ~ C(month)", data=swim_train).fit()
+rmse_month_only = float(np.sqrt(np.mean((swim_test["tickets"] - m_month_only.predict(swim_test)) ** 2)))
+task_swim_output_text = (
+    ">>> m_month_only = smf.ols('tickets ~ C(month)', data=train).fit()\n"
+    ">>> pred = m_month_only.predict(test)\n"
+    ">>> rmse = np.sqrt(np.mean((test['tickets'] - pred) ** 2))\n"
+    f">>> round(rmse, 1)\n{round(rmse_month_only, 1)}"
+)
+
+# --- Case study B: Case-Shiller LA home price index ---
+cs_indexed = cs_df.set_index("date")
+cs_indexed.index.freq = "MS"
+cs_train = cs_indexed[cs_indexed.index < "2017-01-01"]["price_index_sa"]
+cs_test = cs_indexed[(cs_indexed.index >= "2017-01-01") & (cs_indexed.index < "2018-01-01")]["price_index_sa"]
+
+arima_orders = [(1, 1, 0), (2, 1, 0), (1, 1, 1), (2, 0, 0)]
+arima_rows = []
+_best_arima_fc = None
+_best_arima_rmse = np.inf
+_best_arima_model = None
+for order in arima_orders:
+    m = ARIMA(cs_train, order=order).fit()
+    fc = m.get_forecast(steps=len(cs_test))
+    pred_mean = fc.predicted_mean
+    rmse = float(np.sqrt(np.mean((cs_test.values - pred_mean.values) ** 2)))
+    arima_rows.append({"order": f"({order[0]},{order[1]},{order[2]})", "rmse": round(rmse, 2), "aic": round(m.aic, 1)})
+    if rmse < _best_arima_rmse:
+        _best_arima_rmse = rmse
+        _best_arima_fc = fc
+        _best_arima_model = order
+
+ci = _best_arima_fc.conf_int(alpha=0.2)
+arima_forecast_chart = []
+_hist = cs_indexed[(cs_indexed.index >= "2015-01-01") & (cs_indexed.index < "2017-01-01")]["price_index_sa"]
+for d, v in _hist.items():
+    arima_forecast_chart.append({"date": d.strftime("%Y-%m-%d"), "actual": round(float(v), 1), "predicted": None, "lo": None, "hi": None})
+for i, d in enumerate(cs_test.index):
+    arima_forecast_chart.append({
+        "date": d.strftime("%Y-%m-%d"),
+        "actual": round(float(cs_test.iloc[i]), 1),
+        "predicted": round(float(_best_arima_fc.predicted_mean.iloc[i]), 1),
+        "lo": round(float(ci.iloc[i, 0]), 1),
+        "hi": round(float(ci.iloc[i, 1]), 1),
+    })
+best_arima_label = f"ARIMA{_best_arima_model}"
+best_arima_rmse_display = round(_best_arima_rmse, 2)
+
+# --- VAR with unemployment ---
+cs_var_train = cs_indexed[cs_indexed.index < "2017-01-01"][["price_index_sa", "unemployment_sa"]].diff().dropna()
+var_model = VAR(cs_var_train).fit(2)
+var_fc = var_model.forecast(cs_var_train.values[-2:], steps=len(cs_test))
+_last_level = cs_train.iloc[-1]
+var_levels = _last_level + np.cumsum(var_fc[:, 0])
+var_rmse = float(np.sqrt(np.mean((cs_test.values - var_levels) ** 2)))
+var_rmse_display = round(var_rmse, 2)
+
+ojs_define(
+    swim_by_month         = swim_by_month,
+    swim_by_dow           = swim_by_dow,
+    swim_results          = swim_results,
+    swim_holdout_chart    = swim_holdout_chart,
+    task_swim_output_text = task_swim_output_text,
+    arima_rows            = arima_rows,
+    arima_forecast_chart  = arima_forecast_chart,
+    best_arima_label      = best_arima_label,
+    best_arima_rmse_display = best_arima_rmse_display,
+    var_rmse_display      = var_rmse_display,
+)
+```
+
+## {background-color="#1a1a2e"}
+
+::: {style="text-align: center; padding-top: 180px;"}
+[**Forecasting from time series data**]{style="font-size: 2.2em; color: white;"}
+
+[The workshop found genuine relationships in time series data. This session: using that same data to predict what hasn't happened yet.]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+:::
+
+## Planning next year's staffing
+
+::: {.instructions-box}
+**Business question**: a swimming pool operator needs to know roughly how many tickets will sell each day next year, to plan staffing and opening hours.
+:::
+
+::: {.fragment}
+Forecasting is a special case of prediction — using only what's happened up to today to say something about tomorrow. Same discipline as Week 10's prediction content, applied to data where "the future" has a very literal meaning.
+:::
+
+---
+
+## Forecast horizon and cross-validation
+
+---
+
+## Forecast horizon
+
+- The length of the live time series data still to come — the **forecast horizon**, $H$
+- **Short-horizon**: a few periods ahead relative to the data (5 years of monthly data, forecast 3–12 months)
+- **Long-horizon**: many periods ahead (5 years of daily data, forecast a year out)
+
+## Why you can't just shuffle and split
+
+Cross-validation with time series is necessary — and genuinely tricky, because a random shuffle destroys the one thing that makes it a time series: order.
+
+::: {.fragment}
+Two approaches, matched to the horizon:
+
+- **Insert test sets** — for long-horizon forecasts, where serial correlation and trend matter less. Use all remaining observations, including those after the test set, as training data.
+- **Rolling window** — for short-horizon forecasts, where serial correlation matters. Training data always precedes the test set, so nothing "sees the future."
+:::
+
+## Insert test sets, visually
+
+```{ojs}
+{
+  const rows = 4, cols = 20;
+  const testStart = [2, 7, 12, 16];
+  const rowsHtml = d3.range(rows).map(r => {
+    const cells = d3.range(cols).map(c => {
+      const inTest = c >= testStart[r] && c < testStart[r] + 3;
+      return `<div style="width:22px;height:20px;background:${inTest ? '#5b7fbd' : '#7fbf7f'};border:1px solid white;display:inline-block;"></div>`;
+    }).join('');
+    return `<div style="margin-bottom:4px;"><span style="display:inline-block;width:60px;font-family:sans-serif;font-size:0.75em;">Set ${r+1}</span>${cells}</div>`;
+  }).join('');
+  return html`<div>${rowsHtml}<div style="font-family:sans-serif;font-size:0.75em;color:#555;margin-top:8px;">
+    <span style="color:#2d6a4f;">■</span> training &nbsp; <span style="color:#5b7fbd;">■</span> test — test sets scattered through the series, training uses everything else
+  </div></div>`
+}
+```
+
+## Rolling window, visually
+
+```{ojs}
+{
+  const rows = 4, cols = 20;
+  const trainEnd = [6, 9, 12, 15];
+  const rowsHtml = d3.range(rows).map(r => {
+    const cells = d3.range(cols).map(c => {
+      let color = "#eee";
+      if (c < trainEnd[r]) color = "#2d6a4f";
+      else if (c < trainEnd[r] + 3) color = "#5b7fbd";
+      return `<div style="width:22px;height:20px;background:${color};border:1px solid white;display:inline-block;"></div>`;
+    }).join('');
+    return `<div style="margin-bottom:4px;"><span style="display:inline-block;width:60px;font-family:sans-serif;font-size:0.75em;">Set ${r+1}</span>${cells}</div>`;
+  }).join('');
+  return html`<div>${rowsHtml}<div style="font-family:sans-serif;font-size:0.75em;color:#555;margin-top:8px;">
+    <span style="color:#2d6a4f;">■</span> training &nbsp; <span style="color:#5b7fbd;">■</span> test — training always precedes test, the window rolls forward
+  </div></div>`
+}
+```
+
+---
+
+## Long-horizon: trend and seasonality
+
+---
+
+## Two ways to model a trend
+
+- **Average change**: $\hat y_{T+H} = y_T + H \times \widehat{\Delta y}$ — carries forward from the last observation
+- **Trend line**: $\hat y_t = \hat\alpha + \hat\delta t$ — assumes $y$ stays close to a fitted line, so one unusual last observation matters less
+- Neither is inherently better — depends whether you trust the series to keep going from where it is, or to revert to its long-run pattern
+
+## Case study: swimming pool ticket sales
+
+- Daily ticket sales, Albuquerque, 2010–2016 — big data, real transactions
+- Business question already on the table: forecast next year's daily demand
+- Clear seasonality: summer months and weekends dominate
+
+```{ojs}
+{
+  const monthChart = Plot.plot({
+    width: 340, height: 260,
+    x: {label: "Month", domain: swim_by_month.map(d => d.label)},
+    y: {label: "Avg. tickets/day"},
+    marks: [Plot.barY(swim_by_month, {x: "label", y: "avg", fill: "#5b7fbd"}), Plot.ruleY([0])]
+  })
+  const dowChart = Plot.plot({
+    width: 340, height: 260,
+    x: {label: "Day of week", domain: swim_by_dow.map(d => d.label)},
+    y: {label: "Avg. tickets/day"},
+    marks: [Plot.barY(swim_by_dow, {x: "label", y: "avg", fill: "#2d6a4f"}), Plot.ruleY([0])]
+  })
+  return html`<div style="display:flex;gap:24px;justify-content:center;">${monthChart}${dowChart}</div>`
+}
+```
+
+## Building up the model, on real data
+
+```{.python}
+model_specs = {
+    "Trend only": "tickets ~ t",
+    "+ month": "tickets ~ t + C(month)",
+    "+ month + day of week": "tickets ~ t + C(month) + C(dow)",
+}
+
+results = []
+for name, formula in model_specs.items():
+    model = smf.ols(formula, data=train).fit()
+    pred = model.predict(test)
+    rmse = np.sqrt(np.mean((test["tickets"] - pred) ** 2))
+    results.append({"model": name, "rmse": round(rmse, 1)})
+```
+
+```{ojs}
+{
+  return html`<table style="margin:16px auto 0;font-family:sans-serif;font-size:1.05em;border-collapse:collapse;">
+    <tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:6px 26px;">Model</th><th style="padding:6px 26px;">Holdout RMSE</th></tr>
+    ${swim_results.map(d => `<tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 26px;">${d.model}</td><td style="padding:5px 26px;text-align:center;">${d.rmse}</td></tr>`).join('')}
+  </table>`
+}
+```
+
+::: {.fragment}
+Trained on 2010–2015, tested on 2016 — a genuine holdout the model never saw. Seasonality does almost all of the work; the linear trend barely matters on its own.
+:::
+
+## Actual vs. predicted, holdout year
+
+```{ojs}
+Plot.plot({
+  width: 700, height: 340,
+  x: {label: "Date", type: "utc"}, y: {label: "Daily ticket sales"},
+  marks: [
+    Plot.line(swim_holdout_chart, {x: "date", y: "actual", stroke: "#5b7fbd"}),
+    Plot.line(swim_holdout_chart, {x: "date", y: "predicted", stroke: "#2d6a4f", strokeDasharray: "3,3"}),
+  ]
+})
+```
+
+<details>
+<summary style="cursor:pointer;color:#2d6a4f;font-size:0.9em;">Show the Python syntax</summary>
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.6em;line-height:1.4;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">import matplotlib.pyplot as plt
+
+# best_model = whichever of the three had the lowest holdout RMSE
+predicted = best_model.predict(test)
+
+plt.plot(test["date"], test["tickets"], label="Actual")
+plt.plot(test["date"], predicted, linestyle="--", label="Predicted")
+plt.ylabel("Daily ticket sales")
+plt.legend()
+plt.show()</pre>`
+```
+
+</details>
+
+Blue: what actually happened in 2016. Green: what the model — trained only on 2010–2015 — predicted, before any of 2016 existed yet.
+
+## Task — does trend even matter here?
+
+::: {.instructions-box}
+**Business question**: is the linear trend term pulling its weight, or is seasonality carrying the whole model?
+
+Fit `tickets ~ C(month)` — month dummies only, no trend — on the same training data, and check its RMSE on the same 2016 holdout. How does it compare to the full model above? No further syntax hints.
+:::
+
+## What you should have found
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.62em;line-height:1.4;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">${task_swim_output_text}</pre>`
+```
+
+::: {.instructions-box}
+Barely worse than the full model. For this data, over this horizon, seasonality is doing almost everything — a genuinely useful thing to know before building anything more complicated.
+:::
+
+---
+
+## Short-horizon: AR and ARIMA
+
+---
+
+## Autoregressive models
+
+$$y_t^E = \beta_0 + \beta_1 y_{t-1}$$
+
+- The simplest **AR(1)** model: today's value predicted from yesterday's alone
+- $\beta_1$ is just the first-order serial correlation coefficient from the workshop, wearing a forecasting hat
+- $\beta_1 = 1$ is a random walk; $\beta_1 = 0$ is white noise — nothing left to forecast from the series itself
+
+## The innovation
+
+$$e_t = y_t - y_t^E \qquad y_t = y_t^E + e_t$$
+
+The **innovation**: what's genuinely new in $y_t$, on top of everything predictable from its own past. Formally the same idea as a prediction error — but now it's *past* innovations doing the predicting.
+
+## ARIMA, built from three letters
+
+- **AR(p)**: predict $y_t$ from up to $p$ of its own lags
+- **I(d)**: whether the model is written in $y$ itself ($d=0$) or its $d$-th difference
+- **MA(q)**: a linear combination of past innovations, $y_t = e_t + \theta_1 e_{t-1} + \dots + \theta_q e_{t-q}$ — captures serial correlation that drops to zero sharply after a few lags, a different pattern than AR
+- **ARIMA(p,d,q)** combines all three, flexible enough to approximate almost any serial correlation pattern
+
+## Case study: Case-Shiller home price index
+
+- Monthly home price index, Los Angeles, 2000–2018 (FRED)
+- Train on 2000–2016, forecast 12 months into 2017 — a genuine holdout
+- Try a few $(p,d,q)$ specifications, pick by holdout RMSE — exactly the model-selection discipline from Week 10
+
+```{.python}
+from statsmodels.tsa.arima.model import ARIMA
+
+model = ARIMA(train, order=(2, 1, 0)).fit()
+forecast = model.get_forecast(steps=12)
+```
+
+## Real model comparison
+
+```{ojs}
+{
+  return html`<table style="margin:16px auto 0;font-family:sans-serif;font-size:1em;border-collapse:collapse;">
+    <tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:6px 26px;">ARIMA(p,d,q)</th><th style="padding:6px 26px;">Holdout RMSE</th><th style="padding:6px 26px;">AIC</th></tr>
+    ${arima_rows.map(d => `<tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 26px;text-align:center;">${d.order}</td><td style="padding:5px 26px;text-align:center;">${d.rmse}</td><td style="padding:5px 26px;text-align:center;">${d.aic}</td></tr>`).join('')}
+  </table>`
+}
+```
+
+::: {.fragment}
+$(2,0,0)$ — no differencing, fitted on the level of the index — is clearly the worst. The undifferenced series isn't stationary, and the forecast pays for it.
+:::
+
+## Forecast with uncertainty
+
+```{ojs}
+Plot.plot({
+  width: 700, height: 360,
+  x: {label: "Date", type: "utc"}, y: {label: "Case-Shiller price index"},
+  marks: [
+    Plot.line(arima_forecast_chart, {x: "date", y: "actual", stroke: "#5b7fbd"}),
+    Plot.areaY(arima_forecast_chart.filter(d => d.lo !== null), {x: "date", y1: "lo", y2: "hi", fill: "#2d6a4f", fillOpacity: 0.15}),
+    Plot.line(arima_forecast_chart, {x: "date", y: "predicted", stroke: "#2d6a4f", strokeDasharray: "3,3"}),
+  ]
+})
+```
+
+```{ojs}
+html`<p>Best model: <b>${best_arima_label}</b>, holdout RMSE <b>${best_arima_rmse_display}</b>. The shaded band is a genuine 80% prediction interval — and it widens the further out the forecast reaches, exactly as Week 10's prediction-interval logic predicts.</p>`
+```
+
+---
+
+## VAR — bringing in other variables
+
+---
+
+## Forecasting with help from x
+
+- Short-horizon forecasts often improve with other variables — but now you need **forecasts of those too**
+- **Vector autoregression (VAR)**: a set of time series regressions, one per variable, where every equation's right-hand side is lags of every variable in the system
+
+$$y_t^E = \beta_{10} + \beta_{11}y_{t-1} + \beta_{12}x_{t-1} \qquad x_t^E = \beta_{20} + \beta_{21}y_{t-1} + \beta_{22}x_{t-1}$$
+
+- More coefficients to estimate means more estimation error — the hope is that $x$ still nets out an improvement
+
+## Does it help here?
+
+Adding California's unemployment rate to a VAR(2), forecasting the same 2017 holdout:
+
+```{.python}
+from statsmodels.tsa.api import VAR
+
+# Both series first-differenced — VAR needs stationary inputs, same logic as Section C
+var_train = df[["price_index_sa", "unemployment_sa"]].diff().dropna()
+
+var_model = VAR(var_train).fit(2)
+var_forecast_diffs = var_model.forecast(var_train.values[-2:], steps=len(test))
+
+# Undo the differencing: cumulative sum of forecast differences, added back onto
+# the last known level
+var_levels = train.iloc[-1] + np.cumsum(var_forecast_diffs[:, 0])
+var_rmse = np.sqrt(np.mean((test.values - var_levels) ** 2))
+```
+
+```{ojs}
+{
+  return html`<div style="text-align:center;padding-top:10px;">
+    <table style="margin:0 auto;font-family:sans-serif;font-size:1.1em;border-collapse:collapse;">
+      <tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:6px 26px;">Model</th><th style="padding:6px 26px;">Holdout RMSE</th></tr>
+      <tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 26px;">Best ARIMA (<code>${best_arima_label}</code>)</td><td style="padding:5px 26px;text-align:center;">${best_arima_rmse_display}</td></tr>
+      <tr><td style="padding:5px 26px;">VAR(2) with unemployment</td><td style="padding:5px 26px;text-align:center;font-weight:700;">${var_rmse_display}</td></tr>
+    </table>
+  </div>`
+}
+```
+
+::: {.fragment}
+Here, VAR genuinely improves on the best ARIMA — unemployment carries real information about where home prices are heading. Not guaranteed in general: Gabor & Kézdi's own version of this case study found VAR *didn't* help on their sample window. Same method, different window, different answer — a real lesson about external validity on its own.
+:::
+
+---
+
+## External validity in time series
+
+---
+
+## The one assumption everything rests on
+
+- External validity in forecasting means **stationarity**: the patterns you learned from the training data — trend, seasonality, correlation structure — have to still hold in the live data
+- This is a much bigger risk in time series than in cross-sectional prediction, because forecasting is *by design* about a period you've never observed
+- No amount of cross-validation on historical data can fully rule this out — a genuine structural break (a pandemic, a housing crash) breaks every model here equally
+
+## Summary
+
+- Forecasting is prediction with a time index — but cross-validation has to respect order: inserted test sets for long horizons, rolling windows for short ones
+- Long-horizon forecasts lean on trend and seasonality — often seasonality alone does most of the work
+- Short-horizon forecasts lean on serial correlation — AR and ARIMA models capture it directly, chosen by holdout RMSE like any other prediction model
+- VAR can improve a forecast by bringing in other variables, at the cost of needing to forecast those too — and whether it actually helps is itself an empirical, not automatic, question
+
+## Coming up
+
+::: {style="text-align: center; padding-top: 60px;"}
+[**Week 12: Assessment Review**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
+
+::: {.fragment style="padding-top:40px;"}
+*The module's final week*
+:::
+:::

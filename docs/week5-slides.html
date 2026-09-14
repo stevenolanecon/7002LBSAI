@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/tabby.min.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.7.32">
+
+  <title>7002LBSAI – Model Problems &amp; Inference</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="site_libs/revealjs/dist/theme/quarto-2c1b5f745a11cfad616ebade4a4a7d24.css">
+  <link href="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+  <link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+  
+  <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="styles-slides.css?v=20260914">
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Model Problems &amp; Inference</h1>
+  <p class="subtitle">7002LBSAI Research Methods in Analytics — Week 5</p>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section class="slide level2">
+
+<div id="4ba4e078" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="ojs-define">{"contents": [{"name": "student_summary", "value": [{"student_name": "Alex Patel", "mean_rt": 292.7, "device": "Laptop", "finger_mm": 65}, {"student_name": "Bailey Davies", "mean_rt": 298.1, "device": "Laptop", "finger_mm": 72}, {"student_name": "Casey O'Connor", "mean_rt": 308.3, "device": "Laptop", "finger_mm": 71}, {"student_name": "Drew Farrell", "mean_rt": 338.6, "device": "Laptop", "finger_mm": 64}, {"student_name": "Ellis Quraishi", "mean_rt": 355.4, "device": "Laptop", "finger_mm": 73}, {"student_name": "Finley Martins", "mean_rt": 259.8, "device": "Phone", "finger_mm": 71}, {"student_name": "Gray Gupta", "mean_rt": 318.0, "device": "Laptop", "finger_mm": 69}, {"student_name": "Harper Hussain", "mean_rt": 319.7, "device": "Phone", "finger_mm": 68}, {"student_name": "Indigo Rossi", "mean_rt": 312.9, "device": "Laptop", "finger_mm": 68}, {"student_name": "Jules Ito", "mean_rt": 328.2, "device": "Laptop", "finger_mm": 74}, {"student_name": "Kai Brooks", "mean_rt": 304.7, "device": "Laptop", "finger_mm": 74}, {"student_name": "Logan Turner", "mean_rt": 259.8, "device": "Laptop", "finger_mm": 73}, {"student_name": "Morgan Evans", "mean_rt": 301.6, "device": "Laptop", "finger_mm": 68}, {"student_name": "Noor Nguyen", "mean_rt": 385.8, "device": "Phone", "finger_mm": 67}, {"student_name": "Ollie Jensen", "mean_rt": 391.5, "device": "Phone", "finger_mm": 74}, {"student_name": "Parker Silva", "mean_rt": 318.4, "device": "Phone", "finger_mm": 73}, {"student_name": "Quinn Adeyemi", "mean_rt": 331.8, "device": "Phone", "finger_mm": 72}, {"student_name": "Reese Khan", "mean_rt": 273.0, "device": "Laptop", "finger_mm": 68}, {"student_name": "Sage Chen", "mean_rt": 271.5, "device": "Phone", "finger_mm": 68}, {"student_name": "Taylor Lopez", "mean_rt": 396.7, "device": "Phone", "finger_mm": 64}]}, {"name": "trial_data", "value": [{"reaction_time_ms": 267, "finger_mm": 73, "device": "Phone"}, {"reaction_time_ms": 266, "finger_mm": 73, "device": "Phone"}, {"reaction_time_ms": 367, "finger_mm": 73, "device": "Phone"}, {"reaction_time_ms": 341, "finger_mm": 73, "device": "Phone"}, {"reaction_time_ms": 283, "finger_mm": 73, "device": "Phone"}, {"reaction_time_ms": 320, "finger_mm": 73, "device": "Phone"}, {"reaction_time_ms": 329, "finger_mm": 73, "device": "Phone"}, {"reaction_time_ms": 421, "finger_mm": 73, "device": "Phone"}, {"reaction_time_ms": 262, "finger_mm": 73, "device": "Phone"}, {"reaction_time_ms": 328, "finger_mm": 73, "device": "Phone"}, {"reaction_time_ms": 290, "finger_mm": 74, "device": "Laptop"}, {"reaction_time_ms": 324, "finger_mm": 74, "device": "Laptop"}, {"reaction_time_ms": 222, "finger_mm": 74, "device": "Laptop"}, {"reaction_time_ms": 232, "finger_mm": 74, "device": "Laptop"}, {"reaction_time_ms": 824, "finger_mm": 74, "device": "Laptop"}, {"reaction_time_ms": 208, "finger_mm": 74, "device": "Laptop"}, {"reaction_time_ms": 290, "finger_mm": 74, "device": "Laptop"}, {"reaction_time_ms": 421, "finger_mm": 74, "device": "Laptop"}, {"reaction_time_ms": 209, "finger_mm": 74, "device": "Laptop"}, {"reaction_time_ms": 262, "finger_mm": 74, "device": "Laptop"}, {"reaction_time_ms": 834, "finger_mm": 74, "device": "Phone"}, {"reaction_time_ms": 343, "finger_mm": 74, "device": "Phone"}, {"reaction_time_ms": 277, "finger_mm": 74, "device": "Phone"}, {"reaction_time_ms": 306, "finger_mm": 74, "device": "Phone"}, {"reaction_time_ms": 351, "finger_mm": 74, "device": "Phone"}, {"reaction_time_ms": 342, "finger_mm": 74, "device": "Phone"}, {"reaction_time_ms": 305, "finger_mm": 74, "device": "Phone"}, {"reaction_time_ms": 280, "finger_mm": 74, "device": "Phone"}, {"reaction_time_ms": 489, "finger_mm": 74, "device": "Phone"}, {"reaction_time_ms": 388, "finger_mm": 74, "device": "Phone"}, {"reaction_time_ms": 365, "finger_mm": 68, "device": "Phone"}, {"reaction_time_ms": 300, "finger_mm": 68, "device": "Phone"}, {"reaction_time_ms": 275, "finger_mm": 68, "device": "Phone"}, {"reaction_time_ms": 285, "finger_mm": 68, "device": "Phone"}, {"reaction_time_ms": 246, "finger_mm": 68, "device": "Phone"}, {"reaction_time_ms": 411, "finger_mm": 68, "device": "Phone"}, {"reaction_time_ms": 303, "finger_mm": 68, "device": "Phone"}, {"reaction_time_ms": 391, "finger_mm": 68, "device": "Phone"}, {"reaction_time_ms": 287, "finger_mm": 68, "device": "Phone"}, {"reaction_time_ms": 334, "finger_mm": 68, "device": "Phone"}, {"reaction_time_ms": 228, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 383, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 276, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 370, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 367, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 320, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 284, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 302, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 289, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 197, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 262, "finger_mm": 74, "device": "Laptop"}, {"reaction_time_ms": 260, "finger_mm": 74, "device": "Laptop"}, {"reaction_time_ms": 359, "finger_mm": 74, "device": "Laptop"}, {"reaction_time_ms": 306, "finger_mm": 74, "device": "Laptop"}, {"reaction_time_ms": 333, "finger_mm": 74, "device": "Laptop"}, {"reaction_time_ms": 287, "finger_mm": 74, "device": "Laptop"}, {"reaction_time_ms": 336, "finger_mm": 74, "device": "Laptop"}, {"reaction_time_ms": 296, "finger_mm": 74, "device": "Laptop"}, {"reaction_time_ms": 293, "finger_mm": 74, "device": "Laptop"}, {"reaction_time_ms": 315, "finger_mm": 74, "device": "Laptop"}, {"reaction_time_ms": 313, "finger_mm": 69, "device": "Laptop"}, {"reaction_time_ms": 421, "finger_mm": 69, "device": "Laptop"}, {"reaction_time_ms": 285, "finger_mm": 69, "device": "Laptop"}, {"reaction_time_ms": 522, "finger_mm": 69, "device": "Laptop"}, {"reaction_time_ms": 264, "finger_mm": 69, "device": "Laptop"}, {"reaction_time_ms": 204, "finger_mm": 69, "device": "Laptop"}, {"reaction_time_ms": 248, "finger_mm": 69, "device": "Laptop"}, {"reaction_time_ms": 447, "finger_mm": 69, "device": "Laptop"}, {"reaction_time_ms": 257, "finger_mm": 69, "device": "Laptop"}, {"reaction_time_ms": 219, "finger_mm": 69, "device": "Laptop"}, {"reaction_time_ms": 515, "finger_mm": 64, "device": "Phone"}, {"reaction_time_ms": 288, "finger_mm": 64, "device": "Phone"}, {"reaction_time_ms": 593, "finger_mm": 64, "device": "Phone"}, {"reaction_time_ms": 329, "finger_mm": 64, "device": "Phone"}, {"reaction_time_ms": 480, "finger_mm": 64, "device": "Phone"}, {"reaction_time_ms": 336, "finger_mm": 64, "device": "Phone"}, {"reaction_time_ms": 380, "finger_mm": 64, "device": "Phone"}, {"reaction_time_ms": 343, "finger_mm": 64, "device": "Phone"}, {"reaction_time_ms": 337, "finger_mm": 64, "device": "Phone"}, {"reaction_time_ms": 366, "finger_mm": 64, "device": "Phone"}, {"reaction_time_ms": 352, "finger_mm": 64, "device": "Laptop"}, {"reaction_time_ms": 312, "finger_mm": 64, "device": "Laptop"}, {"reaction_time_ms": 293, "finger_mm": 64, "device": "Laptop"}, {"reaction_time_ms": 310, "finger_mm": 64, "device": "Laptop"}, {"reaction_time_ms": 486, "finger_mm": 64, "device": "Laptop"}, {"reaction_time_ms": 389, "finger_mm": 64, "device": "Laptop"}, {"reaction_time_ms": 255, "finger_mm": 64, "device": "Laptop"}, {"reaction_time_ms": 307, "finger_mm": 64, "device": "Laptop"}, {"reaction_time_ms": 363, "finger_mm": 64, "device": "Laptop"}, {"reaction_time_ms": 319, "finger_mm": 64, "device": "Laptop"}, {"reaction_time_ms": 334, "finger_mm": 65, "device": "Laptop"}, {"reaction_time_ms": 231, "finger_mm": 65, "device": "Laptop"}, {"reaction_time_ms": 296, "finger_mm": 65, "device": "Laptop"}, {"reaction_time_ms": 268, "finger_mm": 65, "device": "Laptop"}, {"reaction_time_ms": 270, "finger_mm": 65, "device": "Laptop"}, {"reaction_time_ms": 368, "finger_mm": 65, "device": "Laptop"}, {"reaction_time_ms": 271, "finger_mm": 65, "device": "Laptop"}, {"reaction_time_ms": 298, "finger_mm": 65, "device": "Laptop"}, {"reaction_time_ms": 206, "finger_mm": 65, "device": "Laptop"}, {"reaction_time_ms": 385, "finger_mm": 65, "device": "Laptop"}, {"reaction_time_ms": 308, "finger_mm": 72, "device": "Phone"}, {"reaction_time_ms": 270, "finger_mm": 72, "device": "Phone"}, {"reaction_time_ms": 412, "finger_mm": 72, "device": "Phone"}, {"reaction_time_ms": 446, "finger_mm": 72, "device": "Phone"}, {"reaction_time_ms": 353, "finger_mm": 72, "device": "Phone"}, {"reaction_time_ms": 353, "finger_mm": 72, "device": "Phone"}, {"reaction_time_ms": 309, "finger_mm": 72, "device": "Phone"}, {"reaction_time_ms": 288, "finger_mm": 72, "device": "Phone"}, {"reaction_time_ms": 264, "finger_mm": 72, "device": "Phone"}, {"reaction_time_ms": 315, "finger_mm": 72, "device": "Phone"}, {"reaction_time_ms": 292, "finger_mm": 71, "device": "Phone"}, {"reaction_time_ms": 291, "finger_mm": 71, "device": "Phone"}, {"reaction_time_ms": 252, "finger_mm": 71, "device": "Phone"}, {"reaction_time_ms": 233, "finger_mm": 71, "device": "Phone"}, {"reaction_time_ms": 287, "finger_mm": 71, "device": "Phone"}, {"reaction_time_ms": 213, "finger_mm": 71, "device": "Phone"}, {"reaction_time_ms": 205, "finger_mm": 71, "device": "Phone"}, {"reaction_time_ms": 270, "finger_mm": 71, "device": "Phone"}, {"reaction_time_ms": 285, "finger_mm": 71, "device": "Phone"}, {"reaction_time_ms": 270, "finger_mm": 71, "device": "Phone"}, {"reaction_time_ms": 339, "finger_mm": 73, "device": "Laptop"}, {"reaction_time_ms": 228, "finger_mm": 73, "device": "Laptop"}, {"reaction_time_ms": 191, "finger_mm": 73, "device": "Laptop"}, {"reaction_time_ms": 271, "finger_mm": 73, "device": "Laptop"}, {"reaction_time_ms": 229, "finger_mm": 73, "device": "Laptop"}, {"reaction_time_ms": 307, "finger_mm": 73, "device": "Laptop"}, {"reaction_time_ms": 265, "finger_mm": 73, "device": "Laptop"}, {"reaction_time_ms": 217, "finger_mm": 73, "device": "Laptop"}, {"reaction_time_ms": 247, "finger_mm": 73, "device": "Laptop"}, {"reaction_time_ms": 304, "finger_mm": 73, "device": "Laptop"}, {"reaction_time_ms": 259, "finger_mm": 68, "device": "Phone"}, {"reaction_time_ms": 232, "finger_mm": 68, "device": "Phone"}, {"reaction_time_ms": 275, "finger_mm": 68, "device": "Phone"}, {"reaction_time_ms": 266, "finger_mm": 68, "device": "Phone"}, {"reaction_time_ms": 310, "finger_mm": 68, "device": "Phone"}, {"reaction_time_ms": 293, "finger_mm": 68, "device": "Phone"}, {"reaction_time_ms": 256, "finger_mm": 68, "device": "Phone"}, {"reaction_time_ms": 354, "finger_mm": 68, "device": "Phone"}, {"reaction_time_ms": 271, "finger_mm": 68, "device": "Phone"}, {"reaction_time_ms": 199, "finger_mm": 68, "device": "Phone"}, {"reaction_time_ms": 220, "finger_mm": 71, "device": "Laptop"}, {"reaction_time_ms": 279, "finger_mm": 71, "device": "Laptop"}, {"reaction_time_ms": 197, "finger_mm": 71, "device": "Laptop"}, {"reaction_time_ms": 256, "finger_mm": 71, "device": "Laptop"}, {"reaction_time_ms": 276, "finger_mm": 71, "device": "Laptop"}, {"reaction_time_ms": 260, "finger_mm": 71, "device": "Laptop"}, {"reaction_time_ms": 552, "finger_mm": 71, "device": "Laptop"}, {"reaction_time_ms": 246, "finger_mm": 71, "device": "Laptop"}, {"reaction_time_ms": 294, "finger_mm": 71, "device": "Laptop"}, {"reaction_time_ms": 503, "finger_mm": 71, "device": "Laptop"}, {"reaction_time_ms": 368, "finger_mm": 73, "device": "Laptop"}, {"reaction_time_ms": 251, "finger_mm": 73, "device": "Laptop"}, {"reaction_time_ms": 208, "finger_mm": 73, "device": "Laptop"}, {"reaction_time_ms": 362, "finger_mm": 73, "device": "Laptop"}, {"reaction_time_ms": 328, "finger_mm": 73, "device": "Laptop"}, {"reaction_time_ms": 821, "finger_mm": 73, "device": "Laptop"}, {"reaction_time_ms": 404, "finger_mm": 73, "device": "Laptop"}, {"reaction_time_ms": 272, "finger_mm": 73, "device": "Laptop"}, {"reaction_time_ms": 243, "finger_mm": 73, "device": "Laptop"}, {"reaction_time_ms": 297, "finger_mm": 73, "device": "Laptop"}, {"reaction_time_ms": 199, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 605, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 183, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 229, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 210, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 275, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 271, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 323, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 195, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 240, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 308, "finger_mm": 72, "device": "Laptop"}, {"reaction_time_ms": 306, "finger_mm": 72, "device": "Laptop"}, {"reaction_time_ms": 418, "finger_mm": 72, "device": "Laptop"}, {"reaction_time_ms": 296, "finger_mm": 72, "device": "Laptop"}, {"reaction_time_ms": 247, "finger_mm": 72, "device": "Laptop"}, {"reaction_time_ms": 287, "finger_mm": 72, "device": "Laptop"}, {"reaction_time_ms": 248, "finger_mm": 72, "device": "Laptop"}, {"reaction_time_ms": 198, "finger_mm": 72, "device": "Laptop"}, {"reaction_time_ms": 265, "finger_mm": 72, "device": "Laptop"}, {"reaction_time_ms": 408, "finger_mm": 72, "device": "Laptop"}, {"reaction_time_ms": 406, "finger_mm": 67, "device": "Phone"}, {"reaction_time_ms": 362, "finger_mm": 67, "device": "Phone"}, {"reaction_time_ms": 426, "finger_mm": 67, "device": "Phone"}, {"reaction_time_ms": 462, "finger_mm": 67, "device": "Phone"}, {"reaction_time_ms": 382, "finger_mm": 67, "device": "Phone"}, {"reaction_time_ms": 397, "finger_mm": 67, "device": "Phone"}, {"reaction_time_ms": 388, "finger_mm": 67, "device": "Phone"}, {"reaction_time_ms": 377, "finger_mm": 67, "device": "Phone"}, {"reaction_time_ms": 331, "finger_mm": 67, "device": "Phone"}, {"reaction_time_ms": 327, "finger_mm": 67, "device": "Phone"}, {"reaction_time_ms": 320, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 348, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 272, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 271, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 575, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 219, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 336, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 218, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 260, "finger_mm": 68, "device": "Laptop"}, {"reaction_time_ms": 310, "finger_mm": 68, "device": "Laptop"}]}, {"name": "life_data", "value": [{"country": "Afghanistan", "life_exp": 64.047, "gdp_per_capita": 1.758465636, "continent": "Asia", "ln_gdp_per_capita": 0.56444163108614, "quad_raw_fit": 65.39656355379003}, {"country": "Albania", "life_exp": 78.495, "gdp_per_capita": 11.80328388, "continent": "Europe", "ln_gdp_per_capita": 2.4683777876700264, "quad_raw_fit": 70.77070184461824}, {"country": "Algeria", "life_exp": 76.293, "gdp_per_capita": 13.87629464, "continent": "Africa", "ln_gdp_per_capita": 2.630181962667022, "quad_raw_fit": 71.76714043863083}, {"country": "Angola", "life_exp": 61.809, "gdp_per_capita": 6.044972035, "continent": "Africa", "ln_gdp_per_capita": 1.7992268579187518, "quad_raw_fit": 67.80060693017148}, {"country": "Antigua and Barbuda", "life_exp": 76.519, "gdp_per_capita": 22.85574802, "continent": "North America", "ln_gdp_per_capita": 3.129202640191466, "quad_raw_fit": 75.63823777702642}, {"country": "Argentina", "life_exp": 76.738, "gdp_per_capita": 18.94514402, "continent": "South America", "ln_gdp_per_capita": 2.9415476464474755, "quad_raw_fit": 74.04124767392301}, {"country": "Armenia", "life_exp": 74.782, "gdp_per_capita": 8.744731368, "continent": "Asia", "ln_gdp_per_capita": 2.1684513896454023, "quad_raw_fit": 69.23015401150812}, {"country": "Aruba", "life_exp": 76.01, "gdp_per_capita": 35.86182812, "continent": "North America", "ln_gdp_per_capita": 3.5796734462417774, "quad_raw_fit": 79.96288241382192}, {"country": "Australia", "life_exp": 82.49756098, "gdp_per_capita": 44.88801999, "continent": "Oceania", "ln_gdp_per_capita": 3.804170943779172, "quad_raw_fit": 82.07233222075521}, {"country": "Austria", "life_exp": 81.64146341, "gdp_per_capita": 45.49304535, "continent": "Europe", "ln_gdp_per_capita": 3.8175594648236877, "quad_raw_fit": 82.18759613458224}, {"country": "Azerbaijan", "life_exp": 72.123, "gdp_per_capita": 15.92939963, "continent": "Asia", "ln_gdp_per_capita": 2.7681664352017026, "quad_raw_fit": 72.71602013980295}, {"country": "Bahamas, The", "life_exp": 75.823, "gdp_per_capita": 28.7052785, "continent": "North America", "ln_gdp_per_capita": 3.3570810257150185, "quad_raw_fit": 77.77099900179519}, {"country": "Bahrain", "life_exp": 77.038, "gdp_per_capita": 43.32044036, "continent": "Asia", "ln_gdp_per_capita": 3.7686245873627486, "quad_raw_fit": 81.75841784999125}, {"country": "Bangladesh", "life_exp": 72.808, "gdp_per_capita": 3.634316954, "continent": "Asia", "ln_gdp_per_capita": 1.2904211852129974, "quad_raw_fit": 66.46889519370824}, {"country": "Barbados", "life_exp": 76.057, "gdp_per_capita": 16.83900058, "continent": "North America", "ln_gdp_per_capita": 2.823697659072022, "quad_raw_fit": 73.12432321164705}, {"country": "Belarus", "life_exp": 74.12926829, "gdp_per_capita": 17.19342414, "continent": "Europe", "ln_gdp_per_capita": 2.844526993275601, "quad_raw_fit": 73.28140829567285}, {"country": "Belgium", "life_exp": 81.43902439, "gdp_per_capita": 42.78105782, "continent": "Europe", "ln_gdp_per_capita": 3.756095430323775, "quad_raw_fit": 81.64530766265594}, {"country": "Belize", "life_exp": 70.588, "gdp_per_capita": 7.726380697, "continent": "North America", "ln_gdp_per_capita": 2.0446405378165626, "quad_raw_fit": 68.69860692853491}, {"country": "Benin", "life_exp": 61.171, "gdp_per_capita": 2.06928528, "continent": "Africa", "ln_gdp_per_capita": 0.7272032722936966, "quad_raw_fit": 65.57642531576009}, {"country": "Bhutan", "life_exp": 70.565, "gdp_per_capita": 9.246676763, "continent": "Asia", "ln_gdp_per_capita": 2.2242642181069487, "quad_raw_fit": 69.48873151569865}, {"country": "Bolivia", "life_exp": 69.473, "gdp_per_capita": 6.798929349, "continent": "South America", "ln_gdp_per_capita": 1.9167651511092463, "quad_raw_fit": 68.20641333682346}, {"country": "Bosnia and Herzegovina", "life_exp": 77.087, "gdp_per_capita": 12.27460521, "continent": "Europe", "ln_gdp_per_capita": 2.507532511045246, "quad_raw_fit": 71.000638377076}, {"country": "Botswana", "life_exp": 67.618, "gdp_per_capita": 16.16533839, "continent": "Africa", "ln_gdp_per_capita": 2.7828693444565924, "quad_raw_fit": 72.8226414912146}, {"country": "Brazil", "life_exp": 75.723, "gdp_per_capita": 14.23601775, "continent": "South America", "ln_gdp_per_capita": 2.6557752144861686, "quad_raw_fit": 71.93612479425857}, {"country": "Brunei Darussalam", "life_exp": 77.374, "gdp_per_capita": 72.523836, "continent": "Asia", "ln_gdp_per_capita": 4.283915280240615, "quad_raw_fit": 83.98716747627746}, {"country": "Bulgaria", "life_exp": 74.81219512, "gdp_per_capita": 18.60622003, "continent": "Europe", "ln_gdp_per_capita": 2.923495935031576, "quad_raw_fit": 73.89638078888485}, {"country": "Burkina Faso", "life_exp": 60.77, "gdp_per_capita": 1.696234138, "continent": "Africa", "ln_gdp_per_capita": 0.5284105809073014, "quad_raw_fit": 65.36044798844553}, {"country": "Burundi", "life_exp": 57.857, "gdp_per_capita": 0.6707770725, "continent": "Africa", "ln_gdp_per_capita": -0.39931842895531394, "quad_raw_fit": 64.76032992323097}, {"country": "Cabo Verde", "life_exp": 73.004, "gdp_per_capita": 6.387095706, "continent": "Africa", "ln_gdp_per_capita": 1.8542796589669508, "quad_raw_fit": 67.98538182477994}, {"country": "Cambodia", "life_exp": 69.331, "gdp_per_capita": 3.653641495, "continent": "Asia", "ln_gdp_per_capita": 1.2957243401155971, "quad_raw_fit": 66.4797778383964}, {"country": "Cameroon", "life_exp": 58.575, "gdp_per_capita": 3.312899677, "continent": "Africa", "ln_gdp_per_capita": 1.1978238412413924, "quad_raw_fit": 66.2873974082904}, {"country": "Canada", "life_exp": 82.4704878, "gdp_per_capita": 43.85242489, "continent": "North America", "ln_gdp_per_capita": 3.780830016947147, "quad_raw_fit": 81.86742064191574}, {"country": "Central African Republic", "life_exp": 52.89, "gdp_per_capita": 0.7538248792, "continent": "Africa", "ln_gdp_per_capita": -0.28259519365263147, "quad_raw_fit": 64.80928215579311}, {"country": "Chad", "life_exp": 53.208, "gdp_per_capita": 1.753771876, "continent": "Africa", "ln_gdp_per_capita": 0.5617688261985037, "quad_raw_fit": 65.3938407778712}, {"country": "Chile", "life_exp": 79.732, "gdp_per_capita": 22.296837, "continent": "South America", "ln_gdp_per_capita": 3.10444482984101, "quad_raw_fit": 75.41839391223796}, {"country": "China", "life_exp": 76.41, "gdp_per_capita": 15.25399307, "continent": "Asia", "ln_gdp_per_capita": 2.7248413094348765, "quad_raw_fit": 72.40804171480565}, {"country": "Colombia", "life_exp": 74.562, "gdp_per_capita": 13.18620683, "continent": "South America", "ln_gdp_per_capita": 2.579171346143701, "quad_raw_fit": 71.43971426927294}, {"country": "Comoros", "life_exp": 63.912, "gdp_per_capita": 2.500569443, "continent": "Africa", "ln_gdp_per_capita": 0.9165184831368671, "quad_raw_fit": 65.82456085198254}, {"country": "Congo, Dem. Rep.", "life_exp": 60.031, "gdp_per_capita": 0.8077529051, "continent": "Africa", "ln_gdp_per_capita": -0.21349907775041602, "quad_raw_fit": 64.8410367106155}, {"country": "Congo, Rep.", "life_exp": 65.088, "gdp_per_capita": 5.103142821, "continent": "Africa", "ln_gdp_per_capita": 1.6298565893445083, "quad_raw_fit": 67.2865186789027}, {"country": "Costa Rica", "life_exp": 80.03, "gdp_per_capita": 15.43030863, "continent": "North America", "ln_gdp_per_capita": 2.736333668119298, "quad_raw_fit": 72.48883442659104}, {"country": "Cote d'Ivoire", "life_exp": 54.102, "gdp_per_capita": 3.564595846, "continent": "Africa", "ln_gdp_per_capita": 1.271050680258789, "quad_raw_fit": 66.42960380346504}, {"country": "Croatia", "life_exp": 77.82682927, "gdp_per_capita": 22.83494166, "continent": "Europe", "ln_gdp_per_capita": 3.1282918917836877, "quad_raw_fit": 75.63010394597333}, {"country": "Curacao", "life_exp": 78.01707317, "gdp_per_capita": 25.11091477, "continent": "North America", "ln_gdp_per_capita": 3.2233026030116934, "quad_raw_fit": 76.49683201320676}, {"country": "Cyprus", "life_exp": 80.67, "gdp_per_capita": 33.04754579, "continent": "Asia", "ln_gdp_per_capita": 3.497947306051818, "quad_raw_fit": 79.15573734217537}, {"country": "Czech Republic", "life_exp": 79.47560976, "gdp_per_capita": 32.57078118, "continent": "Europe", "ln_gdp_per_capita": 3.4834156036489645, "quad_raw_fit": 79.01196313717263}, {"country": "Denmark", "life_exp": 81.00487805, "gdp_per_capita": 47.2696913, "continent": "Europe", "ln_gdp_per_capita": 3.8558693142147495, "quad_raw_fit": 82.50709037547347}, {"country": "Dominican Republic", "life_exp": 74.048, "gdp_per_capita": 14.95343649, "continent": "North America", "ln_gdp_per_capita": 2.704941138973497, "quad_raw_fit": 72.26967553246004}, {"country": "Ecuador", "life_exp": 76.551, "gdp_per_capita": 10.4537099, "continent": "South America", "ln_gdp_per_capita": 2.346956929762202, "quad_raw_fit": 70.10128460242501}, {"country": "Egypt, Arab Rep.", "life_exp": 71.661, "gdp_per_capita": 10.67280022, "continent": "Africa", "ln_gdp_per_capita": 2.3676984694956067, "quad_raw_fit": 70.21106877639603}, {"country": "El Salvador", "life_exp": 73.75, "gdp_per_capita": 7.246755527, "continent": "North America", "ln_gdp_per_capita": 1.9805538551852837, "quad_raw_fit": 68.44503559788504}, {"country": "Equatorial Guinea", "life_exp": 57.939, "gdp_per_capita": 22.29894214, "continent": "Africa", "ln_gdp_per_capita": 3.10453923967271, "quad_raw_fit": 75.41922721146258}, {"country": "Estonia", "life_exp": 77.64146341, "gdp_per_capita": 29.91635691, "continent": "Europe", "ln_gdp_per_capita": 3.398405384663389, "quad_raw_fit": 78.17421510207734}, {"country": "Eswatini", "life_exp": 58.268, "gdp_per_capita": 9.567585628, "continent": "Africa", "ln_gdp_per_capita": 2.258380888160085, "quad_raw_fit": 69.65286371791831}, {"country": "Ethiopia", "life_exp": 65.874, "gdp_per_capita": 1.724482541, "continent": "Africa", "ln_gdp_per_capita": 0.5449270292495693, "quad_raw_fit": 65.37684603427934}, {"country": "Fiji", "life_exp": 70.417, "gdp_per_capita": 9.379297794, "continent": "Oceania", "ln_gdp_per_capita": 2.238504898168922, "quad_raw_fit": 69.55667391691642}, {"country": "Finland", "life_exp": 81.42926829, "gdp_per_capita": 41.0180502, "continent": "Europe", "ln_gdp_per_capita": 3.7140122186037345, "quad_raw_fit": 81.25739586655618}, {"country": "France", "life_exp": 82.52439024, "gdp_per_capita": 38.95583397, "continent": "Europe", "ln_gdp_per_capita": 3.6624285421019867, "quad_raw_fit": 80.76827305499994}, {"country": "Gabon", "life_exp": 66.48, "gdp_per_capita": 16.1449353, "continent": "Africa", "ln_gdp_per_capita": 2.781606396769567, "quad_raw_fit": 72.81344100224672}, {"country": "Gambia, The", "life_exp": 61.424, "gdp_per_capita": 1.465335551, "continent": "Africa", "ln_gdp_per_capita": 0.38208426129341205, "quad_raw_fit": 65.22614425751921}, {"country": "Georgia", "life_exp": 73.436, "gdp_per_capita": 9.702168277, "continent": "Asia", "ln_gdp_per_capita": 2.27234939424074, "quad_raw_fit": 69.72142251165168}, {"country": "Germany", "life_exp": 80.9902439, "gdp_per_capita": 45.46202833, "continent": "Europe", "ln_gdp_per_capita": 3.8168774353348995, "quad_raw_fit": 82.18176689902566}, {"country": "Ghana", "life_exp": 63.033, "gdp_per_capita": 4.051461891, "continent": "Africa", "ln_gdp_per_capita": 1.399077776728533, "quad_raw_fit": 66.70306678372079}, {"country": "Greece", "life_exp": 81.38780488, "gdp_per_capita": 24.60167323, "continent": "Europe", "ln_gdp_per_capita": 3.202814458104908, "quad_raw_fit": 76.30693922044455}, {"country": "Grenada", "life_exp": 73.78, "gdp_per_capita": 13.39690285, "continent": "North America", "ln_gdp_per_capita": 2.5950235496450578, "quad_raw_fit": 71.54013624564558}, {"country": "Guatemala", "life_exp": 73.654, "gdp_per_capita": 7.423170622, "continent": "North America", "ln_gdp_per_capita": 2.0046062734565884, "quad_raw_fit": 68.5385437548221}, {"country": "Guinea", "life_exp": 60.617, "gdp_per_capita": 2.213463585, "continent": "Africa", "ln_gdp_per_capita": 0.7945585217332976, "quad_raw_fit": 65.65956266900798}, {"country": "Guinea-Bissau", "life_exp": 57.805, "gdp_per_capita": 1.576748994, "continent": "Africa", "ln_gdp_per_capita": 0.4553651285401737, "quad_raw_fit": 65.29100834346531}, {"country": "Guyana", "life_exp": 66.766, "gdp_per_capita": 7.399136096, "continent": "South America", "ln_gdp_per_capita": 2.0013632496112543, "quad_raw_fit": 68.52582076923358}, {"country": "Haiti", "life_exp": 63.589, "gdp_per_capita": 1.653001342, "continent": "North America", "ln_gdp_per_capita": 0.5025926306957869, "quad_raw_fit": 65.33533772420938}, {"country": "Honduras", "life_exp": 73.774, "gdp_per_capita": 4.468999058, "continent": "North America", "ln_gdp_per_capita": 1.4971644591658815, "quad_raw_fit": 66.9358956219173}, {"country": "Hong Kong SAR, China", "life_exp": 84.6804878, "gdp_per_capita": 56.08769343, "continent": "Asia", "ln_gdp_per_capita": 4.026916420014675, "quad_raw_fit": 83.67386263252871}, {"country": "Hungary", "life_exp": 76.06341463, "gdp_per_capita": 26.86057332, "continent": "Europe", "ln_gdp_per_capita": 3.290659535617854, "quad_raw_fit": 77.13154351854567}, {"country": "Iceland", "life_exp": 82.20487805, "gdp_per_capita": 47.83951903, "continent": "Europe", "ln_gdp_per_capita": 3.8678520558711016, "quad_raw_fit": 82.60356618037338}, {"country": "India", "life_exp": 68.803, "gdp_per_capita": 6.51617262, "continent": "Asia", "ln_gdp_per_capita": 1.8742871821016067, "quad_raw_fit": 68.05482120524611}, {"country": "Indonesia", "life_exp": 69.355, "gdp_per_capita": 11.1610212, "continent": "Asia", "ln_gdp_per_capita": 2.4124274581431475, "quad_raw_fit": 70.45416323888747}, {"country": "Iran, Islamic Rep.", "life_exp": 76.153, "gdp_per_capita": 19.09796678, "continent": "Asia", "ln_gdp_per_capita": 2.949581878077341, "quad_raw_fit": 74.10623195928339}, {"country": "Iraq", "life_exp": 70.038, "gdp_per_capita": 15.82958889, "continent": "Asia", "ln_gdp_per_capita": 2.7618809032461478, "quad_raw_fit": 72.67076511590034}, {"country": "Ireland", "life_exp": 81.95609756, "gdp_per_capita": 66.60442851, "continent": "Europe", "ln_gdp_per_capita": 4.19877106947985, "quad_raw_fit": 84.15351211550085}, {"country": "Israel", "life_exp": 82.60243902, "gdp_per_capita": 33.22044963, "continent": "Asia", "ln_gdp_per_capita": 3.503165639012276, "quad_raw_fit": 79.20737485429646}, {"country": "Italy", "life_exp": 83.24390244, "gdp_per_capita": 35.37316869, "continent": "Europe", "ln_gdp_per_capita": 3.5659535861428022, "quad_raw_fit": 79.8278298296461}, {"country": "Jamaica", "life_exp": 76.097, "gdp_per_capita": 8.153886686, "continent": "North America", "ln_gdp_per_capita": 2.0984947075627036, "quad_raw_fit": 68.92288440228819}, {"country": "Japan", "life_exp": 84.0997561, "gdp_per_capita": 38.90736814, "continent": "Asia", "ln_gdp_per_capita": 3.66118364502748, "quad_raw_fit": 80.75631902177753}, {"country": "Jordan", "life_exp": 74.476, "gdp_per_capita": 8.298545893, "continent": "Asia", "ln_gdp_per_capita": 2.1160803058399007, "quad_raw_fit": 68.99840408545774}, {"country": "Kazakhstan", "life_exp": 72.95, "gdp_per_capita": 24.07854516, "continent": "Asia", "ln_gdp_per_capita": 3.181321201671922, "quad_raw_fit": 76.10944626442782}, {"country": "Kenya", "life_exp": 67.291, "gdp_per_capita": 2.961461738, "continent": "Africa", "ln_gdp_per_capita": 1.0856829768472682, "quad_raw_fit": 66.08788710397806}, {"country": "Kiribati", "life_exp": 66.506, "gdp_per_capita": 2.025042945, "continent": "Oceania", "ln_gdp_per_capita": 0.705590907741036, "quad_raw_fit": 65.550876529698}, {"country": "Korea, Rep.", "life_exp": 82.62682927, "gdp_per_capita": 35.93837422, "continent": "Asia", "ln_gdp_per_capita": 3.581805644383433, "quad_raw_fit": 79.98384371425647}, {"country": "Kosovo", "life_exp": 71.94634146, "gdp_per_capita": 9.779858078, "continent": "Europe", "ln_gdp_per_capita": 2.280324972489491, "quad_raw_fit": 69.76092511968089}, {"country": "Kuwait", "life_exp": 74.811, "gdp_per_capita": 66.00858461, "continent": "Asia", "ln_gdp_per_capita": 4.189784803416561, "quad_raw_fit": 84.15284665990467}, {"country": "Kyrgyz Republic", "life_exp": 71.2, "gdp_per_capita": 3.39361799, "continent": "Asia", "ln_gdp_per_capita": 1.2218966059693455, "quad_raw_fit": 66.33306452526037}, {"country": "Lao PDR", "life_exp": 67.021, "gdp_per_capita": 6.307628082, "continent": "Asia", "ln_gdp_per_capita": 1.841759707628927, "quad_raw_fit": 67.94255638379354}, {"country": "Latvia", "life_exp": 74.6804878, "gdp_per_capita": 25.02979255, "continent": "Europe", "ln_gdp_per_capita": 3.220066817355002, "quad_raw_fit": 76.46673782605843}, {"country": "Lebanon", "life_exp": 79.758, "gdp_per_capita": 11.64701809, "continent": "Asia", "ln_gdp_per_capita": 2.455050189308971, "quad_raw_fit": 70.69402696805199}, {"country": "Lesotho", "life_exp": 54.568, "gdp_per_capita": 2.845889522, "continent": "Africa", "ln_gdp_per_capita": 1.0458756802212932, "quad_raw_fit": 66.0220350403573}, {"country": "Liberia", "life_exp": 63.006, "gdp_per_capita": 1.17563541, "continent": "Africa", "ln_gdp_per_capita": 0.16180877589838746, "quad_raw_fit": 65.0569618448239}, {"country": "Libya", "life_exp": 72.11, "gdp_per_capita": 17.32146121, "continent": "Africa", "ln_gdp_per_capita": 2.851946265049164, "quad_raw_fit": 73.33787894575818}, {"country": "Lithuania", "life_exp": 74.67073171, "gdp_per_capita": 29.60387703, "continent": "Europe", "ln_gdp_per_capita": 3.3879053334960294, "quad_raw_fit": 78.0714373929605}, {"country": "Luxembourg", "life_exp": 82.68536585, "gdp_per_capita": 93.10178496, "continent": "Europe", "ln_gdp_per_capita": 4.533693356601916, "quad_raw_fit": 80.96360772391692}, {"country": "Macao SAR, China", "life_exp": 83.991, "gdp_per_capita": 105.448677, "continent": "Asia", "ln_gdp_per_capita": 4.658224360615638, "quad_raw_fit": 77.32637035393968}, {"country": "Madagascar", "life_exp": 66.312, "gdp_per_capita": 1.418309584, "continent": "Africa", "ln_gdp_per_capita": 0.34946572868119624, "quad_raw_fit": 65.19873267205821}, {"country": "Malawi", "life_exp": 63.671, "gdp_per_capita": 1.154028727, "continent": "Africa", "ln_gdp_per_capita": 0.1432590611902834, "quad_raw_fit": 65.04431356124041}, {"country": "Malaysia", "life_exp": 75.452, "gdp_per_capita": 27.27185923, "continent": "Asia", "ln_gdp_per_capita": 3.3058553731179683, "quad_raw_fit": 77.27675708360525}, {"country": "Maldives", "life_exp": 77.649, "gdp_per_capita": 13.33293838, "continent": "Asia", "ln_gdp_per_capita": 2.5902375435071012, "quad_raw_fit": 71.5096915788513}, {"country": "Mali", "life_exp": 58.456, "gdp_per_capita": 2.019441058, "continent": "Africa", "ln_gdp_per_capita": 0.7028207691631131, "quad_raw_fit": 65.54764033493463}, {"country": "Malta", "life_exp": 82.45365854, "gdp_per_capita": 36.98891847, "continent": "Europe", "ln_gdp_per_capita": 3.6106183669740886, "quad_raw_fit": 80.26621355821733}, {"country": "Mauritania", "life_exp": 63.384, "gdp_per_capita": 3.696353104, "continent": "Africa", "ln_gdp_per_capita": 1.3073466860126255, "quad_raw_fit": 66.50381906331499}, {"country": "Mauritius", "life_exp": 74.51463415, "gdp_per_capita": 20.31949111, "continent": "Africa", "ln_gdp_per_capita": 3.0115805785974676, "quad_raw_fit": 74.61812769333716}, {"country": "Mexico", "life_exp": 77.305, "gdp_per_capita": 17.94901995, "continent": "North America", "ln_gdp_per_capita": 2.8875355145579205, "quad_raw_fit": 73.61253672126672}, {"country": "Micronesia, Fed. Sts.", "life_exp": 69.316, "gdp_per_capita": 3.185280685, "continent": "Oceania", "ln_gdp_per_capita": 1.1585404122997125, "quad_raw_fit": 66.21507657115993}, {"country": "Moldova", "life_exp": 71.718, "gdp_per_capita": 6.234310347, "continent": "Europe", "ln_gdp_per_capita": 1.8300679630704035, "quad_raw_fit": 67.90299490806875}, {"country": "Mongolia", "life_exp": 69.465, "gdp_per_capita": 11.62285369, "continent": "Asia", "ln_gdp_per_capita": 2.4529733056102176, "quad_raw_fit": 70.68215067810077}, {"country": "Montenegro", "life_exp": 77.271, "gdp_per_capita": 16.47739299, "continent": "Europe", "ln_gdp_per_capita": 2.8019893196132264, "quad_raw_fit": 72.96289290607423}, {"country": "Morocco", "life_exp": 76.059, "gdp_per_capita": 7.508795434, "continent": "Africa", "ln_gdp_per_capita": 2.0160750579713196, "quad_raw_fit": 68.5838282422142}, {"country": "Mozambique", "life_exp": 58.872, "gdp_per_capita": 1.176846424, "continent": "Africa", "ln_gdp_per_capita": 0.16283833888116628, "quad_raw_fit": 65.05767063344109}, {"country": "Myanmar", "life_exp": 66.744, "gdp_per_capita": 5.6103247, "continent": "Asia", "ln_gdp_per_capita": 1.7246085966475713, "quad_raw_fit": 67.56434755193524}, {"country": "Namibia", "life_exp": 64.85, "gdp_per_capita": 10.09323318, "continent": "Africa", "ln_gdp_per_capita": 2.3118652171306397, "quad_raw_fit": 69.91971605685004}, {"country": "Nepal", "life_exp": 70.604, "gdp_per_capita": 2.605510114, "continent": "Asia", "ln_gdp_per_capita": 0.9576284771481224, "quad_raw_fit": 65.88468518336353}, {"country": "Netherlands", "life_exp": 81.56097561, "gdp_per_capita": 48.78913571, "continent": "Europe", "ln_gdp_per_capita": 3.887507659180168, "quad_raw_fit": 82.75787209475189}, {"country": "New Zealand", "life_exp": 81.65853659, "gdp_per_capita": 36.04639432, "continent": "Oceania", "ln_gdp_per_capita": 3.5848068398660473, "quad_raw_fit": 80.01333441133058}, {"country": "Nicaragua", "life_exp": 75.653, "gdp_per_capita": 5.169297773, "continent": "North America", "ln_gdp_per_capita": 1.6427368520222512, "quad_raw_fit": 67.32288850609346}, {"country": "Niger", "life_exp": 60.422, "gdp_per_capita": 0.9206266175, "continent": "Africa", "ln_gdp_per_capita": -0.08270073480819791, "quad_raw_fit": 64.90741594584125}, {"country": "Nigeria", "life_exp": 53.875, "gdp_per_capita": 5.351441254, "continent": "Africa", "ln_gdp_per_capita": 1.6773659178990916, "quad_raw_fit": 67.422822208971}, {"country": "North Macedonia", "life_exp": 75.851, "gdp_per_capita": 13.13953555, "continent": "Europe", "ln_gdp_per_capita": 2.5756256661608417, "quad_raw_fit": 71.41741592740591}, {"country": "Norway", "life_exp": 82.5097561, "gdp_per_capita": 64.965386, "continent": "Europe", "ln_gdp_per_capita": 4.173854604977942, "quad_raw_fit": 84.14401357978848}, {"country": "Oman", "life_exp": 77.258, "gdp_per_capita": 37.32858836, "continent": "Asia", "ln_gdp_per_capita": 3.619759477049413, "quad_raw_fit": 80.35539380802368}, {"country": "Pakistan", "life_exp": 66.629, "gdp_per_capita": 4.771205236, "continent": "Asia", "ln_gdp_per_capita": 1.5625989430055205, "quad_raw_fit": 67.10343765431195}, {"country": "Panama", "life_exp": 78.195, "gdp_per_capita": 22.24354948, "continent": "North America", "ln_gdp_per_capita": 3.102052055568692, "quad_raw_fit": 75.39728732754728}, {"country": "Papua New Guinea", "life_exp": 65.705, "gdp_per_capita": 3.880650005, "continent": "Oceania", "ln_gdp_per_capita": 1.3560026666659466, "quad_raw_fit": 66.60736724809836}, {"country": "Paraguay", "life_exp": 73.211, "gdp_per_capita": 11.79046156, "continent": "South America", "ln_gdp_per_capita": 2.4672908622138734, "quad_raw_fit": 70.76441857012844}, {"country": "Peru", "life_exp": 75.22, "gdp_per_capita": 12.5181634, "continent": "South America", "ln_gdp_per_capita": 2.5271806616207044, "quad_raw_fit": 71.1186786536773}, {"country": "Philippines", "life_exp": 69.238, "gdp_per_capita": 7.580847417, "continent": "Asia", "ln_gdp_per_capita": 2.025624989843519, "quad_raw_fit": 68.62188350339537}, {"country": "Poland", "life_exp": 77.85121951, "gdp_per_capita": 27.34627981, "continent": "Europe", "ln_gdp_per_capita": 3.3085804980440052, "quad_raw_fit": 77.30287080795514}, {"country": "Portugal", "life_exp": 81.12439024, "gdp_per_capita": 28.03461996, "continent": "Europe", "ln_gdp_per_capita": 3.333440173571501, "quad_raw_fit": 77.54205054071109}, {"country": "Puerto Rico", "life_exp": 79.97363415, "gdp_per_capita": 35.45440627, "continent": "North America", "ln_gdp_per_capita": 3.568247540599667, "quad_raw_fit": 79.85043018678414}, {"country": "Qatar", "life_exp": 78.331, "gdp_per_capita": 113.2621816, "continent": "Asia", "ln_gdp_per_capita": 4.729705322375483, "quad_raw_fit": 74.31817958967814}, {"country": "Romania", "life_exp": 75.3097561, "gdp_per_capita": 23.44160669, "continent": "Europe", "ln_gdp_per_capita": 3.1545125071549465, "quad_raw_fit": 75.86567360575037}, {"country": "Russian Federation", "life_exp": 72.11902439, "gdp_per_capita": 24.79064833, "continent": "Europe", "ln_gdp_per_capita": 3.210466498589346, "quad_raw_fit": 76.37767820149247}, {"country": "Rwanda", "life_exp": 67.496, "gdp_per_capita": 1.892676646, "continent": "Africa", "ln_gdp_per_capita": 0.6379920419999776, "quad_raw_fit": 65.47433363275097}, {"country": "Samoa", "life_exp": 75.24, "gdp_per_capita": 6.069604785, "continent": "Oceania", "ln_gdp_per_capita": 1.8032934933964984, "quad_raw_fit": 67.81394571196084}, {"country": "Sao Tome and Principe", "life_exp": 66.762, "gdp_per_capita": 3.01106566, "continent": "Africa", "ln_gdp_per_capita": 1.1022940559705685, "quad_raw_fit": 66.11611425176604}, {"country": "Saudi Arabia", "life_exp": 74.72, "gdp_per_capita": 48.80396059, "continent": "Asia", "ln_gdp_per_capita": 3.8878114691969845, "quad_raw_fit": 82.76021691183007}, {"country": "Senegal", "life_exp": 67.477, "gdp_per_capita": 3.232310165, "continent": "Africa", "ln_gdp_per_capita": 1.1731971029478856, "quad_raw_fit": 66.24174486291122}, {"country": "Serbia", "life_exp": 76.08780488, "gdp_per_capita": 15.28909738, "continent": "Europe", "ln_gdp_per_capita": 2.7271399848432996, "quad_raw_fit": 72.42414972044635}, {"country": "Seychelles", "life_exp": 74.3, "gdp_per_capita": 26.4158067, "continent": "Africa", "ln_gdp_per_capita": 3.2739625696161716, "quad_raw_fit": 76.97280136146802}, {"country": "Sierra Leone", "life_exp": 52.214, "gdp_per_capita": 1.403791088, "continent": "Africa", "ln_gdp_per_capita": 0.3391764968113425, "quad_raw_fit": 65.1902657874947}, {"country": "Singapore", "life_exp": 82.89512195, "gdp_per_capita": 87.76036815, "continent": "Asia", "ln_gdp_per_capita": 4.474610010921713, "quad_raw_fit": 82.11341187799836}, {"country": "Slovak Republic", "life_exp": 77.16585366, "gdp_per_capita": 30.13292048, "continent": "Europe", "ln_gdp_per_capita": 3.4056182777512074, "quad_raw_fit": 78.24493118316511}, {"country": "Slovenia", "life_exp": 81.17560976, "gdp_per_capita": 31.35130424, "continent": "Europe", "ln_gdp_per_capita": 3.445255868765402, "quad_raw_fit": 78.63493838582842}, {"country": "Solomon Islands", "life_exp": 71.006, "gdp_per_capita": 2.126352921, "continent": "Oceania", "ln_gdp_per_capita": 0.7544082684947249, "quad_raw_fit": 65.60935445117093}, {"country": "South Africa", "life_exp": 63.404, "gdp_per_capita": 12.23336897, "continent": "Africa", "ln_gdp_per_capita": 2.504167379467191, "quad_raw_fit": 70.980600600593}, {"country": "Spain", "life_exp": 83.32926829, "gdp_per_capita": 34.26911624, "continent": "Europe", "ln_gdp_per_capita": 3.534244547401094, "quad_raw_fit": 79.51481292201541}, {"country": "Sri Lanka", "life_exp": 75.485, "gdp_per_capita": 11.70584378, "continent": "Asia", "ln_gdp_per_capita": 2.460088185486968, "quad_raw_fit": 70.72291665303149}, {"country": "St. Lucia", "life_exp": 75.696, "gdp_per_capita": 12.33366302, "continent": "North America", "ln_gdp_per_capita": 2.51233235497019, "quad_raw_fit": 71.02930956136878}, {"country": "St. Vincent and the Grenadines", "life_exp": 73.294, "gdp_per_capita": 10.70426902, "continent": "North America", "ln_gdp_per_capita": 2.37064263573074, "quad_raw_fit": 70.22680214663417}, {"country": "Sudan", "life_exp": 64.698, "gdp_per_capita": 4.435857095, "continent": "Africa", "ln_gdp_per_capita": 1.4897208541360287, "quad_raw_fit": 66.9174719928216}, {"country": "Suriname", "life_exp": 71.523, "gdp_per_capita": 13.63627551, "continent": "South America", "ln_gdp_per_capita": 2.6127335586770024, "quad_raw_fit": 71.6537429413359}, {"country": "Sweden", "life_exp": 82.30731707, "gdp_per_capita": 46.68117148, "continent": "Europe", "ln_gdp_per_capita": 3.8433409030760357, "quad_raw_fit": 82.40439266000357}, {"country": "Switzerland", "life_exp": 83.60243902, "gdp_per_capita": 57.99764349, "continent": "Europe", "ln_gdp_per_capita": 4.060402380238261, "quad_raw_fit": 83.83469252570572}, {"country": "Tajikistan", "life_exp": 71.214, "gdp_per_capita": 2.923673718, "continent": "Asia", "ln_gdp_per_capita": 1.0728409481098784, "quad_raw_fit": 66.06636899393932}, {"country": "Tanzania", "life_exp": 66.31, "gdp_per_capita": 2.809069009, "continent": "Africa", "ln_gdp_per_capita": 1.0328531149260718, "quad_raw_fit": 66.00102986190358}, {"country": "Thailand", "life_exp": 75.498, "gdp_per_capita": 16.28563737, "continent": "Asia", "ln_gdp_per_capita": 2.7902835764332923, "quad_raw_fit": 72.87681273097316}, {"country": "Timor-Leste", "life_exp": 69.199, "gdp_per_capita": 6.740890192, "continent": "Asia", "ln_gdp_per_capita": 1.9081919921673451, "quad_raw_fit": 68.17535575227487}, {"country": "Togo", "life_exp": 60.477, "gdp_per_capita": 1.529515368, "continent": "Africa", "ln_gdp_per_capita": 0.4249509322863587, "quad_raw_fit": 65.263522869155}, {"country": "Tonga", "life_exp": 73.179, "gdp_per_capita": 5.745951292, "continent": "Oceania", "ln_gdp_per_capita": 1.7484954836677058, "quad_raw_fit": 67.6382513882204}, {"country": "Trinidad and Tobago", "life_exp": 70.783, "gdp_per_capita": 28.56684108, "continent": "North America", "ln_gdp_per_capita": 3.3522466424012336, "quad_raw_fit": 77.7240698551446}, {"country": "Tunisia", "life_exp": 75.943, "gdp_per_capita": 10.95002738, "continent": "Africa", "ln_gdp_per_capita": 2.3933419567160046, "quad_raw_fit": 70.34936774375707}, {"country": "Turkey", "life_exp": 76.009, "gdp_per_capita": 25.02401614, "continent": "Asia", "ln_gdp_per_capita": 3.219836009343511, "quad_raw_fit": 76.4645926803956}, {"country": "Turkmenistan", "life_exp": 67.956, "gdp_per_capita": 16.39017898, "continent": "Asia", "ln_gdp_per_capita": 2.79668231276933, "quad_raw_fit": 72.92378293546825}, {"country": "Uganda", "life_exp": 60.182, "gdp_per_capita": 1.768211137, "continent": "Africa", "ln_gdp_per_capita": 0.5699683784653768, "quad_raw_fit": 65.40221613367702}, {"country": "Ukraine", "life_exp": 71.78097561, "gdp_per_capita": 7.906540301, "continent": "Europe", "ln_gdp_per_capita": 2.067690303166751, "quad_raw_fit": 68.79332179998624}, {"country": "United Arab Emirates", "life_exp": 77.412, "gdp_per_capita": 66.67597347, "continent": "Asia", "ln_gdp_per_capita": 4.199844670186468, "quad_raw_fit": 84.15337788615666}, {"country": "United Kingdom", "life_exp": 81.15609756, "gdp_per_capita": 39.86234552, "continent": "Europe", "ln_gdp_per_capita": 3.6854321570072495, "quad_raw_fit": 80.98798061361514}, {"country": "United States", "life_exp": 78.53902439, "gdp_per_capita": 54.47079667, "continent": "North America", "ln_gdp_per_capita": 3.9976647171377175, "quad_raw_fit": 83.51213595143444}, {"country": "Uruguay", "life_exp": 77.645, "gdp_per_capita": 20.65847444, "continent": "South America", "ln_gdp_per_capita": 3.0281256197259845, "quad_raw_fit": 74.75781078856399}, {"country": "Uzbekistan", "life_exp": 71.42, "gdp_per_capita": 6.039503813, "continent": "Asia", "ln_gdp_per_capita": 1.798321858406651, "quad_raw_fit": 67.79764511701616}, {"country": "Vanuatu", "life_exp": 72.334, "gdp_per_capita": 2.827080453, "continent": "Oceania", "ln_gdp_per_capita": 1.0392445370967467, "quad_raw_fit": 66.01130645790087}, {"country": "Vietnam", "life_exp": 76.454, "gdp_per_capita": 6.233485045, "continent": "Asia", "ln_gdp_per_capita": 1.8299355736663017, "quad_raw_fit": 67.90254930940759}, {"country": "West Bank and Gaza", "life_exp": 73.646, "gdp_per_capita": 4.651723645, "continent": "Asia", "ln_gdp_per_capita": 1.5372378272598473, "quad_raw_fit": 67.03729539349827}, {"country": "Yemen, Rep.", "life_exp": 65.157, "gdp_per_capita": 2.40442237, "continent": "Asia", "ln_gdp_per_capita": 0.8773096959159999, "quad_raw_fit": 65.76938798752813}, {"country": "Zambia", "life_exp": 62.255, "gdp_per_capita": 3.717667166, "continent": "Africa", "ln_gdp_per_capita": 1.3130963656579187, "quad_raw_fit": 66.51581006011722}, {"country": "Zimbabwe", "life_exp": 61.712, "gdp_per_capita": 2.568410072, "continent": "Africa", "ln_gdp_per_capita": 0.9432870584376204, "quad_raw_fit": 65.86344050574755}]}, {"name": "life_r2", "value": [{"model": "Level-level (GDP/capita)", "r_squared": 0.442}, {"model": "Quadratic on raw GDP/capita", "r_squared": 0.605}, {"model": "Log-level (ln GDP/capita)", "r_squared": 0.68}, {"model": "Quadratic on ln GDP/capita", "r_squared": 0.682}]}, {"name": "homo_resid_data", "value": [{"x": 2.4851012743772993, "resid": 0.45553103849926774}, {"x": 4.499754210507954, "resid": -1.8146939677896885}, {"x": 4.109408029965408, "resid": 0.34682384820536766}, {"x": 2.602996908868999, "resid": 0.11462938589618482}, {"x": 8.703956883469495, "resid": -0.35138537101103035}, {"x": 1.8503992716190498, "resid": 1.0278988729896283}, {"x": 0.1966142543004401, "resid": 1.120167614671021}, {"x": 9.532520315037122, "resid": -0.505254037815951}, {"x": 6.804508047310392, "resid": 1.9085154309532575}, {"x": 4.865881265505278, "resid": -1.2765606720072562}, {"x": 9.65026819865954, "resid": 2.525861336409757}, {"x": 3.9339873912163337, "resid": -1.3085931621810547}, {"x": 0.7955757128689422, "resid": 1.7814256928622634}, {"x": 3.514074244137962, "resid": -1.3070748114441522}, {"x": 1.6363516260509525, "resid": 0.7253184419352863}, {"x": 9.831668210338977, "resid": 1.130182475516956}, {"x": 8.806281842152414, "resid": -0.7441716802340109}, {"x": 4.940634681115634, "resid": 0.9778383163941999}, {"x": 4.0095924111847845, "resid": -1.0800480370878631}, {"x": 4.512914630087632, "resid": -0.5764912610041093}, {"x": 7.208768485038962, "resid": 0.27630926466194783}, {"x": 2.477682844367063, "resid": 0.23428205679399808}, {"x": 6.22779952404151, "resid": 0.6430065529671402}, {"x": 1.424488158654288, "resid": 0.8211592127078245}, {"x": 2.0117628247191477, "resid": 3.3855351942655783}, {"x": 0.8121772944869132, "resid": 1.0998042910042554}, {"x": 9.53472294809126, "resid": 0.18086684465096212}, {"x": 0.5573826964217043, "resid": 0.021296369338567718}, {"x": 5.9953648345543495, "resid": 0.008262490094780802}, {"x": 7.229976304934825, "resid": 0.39484154273976846}, {"x": 9.70289719364822, "resid": -0.7048512638389955}, {"x": 8.215694574121692, "resid": 2.1018861800460464}, {"x": 5.275510674393611, "resid": 0.369928269371033}, {"x": 3.314767295436676, "resid": -1.0731399619290822}, {"x": 3.539821955907989, "resid": -0.9229877869689559}, {"x": 0.7903030125787225, "resid": 1.043036276233356}, {"x": 5.559143804253861, "resid": 0.44565695823373513}, {"x": 1.6579446288973876, "resid": -0.7540340835135864}, {"x": 2.952378310408912, "resid": -1.106972757375467}, {"x": 8.40608485158639, "resid": -1.0840697305707687}, {"x": 3.625620094136722, "resid": 0.4873783961222945}, {"x": 3.4081397752267173, "resid": -0.40668022907298695}, {"x": 7.104017442165317, "resid": -1.9867793055677139}, {"x": 0.3170775152874872, "resid": 0.5397136112249861}, {"x": 4.723878660443215, "resid": -3.112727026574432}, {"x": 7.31576622605548, "resid": -0.8920086164504211}, {"x": 7.7321577426368515, "resid": 1.822837724183493}, {"x": 2.412447921705189, "resid": 0.8998747017350267}, {"x": 3.061970455104283, "resid": -2.722904671950413}, {"x": 1.3664963834754318, "resid": -0.9127192792219108}, {"x": 5.957357197268306, "resid": -1.1466025609299817}, {"x": 1.6256886647960578, "resid": 1.1087414351156526}, {"x": 8.023272143430729, "resid": 0.37818896023874043}, {"x": 5.001266521852319, "resid": 1.6090919741331418}, {"x": 0.5949432526546028, "resid": 0.8147904394095258}, {"x": 3.918657759759151, "resid": 0.7131094871532232}, {"x": 6.197755020056901, "resid": -1.3426824792237892}, {"x": 1.8819184329191252, "resid": -0.6560229929037514}, {"x": 4.278884751210637, "resid": -0.6492584935171798}, {"x": 0.8898163794389724, "resid": -1.7602444783342885}, {"x": 7.326304350626252, "resid": 1.5886211375399724}, {"x": 3.932993553912639, "resid": 0.41333614271407154}, {"x": 3.4413639388838027, "resid": -2.3210144299646696}, {"x": 3.9688473567906346, "resid": 1.086794932117363}, {"x": 0.17372025919124345, "resid": -1.129348163476814}, {"x": 4.683649965889627, "resid": 0.8486949493674566}, {"x": 8.932505171959951, "resid": -0.8049954525570465}, {"x": 1.6156441191215443, "resid": -1.4045447196007566}, {"x": 8.444594629494894, "resid": -1.4870476862399553}, {"x": 2.7506829686681344, "resid": -2.0392156878133503}, {"x": 7.687325308162815, "resid": -0.9822164121901855}, {"x": 8.340026215867839, "resid": -2.220504705652082}, {"x": 9.012963176986451, "resid": 0.4765705463406552}, {"x": 9.718249198569858, "resid": -1.1354702953601776}, {"x": 4.2903616574839685, "resid": -0.4229127676917533}, {"x": 6.860843061868155, "resid": 0.3294325037530638}, {"x": 3.2627747822946596, "resid": -1.6632591215720336}, {"x": 7.974891944856877, "resid": -2.130210127404721}, {"x": 4.345283730663097, "resid": 2.02063829695757}, {"x": 5.10194393949749, "resid": -2.3210561259319085}, {"x": 7.6332863730827825, "resid": -1.1747248647838349}, {"x": 1.739191529496058, "resid": 0.4636689921593108}, {"x": 4.524455382201017, "resid": 0.41548243004182467}, {"x": 8.981913664837505, "resid": -0.5395460896384356}, {"x": 6.892831208162546, "resid": -1.6269814025991274}, {"x": 2.859700037567107, "resid": 1.430450351910902}, {"x": 4.208634896780045, "resid": 0.694023754387281}, {"x": 5.679207472576817, "resid": -0.12447628612629875}, {"x": 9.676315855925463, "resid": -0.19325271308972067}, {"x": 5.6071049140637665, "resid": 1.0734491931380998}]}, {"name": "hetero_resid_data", "value": [{"x": 2.4851012743772993, "resid": 1.5098969340656536}, {"x": 4.499754210507954, "resid": 0.2027265803912902}, {"x": 4.109408029965408, "resid": 0.09447172902116246}, {"x": 2.602996908868999, "resid": 0.8609594276211814}, {"x": 8.703956883469495, "resid": -8.247827947320845}, {"x": 1.8503992716190498, "resid": 1.604971262076249}, {"x": 0.1966142543004401, "resid": -0.45964998477821706}, {"x": 9.532520315037122, "resid": -0.7007026991679358}, {"x": 6.804508047310392, "resid": 1.5936860501385999}, {"x": 4.865881265505278, "resid": -0.3331135627529018}, {"x": 9.65026819865954, "resid": 4.680149889020133}, {"x": 3.9339873912163337, "resid": 3.481261404433733}, {"x": 0.7955757128689422, "resid": 0.030359829829183328}, {"x": 3.514074244137962, "resid": 1.133209711036847}, {"x": 1.6363516260509525, "resid": 0.5293996183531391}, {"x": 9.831668210338977, "resid": 4.560669047692308}, {"x": 8.806281842152414, "resid": 0.00289190010771778}, {"x": 4.940634681115634, "resid": -0.29656247230737653}, {"x": 4.0095924111847845, "resid": -0.4462389973626091}, {"x": 4.512914630087632, "resid": 0.20458221066994906}, {"x": 7.208768485038962, "resid": 2.8735507217365615}, {"x": 2.477682844367063, "resid": -1.3359012049020633}, {"x": 6.22779952404151, "resid": 1.9388677865163533}, {"x": 1.424488158654288, "resid": -0.13893570714679707}, {"x": 2.0117628247191477, "resid": -0.34293117236011156}, {"x": 0.8121772944869132, "resid": -1.0981546918453622}, {"x": 9.53472294809126, "resid": -3.6151181002032304}, {"x": 0.5573826964217043, "resid": 0.5059035808096419}, {"x": 5.9953648345543495, "resid": -1.5294008342069514}, {"x": 7.229976304934825, "resid": 4.265587677166768}, {"x": 9.70289719364822, "resid": -3.7618524000048286}, {"x": 8.215694574121692, "resid": -4.592116371613656}, {"x": 5.275510674393611, "resid": 0.4631948287345801}, {"x": 3.314767295436676, "resid": -1.6464602136779165}, {"x": 3.539821955907989, "resid": 0.6758183643085052}, {"x": 0.7903030125787225, "resid": 0.5757221331253938}, {"x": 5.559143804253861, "resid": 0.9830494696447167}, {"x": 1.6579446288973876, "resid": -0.02395818254679583}, {"x": 2.952378310408912, "resid": -1.3803619418610673}, {"x": 8.40608485158639, "resid": 1.5770263626709549}, {"x": 3.625620094136722, "resid": 0.7433921366854437}, {"x": 3.4081397752267173, "resid": -0.4469298908356756}, {"x": 7.104017442165317, "resid": -0.5302908684285519}, {"x": 0.3170775152874872, "resid": -0.2592074551317141}, {"x": 4.723878660443215, "resid": 0.3842701516501257}, {"x": 7.31576622605548, "resid": 0.1191111763736095}, {"x": 7.7321577426368515, "resid": -0.6759701343856154}, {"x": 2.412447921705189, "resid": 0.49487063430780737}, {"x": 3.061970455104283, "resid": 0.8340289132298078}, {"x": 1.3664963834754318, "resid": 0.27885202538348014}, {"x": 5.957357197268306, "resid": 0.13548661574878862}, {"x": 1.6256886647960578, "resid": -0.2055967452166633}, {"x": 8.023272143430729, "resid": 2.726590444864566}, {"x": 5.001266521852319, "resid": 0.11731338215023683}, {"x": 0.5949432526546028, "resid": 0.5749923012176299}, {"x": 3.918657759759151, "resid": 0.9868092573148628}, {"x": 6.197755020056901, "resid": 4.331351010990118}, {"x": 1.8819184329191252, "resid": 0.010312066181118126}, {"x": 4.278884751210637, "resid": -0.048447958020250044}, {"x": 0.8898163794389724, "resid": 0.309237944534785}, {"x": 7.326304350626252, "resid": 1.2108758062622882}, {"x": 3.932993553912639, "resid": 0.06556527188324486}, {"x": 3.4413639388838027, "resid": 0.24715097678388961}, {"x": 3.9688473567906346, "resid": 1.2596192046927115}, {"x": 0.17372025919124345, "resid": 0.038500270475403206}, {"x": 4.683649965889627, "resid": -2.522235068817147}, {"x": 8.932505171959951, "resid": -2.805024434594479}, {"x": 1.6156441191215443, "resid": 1.384734946491393}, {"x": 8.444594629494894, "resid": -1.9635217353884062}, {"x": 2.7506829686681344, "resid": -0.12235158302461296}, {"x": 7.687325308162815, "resid": -0.7669506741150364}, {"x": 8.340026215867839, "resid": -0.851076237109023}, {"x": 9.012963176986451, "resid": 0.07527035460549394}, {"x": 9.718249198569858, "resid": 4.140951201421347}, {"x": 4.2903616574839685, "resid": 0.1562303770578536}, {"x": 6.860843061868155, "resid": -1.066261474588393}, {"x": 3.2627747822946596, "resid": 0.17543301408984469}, {"x": 7.974891944856877, "resid": 1.8874450616074987}, {"x": 4.345283730663097, "resid": -2.8986664530693793}, {"x": 5.10194393949749, "resid": 3.5330323322515134}, {"x": 7.6332863730827825, "resid": -3.686080508551867}, {"x": 1.739191529496058, "resid": 0.2931691069572554}, {"x": 4.524455382201017, "resid": 2.7775136251011037}, {"x": 8.981913664837505, "resid": 3.269079947430293}, {"x": 6.892831208162546, "resid": 3.359948823772713}, {"x": 2.859700037567107, "resid": 0.9384434860423317}, {"x": 4.208634896780045, "resid": -0.5030559336233748}, {"x": 5.679207472576817, "resid": 5.055715577281394}, {"x": 9.676315855925463, "resid": 13.774487770498478}, {"x": 5.6071049140637665, "resid": 1.9280584220692332}]}]}</script>
+</div>
+</div>
+</section>
+<section id="section" class="slide level2" data-background-color="#1a1a2e">
+<h2></h2>
+<div style="text-align: center; padding-top: 180px;">
+<p><span style="font-size: 2.2em; color: white;"><strong>Model problems &amp; inference</strong></span></p>
+<p><span style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;">Week 4 gave HR a formula. Before anyone trusts it: is it the right shape? What if something’s mismeasured? And how sure are we, really?</span></p>
+</div>
+</section>
+<section id="from-formula-to-trustworthy-formula" class="slide level2">
+<h2>From formula to trustworthy formula</h2>
+<div class="instructions-box">
+<p>HR has last week’s line: reaction time as a function of finger length. Someone on the team asks — can we ship this?</p>
+</div>
+<div class="fragment">
+<p><strong>Naive answer:</strong> the model’s built, R² is computed, we’re done.</p>
+<p><strong>Why it’s not that simple:</strong> we assumed a straight line without checking if that’s the right shape. We assumed our measurements are exact. And we’ve given HR one number for <span class="math inline">\(\hat\beta\)</span> with no sense of how much it could be wrong by. Today, we think about how to fix these issues.</p>
+</div>
+</section>
+<section id="choosing-the-right-functional-form" class="slide level2">
+<h2>Choosing the right functional form</h2>
+</section>
+<section id="recap-why-we-log" class="slide level2">
+<h2>Recap: why we log</h2>
+<p>Week 3’s online session showed logging turns differences into approximate percentages, for small changes. That’s the tool — today is about knowing <em>when</em> and <em>how</em> to use it, and what else is in the toolbox.</p>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Week 3 online session</p>
+</div>
+</section>
+<section id="interpreting-log-models-the-full-picture" class="slide level2">
+<h2>Interpreting log models — the full picture</h2>
+<p>The table you previewed in Week 4, with the equation behind each row and the reasoning behind each interpretation:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Equation</th>
+<th>Interpretation of <span class="math inline">\(\hat\beta\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Level–level</td>
+<td><span class="math inline">\(y^E = \alpha + \beta x\)</span></td>
+<td>1-unit higher x → <span class="math inline">\(\hat\beta\)</span>-unit higher y, on average</td>
+</tr>
+<tr class="even">
+<td>Log–level</td>
+<td><span class="math inline">\(\ln(y)^E = \alpha + \beta x\)</span></td>
+<td>1-unit higher x → <span class="math inline">\(100\times\hat\beta\)</span> <strong>%</strong> higher y, on average</td>
+</tr>
+<tr class="odd">
+<td>Level–log</td>
+<td><span class="math inline">\(y^E = \alpha + \beta \ln(x)\)</span></td>
+<td>1<strong>%</strong> higher x → <span class="math inline">\(\hat\beta/100\)</span>-unit higher y, on average</td>
+</tr>
+<tr class="even">
+<td>Log–log</td>
+<td><span class="math inline">\(\ln(y)^E = \alpha + \beta \ln(x)\)</span></td>
+<td>1<strong>%</strong> higher x → <span class="math inline">\(\hat\beta\)</span><strong>%</strong> higher y, on average — an <strong>elasticity</strong></td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<p>Which one to use is a substantive question first: is x likely to move y in <strong>multiplicative</strong> steps (percentages) or <strong>additive</strong> ones (fixed amounts)? Only then check whether the distributions agree.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 8</p>
+</div>
+</section>
+<section id="when-you-cant-just-log" class="slide level2">
+<h2>When you can’t just log</h2>
+<p>Logging needs a strictly positive variable — never zero, never negative. Real data often isn’t:</p>
+<ul>
+<li><strong>Create a binary indicator, then log what’s left</strong> — e.g.&nbsp;“is wealth negative?” (0/1), “is wealth zero?” (0/1), and log the positive values, replacing the log with zero where it can’t be taken</li>
+<li><strong>Add a constant</strong>, <span class="math inline">\(\ln(x+1)\)</span>, if x is zero or positive — a common shortcut, but not principled; it’s least distorting when x tends to be large (there, <span class="math inline">\(\ln(x)\approx\ln(x+1)\)</span> anyway)</li>
+</ul>
+<div class="instructions-box">
+<p>Suppose a trial recorded exactly 0ms — a device timing glitch, not a real reaction. Would you drop it, indicator-and-log it, or use <span class="math inline">\(\ln(x+1)\)</span>? What does your answer depend on?</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 8</p>
+</div>
+</section>
+<section id="ratios-and-per-capita-measures" class="slide level2">
+<h2>Ratios and per-capita measures</h2>
+<p>A common transform outside our own dataset: normalising a total by a size variable — GDP/capita, revenue/employee, sales/store.</p>
+<p><span class="math display">\[\ln\left(\frac{GDP}{Population}\right) = \ln(GDP) - \ln(Population)\]</span></p>
+<div class="fragment">
+<p>The log of a ratio is just the difference of the two logs — so a per-capita measure and its log both stay easy to interpret and combine with everything else you’ve learned about logs today.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 8</p>
+</div>
+</section>
+<section id="polynomials" class="slide level2">
+<h2>Polynomials</h2>
+<p>A quadratic lets the slope change smoothly, without deciding <em>where</em> it bends:</p>
+<p><span class="math display">\[y^E = \alpha + \beta_1 x + \beta_2 x^2\]</span></p>
+<ul>
+<li><span class="math inline">\(\alpha\)</span>: average y when x = 0</li>
+<li><span class="math inline">\(\beta_1\)</span> alone has no clean interpretation</li>
+<li><span class="math inline">\(\beta_2\)</span>: shape only — U-shaped (convex) if positive, inverted-U (concave) if negative</li>
+<li>The slope at any point x is <span class="math inline">\(\beta_1 + 2\beta_2 x\)</span> — it changes as x changes</li>
+</ul>
+<div class="fragment">
+<p>A trade-off, not a downside: what this gives up in flexibility, it gains back in a coefficient you can actually explain.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 8</p>
+</div>
+</section>
+<section id="fitting-a-quadratic-to-our-own-data" class="slide level2">
+<h2>Fitting a quadratic to our own data</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb1" data-startfrom="195" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 194;"><span id="cb1-195"><a></a>{</span>
+<span id="cb1-196"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> student_summary<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">finger_mm</span> <span class="op">!=</span> <span class="kw">null</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="pp">isNaN</span>(d<span class="op">.</span><span class="at">finger_mm</span>))</span>
+<span id="cb1-197"><a></a>  <span class="cf">if</span> (rows<span class="op">.</span><span class="at">length</span> <span class="op">&lt;</span> <span class="dv">5</span>) <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;p style="color:#aaa;"&gt;Not enough data yet.&lt;/p&gt;`</span></span>
+<span id="cb1-198"><a></a>  <span class="kw">const</span> x <span class="op">=</span> rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">finger_mm</span>)<span class="op">,</span> y <span class="op">=</span> rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">mean_rt</span>)</span>
+<span id="cb1-199"><a></a>  <span class="kw">const</span> n <span class="op">=</span> x<span class="op">.</span><span class="at">length</span></span>
+<span id="cb1-200"><a></a>  <span class="kw">const</span> s <span class="op">=</span> k <span class="kw">=&gt;</span> d3<span class="op">.</span><span class="fu">sum</span>(x<span class="op">.</span><span class="fu">map</span>(xi <span class="kw">=&gt;</span> xi <span class="op">**</span> k))</span>
+<span id="cb1-201"><a></a>  <span class="kw">const</span> sxy <span class="op">=</span> k <span class="kw">=&gt;</span> d3<span class="op">.</span><span class="fu">sum</span>(x<span class="op">.</span><span class="fu">map</span>((xi<span class="op">,</span> i) <span class="kw">=&gt;</span> xi <span class="op">**</span> k <span class="op">*</span> y[i]))</span>
+<span id="cb1-202"><a></a>  <span class="co">// Normal equations for y = a + b1*x + b2*x^2, solved via Cramer's rule</span></span>
+<span id="cb1-203"><a></a>  <span class="kw">const</span> M <span class="op">=</span> [[n<span class="op">,</span> <span class="fu">s</span>(<span class="dv">1</span>)<span class="op">,</span> <span class="fu">s</span>(<span class="dv">2</span>)]<span class="op">,</span> [<span class="fu">s</span>(<span class="dv">1</span>)<span class="op">,</span> <span class="fu">s</span>(<span class="dv">2</span>)<span class="op">,</span> <span class="fu">s</span>(<span class="dv">3</span>)]<span class="op">,</span> [<span class="fu">s</span>(<span class="dv">2</span>)<span class="op">,</span> <span class="fu">s</span>(<span class="dv">3</span>)<span class="op">,</span> <span class="fu">s</span>(<span class="dv">4</span>)]]</span>
+<span id="cb1-204"><a></a>  <span class="kw">const</span> v <span class="op">=</span> [d3<span class="op">.</span><span class="fu">sum</span>(y)<span class="op">,</span> <span class="fu">sxy</span>(<span class="dv">1</span>)<span class="op">,</span> <span class="fu">sxy</span>(<span class="dv">2</span>)]</span>
+<span id="cb1-205"><a></a>  <span class="kw">const</span> det3 <span class="op">=</span> m <span class="kw">=&gt;</span> m[<span class="dv">0</span>][<span class="dv">0</span>]<span class="op">*</span>(m[<span class="dv">1</span>][<span class="dv">1</span>]<span class="op">*</span>m[<span class="dv">2</span>][<span class="dv">2</span>]<span class="op">-</span>m[<span class="dv">1</span>][<span class="dv">2</span>]<span class="op">*</span>m[<span class="dv">2</span>][<span class="dv">1</span>]) <span class="op">-</span> m[<span class="dv">0</span>][<span class="dv">1</span>]<span class="op">*</span>(m[<span class="dv">1</span>][<span class="dv">0</span>]<span class="op">*</span>m[<span class="dv">2</span>][<span class="dv">2</span>]<span class="op">-</span>m[<span class="dv">1</span>][<span class="dv">2</span>]<span class="op">*</span>m[<span class="dv">2</span>][<span class="dv">0</span>]) <span class="op">+</span> m[<span class="dv">0</span>][<span class="dv">2</span>]<span class="op">*</span>(m[<span class="dv">1</span>][<span class="dv">0</span>]<span class="op">*</span>m[<span class="dv">2</span>][<span class="dv">1</span>]<span class="op">-</span>m[<span class="dv">1</span>][<span class="dv">1</span>]<span class="op">*</span>m[<span class="dv">2</span>][<span class="dv">0</span>])</span>
+<span id="cb1-206"><a></a>  <span class="kw">const</span> D <span class="op">=</span> <span class="fu">det3</span>(M)</span>
+<span id="cb1-207"><a></a>  <span class="kw">const</span> withCol <span class="op">=</span> (m<span class="op">,</span> col<span class="op">,</span> vec) <span class="kw">=&gt;</span> m<span class="op">.</span><span class="fu">map</span>((row<span class="op">,</span> i) <span class="kw">=&gt;</span> row<span class="op">.</span><span class="fu">map</span>((val<span class="op">,</span> j) <span class="kw">=&gt;</span> j <span class="op">===</span> col <span class="op">?</span> vec[i] <span class="op">:</span> val))</span>
+<span id="cb1-208"><a></a>  <span class="kw">const</span> a <span class="op">=</span> <span class="fu">det3</span>(<span class="fu">withCol</span>(M<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> v)) <span class="op">/</span> D</span>
+<span id="cb1-209"><a></a>  <span class="kw">const</span> b1 <span class="op">=</span> <span class="fu">det3</span>(<span class="fu">withCol</span>(M<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> v)) <span class="op">/</span> D</span>
+<span id="cb1-210"><a></a>  <span class="kw">const</span> b2 <span class="op">=</span> <span class="fu">det3</span>(<span class="fu">withCol</span>(M<span class="op">,</span> <span class="dv">2</span><span class="op">,</span> v)) <span class="op">/</span> D</span>
+<span id="cb1-211"><a></a>  <span class="kw">const</span> fitted <span class="op">=</span> x<span class="op">.</span><span class="fu">map</span>(xi <span class="kw">=&gt;</span> a <span class="op">+</span> b1 <span class="op">*</span> xi <span class="op">+</span> b2 <span class="op">*</span> xi <span class="op">**</span> <span class="dv">2</span>)</span>
+<span id="cb1-212"><a></a>  <span class="kw">const</span> ybar <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(y)</span>
+<span id="cb1-213"><a></a>  <span class="kw">const</span> varY <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(y<span class="op">.</span><span class="fu">map</span>(yi <span class="kw">=&gt;</span> (yi <span class="op">-</span> ybar) <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb1-214"><a></a>  <span class="kw">const</span> varYhat <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(fitted<span class="op">.</span><span class="fu">map</span>(f <span class="kw">=&gt;</span> (f <span class="op">-</span> ybar) <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb1-215"><a></a>  <span class="kw">const</span> r2quad <span class="op">=</span> varYhat <span class="op">/</span> varY</span>
+<span id="cb1-216"><a></a>  <span class="kw">const</span> xbar <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(x)</span>
+<span id="cb1-217"><a></a>  <span class="kw">const</span> cov <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(x<span class="op">.</span><span class="fu">map</span>((xi<span class="op">,</span> i) <span class="kw">=&gt;</span> (xi <span class="op">-</span> xbar) <span class="op">*</span> (y[i] <span class="op">-</span> ybar)))</span>
+<span id="cb1-218"><a></a>  <span class="kw">const</span> varx <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(x<span class="op">.</span><span class="fu">map</span>(xi <span class="kw">=&gt;</span> (xi <span class="op">-</span> xbar) <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb1-219"><a></a>  <span class="kw">const</span> betaLin <span class="op">=</span> cov <span class="op">/</span> varx<span class="op">,</span> alphaLin <span class="op">=</span> ybar <span class="op">-</span> betaLin <span class="op">*</span> xbar</span>
+<span id="cb1-220"><a></a>  <span class="kw">const</span> fittedLin <span class="op">=</span> x<span class="op">.</span><span class="fu">map</span>(xi <span class="kw">=&gt;</span> alphaLin <span class="op">+</span> betaLin <span class="op">*</span> xi)</span>
+<span id="cb1-221"><a></a>  <span class="kw">const</span> varYhatLin <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(fittedLin<span class="op">.</span><span class="fu">map</span>(f <span class="kw">=&gt;</span> (f <span class="op">-</span> ybar) <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb1-222"><a></a>  <span class="kw">const</span> r2lin <span class="op">=</span> varYhatLin <span class="op">/</span> varY</span>
+<span id="cb1-223"><a></a>  <span class="kw">const</span> grid <span class="op">=</span> d3<span class="op">.</span><span class="fu">range</span>(d3<span class="op">.</span><span class="fu">min</span>(x)<span class="op">,</span> d3<span class="op">.</span><span class="fu">max</span>(x)<span class="op">,</span> (d3<span class="op">.</span><span class="fu">max</span>(x) <span class="op">-</span> d3<span class="op">.</span><span class="fu">min</span>(x)) <span class="op">/</span> <span class="dv">60</span>)</span>
+<span id="cb1-224"><a></a>  <span class="kw">const</span> curve <span class="op">=</span> grid<span class="op">.</span><span class="fu">map</span>(xi <span class="kw">=&gt;</span> ({ <span class="dt">finger_mm</span><span class="op">:</span> xi<span class="op">,</span> <span class="dt">fit</span><span class="op">:</span> a <span class="op">+</span> b1 <span class="op">*</span> xi <span class="op">+</span> b2 <span class="op">*</span> xi <span class="op">**</span> <span class="dv">2</span> }))</span>
+<span id="cb1-225"><a></a>  <span class="kw">const</span> chart <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb1-226"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">340</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">60</span><span class="op">,</span></span>
+<span id="cb1-227"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Finger length (mm)"</span> }<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Mean reaction time (ms)"</span> }<span class="op">,</span></span>
+<span id="cb1-228"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb1-229"><a></a>      Plot<span class="op">.</span><span class="fu">dot</span>(rows<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"finger_mm"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"mean_rt"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#1a1a2e"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">4</span> })<span class="op">,</span></span>
+<span id="cb1-230"><a></a>      Plot<span class="op">.</span><span class="fu">line</span>(curve<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"finger_mm"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"fit"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#e63946"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">2.5</span> })<span class="op">,</span></span>
+<span id="cb1-231"><a></a>    ]</span>
+<span id="cb1-232"><a></a>  })</span>
+<span id="cb1-233"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div&gt;</span><span class="sc">${</span>chart<span class="sc">}</span><span class="vs">&lt;p style="font-family:sans-serif;font-size:1em;text-align:center;"&gt;Linear R² = &lt;strong&gt;</span><span class="sc">${</span>r2lin<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">3</span>)<span class="sc">}</span><span class="vs">&lt;/strong&gt; &amp;nbsp;·&amp;nbsp; Quadratic R² = &lt;strong&gt;</span><span class="sc">${</span>r2quad<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">3</span>)<span class="sc">}</span><span class="vs">&lt;/strong&gt;&lt;/p&gt;&lt;/div&gt;`</span></span>
+<span id="cb1-234"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-1" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="instructions-box">
+<p>Does the quadratic noticeably beat the straight line? If the improvement is tiny, that’s a finding too — it says the relationship really is close to linear, for this data.</p>
+</div>
+</section>
+<section id="case-study-life-expectancy-and-income" class="slide level2">
+<h2>Case study: life expectancy and income</h2>
+<p>Gabor &amp; Kézdi’s own example of this exact decision — replicated here on their real published data. Life expectancy vs.&nbsp;GDP per capita, 182 countries, 2017:</p>
+<ul>
+<li>Raw GDP/capita: wildly skewed, hard to see a pattern</li>
+<li><strong>Log</strong> GDP/capita: a much clearer, close-to-linear association</li>
+<li>Adding a <strong>quadratic</strong> on top of the log: does it actually buy much?</li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 8. Data: <code>worldbank-lifeexpectancy</code>, osf.io/pguwf, World Bank WDI, CC-BY 4.0</p>
+</div>
+</section>
+<section id="raw-vs.-logged-side-by-side" class="slide level2">
+<h2>Raw vs.&nbsp;logged, side by side</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="256" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 255;"><span id="cb2-256"><a></a>{</span>
+<span id="cb2-257"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> life_data</span>
+<span id="cb2-258"><a></a>  <span class="kw">const</span> chartRaw <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb2-259"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">320</span><span class="op">,</span> <span class="dt">width</span><span class="op">:</span> <span class="dv">380</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">55</span><span class="op">,</span></span>
+<span id="cb2-260"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"GDP per capita ($000s)"</span> }<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Life expectancy (years)"</span> }<span class="op">,</span></span>
+<span id="cb2-261"><a></a>    <span class="dt">marks</span><span class="op">:</span> [Plot<span class="op">.</span><span class="fu">dot</span>(rows<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"gdp_per_capita"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"life_exp"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#1a1a2e"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">3</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.6</span> })]</span>
+<span id="cb2-262"><a></a>  })</span>
+<span id="cb2-263"><a></a>  <span class="kw">const</span> chartLog <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb2-264"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">320</span><span class="op">,</span> <span class="dt">width</span><span class="op">:</span> <span class="dv">380</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">55</span><span class="op">,</span></span>
+<span id="cb2-265"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"ln(GDP per capita)"</span> }<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Life expectancy (years)"</span> }<span class="op">,</span></span>
+<span id="cb2-266"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb2-267"><a></a>      Plot<span class="op">.</span><span class="fu">dot</span>(rows<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"ln_gdp_per_capita"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"life_exp"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#457b9d"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">3</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.6</span> })<span class="op">,</span></span>
+<span id="cb2-268"><a></a>      Plot<span class="op">.</span><span class="fu">linearRegressionY</span>(rows<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"ln_gdp_per_capita"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"life_exp"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#e63946"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">2.5</span> })<span class="op">,</span></span>
+<span id="cb2-269"><a></a>    ]</span>
+<span id="cb2-270"><a></a>  })</span>
+<span id="cb2-271"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div style="display:flex;gap:20px;justify-content:center;"&gt;</span><span class="sc">${</span>chartRaw<span class="sc">}${</span>chartLog<span class="sc">}</span><span class="vs">&lt;/div&gt;`</span></span>
+<span id="cb2-272"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-2" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="instructions-box">
+<p>Same 182 countries, same y-axis. The left panel bunches almost everyone under $20k and stretches a handful of rich countries far to the right. Logging x pulls that tail in and straightens the pattern out.</p>
+</div>
+</section>
+<section id="what-if-we-just-curve-the-raw-line-instead" class="slide level2">
+<h2>What if we just curve the raw line instead?</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb3" data-startfrom="282" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 281;"><span id="cb3-282"><a></a>{</span>
+<span id="cb3-283"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> life_data</span>
+<span id="cb3-284"><a></a>  <span class="kw">const</span> sorted <span class="op">=</span> [<span class="op">...</span>rows]<span class="op">.</span><span class="fu">sort</span>((a<span class="op">,</span> b) <span class="kw">=&gt;</span> a<span class="op">.</span><span class="at">gdp_per_capita</span> <span class="op">-</span> b<span class="op">.</span><span class="at">gdp_per_capita</span>)</span>
+<span id="cb3-285"><a></a>  <span class="kw">const</span> xbar <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(rows<span class="op">,</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">gdp_per_capita</span>)<span class="op">,</span> ybar <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(rows<span class="op">,</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">life_exp</span>)</span>
+<span id="cb3-286"><a></a>  <span class="kw">const</span> cov <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(rows<span class="op">,</span> d <span class="kw">=&gt;</span> (d<span class="op">.</span><span class="at">gdp_per_capita</span> <span class="op">-</span> xbar) <span class="op">*</span> (d<span class="op">.</span><span class="at">life_exp</span> <span class="op">-</span> ybar))</span>
+<span id="cb3-287"><a></a>  <span class="kw">const</span> varx <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(rows<span class="op">,</span> d <span class="kw">=&gt;</span> (d<span class="op">.</span><span class="at">gdp_per_capita</span> <span class="op">-</span> xbar) <span class="op">**</span> <span class="dv">2</span>)</span>
+<span id="cb3-288"><a></a>  <span class="kw">const</span> beta <span class="op">=</span> cov <span class="op">/</span> varx<span class="op">,</span> alpha <span class="op">=</span> ybar <span class="op">-</span> beta <span class="op">*</span> xbar</span>
+<span id="cb3-289"><a></a>  <span class="kw">const</span> [xmin<span class="op">,</span> xmax] <span class="op">=</span> d3<span class="op">.</span><span class="fu">extent</span>(rows<span class="op">,</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">gdp_per_capita</span>)</span>
+<span id="cb3-290"><a></a>  <span class="kw">const</span> straightLine <span class="op">=</span> [{ <span class="dt">x</span><span class="op">:</span> xmin<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> alpha <span class="op">+</span> beta <span class="op">*</span> xmin }<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> xmax<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> alpha <span class="op">+</span> beta <span class="op">*</span> xmax }]</span>
+<span id="cb3-291"><a></a>  <span class="kw">const</span> chartLinear <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb3-292"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">320</span><span class="op">,</span> <span class="dt">width</span><span class="op">:</span> <span class="dv">380</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">55</span><span class="op">,</span></span>
+<span id="cb3-293"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"GDP per capita ($000s)"</span> }<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Life expectancy (years)"</span> }<span class="op">,</span></span>
+<span id="cb3-294"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb3-295"><a></a>      Plot<span class="op">.</span><span class="fu">dot</span>(rows<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"gdp_per_capita"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"life_exp"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#1a1a2e"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">3</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.6</span> })<span class="op">,</span></span>
+<span id="cb3-296"><a></a>      Plot<span class="op">.</span><span class="fu">line</span>(straightLine<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"y"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#e63946"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">2.5</span> })<span class="op">,</span></span>
+<span id="cb3-297"><a></a>    ]</span>
+<span id="cb3-298"><a></a>  })</span>
+<span id="cb3-299"><a></a>  <span class="kw">const</span> chartQuad <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb3-300"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">320</span><span class="op">,</span> <span class="dt">width</span><span class="op">:</span> <span class="dv">380</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">55</span><span class="op">,</span></span>
+<span id="cb3-301"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"GDP per capita ($000s)"</span> }<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Life expectancy (years)"</span> }<span class="op">,</span></span>
+<span id="cb3-302"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb3-303"><a></a>      Plot<span class="op">.</span><span class="fu">dot</span>(rows<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"gdp_per_capita"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"life_exp"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#1a1a2e"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">3</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.6</span> })<span class="op">,</span></span>
+<span id="cb3-304"><a></a>      Plot<span class="op">.</span><span class="fu">line</span>(sorted<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"gdp_per_capita"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"quad_raw_fit"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#e63946"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">2.5</span> })<span class="op">,</span></span>
+<span id="cb3-305"><a></a>    ]</span>
+<span id="cb3-306"><a></a>  })</span>
+<span id="cb3-307"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div style="display:flex;gap:20px;justify-content:center;"&gt;</span><span class="sc">${</span>chartLinear<span class="sc">}${</span>chartQuad<span class="sc">}</span><span class="vs">&lt;/div&gt;`</span></span>
+<span id="cb3-308"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-3" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="instructions-box">
+<p>Left: a straight line through the raw data. Right: a quadratic through the same raw data — R² rises from 0.44 to 0.61, but the curve is still dragged around by a handful of very rich countries, and still doesn’t resolve the bunching below $20k. Bending the line helped less than transforming the axis did.</p>
+</div>
+</section>
+<section id="which-model-actually-fits-better" class="slide level2 smaller">
+<h2>Which model actually fits better?</h2>
+<p>Same <code>smf.ols(...)</code> syntax from Week 4’s “Doing this in Python” — now fitting all four functional-form candidates on the case study data at once:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-2"><a></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb4-3"><a></a></span>
+<span id="cb4-4"><a></a>life_df[<span class="st">"ln_gdp_per_capita"</span>] <span class="op">=</span> np.log(life_df[<span class="st">"gdp_per_capita"</span>])</span>
+<span id="cb4-5"><a></a></span>
+<span id="cb4-6"><a></a>model_level    <span class="op">=</span> smf.ols(<span class="st">"life_exp ~ gdp_per_capita"</span>, data<span class="op">=</span>life_df).fit()</span>
+<span id="cb4-7"><a></a>model_quad_raw <span class="op">=</span> smf.ols(<span class="st">"life_exp ~ gdp_per_capita + I(gdp_per_capita**2)"</span>, data<span class="op">=</span>life_df).fit()</span>
+<span id="cb4-8"><a></a>model_log      <span class="op">=</span> smf.ols(<span class="st">"life_exp ~ ln_gdp_per_capita"</span>, data<span class="op">=</span>life_df).fit()</span>
+<span id="cb4-9"><a></a>model_quad     <span class="op">=</span> smf.ols(<span class="st">"life_exp ~ ln_gdp_per_capita + I(ln_gdp_per_capita**2)"</span>, data<span class="op">=</span>life_df).fit()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb5" data-startfrom="332" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 331;"><span id="cb5-332"><a></a>{</span>
+<span id="cb5-333"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:0 auto;font-family:sans-serif;font-size:0.95em;border-collapse:collapse;"&gt;</span></span>
+<span id="cb5-334"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;&lt;th style="padding:4px 20px;text-align:left;"&gt;Model&lt;/th&gt;&lt;th style="padding:4px 20px;"&gt;R²&lt;/th&gt;&lt;/tr&gt;</span></span>
+<span id="cb5-335"><a></a><span class="vs">    </span><span class="sc">${</span>life_r2<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="border-bottom:1px solid #ddd;"&gt;&lt;td style="padding:4px 20px;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">model</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:4px 20px;text-align:center;font-weight:700;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">r_squared</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">3</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb5-336"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
+<span id="cb5-337"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-4" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p><strong>The lesson, now with real numbers:</strong> bending the raw line only gets you from 0.44 to 0.61. Logging gets you to 0.68 in one step — and once logged, the quadratic barely moves it further, to 0.68. The transform did more work than the extra flexibility did, and cost far less interpretability. Simpler is usually right.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 8. Computed live from the real dataset above.</p>
+</div>
+</section>
+<section id="the-roadmap-for-choosing-a-functional-form" class="slide level2">
+<h2>The roadmap for choosing a functional form</h2>
+<ol type="1">
+<li><strong>Check the distributions</strong> of y and x — skewed, long right tail?</li>
+<li><strong>Look at the shape</strong> — scatterplot or a non-parametric fit (bin-scatter, lowess)</li>
+<li><strong>Choose a transform</strong> to match what you see — and remember: not every variable can sensibly be logged or ratio’d</li>
+<li><strong>Compare models</strong> — if the results agree, that’s a robustness check; if they disagree sharply, find out why</li>
+</ol>
+</section>
+<section id="task-apply-the-roadmap-to-week-4s-choice" class="slide level2">
+<h2>Task — apply the roadmap to Week 4’s choice</h2>
+<div class="instructions-box">
+<p>Go back to Week 4’s LOWESS curve for finger length vs.&nbsp;reaction time. At a wide bandwidth it was nearly flat; at a narrow one, a slight wiggle appeared. Using the roadmap above: was a plain straight line a defensible choice for last week’s model? What would make you reconsider?</p>
+</div>
+</section>
+<section id="extreme-values-and-influence" class="slide level2">
+<h2>Extreme values and influence</h2>
+</section>
+<section id="extreme-value-influential-observation" class="slide level2">
+<h2>Extreme value ≠ influential observation</h2>
+<p>An <strong>extreme value</strong> is just unusual on some variable. An <strong>influential observation</strong> is one whose presence or absence noticeably moves the regression line.</p>
+<div class="fragment">
+<p>Every influential observation is extreme on <em>something</em> — but plenty of extreme values sit right near the line and barely matter. The two ideas get conflated; they shouldn’t be.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 8</p>
+</div>
+</section>
+<section id="what-to-do-and-it-depends-which-variable" class="slide level2">
+<h2>What to do — and it depends which variable</h2>
+<ul>
+<li><strong>General rule: avoid dropping observations based on their y value.</strong> A genuinely strange outcome is still information — dropping it because it’s inconvenient biases what’s left</li>
+<li><strong>Dropping on x can be more defensible</strong> — if that x value is atypical for the question you’re asking</li>
+<li>But often the opposite is true: <strong>extreme x values are the most informative ones</strong>, since they’re where you see the most variation in the pattern</li>
+<li><strong>Always try a transformation before ever dropping a point</strong></li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 8</p>
+</div>
+</section>
+<section id="task-check-our-own-data" class="slide level2">
+<h2>Task — check our own data</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb6" data-startfrom="393" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 392;"><span id="cb6-393"><a></a>{</span>
+<span id="cb6-394"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> student_summary<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">finger_mm</span> <span class="op">!=</span> <span class="kw">null</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="pp">isNaN</span>(d<span class="op">.</span><span class="at">finger_mm</span>))</span>
+<span id="cb6-395"><a></a>  <span class="cf">if</span> (rows<span class="op">.</span><span class="at">length</span> <span class="op">&lt;</span> <span class="dv">3</span>) <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;p style="color:#aaa;"&gt;Not enough data yet.&lt;/p&gt;`</span></span>
+<span id="cb6-396"><a></a>  <span class="cf">return</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb6-397"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">340</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">60</span><span class="op">,</span></span>
+<span id="cb6-398"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Finger length (mm)"</span> }<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Mean reaction time (ms)"</span> }<span class="op">,</span></span>
+<span id="cb6-399"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb6-400"><a></a>      Plot<span class="op">.</span><span class="fu">dot</span>(rows<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"finger_mm"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"mean_rt"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#1a1a2e"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">4</span> })<span class="op">,</span></span>
+<span id="cb6-401"><a></a>      Plot<span class="op">.</span><span class="fu">text</span>(rows<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"finger_mm"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"mean_rt"</span><span class="op">,</span> <span class="dt">text</span><span class="op">:</span> <span class="st">"student_name"</span><span class="op">,</span> <span class="dt">dy</span><span class="op">:</span> <span class="op">-</span><span class="dv">10</span><span class="op">,</span> <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">9</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#666"</span> })<span class="op">,</span></span>
+<span id="cb6-402"><a></a>    ]</span>
+<span id="cb6-403"><a></a>  })</span>
+<span id="cb6-404"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-5" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="instructions-box">
+<p>Is there a point here that’s extreme on x, extreme on y, or both? Would removing it change the slope much? Discuss what you’d actually do with it, and why.</p>
+</div>
+</section>
+<section id="measurement-error" class="slide level2">
+<h2>Measurement error</h2>
+</section>
+<section id="nothing-here-is-measured-exactly" class="slide level2">
+<h2>Nothing here is measured exactly</h2>
+<p>Every number in our dataset carries some noise:</p>
+<ul>
+<li>Reaction time — self-timed by students on their own devices, with browser and reflex lag</li>
+<li>Finger length — self-measured with a ruler, to the nearest millimetre, by hand</li>
+</ul>
+<div class="fragment">
+<p>This isn’t a flaw specific to our exercise — almost all data in business and economics is measured with error. The question isn’t whether it exists, but what it does to <span class="math inline">\(\hat\beta\)</span>.</p>
+</div>
+</section>
+<section id="classical-measurement-error" class="slide level2">
+<h2>Classical measurement error</h2>
+<p>A measured variable equals its true value plus noise: <span class="math inline">\(x = x^* + e\)</span></p>
+<div class="instructions-box">
+<p><strong>Classical</strong> measurement error: (1) averages to zero — it doesn’t shift the variable’s mean — and (2) is independent of everything else in the model, including the true value itself.</p>
+</div>
+<div class="fragment">
+<p>Recording slips, rounding, reflex-timing lag — plausibly classical. A systematically miscalibrated ruler would not be.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 8</p>
+</div>
+</section>
+<section id="noise-in-y-doesnt-bias-the-slope" class="slide level2">
+<h2>Noise in y doesn’t bias the slope</h2>
+<p>If only the dependent variable is measured with classical error, <span class="math inline">\(y = y^* + e\)</span>:</p>
+<p><span class="math display">\[\hat\beta = \frac{Cov[y,x]}{Var[x]} = \frac{Cov[y^*+e,\ x]}{Var[x]} = \frac{Cov[y^*,x] + Cov[e,x]}{Var[x]} = \frac{Cov[y^*,x]}{Var[x]} = \hat\beta^*\]</span></p>
+<div class="fragment">
+<p><span class="math inline">\(Cov[e,x]=0\)</span> by the classical assumption, so it drops straight out. Noisy y makes the fit worse — more scatter around the line — but it doesn’t move <span class="math inline">\(\hat\beta\)</span> on average.</p>
+</div>
+</section>
+<section id="noise-in-x-does-attenuation-bias" class="slide level2">
+<h2>Noise in x does — attenuation bias</h2>
+<p>If the <em>explanatory</em> variable is measured with classical error, <span class="math inline">\(x = x^*+e\)</span>, the noise inflates <span class="math inline">\(Var[x]\)</span> itself:</p>
+<p><span class="math display">\[\hat\beta = \hat\beta^* \times \frac{Var[x^*]}{Var[x^*] + Var[e]}\]</span></p>
+<div class="fragment">
+<p>That fraction is always less than one — so <span class="math inline">\(\hat\beta\)</span> is always pulled <strong>toward zero</strong>, never away from it. This is <strong>attenuation bias</strong>. The noisier x is relative to its real variation, the flatter the estimated slope looks, regardless of the true relationship.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 8</p>
+</div>
+</section>
+<section id="watch-attenuation-happen" class="slide level2">
+<h2>Watch attenuation happen</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="471" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 470;"><span id="cb7-471"><a></a>viewof noiseSD <span class="op">=</span> {</span>
+<span id="cb7-472"><a></a>  <span class="kw">const</span> f <span class="op">=</span> <span class="fu">html</span><span class="vs">`&lt;div style="display:flex;align-items:center;gap:14px;font-size:13px;</span></span>
+<span id="cb7-473"><a></a><span class="vs">                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;"&gt;</span></span>
+<span id="cb7-474"><a></a><span class="vs">    &lt;span style="color:#666;white-space:nowrap;"&gt;Extra noise SD (mm)&lt;/span&gt;</span></span>
+<span id="cb7-475"><a></a><span class="vs">    &lt;input type="range" min="0" max="10" step="0.2" value="0"</span></span>
+<span id="cb7-476"><a></a><span class="vs">           style="width:200px;cursor:pointer;accent-color:#e63946;"&gt;</span></span>
+<span id="cb7-477"><a></a><span class="vs">    &lt;span id="ns-label" style="font-weight:700;min-width:36px;color:#e63946;"&gt;0.0&lt;/span&gt;</span></span>
+<span id="cb7-478"><a></a><span class="vs">  &lt;/div&gt;`</span></span>
+<span id="cb7-479"><a></a>  <span class="kw">const</span> slider <span class="op">=</span> f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'input'</span>)</span>
+<span id="cb7-480"><a></a>  <span class="kw">const</span> label  <span class="op">=</span> f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'#ns-label'</span>)</span>
+<span id="cb7-481"><a></a>  slider<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">'input'</span><span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb7-482"><a></a>    label<span class="op">.</span><span class="at">textContent</span> <span class="op">=</span> (<span class="op">+</span>slider<span class="op">.</span><span class="at">value</span>)<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>)</span>
+<span id="cb7-483"><a></a>    f<span class="op">.</span><span class="fu">dispatchEvent</span>(<span class="kw">new</span> <span class="bu">CustomEvent</span>(<span class="st">'input'</span>))</span>
+<span id="cb7-484"><a></a>  })</span>
+<span id="cb7-485"><a></a>  <span class="bu">Object</span><span class="op">.</span><span class="fu">defineProperty</span>(f<span class="op">,</span> <span class="st">'value'</span><span class="op">,</span> { <span class="kw">get</span><span class="op">:</span> () <span class="kw">=&gt;</span> <span class="op">+</span>slider<span class="op">.</span><span class="at">value</span> })</span>
+<span id="cb7-486"><a></a>  <span class="cf">return</span> f</span>
+<span id="cb7-487"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-6" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb8" data-startfrom="491" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 490;"><span id="cb8-491"><a></a>{</span>
+<span id="cb8-492"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> student_summary<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">finger_mm</span> <span class="op">!=</span> <span class="kw">null</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="pp">isNaN</span>(d<span class="op">.</span><span class="at">finger_mm</span>))</span>
+<span id="cb8-493"><a></a>  <span class="cf">if</span> (rows<span class="op">.</span><span class="at">length</span> <span class="op">&lt;</span> <span class="dv">3</span>) <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;p style="color:#aaa;"&gt;Not enough data yet.&lt;/p&gt;`</span></span>
+<span id="cb8-494"><a></a>  <span class="co">// True beta* and Var[x*] from our real, unperturbed data — fixed throughout</span></span>
+<span id="cb8-495"><a></a>  <span class="kw">const</span> xbar <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(rows<span class="op">,</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">finger_mm</span>)<span class="op">,</span> ybar <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(rows<span class="op">,</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">mean_rt</span>)</span>
+<span id="cb8-496"><a></a>  <span class="kw">const</span> cov <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(rows<span class="op">,</span> d <span class="kw">=&gt;</span> (d<span class="op">.</span><span class="at">finger_mm</span> <span class="op">-</span> xbar) <span class="op">*</span> (d<span class="op">.</span><span class="at">mean_rt</span> <span class="op">-</span> ybar))</span>
+<span id="cb8-497"><a></a>  <span class="kw">const</span> varXStar <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(rows<span class="op">,</span> d <span class="kw">=&gt;</span> (d<span class="op">.</span><span class="at">finger_mm</span> <span class="op">-</span> xbar) <span class="op">**</span> <span class="dv">2</span>)</span>
+<span id="cb8-498"><a></a>  <span class="kw">const</span> trueBeta <span class="op">=</span> cov <span class="op">/</span> varXStar</span>
+<span id="cb8-499"><a></a>  <span class="co">// The formula from the previous slide: beta = beta* x Var[x*] / (Var[x*] + Var[e])</span></span>
+<span id="cb8-500"><a></a>  <span class="co">// This ratio is always in (0, 1], so beta can shrink toward zero but can never cross it.</span></span>
+<span id="cb8-501"><a></a>  <span class="kw">const</span> betaFor <span class="op">=</span> sd <span class="kw">=&gt;</span> trueBeta <span class="op">*</span> (varXStar <span class="op">/</span> (varXStar <span class="op">+</span> sd <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb8-502"><a></a>  <span class="kw">const</span> currentBeta <span class="op">=</span> <span class="fu">betaFor</span>(noiseSD)</span>
+<span id="cb8-503"><a></a>  <span class="kw">const</span> curve <span class="op">=</span> d3<span class="op">.</span><span class="fu">range</span>(<span class="dv">0</span><span class="op">,</span> <span class="fl">10.2</span><span class="op">,</span> <span class="fl">0.2</span>)<span class="op">.</span><span class="fu">map</span>(sd <span class="kw">=&gt;</span> ({ sd<span class="op">,</span> <span class="dt">beta</span><span class="op">:</span> <span class="fu">betaFor</span>(sd) }))</span>
+<span id="cb8-504"><a></a>  <span class="kw">const</span> chart <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb8-505"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">320</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">60</span><span class="op">,</span></span>
+<span id="cb8-506"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"extra noise SD added to finger length (mm)"</span> }<span class="op">,</span></span>
+<span id="cb8-507"><a></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"attenuated β̂"</span> }<span class="op">,</span></span>
+<span id="cb8-508"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb8-509"><a></a>      Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>]<span class="op">,</span> { <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#ccc"</span> })<span class="op">,</span></span>
+<span id="cb8-510"><a></a>      Plot<span class="op">.</span><span class="fu">line</span>(curve<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"sd"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"beta"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#457b9d"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="dv">2</span> })<span class="op">,</span></span>
+<span id="cb8-511"><a></a>      Plot<span class="op">.</span><span class="fu">dot</span>([{ <span class="dt">sd</span><span class="op">:</span> noiseSD<span class="op">,</span> <span class="dt">beta</span><span class="op">:</span> currentBeta }]<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"sd"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"beta"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#e63946"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">6</span> })<span class="op">,</span></span>
+<span id="cb8-512"><a></a>    ]</span>
+<span id="cb8-513"><a></a>  })</span>
+<span id="cb8-514"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div&gt;</span><span class="sc">${</span>chart<span class="sc">}</span><span class="vs">&lt;p style="font-family:sans-serif;font-size:1em;text-align:center;"&gt;β̂* with no extra noise: &lt;strong&gt;</span><span class="sc">${</span>trueBeta<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">3</span>)<span class="sc">}</span><span class="vs">&lt;/strong&gt; &amp;nbsp;·&amp;nbsp; attenuated β̂ at current noise: &lt;strong&gt;</span><span class="sc">${</span>currentBeta<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">3</span>)<span class="sc">}</span><span class="vs">&lt;/strong&gt;&lt;/p&gt;&lt;/div&gt;`</span></span>
+<span id="cb8-515"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-7" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="instructions-box">
+<p><span class="math inline">\(\hat\beta\)</span> shrinks toward zero as noise is added to finger length — but it never crosses zero, no matter how much noise is added. <span class="math inline">\(Var[x^*]/(Var[x^*]+Var[e])\)</span> is always between 0 and 1, so attenuation can flatten the line but can never flip its sign.</p>
+</div>
+</section>
+<section id="noise-to-signal-ratio" class="slide level2">
+<h2>Noise-to-signal ratio</h2>
+<p><span class="math display">\[\text{noise-to-signal} = \frac{Var[e]}{Var[x^*]}\]</span></p>
+<ul>
+<li><strong>Low ratio</strong> — recording is careful, or the variable is an aggregate over a large sample. Often safe to ignore</li>
+<li><strong>High ratio</strong> — the noise added is large relative to the real spread in x. Worth taking seriously, and worth being upfront about in any write-up</li>
+</ul>
+<div class="fragment">
+<p>You can rarely eliminate measurement error. You can almost always say something honest about its likely direction — and for x, that direction is always toward zero.</p>
+</div>
+</section>
+<section id="generalising-this-regression" class="slide level2">
+<h2>Generalising this regression</h2>
+</section>
+<section id="how-sure-are-we-about-β" class="slide level2">
+<h2>How sure are we about β̂?</h2>
+<p>Week 2 built a confidence interval for a mean. Exactly the same logic now applies to a slope:</p>
+<p><span class="math display">\[CI(\hat\beta)_{95\%} = \left[\hat\beta - 2\,SE(\hat\beta),\ \ \hat\beta + 2\,SE(\hat\beta)\right]\]</span></p>
+<div class="fragment">
+<p>Same idea as <span class="math inline">\(CI(\bar x) = \bar x \pm 2\,SE(\bar x)\)</span> from Week 2 — a plausible range for the <em>true</em> slope, built from how much <span class="math inline">\(\hat\beta\)</span> would bounce around across repeated samples.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 9</p>
+</div>
+</section>
+<section id="where-seβ-comes-from" class="slide level2">
+<h2>Where SE(β̂) comes from</h2>
+<p><span class="math display">\[SE(\hat\beta) = \frac{Std[e]}{\sqrt{n}\cdot Std[x]}\]</span></p>
+<p>SE(β̂) is smaller — the estimate more precise — when:</p>
+<ul>
+<li><strong>Std[e] is small</strong> — the line fits well, little left-over scatter</li>
+<li><strong>Std[x] is large</strong> — x varies a lot in the data</li>
+<li><strong>n is large</strong> — more observations</li>
+</ul>
+<div class="fragment">
+<p>Notice: this is the same <span class="math inline">\(Std[e]\)</span> and <span class="math inline">\(Std[x]\)</span> from Week 4’s slope formula. Precision and the estimate itself come from the same ingredients.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 9</p>
+</div>
+</section>
+<section id="task-se-and-ci-for-our-own-regression" class="slide level2">
+<h2>Task — SE and CI for our own regression</h2>
+<div class="instructions-box">
+<p>By hand or in Excel: using the SE(β̂) formula from the last slide and β̂ from Week 4, calculate the 95% CI for our own finger-length regression.</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb9" data-startfrom="579" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 578;"><span id="cb9-579"><a></a>{</span>
+<span id="cb9-580"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> student_summary<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">finger_mm</span> <span class="op">!=</span> <span class="kw">null</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="pp">isNaN</span>(d<span class="op">.</span><span class="at">finger_mm</span>))</span>
+<span id="cb9-581"><a></a>  <span class="cf">if</span> (rows<span class="op">.</span><span class="at">length</span> <span class="op">&lt;</span> <span class="dv">4</span>) <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;p style="color:#aaa;"&gt;Not enough data yet.&lt;/p&gt;`</span></span>
+<span id="cb9-582"><a></a>  <span class="kw">const</span> x <span class="op">=</span> rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">finger_mm</span>)<span class="op">,</span> y <span class="op">=</span> rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">mean_rt</span>)</span>
+<span id="cb9-583"><a></a>  <span class="kw">const</span> n <span class="op">=</span> x<span class="op">.</span><span class="at">length</span></span>
+<span id="cb9-584"><a></a>  <span class="kw">const</span> xbar <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(x)<span class="op">,</span> ybar <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(y)</span>
+<span id="cb9-585"><a></a>  <span class="kw">const</span> cov <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(x<span class="op">.</span><span class="fu">map</span>((xi<span class="op">,</span> i) <span class="kw">=&gt;</span> (xi <span class="op">-</span> xbar) <span class="op">*</span> (y[i] <span class="op">-</span> ybar)))</span>
+<span id="cb9-586"><a></a>  <span class="kw">const</span> varx <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(x<span class="op">.</span><span class="fu">map</span>(xi <span class="kw">=&gt;</span> (xi <span class="op">-</span> xbar) <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb9-587"><a></a>  <span class="kw">const</span> beta <span class="op">=</span> cov <span class="op">/</span> varx<span class="op">,</span> alpha <span class="op">=</span> ybar <span class="op">-</span> beta <span class="op">*</span> xbar</span>
+<span id="cb9-588"><a></a>  <span class="kw">const</span> resid <span class="op">=</span> x<span class="op">.</span><span class="fu">map</span>((xi<span class="op">,</span> i) <span class="kw">=&gt;</span> y[i] <span class="op">-</span> (alpha <span class="op">+</span> beta <span class="op">*</span> xi))</span>
+<span id="cb9-589"><a></a>  <span class="kw">const</span> sdE <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sqrt</span>(d3<span class="op">.</span><span class="fu">sum</span>(resid<span class="op">.</span><span class="fu">map</span>(e <span class="kw">=&gt;</span> e <span class="op">**</span> <span class="dv">2</span>)) <span class="op">/</span> (n <span class="op">-</span> <span class="dv">2</span>))</span>
+<span id="cb9-590"><a></a>  <span class="kw">const</span> sdX <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sqrt</span>(varx)</span>
+<span id="cb9-591"><a></a>  <span class="kw">const</span> seBeta <span class="op">=</span> sdE <span class="op">/</span> (<span class="bu">Math</span><span class="op">.</span><span class="fu">sqrt</span>(n) <span class="op">*</span> sdX)</span>
+<span id="cb9-592"><a></a>  <span class="kw">const</span> lo <span class="op">=</span> beta <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> seBeta<span class="op">,</span> hi <span class="op">=</span> beta <span class="op">+</span> <span class="dv">2</span> <span class="op">*</span> seBeta</span>
+<span id="cb9-593"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;p style="font-family:sans-serif;font-size:1.1em;"&gt;</span></span>
+<span id="cb9-594"><a></a><span class="vs">    β̂ = &lt;strong&gt;</span><span class="sc">${</span>beta<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">3</span>)<span class="sc">}</span><span class="vs">&lt;/strong&gt; &amp;nbsp;·&amp;nbsp; SE(β̂) = &lt;strong&gt;</span><span class="sc">${</span>seBeta<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">3</span>)<span class="sc">}</span><span class="vs">&lt;/strong&gt;&lt;br&gt;</span></span>
+<span id="cb9-595"><a></a><span class="vs">    95% CI: &lt;strong&gt;[</span><span class="sc">${</span>lo<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">3</span>)<span class="sc">}</span><span class="vs">, </span><span class="sc">${</span>hi<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">3</span>)<span class="sc">}</span><span class="vs">]&lt;/strong&gt;&lt;/p&gt;`</span></span>
+<span id="cb9-596"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-8" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Does the interval include zero? What would that mean for whether HR should trust this formula at all?</p>
+</div>
+</section>
+<section id="homoskedasticity-and-robust-se" class="slide level2 smaller">
+<h2>Homoskedasticity — and robust SE</h2>
+<p>The simple SE formula above assumes <strong>homoskedasticity</strong>: the spread of residuals is the same across the whole range of x. A generic illustration, not our own data (too few points to show this convincingly at n=15-20):</p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb10" data-startfrom="609" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 608;"><span id="cb10-609"><a></a>{</span>
+<span id="cb10-610"><a></a>  <span class="kw">const</span> mkChart <span class="op">=</span> (data<span class="op">,</span> color) <span class="kw">=&gt;</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb10-611"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">220</span><span class="op">,</span> <span class="dt">width</span><span class="op">:</span> <span class="dv">340</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">50</span><span class="op">,</span></span>
+<span id="cb10-612"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"x"</span> }<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"residual"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="op">-</span><span class="dv">4</span><span class="op">,</span> <span class="dv">4</span>] }<span class="op">,</span></span>
+<span id="cb10-613"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb10-614"><a></a>      Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>]<span class="op">,</span> { <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#999"</span><span class="op">,</span> <span class="dt">strokeDasharray</span><span class="op">:</span> <span class="st">"3,2"</span> })<span class="op">,</span></span>
+<span id="cb10-615"><a></a>      Plot<span class="op">.</span><span class="fu">dot</span>(data<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"resid"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> color<span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">3</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.7</span> })<span class="op">,</span></span>
+<span id="cb10-616"><a></a>    ]</span>
+<span id="cb10-617"><a></a>  })</span>
+<span id="cb10-618"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div style="display:flex;gap:24px;justify-content:center;"&gt;</span></span>
+<span id="cb10-619"><a></a><span class="vs">    &lt;div&gt;&lt;p style="text-align:center;font-family:sans-serif;font-weight:700;color:#457b9d;margin:0 0 4px;"&gt;Homoskedastic&lt;/p&gt;</span><span class="sc">${</span><span class="fu">mkChart</span>(homo_resid_data<span class="op">,</span> <span class="st">"#457b9d"</span>)<span class="sc">}</span><span class="vs">&lt;/div&gt;</span></span>
+<span id="cb10-620"><a></a><span class="vs">    &lt;div&gt;&lt;p style="text-align:center;font-family:sans-serif;font-weight:700;color:#e63946;margin:0 0 4px;"&gt;Heteroskedastic&lt;/p&gt;</span><span class="sc">${</span><span class="fu">mkChart</span>(hetero_resid_data<span class="op">,</span> <span class="st">"#e63946"</span>)<span class="sc">}</span><span class="vs">&lt;/div&gt;</span></span>
+<span id="cb10-621"><a></a><span class="vs">  &lt;/div&gt;`</span></span>
+<span id="cb10-622"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-9" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div style="font-size:0.75em;color:#999;">
+<p>Left: residual spread constant across x. Right: residual spread fans out as x grows — the fit gets less precise for larger x, but OLS’s classical SE formula doesn’t know that.</p>
+</div>
+<div class="fragment">
+<p>In practice this is often false — the fit may be tighter for some x values than others. The fix is <strong>heteroskedasticity-robust SE</strong> (White/Huber), correct either way — but you have to ask for it. Software doesn’t default to it: statsmodels, R, and Excel all give you the classical formula above unless you explicitly request the robust version.</p>
+</div>
+<div class="fragment">
+<div class="sourceCode" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb11-2"><a></a></span>
+<span id="cb11-3"><a></a>model <span class="op">=</span> smf.ols(<span class="st">'reaction_time_ms ~ device'</span>, data<span class="op">=</span>df).fit(cov_type<span class="op">=</span><span class="st">'HC1'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Add <code>cov_type='HC1'</code> to <code>.fit()</code> and every SE, CI, and p-value that comes out the other end is heteroskedasticity-robust. Practical rule: <strong>use it by default</strong>; it costs nothing when homoskedasticity holds, and saves you when it doesn’t.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 9</p>
+</div>
+</section>
+<section id="testing-if-β-is-really-zero" class="slide level2">
+<h2>Testing if β is really zero</h2>
+<p><span class="math display">\[H_0: \beta_{true} = 0 \qquad H_A: \beta_{true} \neq 0 \qquad\qquad t = \frac{\hat\beta}{SE(\hat\beta)}\]</span></p>
+<ul>
+<li><span class="math inline">\(t \approx 2\)</span> corresponds to the 95% CI boundary — the same threshold, from a different angle</li>
+<li>A coefficient is “<strong>statistically significant</strong>” if its CI doesn’t contain zero — most commonly at the 5% level (<span class="math inline">\(p&lt;0.05\)</span>)</li>
+</ul>
+<div class="fragment">
+<p>This is the exact same t-statistic logic as Week 2’s tea test — just applied to a slope instead of a mean difference.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 9</p>
+</div>
+</section>
+<section id="two-different-questions-about-prediction" class="slide level2">
+<h2>Two different questions about prediction</h2>
+<ul>
+<li><strong>Confidence interval for the predicted value</strong> — where do we expect the <em>average</em> y to be, for a given x? Uncertainty about <span class="math inline">\(\hat\alpha\)</span> and <span class="math inline">\(\hat\beta\)</span> only</li>
+<li><strong>Prediction interval</strong> — where do we expect <em>one particular</em> y to actually land, for a given x? Adds the extra spread of individual observations around their own average</li>
+</ul>
+<div class="fragment">
+<p>The CI narrows toward zero as n grows. The PI never does — no amount of data removes the fact that individuals vary around the average.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 9</p>
+</div>
+</section>
+<section id="both-bands-on-our-own-data" class="slide level2">
+<h2>Both bands, on our own data</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb12" data-startfrom="678" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 677;"><span id="cb12-678"><a></a>{</span>
+<span id="cb12-679"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> student_summary<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">finger_mm</span> <span class="op">!=</span> <span class="kw">null</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="pp">isNaN</span>(d<span class="op">.</span><span class="at">finger_mm</span>))</span>
+<span id="cb12-680"><a></a>  <span class="cf">if</span> (rows<span class="op">.</span><span class="at">length</span> <span class="op">&lt;</span> <span class="dv">4</span>) <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;p style="color:#aaa;"&gt;Not enough data yet.&lt;/p&gt;`</span></span>
+<span id="cb12-681"><a></a>  <span class="kw">const</span> x <span class="op">=</span> rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">finger_mm</span>)<span class="op">,</span> y <span class="op">=</span> rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">mean_rt</span>)</span>
+<span id="cb12-682"><a></a>  <span class="kw">const</span> n <span class="op">=</span> x<span class="op">.</span><span class="at">length</span></span>
+<span id="cb12-683"><a></a>  <span class="kw">const</span> xbar <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(x)<span class="op">,</span> ybar <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(y)</span>
+<span id="cb12-684"><a></a>  <span class="kw">const</span> cov <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(x<span class="op">.</span><span class="fu">map</span>((xi<span class="op">,</span> i) <span class="kw">=&gt;</span> (xi <span class="op">-</span> xbar) <span class="op">*</span> (y[i] <span class="op">-</span> ybar)))</span>
+<span id="cb12-685"><a></a>  <span class="kw">const</span> varx <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(x<span class="op">.</span><span class="fu">map</span>(xi <span class="kw">=&gt;</span> (xi <span class="op">-</span> xbar) <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb12-686"><a></a>  <span class="kw">const</span> beta <span class="op">=</span> cov <span class="op">/</span> varx<span class="op">,</span> alpha <span class="op">=</span> ybar <span class="op">-</span> beta <span class="op">*</span> xbar</span>
+<span id="cb12-687"><a></a>  <span class="kw">const</span> resid <span class="op">=</span> x<span class="op">.</span><span class="fu">map</span>((xi<span class="op">,</span> i) <span class="kw">=&gt;</span> y[i] <span class="op">-</span> (alpha <span class="op">+</span> beta <span class="op">*</span> xi))</span>
+<span id="cb12-688"><a></a>  <span class="kw">const</span> sdE <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sqrt</span>(d3<span class="op">.</span><span class="fu">sum</span>(resid<span class="op">.</span><span class="fu">map</span>(e <span class="kw">=&gt;</span> e <span class="op">**</span> <span class="dv">2</span>)) <span class="op">/</span> (n <span class="op">-</span> <span class="dv">2</span>))</span>
+<span id="cb12-689"><a></a>  <span class="kw">const</span> grid <span class="op">=</span> d3<span class="op">.</span><span class="fu">range</span>(d3<span class="op">.</span><span class="fu">min</span>(x) <span class="op">-</span> <span class="dv">1</span><span class="op">,</span> d3<span class="op">.</span><span class="fu">max</span>(x) <span class="op">+</span> <span class="dv">1</span><span class="op">,</span> (d3<span class="op">.</span><span class="fu">max</span>(x) <span class="op">-</span> d3<span class="op">.</span><span class="fu">min</span>(x) <span class="op">+</span> <span class="dv">2</span>) <span class="op">/</span> <span class="dv">60</span>)</span>
+<span id="cb12-690"><a></a>  <span class="kw">const</span> bands <span class="op">=</span> grid<span class="op">.</span><span class="fu">map</span>(x0 <span class="kw">=&gt;</span> {</span>
+<span id="cb12-691"><a></a>    <span class="kw">const</span> fit <span class="op">=</span> alpha <span class="op">+</span> beta <span class="op">*</span> x0</span>
+<span id="cb12-692"><a></a>    <span class="kw">const</span> seFit <span class="op">=</span> sdE <span class="op">*</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="op">/</span> n <span class="op">+</span> ((x0 <span class="op">-</span> xbar) <span class="op">**</span> <span class="dv">2</span>) <span class="op">/</span> (n <span class="op">*</span> varx))</span>
+<span id="cb12-693"><a></a>    <span class="kw">const</span> sePred <span class="op">=</span> sdE <span class="op">*</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="op">+</span> <span class="dv">1</span> <span class="op">/</span> n <span class="op">+</span> ((x0 <span class="op">-</span> xbar) <span class="op">**</span> <span class="dv">2</span>) <span class="op">/</span> (n <span class="op">*</span> varx))</span>
+<span id="cb12-694"><a></a>    <span class="cf">return</span> { <span class="dt">x</span><span class="op">:</span> x0<span class="op">,</span> fit<span class="op">,</span> <span class="dt">ciLo</span><span class="op">:</span> fit <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> seFit<span class="op">,</span> <span class="dt">ciHi</span><span class="op">:</span> fit <span class="op">+</span> <span class="dv">2</span> <span class="op">*</span> seFit<span class="op">,</span> <span class="dt">piLo</span><span class="op">:</span> fit <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> sePred<span class="op">,</span> <span class="dt">piHi</span><span class="op">:</span> fit <span class="op">+</span> <span class="dv">2</span> <span class="op">*</span> sePred }</span>
+<span id="cb12-695"><a></a>  })</span>
+<span id="cb12-696"><a></a>  <span class="cf">return</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb12-697"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">400</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">60</span><span class="op">,</span></span>
+<span id="cb12-698"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Finger length (mm)"</span> }<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Mean reaction time (ms)"</span> }<span class="op">,</span></span>
+<span id="cb12-699"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb12-700"><a></a>      Plot<span class="op">.</span><span class="fu">areaY</span>(bands<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span> <span class="dt">y1</span><span class="op">:</span> <span class="st">"piLo"</span><span class="op">,</span> <span class="dt">y2</span><span class="op">:</span> <span class="st">"piHi"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#457b9d"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.12</span> })<span class="op">,</span></span>
+<span id="cb12-701"><a></a>      Plot<span class="op">.</span><span class="fu">areaY</span>(bands<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span> <span class="dt">y1</span><span class="op">:</span> <span class="st">"ciLo"</span><span class="op">,</span> <span class="dt">y2</span><span class="op">:</span> <span class="st">"ciHi"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#e63946"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.25</span> })<span class="op">,</span></span>
+<span id="cb12-702"><a></a>      Plot<span class="op">.</span><span class="fu">line</span>(bands<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"fit"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#1a1a2e"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="dv">2</span> })<span class="op">,</span></span>
+<span id="cb12-703"><a></a>      Plot<span class="op">.</span><span class="fu">dot</span>(rows<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"finger_mm"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"mean_rt"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#1a1a2e"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">4</span> })<span class="op">,</span></span>
+<span id="cb12-704"><a></a>    ]</span>
+<span id="cb12-705"><a></a>  })</span>
+<span id="cb12-706"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-10" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="instructions-box">
+<p>The narrow red band is the CI of the regression line; the wide blue band is the prediction interval. For a new student HR hasn’t met yet, which band should they actually use to set expectations? Why is it so much wider?</p>
+</div>
+</section>
+<section id="online-session" class="slide level2">
+<h2>Online session</h2>
+<p>See <strong>week5-online.html</strong> — a short standalone deck for this week’s online session.</p>
+</section>
+<section id="coming-up-week-6" class="slide level2">
+<h2>Coming up: Week 6</h2>
+<div style="text-align: center; padding-top: 60px;">
+<p><span style="font-size: 1.3em;">One x variable, on its own, barely moved the needle — and we still can’t rule out a third variable driving both.</span></p>
+<p><span style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"><strong>Multiple regression: what “controlling for” really means</strong></span></p>
+<div class="fragment" style="padding-top:40px;">
+<p><em>Omitted variable bias · multicollinearity · interactions</em></p>
+</div>
+</div>
+
+
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'fade',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1280,
+
+        height: 720,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 8.0e-2,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script type="ojs-module-contents">
+    eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgY29uc3Qgcm93cyA9IHN0dWRlbnRfc3VtbWFyeS5maWx0ZXIoZCA9PiBkLmZpbmdlcl9tbSAhPSBudWxsICYmICFpc05hTihkLmZpbmdlcl9tbSkpXG4gIGlmIChyb3dzLmxlbmd0aCA8IDUpIHJldHVybiBodG1sYDxwIHN0eWxlPVwiY29sb3I6I2FhYTtcIj5Ob3QgZW5vdWdoIGRhdGEgeWV0LjwvcD5gXG4gIGNvbnN0IHggPSByb3dzLm1hcChkID0+IGQuZmluZ2VyX21tKSwgeSA9IHJvd3MubWFwKGQgPT4gZC5tZWFuX3J0KVxuICBjb25zdCBuID0geC5sZW5ndGhcbiAgY29uc3QgcyA9IGsgPT4gZDMuc3VtKHgubWFwKHhpID0+IHhpICoqIGspKVxuICBjb25zdCBzeHkgPSBrID0+IGQzLnN1bSh4Lm1hcCgoeGksIGkpID0+IHhpICoqIGsgKiB5W2ldKSlcbiAgLy8gTm9ybWFsIGVxdWF0aW9ucyBmb3IgeSA9IGEgKyBiMSp4ICsgYjIqeF4yLCBzb2x2ZWQgdmlhIENyYW1lcidzIHJ1bGVcbiAgY29uc3QgTSA9IFtbbiwgcygxKSwgcygyKV0sIFtzKDEpLCBzKDIpLCBzKDMpXSwgW3MoMiksIHMoMyksIHMoNCldXVxuICBjb25zdCB2ID0gW2QzLnN1bSh5KSwgc3h5KDEpLCBzeHkoMildXG4gIGNvbnN0IGRldDMgPSBtID0+IG1bMF1bMF0qKG1bMV1bMV0qbVsyXVsyXS1tWzFdWzJdKm1bMl1bMV0pIC0gbVswXVsxXSoobVsxXVswXSptWzJdWzJdLW1bMV1bMl0qbVsyXVswXSkgKyBtWzBdWzJdKihtWzFdWzBdKm1bMl1bMV0tbVsxXVsxXSptWzJdWzBdKVxuICBjb25zdCBEID0gZGV0MyhNKVxuICBjb25zdCB3aXRoQ29sID0gKG0sIGNvbCwgdmVjKSA9PiBtLm1hcCgocm93LCBpKSA9PiByb3cubWFwKCh2YWwsIGopID0+IGogPT09IGNvbCA/IHZlY1tpXSA6IHZhbCkpXG4gIGNvbnN0IGEgPSBkZXQzKHdpdGhDb2woTSwgMCwgdikpIC8gRFxuICBjb25zdCBiMSA9IGRldDMod2l0aENvbChNLCAxLCB2KSkgLyBEXG4gIGNvbnN0IGIyID0gZGV0Myh3aXRoQ29sKE0sIDIsIHYpKSAvIERcbiAgY29uc3QgZml0dGVkID0geC5tYXAoeGkgPT4gYSArIGIxICogeGkgKyBiMiAqIHhpICoqIDIpXG4gIGNvbnN0IHliYXIgPSBkMy5tZWFuKHkpXG4gIGNvbnN0IHZhclkgPSBkMy5tZWFuKHkubWFwKHlpID0+ICh5aSAtIHliYXIpICoqIDIpKVxuICBjb25zdCB2YXJZaGF0ID0gZDMubWVhbihmaXR0ZWQubWFwKGYgPT4gKGYgLSB5YmFyKSAqKiAyKSlcbiAgY29uc3QgcjJxdWFkID0gdmFyWWhhdCAvIHZhcllcbiAgY29uc3QgeGJhciA9IGQzLm1lYW4oeClcbiAgY29uc3QgY292ID0gZDMubWVhbih4Lm1hcCgoeGksIGkpID0+ICh4aSAtIHhiYXIpICogKHlbaV0gLSB5YmFyKSkpXG4gIGNvbnN0IHZhcnggPSBkMy5tZWFuKHgubWFwKHhpID0+ICh4aSAtIHhiYXIpICoqIDIpKVxuICBjb25zdCBiZXRhTGluID0gY292IC8gdmFyeCwgYWxwaGFMaW4gPSB5YmFyIC0gYmV0YUxpbiAqIHhiYXJcbiAgY29uc3QgZml0dGVkTGluID0geC5tYXAoeGkgPT4gYWxwaGFMaW4gKyBiZXRhTGluICogeGkpXG4gIGNvbnN0IHZhclloYXRMaW4gPSBkMy5tZWFuKGZpdHRlZExpbi5tYXAoZiA9PiAoZiAtIHliYXIpICoqIDIpKVxuICBjb25zdCByMmxpbiA9IHZhclloYXRMaW4gLyB2YXJZXG4gIGNvbnN0IGdyaWQgPSBkMy5yYW5nZShkMy5taW4oeCksIGQzLm1heCh4KSwgKGQzLm1heCh4KSAtIGQzLm1pbih4KSkgLyA2MClcbiAgY29uc3QgY3VydmUgPSBncmlkLm1hcCh4aSA9PiAoeyBmaW5nZXJfbW06IHhpLCBmaXQ6IGEgKyBiMSAqIHhpICsgYjIgKiB4aSAqKiAyIH0pKVxuICBjb25zdCBjaGFydCA9IFBsb3QucGxvdCh7XG4gICAgaGVpZ2h0OiAzNDAsIG1hcmdpbkxlZnQ6IDYwLFxuICAgIHg6IHsgbGFiZWw6IFwiRmluZ2VyIGxlbmd0aCAobW0pXCIgfSwgeTogeyBsYWJlbDogXCJNZWFuIHJlYWN0aW9uIHRpbWUgKG1zKVwiIH0sXG4gICAgbWFya3M6IFtcbiAgICAgIFBsb3QuZG90KHJvd3MsIHsgeDogXCJmaW5nZXJfbW1cIiwgeTogXCJtZWFuX3J0XCIsIGZpbGw6IFwiIzFhMWEyZVwiLCByOiA0IH0pLFxuICAgICAgUGxvdC5saW5lKGN1cnZlLCB7IHg6IFwiZmluZ2VyX21tXCIsIHk6IFwiZml0XCIsIHN0cm9rZTogXCIjZTYzOTQ2XCIsIHN0cm9rZVdpZHRoOiAyLjUgfSksXG4gICAgXVxuICB9KVxuICByZXR1cm4gaHRtbGA8ZGl2PiR7Y2hhcnR9PHAgc3R5bGU9XCJmb250LWZhbWlseTpzYW5zLXNlcmlmO2ZvbnQtc2l6ZToxZW07dGV4dC1hbGlnbjpjZW50ZXI7XCI+TGluZWFyIFLCsiA9IDxzdHJvbmc+JHtyMmxpbi50b0ZpeGVkKDMpfTwvc3Ryb25nPiAmbmJzcDvCtyZuYnNwOyBRdWFkcmF0aWMgUsKyID0gPHN0cm9uZz4ke3IycXVhZC50b0ZpeGVkKDMpfTwvc3Ryb25nPjwvcD48L2Rpdj5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIGNvbnN0IHJvd3MgPSBsaWZlX2RhdGFcbiAgY29uc3QgY2hhcnRSYXcgPSBQbG90LnBsb3Qoe1xuICAgIGhlaWdodDogMzIwLCB3aWR0aDogMzgwLCBtYXJnaW5MZWZ0OiA1NSxcbiAgICB4OiB7IGxhYmVsOiBcIkdEUCBwZXIgY2FwaXRhICgkMDAwcylcIiB9LCB5OiB7IGxhYmVsOiBcIkxpZmUgZXhwZWN0YW5jeSAoeWVhcnMpXCIgfSxcbiAgICBtYXJrczogW1Bsb3QuZG90KHJvd3MsIHsgeDogXCJnZHBfcGVyX2NhcGl0YVwiLCB5OiBcImxpZmVfZXhwXCIsIGZpbGw6IFwiIzFhMWEyZVwiLCByOiAzLCBmaWxsT3BhY2l0eTogMC42IH0pXVxuICB9KVxuICBjb25zdCBjaGFydExvZyA9IFBsb3QucGxvdCh7XG4gICAgaGVpZ2h0OiAzMjAsIHdpZHRoOiAzODAsIG1hcmdpbkxlZnQ6IDU1LFxuICAgIHg6IHsgbGFiZWw6IFwibG4oR0RQIHBlciBjYXBpdGEpXCIgfSwgeTogeyBsYWJlbDogXCJMaWZlIGV4cGVjdGFuY3kgKHllYXJzKVwiIH0sXG4gICAgbWFya3M6IFtcbiAgICAgIFBsb3QuZG90KHJvd3MsIHsgeDogXCJsbl9nZHBfcGVyX2NhcGl0YVwiLCB5OiBcImxpZmVfZXhwXCIsIGZpbGw6IFwiIzQ1N2I5ZFwiLCByOiAzLCBmaWxsT3BhY2l0eTogMC42IH0pLFxuICAgICAgUGxvdC5saW5lYXJSZWdyZXNzaW9uWShyb3dzLCB7IHg6IFwibG5fZ2RwX3Blcl9jYXBpdGFcIiwgeTogXCJsaWZlX2V4cFwiLCBzdHJva2U6IFwiI2U2Mzk0NlwiLCBzdHJva2VXaWR0aDogMi41IH0pLFxuICAgIF1cbiAgfSlcbiAgcmV0dXJuIGh0bWxgPGRpdiBzdHlsZT1cImRpc3BsYXk6ZmxleDtnYXA6MjBweDtqdXN0aWZ5LWNvbnRlbnQ6Y2VudGVyO1wiPiR7Y2hhcnRSYXd9JHtjaGFydExvZ308L2Rpdj5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTMiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIGNvbnN0IHJvd3MgPSBsaWZlX2RhdGFcbiAgY29uc3Qgc29ydGVkID0gWy4uLnJvd3NdLnNvcnQoKGEsIGIpID0+IGEuZ2RwX3Blcl9jYXBpdGEgLSBiLmdkcF9wZXJfY2FwaXRhKVxuICBjb25zdCB4YmFyID0gZDMubWVhbihyb3dzLCBkID0+IGQuZ2RwX3Blcl9jYXBpdGEpLCB5YmFyID0gZDMubWVhbihyb3dzLCBkID0+IGQubGlmZV9leHApXG4gIGNvbnN0IGNvdiA9IGQzLm1lYW4ocm93cywgZCA9PiAoZC5nZHBfcGVyX2NhcGl0YSAtIHhiYXIpICogKGQubGlmZV9leHAgLSB5YmFyKSlcbiAgY29uc3QgdmFyeCA9IGQzLm1lYW4ocm93cywgZCA9PiAoZC5nZHBfcGVyX2NhcGl0YSAtIHhiYXIpICoqIDIpXG4gIGNvbnN0IGJldGEgPSBjb3YgLyB2YXJ4LCBhbHBoYSA9IHliYXIgLSBiZXRhICogeGJhclxuICBjb25zdCBbeG1pbiwgeG1heF0gPSBkMy5leHRlbnQocm93cywgZCA9PiBkLmdkcF9wZXJfY2FwaXRhKVxuICBjb25zdCBzdHJhaWdodExpbmUgPSBbeyB4OiB4bWluLCB5OiBhbHBoYSArIGJldGEgKiB4bWluIH0sIHsgeDogeG1heCwgeTogYWxwaGEgKyBiZXRhICogeG1heCB9XVxuICBjb25zdCBjaGFydExpbmVhciA9IFBsb3QucGxvdCh7XG4gICAgaGVpZ2h0OiAzMjAsIHdpZHRoOiAzODAsIG1hcmdpbkxlZnQ6IDU1LFxuICAgIHg6IHsgbGFiZWw6IFwiR0RQIHBlciBjYXBpdGEgKCQwMDBzKVwiIH0sIHk6IHsgbGFiZWw6IFwiTGlmZSBleHBlY3RhbmN5ICh5ZWFycylcIiB9LFxuICAgIG1hcmtzOiBbXG4gICAgICBQbG90LmRvdChyb3dzLCB7IHg6IFwiZ2RwX3Blcl9jYXBpdGFcIiwgeTogXCJsaWZlX2V4cFwiLCBmaWxsOiBcIiMxYTFhMmVcIiwgcjogMywgZmlsbE9wYWNpdHk6IDAuNiB9KSxcbiAgICAgIFBsb3QubGluZShzdHJhaWdodExpbmUsIHsgeDogXCJ4XCIsIHk6IFwieVwiLCBzdHJva2U6IFwiI2U2Mzk0NlwiLCBzdHJva2VXaWR0aDogMi41IH0pLFxuICAgIF1cbiAgfSlcbiAgY29uc3QgY2hhcnRRdWFkID0gUGxvdC5wbG90KHtcbiAgICBoZWlnaHQ6IDMyMCwgd2lkdGg6IDM4MCwgbWFyZ2luTGVmdDogNTUsXG4gICAgeDogeyBsYWJlbDogXCJHRFAgcGVyIGNhcGl0YSAoJDAwMHMpXCIgfSwgeTogeyBsYWJlbDogXCJMaWZlIGV4cGVjdGFuY3kgKHllYXJzKVwiIH0sXG4gICAgbWFya3M6IFtcbiAgICAgIFBsb3QuZG90KHJvd3MsIHsgeDogXCJnZHBfcGVyX2NhcGl0YVwiLCB5OiBcImxpZmVfZXhwXCIsIGZpbGw6IFwiIzFhMWEyZVwiLCByOiAzLCBmaWxsT3BhY2l0eTogMC42IH0pLFxuICAgICAgUGxvdC5saW5lKHNvcnRlZCwgeyB4OiBcImdkcF9wZXJfY2FwaXRhXCIsIHk6IFwicXVhZF9yYXdfZml0XCIsIHN0cm9rZTogXCIjZTYzOTQ2XCIsIHN0cm9rZVdpZHRoOiAyLjUgfSksXG4gICAgXVxuICB9KVxuICByZXR1cm4gaHRtbGA8ZGl2IHN0eWxlPVwiZGlzcGxheTpmbGV4O2dhcDoyMHB4O2p1c3RpZnktY29udGVudDpjZW50ZXI7XCI+JHtjaGFydExpbmVhcn0ke2NoYXJ0UXVhZH08L2Rpdj5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTQiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIHJldHVybiBodG1sYDx0YWJsZSBzdHlsZT1cIm1hcmdpbjowIGF1dG87Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MC45NWVtO2JvcmRlci1jb2xsYXBzZTpjb2xsYXBzZTtcIj5cbiAgICA8dHIgc3R5bGU9XCJib3JkZXItYm90dG9tOjJweCBzb2xpZCAjMWExYTJlO1wiPjx0aCBzdHlsZT1cInBhZGRpbmc6NHB4IDIwcHg7dGV4dC1hbGlnbjpsZWZ0O1wiPk1vZGVsPC90aD48dGggc3R5bGU9XCJwYWRkaW5nOjRweCAyMHB4O1wiPlLCsjwvdGg+PC90cj5cbiAgICAke2xpZmVfcjIubWFwKGQgPT4gYDx0ciBzdHlsZT1cImJvcmRlci1ib3R0b206MXB4IHNvbGlkICNkZGQ7XCI+PHRkIHN0eWxlPVwicGFkZGluZzo0cHggMjBweDtcIj4ke2QubW9kZWx9PC90ZD48dGQgc3R5bGU9XCJwYWRkaW5nOjRweCAyMHB4O3RleHQtYWxpZ246Y2VudGVyO2ZvbnQtd2VpZ2h0OjcwMDtcIj4ke2Qucl9zcXVhcmVkLnRvRml4ZWQoMyl9PC90ZD48L3RyPmApLmpvaW4oJycpfVxuICA8L3RhYmxlPmBcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgY29uc3Qgcm93cyA9IHN0dWRlbnRfc3VtbWFyeS5maWx0ZXIoZCA9PiBkLmZpbmdlcl9tbSAhPSBudWxsICYmICFpc05hTihkLmZpbmdlcl9tbSkpXG4gIGlmIChyb3dzLmxlbmd0aCA8IDMpIHJldHVybiBodG1sYDxwIHN0eWxlPVwiY29sb3I6I2FhYTtcIj5Ob3QgZW5vdWdoIGRhdGEgeWV0LjwvcD5gXG4gIHJldHVybiBQbG90LnBsb3Qoe1xuICAgIGhlaWdodDogMzQwLCBtYXJnaW5MZWZ0OiA2MCxcbiAgICB4OiB7IGxhYmVsOiBcIkZpbmdlciBsZW5ndGggKG1tKVwiIH0sIHk6IHsgbGFiZWw6IFwiTWVhbiByZWFjdGlvbiB0aW1lIChtcylcIiB9LFxuICAgIG1hcmtzOiBbXG4gICAgICBQbG90LmRvdChyb3dzLCB7IHg6IFwiZmluZ2VyX21tXCIsIHk6IFwibWVhbl9ydFwiLCBmaWxsOiBcIiMxYTFhMmVcIiwgcjogNCB9KSxcbiAgICAgIFBsb3QudGV4dChyb3dzLCB7IHg6IFwiZmluZ2VyX21tXCIsIHk6IFwibWVhbl9ydFwiLCB0ZXh0OiBcInN0dWRlbnRfbmFtZVwiLCBkeTogLTEwLCBmb250U2l6ZTogOSwgZmlsbDogXCIjNjY2XCIgfSksXG4gICAgXVxuICB9KVxufVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC02IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoidmlld29mIG5vaXNlU0QgPSB7XG4gIGNvbnN0IGYgPSBodG1sYDxkaXYgc3R5bGU9XCJkaXNwbGF5OmZsZXg7YWxpZ24taXRlbXM6Y2VudGVyO2dhcDoxNHB4O2ZvbnQtc2l6ZToxM3B4O1xuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZm9udC1mYW1pbHk6J0hlbHZldGljYSBOZXVlJyxzYW5zLXNlcmlmO3BhZGRpbmc6NHB4IDJweDtjb2xvcjojMzMzO1wiPlxuICAgIDxzcGFuIHN0eWxlPVwiY29sb3I6IzY2Njt3aGl0ZS1zcGFjZTpub3dyYXA7XCI+RXh0cmEgbm9pc2UgU0QgKG1tKTwvc3Bhbj5cbiAgICA8aW5wdXQgdHlwZT1cInJhbmdlXCIgbWluPVwiMFwiIG1heD1cIjEwXCIgc3RlcD1cIjAuMlwiIHZhbHVlPVwiMFwiXG4gICAgICAgICAgIHN0eWxlPVwid2lkdGg6MjAwcHg7Y3Vyc29yOnBvaW50ZXI7YWNjZW50LWNvbG9yOiNlNjM5NDY7XCI+XG4gICAgPHNwYW4gaWQ9XCJucy1sYWJlbFwiIHN0eWxlPVwiZm9udC13ZWlnaHQ6NzAwO21pbi13aWR0aDozNnB4O2NvbG9yOiNlNjM5NDY7XCI+MC4wPC9zcGFuPlxuICA8L2Rpdj5gXG4gIGNvbnN0IHNsaWRlciA9IGYucXVlcnlTZWxlY3RvcignaW5wdXQnKVxuICBjb25zdCBsYWJlbCAgPSBmLnF1ZXJ5U2VsZWN0b3IoJyNucy1sYWJlbCcpXG4gIHNsaWRlci5hZGRFdmVudExpc3RlbmVyKCdpbnB1dCcsICgpID0+IHtcbiAgICBsYWJlbC50ZXh0Q29udGVudCA9ICgrc2xpZGVyLnZhbHVlKS50b0ZpeGVkKDEpXG4gICAgZi5kaXNwYXRjaEV2ZW50KG5ldyBDdXN0b21FdmVudCgnaW5wdXQnKSlcbiAgfSlcbiAgT2JqZWN0LmRlZmluZVByb3BlcnR5KGYsICd2YWx1ZScsIHsgZ2V0OiAoKSA9PiArc2xpZGVyLnZhbHVlIH0pXG4gIHJldHVybiBmXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTciLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIGNvbnN0IHJvd3MgPSBzdHVkZW50X3N1bW1hcnkuZmlsdGVyKGQgPT4gZC5maW5nZXJfbW0gIT0gbnVsbCAmJiAhaXNOYU4oZC5maW5nZXJfbW0pKVxuICBpZiAocm93cy5sZW5ndGggPCAzKSByZXR1cm4gaHRtbGA8cCBzdHlsZT1cImNvbG9yOiNhYWE7XCI+Tm90IGVub3VnaCBkYXRhIHlldC48L3A+YFxuICAvLyBUcnVlIGJldGEqIGFuZCBWYXJbeCpdIGZyb20gb3VyIHJlYWwsIHVucGVydHVyYmVkIGRhdGEg4oCUIGZpeGVkIHRocm91Z2hvdXRcbiAgY29uc3QgeGJhciA9IGQzLm1lYW4ocm93cywgZCA9PiBkLmZpbmdlcl9tbSksIHliYXIgPSBkMy5tZWFuKHJvd3MsIGQgPT4gZC5tZWFuX3J0KVxuICBjb25zdCBjb3YgPSBkMy5tZWFuKHJvd3MsIGQgPT4gKGQuZmluZ2VyX21tIC0geGJhcikgKiAoZC5tZWFuX3J0IC0geWJhcikpXG4gIGNvbnN0IHZhclhTdGFyID0gZDMubWVhbihyb3dzLCBkID0+IChkLmZpbmdlcl9tbSAtIHhiYXIpICoqIDIpXG4gIGNvbnN0IHRydWVCZXRhID0gY292IC8gdmFyWFN0YXJcbiAgLy8gVGhlIGZvcm11bGEgZnJvbSB0aGUgcHJldmlvdXMgc2xpZGU6IGJldGEgPSBiZXRhKiB4IFZhclt4Kl0gLyAoVmFyW3gqXSArIFZhcltlXSlcbiAgLy8gVGhpcyByYXRpbyBpcyBhbHdheXMgaW4gKDAsIDFdLCBzbyBiZXRhIGNhbiBzaHJpbmsgdG93YXJkIHplcm8gYnV0IGNhbiBuZXZlciBjcm9zcyBpdC5cbiAgY29uc3QgYmV0YUZvciA9IHNkID0+IHRydWVCZXRhICogKHZhclhTdGFyIC8gKHZhclhTdGFyICsgc2QgKiogMikpXG4gIGNvbnN0IGN1cnJlbnRCZXRhID0gYmV0YUZvcihub2lzZVNEKVxuICBjb25zdCBjdXJ2ZSA9IGQzLnJhbmdlKDAsIDEwLjIsIDAuMikubWFwKHNkID0+ICh7IHNkLCBiZXRhOiBiZXRhRm9yKHNkKSB9KSlcbiAgY29uc3QgY2hhcnQgPSBQbG90LnBsb3Qoe1xuICAgIGhlaWdodDogMzIwLCBtYXJnaW5MZWZ0OiA2MCxcbiAgICB4OiB7IGxhYmVsOiBcImV4dHJhIG5vaXNlIFNEIGFkZGVkIHRvIGZpbmdlciBsZW5ndGggKG1tKVwiIH0sXG4gICAgeTogeyBsYWJlbDogXCJhdHRlbnVhdGVkIM6yzIJcIiB9LFxuICAgIG1hcmtzOiBbXG4gICAgICBQbG90LnJ1bGVZKFswXSwgeyBzdHJva2U6IFwiI2NjY1wiIH0pLFxuICAgICAgUGxvdC5saW5lKGN1cnZlLCB7IHg6IFwic2RcIiwgeTogXCJiZXRhXCIsIHN0cm9rZTogXCIjNDU3YjlkXCIsIHN0cm9rZVdpZHRoOiAyIH0pLFxuICAgICAgUGxvdC5kb3QoW3sgc2Q6IG5vaXNlU0QsIGJldGE6IGN1cnJlbnRCZXRhIH1dLCB7IHg6IFwic2RcIiwgeTogXCJiZXRhXCIsIGZpbGw6IFwiI2U2Mzk0NlwiLCByOiA2IH0pLFxuICAgIF1cbiAgfSlcbiAgcmV0dXJuIGh0bWxgPGRpdj4ke2NoYXJ0fTxwIHN0eWxlPVwiZm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MWVtO3RleHQtYWxpZ246Y2VudGVyO1wiPs6yzIIqIHdpdGggbm8gZXh0cmEgbm9pc2U6IDxzdHJvbmc+JHt0cnVlQmV0YS50b0ZpeGVkKDMpfTwvc3Ryb25nPiAmbmJzcDvCtyZuYnNwOyBhdHRlbnVhdGVkIM6yzIIgYXQgY3VycmVudCBub2lzZTogPHN0cm9uZz4ke2N1cnJlbnRCZXRhLnRvRml4ZWQoMyl9PC9zdHJvbmc+PC9wPjwvZGl2PmBcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtOCIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgY29uc3Qgcm93cyA9IHN0dWRlbnRfc3VtbWFyeS5maWx0ZXIoZCA9PiBkLmZpbmdlcl9tbSAhPSBudWxsICYmICFpc05hTihkLmZpbmdlcl9tbSkpXG4gIGlmIChyb3dzLmxlbmd0aCA8IDQpIHJldHVybiBodG1sYDxwIHN0eWxlPVwiY29sb3I6I2FhYTtcIj5Ob3QgZW5vdWdoIGRhdGEgeWV0LjwvcD5gXG4gIGNvbnN0IHggPSByb3dzLm1hcChkID0+IGQuZmluZ2VyX21tKSwgeSA9IHJvd3MubWFwKGQgPT4gZC5tZWFuX3J0KVxuICBjb25zdCBuID0geC5sZW5ndGhcbiAgY29uc3QgeGJhciA9IGQzLm1lYW4oeCksIHliYXIgPSBkMy5tZWFuKHkpXG4gIGNvbnN0IGNvdiA9IGQzLm1lYW4oeC5tYXAoKHhpLCBpKSA9PiAoeGkgLSB4YmFyKSAqICh5W2ldIC0geWJhcikpKVxuICBjb25zdCB2YXJ4ID0gZDMubWVhbih4Lm1hcCh4aSA9PiAoeGkgLSB4YmFyKSAqKiAyKSlcbiAgY29uc3QgYmV0YSA9IGNvdiAvIHZhcngsIGFscGhhID0geWJhciAtIGJldGEgKiB4YmFyXG4gIGNvbnN0IHJlc2lkID0geC5tYXAoKHhpLCBpKSA9PiB5W2ldIC0gKGFscGhhICsgYmV0YSAqIHhpKSlcbiAgY29uc3Qgc2RFID0gTWF0aC5zcXJ0KGQzLnN1bShyZXNpZC5tYXAoZSA9PiBlICoqIDIpKSAvIChuIC0gMikpXG4gIGNvbnN0IHNkWCA9IE1hdGguc3FydCh2YXJ4KVxuICBjb25zdCBzZUJldGEgPSBzZEUgLyAoTWF0aC5zcXJ0KG4pICogc2RYKVxuICBjb25zdCBsbyA9IGJldGEgLSAyICogc2VCZXRhLCBoaSA9IGJldGEgKyAyICogc2VCZXRhXG4gIHJldHVybiBodG1sYDxwIHN0eWxlPVwiZm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MS4xZW07XCI+XG4gICAgzrLMgiA9IDxzdHJvbmc+JHtiZXRhLnRvRml4ZWQoMyl9PC9zdHJvbmc+ICZuYnNwO8K3Jm5ic3A7IFNFKM6yzIIpID0gPHN0cm9uZz4ke3NlQmV0YS50b0ZpeGVkKDMpfTwvc3Ryb25nPjxicj5cbiAgICA5NSUgQ0k6IDxzdHJvbmc+WyR7bG8udG9GaXhlZCgzKX0sICR7aGkudG9GaXhlZCgzKX1dPC9zdHJvbmc+PC9wPmBcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtOSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgY29uc3QgbWtDaGFydCA9IChkYXRhLCBjb2xvcikgPT4gUGxvdC5wbG90KHtcbiAgICBoZWlnaHQ6IDIyMCwgd2lkdGg6IDM0MCwgbWFyZ2luTGVmdDogNTAsXG4gICAgeDogeyBsYWJlbDogXCJ4XCIgfSwgeTogeyBsYWJlbDogXCJyZXNpZHVhbFwiLCBkb21haW46IFstNCwgNF0gfSxcbiAgICBtYXJrczogW1xuICAgICAgUGxvdC5ydWxlWShbMF0sIHsgc3Ryb2tlOiBcIiM5OTlcIiwgc3Ryb2tlRGFzaGFycmF5OiBcIjMsMlwiIH0pLFxuICAgICAgUGxvdC5kb3QoZGF0YSwgeyB4OiBcInhcIiwgeTogXCJyZXNpZFwiLCBmaWxsOiBjb2xvciwgcjogMywgZmlsbE9wYWNpdHk6IDAuNyB9KSxcbiAgICBdXG4gIH0pXG4gIHJldHVybiBodG1sYDxkaXYgc3R5bGU9XCJkaXNwbGF5OmZsZXg7Z2FwOjI0cHg7anVzdGlmeS1jb250ZW50OmNlbnRlcjtcIj5cbiAgICA8ZGl2PjxwIHN0eWxlPVwidGV4dC1hbGlnbjpjZW50ZXI7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXdlaWdodDo3MDA7Y29sb3I6IzQ1N2I5ZDttYXJnaW46MCAwIDRweDtcIj5Ib21vc2tlZGFzdGljPC9wPiR7bWtDaGFydChob21vX3Jlc2lkX2RhdGEsIFwiIzQ1N2I5ZFwiKX08L2Rpdj5cbiAgICA8ZGl2PjxwIHN0eWxlPVwidGV4dC1hbGlnbjpjZW50ZXI7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXdlaWdodDo3MDA7Y29sb3I6I2U2Mzk0NjttYXJnaW46MCAwIDRweDtcIj5IZXRlcm9za2VkYXN0aWM8L3A+JHtta0NoYXJ0KGhldGVyb19yZXNpZF9kYXRhLCBcIiNlNjM5NDZcIil9PC9kaXY+XG4gIDwvZGl2PmBcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMTAiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIGNvbnN0IHJvd3MgPSBzdHVkZW50X3N1bW1hcnkuZmlsdGVyKGQgPT4gZC5maW5nZXJfbW0gIT0gbnVsbCAmJiAhaXNOYU4oZC5maW5nZXJfbW0pKVxuICBpZiAocm93cy5sZW5ndGggPCA0KSByZXR1cm4gaHRtbGA8cCBzdHlsZT1cImNvbG9yOiNhYWE7XCI+Tm90IGVub3VnaCBkYXRhIHlldC48L3A+YFxuICBjb25zdCB4ID0gcm93cy5tYXAoZCA9PiBkLmZpbmdlcl9tbSksIHkgPSByb3dzLm1hcChkID0+IGQubWVhbl9ydClcbiAgY29uc3QgbiA9IHgubGVuZ3RoXG4gIGNvbnN0IHhiYXIgPSBkMy5tZWFuKHgpLCB5YmFyID0gZDMubWVhbih5KVxuICBjb25zdCBjb3YgPSBkMy5tZWFuKHgubWFwKCh4aSwgaSkgPT4gKHhpIC0geGJhcikgKiAoeVtpXSAtIHliYXIpKSlcbiAgY29uc3QgdmFyeCA9IGQzLm1lYW4oeC5tYXAoeGkgPT4gKHhpIC0geGJhcikgKiogMikpXG4gIGNvbnN0IGJldGEgPSBjb3YgLyB2YXJ4LCBhbHBoYSA9IHliYXIgLSBiZXRhICogeGJhclxuICBjb25zdCByZXNpZCA9IHgubWFwKCh4aSwgaSkgPT4geVtpXSAtIChhbHBoYSArIGJldGEgKiB4aSkpXG4gIGNvbnN0IHNkRSA9IE1hdGguc3FydChkMy5zdW0ocmVzaWQubWFwKGUgPT4gZSAqKiAyKSkgLyAobiAtIDIpKVxuICBjb25zdCBncmlkID0gZDMucmFuZ2UoZDMubWluKHgpIC0gMSwgZDMubWF4KHgpICsgMSwgKGQzLm1heCh4KSAtIGQzLm1pbih4KSArIDIpIC8gNjApXG4gIGNvbnN0IGJhbmRzID0gZ3JpZC5tYXAoeDAgPT4ge1xuICAgIGNvbnN0IGZpdCA9IGFscGhhICsgYmV0YSAqIHgwXG4gICAgY29uc3Qgc2VGaXQgPSBzZEUgKiBNYXRoLnNxcnQoMSAvIG4gKyAoKHgwIC0geGJhcikgKiogMikgLyAobiAqIHZhcngpKVxuICAgIGNvbnN0IHNlUHJlZCA9IHNkRSAqIE1hdGguc3FydCgxICsgMSAvIG4gKyAoKHgwIC0geGJhcikgKiogMikgLyAobiAqIHZhcngpKVxuICAgIHJldHVybiB7IHg6IHgwLCBmaXQsIGNpTG86IGZpdCAtIDIgKiBzZUZpdCwgY2lIaTogZml0ICsgMiAqIHNlRml0LCBwaUxvOiBmaXQgLSAyICogc2VQcmVkLCBwaUhpOiBmaXQgKyAyICogc2VQcmVkIH1cbiAgfSlcbiAgcmV0dXJuIFBsb3QucGxvdCh7XG4gICAgaGVpZ2h0OiA0MDAsIG1hcmdpbkxlZnQ6IDYwLFxuICAgIHg6IHsgbGFiZWw6IFwiRmluZ2VyIGxlbmd0aCAobW0pXCIgfSwgeTogeyBsYWJlbDogXCJNZWFuIHJlYWN0aW9uIHRpbWUgKG1zKVwiIH0sXG4gICAgbWFya3M6IFtcbiAgICAgIFBsb3QuYXJlYVkoYmFuZHMsIHsgeDogXCJ4XCIsIHkxOiBcInBpTG9cIiwgeTI6IFwicGlIaVwiLCBmaWxsOiBcIiM0NTdiOWRcIiwgZmlsbE9wYWNpdHk6IDAuMTIgfSksXG4gICAgICBQbG90LmFyZWFZKGJhbmRzLCB7IHg6IFwieFwiLCB5MTogXCJjaUxvXCIsIHkyOiBcImNpSGlcIiwgZmlsbDogXCIjZTYzOTQ2XCIsIGZpbGxPcGFjaXR5OiAwLjI1IH0pLFxuICAgICAgUGxvdC5saW5lKGJhbmRzLCB7IHg6IFwieFwiLCB5OiBcImZpdFwiLCBzdHJva2U6IFwiIzFhMWEyZVwiLCBzdHJva2VXaWR0aDogMiB9KSxcbiAgICAgIFBsb3QuZG90KHJvd3MsIHsgeDogXCJmaW5nZXJfbW1cIiwgeTogXCJtZWFuX3J0XCIsIGZpbGw6IFwiIzFhMWEyZVwiLCByOiA0IH0pLFxuICAgIF1cbiAgfSlcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoic2hpbnlJbnB1dCgnbm9pc2VTRCcpIn1dfQ==
+    </script>
+    <script type="module">
+    if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+    window._ojs.paths.runtimeToDoc = "../..";
+    window._ojs.paths.runtimeToRoot = "../..";
+    window._ojs.paths.docToRoot = "";
+    window._ojs.selfContained = false;
+    window._ojs.runtime.interpretFromScriptTags();
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
+              }
+            }
+            return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

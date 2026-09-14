@@ -1,0 +1,299 @@
+---
+title: "GLMs — Count Outcomes"
+subtitle: "7002LBSAI Research Methods in Analytics — Week 8 Online Session"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="stylesheet" href="styles-slides.css?v=20260914">
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{python}
+import pandas as pd
+import numpy as np
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+
+# UCI Bike Sharing dataset (Fanaee-T & Gama, 2013), daily aggregation, 731 days
+# Source: archive.ics.uci.edu/dataset/275/bike+sharing+dataset (CC BY 4.0)
+# GitHub raw URL (once pushed to the student data repo):
+# bike_df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/bike_sharing_day.csv")
+bike_df = pd.read_csv("data/bike_sharing_day.csv")
+bike_df["temp_c"] = bike_df["temp"] * 41
+bike_df["season_name"] = bike_df["season"].map({1: "Spring", 2: "Summer", 3: "Fall", 4: "Winter"})
+
+f_bike = "cnt ~ temp_c + workingday + C(season_name) + windspeed + hum"
+
+poisson = smf.glm(f_bike, data=bike_df, family=sm.families.Poisson()).fit()
+nb = smf.negativebinomial(f_bike, data=bike_df).fit(disp=0)
+
+_labels = {"temp_c": "Temperature (°C)", "workingday": "Working day",
+           "C(season_name)[T.Spring]": "Spring (vs. Fall)", "C(season_name)[T.Summer]": "Summer (vs. Fall)",
+           "C(season_name)[T.Winter]": "Winter (vs. Fall)", "windspeed": "Windspeed", "hum": "Humidity",
+           "Intercept": "Constant"}
+_order = ["temp_c", "workingday", "C(season_name)[T.Spring]", "C(season_name)[T.Summer]",
+          "C(season_name)[T.Winter]", "windspeed", "hum"]
+
+def _stars(p):
+    return "***" if p < 0.01 else "**" if p < 0.05 else "*" if p < 0.1 else ""
+
+irr_rows = [
+    {"variable": _labels[v], "irr": f"{np.exp(poisson.params[v]):.3f}{_stars(poisson.pvalues[v])}"}
+    for v in _order
+]
+
+temp_irr = float(np.exp(poisson.params["temp_c"]))
+temp_irr_10c = float(np.exp(poisson.params["temp_c"] * 10))
+temp_pct_10c = round((temp_irr_10c - 1) * 100, 1)
+
+# Real captured statsmodels-style output for the fitted Poisson model
+_poisson_lines = poisson.summary().as_text().splitlines()
+poisson_summary_text = "\n".join(_poisson_lines).rstrip()
+
+# Overdispersion — the real numbers
+cnt_mean = float(bike_df["cnt"].mean())
+cnt_var = float(bike_df["cnt"].var())
+overdispersion_ratio = round(cnt_var / cnt_mean, 1)
+
+# Real Poisson vs Negative Binomial comparison
+nb_alpha = round(nb.params["alpha"], 3)
+overdispersion_rows = [
+    {"variable": _labels[v],
+     "poisson_se": f"{poisson.bse[v]:.4f}",
+     "nb_se": f"{nb.bse[v]:.4f}",
+     "ratio": f"{nb.bse[v]/poisson.bse[v]:.1f}x"}
+    for v in _order
+]
+temp_irr_nb = float(np.exp(nb.params["temp_c"]))
+temp_irr_nb_10c = float(np.exp(nb.params["temp_c"] * 10))
+temp_pct_nb_10c = round((temp_irr_nb_10c - 1) * 100, 1)
+
+ojs_define(
+    irr_rows              = irr_rows,
+    temp_irr               = round(temp_irr, 3),
+    temp_irr_10c            = round(temp_irr_10c, 3),
+    temp_pct_10c            = temp_pct_10c,
+    poisson_summary_text   = poisson_summary_text,
+    cnt_mean               = round(cnt_mean, 0),
+    cnt_var                = round(cnt_var, 0),
+    overdispersion_ratio   = overdispersion_ratio,
+    nb_alpha                = nb_alpha,
+    overdispersion_rows    = overdispersion_rows,
+    temp_irr_nb             = round(temp_irr_nb, 3),
+    temp_pct_nb_10c          = temp_pct_nb_10c,
+)
+```
+
+## {background-color="#1a1a2e"}
+
+::: {style="text-align: center; padding-top: 180px;"}
+[**Count outcomes**]{style="font-size: 2.2em; color: white;"}
+
+[The workshop covered a 0/1 outcome. What about an outcome that can be 0, 1, 2, 3... with no natural ceiling?]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+:::
+
+## How many bikes today?
+
+::: {.instructions-box}
+**Business question**: a bike-share operator needs to plan how many bikes to have available each day. Rentals range from 22 on the worst day to 8,714 on the best — driven by weather, season, and whether it's a working day.
+:::
+
+::: {.fragment}
+This is real UCI data: 731 days, daily rental counts (`cnt`), temperature, humidity, windspeed, season, and working-day status.
+:::
+
+## Same logic, new distribution
+
+Everything from the workshop still applies — a link function connects a linear index to the outcome, and raw coefficients aren't directly interpretable.
+
+::: {.fragment}
+- Binary y: link function keeps predictions between 0 and 1 (logistic or normal CDF)
+- **Count y**: link function needs to keep predictions **non-negative** — no upper bound needed, but never below zero
+- The natural choice: $E[y|x] = \exp(\beta_0 + \beta_1 x_1 + \dots)$ — the **log link**
+:::
+
+## Poisson regression
+
+$$\ln(E[y|x]) = \beta_0 + \beta_1 x_1 + \dots$$
+
+- The **Poisson** distribution is the standard choice for count data — same role here as the logistic/normal assumption played for binary y
+- Fit by maximum likelihood, same idea as logit and probit
+- Because of the log link, coefficients are **additive on the log scale, multiplicative on the count scale**
+
+## Interpreting via the incidence rate ratio
+
+Exponentiating a coefficient converts it into an **incidence rate ratio (IRR)**:
+
+$$IRR = \exp(\beta_1)$$
+
+::: {.fragment}
+A one-unit increase in $x_1$ **multiplies** the expected count by $IRR$ — not adds to it. Same underlying logic as an odds ratio from logit, just for counts instead of binary outcomes.
+:::
+
+::: {.fragment}
+- $IRR > 1$: expected count goes up
+- $IRR < 1$: expected count goes down
+- $IRR = 1$: no effect
+:::
+
+## Fitting it, in code
+
+```{.python}
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+
+poisson_model = smf.glm(
+    "cnt ~ temp_c + workingday + C(season_name) + windspeed + hum",
+    data=df,
+    family=sm.families.Poisson()
+).fit()
+
+irr = np.exp(poisson_model.params)
+```
+
+## Real IRRs, on real data
+
+```{ojs}
+{
+  return html`<table style="margin:16px auto 0;font-family:sans-serif;font-size:1em;border-collapse:collapse;">
+    <tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:6px 24px;">Variable</th><th style="padding:6px 24px;">IRR</th></tr>
+    ${irr_rows.map(d => `<tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 24px;">${d.variable}</td><td style="padding:5px 24px;text-align:center;">${d.irr}</td></tr>`).join('')}
+  </table>`
+}
+```
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Reference category for season: Fall. Source: UCI Bike Sharing dataset
+:::
+
+## The temperature story
+
+```{ojs}
+html`<p>Each 1°C warmer day multiplies expected rentals by <b>${temp_irr}</b>.</p>`
+```
+
+::: {.fragment}
+```{ojs}
+html`<p>Over a 10°C swing: an IRR of <b>${temp_irr_10c}</b> — that's <b>${temp_pct_10c}% more rentals expected</b> on a day 10°C warmer, holding season, humidity, windspeed, and working-day status fixed.</p>`
+```
+:::
+
+## Task — read one IRR yourself
+
+::: {.instructions-box}
+**Business question**: how much does a working day actually change expected demand, compared to a weekend or holiday?
+
+Using the table above, convert the `workingday` IRR into a plain-English sentence a scheduling manager could act on. What does an IRR just above 1 actually mean here, in percentage terms?
+:::
+
+---
+
+# A closer look {background-color="#2d6a4f"}
+## Is Poisson actually a good fit here?
+
+---
+
+## Poisson's hidden assumption
+
+Poisson regression assumes **equidispersion**: the variance of $y$ equals its mean, $Var(y|x) = E(y|x)$.
+
+::: {.fragment}
+On this data:
+
+- Mean daily rentals: **${cnt_mean}**
+- Variance: **${cnt_var}**
+- Ratio: **${overdispersion_ratio}×**
+:::
+
+::: {.fragment}
+The variance is nowhere close to the mean — this is **severe overdispersion**. Daily rental counts are the sum of thousands of individual decisions, which naturally vary far more than a simple Poisson process would predict.
+:::
+
+## Why this matters
+
+Fitting a plain Poisson model when the data is this overdispersed doesn't just look untidy — it makes every standard error too small, which makes every result look more certain than it actually is.
+
+::: {.fragment}
+We need a model that keeps the same log link and the same IRR interpretation, but doesn't force variance to equal the mean.
+:::
+
+## Negative binomial — the fix
+
+- Same log link, same IRR interpretation — nothing about *reading* the model changes
+- Adds one extra parameter, **α**, that lets the variance exceed the mean instead of forcing them to be equal
+- The practical rule: **when the data is this overdispersed, reach for negative binomial, not plain Poisson** — you don't need to derive why, just recognise the symptom (variance ≫ mean) and know the fix exists
+
+## Fitting it, in code
+
+```{.python}
+nb_model = smf.negativebinomial(
+    "cnt ~ temp_c + workingday + C(season_name) + windspeed + hum",
+    data=df
+).fit()
+```
+
+α comes out estimated by maximum likelihood, not assumed — here, **${nb_alpha}**.
+
+## The real consequence
+
+```{ojs}
+{
+  return html`<table style="margin:16px auto 0;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;">
+    <tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:5px 16px;">Variable</th><th style="padding:5px 16px;">Poisson SE</th><th style="padding:5px 16px;">NegBin SE</th><th style="padding:5px 16px;">Ratio</th></tr>
+    ${overdispersion_rows.map(d => `<tr style="border-bottom:1px solid #ddd;"><td style="padding:4px 16px;">${d.variable}</td><td style="padding:4px 16px;text-align:center;">${d.poisson_se}</td><td style="padding:4px 16px;text-align:center;">${d.nb_se}</td><td style="padding:4px 16px;text-align:center;font-weight:700;">${d.ratio}</td></tr>`).join('')}
+  </table>`
+}
+```
+
+::: {.fragment}
+Standard errors from the plain Poisson model are roughly **24 times too small**, across every coefficient — not a rounding issue, a fundamentally overconfident model.
+:::
+
+## The estimate itself shifts too
+
+```{ojs}
+html`<ul>
+  <li>Temperature IRR under Poisson: ${temp_irr} (the +10°C story: ${temp_pct_10c}% more rentals)</li>
+  <li>Temperature IRR under Negative Binomial: <b>${temp_irr_nb}</b> (the +10°C story: <b>${temp_pct_nb_10c}% more rentals</b>)</li>
+</ul>`
+```
+
+::: {.fragment}
+Overdispersion here isn't just a false-confidence problem — the point estimate itself moves once the model properly accounts for how much more variable the data really is.
+:::
+
+---
+
+## Other kinds of y, briefly
+
+- **Ordinal/nominal outcomes** (e.g. satisfaction ratings, product categories) can sometimes be recast as binary — "top box vs. not" — trading some information for a model you already know how to run
+- **Duration variables** (time until an event) are often censored — you don't observe the full duration for everyone. Running OLS on censored durations gets the *direction* right but not the *magnitude*. Converting to a binary "did the event happen by time T" is often the pragmatic choice
+
+## Summary
+
+- A count outcome needs a link function that keeps predictions non-negative — the log link, giving Poisson regression
+- Coefficients are read via the **incidence rate ratio**, $\exp(\beta)$ — the same logic as an odds ratio, just multiplicative on counts
+- Poisson assumes variance equals the mean — check this before trusting the standard errors, since real data is often far more dispersed than that
+- Negative binomial is the standard fix, and it can move both the standard errors and the estimates themselves
+
+## Coming up
+
+::: {style="text-align: center; padding-top: 60px;"}
+[**Week 9: Causal Analysis and Experiments**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
+
+::: {.fragment style="padding-top:40px;"}
+*Every model these last two weeks assumed the controls were the right ones. Next week: a formal framework for causal claims, and experiments — the most direct way to get them right.*
+:::
+:::

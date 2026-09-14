@@ -37,16 +37,51 @@ weeks = [
          ("Online session", "week1-online-slides.html", False),
          ("Reaction-time tool", "week1-tool.html", True),
      ]},
-    {"n": 2, "topic": "Inference", "status": "pending"},
-    {"n": 3, "topic": "Relationships Between Variables", "status": "pending"},
-    {"n": 4, "topic": "Regression I — Fitting the Line", "status": "pending"},
-    {"n": 5, "topic": "Regression I — Model Problems & Inference", "status": "pending"},
-    {"n": 6, "topic": "Regression II — Multiple Regression", "status": "pending"},
+    {"n": 2, "topic": "Inference", "status": "live",
+     "links": [
+         ("Workshop slides", "week2-slides.html", False),
+         ("Online session", "week2-online-slides.html", False),
+     ]},
+    {"n": 3, "topic": "Relationships Between Variables", "status": "live",
+     "links": [
+         ("Workshop slides", "week3-slides.html", False),
+         ("Online session", "week3-online-slides.html", False),
+     ]},
+    {"n": 4, "topic": "Regression I — Fitting the Line", "status": "live",
+     "links": [
+         ("Workshop slides", "week4-slides.html", False),
+     ]},
+    {"n": 5, "topic": "Regression I — Model Problems & Inference", "status": "live",
+     "links": [
+         ("Workshop slides", "week5-slides.html", False),
+         ("Online session", "week5-online-slides.html", False),
+     ]},
+    {"n": 6, "topic": "Regression II — Multiple Regression", "status": "live",
+     "links": [
+         ("Workshop slides", "week6-slides.html", False),
+         ("Online session", "week6-online-slides.html", False),
+     ]},
     {"n": 7, "note": "Curriculum Enrichment Week — no session"},
-    {"n": 8, "topic": "Other Models (GLMs)", "status": "pending"},
-    {"n": 9, "topic": "Causal Analysis and Experiments", "status": "pending"},
-    {"n": 10, "topic": "Prediction", "status": "pending"},
-    {"n": 11, "topic": "Time Series", "status": "pending"},
+    {"n": 8, "topic": "Other Models (GLMs)", "status": "live",
+     "links": [
+         ("Workshop slides", "week8-slides.html", False),
+         ("Online session", "week8-online-slides.html", False),
+     ]},
+    {"n": 9, "topic": "Causal Analysis and Experiments", "status": "live",
+     "links": [
+         ("Workshop slides", "week9-slides.html", False),
+         ("Online session", "week9-online-slides.html", False),
+     ]},
+    {"n": 10, "topic": "Prediction", "status": "live",
+     "links": [
+         ("Workshop slides", "week10-slides.html", False),
+         ("Online session", "week10-online-slides.html", False),
+     ]},
+    {"n": 11, "topic": "Time Series", "status": "live",
+     "links": [
+         ("Workshop slides", "week11-slides.html", False),
+         ("Online session", "week11-online-slides.html", False),
+     ]},
     {"n": 12, "note": "Portfolio presentations — see Canvas"},
 ]
 

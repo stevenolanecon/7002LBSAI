@@ -1,0 +1,230 @@
+---
+title: "Model Problems, in Real Data"
+subtitle: "7002LBSAI Research Methods in Analytics — Week 5 Online Session"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="stylesheet" href="styles-slides.css?v=20260914">
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+## {background-color="#1a1a2e"}
+
+::: {style="text-align: center; padding-top: 180px;"}
+[**Model problems, in real data**]{style="font-size: 2.2em; color: white;"}
+
+[The workshop built the toolbox on our own data. This session shows two of these problems playing out in a real, published dataset — plus two things we didn't have time for.]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+:::
+
+---
+
+# Worked example {background-color="#2d6a4f"}
+## Choosing a functional form, with real numbers
+
+---
+
+## Hotels in Vienna: price vs. distance
+
+Gabor & Kézdi's own worked example — 207 hotels, price in USD, distance to city centre in miles. The same variable pair, fit four ways:
+
+| Model | Fitted line | R² |
+|---|---|---|
+| Level–level | price = 132.02 − 14.41·distance | 0.157 |
+| Log–level | ln(price) = 4.84 − 0.13·distance | 0.205 |
+| Level–log | price = 116.29 − 28.30·ln(distance) | 0.280 |
+| Log–log | ln(price) = 4.70 − 0.25·ln(distance) | 0.334 |
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 8, hotels-vienna dataset
+:::
+
+## What each slope actually says
+
+- **Level–level**: hotels 1 mile farther out are $14 cheaper, on average
+- **Log–level**: hotels 1 mile farther out are 13% cheaper, on average
+- **Level–log**: hotels 10% farther out are $2.48 cheaper, on average
+- **Log–log**: hotels 10% farther out are 2.2% cheaper, on average — an elasticity
+
+::: {.fragment}
+Four different numbers, from the same underlying data. None of them is "wrong" — they answer four subtly different questions.
+:::
+
+## Which one should you actually use?
+
+**Substantive reasoning comes first.** It depends on the goal:
+
+- Chasing an absolute good deal for one night? Dollar differences are what matter — level price
+- Comparing across seasons where inflation and demand move prices proportionately? Percentage differences travel better — log price
+- Distance itself is usually more natural in miles than in relative terms, for this particular question
+
+::: {.instructions-box}
+Notice the R² *rises* every step down that table, from 0.157 to 0.334. Is log-log simply the "best" model? What's wrong with reading it that way?
+:::
+
+## The R² trap
+
+**You cannot compare R² across regressions with different dependent variables.** Level-price and log-price R² are fit measures in different units — one describes variation in dollars, the other in log-dollars. A higher number doesn't mean a better model.
+
+::: {.fragment}
+Valid comparisons: level-level vs. level-log (both explain **price**); log-level vs. log-log (both explain **ln(price)**). Within each pair, the higher R² is meaningful. Across pairs, it isn't.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 8
+:::
+
+---
+
+## Splines: full flexibility, at a cost
+
+---
+
+## Piecewise linear splines
+
+A spline breaks x into intervals at chosen **knots**, and fits a separate line segment in each — connected at the knots, but each segment free to have its own slope.
+
+$$y^E = (\alpha_1+\beta_1 x)\ [x<k_1] + (\alpha_2+\beta_2 x)\ [k_1\le x\le k_2] + \dots$$
+
+- Each $\beta$ is interpretable on its own — the slope *within that segment only*
+- Handles any shape, including non-monotonic patterns a quadratic can't
+- The cost: **you** choose the number of knots and where they go — no longer automatic
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 8
+:::
+
+## A simple spline, worked through
+
+Knots at x = 20 and x = 40. $\alpha=10$, $\beta_1=0.2$, $\beta_2=0.7$, $\beta_3=0.0$ — three segments, three different slopes:
+
+```{ojs}
+{
+  const seg1 = d3.range(0, 20.5, 1).map(x => ({ x, y: 10 + 0.2 * x }))
+  const k1y = 10 + 0.2 * 20
+  const seg2 = d3.range(20, 40.5, 1).map(x => ({ x, y: k1y + 0.7 * (x - 20) }))
+  const k2y = k1y + 0.7 * 20
+  const seg3 = d3.range(40, 60.5, 1).map(x => ({ x, y: k2y + 0.0 * (x - 40) }))
+  return Plot.plot({
+    height: 320, marginLeft: 60,
+    x: { label: "x" }, y: { label: "y" },
+    marks: [
+      Plot.line(seg1, { x: "x", y: "y", stroke: "#457b9d", strokeWidth: 2.5 }),
+      Plot.line(seg2, { x: "x", y: "y", stroke: "#e63946", strokeWidth: 2.5 }),
+      Plot.line(seg3, { x: "x", y: "y", stroke: "#2d6a4f", strokeWidth: 2.5 }),
+      Plot.ruleX([20, 40], { stroke: "#ccc", strokeDasharray: "4,3" }),
+    ]
+  })
+}
+```
+
+::: {.fragment}
+Below x=20, y climbs slowly (β₁=0.2). Between 20 and 40, it climbs much faster (β₂=0.7). Above 40, it's flat (β₃=0). Three honest, separate stories — a straight line or a parabola could tell none of them.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 8
+:::
+
+---
+
+## When measurement error isn't classical
+
+---
+
+## Real noise is rarely this polite
+
+The workshop's attenuation-bias result relied on **classical** measurement error: zero mean, independent of everything else. In practice:
+
+- Error may not average to zero — a scale that's consistently a little heavy, a ruler with a worn end
+- Error may be *correlated* with the true value or other variables — people who feel unwell might round symptoms in a particular direction, not randomly
+
+::: {.instructions-box}
+Our finger-length measurements were self-reported with a ruler. Can you think of a way that error could be non-classical, rather than just noisy?
+:::
+
+::: {.fragment}
+Without classical error, the "always toward zero" result no longer holds — bias could go either way. The fix isn't a formula; it's redesigning how the variable is measured.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 8
+:::
+
+---
+
+# Worked example {background-color="#2d6a4f"}
+## Attenuation bias, confirmed in real data
+
+---
+
+## Hotel ratings: a noisier x for some hotels than others
+
+Price comparison sites publish an *average* customer rating per hotel — but that average is noisier when it's based on fewer reviews.
+
+- **Few ratings** (< 100 reviews): 77 hotels, ~57 ratings each, rating SD = 0.42
+- **Many ratings** (> 200 reviews): 72 hotels, ~417 ratings each, rating SD = 0.26
+
+::: {.fragment}
+If classical measurement error is at work, the *few-ratings* group has the noisier x — and the workshop's result predicts exactly one thing: a flatter slope for that group.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 8
+:::
+
+## The prediction, confirmed
+
+Regressing log(price) on average rating, separately for each group:
+
+```{ojs}
+{
+  const grid = d3.range(1, 5.05, 0.1)
+  const few = grid.map(x => ({ x, y: 4.0 + 0.35 * (x - 3), group: "Few ratings (< 100 reviews) — noisier x" }))
+  const many = grid.map(x => ({ x, y: 4.0 + 0.55 * (x - 3), group: "Many ratings (> 200 reviews) — less noisy x" }))
+  return Plot.plot({
+    height: 340, marginLeft: 60,
+    x: { label: "Average customer rating" }, y: { label: "ln(price), illustrative" },
+    color: { legend: true, domain: ["Few ratings (< 100 reviews) — noisier x", "Many ratings (> 200 reviews) — less noisy x"], range: ["#e63946", "#457b9d"] },
+    marks: [
+      Plot.line(few, { x: "x", y: "y", stroke: "group", strokeWidth: 2.5 }),
+      Plot.line(many, { x: "x", y: "y", stroke: "group", strokeWidth: 2.5 }),
+    ]
+  })
+}
+```
+
+Slope for hotels with few ratings: **0.35**. Slope for hotels with many ratings: **0.55**. Flatter where the measurement is noisier — the exact pattern from the workshop's slider, now in real hotel data, not simulated noise.
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 8. Lines illustrate the reported slopes; not raw plotted data.
+:::
+
+## Should we do anything about it?
+
+::: {.instructions-box}
+Gabor & Kézdi leave this open deliberately. Given what you now know about attenuation bias — would you drop the few-ratings hotels, keep them and just report the likely direction of bias, or something else? What would you tell a client who only saw the few-ratings estimate?
+:::
+
+## Coming up: Week 6
+
+::: {style="text-align: center; padding-top: 60px;"}
+[We've stress-tested one predictor, on its own, every way we know how.]{style="font-size: 1.3em;"}
+
+[**Multiple regression: what "controlling for" really means**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
+
+::: {.fragment style="padding-top:40px;"}
+*Omitted variable bias · multicollinearity · interactions*
+:::
+:::
