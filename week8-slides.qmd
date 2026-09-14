@@ -167,6 +167,35 @@ ojs_define(
 )
 ```
 
+```{ojs}
+//| output: false
+{
+  // Generic "shrink on reveal" wiring, used by every chart wrapped as
+  // `:::: {.shrink-on-reveal data-frag="some-fragment-id" style="--large-height:...;--small-height:...;--shrink-scale:..."}`
+  // Each chart renders large while its named fragment is hidden, then
+  // shrinks smoothly to make room the moment that fragment is revealed.
+  // Sizes live entirely in each wrapper's own inline style — this cell only
+  // handles show/hide, once, for every wrapper on the page, so adding a new
+  // chart to this pattern never means touching this cell.
+  const wrapperFor = (fragId) => document.querySelector(`.shrink-on-reveal[data-frag="${fragId}"]`)
+
+  // Sets each wrapper's correct starting state immediately, including on a
+  // reload or direct navigation to a slide whose fragment is already shown
+  // — matters because this cell (no reactive deps) only runs once, at load.
+  document.querySelectorAll('.shrink-on-reveal[data-frag]').forEach(el => {
+    const frag = document.getElementById(el.dataset.frag)
+    el.classList.toggle('is-small', !!frag?.classList.contains('visible'))
+  })
+
+  Reveal.on('fragmentshown', (event) => {
+    wrapperFor(event.fragment.id)?.classList.add('is-small')
+  })
+  Reveal.on('fragmenthidden', (event) => {
+    wrapperFor(event.fragment.id)?.classList.remove('is-small')
+  })
+}
+```
+
 ## {background-color="#1a1a2e"}
 
 ::: {style="text-align: center; padding-top: 180px;"}
@@ -375,7 +404,7 @@ Recall the latent-variable story: $P[y=1|x]$ has to come from a genuine probabil
 
 ```{ojs}
 Plot.plot({
-  width: 640, height: 340,
+  width: 640, height: 560,
   x: {label: "Linear index (z)"}, y: {label: "P(y=1)"},
   marks: [
     Plot.line(d3.range(-6,6.1,0.2).map(z => ({z, p: Math.max(0,Math.min(1,0.5+z/8)), series:"LPM"})), {x:"z",y:"p",stroke:"series"}),
@@ -412,7 +441,7 @@ Compare the three output in one table.
 No further syntax hints.
 :::
 
-## What you should have found
+## What you should have found {.smaller}
 
 ```{ojs}
 {
@@ -583,9 +612,11 @@ calib = (df.groupby("decile")
            .reset_index())
 ```
 
+:::: {.shrink-on-reveal data-frag="wk8-calib-frag" style="--large-height:500px;--small-height:420px;--shrink-scale:0.84;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 Plot.plot({
-  width: 500, height: 420,
+  width: 500, height: 500,
   x: {label: "Predicted probability", domain: [0,1]},
   y: {label: "Actual outcome rate", domain: [0,1]},
   marks: [
@@ -595,8 +626,10 @@ Plot.plot({
   ]
 })
 ```
+:::
+::::
 
-::: {.fragment}
+::: {.fragment #wk8-calib-frag}
 Deciles of predicted probability from the logit model, against the actual fraction who stayed healthy in each decile. Close to the diagonal — well calibrated, not just unbiased on average.
 :::
 

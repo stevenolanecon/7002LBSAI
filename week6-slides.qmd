@@ -164,6 +164,35 @@ ojs_define(
 ```
 
 ```{ojs}
+//| output: false
+{
+  // Generic "shrink on reveal" wiring, used by every chart wrapped as
+  // `:::: {.shrink-on-reveal data-frag="some-fragment-id" style="--large-height:...;--small-height:...;--shrink-scale:..."}`
+  // Each chart renders large while its named fragment is hidden, then
+  // shrinks smoothly to make room the moment that fragment is revealed.
+  // Sizes live entirely in each wrapper's own inline style — this cell only
+  // handles show/hide, once, for every wrapper on the page, so adding a new
+  // chart to this pattern never means touching this cell.
+  const wrapperFor = (fragId) => document.querySelector(`.shrink-on-reveal[data-frag="${fragId}"]`)
+
+  // Sets each wrapper's correct starting state immediately, including on a
+  // reload or direct navigation to a slide whose fragment is already shown
+  // — matters because this cell (no reactive deps) only runs once, at load.
+  document.querySelectorAll('.shrink-on-reveal[data-frag]').forEach(el => {
+    const frag = document.getElementById(el.dataset.frag)
+    el.classList.toggle('is-small', !!frag?.classList.contains('visible'))
+  })
+
+  Reveal.on('fragmentshown', (event) => {
+    wrapperFor(event.fragment.id)?.classList.add('is-small')
+  })
+  Reveal.on('fragmenthidden', (event) => {
+    wrapperFor(event.fragment.id)?.classList.remove('is-small')
+  })
+}
+```
+
+```{ojs}
 olsFit = function(X, y) {
   const n = X.length, k = X[0].length + 1
   const design = X.map(row => [1, ...row])
@@ -290,7 +319,7 @@ Neither condition is something you can assume — it has to be checked, or reaso
 Source: Békés & Kézdi (2021), Ch. 10
 :::
 
-## Worked example: beer sales and price
+## Worked example: beer sales and price {.smaller}
 
 ::: {.instructions-box}
 A scenario where we can control the truth: monthly change in **our** log price ($x_1$) and a **competitor's** log price ($x_2$) tend to move together, both driving change in log sales (y). Simulate it, and check the OVB formula holds exactly.
@@ -617,7 +646,7 @@ The **global F-test** — are *all* slope coefficients zero? — is reported by 
 Source: Békés & Kézdi (2021), Ch. 10
 :::
 
-## The full output, F-test included
+## The full output, F-test included {.smaller}
 
 ```{.python}
 import statsmodels.formula.api as smf
@@ -892,7 +921,7 @@ plt.show()
   const laptopLine = grid.map(v => ({ finger_mm: v, fit: model.coefs[0] + model.coefs[1] * v, group: "Laptop" }))
   const phoneLine = grid.map(v => ({ finger_mm: v, fit: model.coefs[0] + model.coefs[2] + (model.coefs[1] + model.coefs[3]) * v, group: "Phone" }))
   const chart = Plot.plot({
-    height: 280, marginLeft: 60,
+    height: 360, marginLeft: 60,
     x: { label: "Finger length (mm)" }, y: { label: "Reaction time (ms)" },
     color: { legend: true, domain: ["Laptop", "Phone"], range: ["#457b9d", "#e63946"] },
     marks: [
@@ -953,10 +982,12 @@ Reread the structural model: at $D=1$ (female), the slope on age is $\beta_1+\be
 
 ## Two slopes, not one
 
+:::: {.shrink-on-reveal data-frag="wk6-twoslopes-frag" style="--large-height:480px;--small-height:340px;--shrink-scale:0.708;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   return Plot.plot({
-    height: 340, marginLeft: 60,
+    height: 480, marginLeft: 60,
     x: { label: "Age" }, y: { label: "ln(hourly wage)" },
     color: { legend: true, domain: ["Men", "Women"], range: ["#457b9d", "#e63946"] },
     marks: [
@@ -965,8 +996,10 @@ Reread the structural model: at $D=1$ (female), the slope on age is $\beta_1+\be
   })
 }
 ```
+:::
+::::
 
-::: {.fragment}
+::: {.fragment #wk6-twoslopes-frag}
 Men and women start close together at 24, and the gap widens every year after — a single "female" coefficient could never have shown this shape. Only the interaction reveals it.
 :::
 
@@ -1044,7 +1077,7 @@ A scatterplot of $\hat y$ (predicted) against actual y, with the 45° line:
   const lo = Math.min(d3.min(points, d => d.yhat), d3.min(points, d => d.y))
   const hi = Math.max(d3.max(points, d => d.yhat), d3.max(points, d => d.y))
   return Plot.plot({
-    height: 380, marginLeft: 60,
+    height: 420, marginLeft: 60,
     x: { label: "predicted ŷ (ms)", domain: [lo - 10, hi + 10] },
     y: { label: "actual y (ms)", domain: [lo - 10, hi + 10] },
     marks: [

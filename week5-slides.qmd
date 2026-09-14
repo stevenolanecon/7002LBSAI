@@ -89,6 +89,35 @@ ojs_define(
 )
 ```
 
+```{ojs}
+//| output: false
+{
+  // Generic "shrink on reveal" wiring, used by every chart wrapped as
+  // `:::: {.shrink-on-reveal data-frag="some-fragment-id" style="--large-height:...;--small-height:...;--shrink-scale:..."}`
+  // Each chart renders large while its named fragment is hidden, then
+  // shrinks smoothly to make room the moment that fragment is revealed.
+  // Sizes live entirely in each wrapper's own inline style — this cell only
+  // handles show/hide, once, for every wrapper on the page, so adding a new
+  // chart to this pattern never means touching this cell.
+  const wrapperFor = (fragId) => document.querySelector(`.shrink-on-reveal[data-frag="${fragId}"]`)
+
+  // Sets each wrapper's correct starting state immediately, including on a
+  // reload or direct navigation to a slide whose fragment is already shown
+  // — matters because this cell (no reactive deps) only runs once, at load.
+  document.querySelectorAll('.shrink-on-reveal[data-frag]').forEach(el => {
+    const frag = document.getElementById(el.dataset.frag)
+    el.classList.toggle('is-small', !!frag?.classList.contains('visible'))
+  })
+
+  Reveal.on('fragmentshown', (event) => {
+    wrapperFor(event.fragment.id)?.classList.add('is-small')
+  })
+  Reveal.on('fragmenthidden', (event) => {
+    wrapperFor(event.fragment.id)?.classList.remove('is-small')
+  })
+}
+```
+
 ## {background-color="#1a1a2e"}
 
 ::: {style="text-align: center; padding-top: 180px;"}
@@ -224,7 +253,7 @@ Source: Békés & Kézdi (2021), Ch. 8
   const grid = d3.range(d3.min(x), d3.max(x), (d3.max(x) - d3.min(x)) / 60)
   const curve = grid.map(xi => ({ finger_mm: xi, fit: a + b1 * xi + b2 * xi ** 2 }))
   const chart = Plot.plot({
-    height: 340, marginLeft: 60,
+    height: 420, marginLeft: 60,
     x: { label: "Finger length (mm)" }, y: { label: "Mean reaction time (ms)" },
     marks: [
       Plot.dot(rows, { x: "finger_mm", y: "mean_rt", fill: "#1a1a2e", r: 4 }),
@@ -257,12 +286,12 @@ Source: Békés & Kézdi (2021), Ch. 8. Data: `worldbank-lifeexpectancy`, osf.io
 {
   const rows = life_data
   const chartRaw = Plot.plot({
-    height: 320, width: 380, marginLeft: 55,
+    height: 460, width: 380, marginLeft: 55,
     x: { label: "GDP per capita ($000s)" }, y: { label: "Life expectancy (years)" },
     marks: [Plot.dot(rows, { x: "gdp_per_capita", y: "life_exp", fill: "#1a1a2e", r: 3, fillOpacity: 0.6 })]
   })
   const chartLog = Plot.plot({
-    height: 320, width: 380, marginLeft: 55,
+    height: 460, width: 380, marginLeft: 55,
     x: { label: "ln(GDP per capita)" }, y: { label: "Life expectancy (years)" },
     marks: [
       Plot.dot(rows, { x: "ln_gdp_per_capita", y: "life_exp", fill: "#457b9d", r: 3, fillOpacity: 0.6 }),
@@ -290,7 +319,7 @@ Same 182 countries, same y-axis. The left panel bunches almost everyone under $2
   const [xmin, xmax] = d3.extent(rows, d => d.gdp_per_capita)
   const straightLine = [{ x: xmin, y: alpha + beta * xmin }, { x: xmax, y: alpha + beta * xmax }]
   const chartLinear = Plot.plot({
-    height: 320, width: 380, marginLeft: 55,
+    height: 400, width: 380, marginLeft: 55,
     x: { label: "GDP per capita ($000s)" }, y: { label: "Life expectancy (years)" },
     marks: [
       Plot.dot(rows, { x: "gdp_per_capita", y: "life_exp", fill: "#1a1a2e", r: 3, fillOpacity: 0.6 }),
@@ -298,7 +327,7 @@ Same 182 countries, same y-axis. The left panel bunches almost everyone under $2
     ]
   })
   const chartQuad = Plot.plot({
-    height: 320, width: 380, marginLeft: 55,
+    height: 400, width: 380, marginLeft: 55,
     x: { label: "GDP per capita ($000s)" }, y: { label: "Life expectancy (years)" },
     marks: [
       Plot.dot(rows, { x: "gdp_per_capita", y: "life_exp", fill: "#1a1a2e", r: 3, fillOpacity: 0.6 }),
@@ -395,7 +424,7 @@ Source: Békés & Kézdi (2021), Ch. 8
   const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
   if (rows.length < 3) return html`<p style="color:#aaa;">Not enough data yet.</p>`
   return Plot.plot({
-    height: 340, marginLeft: 60,
+    height: 480, marginLeft: 60,
     x: { label: "Finger length (mm)" }, y: { label: "Mean reaction time (ms)" },
     marks: [
       Plot.dot(rows, { x: "finger_mm", y: "mean_rt", fill: "#1a1a2e", r: 4 }),
@@ -503,7 +532,7 @@ viewof noiseSD = {
   const currentBeta = betaFor(noiseSD)
   const curve = d3.range(0, 10.2, 0.2).map(sd => ({ sd, beta: betaFor(sd) }))
   const chart = Plot.plot({
-    height: 320, marginLeft: 60,
+    height: 350, marginLeft: 60,
     x: { label: "extra noise SD added to finger length (mm)" },
     y: { label: "attenuated β̂" },
     marks: [
@@ -606,10 +635,12 @@ Does the interval include zero? What would that mean for whether HR should trust
 
 The simple SE formula above assumes **homoskedasticity**: the spread of residuals is the same across the whole range of x. A generic illustration, not our own data (too few points to show this convincingly at n=15-20):
 
+:::: {.shrink-on-reveal data-frag="wk5-homosked-frag" style="--large-height:320px;--small-height:220px;--shrink-scale:0.6875;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   const mkChart = (data, color) => Plot.plot({
-    height: 220, width: 340, marginLeft: 50,
+    height: 320, width: 340, marginLeft: 50,
     x: { label: "x" }, y: { label: "residual", domain: [-4, 4] },
     marks: [
       Plot.ruleY([0], { stroke: "#999", strokeDasharray: "3,2" }),
@@ -622,12 +653,14 @@ The simple SE formula above assumes **homoskedasticity**: the spread of residual
   </div>`
 }
 ```
+:::
+::::
 
 ::: {style="font-size:0.75em;color:#999;"}
 Left: residual spread constant across x. Right: residual spread fans out as x grows — the fit gets less precise for larger x, but OLS's classical SE formula doesn't know that.
 :::
 
-::: {.fragment}
+::: {.fragment #wk5-homosked-frag}
 In practice this is often false — the fit may be tighter for some x values than others. The fix is **heteroskedasticity-robust SE** (White/Huber), correct either way — but you have to ask for it. Software doesn't default to it: statsmodels, R, and Excel all give you the classical formula above unless you explicitly request the robust version.
 :::
 
@@ -695,7 +728,7 @@ Source: Békés & Kézdi (2021), Ch. 9
     return { x: x0, fit, ciLo: fit - 2 * seFit, ciHi: fit + 2 * seFit, piLo: fit - 2 * sePred, piHi: fit + 2 * sePred }
   })
   return Plot.plot({
-    height: 400, marginLeft: 60,
+    height: 440, marginLeft: 60,
     x: { label: "Finger length (mm)" }, y: { label: "Mean reaction time (ms)" },
     marks: [
       Plot.areaY(bands, { x: "x", y1: "piLo", y2: "piHi", fill: "#457b9d", fillOpacity: 0.12 }),

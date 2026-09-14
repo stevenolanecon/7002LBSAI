@@ -20,6 +20,37 @@ execute:
   message: false
 ---
 
+```{ojs}
+//| output: false
+{
+  // Generic "shrink on reveal" wiring, used by every chart wrapped as
+  // `:::: {.shrink-on-reveal data-frag="some-fragment-id" style="--large-height:...;--small-height:...;--shrink-scale:..."}`
+  // Each chart renders large while its named fragment is hidden, then
+  // shrinks smoothly to make room the moment that fragment is revealed.
+  // Sizes live entirely in each wrapper's own inline style — this cell only
+  // handles show/hide, once, for every wrapper on the page, so adding a new
+  // chart to this pattern never means touching this cell.
+  const wrapperFor = (fragId) => document.querySelector(`.shrink-on-reveal[data-frag="${fragId}"]`)
+
+  // Sets each wrapper's correct starting state immediately, including on a
+  // reload or direct navigation to a slide whose fragment is already shown
+  // — matters because this cell (no reactive deps) only runs once, at load.
+  document.querySelectorAll('.shrink-on-reveal[data-frag]').forEach(el => {
+    const frag = document.getElementById(el.dataset.frag)
+    el.classList.toggle('is-small', !!frag?.classList.contains('visible'))
+  })
+
+  Reveal.on('fragmentshown', (event) => {
+    wrapperFor(event.fragment.id)?.classList.add('is-small')
+  })
+  Reveal.on('fragmenthidden', (event) => {
+    wrapperFor(event.fragment.id)?.classList.remove('is-small')
+  })
+}
+```
+
+---
+
 ## {background-color="#1a1a2e"}
 
 ::: {style="text-align: center; padding-top: 180px;"}
@@ -109,6 +140,8 @@ Source: Békés & Kézdi (2021), Ch. 8
 
 Knots at x = 20 and x = 40. $\alpha=10$, $\beta_1=0.2$, $\beta_2=0.7$, $\beta_3=0.0$ — three segments, three different slopes:
 
+:::: {.shrink-on-reveal data-frag="wk5online-spline-frag" style="--large-height:460px;--small-height:320px;--shrink-scale:0.696;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   const seg1 = d3.range(0, 20.5, 1).map(x => ({ x, y: 10 + 0.2 * x }))
@@ -117,7 +150,7 @@ Knots at x = 20 and x = 40. $\alpha=10$, $\beta_1=0.2$, $\beta_2=0.7$, $\beta_3=
   const k2y = k1y + 0.7 * 20
   const seg3 = d3.range(40, 60.5, 1).map(x => ({ x, y: k2y + 0.0 * (x - 40) }))
   return Plot.plot({
-    height: 320, marginLeft: 60,
+    height: 460, marginLeft: 60,
     x: { label: "x" }, y: { label: "y" },
     marks: [
       Plot.line(seg1, { x: "x", y: "y", stroke: "#457b9d", strokeWidth: 2.5 }),
@@ -128,8 +161,10 @@ Knots at x = 20 and x = 40. $\alpha=10$, $\beta_1=0.2$, $\beta_2=0.7$, $\beta_3=
   })
 }
 ```
+:::
+::::
 
-::: {.fragment}
+::: {.fragment #wk5online-spline-frag}
 Below x=20, y climbs slowly (β₁=0.2). Between 20 and 40, it climbs much faster (β₂=0.7). Above 40, it's flat (β₃=0). Three honest, separate stories — a straight line or a parabola could tell none of them.
 :::
 
@@ -194,7 +229,7 @@ Regressing log(price) on average rating, separately for each group:
   const few = grid.map(x => ({ x, y: 4.0 + 0.35 * (x - 3), group: "Few ratings (< 100 reviews) — noisier x" }))
   const many = grid.map(x => ({ x, y: 4.0 + 0.55 * (x - 3), group: "Many ratings (> 200 reviews) — less noisy x" }))
   return Plot.plot({
-    height: 340, marginLeft: 60,
+    height: 460, marginLeft: 60,
     x: { label: "Average customer rating" }, y: { label: "ln(price), illustrative" },
     color: { legend: true, domain: ["Few ratings (< 100 reviews) — noisier x", "Many ratings (> 200 reviews) — less noisy x"], range: ["#e63946", "#457b9d"] },
     marks: [
