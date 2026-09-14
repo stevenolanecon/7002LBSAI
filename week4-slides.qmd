@@ -62,6 +62,35 @@ ojs_define(
 )
 ```
 
+```{ojs}
+//| output: false
+{
+  // Generic "shrink on reveal" wiring, used by every chart wrapped as
+  // `:::: {.shrink-on-reveal data-frag="some-fragment-id" style="--large-height:...;--small-height:...;--shrink-scale:..."}`
+  // Each chart renders large while its named fragment is hidden, then
+  // shrinks smoothly to make room the moment that fragment is revealed.
+  // Sizes live entirely in each wrapper's own inline style — this cell only
+  // handles show/hide, once, for every wrapper on the page, so adding a new
+  // chart to this pattern never means touching this cell.
+  const wrapperFor = (fragId) => document.querySelector(`.shrink-on-reveal[data-frag="${fragId}"]`)
+
+  // Sets each wrapper's correct starting state immediately, including on a
+  // reload or direct navigation to a slide whose fragment is already shown
+  // — matters because this cell (no reactive deps) only runs once, at load.
+  document.querySelectorAll('.shrink-on-reveal[data-frag]').forEach(el => {
+    const frag = document.getElementById(el.dataset.frag)
+    el.classList.toggle('is-small', !!frag?.classList.contains('visible'))
+  })
+
+  Reveal.on('fragmentshown', (event) => {
+    wrapperFor(event.fragment.id)?.classList.add('is-small')
+  })
+  Reveal.on('fragmenthidden', (event) => {
+    wrapperFor(event.fragment.id)?.classList.remove('is-small')
+  })
+}
+```
+
 ## {background-color="#1a1a2e"}
 
 ::: {style="text-align: center; padding-top: 180px;"}
@@ -148,7 +177,7 @@ viewof bandwidth = {
     return { finger_mm: x0, yhat }
   })
   return Plot.plot({
-    height: 380, marginLeft: 60,
+    height: 410, marginLeft: 60,
     x: { label: "Finger length (mm)" }, y: { label: "Reaction time (ms)" },
     marks: [
       Plot.dot(rows, { x: "finger_mm", y: "reaction_time_ms", fill: "#1a1a2e", r: 2.5, fillOpacity: 0.35 }),
@@ -266,7 +295,7 @@ In your own words: what does the intercept mean here? What does the slope mean? 
   const xExtent = d3.extent(rows, d => d.finger_mm)
   const fitLine = xExtent.map(x => ({finger_mm: x, fit: alpha + beta * x}))
   return Plot.plot({
-    height: 380, marginLeft: 60,
+    height: 400, marginLeft: 60,
     x: {label: "Finger length (mm)"}, y: {label: "Reaction time (ms)"},
     marks: [
       Plot.dot(trials, {x: "finger_mm", y: "reaction_time_ms", fill: "#457b9d", r: 2.5, fillOpacity: 0.25}),
@@ -332,6 +361,8 @@ Source: Békés & Kézdi (2021), Ch. 7
 
 ## Seeing the covariance
 
+:::: {.shrink-on-reveal data-frag="wk4-covariance-frag" style="--large-height:480px;--small-height:340px;--shrink-scale:0.7083;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
@@ -346,7 +377,7 @@ Source: Békés & Kézdi (2021), Ch. 7
     }
   })
   return Plot.plot({
-    height: 340,
+    height: 480,
     marginLeft: 60,
     x: { label: "Finger length (mm)" },
     y: { label: "Mean reaction time (ms)" },
@@ -360,8 +391,10 @@ Source: Békés & Kézdi (2021), Ch. 7
   })
 }
 ```
+:::
+::::
 
-::: {.fragment}
+::: {.fragment #wk4-covariance-frag}
 Every point's rectangle, from the (x̄, ȳ) crosshair to the point, has area $(x_i-\bar x)(y_i-\bar y)$ — exactly the term averaged inside $Cov[x,y]$. Blue rectangles push the covariance positive; red ones pull it negative. **Cov[x,y] is the net signed area.**
 :::
 
@@ -452,6 +485,8 @@ viewof beta_try = {
 }
 ```
 
+:::: {.shrink-on-reveal data-frag="wk4-bowl-frag" style="--large-height:420px;--small-height:280px;--shrink-scale:0.6667;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
@@ -470,7 +505,7 @@ viewof beta_try = {
   const alphaTry = ybar - beta_try * xbar
 
   const bowl = Plot.plot({
-    height: 280, width: 380,
+    height: 420, width: 380,
     x: { label: "candidate slope" },
     y: { label: "sum of squared residuals" },
     marks: [
@@ -482,7 +517,7 @@ viewof beta_try = {
 
   const pad = Math.max(10, (d3.max(rows, d => d.mean_rt) - d3.min(rows, d => d.mean_rt)) * 0.15)
   const fitted = Plot.plot({
-    height: 280, width: 380,
+    height: 420, width: 380,
     x: { label: "Finger length (mm)" },
     y: { label: "Mean reaction time (ms)", domain: [d3.min(rows, d => d.mean_rt) - pad, d3.max(rows, d => d.mean_rt) + pad] },
     marks: [
@@ -497,8 +532,10 @@ viewof beta_try = {
   return html`<div style="display:flex;gap:20px;justify-content:center;">${fitted}${bowl}</div>`
 }
 ```
+:::
+::::
 
-::: {.fragment}
+::: {.fragment #wk4-bowl-frag}
 The sum of squared residuals is smallest exactly where the red line best fits the scatter, and exactly at $\hat\beta = Cov[x,y]/Var[x]$ (the dashed green line).
 :::
 
@@ -817,6 +854,8 @@ Same three-way decision as Week 1's outliers: error → fix or drop; real but ir
 viewof add_extreme = Inputs.toggle({ label: "Add one extreme student", value: false })
 ```
 
+:::: {.shrink-on-reveal data-frag="wk4-leverage-frag" style="--large-height:480px;--small-height:360px;--shrink-scale:0.75;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
@@ -843,7 +882,7 @@ viewof add_extreme = Inputs.toggle({ label: "Add one extreme student", value: fa
 
   return html`<div>
     ${Plot.plot({
-      height: 360, marginLeft: 60,
+      height: 480, marginLeft: 60,
       x: { label: "Finger length (mm)" }, y: { label: "Mean reaction time (ms)" },
       marks: [
         Plot.dot(rows, { x: "finger_mm", y: "mean_rt", fill: "#1a1a2e", r: 4 }),
@@ -858,8 +897,10 @@ viewof add_extreme = Inputs.toggle({ label: "Add one extreme student", value: fa
   </div>`
 }
 ```
+:::
+::::
 
-::: {.fragment}
+::: {.fragment #wk4-leverage-frag}
 One synthetic point — an implausible combination of very long fingers and a very fast reaction time — is enough to swing $\hat\beta$, sometimes even flip its sign. That's leverage: a point far from $\bar x$ has an outsized say in where the line goes, regardless of whether it fits the pattern the rest of the data shows.
 :::
 

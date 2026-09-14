@@ -49,6 +49,35 @@ ojs_define(
 )
 ```
 
+```{ojs}
+//| output: false
+{
+  // Generic "shrink on reveal" wiring, used by every chart wrapped as
+  // `:::: {.shrink-on-reveal data-frag="some-fragment-id" style="--large-height:...;--small-height:...;--shrink-scale:..."}`
+  // Each chart renders large while its named fragment is hidden, then
+  // shrinks smoothly to make room the moment that fragment is revealed.
+  // Sizes live entirely in each wrapper's own inline style — this cell only
+  // handles show/hide, once, for every wrapper on the page, so adding a new
+  // chart to this pattern never means touching this cell.
+  const wrapperFor = (fragId) => document.querySelector(`.shrink-on-reveal[data-frag="${fragId}"]`)
+
+  // Sets each wrapper's correct starting state immediately, including on a
+  // reload or direct navigation to a slide whose fragment is already shown
+  // — matters because this cell (no reactive deps) only runs once, at load.
+  document.querySelectorAll('.shrink-on-reveal[data-frag]').forEach(el => {
+    const frag = document.getElementById(el.dataset.frag)
+    el.classList.toggle('is-small', !!frag?.classList.contains('visible'))
+  })
+
+  Reveal.on('fragmentshown', (event) => {
+    wrapperFor(event.fragment.id)?.classList.add('is-small')
+  })
+  Reveal.on('fragmenthidden', (event) => {
+    wrapperFor(event.fragment.id)?.classList.remove('is-small')
+  })
+}
+```
+
 ## {background-color="#1a1a2e"}
 
 ::: {style="text-align: center; padding-top: 180px;"}
@@ -120,6 +149,8 @@ viewof relx = {
 }
 ```
 
+:::: {.shrink-on-reveal data-frag="wk3online-gap-frag" style="--large-height:480px;--small-height:300px;--shrink-scale:0.625;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   const actual = Math.log(1 + relx)
@@ -132,7 +163,7 @@ viewof relx = {
 
   return html`<div>
     ${Plot.plot({
-      height: 300,
+      height: 480,
       marginLeft: 55,
       x: { label: "x" },
       y: { label: "value" },
@@ -152,8 +183,10 @@ viewof relx = {
   </div>`
 }
 ```
+:::
+::::
 
-::: {.fragment}
+::: {.fragment #wk3online-gap-frag}
 Below about 0.3 (30%) the approximation is close. Beyond that, the gap grows — for a 100% increase, the log difference (0.69) badly understates the true relative change.
 :::
 
@@ -199,7 +232,10 @@ Source: Békés & Kézdi (2021), Ch. 4
 
 ## Bringing it back to our own data
 
-The workshop logged reaction time when scattering it against finger length, because Week 1 found it's skewed — logging stretches out the crowded low end and compresses the long right tail, making the pattern easier to see. 
+The workshop logged reaction time when scattering it against finger length, because Week 1 found it's skewed — logging stretches out the crowded low end and compresses the long right tail, making the pattern easier to see.
+
+:::: {.shrink-on-reveal data-frag="wk3online-ownlog-frag" style="--large-height:420px;--small-height:260px;--shrink-scale:0.619;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
@@ -207,13 +243,13 @@ The workshop logged reaction time when scattering it against finger length, beca
     return html`<div class="instructions-box">Not enough finger-length data yet to demonstrate this live — check back once more of the class has submitted.</div>`
   }
   const p1 = Plot.plot({
-    height: 260, width: 380,
+    height: 420, width: 380,
     x: { label: "Finger length (mm)" },
     y: { label: "Mean reaction time (ms)" },
     marks: [ Plot.dot(rows, { x: "finger_mm", y: "mean_rt", fill: "#457b9d", r: 6 }) ]
   })
   const p2 = Plot.plot({
-    height: 260, width: 380,
+    height: 420, width: 380,
     x: { label: "Finger length (mm)" },
     y: { label: "ln(mean reaction time)" },
     marks: [ Plot.dot(rows, { x: "finger_mm", y: d => Math.log(d.mean_rt), fill: "#2d6a4f", r: 6 }) ]
@@ -221,8 +257,10 @@ The workshop logged reaction time when scattering it against finger length, beca
   return html`<div style="display:flex;gap:24px;justify-content:center;">${p1}${p2}</div>`
 }
 ```
+:::
+::::
 
-::: {.fragment}
+::: {.fragment #wk3online-ownlog-frag}
 Whether logging *our* y variable actually helps depends on whether reaction time is skewed enough to matter here — recall Week 1's online session found it's closer to log-normal than normal. The same logic, a different variable.
 :::
 

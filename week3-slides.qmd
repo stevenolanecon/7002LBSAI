@@ -117,6 +117,35 @@ sleep_scatter_data = [
 ojs_define(sleep_scatter_data = sleep_scatter_data)
 ```
 
+```{ojs}
+//| output: false
+{
+  // Generic "shrink on reveal" wiring, used by every chart wrapped as
+  // `:::: {.shrink-on-reveal data-frag="some-fragment-id" style="--large-height:...;--small-height:...;--shrink-scale:..."}`
+  // Each chart renders large while its named fragment is hidden, then
+  // shrinks smoothly to make room the moment that fragment is revealed.
+  // Sizes live entirely in each wrapper's own inline style — this cell only
+  // handles show/hide, once, for every wrapper on the page, so adding a new
+  // chart to this pattern never means touching this cell.
+  const wrapperFor = (fragId) => document.querySelector(`.shrink-on-reveal[data-frag="${fragId}"]`)
+
+  // Sets each wrapper's correct starting state immediately, including on a
+  // reload or direct navigation to a slide whose fragment is already shown
+  // — matters because this cell (no reactive deps) only runs once, at load.
+  document.querySelectorAll('.shrink-on-reveal[data-frag]').forEach(el => {
+    const frag = document.getElementById(el.dataset.frag)
+    el.classList.toggle('is-small', !!frag?.classList.contains('visible'))
+  })
+
+  Reveal.on('fragmentshown', (event) => {
+    wrapperFor(event.fragment.id)?.classList.add('is-small')
+  })
+  Reveal.on('fragmenthidden', (event) => {
+    wrapperFor(event.fragment.id)?.classList.remove('is-small')
+  })
+}
+```
+
 ## {background-color="#1a1a2e"}
 
 ::: {style="text-align: center; padding-top: 180px;"}
@@ -241,11 +270,13 @@ stacked_data = {
 }
 ```
 
+:::: {.shrink-on-reveal data-frag="wk3-stackedbar-frag" style="--large-height:460px;--small-height:280px;--shrink-scale:0.6087;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   if (!stacked_data.length) return html`<p style="color:#aaa;">Not enough data yet.</p>`
   return Plot.plot({
-    height: 280,
+    height: 460,
     marginLeft: 60,
     x: { label: "Device" },
     y: { label: "% within device", percent: true },
@@ -257,8 +288,10 @@ stacked_data = {
   })
 }
 ```
+:::
+::::
 
-::: {.fragment}
+::: {.fragment #wk3-stackedbar-frag}
 Stacked to 100% within each device — this shows $P(\text{Caffeine} \mid \text{Device})$ directly, not the raw counts.
 :::
 
@@ -306,7 +339,7 @@ Using the class's finger-length and reaction-time data: split students into thre
   }).filter(g => g.n > 0)
 
   return Plot.plot({
-    height: 300,
+    height: 450,
     marginLeft: 60,
     x: { label: "Finger length bin", domain: ["Short","Medium","Long"] },
     y: { label: "E[reaction time | bin] (ms)" },
@@ -333,10 +366,12 @@ A **scatterplot** puts two variables on two axes, one dot per observation. It's 
 Not finger length this time — you'll build that scatter yourselves shortly. Here it's a separate illustrative case: **hours of sleep the night before**, against reaction time, for 69 trials.
 :::
 
+:::: {.shrink-on-reveal data-frag="wk3-scatter-frag" style="--large-height:460px;--small-height:300px;--shrink-scale:0.6522;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   return Plot.plot({
-    height: 300,
+    height: 460,
     marginLeft: 60,
     x: { label: "Sleep the night before (hours)" },
     y: { label: "Reaction time (ms)" },
@@ -347,8 +382,10 @@ Not finger length this time — you'll build that scatter yourselves shortly. He
   })
 }
 ```
+:::
+::::
 
-::: {.fragment}
+::: {.fragment #wk3-scatter-frag}
 Every dot is one trial. There's a real pattern here, but a handful of slow "attention lapse" trials — everyone has them, however well-rested — stretch the top of the scale and make it hard to see. Often with more data this will struggle to fit on a scatter. In those cases, a **bin-scatter** can reveal the pattern without the clutter.
 :::
 
@@ -356,6 +393,8 @@ Every dot is one trial. There's a real pattern here, but a handful of slow "atte
 
 The **conditional mean per bin** — one dot per observed sleep value, not a wide bucket like "Short / Medium / Long" on the finger-length slide.
 
+:::: {.shrink-on-reveal data-frag="wk3-binscatter-frag" style="--large-height:500px;--small-height:340px;--shrink-scale:0.68;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   const grouped = d3.rollups(sleep_scatter_data, v => d3.mean(v, d => d.reaction_time_ms), d => d.sleep_hours)
@@ -363,7 +402,7 @@ The **conditional mean per bin** — one dot per observed sleep value, not a wid
     .sort((a, b) => a.sleep_hours - b.sleep_hours)
 
   return Plot.plot({
-    height: 340,
+    height: 500,
     marginLeft: 60,
     x: { label: "Sleep the night before (hours)" },
     y: { label: "E[reaction time | sleep hours] (ms)" },
@@ -374,8 +413,10 @@ The **conditional mean per bin** — one dot per observed sleep value, not a wid
   })
 }
 ```
+:::
+::::
 
-::: {.fragment}
+::: {.fragment #wk3-binscatter-frag}
 The lapses still show — a few bins still sit high — but the underlying downward trend reads far more clearly than in the raw scatter.
 :::
 
@@ -590,19 +631,19 @@ Suppose we want one "alertness" score for six people, from three imperfect proxi
     { name: "Elin",   sleep: 9.0, energy: 8, grip: 31 },
     { name: "Femi",   sleep: 6.0, energy: 5, grip: 34 },
   ]
-  return html`<table style="width:80%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.85em;">
+  return html`<table style="width:80%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.82em;">
     <thead><tr style="background:#1a1a2e;color:white;">
-      <th style="padding:7px 16px;text-align:left;">Person</th>
-      <th style="padding:7px 16px;text-align:right;">Sleep (h)</th>
-      <th style="padding:7px 16px;text-align:right;">Energy (1&ndash;10)</th>
-      <th style="padding:7px 16px;text-align:right;">Grip (kg)</th>
+      <th style="padding:4px 16px;text-align:left;">Person</th>
+      <th style="padding:4px 16px;text-align:right;">Sleep (h)</th>
+      <th style="padding:4px 16px;text-align:right;">Energy (1&ndash;10)</th>
+      <th style="padding:4px 16px;text-align:right;">Grip (kg)</th>
     </tr></thead>
     <tbody>
       ${people.map((p,i) => `<tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
-        <td style="padding:6px 16px;">${p.name}</td>
-        <td style="padding:6px 16px;text-align:right;">${p.sleep}</td>
-        <td style="padding:6px 16px;text-align:right;">${p.energy}</td>
-        <td style="padding:6px 16px;text-align:right;">${p.grip}</td>
+        <td style="padding:3px 16px;">${p.name}</td>
+        <td style="padding:3px 16px;text-align:right;">${p.sleep}</td>
+        <td style="padding:3px 16px;text-align:right;">${p.energy}</td>
+        <td style="padding:3px 16px;text-align:right;">${p.grip}</td>
       </tr>`).join('')}
     </tbody>
   </table>`
@@ -626,21 +667,21 @@ Different units, different scales — can't just add them. **Standardise each to
   const zs = z(people.map(p => p.sleep)), ze = z(people.map(p => p.energy)), zg = z(people.map(p => p.grip))
   const rows = people.map((p,i) => ({ name: p.name, zs: zs[i], ze: ze[i], zg: zg[i], avg: (zs[i]+ze[i]+zg[i])/3 }))
 
-  return html`<table style="width:85%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.85em;">
+  return html`<table style="width:85%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.82em;">
     <thead><tr style="background:#1a1a2e;color:white;">
-      <th style="padding:7px 16px;text-align:left;">Person</th>
-      <th style="padding:7px 16px;text-align:right;">z(sleep)</th>
-      <th style="padding:7px 16px;text-align:right;">z(energy)</th>
-      <th style="padding:7px 16px;text-align:right;">z(grip)</th>
-      <th style="padding:7px 16px;text-align:right;background:#2d6a4f;">Average z</th>
+      <th style="padding:4px 16px;text-align:left;">Person</th>
+      <th style="padding:4px 16px;text-align:right;">z(sleep)</th>
+      <th style="padding:4px 16px;text-align:right;">z(energy)</th>
+      <th style="padding:4px 16px;text-align:right;">z(grip)</th>
+      <th style="padding:4px 16px;text-align:right;background:#2d6a4f;">Average z</th>
     </tr></thead>
     <tbody>
       ${rows.map((r,i) => `<tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
-        <td style="padding:6px 16px;">${r.name}</td>
-        <td style="padding:6px 16px;text-align:right;">${r.zs.toFixed(2)}</td>
-        <td style="padding:6px 16px;text-align:right;">${r.ze.toFixed(2)}</td>
-        <td style="padding:6px 16px;text-align:right;">${r.zg.toFixed(2)}</td>
-        <td style="padding:6px 16px;text-align:right;font-weight:700;background:#f0f4f8;color:#2d6a4f;">${r.avg.toFixed(2)}</td>
+        <td style="padding:3px 16px;">${r.name}</td>
+        <td style="padding:3px 16px;text-align:right;">${r.zs.toFixed(2)}</td>
+        <td style="padding:3px 16px;text-align:right;">${r.ze.toFixed(2)}</td>
+        <td style="padding:3px 16px;text-align:right;">${r.zg.toFixed(2)}</td>
+        <td style="padding:3px 16px;text-align:right;font-weight:700;background:#f0f4f8;color:#2d6a4f;">${r.avg.toFixed(2)}</td>
       </tr>`).join('')}
     </tbody>
   </table>`
