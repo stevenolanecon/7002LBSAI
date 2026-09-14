@@ -29,6 +29,9 @@ data_groups = [
         ("synthetic_reaction_times.csv", "Placeholder reaction-time data used to build and test slides before the live class dataset exists"),
         ("reaction_times.xlsx", "Generated test dataset — 16 students, 10 trials each — used for demos and dry runs"),
     ]),
+    ("Week 2", [
+        ("samples.csv", "1,000 simulated replays of a class like ours, trial-by-trial — the sampling-distribution task"),
+    ]),
     ("Week 4", [
         ("hotels_vienna.csv", "Hotel prices and star ratings for Vienna — Békés & Kézdi's own case study"),
         ("hotels_europe_nov2017_weekday.csv", "European hotel prices, Nov 2017 weekday stays, 46 cities"),
