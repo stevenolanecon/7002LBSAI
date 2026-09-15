@@ -251,13 +251,13 @@ Two approaches, matched to the horizon:
 ```{ojs}
 {
   const monthChart = Plot.plot({
-    width: 340, height: 260,
+    width: 340, height: 410,
     x: {label: "Month", domain: swim_by_month.map(d => d.label)},
     y: {label: "Avg. tickets/day"},
     marks: [Plot.barY(swim_by_month, {x: "label", y: "avg", fill: "#5b7fbd"}), Plot.ruleY([0])]
   })
   const dowChart = Plot.plot({
-    width: 340, height: 260,
+    width: 340, height: 410,
     x: {label: "Day of week", domain: swim_by_dow.map(d => d.label)},
     y: {label: "Avg. tickets/day"},
     marks: [Plot.barY(swim_by_dow, {x: "label", y: "avg", fill: "#2d6a4f"}), Plot.ruleY([0])]
@@ -300,7 +300,7 @@ Trained on 2010–2015, tested on 2016 — a genuine holdout the model never saw
 
 ```{ojs}
 Plot.plot({
-  width: 700, height: 340,
+  width: 700, height: 490,
   x: {label: "Date", type: "utc"}, y: {label: "Daily ticket sales"},
   marks: [
     Plot.line(swim_holdout_chart, {x: "date", y: "actual", stroke: "#5b7fbd"}),
@@ -410,7 +410,7 @@ $(2,0,0)$ — no differencing, fitted on the level of the index — is clearly t
 
 ```{ojs}
 Plot.plot({
-  width: 700, height: 360,
+  width: 700, height: 490,
   x: {label: "Date", type: "utc"}, y: {label: "Case-Shiller price index"},
   marks: [
     Plot.line(arima_forecast_chart, {x: "date", y: "actual", stroke: "#5b7fbd"}),

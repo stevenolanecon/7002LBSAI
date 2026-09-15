@@ -116,7 +116,7 @@ html`<div style="text-align:center;padding-top:10px;">
 
 $Z$ affects both $X$ and $Y$ — leave it out, and part of $Z$'s effect on $Y$ gets misread as $X$'s. This is Week 6's OVB, drawn.
 
-## Case study: food and health
+## Case study: food and health {.smaller}
 
 ::: {.instructions-box}
 Does eating more fruit and vegetables lower blood pressure?

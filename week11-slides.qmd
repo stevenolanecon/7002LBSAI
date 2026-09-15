@@ -240,7 +240,7 @@ $$y_t = y_{t-1} + e_t$$
 
 ```{ojs}
 Plot.plot({
-  width: 700, height: 380,
+  width: 700, height: 420,
   x: {label: "Time period"}, y: {label: "Value of the simulated variable"},
   marks: [
     Plot.line(random_walks, {x: "t", y: "value", stroke: "series"}),
@@ -293,7 +293,7 @@ plt.axhline(0, color="grey", linewidth=0.8); plt.legend(); plt.show()
 
 ```{ojs}
 Plot.plot({
-  width: 640, height: 230,
+  width: 640, height: 370,
   x: {label: "Time period"}, y: {label: "Value"},
   marks: [
     Plot.ruleY([0]),
@@ -319,7 +319,7 @@ Same shocks, two views: red is **stationary**, its cumulative sum (green) is **n
 
 ```{ojs}
 Plot.plot({
-  width: 700, height: 340,
+  width: 700, height: 542,
   x: {label: "Date", type: "utc", ticks: "5 years", tickFormat: "%Y"},
   y: {label: "Microsoft price (US$)"},
   marks: [
@@ -344,7 +344,7 @@ Same two series as the last slide — **Microsoft's** monthly return and the **S
 
 ```{ojs}
 Plot.plot({
-  width: 700, height: 340,
+  width: 700, height: 400,
   x: {label: "Date", type: "utc", ticks: "5 years", tickFormat: "%Y"},
   y: {label: "Monthly return (%)"},
   color: {legend: true, domain: ["Microsoft", "S&P 500"], range: ["#2d6a4f", "#5b7fbd"]},
@@ -409,7 +409,7 @@ This is Microsoft's **beta** — exactly the concept finance uses to describe ho
 
 ```{ojs}
 Plot.plot({
-  width: 560, height: 320,
+  width: 560, height: 580,
   x: {label: "S&P 500 monthly return (%)"}, y: {label: "Microsoft monthly return (%)"},
   marks: [
     Plot.dot(scatter_data, {x: "pct_sp500", y: "pct_msft", fill: "#5b7fbd", fillOpacity: 0.5, r: 3}),
