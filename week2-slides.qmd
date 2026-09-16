@@ -564,7 +564,6 @@ html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;font-family
 
 ::: {.fragment #wk2-secondsample-frag}
 Same *n* both times — a real class of ${n_sample}, and a simulated class of ${n_sample} — so the two panels are directly comparable.
-:::
 
 ```{ojs}
 html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;font-family:sans-serif;font-size:0.88em;margin-top:4px;">
@@ -582,6 +581,7 @@ html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;font-family
   }).join('')}
 </div>`
 ```
+:::
 
 ---
 
@@ -1419,14 +1419,14 @@ A p-value of 0.011 means: if there truly were no device effect, we'd see a gap t
 Compare the t-statistic you calculated two slides ago to ±2. Reject $H_0$, or not? Write one sentence explaining what your decision means for the original business question — "is a phone-vs-laptop difference real?"
 :::
 
-## What if we had 15,000 students, not 15?
+## What if we had 15,000 students, not ${n_sample}?
 
 ::: {.fragment}
 With a huge sample, almost any difference becomes statistically significant — the CI narrows to nearly nothing, and even a 1ms gap could reject $H_0$.
 :::
 
 ::: {.fragment}
-Statistical significance ≠ practical significance. At scale, the question shifts from *"is there a difference?"* to *"is the difference big enough to matter?"* — external validity remains just as important as it was at n=15.
+Statistical significance ≠ practical significance. At scale, the question shifts from *"is there a difference?"* to *"is the difference big enough to matter?"* — external validity remains just as important as it was at n=${n_sample}.
 :::
 
 ---
