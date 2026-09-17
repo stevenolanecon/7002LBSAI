@@ -1496,10 +1496,6 @@ That requires thinking about **sampling**, **variability**, and **probability**.
 
 The workshop looked at one histogram. The online session (1 hour) covers the recognisable shapes distributions come in — normal, log-normal, power-law, and where our reaction-time data fits.
 
-::: {.instructions-box}
-See **week1-online.html** — a short standalone deck for this week's online session.
-:::
-
 ## Six steps of EDA
 
 1. Start with the variables that matter most
