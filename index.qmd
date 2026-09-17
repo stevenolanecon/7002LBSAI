@@ -96,7 +96,7 @@ def week_card(w):
     if w["status"] == "live":
         chip = '<span class="status-chip live"><span class="dot"></span>Live</span>'
         pills = "".join(
-            f'<a class="pill{" tool" if tool else ""}" href="{href}">{label}</a>'
+            f'<a class="pill{" tool" if tool else ""}" href="{href}" target="_blank" rel="noopener">{label}</a>'
             for label, href, tool in w["links"]
         )
     else:

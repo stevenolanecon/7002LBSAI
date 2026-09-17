@@ -1,0 +1,145 @@
+---
+title: "Topics"
+subtitle: "7002LBSAI — week-by-week"
+toc: false
+---
+
+```{=html}
+<div class="site-hero">
+  <div class="hero-inner">
+    <p class="kicker">7002LBSAI</p>
+    <h1>Topics</h1>
+    <p>What each week covers, workshop by workshop</p>
+  </div>
+</div>
+```
+
+::: {.page-intro}
+Each workshop opens with a real business question, a naive first answer, why that answer fails, and the method that actually answers it. This page lists the topics covered each week — for the schedule, readings, and assessment details, your [Canvas module](https://canvas.ljmu.ac.uk/courses/126948) is the hub.
+:::
+
+```{python}
+#| echo: false
+#| output: asis
+
+weeks = [
+    {"n": 1, "title": "Distributions and Summarising Data",
+     "question": "What does our own reaction-time data actually look like?",
+     "points": [
+         "Exploratory data analysis, and why it comes first",
+         "Variable types, tidy data",
+         "Histograms, shape, and outliers",
+         "Mean, median, variance, standard deviation, IQR",
+         "Box plots and violin plots",
+         "Comparing two groups — is a difference real?",
+     ]},
+    {"n": 2, "title": "Inference",
+     "question": "Can we trust a number computed from a sample?",
+     "points": [
+         "External validity — three threats",
+         "The sampling distribution and standard error",
+         "Unbiasedness, asymptotic normality, root-n convergence",
+         "The bootstrap",
+         "Confidence intervals",
+         "Hypothesis testing, the t-test, and p-values",
+     ]},
+    {"n": 3, "title": "Relationships Between Variables",
+     "question": "Does x actually relate to y — and how would we know?",
+     "points": [
+         "Conditional probability and the conditional mean",
+         "Bin-scatter and stacked bar charts",
+         "Covariance and correlation",
+         "Spurious correlation",
+         "Latent variables — one proxy, z-score averaging, PCA",
+     ]},
+    {"n": 4, "title": "Regression I — Fitting the Line",
+     "question": "How do we turn “y varies with x” into a precise formula?",
+     "points": [
+         "From LOWESS to a straight line",
+         "The OLS estimator — slope and intercept formulas",
+         "Why OLS is BLUE, and what that requires",
+         "Fitted values and residuals",
+         "R² and goodness of fit",
+         "Functional form and influential observations",
+     ]},
+    {"n": 5, "title": "Regression I — Model Problems & Inference",
+     "question": "When can we trust the regression line we just fitted?",
+     "points": [
+         "Choosing functional form — logs, ratios, polynomials",
+         "Extreme values vs. influential observations",
+         "Measurement error and attenuation bias",
+         "Standard errors and confidence intervals for β̂",
+         "Homoskedasticity and robust SE",
+         "Confidence intervals vs. prediction intervals",
+     ]},
+    {"n": 6, "title": "Regression II — Multiple Regression",
+     "question": "Is x really driving y, or is something else doing the work?",
+     "points": [
+         "Omitted variable bias vs. multicollinearity",
+         "Variance inflation factor (VIF)",
+         "Testing several coefficients together — the F-test",
+         "Categorical variables and dummy coding",
+         "Interactions — different slopes for different groups",
+         "Overfitting and variable selection",
+     ]},
+    {"n": 7, "note": "Curriculum Enrichment Week — no workshop"},
+    {"n": 8, "title": "Other Models (GLMs)",
+     "question": "Does smoking pose a health risk — for a yes/no outcome?",
+     "points": [
+         "Binary outcomes and the latent-variable model",
+         "The Generalized Linear Model family",
+         "Linear probability model, logit, and probit",
+         "Marginal effects (AMEs)",
+         "Goodness of fit — pseudo-R², Brier score, calibration",
+     ]},
+    {"n": 9, "title": "Causal Analysis and Experiments",
+     "question": "Does working from home change who quits?",
+     "points": [
+         "Potential outcomes and treatment effects",
+         "DAGs — confounders vs. mediators",
+         "Why random assignment works",
+         "Designing and running an A/B test, power and sample size",
+         "Covariate balance",
+         "ITT vs. treatment effect, internal and external validity",
+     ]},
+    {"n": 10, "title": "Prediction",
+     "question": "What price should go in the ad?",
+     "points": [
+         "Loss functions and the bias–variance trade-off",
+         "Overfitting, and how we'd actually know",
+         "BIC / AIC",
+         "Train/test splits and k-fold cross-validation",
+         "LASSO",
+     ]},
+    {"n": 11, "title": "Time Series",
+     "question": "How risky is Microsoft stock?",
+     "points": [
+         "Trend, seasonality, stationarity",
+         "Random walks",
+         "Spurious regression and differencing",
+         "Serial correlation, and why it breaks standard errors",
+         "Lagged effects and forecasting",
+     ]},
+    {"n": 12, "note": "Assessment review and portfolio presentations — see Canvas"},
+]
+
+def topic_block(w):
+    # Single line per element — Pandoc's raw-HTML-block passthrough is
+    # unreliable across multi-line nested tags under `output: asis`.
+    if "note" in w:
+        return (f'<div class="topic-block is-note">'
+                 f'<div class="topic-head"><span class="week-num">Week {w["n"]:02d}</span></div>'
+                 f'<p class="note-text">{w["note"]}</p></div>')
+
+    points = "".join(f'<li>{p}</li>' for p in w["points"])
+    return (f'<div class="topic-block">'
+             f'<div class="topic-head"><span class="week-num">Week {w["n"]:02d}</span>'
+             f'<span class="topic-title">{w["title"]}</span></div>'
+             f'<p class="topic-question">{w["question"]}</p>'
+             f'<ul class="topic-points">{points}</ul></div>')
+
+print('<div class="topics-list">')
+for w in weeks:
+    print(topic_block(w))
+print('</div>')
+```

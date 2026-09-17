@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Research Methods in Analytics – 7002LBSAI</title>
+<title>Topics – 7002LBSAI</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -91,11 +91,11 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./topics.html"> 
+    <a class="nav-link active" href="./topics.html" aria-current="page"> 
 <span class="menu-text">Topics</span></a>
   </li>  
   <li class="nav-item">
@@ -126,8 +126,8 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Research Methods in Analytics</h1>
-<p class="subtitle lead">7002LBSAI — MSc Business Analytics and AI, LJMU</p>
+<h1 class="title">Topics</h1>
+<p class="subtitle lead">7002LBSAI — week-by-week</p>
 </div>
 
 
@@ -147,150 +147,301 @@ ul.task-list li input[type="checkbox"] {
 <div class="site-hero">
   <div class="hero-inner">
     <p class="kicker">7002LBSAI</p>
-    <h1>Research Methods in Analytics</h1>
-    <p>Interactive course site — live slides, tools, and data</p>
+    <h1>Topics</h1>
+    <p>What each week covers, workshop by workshop</p>
   </div>
 </div>
 <div class="page-intro">
-<p>This site hosts the materials that need to run as live web pages — interactive slide decks, in-class tools, and the datasets behind them.</p>
-<div class="canvas-note">
-<p>For the schedule, assessment details, recordings, and everything else, your <a href="https://canvas.ljmu.ac.uk/courses/126948">Canvas module</a> is the hub. Come here to open a specific week’s slides or tool.</p>
+<p>Each workshop opens with a real business question, a naive first answer, why that answer fails, and the method that actually answers it. This page lists the topics covered each week — for the schedule, readings, and assessment details, your <a href="https://canvas.ljmu.ac.uk/courses/126948">Canvas module</a> is the hub.</p>
 </div>
+<div class="topics-list">
+<div class="topic-block">
+<div class="topic-head">
+<span class="week-num">Week 01</span><span class="topic-title">Distributions and Summarising Data</span>
 </div>
-<section id="weeks" class="level2">
-<h2 class="anchored" data-anchor-id="weeks">Weeks</h2>
-<p>Workshop and online-session slides, published as each week runs.</p>
-<div class="week-grid">
-<div class="week-card">
-<div class="week-card-head">
-<div>
-<span class="week-num">Week 01</span><span class="week-topic">Distributions and Summarising Data</span>
+<p class="topic-question">
+What does our own reaction-time data actually look like?
+</p>
+<ul class="topic-points">
+<li>
+Exploratory data analysis, and why it comes first
+</li>
+<li>
+Variable types, tidy data
+</li>
+<li>
+Histograms, shape, and outliers
+</li>
+<li>
+Mean, median, variance, standard deviation, IQR
+</li>
+<li>
+Box plots and violin plots
+</li>
+<li>
+Comparing two groups — is a difference real?
+</li>
+</ul>
 </div>
-<span class="status-chip live"><span class="dot"></span>Live</span>
+<div class="topic-block">
+<div class="topic-head">
+<span class="week-num">Week 02</span><span class="topic-title">Inference</span>
 </div>
-<div class="pill-row">
-<a class="pill" href="week1-slides.html" target="_blank" rel="noopener">Workshop slides</a><a class="pill" href="week1-online-slides.html" target="_blank" rel="noopener">Online session</a><a class="pill tool" href="week1-tool.html" target="_blank" rel="noopener">Reaction-time tool</a>
+<p class="topic-question">
+Can we trust a number computed from a sample?
+</p>
+<ul class="topic-points">
+<li>
+External validity — three threats
+</li>
+<li>
+The sampling distribution and standard error
+</li>
+<li>
+Unbiasedness, asymptotic normality, root-n convergence
+</li>
+<li>
+The bootstrap
+</li>
+<li>
+Confidence intervals
+</li>
+<li>
+Hypothesis testing, the t-test, and p-values
+</li>
+</ul>
 </div>
+<div class="topic-block">
+<div class="topic-head">
+<span class="week-num">Week 03</span><span class="topic-title">Relationships Between Variables</span>
 </div>
-<div class="week-card">
-<div class="week-card-head">
-<div>
-<span class="week-num">Week 02</span><span class="week-topic">Inference</span>
+<p class="topic-question">
+Does x actually relate to y — and how would we know?
+</p>
+<ul class="topic-points">
+<li>
+Conditional probability and the conditional mean
+</li>
+<li>
+Bin-scatter and stacked bar charts
+</li>
+<li>
+Covariance and correlation
+</li>
+<li>
+Spurious correlation
+</li>
+<li>
+Latent variables — one proxy, z-score averaging, PCA
+</li>
+</ul>
 </div>
-<span class="status-chip live"><span class="dot"></span>Live</span>
+<div class="topic-block">
+<div class="topic-head">
+<span class="week-num">Week 04</span><span class="topic-title">Regression I — Fitting the Line</span>
 </div>
-<div class="pill-row">
-<a class="pill" href="week2-slides.html" target="_blank" rel="noopener">Workshop slides</a><a class="pill" href="week2-online-slides.html" target="_blank" rel="noopener">Online session</a>
+<p class="topic-question">
+How do we turn “y varies with x” into a precise formula?
+</p>
+<ul class="topic-points">
+<li>
+From LOWESS to a straight line
+</li>
+<li>
+The OLS estimator — slope and intercept formulas
+</li>
+<li>
+Why OLS is BLUE, and what that requires
+</li>
+<li>
+Fitted values and residuals
+</li>
+<li>
+R² and goodness of fit
+</li>
+<li>
+Functional form and influential observations
+</li>
+</ul>
 </div>
+<div class="topic-block">
+<div class="topic-head">
+<span class="week-num">Week 05</span><span class="topic-title">Regression I — Model Problems &amp; Inference</span>
 </div>
-<div class="week-card">
-<div class="week-card-head">
-<div>
-<span class="week-num">Week 03</span><span class="week-topic">Relationships Between Variables</span>
+<p class="topic-question">
+When can we trust the regression line we just fitted?
+</p>
+<ul class="topic-points">
+<li>
+Choosing functional form — logs, ratios, polynomials
+</li>
+<li>
+Extreme values vs.&nbsp;influential observations
+</li>
+<li>
+Measurement error and attenuation bias
+</li>
+<li>
+Standard errors and confidence intervals for β̂
+</li>
+<li>
+Homoskedasticity and robust SE
+</li>
+<li>
+Confidence intervals vs.&nbsp;prediction intervals
+</li>
+</ul>
 </div>
-<span class="status-chip live"><span class="dot"></span>Live</span>
+<div class="topic-block">
+<div class="topic-head">
+<span class="week-num">Week 06</span><span class="topic-title">Regression II — Multiple Regression</span>
 </div>
-<div class="pill-row">
-<a class="pill" href="week3-slides.html" target="_blank" rel="noopener">Workshop slides</a><a class="pill" href="week3-online-slides.html" target="_blank" rel="noopener">Online session</a>
+<p class="topic-question">
+Is x really driving y, or is something else doing the work?
+</p>
+<ul class="topic-points">
+<li>
+Omitted variable bias vs.&nbsp;multicollinearity
+</li>
+<li>
+Variance inflation factor (VIF)
+</li>
+<li>
+Testing several coefficients together — the F-test
+</li>
+<li>
+Categorical variables and dummy coding
+</li>
+<li>
+Interactions — different slopes for different groups
+</li>
+<li>
+Overfitting and variable selection
+</li>
+</ul>
 </div>
-</div>
-<div class="week-card">
-<div class="week-card-head">
-<div>
-<span class="week-num">Week 04</span><span class="week-topic">Regression I — Fitting the Line</span>
-</div>
-<span class="status-chip live"><span class="dot"></span>Live</span>
-</div>
-<div class="pill-row">
-<a class="pill" href="week4-slides.html" target="_blank" rel="noopener">Workshop slides</a>
-</div>
-</div>
-<div class="week-card">
-<div class="week-card-head">
-<div>
-<span class="week-num">Week 05</span><span class="week-topic">Regression I — Model Problems &amp; Inference</span>
-</div>
-<span class="status-chip live"><span class="dot"></span>Live</span>
-</div>
-<div class="pill-row">
-<a class="pill" href="week5-slides.html" target="_blank" rel="noopener">Workshop slides</a><a class="pill" href="week5-online-slides.html" target="_blank" rel="noopener">Online session</a>
-</div>
-</div>
-<div class="week-card">
-<div class="week-card-head">
-<div>
-<span class="week-num">Week 06</span><span class="week-topic">Regression II — Multiple Regression</span>
-</div>
-<span class="status-chip live"><span class="dot"></span>Live</span>
-</div>
-<div class="pill-row">
-<a class="pill" href="week6-slides.html" target="_blank" rel="noopener">Workshop slides</a><a class="pill" href="week6-online-slides.html" target="_blank" rel="noopener">Online session</a>
-</div>
-</div>
-<div class="week-card is-note">
+<div class="topic-block is-note">
+<div class="topic-head">
 <span class="week-num">Week 07</span>
+</div>
 <p class="note-text">
-Curriculum Enrichment Week — no session
+Curriculum Enrichment Week — no workshop
 </p>
 </div>
-<div class="week-card">
-<div class="week-card-head">
-<div>
-<span class="week-num">Week 08</span><span class="week-topic">Other Models (GLMs)</span>
+<div class="topic-block">
+<div class="topic-head">
+<span class="week-num">Week 08</span><span class="topic-title">Other Models (GLMs)</span>
 </div>
-<span class="status-chip live"><span class="dot"></span>Live</span>
+<p class="topic-question">
+Does smoking pose a health risk — for a yes/no outcome?
+</p>
+<ul class="topic-points">
+<li>
+Binary outcomes and the latent-variable model
+</li>
+<li>
+The Generalized Linear Model family
+</li>
+<li>
+Linear probability model, logit, and probit
+</li>
+<li>
+Marginal effects (AMEs)
+</li>
+<li>
+Goodness of fit — pseudo-R², Brier score, calibration
+</li>
+</ul>
 </div>
-<div class="pill-row">
-<a class="pill" href="week8-slides.html" target="_blank" rel="noopener">Workshop slides</a><a class="pill" href="week8-online-slides.html" target="_blank" rel="noopener">Online session</a>
+<div class="topic-block">
+<div class="topic-head">
+<span class="week-num">Week 09</span><span class="topic-title">Causal Analysis and Experiments</span>
 </div>
+<p class="topic-question">
+Does working from home change who quits?
+</p>
+<ul class="topic-points">
+<li>
+Potential outcomes and treatment effects
+</li>
+<li>
+DAGs — confounders vs.&nbsp;mediators
+</li>
+<li>
+Why random assignment works
+</li>
+<li>
+Designing and running an A/B test, power and sample size
+</li>
+<li>
+Covariate balance
+</li>
+<li>
+ITT vs.&nbsp;treatment effect, internal and external validity
+</li>
+</ul>
 </div>
-<div class="week-card">
-<div class="week-card-head">
-<div>
-<span class="week-num">Week 09</span><span class="week-topic">Causal Analysis and Experiments</span>
+<div class="topic-block">
+<div class="topic-head">
+<span class="week-num">Week 10</span><span class="topic-title">Prediction</span>
 </div>
-<span class="status-chip live"><span class="dot"></span>Live</span>
+<p class="topic-question">
+What price should go in the ad?
+</p>
+<ul class="topic-points">
+<li>
+Loss functions and the bias–variance trade-off
+</li>
+<li>
+Overfitting, and how we’d actually know
+</li>
+<li>
+BIC / AIC
+</li>
+<li>
+Train/test splits and k-fold cross-validation
+</li>
+<li>
+LASSO
+</li>
+</ul>
 </div>
-<div class="pill-row">
-<a class="pill" href="week9-slides.html" target="_blank" rel="noopener">Workshop slides</a><a class="pill" href="week9-online-slides.html" target="_blank" rel="noopener">Online session</a>
+<div class="topic-block">
+<div class="topic-head">
+<span class="week-num">Week 11</span><span class="topic-title">Time Series</span>
 </div>
+<p class="topic-question">
+How risky is Microsoft stock?
+</p>
+<ul class="topic-points">
+<li>
+Trend, seasonality, stationarity
+</li>
+<li>
+Random walks
+</li>
+<li>
+Spurious regression and differencing
+</li>
+<li>
+Serial correlation, and why it breaks standard errors
+</li>
+<li>
+Lagged effects and forecasting
+</li>
+</ul>
 </div>
-<div class="week-card">
-<div class="week-card-head">
-<div>
-<span class="week-num">Week 10</span><span class="week-topic">Prediction</span>
-</div>
-<span class="status-chip live"><span class="dot"></span>Live</span>
-</div>
-<div class="pill-row">
-<a class="pill" href="week10-slides.html" target="_blank" rel="noopener">Workshop slides</a><a class="pill" href="week10-online-slides.html" target="_blank" rel="noopener">Online session</a>
-</div>
-</div>
-<div class="week-card">
-<div class="week-card-head">
-<div>
-<span class="week-num">Week 11</span><span class="week-topic">Time Series</span>
-</div>
-<span class="status-chip live"><span class="dot"></span>Live</span>
-</div>
-<div class="pill-row">
-<a class="pill" href="week11-slides.html" target="_blank" rel="noopener">Workshop slides</a><a class="pill" href="week11-online-slides.html" target="_blank" rel="noopener">Online session</a>
-</div>
-</div>
-<div class="week-card is-note">
+<div class="topic-block is-note">
+<div class="topic-head">
 <span class="week-num">Week 12</span>
+</div>
 <p class="note-text">
-Portfolio presentations — see Canvas
+Assessment review and portfolio presentations — see Canvas
 </p>
 </div>
 </div>
-</section>
-<section id="module-leader" class="level2">
-<h2 class="anchored" data-anchor-id="module-leader">Module leader</h2>
-<p><strong>Dr Steve Nolan</strong> Liverpool Business School, LJMU <a href="mailto:S.P.Nolan@ljmu.ac.uk">S.P.Nolan@ljmu.ac.uk</a></p>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
