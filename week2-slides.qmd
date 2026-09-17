@@ -20,6 +20,7 @@ execute:
   message: false
 ---
 
+
 ```{python}
 import pandas as pd
 import numpy as np
@@ -412,7 +413,7 @@ Ten possible pairs, ten different averages — some closer to the true mean of a
 
 ---
 
-## What we measured in Week 1
+## What we measured in Week 1 {.smaller}
 
 :::: {.shrink-on-reveal data-frag="wk2-week1recap-frag" style="--large-height:560px;--small-height:340px;--shrink-scale:0.6071;"}
 ::: {.shrink-on-reveal-inner}
@@ -465,6 +466,12 @@ Ten possible pairs, ten different averages — some closer to the true mean of a
 Each point is one student's own average, from the pairs we were just building by hand — now for the whole class. The red curve is a **Normal(μ, σ)** fitted to it. This is our assumed **data-generating process (DGP)**.
 
 We can now use Python to pretend that we've run last week's test many times, each time drawing a new class from the same distribution.
+:::
+
+::: {.fragment}
+**Bessel's correction:** an unbiased estimate of the population variance divides squared deviations by *n* − 1, not *n* — the sample mean already fits this exact sample as closely as possible, so squared deviations from it slightly understate the true spread. Dividing by *n* − 1 corrects for that lost degree of freedom.
+
+Békés & Kézdi's own formulas divide by *n* throughout — harmless at the scale of their case studies, where the difference is vanishingly small. This module generally divides by *n* − 1 instead, since a class of ${n_sample} students is small enough that the difference is real.
 :::
 
 ---
@@ -544,7 +551,7 @@ html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;font-family
   ]
 
   return Plot.plot({
-    height: 310,
+    height: 480,
     marginLeft: 80,
     marginRight: 90,
     marginBottom: 36,
@@ -1347,7 +1354,7 @@ A commonly used critical value for a t-statistic is **±2** (more precisely 1.96
   const tail1R = grid.filter(d => d.x >=  2.576)
 
   return Plot.plot({
-    height: 280,
+    height: 420,
     marginLeft: 20,
     marginBottom: 40,
     x: { label: "t-statistic", domain: [-3.6, 3.6] },
@@ -1434,10 +1441,6 @@ Statistical significance ≠ practical significance. At scale, the question shif
 ## Online session — Testing pitfalls
 
 Multiple testing and p-hacking (why testing many hypotheses at once inflates false positives), a big-data-and-significance deep dive, and using AI to check your own statistics.
-
-::: {.instructions-box}
-See **week2-online.html** — a short standalone deck for this week's online session.
-:::
 
 ---
 
