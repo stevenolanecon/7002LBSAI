@@ -864,12 +864,16 @@ When mean and median diverge, ask *why*. The answer is usually the shape of the 
 After the workshop, go back to the histogram and drag the "exclude above" threshold down. Watch how much the **mean** moves compared to the **median** as the slowest trials drop out — that gap *is* the sensitivity to outliers.
 :::
 
-## Variance and standard deviation
+## Variance and standard deviation {.smaller}
 
-$$Var[x] = \frac{\sum (x_i - \bar{x})^2}{n} \qquad SD[x] = \sqrt{\frac{\sum (x_i - \bar{x})^2}{n}}$$
+$$Var[x] = \frac{\sum (x_i - \bar{x})^2}{n-1} \qquad SD[x] = \sqrt{\frac{\sum (x_i - \bar{x})^2}{n-1}}$$
 
 - **Variance** is the average *squared* deviation from the mean — harder to interpret directly, but easy to work with algebraically because it is itself a mean
 - **Standard deviation** is the square root of variance — back in the original units, and roughly the typical distance between a randomly chosen observation and the mean
+
+::: {.callout-note}
+This divides by *n* − 1, not *n* — the standard formula, and what Python uses. Békés & Kézdi's own textbook divides by *n* instead; the difference is small in practice, and we'll come back to exactly why in Week 2.
+:::
 
 ::: {.fragment}
 Two distributions can share a mean but differ in spread: the higher the SD, the more dispersed the data. In finance, SD is literally how volatility is measured — a higher SD means a price that jumps around more.

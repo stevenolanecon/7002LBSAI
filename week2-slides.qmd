@@ -488,7 +488,7 @@ We can now use Python to pretend that we've run last week's test many times, eac
 :::
 
 ::: {.fragment}
-**Bessel's correction:** an unbiased estimate of the population variance divides squared deviations by *n* − 1, not *n* — the sample mean already fits this exact sample as closely as possible, so squared deviations from it slightly understate the true spread. Dividing by *n* − 1 corrects for that lost degree of freedom.
+**Bessel's correction:** back in Week 1 we used *n* − 1, not *n*, to compute a standard deviation — here's why. An unbiased estimate of the population variance divides squared deviations by *n* − 1, not *n* — the sample mean already fits this exact sample as closely as possible, so squared deviations from it slightly understate the true spread. Dividing by *n* − 1 corrects for that lost degree of freedom.
 
 Békés & Kézdi's own formulas divide by *n* throughout — harmless at the scale of their case studies, where the difference is vanishingly small. This module generally divides by *n* − 1 instead, since a class of ${n_sample} students is small enough that the difference is real.
 :::
