@@ -890,7 +890,7 @@ Source: Békés & Kézdi (2021), Ch. 5
 ```{ojs}
 {
   return html`<p>Go back to the standard error you calculated earlier from <strong>sample_student_means.csv</strong> — the SD of your ${n_sims} sample means.</p>
-<p>Now use the formula above with the numbers from "The DGP &mdash; what we are assuming": <em>σ</em> = ${sd_pop} ms, <em>n</em> = ${n_sample}.</p>
+<p>Now use the formula above with the numbers from "The DGP &mdash; what we are assuming."</p>
 <ol style="padding-left:22px;">
 <li>Calculate SE = σ / √n by hand.</li>
 <li>Compare it to the SD you calculated from sample_student_means.csv. How close are they?</li>
