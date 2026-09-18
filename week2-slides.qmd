@@ -230,6 +230,25 @@ ojs_define(
   Reveal.on('fragmenthidden', (event) => {
     wrapperFor(event.fragment.id)?.classList.remove('is-small')
   })
+
+  // Observable Plot's `tip: true` tooltips can get stuck on screen after the
+  // cursor leaves the chart — its own pointerleave handling doesn't reliably
+  // fire once a chart sits inside Reveal's own scaled/transformed slide
+  // stack. Safety net: on every mouse move, if a chart's tip is showing but
+  // the cursor is no longer over that chart's SVG, dispatch a real
+  // pointerleave at the SVG so Plot's own hide logic runs — never remove the
+  // tip node directly, since Plot reuses that same element on later hovers.
+  document.addEventListener('mousemove', (event) => {
+    document.querySelectorAll('[aria-label="tip"]').forEach((tip) => {
+      const svg = tip.closest('svg')
+      const r = svg?.getBoundingClientRect()
+      if (!r || r.width === 0) return
+      if (event.clientX < r.left || event.clientX > r.right ||
+          event.clientY < r.top || event.clientY > r.bottom) {
+        svg.dispatchEvent(new PointerEvent('pointerleave', { bubbles: true }))
+      }
+    })
+  })
 }
 ```
 
