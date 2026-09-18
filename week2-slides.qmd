@@ -186,6 +186,22 @@ for k in range(N_SIMS):
 task_df = pd.DataFrame(task_rows, columns=['sample', 'student_name', 'trial', 'reaction_time'])
 task_df.to_csv('data/samples.csv', index=False)
 
+# Pre-collapsed companion file: one row per (sample, student), already
+# averaged across that student's N_TRIALS trials. Same granularity as the
+# "enumerate the pairs" task's per-student averages — spares students from
+# re-doing the trial-to-student collapse by hand for every one of N_SIMS
+# samples, which teaches nothing new (Week 1 already covered averaging) and
+# is genuinely awkward in Excel once you also need to average the resulting
+# per-student means down to one number per sample (an average of averages,
+# not a plain PivotTable). The sample-1-only task above still uses the raw
+# file, since that one *is* meant to be a hands-on averaging exercise.
+sample_student_means = (
+    task_df.groupby(['sample', 'student_name'], sort=True)['reaction_time']
+    .mean().round(1).reset_index()
+    .rename(columns={'reaction_time': 'mean_reaction_time'})
+)
+sample_student_means.to_csv('data/sample_student_means.csv', index=False)
+
 ojs_define(
     mu_pop        = round(mu_pop, 1),
     sd_pop        = round(sd_pop, 1),
@@ -617,14 +633,18 @@ html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;font-family
 ```{ojs}
 {
   const total = (n_sims * n_sample * n_trials).toLocaleString()
+  const collapsedTotal = (n_sims * n_sample).toLocaleString()
   return html`<p>Download <a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/samples.csv" target="_blank" rel="noopener" style="color:#457b9d;font-weight:700;"><strong>samples.csv</strong></a> — ${n_sims} <em>simulated</em> replays of a class like ours, not our actual Week 1 results. Same structure (a class doing the reaction-time trial), regenerated ${n_sims} times.</p>
 <p>The file has ${total} rows and four columns: <code>sample</code> (1&ndash;${n_sims}), <code>student_name</code>, <code>trial</code> (1&ndash;${n_trials}), <code>reaction_time</code>.
 Each sample is one simulated class: ${n_sample} students &times; ${n_trials} trials.</p>
 <ol style="padding-left:22px;">
 <li value="0"><strong>First, check the data</strong>: does the file actually have ${total} rows and those four columns? Do sample IDs run 1&ndash;${n_sims}, with no gaps or duplicates? Any missing values? Don't analyse data you haven't checked.</li>
 <li>For <strong>sample 1</strong> only: compute the <strong>mean reaction time for each student</strong> &mdash; you now have ${n_sample} values. Plot a histogram.</li>
-<li>Repeat for samples 1&ndash;10, then 1&ndash;100, then all ${n_sims}. Produce histograms for each iteration.</li>
-<li>What is the mean of those student means? What is the standard deviation?</li>
+</ol>
+<p>For the rest of this task, switch to <a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/sample_student_means.csv" target="_blank" rel="noopener" style="color:#457b9d;font-weight:700;"><strong>sample_student_means.csv</strong></a> &mdash; the same simulation, already collapsed to one row per sample &times; student (${collapsedTotal} rows: <code>sample</code>, <code>student_name</code>, <code>mean_reaction_time</code>). It's what step 1 above gives you for sample 1, already done for every sample &mdash; no need to redo that averaging ${n_sims} times by hand.</p>
+<ol start="2" style="padding-left:22px;">
+<li>For each sample, average its ${n_sample} student means down to <strong>one number</strong> &mdash; that sample's own overall mean. Do this for samples 1&ndash;10, then 1&ndash;100, then all ${n_sims}, plotting a histogram of those sample-level means at each stage.</li>
+<li>What is the mean of those ${n_sims} sample-level means? What is the standard deviation?</li>
 <li>You are not plotting raw reaction times. What are you plotting the distribution <em>of</em>?</li>
 </ol>`
 }
