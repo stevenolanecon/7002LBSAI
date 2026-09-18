@@ -173,10 +173,16 @@ for i in range(100):
 # assumed).
 np.random.seed(99)
 task_rows = []
+# Reaction time can't physically go negative or near-zero, but an unbounded
+# Normal(m, within_sd) occasionally draws below zero anyway when within_sd is
+# large relative to m -- floor at 100ms (well below any real observed trial,
+# so this never touches a plausible value, only the impossible tail).
+TRIAL_FLOOR_MS = 100
 for k in range(N_SIMS):
     sim_true_means = np.random.normal(mu_pop, between_sd, n_students)
-    draws = np.array(
-        [np.random.normal(m, within_sd, N_TRIALS) for m in sim_true_means]
+    draws = np.clip(
+        np.array([np.random.normal(m, within_sd, N_TRIALS) for m in sim_true_means]),
+        TRIAL_FLOOR_MS, None
     ).round(1)   # (n_students, N_TRIALS)
     for i in range(n_students):
         for j in range(N_TRIALS):
