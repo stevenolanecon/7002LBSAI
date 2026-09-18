@@ -20,7 +20,6 @@ execute:
   message: false
 ---
 
-
 ```{python}
 import pandas as pd
 import numpy as np
@@ -498,16 +497,18 @@ Ten possible pairs, ten different averages — some closer to the true mean of a
 ::::
 
 ::: {.fragment #wk2-week1recap-frag}
-Each point is one student's own average, from the pairs we were just building by hand — now for the whole class. The red curve is a **Normal(μ, σ)** fitted to it. This is our assumed **data-generating process (DGP)**.
+Here we have the distribution of all students average reaction time captured last week.
 
-We can now use Python to pretend that we've run last week's test many times, each time drawing a new class from the same distribution.
+The red curve is a **Normal(μ, σ)** fitted to it. This is our assumed **data-generating process (DGP)**.
+
+Using these parameters, we can  use Python to pretend that we've run last week's test many times, creating a new dataset each time drawing from the same distribution.
 :::
 
-::: {.fragment}
-**Bessel's correction:** back in Week 1 we used *n* − 1, not *n*, to compute a standard deviation — here's why. An unbiased estimate of the population variance divides squared deviations by *n* − 1, not *n* — the sample mean already fits this exact sample as closely as possible, so squared deviations from it slightly understate the true spread. Dividing by *n* − 1 corrects for that lost degree of freedom.
+## Bessel's correction
 
-Békés & Kézdi's own formulas divide by *n* throughout — harmless at the scale of their case studies, where the difference is vanishingly small. This module generally divides by *n* − 1 instead, since a class of ${n_sample} students is small enough that the difference is real.
-:::
+**Bessel's correction:** back in Week 1 we used *n* − 1, not *n*, to compute a standard deviation — here's why. An unbiased estimate of the population variance divides squared deviations by *n* − 1, not *n* — the sample mean already fits this exact sample as closely as possible, so squared deviations from it slightly understate the true spread. Dividing by *n* − 1 corrects for using one number's worth of information, since the sample mean was calculated from these same values.
+
+Békés & Kézdi's own formulas divide by *n* throughout — harmless at the scale of their case studies, where the difference is vanishingly small. This module generally divides by *n* − 1 instead, since a class of ${n_sample} students is small enough that the difference is real. Ultimately, it is not a big deal but is important to know.
 
 ---
 
@@ -627,22 +628,14 @@ html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;font-family
 
 ---
 
-## Task {.smaller}
+## Task
 
 ::: {.instructions-box}
 ```{ojs}
 {
-  const total = (n_sims * n_sample * n_trials).toLocaleString()
   const collapsedTotal = (n_sims * n_sample).toLocaleString()
-  return html`<p>Download <a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/samples.csv" target="_blank" rel="noopener" style="color:#457b9d;font-weight:700;"><strong>samples.csv</strong></a> — ${n_sims} <em>simulated</em> replays of a class like ours, not our actual Week 1 results. Same structure (a class doing the reaction-time trial), regenerated ${n_sims} times.</p>
-<p>The file has ${total} rows and four columns: <code>sample</code> (1&ndash;${n_sims}), <code>student_name</code>, <code>trial</code> (1&ndash;${n_trials}), <code>reaction_time</code>.
-Each sample is one simulated class: ${n_sample} students &times; ${n_trials} trials.</p>
+  return html`<p>Download <a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/sample_student_means.csv" target="_blank" rel="noopener" style="color:#457b9d;font-weight:700;"><strong>sample_student_means.csv</strong></a> — ${n_sims} <em>simulated</em> replays of a class like ours, not our actual Week 1 results, already collapsed to one row per sample &times; student (${collapsedTotal} rows: <code>sample</code>, <code>student_name</code>, <code>mean_reaction_time</code>).</p>
 <ol style="padding-left:22px;">
-<li value="0"><strong>First, check the data</strong>: does the file actually have ${total} rows and those four columns? Do sample IDs run 1&ndash;${n_sims}, with no gaps or duplicates? Any missing values? Don't analyse data you haven't checked.</li>
-<li>For <strong>sample 1</strong> only: compute the <strong>mean reaction time for each student</strong> &mdash; you now have ${n_sample} values. Plot a histogram.</li>
-</ol>
-<p>For the rest of this task, switch to <a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/sample_student_means.csv" target="_blank" rel="noopener" style="color:#457b9d;font-weight:700;"><strong>sample_student_means.csv</strong></a> &mdash; the same simulation, already collapsed to one row per sample &times; student (${collapsedTotal} rows: <code>sample</code>, <code>student_name</code>, <code>mean_reaction_time</code>). It's what step 1 above gives you for sample 1, already done for every sample &mdash; no need to redo that averaging ${n_sims} times by hand.</p>
-<ol start="2" style="padding-left:22px;">
 <li>For each sample, average its ${n_sample} student means down to <strong>one number</strong> &mdash; that sample's own overall mean. Do this for samples 1&ndash;10, then 1&ndash;100, then all ${n_sims}, plotting a histogram of those sample-level means at each stage.</li>
 <li>What is the mean of those ${n_sims} sample-level means? What is the standard deviation?</li>
 <li>You are not plotting raw reaction times. What are you plotting the distribution <em>of</em>?</li>
@@ -801,7 +794,7 @@ An estimator whose expected value equals the true parameter is called **unbiased
       Plot.line(normalCurve(vals, label, bw),
         { x: "x", y: "y", fx: () => label,
           stroke: "#e63946", strokeWidth: 2 }),
-      Plot.ruleX([0]),
+      Plot.ruleX([d3.mean(vals)], { fx: () => label, stroke: "#1a1a2e", strokeWidth: 1.5, strokeDasharray: "3,3" }),
     ])
   })
 }
@@ -896,11 +889,11 @@ Source: Békés & Kézdi (2021), Ch. 5
 ::: {.instructions-box}
 ```{ojs}
 {
-  return html`<p>Go back to the standard error you calculated earlier from <strong>samples.csv</strong> — the SD of your ${n_sims} sample means.</p>
+  return html`<p>Go back to the standard error you calculated earlier from <strong>sample_student_means.csv</strong> — the SD of your ${n_sims} sample means.</p>
 <p>Now use the formula above with the numbers from "The DGP &mdash; what we are assuming": <em>σ</em> = ${sd_pop} ms, <em>n</em> = ${n_sample}.</p>
 <ol style="padding-left:22px;">
 <li>Calculate SE = σ / √n by hand.</li>
-<li>Compare it to the SD you calculated from samples.csv. How close are they?</li>
+<li>Compare it to the SD you calculated from sample_student_means.csv. How close are they?</li>
 <li>Should they match exactly, or only approximately &mdash; and why?</li>
 </ol>`
 }
