@@ -1312,6 +1312,10 @@ For a difference between two averages, $\bar{x}_A$ and $\bar{x}_B$:
 
 $$t = \frac{\bar{x}_A - \bar{x}_B}{SE(\bar{x}_A - \bar{x}_B)} \qquad SE(\bar{x}_A - \bar{x}_B) = \sqrt{\frac{SD_A^2}{n_A} + \frac{SD_B^2}{n_B}}$$
 
+::: {.callout-note}
+This needs the *sampling distribution* of $\bar{x}_A - \bar{x}_B$ to be approximately normal — not reaction time itself, which we already know is right-skewed. With dozens of trials in each group, the CLT (see "2. Asymptotic normality" earlier) makes that a safe bet regardless of the raw variable's shape.
+:::
+
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
 Source: Békés & Kézdi (2021), Ch. 6
 :::
@@ -1342,6 +1346,10 @@ Source: Békés & Kézdi (2021), Ch. 6
   </table>`
 }
 ```
+
+::: {.fragment}
+**A real limitation, worth naming honestly:** these n's count *trials*, not independent students — each of our ${n_sample} students contributes several correlated trials, not separate independent observations. Treating them as independent understates the SE and can make a difference look more significant than it is. Averaging each student down to one number first would fix that, but with only a handful of students per device group, we'd be relying on the CLT to rescue normality with far fewer than the "dozens of trials" that made it a safe bet earlier — there's no clean fix within what we've covered so far, and that trade-off is the actual lesson here.
+:::
 
 ## Task — calculate the t-statistic
 
