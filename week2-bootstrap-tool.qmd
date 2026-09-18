@@ -12,16 +12,12 @@ execute:
   <div class="hero-inner">
     <p class="kicker">7002LBSAI — Week 2</p>
     <h1>Bootstrapping our own data</h1>
-    <p>A live tool for the workshop — no slides needed.</p>
+    <p>A live tool for the workshop</p>
   </div>
 </div>
 ```
 
-::: {.page-intro}
-The **bootstrap** builds a sampling distribution without ever needing to know the true data-generating process: draw repeated samples *from the data itself*, with replacement, compute the statistic (here, the mean) on each one, and look at how much those statistics vary. Some observations get picked more than once in a given resample; others aren't picked at all — that's what "with replacement" means.
 
-Adjust the sliders below to change the resample size (*n*) and the number of resamples (*B*), and watch the bootstrap distribution respond — using the class's own data, live.
-:::
 
 ```{python}
 import pandas as pd
@@ -108,5 +104,5 @@ viewof boot_controls = {
 ```
 
 ::: {.page-intro}
-<p class="canvas-note">The full interactive slide deck for Week 2 goes live after the workshop — this page is a standalone version of one chart from it, for use during class.</p>
+<p class="canvas-note">The full interactive slide deck for Week 2 goes live after the workshop.</p>
 :::

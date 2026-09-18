@@ -1124,6 +1124,10 @@ $$CI = \text{statistic} \; \pm \; (\text{critical value} \times SE)$$
 Wider interval → more confident it contains the truth, but less precise about where. There's no free lunch: more confidence costs precision.
 :::
 
+::: {.callout-note}
+For a 95% confidence level, the precise critical value is 1.96 — but 2 is a decent rule of thumb.
+:::
+
 ## Confidence intervals
 
 Does that 95% promise actually hold? Let's check: simulate 100 samples from the same DGP, build a 95% CI from each one the way we just described, and see how many actually contain the true mean.
