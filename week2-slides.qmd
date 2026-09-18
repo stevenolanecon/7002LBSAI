@@ -617,7 +617,7 @@ html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;font-family
 ```{ojs}
 {
   const total = (n_sims * n_sample * n_trials).toLocaleString()
-  return html`<p>Download <strong>samples.csv</strong> — ${n_sims} <em>simulated</em> replays of a class like ours, not our actual Week 1 results. Same structure (a class doing the reaction-time trial), regenerated ${n_sims} times.</p>
+  return html`<p>Download <a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/samples.csv" target="_blank" rel="noopener" style="color:#457b9d;font-weight:700;"><strong>samples.csv</strong></a> — ${n_sims} <em>simulated</em> replays of a class like ours, not our actual Week 1 results. Same structure (a class doing the reaction-time trial), regenerated ${n_sims} times.</p>
 <p>The file has ${total} rows and four columns: <code>sample</code> (1&ndash;${n_sims}), <code>student_name</code>, <code>trial</code> (1&ndash;${n_trials}), <code>reaction_time</code>.
 Each sample is one simulated class: ${n_sample} students &times; ${n_trials} trials.</p>
 <ol style="padding-left:22px;">
