@@ -232,7 +232,7 @@ Source: Békés & Kézdi (2021), Ch. 4
 
 ## Bringing it back to our own data
 
-The workshop logged reaction time when scattering it against finger length, because Week 1 found it's skewed — logging stretches out the crowded low end and compresses the long right tail, making the pattern easier to see.
+Back in the workshop, we scattered finger length against raw reaction time — no logging. Week 1 found reaction time is skewed, though: logging stretches out the crowded low end and compresses the long right tail, which can make a pattern easier to see. Let's check both, side by side, on our own data.
 
 :::: {.shrink-on-reveal data-frag="wk3online-ownlog-frag" style="--large-height:420px;--small-height:260px;--shrink-scale:0.619;"}
 ::: {.shrink-on-reveal-inner}

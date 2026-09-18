@@ -467,6 +467,37 @@ Week 1 found reaction time is closer to log-normal than normal — a floor, no c
 Same data, side by side. The lapse trials are still there — logging doesn't delete them — but on the raw scale they dominate the axis; logged, they no longer do, and the downward trend is much easier to see. Logging a skewed variable is a tool, not a rule: it helps here only because it actually makes the pattern clearer, and the online session goes further into why.
 :::
 
+## Task — plot finger length against reaction time
+
+::: {.instructions-box}
+Using the class's (finger length, mean reaction time) pairs — one point per student — build a scatterplot in Excel. Does a relationship look plausible before you calculate anything?
+:::
+
+## Finger length vs. reaction time — our data
+
+```{ojs}
+{
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) {
+    return html`<div class="instructions-box">Not enough finger-length data yet to plot — this will populate once more of the class has submitted through the updated tool.</div>`
+  }
+  return Plot.plot({
+    height: 460,
+    marginLeft: 60,
+    x: { label: "Finger length (mm)" },
+    y: { label: "Mean reaction time (ms)" },
+    marks: [
+      Plot.dot(rows, { x: "finger_mm", y: "mean_rt", fill: "#457b9d", r: 6, fillOpacity: 0.8,
+                       tip: true, title: d => `${d.student_name}: ${d.finger_mm}mm, ${d.mean_rt.toFixed(0)}ms` }),
+    ]
+  })
+}
+```
+
+::: {.fragment}
+A relationship might be visible here — or might not. Covariance and correlation, next, put a number on exactly how strong it is.
+:::
+
 ## Covariance
 
 In plain language: **covariance** asks whether x and y tend to move together — when one is above its own average, is the other usually above its average too?

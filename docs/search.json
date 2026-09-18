@@ -256,7 +256,7 @@
     "href": "week1-slides.html#python-does-this-for-you",
     "title": "EDA: Understanding Your Data",
     "section": "Python does this for you",
-    "text": "Python does this for you\nUltimatly, in your working life you will not be calculting all these statistics yourself. Rather, you’ll use statistical software. Here is what the Python output looks like:\nimport statsmodels.stats.descriptivestats as smd\nprint(smd.describe(df[\"reaction_time_ms\"]))\n\nnobs            200mean            318.3std_err         7.1upper_ci        332.2lower_ci        304.5std             100.1iqr             90.2skewness        2.40kurtosis        11.73mode            271.0median          296.0\n\n\nTask — In Excel: produce a summary statistics table for the full dataset and by device group."
+    "text": "Python does this for you\nUltimatly, in your working life you will not be calculting all these statistics yourself. Rather, you’ll use statistical software. Here is what the Python output looks like:\nimport statsmodels.stats.descriptivestats as smd\nprint(smd.describe(df[\"reaction_time_ms\"]))\n\nnobs            200mean            318.3std_err         7.1upper_ci        332.2lower_ci        304.5std             100.1iqr             90.2skewness        2.40kurtosis        11.73mode            271.0median          296.0\n\n\nTask — In Excel: produce a summary statistics table (Obs, Mean, SD, Min, Max, Median, IQR) for the full dataset and by device group."
   },
   {
     "objectID": "week1-slides.html#so-was-a-single-test-score-enough",
@@ -1516,7 +1516,7 @@
     "href": "week3-online-slides.html#bringing-it-back-to-our-own-data",
     "title": "Functional Form: Why We Log",
     "section": "Bringing it back to our own data",
-    "text": "Bringing it back to our own data\nThe workshop logged reaction time when scattering it against finger length, because Week 1 found it’s skewed — logging stretches out the crowded low end and compresses the long right tail, making the pattern easier to see.\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) {\n    return html`&lt;div class=\"instructions-box\"&gt;Not enough finger-length data yet to demonstrate this live — check back once more of the class has submitted.&lt;/div&gt;`\n  }\n  const p1 = Plot.plot({\n    height: 420, width: 380,\n    x: { label: \"Finger length (mm)\" },\n    y: { label: \"Mean reaction time (ms)\" },\n    marks: [ Plot.dot(rows, { x: \"finger_mm\", y: \"mean_rt\", fill: \"#457b9d\", r: 6 }) ]\n  })\n  const p2 = Plot.plot({\n    height: 420, width: 380,\n    x: { label: \"Finger length (mm)\" },\n    y: { label: \"ln(mean reaction time)\" },\n    marks: [ Plot.dot(rows, { x: \"finger_mm\", y: d =&gt; Math.log(d.mean_rt), fill: \"#2d6a4f\", r: 6 }) ]\n  })\n  return html`&lt;div style=\"display:flex;gap:24px;justify-content:center;\"&gt;${p1}${p2}&lt;/div&gt;`\n}\n\n\n\n\n\n\n\n\n\nWhether logging our y variable actually helps depends on whether reaction time is skewed enough to matter here — recall Week 1’s online session found it’s closer to log-normal than normal. The same logic, a different variable."
+    "text": "Bringing it back to our own data\nBack in the workshop, we scattered finger length against raw reaction time — no logging. Week 1 found reaction time is skewed, though: logging stretches out the crowded low end and compresses the long right tail, which can make a pattern easier to see. Let’s check both, side by side, on our own data.\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) {\n    return html`&lt;div class=\"instructions-box\"&gt;Not enough finger-length data yet to demonstrate this live — check back once more of the class has submitted.&lt;/div&gt;`\n  }\n  const p1 = Plot.plot({\n    height: 420, width: 380,\n    x: { label: \"Finger length (mm)\" },\n    y: { label: \"Mean reaction time (ms)\" },\n    marks: [ Plot.dot(rows, { x: \"finger_mm\", y: \"mean_rt\", fill: \"#457b9d\", r: 6 }) ]\n  })\n  const p2 = Plot.plot({\n    height: 420, width: 380,\n    x: { label: \"Finger length (mm)\" },\n    y: { label: \"ln(mean reaction time)\" },\n    marks: [ Plot.dot(rows, { x: \"finger_mm\", y: d =&gt; Math.log(d.mean_rt), fill: \"#2d6a4f\", r: 6 }) ]\n  })\n  return html`&lt;div style=\"display:flex;gap:24px;justify-content:center;\"&gt;${p1}${p2}&lt;/div&gt;`\n}\n\n\n\n\n\n\n\n\n\nWhether logging our y variable actually helps depends on whether reaction time is skewed enough to matter here — recall Week 1’s online session found it’s closer to log-normal than normal. The same logic, a different variable."
   },
   {
     "objectID": "week3-online-slides.html#coming-up-week-4",
@@ -4737,5 +4737,19 @@
     "title": "EDA: Understanding Your Data",
     "section": "Task — compare two box plots",
     "text": "Task — compare two box plots\n\n\nPair up with a neighbour — each of you use your own 10 trials\nSort your values. Q1 is the 3rd-smallest value (the median of the bottom half); Q3 is the 3rd-largest value (the median of the top half) — this is what Excel’s own box-and-whisker chart calculates by default, not the interpolated result you’d get from the QUARTILE() function\nThe whiskers reach to the most extreme value still within 1.5×IQR of the box (IQR = Q3 − Q1) — not the fence itself, and not the min/max. Anything beyond that is plotted as its own outside value, as in the diagram above\nBuild a box plot for each of you in Excel, side by side, and compare"
+  },
+  {
+    "objectID": "week3-slides.html#task-plot-finger-length-against-reaction-time",
+    "href": "week3-slides.html#task-plot-finger-length-against-reaction-time",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Task — plot finger length against reaction time",
+    "text": "Task — plot finger length against reaction time\n\nUsing the class’s (finger length, mean reaction time) pairs — one point per student — build a scatterplot in Excel. Does a relationship look plausible before you calculate anything?"
+  },
+  {
+    "objectID": "week3-slides.html#finger-length-vs.-reaction-time-our-data",
+    "href": "week3-slides.html#finger-length-vs.-reaction-time-our-data",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Finger length vs. reaction time — our data",
+    "text": "Finger length vs. reaction time — our data\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) {\n    return html`&lt;div class=\"instructions-box\"&gt;Not enough finger-length data yet to plot — this will populate once more of the class has submitted through the updated tool.&lt;/div&gt;`\n  }\n  return Plot.plot({\n    height: 460,\n    marginLeft: 60,\n    x: { label: \"Finger length (mm)\" },\n    y: { label: \"Mean reaction time (ms)\" },\n    marks: [\n      Plot.dot(rows, { x: \"finger_mm\", y: \"mean_rt\", fill: \"#457b9d\", r: 6, fillOpacity: 0.8,\n                       tip: true, title: d =&gt; `${d.student_name}: ${d.finger_mm}mm, ${d.mean_rt.toFixed(0)}ms` }),\n    ]\n  })\n}\n\n\n\n\n\n\n\nA relationship might be visible here — or might not. Covariance and correlation, next, put a number on exactly how strong it is."
   }
 ]

@@ -1255,7 +1255,7 @@ print(
 ```
 
 ::: {.fragment}
-**Task** — In Excel: produce a summary statistics table for the full dataset and by device group.
+**Task** — In Excel: produce a summary statistics table (Obs, Mean, SD, Min, Max, Median, IQR) for the full dataset and by device group.
 :::
 
 ## So — was a single test score enough?
