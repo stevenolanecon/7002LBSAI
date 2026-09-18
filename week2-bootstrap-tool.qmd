@@ -1,0 +1,112 @@
+---
+title: "Week 2 — Bootstrapping Our Own Data"
+toc: false
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{=html}
+<div class="site-hero">
+  <div class="hero-inner">
+    <p class="kicker">7002LBSAI — Week 2</p>
+    <h1>Bootstrapping our own data</h1>
+    <p>A live tool for the workshop — no slides needed.</p>
+  </div>
+</div>
+```
+
+::: {.page-intro}
+The **bootstrap** builds a sampling distribution without ever needing to know the true data-generating process: draw repeated samples *from the data itself*, with replacement, compute the statistic (here, the mean) on each one, and look at how much those statistics vary. Some observations get picked more than once in a given resample; others aren't picked at all — that's what "with replacement" means.
+
+Adjust the sliders below to change the resample size (*n*) and the number of resamples (*B*), and watch the bootstrap distribution respond — using the class's own data, live.
+:::
+
+```{python}
+import pandas as pd
+
+# Live Google Sheet — the real, in-progress class data.
+live_df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIOZ03GpUJgqvGVmI9cih169mMq0ajLMj6a0VTd2tytB3K5BmX5AUiKQ8FKIL6KUKEcgb-1LR-1eM/pub?gid=0&single=true&output=csv")
+
+if 'name' in live_df.columns and 'student_name' not in live_df.columns:
+    live_df = live_df.rename(columns={'name': 'student_name'})
+
+live_df_clean = live_df.astype(object).where(live_df.notna(), None)
+
+ojs_define(
+    live_data      = live_df_clean.to_dict(orient="records"),
+    live_pool_mean = round(float(live_df["reaction_time_ms"].mean()), 2),
+    live_pool_n    = int(len(live_df)),
+)
+```
+
+```{ojs}
+viewof boot_controls = {
+  const f = html`<div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;
+                              font-size:13px;font-family:'Helvetica Neue',sans-serif;
+                              padding:6px 2px;color:#333;">
+    <label style="display:flex;align-items:center;gap:8px;">
+      <span style="color:#666;white-space:nowrap;">Sample size (n)</span>
+      <input type="range" name="n" min="5" max="${Math.max(5, live_pool_n)}" step="5"
+             value="${Math.max(5, live_pool_n)}"
+             style="width:110px;cursor:pointer;accent-color:#457b9d;">
+      <span id="n-label" style="font-weight:600;min-width:34px;color:#457b9d;">${Math.max(5, live_pool_n)}</span>
+    </label>
+    <label style="display:flex;align-items:center;gap:8px;">
+      <span style="color:#2d6a4f;white-space:nowrap;">Resamples (B)</span>
+      <input type="range" name="B" min="10" max="2000" step="10" value="10"
+             style="width:110px;cursor:pointer;accent-color:#2d6a4f;">
+      <span id="B-label" style="font-weight:600;min-width:44px;color:#2d6a4f;">10</span>
+    </label>
+  </div>`
+  const nRange = f.querySelector('[name=n]')
+  const nLabel = f.querySelector('#n-label')
+  const bRange = f.querySelector('[name=B]')
+  const bLabel = f.querySelector('#B-label')
+  nRange.addEventListener('input', () => { nLabel.textContent = nRange.value; f.dispatchEvent(new CustomEvent('input')) })
+  bRange.addEventListener('input', () => { bLabel.textContent = bRange.value; f.dispatchEvent(new CustomEvent('input')) })
+  Object.defineProperty(f, 'value', { get() { return { n: +nRange.value, B: +bRange.value } } })
+  return f
+}
+```
+
+```{ojs}
+{
+  const vals = live_data.map(d => d.reaction_time_ms)
+  if (vals.length < 2) return html`<p style="color:#aaa;">Not enough data yet — check back once more of the class has submitted.</p>`
+  const n = Math.min(boot_controls.n, vals.length)
+  const B = boot_controls.B
+  const means = []
+  for (let b = 0; b < B; b++) {
+    let sum = 0
+    for (let i = 0; i < n; i++) sum += vals[Math.floor(Math.random() * vals.length)]
+    means.push(sum / n)
+  }
+  const mu = d3.mean(means)
+  const se = d3.deviation(means)
+  const pad = Math.max(10, (d3.max(means) - d3.min(means)) * 0.15)
+  const xmin = d3.min(means) - pad
+  const xmax = d3.max(means) + pad
+
+  return Plot.plot({
+    height: 450,
+    marginLeft: 55,
+    marginBottom: 36,
+    x: { label: "Bootstrap sample mean (ms)", domain: [xmin, xmax] },
+    y: { label: "Count" },
+    marks: [
+      Plot.rectY(means, Plot.binX({ y: "count" }, { x: d => d, thresholds: 30, fill: "#457b9d", fillOpacity: 0.75 })),
+      Plot.ruleX([0]),
+      Plot.ruleX([live_pool_mean], { stroke: "#e63946", strokeWidth: 2.5, strokeDasharray: "6,4",
+                                      tip: true, title: () => `Original sample mean: ${live_pool_mean} ms` }),
+      Plot.text([{ x: xmax, y: 0, label: `bootstrap mean = ${mu.toFixed(1)} · bootstrap SE = ${se.toFixed(1)}` }],
+                { x: "x", text: "label", frameAnchor: "top-right", dy: 10, fill: "#333", fontSize: 12 }),
+    ]
+  })
+}
+```
+
+::: {.page-intro}
+<p class="canvas-note">The full interactive slide deck for Week 2 goes live after the workshop — this page is a standalone version of one chart from it, for use during class.</p>
+:::

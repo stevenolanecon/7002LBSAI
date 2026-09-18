@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Week 2 — Bootstrapping Our Own Data – 7002LBSAI</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-6bdd2aebeb936dcddaa5f935a5de481c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+<link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles.css?v=20260917">
+
+
+</head>
+
+<body class="nav-fixed fullcontent quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">7002LBSAI</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./topics.html"> 
+<span class="menu-text">Topics</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./data.html"> 
+<span class="menu-text">Data</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/stevenolanecon/7002LBSAI"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Week 2 — Bootstrapping Our Own Data</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="site-hero">
+  <div class="hero-inner">
+    <p class="kicker">7002LBSAI — Week 2</p>
+    <h1>Bootstrapping our own data</h1>
+    <p>A live tool for the workshop — no slides needed.</p>
+  </div>
+</div>
+<div class="page-intro">
+<p>The <strong>bootstrap</strong> builds a sampling distribution without ever needing to know the true data-generating process: draw repeated samples <em>from the data itself</em>, with replacement, compute the statistic (here, the mean) on each one, and look at how much those statistics vary. Some observations get picked more than once in a given resample; others aren’t picked at all — that’s what “with replacement” means.</p>
+<p>Adjust the sliders below to change the resample size (<em>n</em>) and the number of resamples (<em>B</em>), and watch the bootstrap distribution respond — using the class’s own data, live.</p>
+</div>
+<div id="f02e2ade" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="ojs-define">{"contents": [{"name": "live_data", "value": [{"student_name": "Steve", "trial": 1, "reaction_time_ms": 624, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-06-22T13:00:14.511Z", "finger_mm": 21}, {"student_name": "Steve", "trial": 2, "reaction_time_ms": 267, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-06-22T13:00:14.511Z", "finger_mm": 21}, {"student_name": "Steve", "trial": 3, "reaction_time_ms": 389, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-06-22T13:00:14.511Z", "finger_mm": 21}, {"student_name": "Steve", "trial": 4, "reaction_time_ms": 463, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-06-22T13:00:14.511Z", "finger_mm": 21}, {"student_name": "Steve", "trial": 5, "reaction_time_ms": 452, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-06-22T13:00:14.511Z", "finger_mm": 21}, {"student_name": "Steve", "trial": 6, "reaction_time_ms": 557, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-06-22T13:00:14.511Z", "finger_mm": 21}, {"student_name": "Steve", "trial": 7, "reaction_time_ms": 649, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-06-22T13:00:14.511Z", "finger_mm": 21}, {"student_name": "Steve", "trial": 8, "reaction_time_ms": 424, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-06-22T13:00:14.511Z", "finger_mm": 21}, {"student_name": "Steve", "trial": 9, "reaction_time_ms": 385, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-06-22T13:00:14.511Z", "finger_mm": 21}, {"student_name": "Steve", "trial": 10, "reaction_time_ms": 431, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-06-22T13:00:14.511Z", "finger_mm": 21}, {"student_name": "Stevie", "trial": 1, "reaction_time_ms": 670, "device": "Laptop", "caffeine": "No", "timestamp": "2026-06-22T13:01:29.859Z", "finger_mm": 54}, {"student_name": "Stevie", "trial": 2, "reaction_time_ms": 633, "device": "Laptop", "caffeine": "No", "timestamp": "2026-06-22T13:01:29.859Z", "finger_mm": 54}, {"student_name": "Stevie", "trial": 3, "reaction_time_ms": 410, "device": "Laptop", "caffeine": "No", "timestamp": "2026-06-22T13:01:29.859Z", "finger_mm": 54}, {"student_name": "Stevie", "trial": 4, "reaction_time_ms": 390, "device": "Laptop", "caffeine": "No", "timestamp": "2026-06-22T13:01:29.859Z", "finger_mm": 54}, {"student_name": "Stevie", "trial": 5, "reaction_time_ms": 598, "device": "Laptop", "caffeine": "No", "timestamp": "2026-06-22T13:01:29.859Z", "finger_mm": 54}, {"student_name": "Stevie", "trial": 6, "reaction_time_ms": 446, "device": "Laptop", "caffeine": "No", "timestamp": "2026-06-22T13:01:29.859Z", "finger_mm": 54}, {"student_name": "Stevie", "trial": 7, "reaction_time_ms": 480, "device": "Laptop", "caffeine": "No", "timestamp": "2026-06-22T13:01:29.859Z", "finger_mm": 54}, {"student_name": "Stevie", "trial": 8, "reaction_time_ms": 435, "device": "Laptop", "caffeine": "No", "timestamp": "2026-06-22T13:01:29.859Z", "finger_mm": 54}, {"student_name": "Stevie", "trial": 9, "reaction_time_ms": 434, "device": "Laptop", "caffeine": "No", "timestamp": "2026-06-22T13:01:29.859Z", "finger_mm": 54}, {"student_name": "Stevie", "trial": 10, "reaction_time_ms": 449, "device": "Laptop", "caffeine": "No", "timestamp": "2026-06-22T13:01:29.859Z", "finger_mm": 54}, {"student_name": "Baby boy", "trial": 1, "reaction_time_ms": 1281, "device": "Phone", "caffeine": "No", "timestamp": "2026-07-17T14:49:00.180Z", "finger_mm": 24}, {"student_name": "Baby boy", "trial": 2, "reaction_time_ms": 438, "device": "Phone", "caffeine": "No", "timestamp": "2026-07-17T14:49:00.180Z", "finger_mm": 24}, {"student_name": "Baby boy", "trial": 3, "reaction_time_ms": 428, "device": "Phone", "caffeine": "No", "timestamp": "2026-07-17T14:49:00.180Z", "finger_mm": 24}, {"student_name": "Baby boy", "trial": 4, "reaction_time_ms": 550, "device": "Phone", "caffeine": "No", "timestamp": "2026-07-17T14:49:00.180Z", "finger_mm": 24}, {"student_name": "Baby boy", "trial": 5, "reaction_time_ms": 470, "device": "Phone", "caffeine": "No", "timestamp": "2026-07-17T14:49:00.180Z", "finger_mm": 24}, {"student_name": "Baby boy", "trial": 6, "reaction_time_ms": 504, "device": "Phone", "caffeine": "No", "timestamp": "2026-07-17T14:49:00.180Z", "finger_mm": 24}, {"student_name": "Baby boy", "trial": 7, "reaction_time_ms": 449, "device": "Phone", "caffeine": "No", "timestamp": "2026-07-17T14:49:00.180Z", "finger_mm": 24}, {"student_name": "Baby boy", "trial": 8, "reaction_time_ms": 457, "device": "Phone", "caffeine": "No", "timestamp": "2026-07-17T14:49:00.180Z", "finger_mm": 24}, {"student_name": "Baby boy", "trial": 9, "reaction_time_ms": 502, "device": "Phone", "caffeine": "No", "timestamp": "2026-07-17T14:49:00.180Z", "finger_mm": 24}, {"student_name": "Baby boy", "trial": 10, "reaction_time_ms": 895, "device": "Phone", "caffeine": "No", "timestamp": "2026-07-17T14:49:00.180Z", "finger_mm": 24}, {"student_name": "ZZTEST-DELETE-ME (Claude QA)", "trial": 1, "reaction_time_ms": 35740, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-07T14:46:37.212Z", "finger_mm": 9999}, {"student_name": "ZZTEST-DELETE-ME (Claude QA)", "trial": 2, "reaction_time_ms": 17985, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-07T14:46:37.212Z", "finger_mm": 9999}, {"student_name": "ZZTEST-DELETE-ME (Claude QA)", "trial": 3, "reaction_time_ms": 6536, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-07T14:46:37.212Z", "finger_mm": 9999}, {"student_name": "ZZTEST-DELETE-ME (Claude QA)", "trial": 4, "reaction_time_ms": 8367, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-07T14:46:37.212Z", "finger_mm": 9999}, {"student_name": "ZZTEST-DELETE-ME (Claude QA)", "trial": 5, "reaction_time_ms": 1470, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-07T14:46:37.212Z", "finger_mm": 9999}, {"student_name": "ZZTEST-DELETE-ME (Claude QA)", "trial": 6, "reaction_time_ms": 445, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-07T14:46:37.212Z", "finger_mm": 9999}, {"student_name": "ZZTEST-DELETE-ME (Claude QA)", "trial": 7, "reaction_time_ms": 3733, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-07T14:46:37.212Z", "finger_mm": 9999}, {"student_name": "ZZTEST-DELETE-ME (Claude QA)", "trial": 8, "reaction_time_ms": 1149, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-07T14:46:37.212Z", "finger_mm": 9999}, {"student_name": "ZZTEST-DELETE-ME (Claude QA)", "trial": 9, "reaction_time_ms": 586, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-07T14:46:37.212Z", "finger_mm": 9999}, {"student_name": "ZZTEST-DELETE-ME (Claude QA)", "trial": 10, "reaction_time_ms": 6382, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-07T14:46:37.212Z", "finger_mm": 9999}, {"student_name": "Steve", "trial": 1, "reaction_time_ms": 513, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-07T16:16:49.324Z", "finger_mm": 72}, {"student_name": "Steve", "trial": 2, "reaction_time_ms": 362, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-07T16:16:49.324Z", "finger_mm": 72}, {"student_name": "Steve", "trial": 3, "reaction_time_ms": 382, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-07T16:16:49.324Z", "finger_mm": 72}, {"student_name": "Steve", "trial": 4, "reaction_time_ms": 422, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-07T16:16:49.324Z", "finger_mm": 72}, {"student_name": "Steve", "trial": 5, "reaction_time_ms": 404, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-07T16:16:49.324Z", "finger_mm": 72}, {"student_name": "Steve", "trial": 6, "reaction_time_ms": 407, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-07T16:16:49.324Z", "finger_mm": 72}, {"student_name": "Steve", "trial": 7, "reaction_time_ms": 414, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-07T16:16:49.324Z", "finger_mm": 72}, {"student_name": "Steve", "trial": 8, "reaction_time_ms": 489, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-07T16:16:49.324Z", "finger_mm": 72}, {"student_name": "Steve", "trial": 9, "reaction_time_ms": 380, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-07T16:16:49.324Z", "finger_mm": 72}, {"student_name": "Steve", "trial": 10, "reaction_time_ms": 390, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-07T16:16:49.324Z", "finger_mm": 72}]}, {"name": "live_pool_mean", "value": 2042.32}, {"name": "live_pool_n", "value": 50}]}</script>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb1" data-startfrom="44" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 43;"><span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>viewof boot_controls <span class="op">=</span> {</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> f <span class="op">=</span> <span class="fu">html</span><span class="vs">`&lt;div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="vs">                              font-size:13px;font-family:'Helvetica Neue',sans-serif;</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="vs">                              padding:6px 2px;color:#333;"&gt;</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;label style="display:flex;align-items:center;gap:8px;"&gt;</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;span style="color:#666;white-space:nowrap;"&gt;Sample size (n)&lt;/span&gt;</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;input type="range" name="n" min="5" max="</span><span class="sc">${</span><span class="bu">Math</span><span class="op">.</span><span class="fu">max</span>(<span class="dv">5</span><span class="op">,</span> live_pool_n)<span class="sc">}</span><span class="vs">" step="5"</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="vs">             value="</span><span class="sc">${</span><span class="bu">Math</span><span class="op">.</span><span class="fu">max</span>(<span class="dv">5</span><span class="op">,</span> live_pool_n)<span class="sc">}</span><span class="vs">"</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="vs">             style="width:110px;cursor:pointer;accent-color:#457b9d;"&gt;</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;span id="n-label" style="font-weight:600;min-width:34px;color:#457b9d;"&gt;</span><span class="sc">${</span><span class="bu">Math</span><span class="op">.</span><span class="fu">max</span>(<span class="dv">5</span><span class="op">,</span> live_pool_n)<span class="sc">}</span><span class="vs">&lt;/span&gt;</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;/label&gt;</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;label style="display:flex;align-items:center;gap:8px;"&gt;</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;span style="color:#2d6a4f;white-space:nowrap;"&gt;Resamples (B)&lt;/span&gt;</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;input type="range" name="B" min="10" max="2000" step="10" value="10"</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="vs">             style="width:110px;cursor:pointer;accent-color:#2d6a4f;"&gt;</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;span id="B-label" style="font-weight:600;min-width:44px;color:#2d6a4f;"&gt;10&lt;/span&gt;</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;/label&gt;</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;/div&gt;`</span></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> nRange <span class="op">=</span> f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'[name=n]'</span>)</span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> nLabel <span class="op">=</span> f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'#n-label'</span>)</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> bRange <span class="op">=</span> f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'[name=B]'</span>)</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> bLabel <span class="op">=</span> f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'#B-label'</span>)</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>  nRange<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">'input'</span><span class="op">,</span> () <span class="kw">=&gt;</span> { nLabel<span class="op">.</span><span class="at">textContent</span> <span class="op">=</span> nRange<span class="op">.</span><span class="at">value</span><span class="op">;</span> f<span class="op">.</span><span class="fu">dispatchEvent</span>(<span class="kw">new</span> <span class="bu">CustomEvent</span>(<span class="st">'input'</span>)) })</span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>  bRange<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">'input'</span><span class="op">,</span> () <span class="kw">=&gt;</span> { bLabel<span class="op">.</span><span class="at">textContent</span> <span class="op">=</span> bRange<span class="op">.</span><span class="at">value</span><span class="op">;</span> f<span class="op">.</span><span class="fu">dispatchEvent</span>(<span class="kw">new</span> <span class="bu">CustomEvent</span>(<span class="st">'input'</span>)) })</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>  <span class="bu">Object</span><span class="op">.</span><span class="fu">defineProperty</span>(f<span class="op">,</span> <span class="st">'value'</span><span class="op">,</span> { <span class="kw">get</span>() { <span class="cf">return</span> { <span class="dt">n</span><span class="op">:</span> <span class="op">+</span>nRange<span class="op">.</span><span class="at">value</span><span class="op">,</span> <span class="dt">B</span><span class="op">:</span> <span class="op">+</span>bRange<span class="op">.</span><span class="at">value</span> } } })</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> f</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="74" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 73;"><span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> vals <span class="op">=</span> live_data<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">reaction_time_ms</span>)</span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (vals<span class="op">.</span><span class="at">length</span> <span class="op">&lt;</span> <span class="dv">2</span>) <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;p style="color:#aaa;"&gt;Not enough data yet — check back once more of the class has submitted.&lt;/p&gt;`</span></span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> n <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">min</span>(boot_controls<span class="op">.</span><span class="at">n</span><span class="op">,</span> vals<span class="op">.</span><span class="at">length</span>)</span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> B <span class="op">=</span> boot_controls<span class="op">.</span><span class="at">B</span></span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> means <span class="op">=</span> []</span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (<span class="kw">let</span> b <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> b <span class="op">&lt;</span> B<span class="op">;</span> b<span class="op">++</span>) {</span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> sum <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n<span class="op">;</span> i<span class="op">++</span>) sum <span class="op">+=</span> vals[<span class="bu">Math</span><span class="op">.</span><span class="fu">floor</span>(<span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>() <span class="op">*</span> vals<span class="op">.</span><span class="at">length</span>)]</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>    means<span class="op">.</span><span class="fu">push</span>(sum <span class="op">/</span> n)</span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> mu <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(means)</span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> se <span class="op">=</span> d3<span class="op">.</span><span class="fu">deviation</span>(means)</span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> pad <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">max</span>(<span class="dv">10</span><span class="op">,</span> (d3<span class="op">.</span><span class="fu">max</span>(means) <span class="op">-</span> d3<span class="op">.</span><span class="fu">min</span>(means)) <span class="op">*</span> <span class="fl">0.15</span>)</span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> xmin <span class="op">=</span> d3<span class="op">.</span><span class="fu">min</span>(means) <span class="op">-</span> pad</span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> xmax <span class="op">=</span> d3<span class="op">.</span><span class="fu">max</span>(means) <span class="op">+</span> pad</span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">450</span><span class="op">,</span></span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>    <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">55</span><span class="op">,</span></span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a>    <span class="dt">marginBottom</span><span class="op">:</span> <span class="dv">36</span><span class="op">,</span></span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Bootstrap sample mean (ms)"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [xmin<span class="op">,</span> xmax] }<span class="op">,</span></span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Count"</span> }<span class="op">,</span></span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a>      Plot<span class="op">.</span><span class="fu">rectY</span>(means<span class="op">,</span> Plot<span class="op">.</span><span class="fu">binX</span>({ <span class="dt">y</span><span class="op">:</span> <span class="st">"count"</span> }<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">,</span> <span class="dt">thresholds</span><span class="op">:</span> <span class="dv">30</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#457b9d"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.75</span> }))<span class="op">,</span></span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a>      Plot<span class="op">.</span><span class="fu">ruleX</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a>      Plot<span class="op">.</span><span class="fu">ruleX</span>([live_pool_mean]<span class="op">,</span> { <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#e63946"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">2.5</span><span class="op">,</span> <span class="dt">strokeDasharray</span><span class="op">:</span> <span class="st">"6,4"</span><span class="op">,</span></span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>                                      <span class="dt">tip</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">title</span><span class="op">:</span> () <span class="kw">=&gt;</span> <span class="vs">`Original sample mean: </span><span class="sc">${</span>live_pool_mean<span class="sc">}</span><span class="vs"> ms`</span> })<span class="op">,</span></span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>      Plot<span class="op">.</span><span class="fu">text</span>([{ <span class="dt">x</span><span class="op">:</span> xmax<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="dv">0</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="vs">`bootstrap mean = </span><span class="sc">${</span>mu<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>)<span class="sc">}</span><span class="vs"> · bootstrap SE = </span><span class="sc">${</span>se<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>)<span class="sc">}</span><span class="vs">`</span> }]<span class="op">,</span></span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>                { <span class="dt">x</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span> <span class="dt">text</span><span class="op">:</span> <span class="st">"label"</span><span class="op">,</span> <span class="dt">frameAnchor</span><span class="op">:</span> <span class="st">"top-right"</span><span class="op">,</span> <span class="dt">dy</span><span class="op">:</span> <span class="dv">10</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#333"</span><span class="op">,</span> <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">12</span> })<span class="op">,</span></span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-2" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="page-intro">
+<p class="canvas-note">
+The full interactive slide deck for Week 2 goes live after the workshop — this page is a standalone version of one chart from it, for use during class.
+</p>
+</div>
+
+
+
+</main> <!-- /main -->
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6InZpZXdvZiBib290X2NvbnRyb2xzID0ge1xuICBjb25zdCBmID0gaHRtbGA8ZGl2IHN0eWxlPVwiZGlzcGxheTpmbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjtnYXA6MjRweDtmbGV4LXdyYXA6d3JhcDtcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGZvbnQtc2l6ZToxM3B4O2ZvbnQtZmFtaWx5OidIZWx2ZXRpY2EgTmV1ZScsc2Fucy1zZXJpZjtcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHBhZGRpbmc6NnB4IDJweDtjb2xvcjojMzMzO1wiPlxuICAgIDxsYWJlbCBzdHlsZT1cImRpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7Z2FwOjhweDtcIj5cbiAgICAgIDxzcGFuIHN0eWxlPVwiY29sb3I6IzY2Njt3aGl0ZS1zcGFjZTpub3dyYXA7XCI+U2FtcGxlIHNpemUgKG4pPC9zcGFuPlxuICAgICAgPGlucHV0IHR5cGU9XCJyYW5nZVwiIG5hbWU9XCJuXCIgbWluPVwiNVwiIG1heD1cIiR7TWF0aC5tYXgoNSwgbGl2ZV9wb29sX24pfVwiIHN0ZXA9XCI1XCJcbiAgICAgICAgICAgICB2YWx1ZT1cIiR7TWF0aC5tYXgoNSwgbGl2ZV9wb29sX24pfVwiXG4gICAgICAgICAgICAgc3R5bGU9XCJ3aWR0aDoxMTBweDtjdXJzb3I6cG9pbnRlcjthY2NlbnQtY29sb3I6IzQ1N2I5ZDtcIj5cbiAgICAgIDxzcGFuIGlkPVwibi1sYWJlbFwiIHN0eWxlPVwiZm9udC13ZWlnaHQ6NjAwO21pbi13aWR0aDozNHB4O2NvbG9yOiM0NTdiOWQ7XCI+JHtNYXRoLm1heCg1LCBsaXZlX3Bvb2xfbil9PC9zcGFuPlxuICAgIDwvbGFiZWw+XG4gICAgPGxhYmVsIHN0eWxlPVwiZGlzcGxheTpmbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjtnYXA6OHB4O1wiPlxuICAgICAgPHNwYW4gc3R5bGU9XCJjb2xvcjojMmQ2YTRmO3doaXRlLXNwYWNlOm5vd3JhcDtcIj5SZXNhbXBsZXMgKEIpPC9zcGFuPlxuICAgICAgPGlucHV0IHR5cGU9XCJyYW5nZVwiIG5hbWU9XCJCXCIgbWluPVwiMTBcIiBtYXg9XCIyMDAwXCIgc3RlcD1cIjEwXCIgdmFsdWU9XCIxMFwiXG4gICAgICAgICAgICAgc3R5bGU9XCJ3aWR0aDoxMTBweDtjdXJzb3I6cG9pbnRlcjthY2NlbnQtY29sb3I6IzJkNmE0ZjtcIj5cbiAgICAgIDxzcGFuIGlkPVwiQi1sYWJlbFwiIHN0eWxlPVwiZm9udC13ZWlnaHQ6NjAwO21pbi13aWR0aDo0NHB4O2NvbG9yOiMyZDZhNGY7XCI+MTA8L3NwYW4+XG4gICAgPC9sYWJlbD5cbiAgPC9kaXY+YFxuICBjb25zdCBuUmFuZ2UgPSBmLnF1ZXJ5U2VsZWN0b3IoJ1tuYW1lPW5dJylcbiAgY29uc3QgbkxhYmVsID0gZi5xdWVyeVNlbGVjdG9yKCcjbi1sYWJlbCcpXG4gIGNvbnN0IGJSYW5nZSA9IGYucXVlcnlTZWxlY3RvcignW25hbWU9Ql0nKVxuICBjb25zdCBiTGFiZWwgPSBmLnF1ZXJ5U2VsZWN0b3IoJyNCLWxhYmVsJylcbiAgblJhbmdlLmFkZEV2ZW50TGlzdGVuZXIoJ2lucHV0JywgKCkgPT4geyBuTGFiZWwudGV4dENvbnRlbnQgPSBuUmFuZ2UudmFsdWU7IGYuZGlzcGF0Y2hFdmVudChuZXcgQ3VzdG9tRXZlbnQoJ2lucHV0JykpIH0pXG4gIGJSYW5nZS5hZGRFdmVudExpc3RlbmVyKCdpbnB1dCcsICgpID0+IHsgYkxhYmVsLnRleHRDb250ZW50ID0gYlJhbmdlLnZhbHVlOyBmLmRpc3BhdGNoRXZlbnQobmV3IEN1c3RvbUV2ZW50KCdpbnB1dCcpKSB9KVxuICBPYmplY3QuZGVmaW5lUHJvcGVydHkoZiwgJ3ZhbHVlJywgeyBnZXQoKSB7IHJldHVybiB7IG46ICtuUmFuZ2UudmFsdWUsIEI6ICtiUmFuZ2UudmFsdWUgfSB9IH0pXG4gIHJldHVybiBmXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIGNvbnN0IHZhbHMgPSBsaXZlX2RhdGEubWFwKGQgPT4gZC5yZWFjdGlvbl90aW1lX21zKVxuICBpZiAodmFscy5sZW5ndGggPCAyKSByZXR1cm4gaHRtbGA8cCBzdHlsZT1cImNvbG9yOiNhYWE7XCI+Tm90IGVub3VnaCBkYXRhIHlldCDigJQgY2hlY2sgYmFjayBvbmNlIG1vcmUgb2YgdGhlIGNsYXNzIGhhcyBzdWJtaXR0ZWQuPC9wPmBcbiAgY29uc3QgbiA9IE1hdGgubWluKGJvb3RfY29udHJvbHMubiwgdmFscy5sZW5ndGgpXG4gIGNvbnN0IEIgPSBib290X2NvbnRyb2xzLkJcbiAgY29uc3QgbWVhbnMgPSBbXVxuICBmb3IgKGxldCBiID0gMDsgYiA8IEI7IGIrKykge1xuICAgIGxldCBzdW0gPSAwXG4gICAgZm9yIChsZXQgaSA9IDA7IGkgPCBuOyBpKyspIHN1bSArPSB2YWxzW01hdGguZmxvb3IoTWF0aC5yYW5kb20oKSAqIHZhbHMubGVuZ3RoKV1cbiAgICBtZWFucy5wdXNoKHN1bSAvIG4pXG4gIH1cbiAgY29uc3QgbXUgPSBkMy5tZWFuKG1lYW5zKVxuICBjb25zdCBzZSA9IGQzLmRldmlhdGlvbihtZWFucylcbiAgY29uc3QgcGFkID0gTWF0aC5tYXgoMTAsIChkMy5tYXgobWVhbnMpIC0gZDMubWluKG1lYW5zKSkgKiAwLjE1KVxuICBjb25zdCB4bWluID0gZDMubWluKG1lYW5zKSAtIHBhZFxuICBjb25zdCB4bWF4ID0gZDMubWF4KG1lYW5zKSArIHBhZFxuXG4gIHJldHVybiBQbG90LnBsb3Qoe1xuICAgIGhlaWdodDogNDUwLFxuICAgIG1hcmdpbkxlZnQ6IDU1LFxuICAgIG1hcmdpbkJvdHRvbTogMzYsXG4gICAgeDogeyBsYWJlbDogXCJCb290c3RyYXAgc2FtcGxlIG1lYW4gKG1zKVwiLCBkb21haW46IFt4bWluLCB4bWF4XSB9LFxuICAgIHk6IHsgbGFiZWw6IFwiQ291bnRcIiB9LFxuICAgIG1hcmtzOiBbXG4gICAgICBQbG90LnJlY3RZKG1lYW5zLCBQbG90LmJpblgoeyB5OiBcImNvdW50XCIgfSwgeyB4OiBkID0+IGQsIHRocmVzaG9sZHM6IDMwLCBmaWxsOiBcIiM0NTdiOWRcIiwgZmlsbE9wYWNpdHk6IDAuNzUgfSkpLFxuICAgICAgUGxvdC5ydWxlWChbMF0pLFxuICAgICAgUGxvdC5ydWxlWChbbGl2ZV9wb29sX21lYW5dLCB7IHN0cm9rZTogXCIjZTYzOTQ2XCIsIHN0cm9rZVdpZHRoOiAyLjUsIHN0cm9rZURhc2hhcnJheTogXCI2LDRcIixcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdGlwOiB0cnVlLCB0aXRsZTogKCkgPT4gYE9yaWdpbmFsIHNhbXBsZSBtZWFuOiAke2xpdmVfcG9vbF9tZWFufSBtc2AgfSksXG4gICAgICBQbG90LnRleHQoW3sgeDogeG1heCwgeTogMCwgbGFiZWw6IGBib290c3RyYXAgbWVhbiA9ICR7bXUudG9GaXhlZCgxKX0gwrcgYm9vdHN0cmFwIFNFID0gJHtzZS50b0ZpeGVkKDEpfWAgfV0sXG4gICAgICAgICAgICAgICAgeyB4OiBcInhcIiwgdGV4dDogXCJsYWJlbFwiLCBmcmFtZUFuY2hvcjogXCJ0b3AtcmlnaHRcIiwgZHk6IDEwLCBmaWxsOiBcIiMzMzNcIiwgZm9udFNpemU6IDEyIH0pLFxuICAgIF1cbiAgfSlcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoic2hpbnlJbnB1dCgnYm9vdF9jb250cm9scycpIn1dfQ==
+</script>
+<script type="module">
+if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+window._ojs.paths.runtimeToDoc = "../..";
+window._ojs.paths.runtimeToRoot = "../..";
+window._ojs.paths.docToRoot = "";
+window._ojs.selfContained = false;
+window._ojs.runtime.interpretFromScriptTags();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>7002LBSAI Research Methods in Analytics — LJMU</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Steve Nolan</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

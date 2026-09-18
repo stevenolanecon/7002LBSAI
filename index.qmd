@@ -41,6 +41,7 @@ weeks = [
      "links": [
          ("Workshop slides", "week2-slides.html", False),
          ("Online session", "week2-online-slides.html", False),
+         ("Bootstrap tool", "week2-bootstrap-tool.html", True),
      ]},
     {"n": 3, "topic": "Relationships Between Variables", "status": "live",
      "links": [
