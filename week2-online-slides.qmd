@@ -22,6 +22,54 @@ execute:
   message: false
 ---
 
+```{ojs}
+//| output: false
+{
+  // Generic "shrink on reveal" wiring, used by every chart wrapped as
+  // `:::: {.shrink-on-reveal data-frag="some-fragment-id" style="--large-height:...;--small-height:...;--shrink-scale:..."}`
+  // Each chart renders large while its named fragment is hidden, then
+  // shrinks smoothly to make room the moment that fragment is revealed.
+  // Sizes live entirely in each wrapper's own inline style — this cell only
+  // handles show/hide, once, for every wrapper on the page, so adding a new
+  // chart to this pattern never means touching this cell.
+  const wrapperFor = (fragId) => document.querySelector(`.shrink-on-reveal[data-frag="${fragId}"]`)
+
+  // Sets each wrapper's correct starting state immediately, including on a
+  // reload or direct navigation to a slide whose fragment is already shown
+  // — matters because this cell (no reactive deps) only runs once, at load.
+  document.querySelectorAll('.shrink-on-reveal[data-frag]').forEach(el => {
+    const frag = document.getElementById(el.dataset.frag)
+    el.classList.toggle('is-small', !!frag?.classList.contains('visible'))
+  })
+
+  Reveal.on('fragmentshown', (event) => {
+    wrapperFor(event.fragment.id)?.classList.add('is-small')
+  })
+  Reveal.on('fragmenthidden', (event) => {
+    wrapperFor(event.fragment.id)?.classList.remove('is-small')
+  })
+
+  // Observable Plot's `tip: true` tooltips can get stuck on screen after the
+  // cursor leaves the chart — its own pointerleave handling doesn't reliably
+  // fire once a chart sits inside Reveal's own scaled/transformed slide
+  // stack. Safety net: on every mouse move, if a chart's tip is showing but
+  // the cursor is no longer over that chart's SVG, dispatch a real
+  // pointerleave at the SVG so Plot's own hide logic runs — never remove the
+  // tip node directly, since Plot reuses that same element on later hovers.
+  document.addEventListener('mousemove', (event) => {
+    document.querySelectorAll('[aria-label="tip"]').forEach((tip) => {
+      const svg = tip.closest('svg')
+      const r = svg?.getBoundingClientRect()
+      if (!r || r.width === 0) return
+      if (event.clientX < r.left || event.clientX > r.right ||
+          event.clientY < r.top || event.clientY > r.bottom) {
+        svg.dispatchEvent(new PointerEvent('pointerleave', { bubbles: true }))
+      }
+    })
+  })
+}
+```
+
 ## {background-color="#1a1a2e"}
 
 ::: {style="text-align: center; padding-top: 180px;"}
@@ -40,7 +88,12 @@ So far we've tested $H_0: s_{true} = 0$ against $H_A: s_{true} \neq 0$ — a **t
 **Reject $H_0$ if** $|t| > c$ — the t-statistic is extreme in *either* direction. For a 5% test, $c \approx 1.96$: this is the same $\pm 2$ rule from the workshop, with the 5% split across both tails (2.5% each).
 :::
 
-::: {.fragment}
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 6
+:::
+
+## One-sided tests
+
 A **one-sided** test focuses on one direction only:
 
 $$H_0: s_{true} \leq 0 \quad \text{vs.} \quad H_A: s_{true} > 0$$
@@ -48,7 +101,6 @@ $$H_0: s_{true} \leq 0 \quad \text{vs.} \quad H_A: s_{true} > 0$$
 **Example:** *does caffeine reduce reaction time?* Caffeine is a stimulant — we have a specific directional prediction going in, so only a large effect in that one predicted direction counts as evidence against $H_0$.
 
 **Reject $H_0$ if** $t > c$ — extreme in the predicted direction only. For a 5% test, $c \approx 1.645$: smaller than the two-sided threshold, because all 5% sits in one tail instead of being split.
-:::
 
 ::: {.fragment}
 Same overall false-positive rate (5%) either way — but the one-sided test is more powerful for an effect in the predicted direction (a smaller $t$ clears the lower bar), at the cost of **zero power** to detect an effect in the other direction, however large.
@@ -89,7 +141,7 @@ Power is higher when:
 - the true effect is further from the null
 :::
 
-## Visualising size and power
+## Visualising size and power {.smaller}
 
 ```{ojs}
 viewof effect_size = {
@@ -111,21 +163,29 @@ viewof effect_size = {
 }
 ```
 
+:::: {.shrink-on-reveal data-frag="wk2online-power-frag"
+      style="--large-height:460px;--small-height:320px;--shrink-scale:0.696;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
+  // Two-sided throughout, matching the ±2 rule-of-thumb from the workshop:
+  // both the rejection region (size) and the power calculation need to
+  // account for BOTH tails, or the dashed lines at ±crit would be showing
+  // a boundary that the shaded regions and the power number don't actually
+  // use.
   const mu0 = 0, mu1 = effect_size, sigma = 1, crit = 2
   const xs = d3.range(-5, 7.51, 0.05)
   const pdf = (x, mu) => (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * ((x - mu) / sigma) ** 2)
   const nullCurve = xs.map(x => ({ x, y: pdf(x, mu0) }))
   const altCurve  = xs.map(x => ({ x, y: pdf(x, mu1) }))
-  const nullReject = xs.filter(x => x > crit).map(x => ({ x, y: pdf(x, mu0) }))
-  const altMiss     = xs.filter(x => x < crit).map(x => ({ x, y: pdf(x, mu1) }))
-  const altHit       = xs.filter(x => x > crit).map(x => ({ x, y: pdf(x, mu1) }))
 
-  const power = 1 - jStat_norm_cdf(crit - mu1)
-  function jStat_norm_cdf(z) {
-    return 0.5 * (1 + erf(z / Math.SQRT2))
-  }
+  const nullRejectHi = xs.filter(x => x > crit).map(x => ({ x, y: pdf(x, mu0) }))
+  const nullRejectLo = xs.filter(x => x < -crit).map(x => ({ x, y: pdf(x, mu0) }))
+  const altMiss   = xs.filter(x => x > -crit && x < crit).map(x => ({ x, y: pdf(x, mu1) }))
+  const altHitHi  = xs.filter(x => x > crit).map(x => ({ x, y: pdf(x, mu1) }))
+  const altHitLo  = xs.filter(x => x < -crit).map(x => ({ x, y: pdf(x, mu1) }))
+
+  function normCdf(z) { return 0.5 * (1 + erf(z / Math.SQRT2)) }
   function erf(x) {
     const sign = x < 0 ? -1 : 1
     x = Math.abs(x)
@@ -135,29 +195,40 @@ viewof effect_size = {
     return sign*y
   }
 
+  const size  = 2 * (1 - normCdf(crit))                             // both tails, under H0
+  const power = (1 - normCdf(crit - mu1)) + normCdf(-crit - mu1)     // both tails, under H1
+
   return Plot.plot({
-    height: 320,
+    height: 460,
     marginLeft: 50,
     marginBottom: 34,
     x: { label: "t-statistic", domain: [-5, 7.5] },
     y: { label: "density" },
     marks: [
-      Plot.areaY(nullReject, { x: "x", y: "y", fill: "#e63946", fillOpacity: 0.55 }),
-      Plot.areaY(altMiss,    { x: "x", y: "y", fill: "#f4a261", fillOpacity: 0.45 }),
-      Plot.areaY(altHit,     { x: "x", y: "y", fill: "#2d6a4f", fillOpacity: 0.35 }),
+      Plot.areaY(nullRejectHi, { x: "x", y: "y", fill: "#e63946", fillOpacity: 0.55 }),
+      Plot.areaY(nullRejectLo, { x: "x", y: "y", fill: "#e63946", fillOpacity: 0.55 }),
+      Plot.areaY(altMiss,      { x: "x", y: "y", fill: "#f4a261", fillOpacity: 0.45 }),
+      Plot.areaY(altHitHi,     { x: "x", y: "y", fill: "#2d6a4f", fillOpacity: 0.35 }),
+      Plot.areaY(altHitLo,     { x: "x", y: "y", fill: "#2d6a4f", fillOpacity: 0.35 }),
       Plot.line(nullCurve, { x: "x", y: "y", stroke: "#1a1a2e", strokeWidth: 2 }),
       Plot.line(altCurve,  { x: "x", y: "y", stroke: "#457b9d", strokeWidth: 2 }),
       Plot.ruleX([crit, -crit], { stroke: "#666", strokeWidth: 1, strokeDasharray: "4,3" }),
       Plot.ruleY([0]),
-      Plot.text([{ x: -5, y: pdf(0,0)*1.05, label: `Power ≈ ${(power*100).toFixed(0)}%` }],
+      Plot.text([{ x: -5, y: pdf(0,0)*1.08, label: `Size ≈ ${(size*100).toFixed(1)}%` }],
+                { x: "x", y: "y", text: "label", textAnchor: "start", fill: "#e63946", fontSize: 13, fontWeight: 700 }),
+      Plot.text([{ x: -5, y: pdf(0,0)*0.94, label: `Power ≈ ${(power*100).toFixed(0)}%` }],
                 { x: "x", y: "y", text: "label", textAnchor: "start", fill: "#2d6a4f", fontSize: 13, fontWeight: 700 }),
     ]
   })
 }
 ```
+:::
+::::
 
-::: {.fragment}
-Black = null distribution. Blue = alternative (true effect). Red = Type I error (false positive) region. Orange = Type II error (false negative, missed). Green = power. Drag the slider to 0 and watch the curves merge — no true effect means no power, only the 5% false-positive rate remains.
+::: {.fragment #wk2online-power-frag}
+Black = the sampling distribution under $H_0$ (no effect). Blue = under $H_A$, at whatever effect size the slider is set to. The dashed lines are the same $\pm 2$ critical values from the last slide — reject $H_0$ outside them. Red = Type I error (size) — fixed by the critical value, not the slider. Orange = Type II error: alternative-curve mass still inside the "don't reject" zone. Green = power: what's left.
+
+Drag the slider right and the blue curve slides away from black — less of it falls between the dashed lines, more clears them. That's "the true effect is further from the null" from two slides ago, made concrete. Drag to 0 and the curves merge completely: no real effect, so only the fixed false-positive rate remains.
 :::
 
 ::: {style="font-size:0.75em;color:#999;margin-top:4px;"}
@@ -188,16 +259,30 @@ Source: Békés & Kézdi (2021), Ch. 6
 
 ## The jelly bean problem
 
+::: {style="text-align:center;"}
 ```{=html}
-<div style="text-align:center;">
-  <a href="images/xkcd-significant.png" target="_blank" style="text-decoration:none;">
-    <img src="images/xkcd-significant.png" style="max-height:580px;border-radius:6px;box-shadow:0 4px 20px rgba(0,0,0,0.15);cursor:zoom-in;">
-  </a>
-</div>
+<a href="images/xkcd-significant-top.png" target="_blank" style="text-decoration:none;">
+  <img src="images/xkcd-significant-top.png" style="max-height:560px;border-radius:6px;box-shadow:0 4px 20px rgba(0,0,0,0.15);cursor:zoom-in;">
+</a>
 ```
+:::
 
 ::: {style="font-size:0.7em;color:#999;text-align:center;margin-top:8px;"}
-XKCD #882, "Significant" — Randall Munroe, CC BY-NC 2.5 — click to view full size
+XKCD #882, "Significant" — Randall Munroe, CC BY-NC 2.5 — click to view full size (1 of 2)
+:::
+
+## The jelly bean problem (continued)
+
+::: {style="text-align:center;"}
+```{=html}
+<a href="images/xkcd-significant-bottom.png" target="_blank" style="text-decoration:none;">
+  <img src="images/xkcd-significant-bottom.png" style="max-height:560px;border-radius:6px;box-shadow:0 4px 20px rgba(0,0,0,0.15);cursor:zoom-in;">
+</a>
+```
+:::
+
+::: {style="font-size:0.7em;color:#999;text-align:center;margin-top:8px;"}
+XKCD #882, "Significant" — Randall Munroe, CC BY-NC 2.5 — click to view full size (2 of 2)
 :::
 
 ## Fixing it
