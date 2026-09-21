@@ -70,14 +70,14 @@ We'll work through that week's ideas together — building intuition first, ofte
 ::: {.col}
 **Online session**
 
-Thursdays, 1 hour
+Thursdays, 1 hour — live, via the Teams link in your timetable.
 
 The following Thursday, we go a bit deeper into the same material.
 :::
 :::
 
 ::: {.instructions-box}
-Today's session is a one-off, before teaching starts — that's why we're meeting online first. From Week 1 onwards it's workshop on Friday, online session the following Thursday, every week.
+This first session is a one-off: rather than run it live, I'm releasing it as a video today, before teaching properly starts. From Week 1 onwards, online sessions are live every Thursday, joined via the Teams link in your timetable — workshop on Friday, online session the following Thursday, every week.
 :::
 
 ## Office hours
@@ -264,7 +264,7 @@ In **7002LBSAI** specifically: AI can support brainstorming, literature/data sea
 
 ::: {.two-col}
 ::: {.col}
-![](gabor-front-cover.png){height="450"}
+![](gabor-front-cover.png){height="320"}
 :::
 ::: {.col}
 Our primary textbook is **Gábor Békés and Gábor Kézdi, *Data Analysis for Business, Economics, and Policy*** (Cambridge University Press, 2021).
@@ -278,6 +278,12 @@ I'd recommend getting a copy.
 ::: {.fragment}
 ::: {.instructions-box}
 The authors have made all the data and code freely available at [gabors-data-analysis.com](https://gabors-data-analysis.com), whether or not you own a copy: raw and cleaned datasets, working Python/R/Stata code for all 47 case studies, and slides, practice questions, and interactive dashboards.
+:::
+:::
+
+::: {.fragment}
+::: {.callout-note}
+I'm currently negotiating with the library about an ebook licence for this textbook — I'll keep you posted. That said, if you can, I'd recommend purchasing the textbook. I guarantee it's a resource you'll return to again and again.
 :::
 :::
 
