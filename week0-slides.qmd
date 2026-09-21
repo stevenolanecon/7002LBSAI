@@ -80,6 +80,23 @@ The following Thursday, we go a bit deeper into the same material.
 Today's session is a one-off, before teaching starts — that's why we're meeting online first. From Week 1 onwards it's workshop on Friday, online session the following Thursday, every week.
 :::
 
+## Office hours
+
+::: {.two-col}
+::: {.col}
+**Weekly drop-in**
+
+Every **Monday, 10am–12pm** — on Teams, or in my office: **Room 210, Redmonds Building**.
+
+Book a slot via [SeeMyTutor](https://seemytutor.ljmu.ac.uk).
+:::
+::: {.col}
+**After the workshop**
+
+I'll stay behind after each Friday workshop, **4–5pm**, if you want to chat through questions from that session.
+:::
+:::
+
 ## The semester at a glance {.smaller}
 
 | Wk | Topic | Workshop | Online session |
