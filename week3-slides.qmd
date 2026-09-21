@@ -196,13 +196,31 @@ Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Pol
 
 ---
 
-## Conditioning on x
+## Conditioning on x {.smaller}
 
-- **Comparison → conditioning.** Comparing y by values of x means we **condition** y on x
-- x is the **conditioning variable**; y is the **outcome variable**
-- **Conditional probability:** $P(A \mid B) = \dfrac{P(A \text{ and } B)}{P(B)}$
-- **Joint probability:** $P(A \text{ and } B) = P(A) \times P(B)$ — *if A and B are independent*
-- **Independence:** $P(A \mid B) = P(A)$ and $P(B \mid A) = P(B)$
+**Comparison → conditioning.** Comparing y by values of x means we **condition** y on x — x is the **conditioning variable**, y is the **outcome variable**.
+
+Worked example: 20 students, 12 use a Phone, and 9 of those 12 had caffeine.
+
+::: {.fragment}
+**Joint probability** — the chance both things happen together:
+
+$$P(A \text{ and } B) = \frac{9}{20} = 0.45$$
+:::
+
+::: {.fragment}
+**Conditional probability** — the chance of A, *restricted to* the cases where B happened:
+
+$$P(A \mid B) = \frac{P(A \text{ and } B)}{P(B)} = \frac{0.45}{12/20} = \frac{0.45}{0.6} = 0.75$$
+:::
+
+::: {.fragment}
+**Independence** — A and B are independent if knowing one tells you nothing about the other: $P(A \mid B) = P(A)$. Here, overall $P(\text{Caffeine}) = 11/20 = 0.55$, but $P(\text{Caffeine} \mid \text{Phone}) = 0.75$ — **not equal, so not independent** in this example.
+:::
+
+::: {.fragment}
+**When A and B are *not* independent**, $P(A \text{ and } B) \neq P(A) \times P(B)$ — that shortcut only holds under independence ($0.6 \times 0.55 = 0.33$, not the real $0.45$). The formula that always holds is the one above, rearranged: $P(A \text{ and } B) = P(A \mid B) \times P(B)$.
+:::
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
 Source: Békés & Kézdi (2021), Ch. 4
@@ -243,7 +261,7 @@ Source: Békés & Kézdi (2021), Ch. 4
 ```
 
 ::: {.fragment}
-Row and column **totals** give you the marginals directly — no need to derive $P(\text{Device})$ or $P(\text{Caffeine})$ yourself before you can condition.
+Row and column totals give you the **marginal probabilities** — $P(\text{Device})$ and $P(\text{Caffeine})$, each on its own, ignoring the other variable — directly, with no need to derive them separately before you can condition.
 :::
 
 ## Task — condition on our own data
@@ -393,24 +411,30 @@ Every dot is one trial. There's a real pattern here, but a handful of slow "atte
 
 ## The bin-scatter
 
-The **conditional mean per bin** — one dot per observed sleep value, not a wide bucket like "Short / Medium / Long" on the finger-length slide.
+The **conditional mean per bin** — like the finger-length "Short / Medium / Long" buckets, but with more, narrower bins. A bin still needs to be *wide enough to contain several trials* — group by the exact observed sleep value and most bins would only ever hold one trial, which isn't averaging away anything.
 
 :::: {.shrink-on-reveal data-frag="wk3-binscatter-frag" style="--large-height:500px;--small-height:340px;--shrink-scale:0.68;"}
 ::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
-  const grouped = d3.rollups(sleep_scatter_data, v => d3.mean(v, d => d.reaction_time_ms), d => d.sleep_hours)
-    .map(([sleep_hours, mean_rt]) => ({ sleep_hours, mean_rt }))
+  const width = 1.0
+  const grouped = d3.rollups(
+      sleep_scatter_data,
+      v => ({ mean_rt: d3.mean(v, d => d.reaction_time_ms), n: v.length }),
+      d => Math.round(d.sleep_hours / width) * width
+    )
+    .map(([sleep_hours, { mean_rt, n }]) => ({ sleep_hours, mean_rt, n }))
     .sort((a, b) => a.sleep_hours - b.sleep_hours)
 
   return Plot.plot({
     height: 500,
     marginLeft: 60,
-    x: { label: "Sleep the night before (hours)" },
-    y: { label: "E[reaction time | sleep hours] (ms)" },
+    x: { label: "Sleep the night before (hours, 1h bins)" },
+    y: { label: "E[reaction time | bin] (ms)" },
     marks: [
-      Plot.dot(grouped, { x: "sleep_hours", y: "mean_rt", fill: "#2d6a4f", r: 5, fillOpacity: 0.85,
-                       tip: true, title: d => `${d.sleep_hours}h: ${d.mean_rt.toFixed(0)}ms` }),
+      Plot.dot(grouped, { x: "sleep_hours", y: "mean_rt", fill: "#2d6a4f", r: 6, fillOpacity: 0.85,
+                       tip: true, title: d => `${d.sleep_hours}h bin (n=${d.n}): ${d.mean_rt.toFixed(0)}ms` }),
+      Plot.text(grouped, { x: "sleep_hours", y: "mean_rt", text: d => `n=${d.n}`, dy: -12, fill: "#333", fontSize: 11 }),
     ]
   })
 }
@@ -419,12 +443,27 @@ The **conditional mean per bin** — one dot per observed sleep value, not a wid
 ::::
 
 ::: {.fragment #wk3-binscatter-frag}
-The lapses still show — a few bins still sit high — but the underlying downward trend reads far more clearly than in the raw scatter.
+Every bin here is an average of at least 4 trials (labelled above each dot) — a lapse trial can still pull a bin's mean up a little, but it can no longer dominate the whole chart the way it did as a single raw point. The downward trend reads far more clearly than in the raw scatter.
 :::
 
 ## Does logging reaction time help? {.smaller}
 
 Week 1 found reaction time is closer to log-normal than normal — a floor, no ceiling, long right tail. Gabor's own case study logs a skewed variable for exactly this reason: it stretches out the crowded end and compresses the tail, so a pattern against x is easier to read.
+
+```{ojs}
+function fitLine(rows, yOf) {
+  const xs = rows.map(d => d.sleep_hours), ys = rows.map(yOf)
+  const mx = d3.mean(xs), my = d3.mean(ys)
+  const b = d3.sum(xs.map((x, i) => (x - mx) * (ys[i] - my))) / d3.sum(xs.map(x => (x - mx) ** 2))
+  const a = my - b * mx
+  const yhat = xs.map(x => a + b * x)
+  const ssRes = d3.sum(ys.map((y, i) => (y - yhat[i]) ** 2))
+  const ssTot = d3.sum(ys.map(y => (y - my) ** 2))
+  const r2 = 1 - ssRes / ssTot
+  const [x0, x1] = d3.extent(xs)
+  return { line: [{ x: x0, y: a + b * x0 }, { x: x1, y: a + b * x1 }], r2 }
+}
+```
 
 ::: {.two-col}
 ::: {.col}
@@ -432,14 +471,19 @@ Week 1 found reaction time is closer to log-normal than normal — a floor, no c
 
 ```{ojs}
 {
+  const yOf = d => Math.log(d.reaction_time_ms)
+  const { line, r2 } = fitLine(sleep_scatter_data, yOf)
   return Plot.plot({
     height: 340,
     marginLeft: 55,
     x: { label: "Sleep the night before (hours)" },
     y: { label: "ln(reaction time)" },
     marks: [
-      Plot.dot(sleep_scatter_data, { x: "sleep_hours", y: d => Math.log(d.reaction_time_ms), fill: "#2d6a4f", r: 5, fillOpacity: 0.75,
+      Plot.dot(sleep_scatter_data, { x: "sleep_hours", y: yOf, fill: "#2d6a4f", r: 5, fillOpacity: 0.75,
                        tip: true, title: d => `${d.sleep_hours}h sleep, ${d.reaction_time_ms}ms` }),
+      Plot.line(line, { x: "x", y: "y", stroke: "#1a1a2e", strokeWidth: 2, strokeDasharray: "5,3" }),
+      Plot.text([{ x: line[0].x, y: d3.max(sleep_scatter_data, yOf), label: `R² = ${r2.toFixed(2)}` }],
+                { x: "x", y: "y", text: "label", fill: "#2d6a4f", fontWeight: 700, fontSize: 13, textAnchor: "start" }),
     ]
   })
 }
@@ -450,14 +494,19 @@ Week 1 found reaction time is closer to log-normal than normal — a floor, no c
 
 ```{ojs}
 {
+  const yOf = d => d.reaction_time_ms
+  const { line, r2 } = fitLine(sleep_scatter_data, yOf)
   return Plot.plot({
     height: 340,
     marginLeft: 55,
     x: { label: "Sleep the night before (hours)" },
     y: { label: "Reaction time (ms)" },
     marks: [
-      Plot.dot(sleep_scatter_data, { x: "sleep_hours", y: "reaction_time_ms", fill: "#457b9d", r: 5, fillOpacity: 0.75,
+      Plot.dot(sleep_scatter_data, { x: "sleep_hours", y: yOf, fill: "#457b9d", r: 5, fillOpacity: 0.75,
                        tip: true, title: d => `${d.sleep_hours}h sleep, ${d.reaction_time_ms}ms` }),
+      Plot.line(line, { x: "x", y: "y", stroke: "#1a1a2e", strokeWidth: 2, strokeDasharray: "5,3" }),
+      Plot.text([{ x: line[0].x, y: d3.max(sleep_scatter_data, yOf), label: `R² = ${r2.toFixed(2)}` }],
+                { x: "x", y: "y", text: "label", fill: "#457b9d", fontWeight: 700, fontSize: 13, textAnchor: "start" }),
     ]
   })
 }
@@ -466,7 +515,7 @@ Week 1 found reaction time is closer to log-normal than normal — a floor, no c
 :::
 
 ::: {.fragment data-fragment-index="1"}
-Same data, side by side. The lapse trials are still there — logging doesn't delete them — but on the raw scale they dominate the axis; logged, they no longer do, and the downward trend is much easier to see. Logging a skewed variable is a tool, not a rule: it helps here only because it actually makes the pattern clearer, and the online session goes further into why.
+Same data, same kind of fitted line, side by side. The lapse trials are still there on both — logging doesn't delete them — but the logged fit's R² is genuinely higher: logging didn't just move the dots around, it made the linear relationship measurably tighter. Logging a skewed variable is a tool, not a rule: it helps here only because it actually improves the fit, and the online session goes further into why.
 :::
 
 ## Task — plot finger length against reaction time
@@ -500,16 +549,48 @@ Using the class's (finger length, mean reaction time) pairs — one point per st
 A relationship might be visible here — or might not. Covariance and correlation, next, put a number on exactly how strong it is.
 :::
 
-## Covariance
+## Covariance {.smaller}
 
 In plain language: **covariance** asks whether x and y tend to move together — when one is above its own average, is the other usually above its average too?
 
 ::: {.fragment}
-$$Cov[x,y] = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{n}$$
+$$Cov[x,y] = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{n-1}$$
 
 - Multiplies each observation's deviation from the x-mean by its deviation from the y-mean, and averages
 - Positive when x and y tend to deviate from their means **in the same direction**
 - Can be any positive or negative number — units depend on the units of x and y
+- Like the SD back in Week 1, this divides by $n-1$, not $n$ — the same small-sample correction, applied here too
+
+:::: {.shrink-on-reveal data-frag="wk3-covviz-frag" style="--large-height:340px;--small-height:230px;--shrink-scale:0.6765;"}
+::: {.shrink-on-reveal-inner}
+```{ojs}
+{
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) return html`<div class="instructions-box">Not enough finger-length data yet.</div>`
+  const mx = d3.mean(rows, d => d.finger_mm), my = d3.mean(rows, d => d.mean_rt)
+  const colored = rows.map(d => ({ ...d, sign: (d.finger_mm - mx) * (d.mean_rt - my) >= 0 ? "Same sign (+)" : "Opposite sign (−)" }))
+
+  return Plot.plot({
+    height: 340,
+    marginLeft: 60,
+    x: { label: "Finger length (mm)" },
+    y: { label: "Mean reaction time (ms)" },
+    color: { domain: ["Same sign (+)", "Opposite sign (−)"], range: ["#2d6a4f", "#e63946"], legend: true },
+    marks: [
+      Plot.ruleX([mx], { stroke: "#999", strokeDasharray: "4,3" }),
+      Plot.ruleY([my], { stroke: "#999", strokeDasharray: "4,3" }),
+      Plot.dot(colored, { x: "finger_mm", y: "mean_rt", fill: "sign", r: 6, fillOpacity: 0.85,
+                       tip: true, title: d => `${d.student_name}: ${d.finger_mm}mm, ${d.mean_rt.toFixed(0)}ms` }),
+    ]
+  })
+}
+```
+:::
+::::
+:::
+
+::: {.fragment #wk3-covviz-frag}
+Dashed lines = each variable's own mean. A point's contribution is $(x_i - \bar{x})(y_i - \bar{y})$ — **green** = both deviations the same sign, positive product; **red** = opposite signs, negative product. Covariance is the average of all these products.
 :::
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
@@ -529,7 +610,7 @@ By hand or in Excel, using the class's (finger length, mean reaction time) pairs
   if (rows.length < 3) return html`<p style="color:#aaa;">Will compute automatically once enough data is in.</p>`
   const xs = rows.map(d => d.finger_mm), ys = rows.map(d => d.mean_rt)
   const mx = d3.mean(xs), my = d3.mean(ys)
-  const cov = d3.mean(xs.map((x,i) => (x - mx) * (ys[i] - my)))
+  const cov = d3.sum(xs.map((x,i) => (x - mx) * (ys[i] - my))) / (xs.length - 1)
   return html`<p style="font-family:sans-serif;">Cov[finger length, reaction time] = <strong style="color:#e63946;font-size:1.2em;">${cov.toFixed(1)}</strong></p>`
 }
 ```
@@ -558,7 +639,7 @@ Using your covariance from two slides ago, and the SD of each variable: calculat
   if (rows.length < 3) return html`<p style="color:#aaa;">Will compute automatically once enough data is in.</p>`
   const xs = rows.map(d => d.finger_mm), ys = rows.map(d => d.mean_rt)
   const mx = d3.mean(xs), my = d3.mean(ys)
-  const cov = d3.mean(xs.map((x,i) => (x - mx) * (ys[i] - my)))
+  const cov = d3.sum(xs.map((x,i) => (x - mx) * (ys[i] - my))) / (xs.length - 1)
   const corr = cov / (d3.deviation(xs) * d3.deviation(ys))
   return html`<p style="font-family:sans-serif;">Corr[finger length, reaction time] = <strong style="color:#e63946;font-size:1.2em;">${corr.toFixed(2)}</strong></p>`
 }
@@ -664,19 +745,19 @@ Suppose we want one "alertness" score for six people, from three imperfect proxi
     { name: "Elin",   sleep: 9.0, energy: 8, grip: 31 },
     { name: "Femi",   sleep: 6.0, energy: 5, grip: 34 },
   ]
-  return html`<table style="width:80%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.82em;">
+  return html`<table style="width:80%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.78em;">
     <thead><tr style="background:#1a1a2e;color:white;">
-      <th style="padding:4px 16px;text-align:left;">Person</th>
-      <th style="padding:4px 16px;text-align:right;">Sleep (h)</th>
-      <th style="padding:4px 16px;text-align:right;">Energy (1&ndash;10)</th>
-      <th style="padding:4px 16px;text-align:right;">Grip (kg)</th>
+      <th style="padding:1px 14px;text-align:left;">Person</th>
+      <th style="padding:1px 14px;text-align:right;">Sleep (h)</th>
+      <th style="padding:1px 14px;text-align:right;">Energy (1&ndash;10)</th>
+      <th style="padding:1px 14px;text-align:right;">Grip (kg)</th>
     </tr></thead>
     <tbody>
       ${people.map((p,i) => `<tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
-        <td style="padding:3px 16px;">${p.name}</td>
-        <td style="padding:3px 16px;text-align:right;">${p.sleep}</td>
-        <td style="padding:3px 16px;text-align:right;">${p.energy}</td>
-        <td style="padding:3px 16px;text-align:right;">${p.grip}</td>
+        <td style="padding:1px 14px;">${p.name}</td>
+        <td style="padding:1px 14px;text-align:right;">${p.sleep}</td>
+        <td style="padding:1px 14px;text-align:right;">${p.energy}</td>
+        <td style="padding:1px 14px;text-align:right;">${p.grip}</td>
       </tr>`).join('')}
     </tbody>
   </table>`
@@ -685,6 +766,50 @@ Suppose we want one "alertness" score for six people, from three imperfect proxi
 
 ::: {.fragment}
 Different units, different scales — can't just add them. **Standardise each to a z-score first**, $z = (x - \bar{x}) / SD[x]$, then average the three z-scores per person.
+
+```{ojs}
+{
+  const people = [
+    { name: "Amara", sleep: 8.5, energy: 9, grip: 33 },
+    { name: "Ben",    sleep: 5.0, energy: 4, grip: 32 },
+    { name: "Chidi",  sleep: 7.0, energy: 6, grip: 35 },
+    { name: "Dana",   sleep: 4.5, energy: 3, grip: 30 },
+    { name: "Elin",   sleep: 9.0, energy: 8, grip: 31 },
+    { name: "Femi",   sleep: 6.0, energy: 5, grip: 34 },
+  ]
+  const z = vals => { const m = d3.mean(vals), s = d3.deviation(vals) * Math.sqrt((vals.length-1)/vals.length); return vals.map(v => (v - m) / s) }
+  const zs = z(people.map(p => p.sleep)), ze = z(people.map(p => p.energy))
+  const rows = people.map((p,i) => ({ name: p.name, zs: zs[i], ze: ze[i] }))
+
+  return html`<table style="width:70%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.78em;">
+    <thead><tr style="background:#1a1a2e;color:white;">
+      <th style="padding:1px 14px;text-align:left;">Person</th>
+      <th style="padding:1px 14px;text-align:right;">z(sleep)</th>
+      <th style="padding:1px 14px;text-align:right;">z(energy)</th>
+      <th style="padding:1px 14px;text-align:right;color:#999;">z(grip)</th>
+      <th style="padding:1px 14px;text-align:right;color:#999;">Average z</th>
+    </tr></thead>
+    <tbody>
+      ${rows.map((r,i) => `<tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
+        <td style="padding:1px 14px;">${r.name}</td>
+        <td style="padding:1px 14px;text-align:right;">${r.zs.toFixed(2)}</td>
+        <td style="padding:1px 14px;text-align:right;">${r.ze.toFixed(2)}</td>
+        <td style="padding:1px 14px;text-align:right;color:#ccc;">?</td>
+        <td style="padding:1px 14px;text-align:right;color:#ccc;">?</td>
+      </tr>`).join('')}
+    </tbody>
+  </table>`
+}
+```
+:::
+
+::: {.fragment}
+::: {.instructions-box style="padding:0.4em 1.2em;margin:0.3em 0 0 0;"}
+**Task** — using the same formula and the grip-strength values from the table above, calculate $z(\text{grip})$ for each person. Then average all three z-scores to get one "alertness" score per person.
+:::
+:::
+
+## Average several (as z-scores) — answer {.smaller}
 
 ```{ojs}
 {
@@ -720,7 +845,6 @@ Different units, different scales — can't just add them. **Standardise each to
   </table>`
 }
 ```
-:::
 
 ## PCA {.smaller}
 
@@ -793,10 +917,6 @@ Source: Békés & Kézdi (2021), Ch. 4
 ## Online session — Functional form
 
 A closer look at log transformations: why they approximate percentage differences, and where that approximation breaks down.
-
-::: {.instructions-box}
-See **week3-online.html** — a short standalone deck for this week's online session.
-:::
 
 ## Coming up: Week 4
 
