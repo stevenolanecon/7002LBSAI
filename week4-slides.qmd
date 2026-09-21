@@ -24,6 +24,7 @@ execute:
 
 ```{python}
 import pandas as pd
+import numpy as np
 
 # This is the TEST-DATA deck — always reads the synthetic placeholder, never
 # the live Google Sheet. See week4-live.qmd for the in-class version.
@@ -52,6 +53,33 @@ device_stats = (
 
 trial_data = df[['reaction_time_ms', 'finger_mm', 'device']].copy()
 
+# Homo/heteroskedasticity, made concrete in the natural y-vs-x space before
+# "residual" is even formally introduced two slides later. Generic
+# illustration, not our own class data (too few points at n=15-20 to show a
+# convincing fan pattern) — same generating process Week 5's residual-space
+# version of this same illustration reuses, so it's recognisably "the same
+# data, viewed a different way" once that slide comes around.
+np.random.seed(33)
+_n_hsk = 90
+_x_hsk = np.random.uniform(0, 10, _n_hsk)
+_alpha_hsk, _beta_hsk = 1.0, 2.0
+_y_homo = _alpha_hsk + _beta_hsk * _x_hsk + np.random.normal(0, 1.2, _n_hsk)
+_y_hetero = _alpha_hsk + _beta_hsk * _x_hsk + np.random.normal(0, 0.3 + 0.35 * _x_hsk, _n_hsk)
+
+def _ols_fit(x, y):
+    xbar, ybar = x.mean(), y.mean()
+    b = np.sum((x - xbar) * (y - ybar)) / np.sum((x - xbar) ** 2)
+    a = ybar - b * xbar
+    return a, b
+
+_a_homo, _b_homo = _ols_fit(_x_hsk, _y_homo)
+_a_hetero, _b_hetero = _ols_fit(_x_hsk, _y_hetero)
+
+homo_scatter_data = [{"x": float(_x_hsk[i]), "y": float(_y_homo[i])} for i in range(_n_hsk)]
+hetero_scatter_data = [{"x": float(_x_hsk[i]), "y": float(_y_hetero[i])} for i in range(_n_hsk)]
+homo_fit_line = [{"x": 0.0, "y": float(_a_homo)}, {"x": 10.0, "y": float(_a_homo + _b_homo * 10)}]
+hetero_fit_line = [{"x": 0.0, "y": float(_a_hetero)}, {"x": 10.0, "y": float(_a_hetero + _b_hetero * 10)}]
+
 # NaN is not valid JSON — clean before ojs_define
 student_summary_clean = student_summary.astype(object).where(student_summary.notna(), None)
 device_stats_clean = device_stats.astype(object).where(device_stats.notna(), None)
@@ -61,6 +89,10 @@ ojs_define(
     student_summary = student_summary_clean.to_dict(orient='records'),
     device_stats     = device_stats_clean.to_dict(orient='records'),
     trial_data       = trial_data_clean.to_dict(orient='records'),
+    homo_scatter_data   = homo_scatter_data,
+    hetero_scatter_data = hetero_scatter_data,
+    homo_fit_line       = homo_fit_line,
+    hetero_fit_line     = hetero_fit_line,
 )
 ```
 
@@ -98,19 +130,23 @@ ojs_define(
 ::: {style="text-align: center; padding-top: 180px;"}
 [**Simple regression**]{style="font-size: 2.2em; color: white;"}
 
-[Week 3 found a weak correlation. Today: turn that into a model, and be honest about what it's worth.]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+[Week 3 found a correlation between finger length and reaction time — whatever its strength turned out to be. Today: turn that into a model, and be honest about what it's worth.]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
 :::
 
 ## From correlation to formula
 
 ::: {.instructions-box}
-Week 3 found a weak correlation between finger length and reaction time. HR wants to know: can we turn that into an actual formula — a screening tool?
+Week 3 found a correlation between finger length and reaction time. HR wants to know: can we turn that into an actual formula — a screening tool?
+:::
+
+::: {.fragment}
+In other words the firm wants to measure a candidate's finger length, plug it into our fitted line, and use the predicted reaction time to decide whether to shortlist them — no need to run the real 10-trial test at all. Ethics clearly not a huge concern at this firm. 
 :::
 
 ::: {.fragment}
 **Naive answer:** draw a line through the points, read off the equation, done.
 
-**Why it's not that simple:** which line, by what criterion? What does the slope actually mean? And a weak correlation doesn't become a good predictor just because you fit a line through it.
+**Why it's not that simple:** which line, by what criterion? What does the slope actually mean? And a correlation doesn't become a good predictor just because you fit a line through it — how good it is depends on how strong that correlation actually was.
 :::
 
 ---
@@ -118,6 +154,15 @@ Week 3 found a weak correlation between finger length and reaction time. HR want
 ## What is regression?
 
 ---
+
+## Two goals, kept separate
+
+- **Predictive analysis** — what to expect of y for a given x. Concerned with the *predicted value*.
+- **Causal analysis** — the effect of x on y. Concerned with a *parameter* — what would y be if we changed x?
+
+::: {.fragment}
+Regression itself doesn't know which goal you have. It's a method of **comparison** either way — the interpretation you're allowed to make is what changes.
+:::
 
 ## Regression: comparing conditional means
 
@@ -140,11 +185,15 @@ Bin-scatter gives one average per bracket. **LOWESS** (locally weighted scatterp
 - The **bandwidth** controls how "local" — wide = smoother, but can miss real bends; narrow = tracks the pattern closely, but looks rugged
 - Like bin-scatter: great for spotting shape, gives no interpretable number
 
+::: {.fragment}
+LOWESS can be estimated in most stats packages, including Python — this is where we start showing the actual code behind what we're building, alongside the ideas. In Python, that's `statsmodels`: `statsmodels.nonparametric.smoothers_lowess.lowess`.
+:::
+
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
 Source: Békés & Kézdi (2021), Ch. 7
 :::
 
-## Try a bandwidth on our own data
+## Try a bandwidth on our own data {.smaller}
 
 ```{ojs}
 viewof bandwidth = {
@@ -179,7 +228,7 @@ viewof bandwidth = {
     return { finger_mm: x0, yhat }
   })
   return Plot.plot({
-    height: 410, marginLeft: 60,
+    height: 300, marginLeft: 60,
     x: { label: "Finger length (mm)" }, y: { label: "Reaction time (ms)" },
     marks: [
       Plot.dot(rows, { x: "finger_mm", y: "reaction_time_ms", fill: "#1a1a2e", r: 2.5, fillOpacity: 0.35 }),
@@ -193,13 +242,13 @@ viewof bandwidth = {
 Drag the bandwidth from narrow to wide. At what point does the curve stop looking like noise and start looking like a nearly straight line? What does that tell you about how much curvature is really in this relationship?
 :::
 
-## Two goals, kept separate
-
-- **Predictive analysis** — what to expect of y for a given x. Concerned with the *predicted value*.
-- **Causal analysis** — the effect of x on y. Concerned with a *parameter* — what would y be if we changed x?
-
 ::: {.fragment}
-Regression itself doesn't know which goal you have. It's a method of **comparison** either way — the interpretation you're allowed to make is what changes.
+The same idea in `statsmodels` — here `frac` (the fraction of all points used in each local average) plays the role the slider's bandwidth plays above, one specific choice rather than the whole range:
+
+<pre><code>from statsmodels.nonparametric.smoothers_lowess import lowess
+
+smoothed = lowess(endog=df['reaction_time_ms'], exog=df['finger_mm'], frac=0.3)
+# smoothed is an array of (x, y-hat) pairs, sorted by x</code></pre>
 :::
 
 ---
@@ -226,10 +275,10 @@ The error term doesn't vanish from reality — it **averages to zero** by assump
 :::
 
 ::: {.fragment}
-Individual students will still scatter around this line by their own $\varepsilon$ — as the finger length isn't the only thing driving reaction time.
+Individual students will still scatter around this fitted line by their own $\varepsilon$ — finger length isn't the only thing driving reaction time. $y^E$ is the average; any one student's actual reaction time differs from it by their own $\varepsilon$.
 :::
 
-::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+::: {style="font-size:0.75em;color:#999;margin-top:4px;"}
 Source: Békés & Kézdi (2021), Ch. 7
 :::
 
@@ -265,6 +314,11 @@ Source: Békés & Kézdi (2021), Ch. 7
 
 ## Task — interpret our own regression
 
+::: {.instructions-box}
+Open the Colab notebook and fit `mean_rt ~ finger_mm` on the class's own data with `smf.ols(...)`. Write down $\hat\alpha$ and $\hat\beta$ from `model.params` before revealing the line below.
+:::
+
+::: {.fragment}
 ```{ojs}
 {
   const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
@@ -274,9 +328,10 @@ Source: Békés & Kézdi (2021), Ch. 7
   const varx = d3.mean(rows, d => (d.finger_mm - xbar) ** 2)
   const beta = cov / varx
   const alpha = ybar - beta * xbar
-  return html`<p style="font-family:sans-serif;font-size:1.1em;">Fitted line: mean reaction time = <strong>${alpha.toFixed(1)}</strong> + (<strong>${beta.toFixed(2)}</strong>) × finger length</p>`
+  return html`<p style="font-family:sans-serif;font-size:1.1em;">Fitted line: mean reaction time = <strong>${alpha.toFixed(1)}</strong> + (<strong>${beta.toFixed(2)}</strong>) × finger length — check it against your own Colab output.</p>`
 }
 ```
+:::
 
 ::: {.instructions-box}
 In your own words: what does the intercept mean here? What does the slope mean? Is either number, on its own, useful to HR?
@@ -550,7 +605,7 @@ The sum of squared residuals is smallest exactly where the red line best fits th
 :::
 
 ::: {.fragment}
-That guarantee isn't unconditional — it holds only if a handful of assumptions about the data are true. 
+The **Gauss-Markov theorem** states that OLS is BLUE only if a handful of assumptions about the data are true.
 :::
 
 ## What has to be true?
@@ -558,8 +613,12 @@ That guarantee isn't unconditional — it holds only if a handful of assumptions
 - **Linearity** — a straight line is a reasonable approximation
 - **Independent observations** — one observation's error doesn't leak into another's
 - **Homoskedasticity** — the spread of residuals is roughly constant across the range of x, not fanning out or narrowing
-- **No extreme influence** — no single point is silently dragging the whole line 
+- **No extreme influence** — no single point is silently dragging the whole line
+- **No perfect multicollinearity** — no explanatory variable is an exact linear combination of the others, or OLS can't even be computed. Only really bites once there's more than one x — full treatment in Week 6.
 
+::: {.fragment}
+These five are what **BLUE** requires — Gauss-Markov doesn't care what shape the residuals take. There's a sixth assumption, **normally distributed residuals**, that never appears on a BLUE checklist: it can't make $\hat\beta$ biased or imprecise. It only matters once we build a confidence interval or t-test around $\hat\beta$ — which is where Week 5 starts.
+:::
 
 ## Assumptions
 
@@ -576,7 +635,39 @@ That guarantee isn't unconditional — it holds only if a handful of assumptions
 :::
 
 ::: {.fragment}
-None of these make OLS *wrong* if violated — but they change how much you should trust the standard errors and the line's precision. Homoskedasticity in particular gets a full treatment next week, when we build confidence intervals for $\hat\beta$ itself. **No extreme influence** — the fourth assumption — gets its own live demonstration later this session, in "Influential observations."
+None of these make OLS *wrong* if violated — but they change how much you should trust the standard errors and the line's precision. Homoskedasticity in particular gets a full treatment next week, when we build confidence intervals for $\hat\beta$ itself. **No extreme influence** — the fourth assumption — gets its own live demonstration later this session, in "Influential observations." One assumption doesn't even make this list: whether the residuals are normally distributed. It isn't a BLUE requirement, so its absence can't bias $\hat\beta$ — but it matters for the confidence intervals and t-tests we build starting next week.
+:::
+
+## Homoskedastic vs. heteroskedastic, in the raw data
+
+Same generic illustration, two different noise patterns:
+
+:::: {.shrink-on-reveal data-frag="wk4-hsk-frag" style="--large-height:470px;--small-height:280px;--shrink-scale:0.596;"}
+::: {.shrink-on-reveal-inner}
+```{ojs}
+{
+  const allY = [...homo_scatter_data, ...hetero_scatter_data].map(d => d.y)
+  const yDomain = [d3.min(allY) - 2, d3.max(allY) + 2]
+  const mkPanel = (data, fitLine) => Plot.plot({
+    width: 340, height: 470,
+    x: {label: "x"}, y: {label: "y", domain: yDomain},
+    marks: [
+      Plot.dot(data, {x: "x", y: "y", fill: "#457b9d", fillOpacity: 0.55, r: 3}),
+      Plot.line(fitLine, {x: "x", y: "y", stroke: "#e63946", strokeWidth: 2.5}),
+    ]
+  })
+  const label = (text) => html`<div style="text-align:center;font-family:'Helvetica Neue',sans-serif;font-weight:600;color:#1a1a2e;margin-bottom:4px;">${text}</div>`
+  return html`<div style="display:flex;gap:20px;justify-content:center;">
+    <div>${label("Homoskedastic")}${mkPanel(homo_scatter_data, homo_fit_line)}</div>
+    <div>${label("Heteroskedastic")}${mkPanel(hetero_scatter_data, hetero_fit_line)}</div>
+  </div>`
+}
+```
+:::
+::::
+
+::: {.fragment #wk4-hsk-frag}
+Left: the vertical scatter around the fitted line stays roughly the same width from low x to high x. Right: same fitted line, same overall trend — but the scatter visibly fans out as x grows. That fan is exactly what "the spread of residuals isn't constant" means.
 :::
 
 ---
@@ -696,7 +787,7 @@ $$\underbrace{\textstyle\sum(y_i-\bar y)^2}_{TSS} \;=\; \underbrace{\textstyle\s
 ## Task — compute our own R²
 
 ::: {.instructions-box}
-By hand: using Var[ŷ] and Var[y] from your own regression, compute R².
+Open the Colab notebook and fit `mean_rt ~ finger_mm` on the class's own data with `smf.ols(...)`. Pull out the fitted values, then use them to work out Var[ŷ] and Var[y] yourself — and use those two numbers to compute R².
 :::
 
 ::: {.fragment}
@@ -712,13 +803,55 @@ By hand: using Var[ŷ] and Var[y] from your own regression, compute R².
   const varY = d3.mean(rows, d => (d.mean_rt - ybar) ** 2)
   const varYhat = d3.mean(fitted, f => (f - ybar) ** 2)
   const r2 = varYhat / varY
-  return html`<p style="font-family:sans-serif;font-size:1.1em;"><strong>R² = ${r2.toFixed(3)}</strong> — the regression explains about ${(r2*100).toFixed(1)}% of the variation in reaction time.</p>`
+  return html`<p style="font-family:sans-serif;font-size:1.1em;"><strong>R² = ${r2.toFixed(3)}</strong> — the regression explains about ${(r2*100).toFixed(1)}% of the variation in reaction time. Check it against what your own Colab notebook gave you.</p>`
 }
 ```
 :::
 
 ::: {.fragment}
-That number **is the answer to the HR question.** A weak correlation (Week 3) means a low R² here — finger length barely moves the needle on reaction time. The formula exists; whether it's *useful* is a separate question, R² suggested we should be skeptical.
+That number **is the answer to the HR question.** R² and correlation are directly linked for simple regression ($R^2 = Corr[x,y]^2$) — whatever finger length's correlation with reaction time turned out to be for our class, this is exactly what it's worth as a predictor. The formula exists; whether it's *useful* is a separate question.
+:::
+
+## Same task, in Python
+
+::: {.fragment}
+Not everything on this slide will make sense yet — `smf.ols`, `.fittedvalues`, and the rest of this get unpacked properly over the next few weeks. For now, just see that real Python code, run on the class's own data, gets you to the same place as the by-hand version:
+:::
+
+```python
+import statsmodels.formula.api as smf
+
+model = smf.ols('mean_rt ~ finger_mm', data=student_summary).fit()
+fitted = model.fittedvalues
+
+var_y = student_summary['mean_rt'].var()
+var_yhat = fitted.var()
+r2 = var_yhat / var_y
+```
+
+```{python}
+#| output: asis
+import statsmodels.formula.api as smf
+
+_r2_model = smf.ols('mean_rt ~ finger_mm', data=student_summary).fit()
+_r2_fitted = _r2_model.fittedvalues
+_r2_vary = student_summary['mean_rt'].var()
+_r2_varyhat = _r2_fitted.var()
+_r2_val = _r2_varyhat / _r2_vary
+_lines = (
+    f"Var[y]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{_r2_vary:.2f}<br>"
+    f"Var[&#375;]&nbsp;&nbsp;&nbsp;{_r2_varyhat:.2f}<br>"
+    f"R&sup2;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{_r2_val:.4f}"
+)
+print(
+    '::: {style="font-family: monospace; font-size: 0.85em; background: #f8f8f8; '
+    'border-left: 4px solid #457b9d; padding: 14px 20px; border-radius: 4px; line-height: 1.9;"}\n'
+    f'{_lines}\n:::'
+)
+```
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Same `smf.ols(...)` syntax as "Doing this in Python" later this session — you'll see this pattern again and again from here on.
 :::
 
 ---
