@@ -903,7 +903,7 @@ $\hat\alpha$ = average y when x = 0 (average reaction time on Laptop). $\hat\bet
 
 :::: {.fragment}
 ::: {.instructions-box}
-**Task (Excel)** — confirm it directly: compute the average reaction time separately for the Phone and Laptop groups from the class data, then check they match $\hat\alpha$ and $\hat\alpha + \hat\beta$ below.
+**Task (Python or Excel)** — confirm it directly: compute the average reaction time separately for the Phone and Laptop groups from the class data — in Excel, or with `df.groupby('device')['reaction_time_ms'].mean()` in Python — then check they match $\hat\alpha$ and $\hat\alpha + \hat\beta$ below.
 :::
 ::::
 
@@ -926,9 +926,55 @@ $\hat\alpha$ = average y when x = 0 (average reaction time on Laptop). $\hat\bet
 ```
 :::
 
-## Doing this in Python
+## Doing this in Python {.smaller}
 
-Everything on the last few slides — by hand, in Excel — collapses to a couple of lines once the data's in a dataframe:
+A model answer for the manual calculation — same $\hat\beta = Cov[x,y]/Var[x]$, $\hat\alpha = \bar y - \hat\beta\bar x$ formula, done in code instead of Excel:
+
+```python
+import numpy as np
+
+# device as 0/1 directly, no intermediate df needed
+x = (student_summary['device'] == 'Phone').astype(int)
+y = student_summary['mean_rt']
+
+cov = np.cov(x, y)[0, 1]
+var_x = x.var(ddof=1)
+
+beta = round(cov / var_x, 2)
+alpha = y.mean() - beta * x.mean()
+
+print("cov:", cov)
+print("var_x:", var_x)
+print("beta:", beta)
+print("alpha:", alpha)
+```
+
+```{python}
+#| output: asis
+import numpy as np
+
+_dev_x = (student_summary['device'] == 'Phone').astype(int)
+_dev_y = student_summary['mean_rt']
+_dev_cov = np.cov(_dev_x, _dev_y)[0, 1]
+_dev_var_x = _dev_x.var(ddof=1)
+_dev_beta = round(_dev_cov / _dev_var_x, 2)
+_dev_alpha = _dev_y.mean() - _dev_beta * _dev_x.mean()
+_dev_lines = (
+    f"cov:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{_dev_cov:.2f}<br>"
+    f"var_x:&nbsp;&nbsp;&nbsp;{_dev_var_x:.2f}<br>"
+    f"beta:&nbsp;&nbsp;&nbsp;&nbsp;{_dev_beta:.2f}<br>"
+    f"alpha:&nbsp;&nbsp;&nbsp;{_dev_alpha:.2f}"
+)
+print(
+    '::: {style="font-family: monospace; font-size: 0.85em; background: #f8f8f8; '
+    'border-left: 4px solid #457b9d; padding: 14px 20px; border-radius: 4px; line-height: 1.9;"}\n'
+    f'{_dev_lines}\n:::'
+)
+```
+
+## The quick way: statsmodels
+
+`statsmodels` does the same calculation in one line:
 
 ```python
 import statsmodels.formula.api as smf
@@ -960,9 +1006,9 @@ print(
   const rows = device_stats.filter(d => d.n >= 2)
   const laptop = rows.find(d => d.device === "Laptop")
   const phone = rows.find(d => d.device === "Phone")
-  if (!laptop || !phone) return html`<p>Same numbers we just computed by hand and confirmed in Excel — statsmodels just automates it. <code>device</code> is converted to 0/1 automatically because it's text ("Laptop"/"Phone"); the coefficient is labelled <code>device[T.Phone]</code> to make clear which category is x = 1.</p>`
+  if (!laptop || !phone) return html`<p>Same numbers we just computed by hand, in Excel, and in Python on the last slide — statsmodels just automates it. <code>device</code> is converted to 0/1 automatically because it's text ("Laptop"/"Phone"); the coefficient is labelled <code>device[T.Phone]</code> to make clear which category is x = 1.</p>`
   const alpha = laptop.mean, beta = phone.mean - laptop.mean
-  return html`<p>Same ${alpha.toFixed(1)} and ${beta.toFixed(1)} we just computed by hand and confirmed in Excel — statsmodels just automates it. <code>device</code> is converted to 0/1 automatically because it's text ("Laptop"/"Phone"); the coefficient is labelled <code>device[T.Phone]</code> to make clear which category is x = 1.</p>`
+  return html`<p>Same ${alpha.toFixed(1)} and ${beta.toFixed(1)} we just computed by hand, in Excel, and in Python on the last slide — statsmodels just automates it. <code>device</code> is converted to 0/1 automatically because it's text ("Laptop"/"Phone"); the coefficient is labelled <code>device[T.Phone]</code> to make clear which category is x = 1.</p>`
 }
 ```
 :::
