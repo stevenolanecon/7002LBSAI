@@ -742,6 +742,37 @@ Source: Békés & Kézdi (2021), Ch. 7
 }
 ```
 
+::: {.fragment}
+The same check in Python, on `model` from the earlier task:
+
+```python
+resid = model.resid
+resid.sum()                                            # ≈ 0
+
+model.fittedvalues.mean(), student_summary['mean_rt'].mean()
+```
+
+```{python}
+#| output: asis
+import statsmodels.formula.api as smf
+
+_check_model = smf.ols('mean_rt ~ finger_mm', data=student_summary).fit()
+_check_resid_sum = _check_model.resid.sum()
+_check_yhat_bar = _check_model.fittedvalues.mean()
+_check_y_bar = student_summary['mean_rt'].mean()
+_check_lines = (
+    f"resid.sum()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{_check_resid_sum:.2e}<br>"
+    f"fittedvalues.mean()&nbsp;&nbsp;{_check_yhat_bar:.1f}<br>"
+    f"mean_rt.mean()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{_check_y_bar:.1f}"
+)
+print(
+    '::: {style="font-family: monospace; font-size: 0.85em; background: #f8f8f8; '
+    'border-left: 4px solid #457b9d; padding: 14px 20px; border-radius: 4px; line-height: 1.9;"}\n'
+    f'{_check_lines}\n:::'
+)
+```
+:::
+
 ::: {.instructions-box}
 Not a coincidence — it's a mathematical property of how OLS fits the line. It's true by construction, for *any* data.
 :::
