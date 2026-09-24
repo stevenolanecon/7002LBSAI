@@ -381,8 +381,8 @@ html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:
 
 ## Visualisation
 
-- Statistics are useful but it often (always?) useful to **look** at your data
-- There are many ways to understanding the distribution of your variables
+- Statistics are useful but it is often (always?) useful to **look** at your data
+- There are many ways to understand the distribution of your variables
 - Histograms are the most famous 
 
 ## What is a histogram?
@@ -1250,7 +1250,7 @@ Box = IQR · Line = median · Diamond = mean · Whiskers = furthest point within
 
 ## Python does this for you
 
-Ultimatly, in your working life you will not be calculting all these statistics yourself. Rather, you'll use statistical software. Here is what the Python output looks like: 
+Ultimately, in your working life you will not be calculating all these statistics yourself. Rather, you'll use statistical software. Here is what the Python output looks like: 
 
 ```python
 import statsmodels.stats.descriptivestats as smd
