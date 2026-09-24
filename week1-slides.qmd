@@ -863,7 +863,7 @@ When mean and median diverge, ask *why*. The answer is usually the shape of the 
 :::
 
 ::: {.fragment}
-After the workshop, go back to the histogram and drag the "exclude above" threshold down. Watch how much the **mean** moves compared to the **median** as the slowest trials drop out — that gap *is* the sensitivity to outliers.
+You don't have to wait — the interactive histogram is on Canvas, using the class's real data live. Drag the "exclude above" threshold down yourself and watch how much the **mean** moves compared to the **median** as the slowest trials drop out — that gap *is* the sensitivity to outliers.
 :::
 
 ## Variance and standard deviation {.smaller}
@@ -1266,7 +1266,7 @@ print(
 ::: {.col}
 Go back to HR's onboarding test: **one trial, one number, one ranking.**
 
-Every student here just produced **10** trials — and for most, the spread between fastest and slowest trial was far bigger than the difference between students.
+Every student here just produced **10** trials — look back at your own numbers. How does the spread between your fastest and slowest trial compare to the differences you can see between different students?
 :::
 ::: {.col .fragment}
 A single measurement doesn't tell you someone's typical response time. It tells you where **one random draw** from their distribution happened to land.

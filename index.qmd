@@ -36,6 +36,7 @@ weeks = [
          ("Workshop slides", "week1-slides.html", False),
          ("Online session", "week1-online-slides.html", False),
          ("Reaction-time tool", "week1-tool.html", True),
+         ("Pooled histogram tool", "week1-histogram-tool.html", True),
      ]},
     {"n": 2, "topic": "Inference", "status": "live",
      "links": [

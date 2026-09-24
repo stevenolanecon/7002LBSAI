@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Week 1 — Pooled Histogram – 7002LBSAI</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-6bdd2aebeb936dcddaa5f935a5de481c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+<link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles.css?v=20260917">
+
+
+</head>
+
+<body class="nav-fixed fullcontent quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">7002LBSAI</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./topics.html"> 
+<span class="menu-text">Topics</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./data.html"> 
+<span class="menu-text">Data</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/stevenolanecon/7002LBSAI"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Week 1 — Pooled Histogram</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="site-hero">
+  <div class="hero-inner">
+    <p class="kicker">7002LBSAI — Week 1</p>
+    <h1>Pooled histogram — the whole class</h1>
+    <p>A live tool for the workshop</p>
+  </div>
+</div>
+<div id="56578988" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="ojs-define">{"contents": [{"name": "live_data", "value": [{"student_name": "Steve", "trial": 1, "reaction_time_ms": 624, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-06-22T13:00:14.511Z", "finger_mm": 21}, {"student_name": "Steve", "trial": 2, "reaction_time_ms": 267, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-06-22T13:00:14.511Z", "finger_mm": 21}, {"student_name": "Steve", "trial": 3, "reaction_time_ms": 389, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-06-22T13:00:14.511Z", "finger_mm": 21}, {"student_name": "Steve", "trial": 4, "reaction_time_ms": 463, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-06-22T13:00:14.511Z", "finger_mm": 21}, {"student_name": "Steve", "trial": 5, "reaction_time_ms": 452, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-06-22T13:00:14.511Z", "finger_mm": 21}, {"student_name": "Steve", "trial": 6, "reaction_time_ms": 557, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-06-22T13:00:14.511Z", "finger_mm": 21}, {"student_name": "Steve", "trial": 7, "reaction_time_ms": 649, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-06-22T13:00:14.511Z", "finger_mm": 21}, {"student_name": "Steve", "trial": 8, "reaction_time_ms": 424, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-06-22T13:00:14.511Z", "finger_mm": 21}, {"student_name": "Steve", "trial": 9, "reaction_time_ms": 385, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-06-22T13:00:14.511Z", "finger_mm": 21}, {"student_name": "Steve", "trial": 10, "reaction_time_ms": 431, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-06-22T13:00:14.511Z", "finger_mm": 21}, {"student_name": "Stevie", "trial": 1, "reaction_time_ms": 670, "device": "Laptop", "caffeine": "No", "timestamp": "2026-06-22T13:01:29.859Z", "finger_mm": 54}, {"student_name": "Stevie", "trial": 2, "reaction_time_ms": 633, "device": "Laptop", "caffeine": "No", "timestamp": "2026-06-22T13:01:29.859Z", "finger_mm": 54}, {"student_name": "Stevie", "trial": 3, "reaction_time_ms": 410, "device": "Laptop", "caffeine": "No", "timestamp": "2026-06-22T13:01:29.859Z", "finger_mm": 54}, {"student_name": "Stevie", "trial": 4, "reaction_time_ms": 390, "device": "Laptop", "caffeine": "No", "timestamp": "2026-06-22T13:01:29.859Z", "finger_mm": 54}, {"student_name": "Stevie", "trial": 5, "reaction_time_ms": 598, "device": "Laptop", "caffeine": "No", "timestamp": "2026-06-22T13:01:29.859Z", "finger_mm": 54}, {"student_name": "Stevie", "trial": 6, "reaction_time_ms": 446, "device": "Laptop", "caffeine": "No", "timestamp": "2026-06-22T13:01:29.859Z", "finger_mm": 54}, {"student_name": "Stevie", "trial": 7, "reaction_time_ms": 480, "device": "Laptop", "caffeine": "No", "timestamp": "2026-06-22T13:01:29.859Z", "finger_mm": 54}, {"student_name": "Stevie", "trial": 8, "reaction_time_ms": 435, "device": "Laptop", "caffeine": "No", "timestamp": "2026-06-22T13:01:29.859Z", "finger_mm": 54}, {"student_name": "Stevie", "trial": 9, "reaction_time_ms": 434, "device": "Laptop", "caffeine": "No", "timestamp": "2026-06-22T13:01:29.859Z", "finger_mm": 54}, {"student_name": "Stevie", "trial": 10, "reaction_time_ms": 449, "device": "Laptop", "caffeine": "No", "timestamp": "2026-06-22T13:01:29.859Z", "finger_mm": 54}, {"student_name": "Baby boy", "trial": 1, "reaction_time_ms": 1281, "device": "Phone", "caffeine": "No", "timestamp": "2026-07-17T14:49:00.180Z", "finger_mm": 24}, {"student_name": "Baby boy", "trial": 2, "reaction_time_ms": 438, "device": "Phone", "caffeine": "No", "timestamp": "2026-07-17T14:49:00.180Z", "finger_mm": 24}, {"student_name": "Baby boy", "trial": 3, "reaction_time_ms": 428, "device": "Phone", "caffeine": "No", "timestamp": "2026-07-17T14:49:00.180Z", "finger_mm": 24}, {"student_name": "Baby boy", "trial": 4, "reaction_time_ms": 550, "device": "Phone", "caffeine": "No", "timestamp": "2026-07-17T14:49:00.180Z", "finger_mm": 24}, {"student_name": "Baby boy", "trial": 5, "reaction_time_ms": 470, "device": "Phone", "caffeine": "No", "timestamp": "2026-07-17T14:49:00.180Z", "finger_mm": 24}, {"student_name": "Baby boy", "trial": 6, "reaction_time_ms": 504, "device": "Phone", "caffeine": "No", "timestamp": "2026-07-17T14:49:00.180Z", "finger_mm": 24}, {"student_name": "Baby boy", "trial": 7, "reaction_time_ms": 449, "device": "Phone", "caffeine": "No", "timestamp": "2026-07-17T14:49:00.180Z", "finger_mm": 24}, {"student_name": "Baby boy", "trial": 8, "reaction_time_ms": 457, "device": "Phone", "caffeine": "No", "timestamp": "2026-07-17T14:49:00.180Z", "finger_mm": 24}, {"student_name": "Baby boy", "trial": 9, "reaction_time_ms": 502, "device": "Phone", "caffeine": "No", "timestamp": "2026-07-17T14:49:00.180Z", "finger_mm": 24}, {"student_name": "Baby boy", "trial": 10, "reaction_time_ms": 895, "device": "Phone", "caffeine": "No", "timestamp": "2026-07-17T14:49:00.180Z", "finger_mm": 24}, {"student_name": "ZZTEST-DELETE-ME (Claude QA)", "trial": 1, "reaction_time_ms": 35740, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-07T14:46:37.212Z", "finger_mm": 9999}, {"student_name": "ZZTEST-DELETE-ME (Claude QA)", "trial": 2, "reaction_time_ms": 17985, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-07T14:46:37.212Z", "finger_mm": 9999}, {"student_name": "ZZTEST-DELETE-ME (Claude QA)", "trial": 3, "reaction_time_ms": 6536, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-07T14:46:37.212Z", "finger_mm": 9999}, {"student_name": "ZZTEST-DELETE-ME (Claude QA)", "trial": 4, "reaction_time_ms": 8367, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-07T14:46:37.212Z", "finger_mm": 9999}, {"student_name": "ZZTEST-DELETE-ME (Claude QA)", "trial": 5, "reaction_time_ms": 1470, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-07T14:46:37.212Z", "finger_mm": 9999}, {"student_name": "ZZTEST-DELETE-ME (Claude QA)", "trial": 6, "reaction_time_ms": 445, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-07T14:46:37.212Z", "finger_mm": 9999}, {"student_name": "ZZTEST-DELETE-ME (Claude QA)", "trial": 7, "reaction_time_ms": 3733, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-07T14:46:37.212Z", "finger_mm": 9999}, {"student_name": "ZZTEST-DELETE-ME (Claude QA)", "trial": 8, "reaction_time_ms": 1149, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-07T14:46:37.212Z", "finger_mm": 9999}, {"student_name": "ZZTEST-DELETE-ME (Claude QA)", "trial": 9, "reaction_time_ms": 586, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-07T14:46:37.212Z", "finger_mm": 9999}, {"student_name": "ZZTEST-DELETE-ME (Claude QA)", "trial": 10, "reaction_time_ms": 6382, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-07T14:46:37.212Z", "finger_mm": 9999}, {"student_name": "Steve", "trial": 1, "reaction_time_ms": 513, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-07T16:16:49.324Z", "finger_mm": 72}, {"student_name": "Steve", "trial": 2, "reaction_time_ms": 362, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-07T16:16:49.324Z", "finger_mm": 72}, {"student_name": "Steve", "trial": 3, "reaction_time_ms": 382, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-07T16:16:49.324Z", "finger_mm": 72}, {"student_name": "Steve", "trial": 4, "reaction_time_ms": 422, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-07T16:16:49.324Z", "finger_mm": 72}, {"student_name": "Steve", "trial": 5, "reaction_time_ms": 404, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-07T16:16:49.324Z", "finger_mm": 72}, {"student_name": "Steve", "trial": 6, "reaction_time_ms": 407, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-07T16:16:49.324Z", "finger_mm": 72}, {"student_name": "Steve", "trial": 7, "reaction_time_ms": 414, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-07T16:16:49.324Z", "finger_mm": 72}, {"student_name": "Steve", "trial": 8, "reaction_time_ms": 489, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-07T16:16:49.324Z", "finger_mm": 72}, {"student_name": "Steve", "trial": 9, "reaction_time_ms": 380, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-07T16:16:49.324Z", "finger_mm": 72}, {"student_name": "Steve", "trial": 10, "reaction_time_ms": 390, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-07T16:16:49.324Z", "finger_mm": 72}, {"student_name": "ZZTEST-FRIDAY-CHECK (Claude QA)", "trial": 1, "reaction_time_ms": 50451, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-21T14:15:02.780Z", "finger_mm": 70}, {"student_name": "ZZTEST-FRIDAY-CHECK (Claude QA)", "trial": 2, "reaction_time_ms": 9907, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-21T14:15:02.780Z", "finger_mm": 70}, {"student_name": "ZZTEST-FRIDAY-CHECK (Claude QA)", "trial": 3, "reaction_time_ms": 9501, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-21T14:15:02.780Z", "finger_mm": 70}, {"student_name": "ZZTEST-FRIDAY-CHECK (Claude QA)", "trial": 4, "reaction_time_ms": 7514, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-21T14:15:02.780Z", "finger_mm": 70}, {"student_name": "ZZTEST-FRIDAY-CHECK (Claude QA)", "trial": 5, "reaction_time_ms": 6982, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-21T14:15:02.780Z", "finger_mm": 70}, {"student_name": "ZZTEST-FRIDAY-CHECK (Claude QA)", "trial": 6, "reaction_time_ms": 7302, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-21T14:15:02.780Z", "finger_mm": 70}, {"student_name": "ZZTEST-FRIDAY-CHECK (Claude QA)", "trial": 7, "reaction_time_ms": 7147, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-21T14:15:02.780Z", "finger_mm": 70}, {"student_name": "ZZTEST-FRIDAY-CHECK (Claude QA)", "trial": 8, "reaction_time_ms": 7285, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-21T14:15:02.780Z", "finger_mm": 70}, {"student_name": "ZZTEST-FRIDAY-CHECK (Claude QA)", "trial": 9, "reaction_time_ms": 7028, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-21T14:15:02.780Z", "finger_mm": 70}, {"student_name": "ZZTEST-FRIDAY-CHECK (Claude QA)", "trial": 10, "reaction_time_ms": 9829, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-21T14:15:02.780Z", "finger_mm": 70}]}, {"name": "live_pool_min", "value": 267}, {"name": "live_pool_max", "value": 50451}]}</script>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb1" data-startfrom="38" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 37;"><span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="co">// Screen readers walk into an SVG's own children unless told otherwise — see</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="co">// wk1/week1.qmd for the full rationale. Same helper, reused here so this</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="co">// standalone chart gets the same one-sentence description treatment.</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">accessibleChart</span>(node<span class="op">,</span> label) {</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  node<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">"aria-hidden"</span><span class="op">,</span> <span class="st">"true"</span>)</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> wrapper <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">"div"</span>)</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  wrapper<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">"role"</span><span class="op">,</span> <span class="st">"img"</span>)</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>  wrapper<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">"aria-label"</span><span class="op">,</span> label)</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>  wrapper<span class="op">.</span><span class="fu">appendChild</span>(node)</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> wrapper</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="52" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 51;"><span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>viewof hist_controls <span class="op">=</span> {</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> f <span class="op">=</span> <span class="fu">html</span><span class="vs">`&lt;div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;</span></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a><span class="vs">                              font-size:13px;font-family:'Helvetica Neue',sans-serif;</span></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a><span class="vs">                              padding:6px 2px;color:#333;"&gt;</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;label style="display:flex;align-items:center;gap:8px;"&gt;</span></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;span style="color:#666;white-space:nowrap;"&gt;Bin width&lt;/span&gt;</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;input type="range" name="bin_width" min="10" max="80" step="10" value="30"</span></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a><span class="vs">             style="width:100px;cursor:pointer;accent-color:#457b9d;"&gt;</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;span id="bw-label" style="font-weight:600;min-width:34px;color:#457b9d;"&gt;30 ms&lt;/span&gt;</span></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;/label&gt;</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;label style="display:flex;align-items:center;gap:8px;"&gt;</span></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;span style="color:#e63946;white-space:nowrap;font-weight:600;"&gt;Exclude above&lt;/span&gt;</span></span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;input type="range" name="threshold" min="</span><span class="sc">${</span>live_pool_min<span class="sc">}</span><span class="vs">" max="</span><span class="sc">${</span><span class="bu">Math</span><span class="op">.</span><span class="fu">ceil</span>(live_pool_max<span class="op">/</span><span class="dv">10</span>)<span class="op">*</span><span class="dv">10</span> <span class="op">+</span> <span class="dv">10</span><span class="sc">}</span><span class="vs">" step="10" value="</span><span class="sc">${</span><span class="bu">Math</span><span class="op">.</span><span class="fu">ceil</span>(live_pool_max<span class="op">/</span><span class="dv">10</span>)<span class="op">*</span><span class="dv">10</span> <span class="op">+</span> <span class="dv">10</span><span class="sc">}</span><span class="vs">"</span></span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a><span class="vs">             style="width:110px;cursor:pointer;accent-color:#e63946;"&gt;</span></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;span id="thr-label" style="font-weight:600;min-width:40px;color:#e63946;"&gt;All&lt;/span&gt;</span></span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;/label&gt;</span></span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;label style="display:flex;align-items:center;gap:6px;cursor:pointer;"&gt;</span></span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;input type="checkbox" name="show_mean" checked style="cursor:pointer;accent-color:#e63946;"&gt; Mean</span></span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;/label&gt;</span></span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;label style="display:flex;align-items:center;gap:6px;cursor:pointer;"&gt;</span></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;input type="checkbox" name="show_median" style="cursor:pointer;accent-color:#f4a261;"&gt; Median</span></span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;/label&gt;</span></span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;label style="display:flex;align-items:center;gap:6px;cursor:pointer;"&gt;</span></span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;input type="checkbox" name="show_kde" style="cursor:pointer;accent-color:#2d6a4f;"&gt; KDE</span></span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;/label&gt;</span></span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;label style="display:flex;align-items:center;gap:6px;cursor:pointer;"&gt;</span></span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;input type="checkbox" name="show_pct" style="cursor:pointer;accent-color:#333;"&gt; Show as %</span></span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a><span class="vs">    &lt;/label&gt;</span></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a><span class="vs">  &lt;/div&gt;`</span></span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> bwRange  <span class="op">=</span> f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'[name=bin_width]'</span>)</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> bwLabel  <span class="op">=</span> f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'#bw-label'</span>)</span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> thrRange <span class="op">=</span> f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'[name=threshold]'</span>)</span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> thrLabel <span class="op">=</span> f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'#thr-label'</span>)</span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>  bwRange<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">'input'</span><span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>    bwLabel<span class="op">.</span><span class="at">textContent</span> <span class="op">=</span> bwRange<span class="op">.</span><span class="at">value</span> <span class="op">+</span> <span class="st">' ms'</span></span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>    f<span class="op">.</span><span class="fu">dispatchEvent</span>(<span class="kw">new</span> <span class="bu">CustomEvent</span>(<span class="st">'input'</span>))</span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> thrMax <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">ceil</span>(live_pool_max <span class="op">/</span> <span class="dv">10</span>) <span class="op">*</span> <span class="dv">10</span> <span class="op">+</span> <span class="dv">10</span></span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>  thrRange<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">'input'</span><span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>    thrLabel<span class="op">.</span><span class="at">textContent</span> <span class="op">=</span> <span class="op">+</span>thrRange<span class="op">.</span><span class="at">value</span> <span class="op">&gt;=</span> thrMax <span class="op">?</span> <span class="st">'All'</span> <span class="op">:</span> thrRange<span class="op">.</span><span class="at">value</span> <span class="op">+</span> <span class="st">' ms'</span></span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a>    f<span class="op">.</span><span class="fu">dispatchEvent</span>(<span class="kw">new</span> <span class="bu">CustomEvent</span>(<span class="st">'input'</span>))</span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>  f<span class="op">.</span><span class="fu">querySelectorAll</span>(<span class="st">'input[type=checkbox]'</span>)<span class="op">.</span><span class="fu">forEach</span>(cb <span class="kw">=&gt;</span></span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>    cb<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">'change'</span><span class="op">,</span> () <span class="kw">=&gt;</span> f<span class="op">.</span><span class="fu">dispatchEvent</span>(<span class="kw">new</span> <span class="bu">CustomEvent</span>(<span class="st">'input'</span>)))</span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a>  <span class="bu">Object</span><span class="op">.</span><span class="fu">defineProperty</span>(f<span class="op">,</span> <span class="st">'value'</span><span class="op">,</span> { <span class="kw">get</span>() { <span class="cf">return</span> {</span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a>    <span class="dt">bin_width</span><span class="op">:</span>  <span class="op">+</span>f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'[name=bin_width]'</span>)<span class="op">.</span><span class="at">value</span><span class="op">,</span></span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>    <span class="dt">threshold</span><span class="op">:</span>  <span class="op">+</span>f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'[name=threshold]'</span>)<span class="op">.</span><span class="at">value</span><span class="op">,</span></span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>    <span class="dt">show_mean</span><span class="op">:</span>   f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'[name=show_mean]'</span>)<span class="op">.</span><span class="at">checked</span><span class="op">,</span></span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>    <span class="dt">show_median</span><span class="op">:</span> f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'[name=show_median]'</span>)<span class="op">.</span><span class="at">checked</span><span class="op">,</span></span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>    <span class="dt">show_kde</span><span class="op">:</span>    f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'[name=show_kde]'</span>)<span class="op">.</span><span class="at">checked</span><span class="op">,</span></span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>    <span class="dt">show_pct</span><span class="op">:</span>    f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'[name=show_pct]'</span>)<span class="op">.</span><span class="at">checked</span><span class="op">,</span></span>
+<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a>  }}})</span>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> f</span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb3" data-startfrom="112" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 111;"><span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (live_data<span class="op">.</span><span class="at">length</span> <span class="op">&lt;</span> <span class="dv">2</span>) <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;p style="color:#aaa;"&gt;Not enough data yet — check back once more of the class has submitted.&lt;/p&gt;`</span></span>
+<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> thr      <span class="op">=</span> hist_controls<span class="op">.</span><span class="at">threshold</span></span>
+<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> thrMax   <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">ceil</span>(live_pool_max <span class="op">/</span> <span class="dv">10</span>) <span class="op">*</span> <span class="dv">10</span> <span class="op">+</span> <span class="dv">10</span></span>
+<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> filtered <span class="op">=</span> live_data<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">reaction_time_ms</span> <span class="op">&lt;=</span> thr)</span>
+<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> vals     <span class="op">=</span> filtered<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">reaction_time_ms</span>)</span>
+<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> mu       <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(vals)</span>
+<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> med      <span class="op">=</span> d3<span class="op">.</span><span class="fu">median</span>(vals)</span>
+<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> sigma    <span class="op">=</span> d3<span class="op">.</span><span class="fu">deviation</span>(vals)</span>
+<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> excluded <span class="op">=</span> live_data<span class="op">.</span><span class="at">length</span> <span class="op">-</span> filtered<span class="op">.</span><span class="at">length</span></span>
+<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> bw       <span class="op">=</span> hist_controls<span class="op">.</span><span class="at">bin_width</span></span>
+<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> pct      <span class="op">=</span> hist_controls<span class="op">.</span><span class="at">show_pct</span></span>
+<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> pad  <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">max</span>(<span class="dv">20</span><span class="op">,</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">round</span>((d3<span class="op">.</span><span class="fu">max</span>(vals) <span class="op">-</span> d3<span class="op">.</span><span class="fu">min</span>(vals)) <span class="op">*</span> <span class="fl">0.1</span>))</span>
+<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> xmin <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">floor</span>((d3<span class="op">.</span><span class="fu">min</span>(vals) <span class="op">-</span> pad) <span class="op">/</span> <span class="dv">10</span>) <span class="op">*</span> <span class="dv">10</span></span>
+<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> xmax <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">ceil</span>((thr <span class="op">+</span> pad) <span class="op">/</span> <span class="dv">10</span>) <span class="op">*</span> <span class="dv">10</span></span>
+<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a>  <span class="co">// KDE — Epanechnikov kernel, Silverman's bandwidth</span></span>
+<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> h <span class="op">=</span> sigma <span class="op">*</span> <span class="fl">1.06</span> <span class="op">*</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">pow</span>(vals<span class="op">.</span><span class="at">length</span><span class="op">,</span> <span class="op">-</span><span class="fl">0.2</span>)</span>
+<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> kdePoints <span class="op">=</span> (sigma <span class="op">&gt;</span> <span class="dv">0</span>) <span class="op">?</span> d3<span class="op">.</span><span class="fu">range</span>(xmin<span class="op">,</span> xmax<span class="op">,</span> <span class="dv">2</span>)<span class="op">.</span><span class="fu">map</span>(x <span class="kw">=&gt;</span> {</span>
+<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> density <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(vals<span class="op">,</span> v <span class="kw">=&gt;</span> {</span>
+<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a>      <span class="kw">const</span> u <span class="op">=</span> (x <span class="op">-</span> v) <span class="op">/</span> h</span>
+<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a>      <span class="cf">return</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">abs</span>(u) <span class="op">&lt;=</span> <span class="dv">1</span> <span class="op">?</span> <span class="fl">0.75</span> <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> u <span class="op">*</span> u) <span class="op">/</span> h <span class="op">:</span> <span class="dv">0</span></span>
+<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> { x<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> pct <span class="op">?</span> density <span class="op">*</span> bw <span class="op">:</span> density <span class="op">*</span> filtered<span class="op">.</span><span class="at">length</span> <span class="op">*</span> bw }</span>
+<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a>  }) <span class="op">:</span> []</span>
+<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> chartLabel <span class="op">=</span> <span class="vs">`This chart shows how bin width and where you cut off outliers change a histogram's apparent shape. Currently: bins </span><span class="sc">${</span>bw<span class="sc">}</span><span class="vs"> ms wide`</span> <span class="op">+</span></span>
+<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a>    (excluded <span class="op">&gt;</span> <span class="dv">0</span> <span class="op">?</span> <span class="vs">`, with </span><span class="sc">${</span>excluded<span class="sc">}</span><span class="vs"> value</span><span class="sc">${</span>excluded <span class="op">&gt;</span> <span class="dv">1</span> <span class="op">?</span> <span class="st">'s'</span> <span class="op">:</span> <span class="st">''</span><span class="sc">}</span><span class="vs"> above </span><span class="sc">${</span>thr<span class="sc">}</span><span class="vs"> ms excluded`</span> <span class="op">:</span> <span class="st">", with no values excluded"</span>) <span class="op">+</span></span>
+<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a>    <span class="vs">`. This is the class's real, in-progress reaction time data.`</span> <span class="op">+</span></span>
+<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a>    (hist_controls<span class="op">.</span><span class="at">show_mean</span> <span class="op">?</span> <span class="vs">` The mean is </span><span class="sc">${</span>mu<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>)<span class="sc">}</span><span class="vs"> ms.`</span> <span class="op">:</span> <span class="st">""</span>) <span class="op">+</span></span>
+<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a>    (hist_controls<span class="op">.</span><span class="at">show_median</span> <span class="op">?</span> <span class="vs">` The median is </span><span class="sc">${</span>med<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>)<span class="sc">}</span><span class="vs"> ms.`</span> <span class="op">:</span> <span class="st">""</span>) <span class="op">+</span></span>
+<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a>    (hist_controls<span class="op">.</span><span class="at">show_kde</span> <span class="op">?</span> <span class="st">" A smoothed density curve is overlaid on the bars."</span> <span class="op">:</span> <span class="st">""</span>)</span>
+<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> svg <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">480</span><span class="op">,</span></span>
+<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a>    <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">55</span><span class="op">,</span></span>
+<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a>    <span class="dt">marginBottom</span><span class="op">:</span> <span class="dv">32</span><span class="op">,</span></span>
+<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Reaction time (ms)"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [xmin<span class="op">,</span> xmax] }<span class="op">,</span></span>
+<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>    <span class="dt">y</span><span class="op">:</span> pct</span>
+<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a>      <span class="op">?</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"% of trials"</span><span class="op">,</span> <span class="dt">percent</span><span class="op">:</span> <span class="kw">true</span> }</span>
+<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a>      <span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Count"</span> }<span class="op">,</span></span>
+<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a>      Plot<span class="op">.</span><span class="fu">rectY</span>(filtered<span class="op">,</span></span>
+<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a>        Plot<span class="op">.</span><span class="fu">binX</span>({ <span class="dt">y</span><span class="op">:</span> pct <span class="op">?</span> <span class="st">"proportion"</span> <span class="op">:</span> <span class="st">"count"</span> }<span class="op">,</span></span>
+<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a>          { <span class="dt">x</span><span class="op">:</span> <span class="st">"reaction_time_ms"</span><span class="op">,</span> <span class="dt">thresholds</span><span class="op">:</span> d3<span class="op">.</span><span class="fu">range</span>(xmin<span class="op">,</span> xmax <span class="op">+</span> bw<span class="op">,</span> bw)<span class="op">,</span></span>
+<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a>            <span class="dt">fill</span><span class="op">:</span> <span class="st">"#457b9d"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.75</span> }))<span class="op">,</span></span>
+<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a>      Plot<span class="op">.</span><span class="fu">ruleX</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>      hist_controls<span class="op">.</span><span class="at">show_mean</span>   <span class="op">?</span> Plot<span class="op">.</span><span class="fu">ruleX</span>([mu]<span class="op">,</span>  { <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#e63946"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">2.5</span><span class="op">,</span></span>
+<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>                             <span class="dt">strokeDasharray</span><span class="op">:</span> <span class="st">"6,4"</span><span class="op">,</span></span>
+<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>                             <span class="dt">tip</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">title</span><span class="op">:</span> () <span class="kw">=&gt;</span> <span class="vs">`Mean: </span><span class="sc">${</span>mu<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>)<span class="sc">}</span><span class="vs"> ms`</span> }) <span class="op">:</span> <span class="kw">null</span><span class="op">,</span></span>
+<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a>      hist_controls<span class="op">.</span><span class="at">show_median</span> <span class="op">?</span> Plot<span class="op">.</span><span class="fu">ruleX</span>([med]<span class="op">,</span> { <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#f4a261"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">2.5</span><span class="op">,</span></span>
+<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a>                             <span class="dt">strokeDasharray</span><span class="op">:</span> <span class="st">"6,4"</span><span class="op">,</span></span>
+<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a>                             <span class="dt">tip</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">title</span><span class="op">:</span> () <span class="kw">=&gt;</span> <span class="vs">`Median: </span><span class="sc">${</span>med<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>)<span class="sc">}</span><span class="vs"> ms`</span> }) <span class="op">:</span> <span class="kw">null</span><span class="op">,</span></span>
+<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a>      hist_controls<span class="op">.</span><span class="at">show_kde</span>    <span class="op">?</span> Plot<span class="op">.</span><span class="fu">line</span>(kdePoints<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"y"</span><span class="op">,</span></span>
+<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a>                             <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#2d6a4f"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">2.5</span> }) <span class="op">:</span> <span class="kw">null</span><span class="op">,</span></span>
+<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a>      excluded <span class="op">&gt;</span> <span class="dv">0</span> <span class="op">?</span> Plot<span class="op">.</span><span class="fu">text</span>([{ <span class="dt">x</span><span class="op">:</span> xmax<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="dv">0</span> }]<span class="op">,</span> {</span>
+<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a>                             <span class="dt">text</span><span class="op">:</span> () <span class="kw">=&gt;</span> <span class="vs">`</span><span class="sc">${</span>excluded<span class="sc">}</span><span class="vs"> value</span><span class="sc">${</span>excluded <span class="op">&gt;</span> <span class="dv">1</span> <span class="op">?</span> <span class="st">'s'</span> <span class="op">:</span> <span class="st">''</span><span class="sc">}</span><span class="vs"> excluded`</span><span class="op">,</span></span>
+<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a>                             <span class="dt">x</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span> <span class="dt">frameAnchor</span><span class="op">:</span> <span class="st">"top-right"</span><span class="op">,</span></span>
+<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a>                             <span class="dt">fill</span><span class="op">:</span> <span class="st">"#e63946"</span><span class="op">,</span> <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">12</span><span class="op">,</span> <span class="dt">fontStyle</span><span class="op">:</span> <span class="st">"italic"</span> }) <span class="op">:</span> <span class="kw">null</span><span class="op">,</span></span>
+<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="fu">accessibleChart</span>(svg<span class="op">,</span> chartLabel)</span>
+<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-3" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb4" data-startfrom="181" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 180;"><span id="cb4-181"><a href="#cb4-181" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb4-182"><a href="#cb4-182" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> box <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">'div'</span>)</span>
+<span id="cb4-183"><a href="#cb4-183" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (hist_controls<span class="op">.</span><span class="at">show_kde</span>) {</span>
+<span id="cb4-184"><a href="#cb4-184" aria-hidden="true" tabindex="-1"></a>    box<span class="op">.</span><span class="at">innerHTML</span> <span class="op">=</span> <span class="vs">`&lt;div style="margin-top:10px;background:#eaf5ef;border-left:4px solid #2d6a4f;</span></span>
+<span id="cb4-185"><a href="#cb4-185" aria-hidden="true" tabindex="-1"></a><span class="vs">                        border-radius:6px;padding:10px 16px;text-align:left;font-size:0.8em;</span></span>
+<span id="cb4-186"><a href="#cb4-186" aria-hidden="true" tabindex="-1"></a><span class="vs">                        color:#333;line-height:1.5;"&gt;</span></span>
+<span id="cb4-187"><a href="#cb4-187" aria-hidden="true" tabindex="-1"></a><span class="vs">        &lt;strong style="color:#1e3a2f;"&gt;What is a KDE?&lt;/strong&gt;&lt;br&gt;</span></span>
+<span id="cb4-188"><a href="#cb4-188" aria-hidden="true" tabindex="-1"></a><span class="vs">        A kernel density estimate smooths the histogram into a continuous curve. Instead of</span></span>
+<span id="cb4-189"><a href="#cb4-189" aria-hidden="true" tabindex="-1"></a><span class="vs">        counting values into fixed-width bins, it places a small "bump" over every observation</span></span>
+<span id="cb4-190"><a href="#cb4-190" aria-hidden="true" tabindex="-1"></a><span class="vs">        and adds them up — so the shape it shows doesn't depend on a bin-width choice the way</span></span>
+<span id="cb4-191"><a href="#cb4-191" aria-hidden="true" tabindex="-1"></a><span class="vs">        the bars do.</span></span>
+<span id="cb4-192"><a href="#cb4-192" aria-hidden="true" tabindex="-1"></a><span class="vs">      &lt;/div&gt;`</span></span>
+<span id="cb4-193"><a href="#cb4-193" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-194"><a href="#cb4-194" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> box</span>
+<span id="cb4-195"><a href="#cb4-195" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-4" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="page-intro">
+<p class="canvas-note">
+This uses the real, in-progress class data — try it during the workshop as results come in, and drag the “exclude above” threshold down to see how much the mean moves compared to the median as the slowest trials drop out.
+</p>
+</div>
+
+
+
+</main> <!-- /main -->
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Ii8vIFNjcmVlbiByZWFkZXJzIHdhbGsgaW50byBhbiBTVkcncyBvd24gY2hpbGRyZW4gdW5sZXNzIHRvbGQgb3RoZXJ3aXNlIOKAlCBzZWVcbi8vIHdrMS93ZWVrMS5xbWQgZm9yIHRoZSBmdWxsIHJhdGlvbmFsZS4gU2FtZSBoZWxwZXIsIHJldXNlZCBoZXJlIHNvIHRoaXNcbi8vIHN0YW5kYWxvbmUgY2hhcnQgZ2V0cyB0aGUgc2FtZSBvbmUtc2VudGVuY2UgZGVzY3JpcHRpb24gdHJlYXRtZW50LlxuZnVuY3Rpb24gYWNjZXNzaWJsZUNoYXJ0KG5vZGUsIGxhYmVsKSB7XG4gIG5vZGUuc2V0QXR0cmlidXRlKFwiYXJpYS1oaWRkZW5cIiwgXCJ0cnVlXCIpXG4gIGNvbnN0IHdyYXBwZXIgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KFwiZGl2XCIpXG4gIHdyYXBwZXIuc2V0QXR0cmlidXRlKFwicm9sZVwiLCBcImltZ1wiKVxuICB3cmFwcGVyLnNldEF0dHJpYnV0ZShcImFyaWEtbGFiZWxcIiwgbGFiZWwpXG4gIHdyYXBwZXIuYXBwZW5kQ2hpbGQobm9kZSlcbiAgcmV0dXJuIHdyYXBwZXJcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMiIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6InZpZXdvZiBoaXN0X2NvbnRyb2xzID0ge1xuICBjb25zdCBmID0gaHRtbGA8ZGl2IHN0eWxlPVwiZGlzcGxheTpmbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjtnYXA6MjRweDtmbGV4LXdyYXA6d3JhcDtcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGZvbnQtc2l6ZToxM3B4O2ZvbnQtZmFtaWx5OidIZWx2ZXRpY2EgTmV1ZScsc2Fucy1zZXJpZjtcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHBhZGRpbmc6NnB4IDJweDtjb2xvcjojMzMzO1wiPlxuICAgIDxsYWJlbCBzdHlsZT1cImRpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7Z2FwOjhweDtcIj5cbiAgICAgIDxzcGFuIHN0eWxlPVwiY29sb3I6IzY2Njt3aGl0ZS1zcGFjZTpub3dyYXA7XCI+QmluIHdpZHRoPC9zcGFuPlxuICAgICAgPGlucHV0IHR5cGU9XCJyYW5nZVwiIG5hbWU9XCJiaW5fd2lkdGhcIiBtaW49XCIxMFwiIG1heD1cIjgwXCIgc3RlcD1cIjEwXCIgdmFsdWU9XCIzMFwiXG4gICAgICAgICAgICAgc3R5bGU9XCJ3aWR0aDoxMDBweDtjdXJzb3I6cG9pbnRlcjthY2NlbnQtY29sb3I6IzQ1N2I5ZDtcIj5cbiAgICAgIDxzcGFuIGlkPVwiYnctbGFiZWxcIiBzdHlsZT1cImZvbnQtd2VpZ2h0OjYwMDttaW4td2lkdGg6MzRweDtjb2xvcjojNDU3YjlkO1wiPjMwIG1zPC9zcGFuPlxuICAgIDwvbGFiZWw+XG4gICAgPGxhYmVsIHN0eWxlPVwiZGlzcGxheTpmbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjtnYXA6OHB4O1wiPlxuICAgICAgPHNwYW4gc3R5bGU9XCJjb2xvcjojZTYzOTQ2O3doaXRlLXNwYWNlOm5vd3JhcDtmb250LXdlaWdodDo2MDA7XCI+RXhjbHVkZSBhYm92ZTwvc3Bhbj5cbiAgICAgIDxpbnB1dCB0eXBlPVwicmFuZ2VcIiBuYW1lPVwidGhyZXNob2xkXCIgbWluPVwiJHtsaXZlX3Bvb2xfbWlufVwiIG1heD1cIiR7TWF0aC5jZWlsKGxpdmVfcG9vbF9tYXgvMTApKjEwICsgMTB9XCIgc3RlcD1cIjEwXCIgdmFsdWU9XCIke01hdGguY2VpbChsaXZlX3Bvb2xfbWF4LzEwKSoxMCArIDEwfVwiXG4gICAgICAgICAgICAgc3R5bGU9XCJ3aWR0aDoxMTBweDtjdXJzb3I6cG9pbnRlcjthY2NlbnQtY29sb3I6I2U2Mzk0NjtcIj5cbiAgICAgIDxzcGFuIGlkPVwidGhyLWxhYmVsXCIgc3R5bGU9XCJmb250LXdlaWdodDo2MDA7bWluLXdpZHRoOjQwcHg7Y29sb3I6I2U2Mzk0NjtcIj5BbGw8L3NwYW4+XG4gICAgPC9sYWJlbD5cbiAgICA8bGFiZWwgc3R5bGU9XCJkaXNwbGF5OmZsZXg7YWxpZ24taXRlbXM6Y2VudGVyO2dhcDo2cHg7Y3Vyc29yOnBvaW50ZXI7XCI+XG4gICAgICA8aW5wdXQgdHlwZT1cImNoZWNrYm94XCIgbmFtZT1cInNob3dfbWVhblwiIGNoZWNrZWQgc3R5bGU9XCJjdXJzb3I6cG9pbnRlcjthY2NlbnQtY29sb3I6I2U2Mzk0NjtcIj4gTWVhblxuICAgIDwvbGFiZWw+XG4gICAgPGxhYmVsIHN0eWxlPVwiZGlzcGxheTpmbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjtnYXA6NnB4O2N1cnNvcjpwb2ludGVyO1wiPlxuICAgICAgPGlucHV0IHR5cGU9XCJjaGVja2JveFwiIG5hbWU9XCJzaG93X21lZGlhblwiIHN0eWxlPVwiY3Vyc29yOnBvaW50ZXI7YWNjZW50LWNvbG9yOiNmNGEyNjE7XCI+IE1lZGlhblxuICAgIDwvbGFiZWw+XG4gICAgPGxhYmVsIHN0eWxlPVwiZGlzcGxheTpmbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjtnYXA6NnB4O2N1cnNvcjpwb2ludGVyO1wiPlxuICAgICAgPGlucHV0IHR5cGU9XCJjaGVja2JveFwiIG5hbWU9XCJzaG93X2tkZVwiIHN0eWxlPVwiY3Vyc29yOnBvaW50ZXI7YWNjZW50LWNvbG9yOiMyZDZhNGY7XCI+IEtERVxuICAgIDwvbGFiZWw+XG4gICAgPGxhYmVsIHN0eWxlPVwiZGlzcGxheTpmbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjtnYXA6NnB4O2N1cnNvcjpwb2ludGVyO1wiPlxuICAgICAgPGlucHV0IHR5cGU9XCJjaGVja2JveFwiIG5hbWU9XCJzaG93X3BjdFwiIHN0eWxlPVwiY3Vyc29yOnBvaW50ZXI7YWNjZW50LWNvbG9yOiMzMzM7XCI+IFNob3cgYXMgJVxuICAgIDwvbGFiZWw+XG4gIDwvZGl2PmBcblxuICBjb25zdCBid1JhbmdlICA9IGYucXVlcnlTZWxlY3RvcignW25hbWU9YmluX3dpZHRoXScpXG4gIGNvbnN0IGJ3TGFiZWwgID0gZi5xdWVyeVNlbGVjdG9yKCcjYnctbGFiZWwnKVxuICBjb25zdCB0aHJSYW5nZSA9IGYucXVlcnlTZWxlY3RvcignW25hbWU9dGhyZXNob2xkXScpXG4gIGNvbnN0IHRockxhYmVsID0gZi5xdWVyeVNlbGVjdG9yKCcjdGhyLWxhYmVsJylcblxuICBid1JhbmdlLmFkZEV2ZW50TGlzdGVuZXIoJ2lucHV0JywgKCkgPT4ge1xuICAgIGJ3TGFiZWwudGV4dENvbnRlbnQgPSBid1JhbmdlLnZhbHVlICsgJyBtcydcbiAgICBmLmRpc3BhdGNoRXZlbnQobmV3IEN1c3RvbUV2ZW50KCdpbnB1dCcpKVxuICB9KVxuICBjb25zdCB0aHJNYXggPSBNYXRoLmNlaWwobGl2ZV9wb29sX21heCAvIDEwKSAqIDEwICsgMTBcbiAgdGhyUmFuZ2UuYWRkRXZlbnRMaXN0ZW5lcignaW5wdXQnLCAoKSA9PiB7XG4gICAgdGhyTGFiZWwudGV4dENvbnRlbnQgPSArdGhyUmFuZ2UudmFsdWUgPj0gdGhyTWF4ID8gJ0FsbCcgOiB0aHJSYW5nZS52YWx1ZSArICcgbXMnXG4gICAgZi5kaXNwYXRjaEV2ZW50KG5ldyBDdXN0b21FdmVudCgnaW5wdXQnKSlcbiAgfSlcbiAgZi5xdWVyeVNlbGVjdG9yQWxsKCdpbnB1dFt0eXBlPWNoZWNrYm94XScpLmZvckVhY2goY2IgPT5cbiAgICBjYi5hZGRFdmVudExpc3RlbmVyKCdjaGFuZ2UnLCAoKSA9PiBmLmRpc3BhdGNoRXZlbnQobmV3IEN1c3RvbUV2ZW50KCdpbnB1dCcpKSlcbiAgKVxuICBPYmplY3QuZGVmaW5lUHJvcGVydHkoZiwgJ3ZhbHVlJywgeyBnZXQoKSB7IHJldHVybiB7XG4gICAgYmluX3dpZHRoOiAgK2YucXVlcnlTZWxlY3RvcignW25hbWU9YmluX3dpZHRoXScpLnZhbHVlLFxuICAgIHRocmVzaG9sZDogICtmLnF1ZXJ5U2VsZWN0b3IoJ1tuYW1lPXRocmVzaG9sZF0nKS52YWx1ZSxcbiAgICBzaG93X21lYW46ICAgZi5xdWVyeVNlbGVjdG9yKCdbbmFtZT1zaG93X21lYW5dJykuY2hlY2tlZCxcbiAgICBzaG93X21lZGlhbjogZi5xdWVyeVNlbGVjdG9yKCdbbmFtZT1zaG93X21lZGlhbl0nKS5jaGVja2VkLFxuICAgIHNob3dfa2RlOiAgICBmLnF1ZXJ5U2VsZWN0b3IoJ1tuYW1lPXNob3dfa2RlXScpLmNoZWNrZWQsXG4gICAgc2hvd19wY3Q6ICAgIGYucXVlcnlTZWxlY3RvcignW25hbWU9c2hvd19wY3RdJykuY2hlY2tlZCxcbiAgfX19KVxuICByZXR1cm4gZlxufVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC0zIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICBpZiAobGl2ZV9kYXRhLmxlbmd0aCA8IDIpIHJldHVybiBodG1sYDxwIHN0eWxlPVwiY29sb3I6I2FhYTtcIj5Ob3QgZW5vdWdoIGRhdGEgeWV0IOKAlCBjaGVjayBiYWNrIG9uY2UgbW9yZSBvZiB0aGUgY2xhc3MgaGFzIHN1Ym1pdHRlZC48L3A+YFxuXG4gIGNvbnN0IHRociAgICAgID0gaGlzdF9jb250cm9scy50aHJlc2hvbGRcbiAgY29uc3QgdGhyTWF4ICAgPSBNYXRoLmNlaWwobGl2ZV9wb29sX21heCAvIDEwKSAqIDEwICsgMTBcbiAgY29uc3QgZmlsdGVyZWQgPSBsaXZlX2RhdGEuZmlsdGVyKGQgPT4gZC5yZWFjdGlvbl90aW1lX21zIDw9IHRocilcbiAgY29uc3QgdmFscyAgICAgPSBmaWx0ZXJlZC5tYXAoZCA9PiBkLnJlYWN0aW9uX3RpbWVfbXMpXG4gIGNvbnN0IG11ICAgICAgID0gZDMubWVhbih2YWxzKVxuICBjb25zdCBtZWQgICAgICA9IGQzLm1lZGlhbih2YWxzKVxuICBjb25zdCBzaWdtYSAgICA9IGQzLmRldmlhdGlvbih2YWxzKVxuICBjb25zdCBleGNsdWRlZCA9IGxpdmVfZGF0YS5sZW5ndGggLSBmaWx0ZXJlZC5sZW5ndGhcbiAgY29uc3QgYncgICAgICAgPSBoaXN0X2NvbnRyb2xzLmJpbl93aWR0aFxuICBjb25zdCBwY3QgICAgICA9IGhpc3RfY29udHJvbHMuc2hvd19wY3RcblxuICBjb25zdCBwYWQgID0gTWF0aC5tYXgoMjAsIE1hdGgucm91bmQoKGQzLm1heCh2YWxzKSAtIGQzLm1pbih2YWxzKSkgKiAwLjEpKVxuICBjb25zdCB4bWluID0gTWF0aC5mbG9vcigoZDMubWluKHZhbHMpIC0gcGFkKSAvIDEwKSAqIDEwXG4gIGNvbnN0IHhtYXggPSBNYXRoLmNlaWwoKHRociArIHBhZCkgLyAxMCkgKiAxMFxuXG4gIC8vIEtERSDigJQgRXBhbmVjaG5pa292IGtlcm5lbCwgU2lsdmVybWFuJ3MgYmFuZHdpZHRoXG4gIGNvbnN0IGggPSBzaWdtYSAqIDEuMDYgKiBNYXRoLnBvdyh2YWxzLmxlbmd0aCwgLTAuMilcbiAgY29uc3Qga2RlUG9pbnRzID0gKHNpZ21hID4gMCkgPyBkMy5yYW5nZSh4bWluLCB4bWF4LCAyKS5tYXAoeCA9PiB7XG4gICAgY29uc3QgZGVuc2l0eSA9IGQzLm1lYW4odmFscywgdiA9PiB7XG4gICAgICBjb25zdCB1ID0gKHggLSB2KSAvIGhcbiAgICAgIHJldHVybiBNYXRoLmFicyh1KSA8PSAxID8gMC43NSAqICgxIC0gdSAqIHUpIC8gaCA6IDBcbiAgICB9KVxuICAgIHJldHVybiB7IHgsIHk6IHBjdCA/IGRlbnNpdHkgKiBidyA6IGRlbnNpdHkgKiBmaWx0ZXJlZC5sZW5ndGggKiBidyB9XG4gIH0pIDogW11cblxuICBjb25zdCBjaGFydExhYmVsID0gYFRoaXMgY2hhcnQgc2hvd3MgaG93IGJpbiB3aWR0aCBhbmQgd2hlcmUgeW91IGN1dCBvZmYgb3V0bGllcnMgY2hhbmdlIGEgaGlzdG9ncmFtJ3MgYXBwYXJlbnQgc2hhcGUuIEN1cnJlbnRseTogYmlucyAke2J3fSBtcyB3aWRlYCArXG4gICAgKGV4Y2x1ZGVkID4gMCA/IGAsIHdpdGggJHtleGNsdWRlZH0gdmFsdWUke2V4Y2x1ZGVkID4gMSA/ICdzJyA6ICcnfSBhYm92ZSAke3Rocn0gbXMgZXhjbHVkZWRgIDogXCIsIHdpdGggbm8gdmFsdWVzIGV4Y2x1ZGVkXCIpICtcbiAgICBgLiBUaGlzIGlzIHRoZSBjbGFzcydzIHJlYWwsIGluLXByb2dyZXNzIHJlYWN0aW9uIHRpbWUgZGF0YS5gICtcbiAgICAoaGlzdF9jb250cm9scy5zaG93X21lYW4gPyBgIFRoZSBtZWFuIGlzICR7bXUudG9GaXhlZCgxKX0gbXMuYCA6IFwiXCIpICtcbiAgICAoaGlzdF9jb250cm9scy5zaG93X21lZGlhbiA/IGAgVGhlIG1lZGlhbiBpcyAke21lZC50b0ZpeGVkKDEpfSBtcy5gIDogXCJcIikgK1xuICAgIChoaXN0X2NvbnRyb2xzLnNob3dfa2RlID8gXCIgQSBzbW9vdGhlZCBkZW5zaXR5IGN1cnZlIGlzIG92ZXJsYWlkIG9uIHRoZSBiYXJzLlwiIDogXCJcIilcblxuICBjb25zdCBzdmcgPSBQbG90LnBsb3Qoe1xuICAgIGhlaWdodDogNDgwLFxuICAgIG1hcmdpbkxlZnQ6IDU1LFxuICAgIG1hcmdpbkJvdHRvbTogMzIsXG4gICAgeDogeyBsYWJlbDogXCJSZWFjdGlvbiB0aW1lIChtcylcIiwgZG9tYWluOiBbeG1pbiwgeG1heF0gfSxcbiAgICB5OiBwY3RcbiAgICAgID8geyBsYWJlbDogXCIlIG9mIHRyaWFsc1wiLCBwZXJjZW50OiB0cnVlIH1cbiAgICAgIDogeyBsYWJlbDogXCJDb3VudFwiIH0sXG4gICAgbWFya3M6IFtcbiAgICAgIFBsb3QucmVjdFkoZmlsdGVyZWQsXG4gICAgICAgIFBsb3QuYmluWCh7IHk6IHBjdCA/IFwicHJvcG9ydGlvblwiIDogXCJjb3VudFwiIH0sXG4gICAgICAgICAgeyB4OiBcInJlYWN0aW9uX3RpbWVfbXNcIiwgdGhyZXNob2xkczogZDMucmFuZ2UoeG1pbiwgeG1heCArIGJ3LCBidyksXG4gICAgICAgICAgICBmaWxsOiBcIiM0NTdiOWRcIiwgZmlsbE9wYWNpdHk6IDAuNzUgfSkpLFxuICAgICAgUGxvdC5ydWxlWChbMF0pLFxuICAgICAgaGlzdF9jb250cm9scy5zaG93X21lYW4gICA/IFBsb3QucnVsZVgoW211XSwgIHsgc3Ryb2tlOiBcIiNlNjM5NDZcIiwgc3Ryb2tlV2lkdGg6IDIuNSxcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3Ryb2tlRGFzaGFycmF5OiBcIjYsNFwiLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0aXA6IHRydWUsIHRpdGxlOiAoKSA9PiBgTWVhbjogJHttdS50b0ZpeGVkKDEpfSBtc2AgfSkgOiBudWxsLFxuICAgICAgaGlzdF9jb250cm9scy5zaG93X21lZGlhbiA/IFBsb3QucnVsZVgoW21lZF0sIHsgc3Ryb2tlOiBcIiNmNGEyNjFcIiwgc3Ryb2tlV2lkdGg6IDIuNSxcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3Ryb2tlRGFzaGFycmF5OiBcIjYsNFwiLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0aXA6IHRydWUsIHRpdGxlOiAoKSA9PiBgTWVkaWFuOiAke21lZC50b0ZpeGVkKDEpfSBtc2AgfSkgOiBudWxsLFxuICAgICAgaGlzdF9jb250cm9scy5zaG93X2tkZSAgICA/IFBsb3QubGluZShrZGVQb2ludHMsIHsgeDogXCJ4XCIsIHk6IFwieVwiLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzdHJva2U6IFwiIzJkNmE0ZlwiLCBzdHJva2VXaWR0aDogMi41IH0pIDogbnVsbCxcbiAgICAgIGV4Y2x1ZGVkID4gMCA/IFBsb3QudGV4dChbeyB4OiB4bWF4LCB5OiAwIH1dLCB7XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgIHRleHQ6ICgpID0+IGAke2V4Y2x1ZGVkfSB2YWx1ZSR7ZXhjbHVkZWQgPiAxID8gJ3MnIDogJyd9IGV4Y2x1ZGVkYCxcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgeDogXCJ4XCIsIGZyYW1lQW5jaG9yOiBcInRvcC1yaWdodFwiLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICBmaWxsOiBcIiNlNjM5NDZcIiwgZm9udFNpemU6IDEyLCBmb250U3R5bGU6IFwiaXRhbGljXCIgfSkgOiBudWxsLFxuICAgIF1cbiAgfSlcblxuICByZXR1cm4gYWNjZXNzaWJsZUNoYXJ0KHN2ZywgY2hhcnRMYWJlbClcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNCIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgY29uc3QgYm94ID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnZGl2JylcbiAgaWYgKGhpc3RfY29udHJvbHMuc2hvd19rZGUpIHtcbiAgICBib3guaW5uZXJIVE1MID0gYDxkaXYgc3R5bGU9XCJtYXJnaW4tdG9wOjEwcHg7YmFja2dyb3VuZDojZWFmNWVmO2JvcmRlci1sZWZ0OjRweCBzb2xpZCAjMmQ2YTRmO1xuICAgICAgICAgICAgICAgICAgICAgICAgYm9yZGVyLXJhZGl1czo2cHg7cGFkZGluZzoxMHB4IDE2cHg7dGV4dC1hbGlnbjpsZWZ0O2ZvbnQtc2l6ZTowLjhlbTtcbiAgICAgICAgICAgICAgICAgICAgICAgIGNvbG9yOiMzMzM7bGluZS1oZWlnaHQ6MS41O1wiPlxuICAgICAgICA8c3Ryb25nIHN0eWxlPVwiY29sb3I6IzFlM2EyZjtcIj5XaGF0IGlzIGEgS0RFPzwvc3Ryb25nPjxicj5cbiAgICAgICAgQSBrZXJuZWwgZGVuc2l0eSBlc3RpbWF0ZSBzbW9vdGhzIHRoZSBoaXN0b2dyYW0gaW50byBhIGNvbnRpbnVvdXMgY3VydmUuIEluc3RlYWQgb2ZcbiAgICAgICAgY291bnRpbmcgdmFsdWVzIGludG8gZml4ZWQtd2lkdGggYmlucywgaXQgcGxhY2VzIGEgc21hbGwgXCJidW1wXCIgb3ZlciBldmVyeSBvYnNlcnZhdGlvblxuICAgICAgICBhbmQgYWRkcyB0aGVtIHVwIOKAlCBzbyB0aGUgc2hhcGUgaXQgc2hvd3MgZG9lc24ndCBkZXBlbmQgb24gYSBiaW4td2lkdGggY2hvaWNlIHRoZSB3YXlcbiAgICAgICAgdGhlIGJhcnMgZG8uXG4gICAgICA8L2Rpdj5gXG4gIH1cbiAgcmV0dXJuIGJveFxufVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJzaGlueUlucHV0KCdoaXN0X2NvbnRyb2xzJykifV19
+</script>
+<script type="module">
+if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+window._ojs.paths.runtimeToDoc = "../..";
+window._ojs.paths.runtimeToRoot = "../..";
+window._ojs.paths.docToRoot = "";
+window._ojs.selfContained = false;
+window._ojs.runtime.interpretFromScriptTags();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>7002LBSAI Research Methods in Analytics — LJMU</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Steve Nolan</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
