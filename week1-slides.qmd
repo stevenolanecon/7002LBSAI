@@ -714,12 +714,31 @@ There is no ceiling. Distraction, hesitation, accidental clicks — all extend t
 
 ## Spotting the outlier
 
+```{ojs}
+// Real outlier test — Tukey's 1.5×IQR fence, the same rule taught in the
+// "Task — compare two box plots" instructions box and used by every other
+// box-plot chart in this deck. With real class data there's no guarantee
+// the largest value is actually separated from the rest, so this decides
+// whether the chart below is honest to call it "the outlier" — rather than
+// always pointing an arrow at whatever the max happens to be.
+outlier_check = {
+  const vals    = data.map(d => d.reaction_time_ms)
+  const sorted  = [...vals].sort((a, b) => a - b)
+  const q1      = d3.quantile(sorted, 0.25)
+  const q3      = d3.quantile(sorted, 0.75)
+  const iqr     = q3 - q1
+  const fenceHi = q3 + 1.5 * iqr
+  const maxVal  = d3.max(vals)
+  return { maxVal, fenceHi, isOutlier: maxVal > fenceHi }
+}
+```
+
 :::: {.shrink-on-reveal data-frag="wk1-outlier-frag" style="--large-height:540px;--small-height:380px;--shrink-scale:0.7037;"}
 ::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
-  const vals = data.map(d => d.reaction_time_ms)
-  const maxVal = d3.max(vals)
+  const vals   = data.map(d => d.reaction_time_ms)
+  const maxVal = outlier_check.maxVal
   const pad  = Math.max(20, Math.round((d3.max(vals) - d3.min(vals)) * 0.1))
   const xmin = Math.floor((d3.min(vals) - pad) / 10) * 10
   const xmax = Math.ceil((maxVal + pad) / 10) * 10
@@ -730,30 +749,40 @@ There is no ceiling. Distraction, hesitation, accidental clicks — all extend t
   const topBin = bins.find(b => maxVal >= b.x0 && maxVal < b.x1) ?? bins[bins.length - 1]
   const labelY = maxBinCount + Math.max(2, Math.round(maxBinCount * 0.35))
 
-  return accessibleChart(Plot.plot({
-    height: 540,
-    marginLeft: 55,
-    marginTop: 55,
-    x: { label: "Reaction time (ms)", domain: [xmin, xmax] },
-    y: { label: "Count" },
-    marks: [
-      Plot.rectY(bins, { x1: "x0", x2: "x1", y: "length", fill: "#457b9d", fillOpacity: 0.75 }),
-      Plot.ruleX([0]),
+  const marks = [
+    Plot.rectY(bins, { x1: "x0", x2: "x1", y: "length", fill: "#457b9d", fillOpacity: 0.75 }),
+    Plot.ruleX([0]),
+  ]
+  if (outlier_check.isOutlier) {
+    marks.push(
       Plot.arrow([{ x1: maxVal, y1: labelY, x2: maxVal, y2: topBin.length + 0.3 }],
                  { x1: "x1", y1: "y1", x2: "x2", y2: "y2",
                    stroke: "#e63946", strokeWidth: 2.5, headLength: 10, insetEnd: 2 }),
       Plot.text([{ x: maxVal, y: labelY, label: `Highest: ${maxVal.toFixed(0)} ms` }],
                 { x: "x", y: "y", text: "label", dy: -10, fill: "#e63946",
                   fontSize: 13, fontWeight: 600 }),
-    ]
-  }), `This chart highlights the single most extreme reaction time in the dataset, to set up the question of what to do with it. An arrow points to ${maxVal.toFixed(0)} ms, the point furthest from the rest of the distribution.`)
+    )
+  }
+
+  const chartLabel = outlier_check.isOutlier
+    ? `This chart highlights the single most extreme reaction time in the dataset, to set up the question of what to do with it. An arrow points to ${maxVal.toFixed(0)} ms, the point furthest from the rest of the distribution.`
+    : `This chart shows the pooled distribution of reaction times. No value is far enough from the rest to count as a statistical outlier by the 1.5 times IQR rule — the highest value, ${maxVal.toFixed(0)} ms, sits within the expected spread.`
+
+  return accessibleChart(Plot.plot({
+    height: 540,
+    marginLeft: 55,
+    marginTop: 55,
+    x: { label: "Reaction time (ms)", domain: [xmin, xmax] },
+    y: { label: "Count" },
+    marks
+  }), chartLabel)
 }
 ```
 :::
 ::::
 
 ::: {.fragment #wk1-outlier-frag}
-This single value is what we now need to decide what to do with.
+${outlier_check.isOutlier ? "This single value is what we now need to decide what to do with." : "No dramatic outlier in our collected data. But this will not always be the case and so we need to decide what to do."}
 :::
 
 ## What do we do with an outlier?
