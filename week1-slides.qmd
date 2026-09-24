@@ -158,7 +158,7 @@ That's the question we'll answer today — using data we collect ourselves.
 ## Collect the data
 
 ::: {.instructions-box}
-1. Open **stevenolanecon.github.io/7002LBSAI/week1-tool.html** on your phone or laptop
+1. Open the reaction-time tool on your phone or laptop — you'll find it linked from this week's **Canvas** page, or go directly to **stevenolanecon.github.io/7002LBSAI/week1-tool.html**
 2. Enter your name, select your device, answer the caffeine question, and measure your **index finger length** with a ruler (tip to base crease, mm)
 3. Complete **10 trials** — tap as soon as the screen turns green
 4. Your results save automatically when you finish
