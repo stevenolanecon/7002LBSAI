@@ -137,7 +137,7 @@ html`<div class="stat-row">
 For genuine human reaction times, the mean should sit close to the median, and the standard deviation should be a fraction of the mean — not larger than it.
 
 ::: {.fragment}
-Here, the mean is **${(analysis.mean / analysis.median).toFixed(1)}× the median**, and the standard deviation is **larger than the mean itself**. That's not a rounding quirk — it's a sign the data is being pulled around by more than one extreme value.
+Here, the mean is **${(analysis.mean / analysis.median).toFixed(1)}× the median**, and the standard deviation is **larger than the mean itself**. That gap is a sign the data is being pulled around by more than one extreme value.
 :::
 
 ## How much of the data is affected?
@@ -170,7 +170,7 @@ Here, the mean is **${(analysis.mean / analysis.median).toFixed(1)}× the median
 ```
 
 ::: {.fragment}
-That's **not one value — it's a real chunk of the dataset**, beyond the same 1.5×IQR fence this module already teaches on box plots.
+That's a real chunk of the dataset, not a single stray value — and it clears the same 1.5×IQR fence this module already teaches on box plots.
 :::
 
 ## How many students were affected?
@@ -203,7 +203,7 @@ html`<div class="stat-row">
 ```
 
 ::: {.fragment}
-This isn't spread evenly — a handful of students account for most of the flagged trials, while most students have none at all.
+A handful of students account for most of the flagged trials, while most students have none at all.
 :::
 
 ## Ruling out the easy explanations
@@ -263,11 +263,11 @@ Trials 1–2 account for **${analysis.earlyPct.toFixed(0)}% of flagged trials** 
 The trial-1–2 effect only accounts for part of the picture. The remaining flagged trials are scattered across trials 3–10, with no link to device or caffeine.
 
 ::: {.fragment}
-The most honest explanation is the one already named live in the workshop: **inattention** — talking to a neighbour, looking away, getting distracted mid-task — just happening more often, across more of the room, than a single case.
+The likely explanation is the one already named live in the workshop: **inattention** — talking to a neighbour, looking away, getting distracted mid-task — just happening more often, across more of the room, than a single case.
 :::
 
 ::: {.fragment}
-That's a real, human explanation. It's also not something this data can *prove* — we didn't measure distraction directly, so this is an inference from the pattern, not a fact we captured.
+This data can't *prove* that — we didn't measure distraction directly, so it's an inference from the pattern, not something we captured directly.
 :::
 
 ## Back to the framework
@@ -281,7 +281,7 @@ For every extreme value, this module already asks three questions. Applied at th
 | **Is it a genuine feature of the process?** | Partly — the trial-1–2 warm-up effect is a real, relevant feature of how people perform this specific task |
 
 ::: {.fragment}
-Notice this doesn't collapse to one clean answer. **Different flagged trials plausibly belong in different rows of this table** — that's the harder, more realistic version of the judgement call the workshop introduced.
+**Different flagged trials plausibly belong in different rows of this table** — a harder, more realistic version of the judgement call the workshop introduced.
 :::
 
 ## Bridge to Week 2
