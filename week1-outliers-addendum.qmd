@@ -157,12 +157,21 @@ recommendation = {
   const softDropLine = `**Drop, with a note**, the remaining flagged trials at positions 3–10 (${nSoftDrop} of them) — real values, but driven by inattention rather than the reaction-time ability we're actually measuring`
   const keptEarlyLine = `**Keep** the flagged trials at positions 1–2 (${nKeptEarly} of them) — a genuine warm-up effect, not noise to remove`
 
+  const rawStats = stats(data)
+  const finalStats = stats(finalRows)
+  const pctDrop = (from, to) => Math.round(100 * (from - to) / from)
+  const meanDropPct = pctDrop(rawStats.mean, finalStats.mean)
+  const medianDropPct = pctDrop(rawStats.median, finalStats.median)
+  const sdDropPct = pctDrop(rawStats.sd, finalStats.sd)
+  const iqrDropPct = pctDrop(rawStats.iqr, finalStats.iqr)
+  const summaryLine = `The median barely moves (down ${medianDropPct}%), while the mean drops by ${meanDropPct}%. Spread falls too, since the trimmed trials were sitting out past it — but the SD collapses by ${sdDropPct}%, far more than the IQR's ${iqrDropPct}%. The median is doing its job here in a way the mean and SD aren't.`
+
   return {
     nError, nSoftDrop, nKeptEarly,
     maxErrorMs: errorRows.length ? errorRows[0].reaction_time_ms : null,
-    errorLine, softDropLine, keptEarlyLine,
-    raw: stats(data),
-    final: stats(finalRows),
+    errorLine, softDropLine, keptEarlyLine, summaryLine,
+    raw: rawStats,
+    final: finalStats,
   }
 }
 ```
@@ -394,7 +403,7 @@ Four decisions, applied consistently rather than case by case:
 ```
 
 ::: {.fragment}
-The mean and SD move a lot once the noise is handled; the median and IQR barely move at all — exactly what robust statistics are for.
+${recommendation.summaryLine}
 :::
 
 ## Bridge to Week 2
