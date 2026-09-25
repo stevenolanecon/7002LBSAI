@@ -428,21 +428,21 @@ Reading one, look for:
 </tr>
 </thead>
 <tbody>
-<tr class="odd fragment">
+<tr class="odd">
 <td><strong>Modes</strong></td>
-<td>Peaks that stand out from their neighbourhood</td>
+<td class="fragment">Peaks that stand out from their neighbourhood</td>
 </tr>
-<tr class="even fragment">
+<tr class="even">
 <td><strong>Centre and tails</strong></td>
-<td>Where most of the mass sits, and how it thins out</td>
+<td class="fragment">Where most of the mass sits, and how it thins out</td>
 </tr>
-<tr class="odd fragment">
+<tr class="odd">
 <td><strong>Symmetry</strong></td>
-<td>Symmetric, or a long left/right tail?</td>
+<td class="fragment">Symmetric, or a long left/right tail?</td>
 </tr>
-<tr class="even fragment">
+<tr class="even">
 <td><strong>Extreme values</strong></td>
-<td>Points far from the rest, out in the tails</td>
+<td class="fragment">Points far from the rest, out in the tails</td>
 </tr>
 </tbody>
 </table>
@@ -1319,7 +1319,7 @@ Source: Békés & Kézdi (2021), Ch. 3 — box plot and violin plot anatomy
 Box = IQR · Line = median · Diamond = mean · Whiskers = furthest point within 1.5×IQR of the box · Open circles = outliers beyond that. Violin = the same distribution, shown as its full shape rather than five summary numbers.
 :::
 
-## Python does this for you
+## Python does this for you {.smaller}
 
 Ultimately, in your working life you will not be calculating all these statistics yourself. Rather, you'll use statistical software. Here is what the Python output looks like: 
 
