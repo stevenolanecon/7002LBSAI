@@ -26,6 +26,7 @@ RAW_BASE = "https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data
 
 data_groups = [
     ("Week 1", [
+        ("week1_reaction_times.csv", "The real reaction-time data collected in the Week 1 workshop"),
         ("synthetic_reaction_times.csv", "Placeholder reaction-time data used to build and test slides before the live class dataset exists"),
         ("reaction_times.xlsx", "Generated test dataset — 16 students, 10 trials each — used for demos and dry runs"),
     ]),

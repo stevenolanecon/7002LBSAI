@@ -1,0 +1,60 @@
+---
+title: "Week 1 — Download the Data"
+toc: false
+---
+
+```{=html}
+<div class="site-hero">
+  <div class="hero-inner">
+    <p class="kicker">7002LBSAI — Week 1</p>
+    <h1>Download the reaction-time data</h1>
+    <p>The real data collected in the Week 1 workshop</p>
+  </div>
+</div>
+```
+
+::: {.page-intro}
+<p>This is the class's own reaction-time data — one row per trial, the same data used in the Week 1 slides and tools.</p>
+<p>
+  <button id="w1-download-btn" style="background:#1f7a79;color:#fff;border:none;border-radius:8px;padding:12px 24px;font-size:1em;cursor:pointer;font-family:inherit;">
+    Download week1_reaction_times.csv
+  </button>
+</p>
+<p id="w1-download-status" style="color:#888;font-size:0.9em;"></p>
+<p class="canvas-note">
+  If the button doesn't work, right-click and choose "Save Link As…":
+  <a id="w1-download-fallback" href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week1_reaction_times.csv">week1_reaction_times.csv</a>
+</p>
+:::
+
+```{=html}
+<script>
+(function () {
+  var csvUrl = "https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week1_reaction_times.csv";
+  var btn = document.getElementById("w1-download-btn");
+  var status = document.getElementById("w1-download-status");
+  btn.addEventListener("click", function () {
+    status.textContent = "Downloading…";
+    fetch(csvUrl)
+      .then(function (resp) {
+        if (!resp.ok) { throw new Error("HTTP " + resp.status); }
+        return resp.blob();
+      })
+      .then(function (blob) {
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = "week1_reaction_times.csv";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        status.textContent = "Downloaded — check your Downloads folder.";
+      })
+      .catch(function () {
+        status.textContent = "Something went wrong — use the link below instead.";
+      });
+  });
+})();
+</script>
+```
