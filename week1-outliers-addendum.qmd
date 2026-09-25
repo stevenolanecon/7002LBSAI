@@ -106,6 +106,67 @@ analysis = {
 }
 ```
 
+```{ojs}
+// The recommended treatment, applied consistently to whatever the live
+// data currently holds. "Error" isn't a fixed millisecond cutoff — a
+// slow-but-real distracted trial can genuinely run several seconds long.
+// Instead, a flagged trial only counts as a clear error if it's wildly
+// separated from every other flagged trial (more than 2.5x the
+// next-highest) — the same test that isolated the single ~56-second
+// trial excluded live in the workshop. Anything flagged but not that
+// extreme is a real value: dropped with a note at trial positions 3–10
+// (inattention, not the ability we're measuring), kept at positions 1–2
+// (a genuine warm-up effect).
+recommendation = {
+  const flagged = data.filter(d => d.reaction_time_ms > analysis.fenceHi)
+  const bySize = [...flagged].sort((a, b) => b.reaction_time_ms - a.reaction_time_ms)
+
+  const errorRows = []
+  if (bySize.length >= 2 && bySize[0].reaction_time_ms > 2.5 * bySize[1].reaction_time_ms) {
+    errorRows.push(bySize[0])
+  }
+  const errorIds = new Set(errorRows.map(d => `${d.student_name}|${d.trial}`))
+  const remaining = flagged.filter(d => !errorIds.has(`${d.student_name}|${d.trial}`))
+  const softDrop = remaining.filter(d => d.trial > 2)
+  const keptEarly = remaining.filter(d => d.trial <= 2)
+
+  const dropIds = new Set([...errorRows, ...softDrop].map(d => `${d.student_name}|${d.trial}`))
+  const finalRows = data.filter(d => !dropIds.has(`${d.student_name}|${d.trial}`))
+
+  function stats(rows) {
+    const vals = rows.map(d => d.reaction_time_ms)
+    const sorted = [...vals].sort((a, b) => a - b)
+    return {
+      n: vals.length,
+      mean: d3.mean(vals),
+      sd: d3.deviation(vals),
+      min: d3.min(vals),
+      max: d3.max(vals),
+      median: d3.median(vals),
+      iqr: d3.quantile(sorted, 0.75) - d3.quantile(sorted, 0.25),
+    }
+  }
+
+  const nError = errorRows.length
+  const nSoftDrop = softDrop.length
+  const nKeptEarly = keptEarly.length
+
+  const errorLine = nError > 0
+    ? `**Drop** the trial at ${(errorRows[0].reaction_time_ms / 1000).toFixed(0)} seconds — several times longer than every other flagged trial, not a real single-tap reaction time, just an error.`
+    : `**Drop** any trial that's wildly separated from every other flagged trial — none of the current data is that extreme, but the rule still stands.`
+  const softDropLine = `**Drop, with a note**, the remaining flagged trials at positions 3–10 (${nSoftDrop} of them) — real values, but driven by inattention rather than the reaction-time ability we're actually measuring`
+  const keptEarlyLine = `**Keep** the flagged trials at positions 1–2 (${nKeptEarly} of them) — a genuine warm-up effect, not noise to remove`
+
+  return {
+    nError, nSoftDrop, nKeptEarly,
+    maxErrorMs: errorRows.length ? errorRows[0].reaction_time_ms : null,
+    errorLine, softDropLine, keptEarlyLine,
+    raw: stats(data),
+    final: stats(finalRows),
+  }
+}
+```
+
 ## {background-color="#1a1a2e"}
 
 ::: {style="text-align: center; padding-top: 180px;"}
@@ -282,6 +343,58 @@ For every extreme value, this module already asks three questions. Applied at th
 
 ::: {.fragment}
 **Different flagged trials plausibly belong in different rows of this table** — a harder, more realistic version of the judgement call the workshop introduced.
+:::
+
+## What should we actually do with it?
+
+Four decisions, applied consistently rather than case by case:
+
+- ${recommendation.errorLine}
+- ${recommendation.softDropLine}
+- ${recommendation.keptEarlyLine}
+- For this dataset, use the **median and IQR**, not the mean and SD, as the trustworthy summary — they held up through all of this; the mean and SD didn't
+
+## The data, after applying that
+
+```{ojs}
+{
+  const rows = [
+    { label: "All trials (raw)", ...recommendation.raw },
+    { label: "Final data (recommended)", ...recommendation.final },
+  ]
+  const fmt = v => v.toFixed(0)
+  return html`<table style="width:100%; font-size:0.85em; border-collapse:collapse; margin-top:20px;">
+    <caption class="visually-hidden">Summary statistics comparing the raw data to the data after applying the recommended treatment</caption>
+    <thead>
+      <tr style="border-bottom:2px solid #333;">
+        <th scope="col" style="text-align:left; padding:8px;">Data</th>
+        <th scope="col" style="text-align:right; padding:8px;">Obs</th>
+        <th scope="col" style="text-align:right; padding:8px;">Mean</th>
+        <th scope="col" style="text-align:right; padding:8px;">SD</th>
+        <th scope="col" style="text-align:right; padding:8px;">Min</th>
+        <th scope="col" style="text-align:right; padding:8px;">Max</th>
+        <th scope="col" style="text-align:right; padding:8px;">Median</th>
+        <th scope="col" style="text-align:right; padding:8px;">IQR</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rows.map(r => `<tr style="border-bottom:1px solid #ddd;">
+        <td style="text-align:left; padding:8px;">${r.label}</td>
+        <td style="text-align:right; padding:8px;">${r.n}</td>
+        <td style="text-align:right; padding:8px;">${fmt(r.mean)}</td>
+        <td style="text-align:right; padding:8px;">${fmt(r.sd)}</td>
+        <td style="text-align:right; padding:8px;">${fmt(r.min)}</td>
+        <td style="text-align:right; padding:8px;">${fmt(r.max)}</td>
+        <td style="text-align:right; padding:8px;">${fmt(r.median)}</td>
+        <td style="text-align:right; padding:8px;">${fmt(r.iqr)}</td>
+      </tr>`).join("")}
+    </tbody>
+  </table>`
+}
+```
+
+::: {.fragment}
+The mean and SD move a lot once the noise is handled; the median and IQR barely move at all — exactly what robust statistics are for.
 :::
 
 ## Bridge to Week 2
