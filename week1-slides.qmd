@@ -177,8 +177,23 @@ Results go directly to the class dataset. We will explore them together today an
 ## What did we just collect?
 
 ```{ojs}
-html`<table style="width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;">
-  <caption class="visually-hidden">This table grounds the discussion of variable types in what was actually just collected — name, reaction time, device, and caffeine — showing each one's type and scale.</caption>
+{
+  // Real example values pulled from whatever's actually loaded (live class
+  // data, or the synthetic placeholder before it's swapped in) — never
+  // hardcoded illustrative examples, so this never goes stale.
+  const take = (arr, n = 2) => {
+    const uniq = [...new Set(arr)].filter(v => v !== null && v !== undefined && v !== '')
+    if (!uniq.length) return "—"
+    return uniq.slice(0, n).join(", ") + (uniq.length > n ? ", …" : "")
+  }
+  const nameEx   = take(students)
+  const rtEx     = take(data.map(d => `${d.reaction_time_ms} ms`))
+  const deviceEx = take(data.map(d => d.device))
+  const caffEx   = take(data.map(d => d.caffeine))
+  const fingerEx = take(data.map(d => d.finger_mm !== null && d.finger_mm !== undefined ? `${d.finger_mm} mm` : null))
+
+  return html`<table style="width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;">
+  <caption class="visually-hidden">This table grounds the discussion of variable types in what was actually just collected — name, reaction time, device, caffeine, and finger length — showing each one's type and scale, with real example values from the data.</caption>
   <thead>
     <tr style="background:#1a1a2e;color:white;">
       <th scope="col" style="padding:12px 20px;text-align:left;">Variable</th>
@@ -192,28 +207,35 @@ html`<table style="width:100%;border-collapse:collapse;font-family:sans-serif;fo
       <td style="padding:12px 20px;font-weight:600;">Name</td>
       <td style="padding:12px 20px;">Categorical</td>
       <td style="padding:12px 20px;">Nominal</td>
-      <td style="padding:12px 20px;color:#666;">Alice Smith, …</td>
+      <td style="padding:12px 20px;color:#666;">${nameEx}</td>
     </tr>
     <tr style="background:#fafafa;border-bottom:1px solid #eee;">
       <td style="padding:12px 20px;font-weight:600;">Reaction time</td>
       <td style="padding:12px 20px;">Continuous</td>
       <td style="padding:12px 20px;">Ratio</td>
-      <td style="padding:12px 20px;color:#666;">243 ms, 312 ms, …</td>
+      <td style="padding:12px 20px;color:#666;">${rtEx}</td>
     </tr>
     <tr style="border-bottom:1px solid #eee;">
       <td style="padding:12px 20px;font-weight:600;">Device</td>
       <td style="padding:12px 20px;">Categorical</td>
       <td style="padding:12px 20px;">Nominal</td>
-      <td style="padding:12px 20px;color:#666;">Phone, Laptop</td>
+      <td style="padding:12px 20px;color:#666;">${deviceEx}</td>
     </tr>
-    <tr style="background:#fafafa;">
+    <tr style="background:#fafafa;border-bottom:1px solid #eee;">
       <td style="padding:12px 20px;font-weight:600;">Caffeine</td>
       <td style="padding:12px 20px;">Binary</td>
       <td style="padding:12px 20px;">Nominal</td>
-      <td style="padding:12px 20px;color:#666;">Yes, No</td>
+      <td style="padding:12px 20px;color:#666;">${caffEx}</td>
+    </tr>
+    <tr>
+      <td style="padding:12px 20px;font-weight:600;">Finger length</td>
+      <td style="padding:12px 20px;">Continuous</td>
+      <td style="padding:12px 20px;">Ratio</td>
+      <td style="padding:12px 20px;color:#666;">${fingerEx}</td>
     </tr>
   </tbody>
 </table>`
+}
 ```
 
 ::: {.fragment}
@@ -288,6 +310,7 @@ html`<table style="width:100%;border-collapse:collapse;font-family:sans-serif;fo
       <th scope="col" style="padding:10px 18px;text-align:left;">reaction_time_ms</th>
       <th scope="col" style="padding:10px 18px;text-align:left;">device</th>
       <th scope="col" style="padding:10px 18px;text-align:left;">caffeine</th>
+      <th scope="col" style="padding:10px 18px;text-align:left;">finger_mm</th>
     </tr>
   </thead>
   <tbody>
@@ -298,8 +321,9 @@ html`<table style="width:100%;border-collapse:collapse;font-family:sans-serif;fo
         <td style="padding:9px 18px;text-align:right;font-weight:700;color:#457b9d;">${r.reaction_time_ms}</td>
         <td style="padding:9px 18px;">${r.device}</td>
         <td style="padding:9px 18px;">${r.caffeine || '—'}</td>
+        <td style="padding:9px 18px;">${r.finger_mm ?? '—'}</td>
       </tr>`).join('')}
-    <tr><td colspan="5" style="padding:9px 18px;color:#888;font-style:italic;font-size:0.9em;">… ${data.length} rows total (10 trials × ${students.length} students)</td></tr>
+    <tr><td colspan="6" style="padding:9px 18px;color:#888;font-style:italic;font-size:0.9em;">… ${data.length} rows total (10 trials × ${students.length} students)</td></tr>
   </tbody>
 </table>`
 ```
@@ -670,8 +694,28 @@ Wider bins can smooth away real structure and suggest a more gradual decline tha
 **What the histogram tells us**
 
 ```{ojs}
-html`<table style="width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.85em;">
-  <caption class="visually-hidden">This table puts into words what the histogram above shows visually — the floor, tail, skew, and smoothed shape of the distribution.</caption>
+{
+  // Tail/Skew read off the same mean-vs-median asymmetry this deck already
+  // teaches on "Centre: mean vs median" — a full skewness statistic isn't
+  // introduced until later, so this is the honest comparison available here.
+  // Real class data won't necessarily skew the same way the synthetic
+  // placeholder does, so these are computed live, not asserted.
+  const vals = data.map(d => d.reaction_time_ms)
+  const mu   = d3.mean(vals)
+  const med  = d3.median(vals)
+  const sd   = d3.deviation(vals)
+  const diff = mu - med
+  const dir  = (sd && Math.abs(diff) > 0.05 * sd) ? (diff > 0 ? 'right' : 'left') : 'none'
+
+  const tailText = dir === 'right' ? 'Long tail to the right'
+                  : dir === 'left'  ? 'Long tail to the left'
+                  : 'No strong tail either side'
+  const skewText = dir === 'right' ? 'Right-skewed'
+                  : dir === 'left'  ? 'Left-skewed'
+                  : 'Roughly symmetric'
+
+  return html`<table style="width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.85em;">
+  <caption class="visually-hidden">This table puts into words what the histogram above shows visually — the floor, tail, skew, and smoothed shape of the distribution, computed from the real loaded data.</caption>
   <thead>
     <tr><th scope="col" style="padding:6px 10px;text-align:left;">Feature</th><th scope="col" style="padding:6px 10px;text-align:left;">What we see</th></tr>
   </thead>
@@ -682,11 +726,11 @@ html`<table style="width:100%;border-collapse:collapse;font-family:sans-serif;fo
     </tr>
     <tr style="border-bottom:1px solid #eee;">
       <td style="padding:6px 10px;font-weight:600;">Tail</td>
-      <td style="padding:6px 10px;color:#666;">Long tail to the right</td>
+      <td style="padding:6px 10px;color:#666;">${tailText}</td>
     </tr>
     <tr style="border-bottom:1px solid #eee;">
       <td style="padding:6px 10px;font-weight:600;">Skew</td>
-      <td style="padding:6px 10px;color:#666;">Right-skewed</td>
+      <td style="padding:6px 10px;color:#666;">${skewText}</td>
     </tr>
     <tr>
       <td style="padding:6px 10px;font-weight:600;">KDE</td>
@@ -694,6 +738,7 @@ html`<table style="width:100%;border-collapse:collapse;font-family:sans-serif;fo
     </tr>
   </tbody>
 </table>`
+}
 ```
 
 :::
