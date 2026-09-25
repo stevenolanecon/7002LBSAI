@@ -524,7 +524,26 @@ student_data_trials = selected_student_trials
 ## Pooled histogram
 
 ```{ojs}
+// Default "exclude above" threshold for the pooled histogram — the same
+// 1.5×IQR fence used by the "Spotting the outlier" check. With real class
+// data there's no guarantee there's only one extreme value, so defaulting
+// this slider to "show everything" can leave the first view of this chart
+// completely unreadable (every bar compressed against the axis). Starting
+// at the fence instead gives a sensible first view, with the full range
+// still one drag away.
+pool_fence = {
+  const vals = data.map(d => d.reaction_time_ms)
+  const sorted = [...vals].sort((a, b) => a - b)
+  const q1 = d3.quantile(sorted, 0.25)
+  const q3 = d3.quantile(sorted, 0.75)
+  const iqr = q3 - q1
+  return Math.min(Math.ceil(pool_max / 10) * 10 + 10, Math.ceil((q3 + 1.5 * iqr) / 10) * 10)
+}
+```
+
+```{ojs}
 viewof hist_controls = {
+  const thrMax = Math.ceil(pool_max / 10) * 10 + 10
   const f = html`<div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;
                               font-size:13px;font-family:'Helvetica Neue',sans-serif;
                               padding:6px 2px;color:#333;">
@@ -536,9 +555,9 @@ viewof hist_controls = {
     </label>
     <label style="display:flex;align-items:center;gap:8px;">
       <span style="color:#e63946;white-space:nowrap;font-weight:600;">Exclude above</span>
-      <input type="range" name="threshold" min="${pool_min}" max="${Math.ceil(pool_max/10)*10 + 10}" step="10" value="${Math.ceil(pool_max/10)*10 + 10}"
+      <input type="range" name="threshold" min="${pool_min}" max="${thrMax}" step="10" value="${pool_fence}"
              style="width:110px;cursor:pointer;accent-color:#e63946;">
-      <span id="thr-label" style="font-weight:600;min-width:40px;color:#e63946;">All</span>
+      <span id="thr-label" style="font-weight:600;min-width:40px;color:#e63946;">${pool_fence >= thrMax ? 'All' : pool_fence + ' ms'}</span>
     </label>
     <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
       <input type="checkbox" name="show_mean" checked style="cursor:pointer;accent-color:#e63946;"> Mean
@@ -563,7 +582,6 @@ viewof hist_controls = {
     bwLabel.textContent = bwRange.value + ' ms'
     f.dispatchEvent(new CustomEvent('input'))
   })
-  const thrMax = Math.ceil(pool_max / 10) * 10 + 10
   thrRange.addEventListener('input', () => {
     thrLabel.textContent = +thrRange.value >= thrMax ? 'All' : thrRange.value + ' ms'
     f.dispatchEvent(new CustomEvent('input'))
@@ -1223,14 +1241,33 @@ Source: Békés & Kézdi (2021), Ch. 3 — box plot and violin plot anatomy
 
 ## Box plot and violin plot: our data
 
+```{ojs}
+// Shared axis range for both the box plot and violin plot below — capped
+// at the same pooled 1.5×IQR fence used on the Pooled histogram slide,
+// rather than stretched to the true max. With real class data there's no
+// guarantee there's only one extreme value, and an axis wide enough to
+// include all of them compresses both charts into an unreadable sliver.
+// The box-plot maths (whiskers, outlier circles) still use the true,
+// per-device fence below — this only caps what's drawn on the axis.
+bv_axis = {
+  const allVals = data.map(d => d.reaction_time_ms)
+  const pad = Math.max(30, Math.round(pool_fence * 0.08))
+  const bMin = Math.floor((d3.min(allVals) - pad) / 10) * 10
+  const bMax = pool_fence + pad
+  const hidden = allVals.filter(v => v > bMax).length
+  const noun = hidden === 1 ? "value is" : "values are"
+  const caption = hidden > 0
+    ? "The axis is capped so the box and violin stay readable — " + hidden + " " + noun + " beyond what the chart shows."
+    : ""
+  return { bMin, bMax, hidden, caption }
+}
+```
+
 :::: {.shrink-on-reveal data-frag="wk1-boxviolin-frag" style="--large-height:480px;--small-height:380px;--shrink-scale:0.7917;"}
 ::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
-  const allVals = data.map(d => d.reaction_time_ms)
-  const bPad = Math.max(30, Math.round((d3.max(allVals) - d3.min(allVals)) * 0.1))
-  const bMin = Math.floor((d3.min(allVals) - bPad) / 10) * 10
-  const bMax = Math.ceil((d3.max(allVals) + bPad) / 10) * 10
+  const { bMin, bMax } = bv_axis
   const colours = { Phone: "#457b9d", Laptop: "#2d6a4f" }
 
   const grouped = ["Phone", "Laptop"].map(dev => {
@@ -1279,10 +1316,7 @@ Source: Békés & Kézdi (2021), Ch. 3 — box plot and violin plot anatomy
   const groups = ["Phone", "Laptop"]
   const yPos = { Phone: 1, Laptop: 0 }
   const colours = { Phone: "#457b9d", Laptop: "#2d6a4f" }
-  const allVals = data.map(d => d.reaction_time_ms)
-  const bPad = Math.max(30, Math.round((d3.max(allVals) - d3.min(allVals)) * 0.1))
-  const bMin = Math.floor((d3.min(allVals) - bPad) / 10) * 10
-  const bMax = Math.ceil((d3.max(allVals) + bPad) / 10) * 10
+  const { bMin, bMax } = bv_axis
 
   const violinData = groups.flatMap(g => {
     const vals = data.filter(d => d.device === g).map(d => d.reaction_time_ms)
@@ -1317,6 +1351,8 @@ Source: Békés & Kézdi (2021), Ch. 3 — box plot and violin plot anatomy
 
 ::: {.fragment #wk1-boxviolin-frag}
 Box = IQR · Line = median · Diamond = mean · Whiskers = furthest point within 1.5×IQR of the box · Open circles = outliers beyond that. Violin = the same distribution, shown as its full shape rather than five summary numbers.
+
+${bv_axis.caption}
 :::
 
 ## Python does this for you
