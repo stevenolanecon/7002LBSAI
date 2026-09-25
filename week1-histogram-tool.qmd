@@ -50,7 +50,27 @@ function accessibleChart(node, label) {
 ```
 
 ```{ojs}
+// Same 1.5×IQR outlier fence the rest of Week 1 uses (see wk1/week1.qmd's
+// pool_fence) — the default "exclude above" cutoff, not the true max, so
+// the chart opens readable rather than stretched out by a handful of
+// extreme trials. Guarded for very sparse data (early in the workshop,
+// before enough submissions exist to compute quartiles meaningfully).
+pool_fence = {
+  const vals = live_data.map(d => d.reaction_time_ms)
+  const thrMax = Math.ceil(live_pool_max / 10) * 10 + 10
+  if (vals.length < 4) return thrMax
+  const sorted = [...vals].sort((a, b) => a - b)
+  const q1 = d3.quantile(sorted, 0.25)
+  const q3 = d3.quantile(sorted, 0.75)
+  const iqr = q3 - q1
+  return Math.min(thrMax, Math.ceil((q3 + 1.5 * iqr) / 10) * 10)
+}
+```
+
+```{ojs}
 viewof hist_controls = {
+  const thrMax = Math.ceil(live_pool_max / 10) * 10 + 10
+
   const f = html`<div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;
                               font-size:13px;font-family:'Helvetica Neue',sans-serif;
                               padding:6px 2px;color:#333;">
@@ -62,9 +82,9 @@ viewof hist_controls = {
     </label>
     <label style="display:flex;align-items:center;gap:8px;">
       <span style="color:#e63946;white-space:nowrap;font-weight:600;">Exclude above</span>
-      <input type="range" name="threshold" min="${live_pool_min}" max="${Math.ceil(live_pool_max/10)*10 + 10}" step="10" value="${Math.ceil(live_pool_max/10)*10 + 10}"
+      <input type="range" name="threshold" min="${live_pool_min}" max="${thrMax}" step="10" value="${pool_fence}"
              style="width:110px;cursor:pointer;accent-color:#e63946;">
-      <span id="thr-label" style="font-weight:600;min-width:40px;color:#e63946;">All</span>
+      <span id="thr-label" style="font-weight:600;min-width:40px;color:#e63946;">${pool_fence >= thrMax ? 'All' : pool_fence + ' ms'}</span>
     </label>
     <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
       <input type="checkbox" name="show_mean" checked style="cursor:pointer;accent-color:#e63946;"> Mean
@@ -89,7 +109,6 @@ viewof hist_controls = {
     bwLabel.textContent = bwRange.value + ' ms'
     f.dispatchEvent(new CustomEvent('input'))
   })
-  const thrMax = Math.ceil(live_pool_max / 10) * 10 + 10
   thrRange.addEventListener('input', () => {
     thrLabel.textContent = +thrRange.value >= thrMax ? 'All' : thrRange.value + ' ms'
     f.dispatchEvent(new CustomEvent('input'))
@@ -197,5 +216,5 @@ viewof hist_controls = {
 ```
 
 ::: {.page-intro}
-<p class="canvas-note">This uses the real, in-progress class data — try it during the workshop as results come in, and drag the "exclude above" threshold down to see how much the mean moves compared to the median as the slowest trials drop out.</p>
+<p class="canvas-note">This uses the real, in-progress class data — try it during the workshop as results come in. Extreme outliers are excluded by default (the same 1.5×IQR rule used in the workshop); drag the "exclude above" threshold up to bring them back, or down further, and see how much the mean moves compared to the median.</p>
 :::
