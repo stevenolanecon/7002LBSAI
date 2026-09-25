@@ -1,0 +1,200 @@
+name,trial,reaction_time_ms,device,caffeine,timestamp,finger_mm
+Steve Nolan,1,1282,Laptop,Yes,2026-09-25T09:15:15.071Z,81.0
+Steve Nolan,2,495,Laptop,Yes,2026-09-25T09:15:15.071Z,81.0
+Steve Nolan,3,438,Laptop,Yes,2026-09-25T09:15:15.071Z,81.0
+Steve Nolan,4,468,Laptop,Yes,2026-09-25T09:15:15.071Z,81.0
+Steve Nolan,5,429,Laptop,Yes,2026-09-25T09:15:15.071Z,81.0
+Steve Nolan,6,432,Laptop,Yes,2026-09-25T09:15:15.071Z,81.0
+Steve Nolan,7,416,Laptop,Yes,2026-09-25T09:15:15.071Z,81.0
+Steve Nolan,8,422,Laptop,Yes,2026-09-25T09:15:15.071Z,81.0
+Steve Nolan,9,450,Laptop,Yes,2026-09-25T09:15:15.071Z,81.0
+Steve Nolan,10,452,Laptop,Yes,2026-09-25T09:15:15.071Z,81.0
+James hushon,1,477,Phone,Yes,2026-09-25T12:19:55.032Z,68.0
+James hushon,2,389,Phone,Yes,2026-09-25T12:19:55.032Z,68.0
+James hushon,3,462,Phone,Yes,2026-09-25T12:19:55.032Z,68.0
+James hushon,4,336,Phone,Yes,2026-09-25T12:19:55.032Z,68.0
+James hushon,5,434,Phone,Yes,2026-09-25T12:19:55.032Z,68.0
+James hushon,6,395,Phone,Yes,2026-09-25T12:19:55.032Z,68.0
+James hushon,7,428,Phone,Yes,2026-09-25T12:19:55.032Z,68.0
+James hushon,8,485,Phone,Yes,2026-09-25T12:19:55.032Z,68.0
+James hushon,9,435,Phone,Yes,2026-09-25T12:19:55.032Z,68.0
+James hushon,10,421,Phone,Yes,2026-09-25T12:19:55.032Z,68.0
+Rufkat Adetola oladipo,1,1737,Laptop,No,2026-09-25T12:21:08.107Z,700.0
+Rufkat Adetola oladipo,2,14567,Laptop,No,2026-09-25T12:21:08.107Z,700.0
+Rufkat Adetola oladipo,3,1045,Laptop,No,2026-09-25T12:21:08.107Z,700.0
+Rufkat Adetola oladipo,4,776,Laptop,No,2026-09-25T12:21:08.107Z,700.0
+Rufkat Adetola oladipo,5,996,Laptop,No,2026-09-25T12:21:08.107Z,700.0
+Rufkat Adetola oladipo,6,1081,Laptop,No,2026-09-25T12:21:08.107Z,700.0
+Rufkat Adetola oladipo,7,1253,Laptop,No,2026-09-25T12:21:08.107Z,700.0
+Rufkat Adetola oladipo,8,758,Laptop,No,2026-09-25T12:21:08.107Z,700.0
+Rufkat Adetola oladipo,9,624,Laptop,No,2026-09-25T12:21:08.107Z,700.0
+Rufkat Adetola oladipo,10,556,Laptop,No,2026-09-25T12:21:08.107Z,700.0
+Remy,1,612,Phone,No,2026-09-25T12:21:12.937Z,82.0
+Remy,2,767,Phone,No,2026-09-25T12:21:12.937Z,82.0
+Remy,3,379,Phone,No,2026-09-25T12:21:12.937Z,82.0
+Remy,4,372,Phone,No,2026-09-25T12:21:12.937Z,82.0
+Remy,5,379,Phone,No,2026-09-25T12:21:12.937Z,82.0
+Remy,6,382,Phone,No,2026-09-25T12:21:12.937Z,82.0
+Remy,7,351,Phone,No,2026-09-25T12:21:12.937Z,82.0
+Remy,8,381,Phone,No,2026-09-25T12:21:12.937Z,82.0
+Remy,9,371,Phone,No,2026-09-25T12:21:12.937Z,82.0
+Remy,10,360,Phone,No,2026-09-25T12:21:12.937Z,82.0
+Lesley Nyonggesa,1,4719,Laptop,Yes,2026-09-25T12:21:15.856Z,80.0
+Lesley Nyonggesa,2,3646,Laptop,Yes,2026-09-25T12:21:15.856Z,80.0
+Lesley Nyonggesa,3,835,Laptop,Yes,2026-09-25T12:21:15.856Z,80.0
+Lesley Nyonggesa,4,458,Laptop,Yes,2026-09-25T12:21:15.856Z,80.0
+Lesley Nyonggesa,5,419,Laptop,Yes,2026-09-25T12:21:15.856Z,80.0
+Luca Marlowe,1,527,Phone,No,2026-09-25T12:21:17.504Z,94.0
+Lesley Nyonggesa,6,406,Laptop,Yes,2026-09-25T12:21:15.856Z,80.0
+Luca Marlowe,2,363,Phone,No,2026-09-25T12:21:17.504Z,94.0
+Lesley Nyonggesa,7,491,Laptop,Yes,2026-09-25T12:21:15.856Z,80.0
+Luca Marlowe,3,868,Phone,No,2026-09-25T12:21:17.504Z,94.0
+Luca Marlowe,4,646,Phone,No,2026-09-25T12:21:17.504Z,94.0
+Gianna Cavacuiti,1,439,Phone,No,2026-09-25T12:21:18.298Z,79.0
+Lesley Nyonggesa,8,560,Laptop,Yes,2026-09-25T12:21:15.856Z,80.0
+Luca Marlowe,5,337,Phone,No,2026-09-25T12:21:17.504Z,94.0
+Gianna Cavacuiti,2,360,Phone,No,2026-09-25T12:21:18.298Z,79.0
+Lesley Nyonggesa,9,682,Laptop,Yes,2026-09-25T12:21:15.856Z,80.0
+Luca Marlowe,7,398,Phone,No,2026-09-25T12:21:17.504Z,94.0
+Joy Ojeabulu,1,6630,Laptop,No,2026-09-25T12:21:19.245Z,8.2
+Lesley Nyonggesa,10,1322,Laptop,Yes,2026-09-25T12:21:15.856Z,80.0
+Luca Marlowe,8,425,Phone,No,2026-09-25T12:21:17.504Z,94.0
+Charlotte Smith,3,415,Laptop,Yes,2026-09-25T12:21:18.857Z,72.0
+Joy Ojeabulu,2,3170,Laptop,No,2026-09-25T12:21:19.245Z,8.2
+Luca Marlowe,9,479,Phone,No,2026-09-25T12:21:17.504Z,94.0
+Charlotte Smith,4,344,Laptop,Yes,2026-09-25T12:21:18.857Z,72.0
+Luca Marlowe,10,433,Phone,No,2026-09-25T12:21:17.504Z,94.0
+Gianna Cavacuiti,5,390,Phone,No,2026-09-25T12:21:18.298Z,79.0
+Charlotte Smith,5,378,Laptop,Yes,2026-09-25T12:21:18.857Z,72.0
+Sodiq Salaudeen,2,400,Laptop,No,2026-09-25T12:21:20.363Z,76.0
+Joy Ojeabulu,4,849,Laptop,No,2026-09-25T12:21:19.245Z,8.2
+Gianna Cavacuiti,6,437,Phone,No,2026-09-25T12:21:18.298Z,79.0
+Charlotte Smith,7,396,Laptop,Yes,2026-09-25T12:21:18.857Z,72.0
+Joy Ojeabulu,5,672,Laptop,No,2026-09-25T12:21:19.245Z,8.2
+Gianna Cavacuiti,7,384,Phone,No,2026-09-25T12:21:18.298Z,79.0
+Joy Ojeabulu,6,603,Laptop,No,2026-09-25T12:21:19.245Z,8.2
+Charlotte Smith,8,530,Laptop,Yes,2026-09-25T12:21:18.857Z,72.0
+Gianna Cavacuiti,8,361,Phone,No,2026-09-25T12:21:18.298Z,79.0
+Charlotte Smith,9,408,Laptop,Yes,2026-09-25T12:21:18.857Z,72.0
+Rael,3,1748,Laptop,No,2026-09-25T12:21:23.349Z,80.0
+Charlotte Smith,10,373,Laptop,Yes,2026-09-25T12:21:18.857Z,72.0
+Joy Ojeabulu,9,602,Laptop,No,2026-09-25T12:21:19.245Z,8.2
+Mimy Kanza,2,8077,Laptop,No,2026-09-25T12:21:24.410Z,900.0
+Sodiq Salaudeen,8,407,Laptop,No,2026-09-25T12:21:20.363Z,76.0
+Joy Ojeabulu,10,545,Laptop,No,2026-09-25T12:21:19.245Z,8.2
+Rael,5,1211,Laptop,No,2026-09-25T12:21:23.349Z,80.0
+Sodiq Salaudeen,9,313,Laptop,No,2026-09-25T12:21:20.363Z,76.0
+Rael,6,899,Laptop,No,2026-09-25T12:21:23.349Z,80.0
+Mimy Kanza,4,787,Laptop,No,2026-09-25T12:21:24.410Z,900.0
+Sodiq Salaudeen,10,374,Laptop,No,2026-09-25T12:21:20.363Z,76.0
+Mimy Kanza,5,979,Laptop,No,2026-09-25T12:21:24.410Z,900.0
+Mimy Kanza,6,1030,Laptop,No,2026-09-25T12:21:24.410Z,900.0
+Mimy Kanza,7,693,Laptop,No,2026-09-25T12:21:24.410Z,900.0
+Mimy Kanza,8,1165,Laptop,No,2026-09-25T12:21:24.410Z,900.0
+Michael Adewumi,1,5201,Laptop,No,2026-09-25T12:21:27.382Z,80.0
+Mimy Kanza,9,1061,Laptop,No,2026-09-25T12:21:24.410Z,900.0
+Michael Adewumi,2,2439,Laptop,No,2026-09-25T12:21:27.382Z,80.0
+Michael Adewumi,3,674,Laptop,No,2026-09-25T12:21:27.382Z,80.0
+Ethan Toudic,1,333,Laptop,No,2026-09-25T12:21:28.039Z,71.0
+Michael Adewumi,4,1251,Laptop,No,2026-09-25T12:21:27.382Z,80.0
+Rael,9,1191,Laptop,No,2026-09-25T12:21:23.349Z,80.0
+Ethan Toudic,3,322,Laptop,No,2026-09-25T12:21:28.039Z,71.0
+Rael,10,1251,Laptop,No,2026-09-25T12:21:23.349Z,80.0
+Ethan Toudic,4,288,Laptop,No,2026-09-25T12:21:28.039Z,71.0
+Ethan Toudic,5,349,Laptop,No,2026-09-25T12:21:28.039Z,71.0
+Michael Adewumi,5,793,Laptop,No,2026-09-25T12:21:27.382Z,80.0
+Ethan Toudic,6,293,Laptop,No,2026-09-25T12:21:28.039Z,71.0
+Michael Adewumi,6,690,Laptop,No,2026-09-25T12:21:27.382Z,80.0
+Ethan Toudic,7,506,Laptop,No,2026-09-25T12:21:28.039Z,71.0
+Ethan Toudic,8,647,Laptop,No,2026-09-25T12:21:28.039Z,71.0
+Ethan Toudic,9,288,Laptop,No,2026-09-25T12:21:28.039Z,71.0
+Michael Adewumi,7,443,Laptop,No,2026-09-25T12:21:27.382Z,80.0
+Ethan Toudic,10,305,Laptop,No,2026-09-25T12:21:28.039Z,71.0
+Michael Adewumi,8,533,Laptop,No,2026-09-25T12:21:27.382Z,80.0
+Michael Adewumi,9,486,Laptop,No,2026-09-25T12:21:27.382Z,80.0
+Michael Adewumi,10,635,Laptop,No,2026-09-25T12:21:27.382Z,80.0
+Basirat Adeyemo,1,639,Laptop,No,2026-09-25T12:21:31.884Z,80.0
+Basirat Adeyemo,2,476,Laptop,No,2026-09-25T12:21:31.884Z,80.0
+Basirat Adeyemo,3,437,Laptop,No,2026-09-25T12:21:31.884Z,80.0
+Basirat Adeyemo,4,313,Laptop,No,2026-09-25T12:21:31.884Z,80.0
+Basirat Adeyemo,5,330,Laptop,No,2026-09-25T12:21:31.884Z,80.0
+Basirat Adeyemo,6,338,Laptop,No,2026-09-25T12:21:31.884Z,80.0
+Basirat Adeyemo,7,433,Laptop,No,2026-09-25T12:21:31.884Z,80.0
+Basirat Adeyemo,8,435,Laptop,No,2026-09-25T12:21:31.884Z,80.0
+Basirat Adeyemo,9,327,Laptop,No,2026-09-25T12:21:31.884Z,80.0
+Basirat Adeyemo,10,468,Laptop,No,2026-09-25T12:21:31.884Z,80.0
+David Ekpo,1,419,Phone,No,2026-09-25T12:21:43.205Z,80.0
+David Ekpo,2,364,Phone,No,2026-09-25T12:21:43.205Z,80.0
+David Ekpo,3,360,Phone,No,2026-09-25T12:21:43.205Z,80.0
+David Ekpo,4,449,Phone,No,2026-09-25T12:21:43.205Z,80.0
+David Ekpo,5,391,Phone,No,2026-09-25T12:21:43.205Z,80.0
+David Ekpo,6,344,Phone,No,2026-09-25T12:21:43.205Z,80.0
+David Ekpo,7,368,Phone,No,2026-09-25T12:21:43.205Z,80.0
+Soumaya,1,4761,Phone,Yes,2026-09-25T12:21:45.641Z,70.0
+David Ekpo,8,459,Phone,No,2026-09-25T12:21:43.205Z,80.0
+David Ekpo,9,367,Phone,No,2026-09-25T12:21:43.205Z,80.0
+Soumaya,2,7777,Phone,Yes,2026-09-25T12:21:45.641Z,70.0
+David Ekpo,10,642,Phone,No,2026-09-25T12:21:43.205Z,80.0
+Soumaya,4,1454,Phone,Yes,2026-09-25T12:21:45.641Z,70.0
+Soumaya,5,1212,Phone,Yes,2026-09-25T12:21:45.641Z,70.0
+Soumaya,6,1063,Phone,Yes,2026-09-25T12:21:45.641Z,70.0
+Rosie Birch,1,282,Laptop,No,2026-09-25T12:21:48.356Z,74.0
+Rosie Birch,2,322,Laptop,No,2026-09-25T12:21:48.356Z,74.0
+Rosie Birch,3,259,Laptop,No,2026-09-25T12:21:48.356Z,74.0
+Rosie Birch,4,283,Laptop,No,2026-09-25T12:21:48.356Z,74.0
+Emmanuela Odoh,1,2917,Laptop,No,2026-09-25T12:21:49.683Z,6.9
+Emmanuela Odoh,2,2228,Laptop,No,2026-09-25T12:21:49.683Z,6.9
+Emmanuela Odoh,3,609,Laptop,No,2026-09-25T12:21:49.683Z,6.9
+Rosie Birch,5,275,Laptop,No,2026-09-25T12:21:48.356Z,74.0
+Emmanuela Odoh,4,480,Laptop,No,2026-09-25T12:21:49.683Z,6.9
+Rosie Birch,6,285,Laptop,No,2026-09-25T12:21:48.356Z,74.0
+Emmanuela Odoh,5,534,Laptop,No,2026-09-25T12:21:49.683Z,6.9
+Rosie Birch,7,272,Laptop,No,2026-09-25T12:21:48.356Z,74.0
+Emmanuela Odoh,6,441,Laptop,No,2026-09-25T12:21:49.683Z,6.9
+Rosie Birch,8,285,Laptop,No,2026-09-25T12:21:48.356Z,74.0
+Emmanuela Odoh,7,494,Laptop,No,2026-09-25T12:21:49.683Z,6.9
+Abderrahmane Boukhaled,1,6007,Phone,No,2026-09-25T12:21:51.370Z,80.0
+Rosie Birch,9,298,Laptop,No,2026-09-25T12:21:48.356Z,74.0
+Abderrahmane Boukhaled,2,934,Phone,No,2026-09-25T12:21:51.370Z,80.0
+Rosie Birch,10,273,Laptop,No,2026-09-25T12:21:48.356Z,74.0
+Abderrahmane Boukhaled,4,1113,Phone,No,2026-09-25T12:21:51.370Z,80.0
+Emmanuela Odoh,10,946,Laptop,No,2026-09-25T12:21:49.683Z,6.9
+Abderrahmane Boukhaled,5,696,Phone,No,2026-09-25T12:21:51.370Z,80.0
+Abderrahmane Boukhaled,7,884,Phone,No,2026-09-25T12:21:51.370Z,80.0
+Abderrahmane Boukhaled,8,1006,Phone,No,2026-09-25T12:21:51.370Z,80.0
+Abderrahmane Boukhaled,10,568,Phone,No,2026-09-25T12:21:51.370Z,80.0
+Otito,1,7552,Laptop,No,2026-09-25T12:21:54.617Z,100.0
+Otito,2,502,Laptop,No,2026-09-25T12:21:54.617Z,100.0
+Otito,3,436,Laptop,No,2026-09-25T12:21:54.617Z,100.0
+Otito,4,382,Laptop,No,2026-09-25T12:21:54.617Z,100.0
+Otito,5,343,Laptop,No,2026-09-25T12:21:54.617Z,100.0
+Otito,6,313,Laptop,No,2026-09-25T12:21:54.617Z,100.0
+Otito,7,359,Laptop,No,2026-09-25T12:21:54.617Z,100.0
+Otito,8,379,Laptop,No,2026-09-25T12:21:54.617Z,100.0
+Otito,9,387,Laptop,No,2026-09-25T12:21:54.617Z,100.0
+Otito,10,358,Laptop,No,2026-09-25T12:21:54.617Z,100.0
+Rashida kinattingalakath,1,581,Phone,Yes,2026-09-25T12:22:12.020Z,7.0
+Rashida kinattingalakath,2,507,Phone,Yes,2026-09-25T12:22:12.020Z,7.0
+Rashida kinattingalakath,3,516,Phone,Yes,2026-09-25T12:22:12.020Z,7.0
+Rashida kinattingalakath,4,373,Phone,Yes,2026-09-25T12:22:12.020Z,7.0
+Rashida kinattingalakath,5,447,Phone,Yes,2026-09-25T12:22:12.020Z,7.0
+Rashida kinattingalakath,6,446,Phone,Yes,2026-09-25T12:22:12.020Z,7.0
+Rashida kinattingalakath,7,368,Phone,Yes,2026-09-25T12:22:12.020Z,7.0
+Rashida kinattingalakath,8,358,Phone,Yes,2026-09-25T12:22:12.020Z,7.0
+Eno-obong Udofia,1,4562,Laptop,No,2026-09-25T12:22:13.849Z,95.0
+Rashida kinattingalakath,9,349,Phone,Yes,2026-09-25T12:22:12.020Z,7.0
+Eno-obong Udofia,2,8297,Laptop,No,2026-09-25T12:22:13.849Z,95.0
+Rashida kinattingalakath,10,724,Phone,Yes,2026-09-25T12:22:12.020Z,7.0
+Eno-obong Udofia,3,739,Laptop,No,2026-09-25T12:22:13.849Z,95.0
+Eno-obong Udofia,6,1545,Laptop,No,2026-09-25T12:22:13.849Z,95.0
+Eno-obong Udofia,9,534,Laptop,No,2026-09-25T12:22:13.849Z,95.0
+Sally Muinami,1,608,Laptop,No,2026-09-25T12:23:17.180Z,80.0
+Sally Muinami,2,305,Laptop,No,2026-09-25T12:23:17.180Z,80.0
+Sally Muinami,3,313,Laptop,No,2026-09-25T12:23:17.180Z,80.0
+Sally Muinami,4,391,Laptop,No,2026-09-25T12:23:17.180Z,80.0
+Sally Muinami,5,449,Laptop,No,2026-09-25T12:23:17.180Z,80.0
+Sally Muinami,6,436,Laptop,No,2026-09-25T12:23:17.180Z,80.0
+Sally Muinami,7,321,Laptop,No,2026-09-25T12:23:17.180Z,80.0
+Sally Muinami,8,406,Laptop,No,2026-09-25T12:23:17.180Z,80.0
+Sally Muinami,9,357,Laptop,No,2026-09-25T12:23:17.180Z,80.0
+Sally Muinami,10,275,Laptop,No,2026-09-25T12:23:17.180Z,80.0
