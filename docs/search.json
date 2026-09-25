@@ -256,7 +256,7 @@
     "href": "week1-slides.html#python-does-this-for-you",
     "title": "EDA: Understanding Your Data",
     "section": "Python does this for you",
-    "text": "Python does this for you\nUltimately, in your working life you will not be calculating all these statistics yourself. Rather, you’ll use statistical software. Here is what the Python output looks like:\nimport statsmodels.stats.descriptivestats as smd\nprint(smd.describe(df[\"reaction_time_ms\"]))\n\nnobs            200mean            318.3std_err         7.1upper_ci        332.2lower_ci        304.5std             100.1iqr             90.2skewness        2.40kurtosis        11.73mode            271.0median          296.0\n\n\nTask — In Excel: produce a summary statistics table (Obs, Mean, SD, Min, Max, Median, IQR) for the full dataset and by device group."
+    "text": "Python does this for you\nUltimately, in your working life you will not be calculating all these statistics yourself. Rather, you’ll use statistical software. Here is what the Python output looks like:\n\nimport statsmodels.stats.descriptivestats as smd\nprint(smd.describe(df[\"reaction_time_ms\"]))\n\n\nnobs            200mean            318.3std_err         7.1upper_ci        332.2lower_ci        304.5std             100.1iqr             90.2skewness        2.40kurtosis        11.73mode            271.0median          296.0\n\n\nTask — In Excel: produce a summary statistics table (Obs, Mean, SD, Min, Max, Median, IQR) for the full dataset and by device group."
   },
   {
     "objectID": "week1-slides.html#so-was-a-single-test-score-enough",

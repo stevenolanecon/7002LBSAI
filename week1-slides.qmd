@@ -1319,14 +1319,16 @@ Source: Békés & Kézdi (2021), Ch. 3 — box plot and violin plot anatomy
 Box = IQR · Line = median · Diamond = mean · Whiskers = furthest point within 1.5×IQR of the box · Open circles = outliers beyond that. Violin = the same distribution, shown as its full shape rather than five summary numbers.
 :::
 
-## Python does this for you {.smaller}
+## Python does this for you
 
-Ultimately, in your working life you will not be calculating all these statistics yourself. Rather, you'll use statistical software. Here is what the Python output looks like: 
+Ultimately, in your working life you will not be calculating all these statistics yourself. Rather, you'll use statistical software. Here is what the Python output looks like:
 
+::: {style="font-size:1.95em;"}
 ```python
 import statsmodels.stats.descriptivestats as smd
 print(smd.describe(df["reaction_time_ms"]))
 ```
+:::
 
 ```{python}
 #| output: asis
@@ -1350,8 +1352,8 @@ _line_width = 16
 _lines = "<br>".join(k + "&nbsp;" * (_line_width - len(k)) + v for k, v in _rows)
 
 print(
-    '::: {style="font-family: monospace; font-size: 0.78em; background: #f8f8f8; '
-    'border-left: 4px solid #457b9d; padding: 14px 20px; border-radius: 4px; line-height: 1.9;"}\n'
+    '::: {style="font-family: monospace; font-size: 0.6em; background: #f8f8f8; '
+    'border-left: 4px solid #457b9d; padding: 6px 12px; border-radius: 4px; line-height: 1.32;"}\n'
     f'{_lines}\n:::'
 )
 ```
