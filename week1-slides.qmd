@@ -415,12 +415,38 @@ A histogram is a bar chart of a variable's distribution — bars show how many o
 
 Reading one, look for:
 
-| Feature | What to look for |
-|---|---|
-| **Modes** | Peaks that stand out from their neighbourhood |
-| **Centre and tails** | Where most of the mass sits, and how it thins out |
-| **Symmetry** | Symmetric, or a long left/right tail? |
-| **Extreme values** | Points far from the rest, out in the tails |
+```{=html}
+<table class="caption-top">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>What to look for</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd fragment">
+<td><strong>Modes</strong></td>
+<td>Peaks that stand out from their neighbourhood</td>
+</tr>
+<tr class="even fragment">
+<td><strong>Centre and tails</strong></td>
+<td>Where most of the mass sits, and how it thins out</td>
+</tr>
+<tr class="odd fragment">
+<td><strong>Symmetry</strong></td>
+<td>Symmetric, or a long left/right tail?</td>
+</tr>
+<tr class="even fragment">
+<td><strong>Extreme values</strong></td>
+<td>Points far from the rest, out in the tails</td>
+</tr>
+</tbody>
+</table>
+```
 
 ::: {.fragment}
 Now let's build one from data we collected ten minutes ago.
