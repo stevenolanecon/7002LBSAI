@@ -676,7 +676,7 @@
     "href": "index.html#weeks",
     "title": "Research Methods in Analytics",
     "section": "Weeks",
-    "text": "Weeks\nWorkshop and online-session slides, published as each week runs.\n\n\n\n\nWeek 01Distributions and Summarising Data\n\nLive\n\n\nWorkshop slidesOnline sessionReaction-time toolPooled histogram toolDownload the data\n\n\n\n\n\nWeek 02Inference\n\nLive\n\n\nWorkshop slidesOnline sessionBootstrap tool\n\n\n\n\n\nWeek 03Relationships Between Variables\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 04Regression I — Fitting the Line\n\nLive\n\n\nWorkshop slides\n\n\n\n\n\nWeek 05Regression I — Model Problems & Inference\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 06Regression II — Multiple Regression\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\nWeek 07\n\nCurriculum Enrichment Week — no session\n\n\n\n\n\nWeek 08Other Models (GLMs)\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 09Causal Analysis and Experiments\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 10Prediction\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 11Time Series\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\nWeek 12\n\nPortfolio presentations — see Canvas"
+    "text": "Weeks\nWorkshop and online-session slides, published as each week runs.\n\n\n\n\nWeek 01Distributions and Summarising Data\n\nLive\n\n\nWorkshop slidesOnline sessionOutliers addendumReaction-time toolPooled histogram toolDownload the data\n\n\n\n\n\nWeek 02Inference\n\nLive\n\n\nWorkshop slidesOnline sessionBootstrap tool\n\n\n\n\n\nWeek 03Relationships Between Variables\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 04Regression I — Fitting the Line\n\nLive\n\n\nWorkshop slides\n\n\n\n\n\nWeek 05Regression I — Model Problems & Inference\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 06Regression II — Multiple Regression\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\nWeek 07\n\nCurriculum Enrichment Week — no session\n\n\n\n\n\nWeek 08Other Models (GLMs)\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 09Causal Analysis and Experiments\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 10Prediction\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 11Time Series\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\nWeek 12\n\nPortfolio presentations — see Canvas"
   },
   {
     "objectID": "data.html",
@@ -4828,5 +4828,82 @@
     "title": "Week 1 — Download the Data",
     "section": "",
     "text": "7002LBSAI — Week 1\n    Download the reaction-time data\n    The real data collected in the Week 1 workshop\n  \n\n\n\nThis is the class’s own reaction-time data — one row per trial, the same data used in the Week 1 slides and tools.\n\n\n\nDownload week1_reaction_times.csv\n\n\n\n\n\nIf the button doesn’t work, right-click and choose “Save Link As…”: week1_reaction_times.csv"
+  },
+  {
+    "objectID": "week1-outliers-addendum.html#section",
+    "href": "week1-outliers-addendum.html#section",
+    "title": "Addendum: What Our Real Data Actually Showed",
+    "section": "",
+    "text": "Addendum: what our real data actually showed\nIn the workshop, we excluded one obvious outlier. That wasn’t the whole story."
+  },
+  {
+    "objectID": "week1-outliers-addendum.html#quick-recap",
+    "href": "week1-outliers-addendum.html#quick-recap",
+    "title": "Addendum: What Our Real Data Actually Showed",
+    "section": "Quick recap",
+    "text": "Quick recap\n\nIn the Week 1 workshop, we spotted one clearly broken trial — one value at around 56 seconds, obviously not a real reaction time — and excluded it live so the histogram and box plot were readable.\n\n\nIf you explore the full class dataset yourself, you’ll find that single exclusion wasn’t the whole story. This addendum walks through what’s actually in the data, and what it means for the module’s own outlier framework."
+  },
+  {
+    "objectID": "week1-outliers-addendum.html#the-headline-numbers",
+    "href": "week1-outliers-addendum.html#the-headline-numbers",
+    "title": "Addendum: What Our Real Data Actually Showed",
+    "section": "The headline numbers",
+    "text": "The headline numbers\n\nhtml`&lt;div class=\"stat-row\"&gt;\n  &lt;div class=\"stat-chip chip-red\"&gt;Mean: ${analysis.mean.toFixed(0)} ms&lt;/div&gt;\n  &lt;div class=\"stat-chip chip-orange\"&gt;Median: ${analysis.median.toFixed(0)} ms&lt;/div&gt;\n  &lt;div class=\"stat-chip chip-red\"&gt;SD: ${analysis.sd.toFixed(0)} ms&lt;/div&gt;\n&lt;/div&gt;`\n\n\n\n\n\n\nFor genuine human reaction times, the mean should sit close to the median, and the standard deviation should be a fraction of the mean — not larger than it.\n\nHere, the mean is × the median, and the standard deviation is larger than the mean itself. That’s not a rounding quirk — it’s a sign the data is being pulled around by more than one extreme value."
+  },
+  {
+    "objectID": "week1-outliers-addendum.html#how-much-of-the-data-is-affected",
+    "href": "week1-outliers-addendum.html#how-much-of-the-data-is-affected",
+    "title": "Addendum: What Our Real Data Actually Showed",
+    "section": "How much of the data is affected?",
+    "text": "How much of the data is affected?\n\n{\n  const vals = data.map(d =&gt; d.reaction_time_ms)\n  const filtered = vals.filter(v =&gt; v &lt;= analysis.fenceHi)\n  const pad = Math.max(20, Math.round((d3.max(filtered) - d3.min(filtered)) * 0.1))\n  const xmin = Math.floor((d3.min(filtered) - pad) / 10) * 10\n  const xmax = Math.ceil((analysis.fenceHi + pad) / 10) * 10\n\n  const chartLabel = `This histogram shows the data within the standard outlier fence, with the excluded count marked. ${analysis.nOut} of ${analysis.n} trials — ${analysis.pctOut.toFixed(0)} percent — sit beyond the 1.5 times IQR fence at ${analysis.fenceHi.toFixed(0)} milliseconds.`\n\n  return accessibleChart(Plot.plot({\n    height: 340,\n    marginLeft: 55,\n    marginBottom: 32,\n    x: { label: \"Reaction time (ms)\", domain: [xmin, xmax] },\n    y: { label: \"Count\" },\n    marks: [\n      Plot.rectY(filtered, Plot.binX({ y: \"count\" }, { x: d =&gt; d, thresholds: 20, fill: \"#457b9d\", fillOpacity: 0.75 })),\n      Plot.ruleX([0]),\n      Plot.text([{ x: xmax, y: 0 }], {\n        text: () =&gt; `${analysis.nOut} of ${analysis.n} trials (${analysis.pctOut.toFixed(0)}%) excluded`,\n        x: \"x\", frameAnchor: \"top-right\", fill: \"#e63946\", fontSize: 13, fontStyle: \"italic\" }),\n    ]\n  }), chartLabel)\n}\n\n\n\n\n\n\n\nThat’s not one value — it’s a real chunk of the dataset, beyond the same 1.5×IQR fence this module already teaches on box plots."
+  },
+  {
+    "objectID": "week1-outliers-addendum.html#how-many-students-were-affected",
+    "href": "week1-outliers-addendum.html#how-many-students-were-affected",
+    "title": "Addendum: What Our Real Data Actually Showed",
+    "section": "How many students were affected?",
+    "text": "How many students were affected?\n\nhtml`&lt;div class=\"stat-row\"&gt;\n  &lt;div class=\"stat-chip chip-red\"&gt;${analysis.studentsOutCount} of ${analysis.studentsAllCount} students have at least one flagged trial&lt;/div&gt;\n&lt;/div&gt;`\n\n\n\n\n\n\n\n{\n  const rows = [\n    { label: \"No flagged trials\", count: analysis.buckets.zero },\n    { label: \"1–2 flagged trials\", count: analysis.buckets.oneTwo },\n    { label: \"3+ flagged trials\", count: analysis.buckets.threePlus },\n  ]\n  return accessibleChart(Plot.plot({\n    height: 260,\n    marginLeft: 140,\n    x: { label: \"Students\" },\n    y: { label: null, domain: rows.map(r =&gt; r.label) },\n    marks: [\n      Plot.barX(rows, { x: \"count\", y: \"label\", fill: \"#457b9d\", fillOpacity: 0.75 }),\n      Plot.ruleX([0]),\n      Plot.text(rows, { x: \"count\", y: \"label\", text: d =&gt; d.count, dx: 14, fill: \"#333\", fontWeight: 600 }),\n    ]\n  }), `This chart groups students by how many of their own trials were flagged as outliers, without naming anyone individually. ${rows.map(r =&gt; `${r.count} students had ${r.label.toLowerCase()}`).join(\"; \")}.`)\n}\n\n\n\n\n\n\n\nThis isn’t spread evenly — a handful of students account for most of the flagged trials, while most students have none at all."
+  },
+  {
+    "objectID": "week1-outliers-addendum.html#ruling-out-the-easy-explanations",
+    "href": "week1-outliers-addendum.html#ruling-out-the-easy-explanations",
+    "title": "Addendum: What Our Real Data Actually Showed",
+    "section": "Ruling out the easy explanations",
+    "text": "Ruling out the easy explanations\n\n{\n  const devices = [\"Phone\", \"Laptop\"]\n  const rows = devices.flatMap(dev =&gt; [\n    { device: dev, group: \"All trials\", pct: 100 * (analysis.byDeviceAll.get(dev) || 0) / analysis.n },\n    { device: dev, group: \"Flagged trials\", pct: 100 * (analysis.byDeviceOut.get(dev) || 0) / analysis.nOut },\n  ])\n  return accessibleChart(Plot.plot({\n    height: 220,\n    marginLeft: 90,\n    x: { label: \"% of trials\", domain: [0, 100] },\n    y: { label: null },\n    fy: { label: null },\n    marks: [\n      Plot.barX(rows, { x: \"pct\", y: \"group\", fy: \"device\", fill: \"#457b9d\", fillOpacity: 0.75 }),\n      Plot.ruleX([0]),\n      Plot.text(rows, { x: \"pct\", y: \"group\", fy: \"device\", text: d =&gt; d.pct.toFixed(0) + \"%\", dx: 18, fill: \"#333\" }),\n    ]\n  }), \"This chart compares the device split of all trials against the device split of flagged trials — the two bars are nearly identical for both Phone and Laptop, showing device isn't the explanation.\")\n}\n\n\n\n\n\n\n\nDevice doesn’t explain it — flagged trials split between Phone and Laptop in almost the same proportion as the dataset overall. The same is true for caffeine."
+  },
+  {
+    "objectID": "week1-outliers-addendum.html#the-one-real-pattern-we-did-find",
+    "href": "week1-outliers-addendum.html#the-one-real-pattern-we-did-find",
+    "title": "Addendum: What Our Real Data Actually Showed",
+    "section": "The one real pattern we did find",
+    "text": "The one real pattern we did find\n\n{\n  const trials = d3.range(1, 11)\n  const rows = trials.map(t =&gt; ({ trial: t, count: analysis.byTrial.get(t) || 0 }))\n  return accessibleChart(Plot.plot({\n    height: 280,\n    marginLeft: 50,\n    marginBottom: 36,\n    x: { label: \"Trial number\", domain: trials, tickFormat: d =&gt; d },\n    y: { label: \"Flagged trials\" },\n    marks: [\n      Plot.rectY(rows, { x: \"trial\", y: \"count\", fill: d =&gt; d.trial &lt;= 2 ? \"#e63946\" : \"#457b9d\", fillOpacity: 0.75, interval: 1, inset: 4 }),\n      Plot.ruleY([0]),\n    ]\n  }), `This chart shows how many flagged trials occurred at each of the ten trial positions. Trials one and two account for ${analysis.earlyOutliers} of the ${analysis.nOut} flagged trials — ${analysis.earlyPct.toFixed(0)} percent — noticeably more than the 20 percent you'd expect if they were spread evenly across all ten positions.`)\n}\n\n\n\n\n\n\n\nTrials 1–2 account for % of flagged trials — well above the 20% you’d expect by chance. This matches exactly what we noticed live, watching one student’s data: the first trial or two, before you’ve settled into the task, is genuinely slower."
+  },
+  {
+    "objectID": "week1-outliers-addendum.html#what-explains-the-rest",
+    "href": "week1-outliers-addendum.html#what-explains-the-rest",
+    "title": "Addendum: What Our Real Data Actually Showed",
+    "section": "What explains the rest?",
+    "text": "What explains the rest?\nThe trial-1–2 effect only accounts for part of the picture. The remaining flagged trials are scattered across trials 3–10, with no link to device or caffeine.\n\nThe most honest explanation is the one already named live in the workshop: inattention — talking to a neighbour, looking away, getting distracted mid-task — just happening more often, across more of the room, than a single case.\n\n\nThat’s a real, human explanation. It’s also not something this data can prove — we didn’t measure distraction directly, so this is an inference from the pattern, not a fact we captured."
+  },
+  {
+    "objectID": "week1-outliers-addendum.html#back-to-the-framework",
+    "href": "week1-outliers-addendum.html#back-to-the-framework",
+    "title": "Addendum: What Our Real Data Actually Showed",
+    "section": "Back to the framework",
+    "text": "Back to the framework\nFor every extreme value, this module already asks three questions. Applied at this scale, not just to one point:\n\n\n\n\n\n\n\nQuestion\nApplied here\n\n\n\n\nIs it an error?\nA little of it — the single ~56-second trial almost certainly is\n\n\nIs it real, but not what we’re studying?\nMost of it — genuine slow taps, but driven by distraction, not the underlying reaction-time ability the business actually cares about\n\n\nIs it a genuine feature of the process?\nPartly — the trial-1–2 warm-up effect is a real, relevant feature of how people perform this specific task\n\n\n\n\nNotice this doesn’t collapse to one clean answer. Different flagged trials plausibly belong in different rows of this table — that’s the harder, more realistic version of the judgement call the workshop introduced."
+  },
+  {
+    "objectID": "week1-outliers-addendum.html#bridge-to-week-2",
+    "href": "week1-outliers-addendum.html#bridge-to-week-2",
+    "title": "Addendum: What Our Real Data Actually Showed",
+    "section": "Bridge to Week 2",
+    "text": "Bridge to Week 2\n\nWe’ve just seen that a sample this noisy can produce a mean that’s × the median, purely from a messy minority of trials.\n\n\nThat’s exactly why you can’t just eyeball a mean, or a difference between two groups, and call it real. Next week: how we decide, systematically, which differences in a sample are worth taking seriously — and which are just noise."
+  },
+  {
+    "objectID": "week1-outliers-addendum.html#takeaways",
+    "href": "week1-outliers-addendum.html#takeaways",
+    "title": "Addendum: What Our Real Data Actually Showed",
+    "section": "Takeaways",
+    "text": "Takeaways\n\nA single “obvious” outlier is the easy case. Real data is often messier — check for that explicitly, don’t assume you’re done after removing one point\nAlways ask how much of the data is affected, and how it’s distributed across your groups (here: students, devices, trial position) — not just whether outliers exist\nThe three-question outlier framework still applies, but different points in the same dataset can land in different answers\nRobust statistics — the median, the IQR — held up here exactly as intended. The mean and SD didn’t\n\n\nAnalysis computed live from the current class dataset."
   }
 ]

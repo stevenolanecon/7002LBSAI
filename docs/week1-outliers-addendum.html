@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/tabby.min.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.7.32">
+
+  <title>7002LBSAI – Addendum: What Our Real Data Actually Showed</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="site_libs/revealjs/dist/theme/quarto-2c1b5f745a11cfad616ebade4a4a7d24.css">
+  <link href="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+  <link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+  
+  <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="styles-slides.css?v=20260914-2-2">
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Addendum: What Our Real Data Actually Showed</h1>
+  <p class="subtitle">7002LBSAI Research Methods in Analytics — Week 1</p>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section class="slide level2">
+
+<div id="d0af442b" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="ojs-define">{"contents": [{"name": "data", "value": [{"student_name": "Steve Nolan", "trial": 1, "reaction_time_ms": 1282, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T09:15:15.071Z", "finger_mm": 81.0}, {"student_name": "Steve Nolan", "trial": 2, "reaction_time_ms": 495, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T09:15:15.071Z", "finger_mm": 81.0}, {"student_name": "Steve Nolan", "trial": 3, "reaction_time_ms": 438, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T09:15:15.071Z", "finger_mm": 81.0}, {"student_name": "Steve Nolan", "trial": 4, "reaction_time_ms": 468, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T09:15:15.071Z", "finger_mm": 81.0}, {"student_name": "Steve Nolan", "trial": 5, "reaction_time_ms": 429, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T09:15:15.071Z", "finger_mm": 81.0}, {"student_name": "Steve Nolan", "trial": 6, "reaction_time_ms": 432, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T09:15:15.071Z", "finger_mm": 81.0}, {"student_name": "Steve Nolan", "trial": 7, "reaction_time_ms": 416, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T09:15:15.071Z", "finger_mm": 81.0}, {"student_name": "Steve Nolan", "trial": 8, "reaction_time_ms": 422, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T09:15:15.071Z", "finger_mm": 81.0}, {"student_name": "Steve Nolan", "trial": 9, "reaction_time_ms": 450, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T09:15:15.071Z", "finger_mm": 81.0}, {"student_name": "Steve Nolan", "trial": 10, "reaction_time_ms": 452, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T09:15:15.071Z", "finger_mm": 81.0}, {"student_name": "James hushon", "trial": 1, "reaction_time_ms": 477, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:19:55.032Z", "finger_mm": 68.0}, {"student_name": "James hushon", "trial": 2, "reaction_time_ms": 389, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:19:55.032Z", "finger_mm": 68.0}, {"student_name": "James hushon", "trial": 3, "reaction_time_ms": 462, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:19:55.032Z", "finger_mm": 68.0}, {"student_name": "James hushon", "trial": 4, "reaction_time_ms": 336, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:19:55.032Z", "finger_mm": 68.0}, {"student_name": "James hushon", "trial": 5, "reaction_time_ms": 434, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:19:55.032Z", "finger_mm": 68.0}, {"student_name": "James hushon", "trial": 6, "reaction_time_ms": 395, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:19:55.032Z", "finger_mm": 68.0}, {"student_name": "James hushon", "trial": 7, "reaction_time_ms": 428, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:19:55.032Z", "finger_mm": 68.0}, {"student_name": "James hushon", "trial": 8, "reaction_time_ms": 485, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:19:55.032Z", "finger_mm": 68.0}, {"student_name": "James hushon", "trial": 9, "reaction_time_ms": 435, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:19:55.032Z", "finger_mm": 68.0}, {"student_name": "James hushon", "trial": 10, "reaction_time_ms": 421, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:19:55.032Z", "finger_mm": 68.0}, {"student_name": "Rufkat Adetola oladipo", "trial": 1, "reaction_time_ms": 1737, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:08.107Z", "finger_mm": 700.0}, {"student_name": "Rufkat Adetola oladipo", "trial": 2, "reaction_time_ms": 14567, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:08.107Z", "finger_mm": 700.0}, {"student_name": "Rufkat Adetola oladipo", "trial": 3, "reaction_time_ms": 1045, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:08.107Z", "finger_mm": 700.0}, {"student_name": "Rufkat Adetola oladipo", "trial": 4, "reaction_time_ms": 776, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:08.107Z", "finger_mm": 700.0}, {"student_name": "Rufkat Adetola oladipo", "trial": 5, "reaction_time_ms": 996, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:08.107Z", "finger_mm": 700.0}, {"student_name": "Rufkat Adetola oladipo", "trial": 6, "reaction_time_ms": 1081, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:08.107Z", "finger_mm": 700.0}, {"student_name": "Rufkat Adetola oladipo", "trial": 7, "reaction_time_ms": 1253, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:08.107Z", "finger_mm": 700.0}, {"student_name": "Rufkat Adetola oladipo", "trial": 8, "reaction_time_ms": 758, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:08.107Z", "finger_mm": 700.0}, {"student_name": "Rufkat Adetola oladipo", "trial": 9, "reaction_time_ms": 624, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:08.107Z", "finger_mm": 700.0}, {"student_name": "Rufkat Adetola oladipo", "trial": 10, "reaction_time_ms": 556, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:08.107Z", "finger_mm": 700.0}, {"student_name": "Remy", "trial": 1, "reaction_time_ms": 612, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:12.937Z", "finger_mm": 82.0}, {"student_name": "Remy", "trial": 2, "reaction_time_ms": 767, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:12.937Z", "finger_mm": 82.0}, {"student_name": "Remy", "trial": 3, "reaction_time_ms": 379, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:12.937Z", "finger_mm": 82.0}, {"student_name": "Remy", "trial": 4, "reaction_time_ms": 372, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:12.937Z", "finger_mm": 82.0}, {"student_name": "Remy", "trial": 5, "reaction_time_ms": 379, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:12.937Z", "finger_mm": 82.0}, {"student_name": "Remy", "trial": 6, "reaction_time_ms": 382, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:12.937Z", "finger_mm": 82.0}, {"student_name": "Remy", "trial": 7, "reaction_time_ms": 351, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:12.937Z", "finger_mm": 82.0}, {"student_name": "Remy", "trial": 8, "reaction_time_ms": 381, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:12.937Z", "finger_mm": 82.0}, {"student_name": "Remy", "trial": 9, "reaction_time_ms": 371, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:12.937Z", "finger_mm": 82.0}, {"student_name": "Remy", "trial": 10, "reaction_time_ms": 360, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:12.937Z", "finger_mm": 82.0}, {"student_name": "Lesley Nyonggesa", "trial": 1, "reaction_time_ms": 4719, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:15.856Z", "finger_mm": 80.0}, {"student_name": "Lesley Nyonggesa", "trial": 2, "reaction_time_ms": 3646, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:15.856Z", "finger_mm": 80.0}, {"student_name": "Lesley Nyonggesa", "trial": 3, "reaction_time_ms": 835, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:15.856Z", "finger_mm": 80.0}, {"student_name": "Lesley Nyonggesa", "trial": 4, "reaction_time_ms": 458, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:15.856Z", "finger_mm": 80.0}, {"student_name": "Lesley Nyonggesa", "trial": 5, "reaction_time_ms": 419, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:15.856Z", "finger_mm": 80.0}, {"student_name": "Luca Marlowe", "trial": 1, "reaction_time_ms": 527, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:17.504Z", "finger_mm": 94.0}, {"student_name": "Lesley Nyonggesa", "trial": 6, "reaction_time_ms": 406, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:15.856Z", "finger_mm": 80.0}, {"student_name": "Luca Marlowe", "trial": 2, "reaction_time_ms": 363, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:17.504Z", "finger_mm": 94.0}, {"student_name": "Lesley Nyonggesa", "trial": 7, "reaction_time_ms": 491, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:15.856Z", "finger_mm": 80.0}, {"student_name": "Luca Marlowe", "trial": 3, "reaction_time_ms": 868, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:17.504Z", "finger_mm": 94.0}, {"student_name": "Luca Marlowe", "trial": 4, "reaction_time_ms": 646, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:17.504Z", "finger_mm": 94.0}, {"student_name": "Gianna Cavacuiti", "trial": 1, "reaction_time_ms": 439, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:18.298Z", "finger_mm": 79.0}, {"student_name": "Lesley Nyonggesa", "trial": 8, "reaction_time_ms": 560, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:15.856Z", "finger_mm": 80.0}, {"student_name": "Luca Marlowe", "trial": 5, "reaction_time_ms": 337, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:17.504Z", "finger_mm": 94.0}, {"student_name": "Gianna Cavacuiti", "trial": 2, "reaction_time_ms": 360, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:18.298Z", "finger_mm": 79.0}, {"student_name": "Lesley Nyonggesa", "trial": 9, "reaction_time_ms": 682, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:15.856Z", "finger_mm": 80.0}, {"student_name": "Luca Marlowe", "trial": 7, "reaction_time_ms": 398, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:17.504Z", "finger_mm": 94.0}, {"student_name": "Joy Ojeabulu", "trial": 1, "reaction_time_ms": 6630, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:19.245Z", "finger_mm": 8.2}, {"student_name": "Lesley Nyonggesa", "trial": 10, "reaction_time_ms": 1322, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:15.856Z", "finger_mm": 80.0}, {"student_name": "Luca Marlowe", "trial": 8, "reaction_time_ms": 425, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:17.504Z", "finger_mm": 94.0}, {"student_name": "Charlotte Smith", "trial": 3, "reaction_time_ms": 415, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:18.857Z", "finger_mm": 72.0}, {"student_name": "Joy Ojeabulu", "trial": 2, "reaction_time_ms": 3170, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:19.245Z", "finger_mm": 8.2}, {"student_name": "Luca Marlowe", "trial": 9, "reaction_time_ms": 479, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:17.504Z", "finger_mm": 94.0}, {"student_name": "Charlotte Smith", "trial": 4, "reaction_time_ms": 344, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:18.857Z", "finger_mm": 72.0}, {"student_name": "Luca Marlowe", "trial": 10, "reaction_time_ms": 433, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:17.504Z", "finger_mm": 94.0}, {"student_name": "Gianna Cavacuiti", "trial": 5, "reaction_time_ms": 390, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:18.298Z", "finger_mm": 79.0}, {"student_name": "Charlotte Smith", "trial": 5, "reaction_time_ms": 378, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:18.857Z", "finger_mm": 72.0}, {"student_name": "Sodiq Salaudeen", "trial": 2, "reaction_time_ms": 400, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:20.363Z", "finger_mm": 76.0}, {"student_name": "Joy Ojeabulu", "trial": 4, "reaction_time_ms": 849, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:19.245Z", "finger_mm": 8.2}, {"student_name": "Gianna Cavacuiti", "trial": 6, "reaction_time_ms": 437, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:18.298Z", "finger_mm": 79.0}, {"student_name": "Charlotte Smith", "trial": 7, "reaction_time_ms": 396, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:18.857Z", "finger_mm": 72.0}, {"student_name": "Joy Ojeabulu", "trial": 5, "reaction_time_ms": 672, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:19.245Z", "finger_mm": 8.2}, {"student_name": "Gianna Cavacuiti", "trial": 7, "reaction_time_ms": 384, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:18.298Z", "finger_mm": 79.0}, {"student_name": "Joy Ojeabulu", "trial": 6, "reaction_time_ms": 603, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:19.245Z", "finger_mm": 8.2}, {"student_name": "Charlotte Smith", "trial": 8, "reaction_time_ms": 530, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:18.857Z", "finger_mm": 72.0}, {"student_name": "Joy Ojeabulu", "trial": 7, "reaction_time_ms": 3473, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:19.245Z", "finger_mm": 8.2}, {"student_name": "Gianna Cavacuiti", "trial": 8, "reaction_time_ms": 361, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:18.298Z", "finger_mm": 79.0}, {"student_name": "Charlotte Smith", "trial": 9, "reaction_time_ms": 408, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:18.857Z", "finger_mm": 72.0}, {"student_name": "Rael", "trial": 3, "reaction_time_ms": 1748, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:23.349Z", "finger_mm": 80.0}, {"student_name": "Joy Ojeabulu", "trial": 8, "reaction_time_ms": 3072, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:19.245Z", "finger_mm": 8.2}, {"student_name": "Mimy Kanza", "trial": 1, "reaction_time_ms": 56249, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:24.410Z", "finger_mm": 900.0}, {"student_name": "Charlotte Smith", "trial": 10, "reaction_time_ms": 373, "device": "Laptop", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:18.857Z", "finger_mm": 72.0}, {"student_name": "Joy Ojeabulu", "trial": 9, "reaction_time_ms": 602, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:19.245Z", "finger_mm": 8.2}, {"student_name": "Mimy Kanza", "trial": 2, "reaction_time_ms": 8077, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:24.410Z", "finger_mm": 900.0}, {"student_name": "Sodiq Salaudeen", "trial": 8, "reaction_time_ms": 407, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:20.363Z", "finger_mm": 76.0}, {"student_name": "Joy Ojeabulu", "trial": 10, "reaction_time_ms": 545, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:19.245Z", "finger_mm": 8.2}, {"student_name": "Rael", "trial": 5, "reaction_time_ms": 1211, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:23.349Z", "finger_mm": 80.0}, {"student_name": "Mimy Kanza", "trial": 3, "reaction_time_ms": 2080, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:24.410Z", "finger_mm": 900.0}, {"student_name": "Sodiq Salaudeen", "trial": 9, "reaction_time_ms": 313, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:20.363Z", "finger_mm": 76.0}, {"student_name": "Rael", "trial": 6, "reaction_time_ms": 899, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:23.349Z", "finger_mm": 80.0}, {"student_name": "Mimy Kanza", "trial": 4, "reaction_time_ms": 787, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:24.410Z", "finger_mm": 900.0}, {"student_name": "Sodiq Salaudeen", "trial": 10, "reaction_time_ms": 374, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:20.363Z", "finger_mm": 76.0}, {"student_name": "Mimy Kanza", "trial": 5, "reaction_time_ms": 979, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:24.410Z", "finger_mm": 900.0}, {"student_name": "Mimy Kanza", "trial": 6, "reaction_time_ms": 1030, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:24.410Z", "finger_mm": 900.0}, {"student_name": "Mimy Kanza", "trial": 7, "reaction_time_ms": 693, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:24.410Z", "finger_mm": 900.0}, {"student_name": "Mimy Kanza", "trial": 8, "reaction_time_ms": 1165, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:24.410Z", "finger_mm": 900.0}, {"student_name": "Michael Adewumi", "trial": 1, "reaction_time_ms": 5201, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:27.382Z", "finger_mm": 80.0}, {"student_name": "Mimy Kanza", "trial": 9, "reaction_time_ms": 1061, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:24.410Z", "finger_mm": 900.0}, {"student_name": "Michael Adewumi", "trial": 2, "reaction_time_ms": 2439, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:27.382Z", "finger_mm": 80.0}, {"student_name": "Mimy Kanza", "trial": 10, "reaction_time_ms": 2158, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:24.410Z", "finger_mm": 900.0}, {"student_name": "Michael Adewumi", "trial": 3, "reaction_time_ms": 674, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:27.382Z", "finger_mm": 80.0}, {"student_name": "Ethan Toudic", "trial": 1, "reaction_time_ms": 333, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:28.039Z", "finger_mm": 71.0}, {"student_name": "Michael Adewumi", "trial": 4, "reaction_time_ms": 1251, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:27.382Z", "finger_mm": 80.0}, {"student_name": "Rael", "trial": 9, "reaction_time_ms": 1191, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:23.349Z", "finger_mm": 80.0}, {"student_name": "Ethan Toudic", "trial": 3, "reaction_time_ms": 322, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:28.039Z", "finger_mm": 71.0}, {"student_name": "Rael", "trial": 10, "reaction_time_ms": 1251, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:23.349Z", "finger_mm": 80.0}, {"student_name": "Ethan Toudic", "trial": 4, "reaction_time_ms": 288, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:28.039Z", "finger_mm": 71.0}, {"student_name": "Ethan Toudic", "trial": 5, "reaction_time_ms": 349, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:28.039Z", "finger_mm": 71.0}, {"student_name": "Michael Adewumi", "trial": 5, "reaction_time_ms": 793, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:27.382Z", "finger_mm": 80.0}, {"student_name": "Ethan Toudic", "trial": 6, "reaction_time_ms": 293, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:28.039Z", "finger_mm": 71.0}, {"student_name": "Michael Adewumi", "trial": 6, "reaction_time_ms": 690, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:27.382Z", "finger_mm": 80.0}, {"student_name": "Ethan Toudic", "trial": 7, "reaction_time_ms": 506, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:28.039Z", "finger_mm": 71.0}, {"student_name": "Ethan Toudic", "trial": 8, "reaction_time_ms": 647, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:28.039Z", "finger_mm": 71.0}, {"student_name": "Ethan Toudic", "trial": 9, "reaction_time_ms": 288, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:28.039Z", "finger_mm": 71.0}, {"student_name": "Michael Adewumi", "trial": 7, "reaction_time_ms": 443, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:27.382Z", "finger_mm": 80.0}, {"student_name": "Ethan Toudic", "trial": 10, "reaction_time_ms": 305, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:28.039Z", "finger_mm": 71.0}, {"student_name": "Michael Adewumi", "trial": 8, "reaction_time_ms": 533, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:27.382Z", "finger_mm": 80.0}, {"student_name": "Michael Adewumi", "trial": 9, "reaction_time_ms": 486, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:27.382Z", "finger_mm": 80.0}, {"student_name": "Michael Adewumi", "trial": 10, "reaction_time_ms": 635, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:27.382Z", "finger_mm": 80.0}, {"student_name": "Basirat Adeyemo", "trial": 1, "reaction_time_ms": 639, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:31.884Z", "finger_mm": 80.0}, {"student_name": "Basirat Adeyemo", "trial": 2, "reaction_time_ms": 476, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:31.884Z", "finger_mm": 80.0}, {"student_name": "Basirat Adeyemo", "trial": 3, "reaction_time_ms": 437, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:31.884Z", "finger_mm": 80.0}, {"student_name": "Basirat Adeyemo", "trial": 4, "reaction_time_ms": 313, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:31.884Z", "finger_mm": 80.0}, {"student_name": "Basirat Adeyemo", "trial": 5, "reaction_time_ms": 330, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:31.884Z", "finger_mm": 80.0}, {"student_name": "Basirat Adeyemo", "trial": 6, "reaction_time_ms": 338, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:31.884Z", "finger_mm": 80.0}, {"student_name": "Basirat Adeyemo", "trial": 7, "reaction_time_ms": 433, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:31.884Z", "finger_mm": 80.0}, {"student_name": "Basirat Adeyemo", "trial": 8, "reaction_time_ms": 435, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:31.884Z", "finger_mm": 80.0}, {"student_name": "Basirat Adeyemo", "trial": 9, "reaction_time_ms": 327, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:31.884Z", "finger_mm": 80.0}, {"student_name": "Basirat Adeyemo", "trial": 10, "reaction_time_ms": 468, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:31.884Z", "finger_mm": 80.0}, {"student_name": "David Ekpo", "trial": 1, "reaction_time_ms": 419, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:43.205Z", "finger_mm": 80.0}, {"student_name": "David Ekpo", "trial": 2, "reaction_time_ms": 364, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:43.205Z", "finger_mm": 80.0}, {"student_name": "David Ekpo", "trial": 3, "reaction_time_ms": 360, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:43.205Z", "finger_mm": 80.0}, {"student_name": "David Ekpo", "trial": 4, "reaction_time_ms": 449, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:43.205Z", "finger_mm": 80.0}, {"student_name": "David Ekpo", "trial": 5, "reaction_time_ms": 391, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:43.205Z", "finger_mm": 80.0}, {"student_name": "David Ekpo", "trial": 6, "reaction_time_ms": 344, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:43.205Z", "finger_mm": 80.0}, {"student_name": "David Ekpo", "trial": 7, "reaction_time_ms": 368, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:43.205Z", "finger_mm": 80.0}, {"student_name": "Soumaya", "trial": 1, "reaction_time_ms": 4761, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:45.641Z", "finger_mm": 70.0}, {"student_name": "David Ekpo", "trial": 8, "reaction_time_ms": 459, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:43.205Z", "finger_mm": 80.0}, {"student_name": "David Ekpo", "trial": 9, "reaction_time_ms": 367, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:43.205Z", "finger_mm": 80.0}, {"student_name": "Soumaya", "trial": 2, "reaction_time_ms": 7777, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:45.641Z", "finger_mm": 70.0}, {"student_name": "David Ekpo", "trial": 10, "reaction_time_ms": 642, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:43.205Z", "finger_mm": 80.0}, {"student_name": "Soumaya", "trial": 3, "reaction_time_ms": 2828, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:45.641Z", "finger_mm": 70.0}, {"student_name": "Soumaya", "trial": 4, "reaction_time_ms": 1454, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:45.641Z", "finger_mm": 70.0}, {"student_name": "Soumaya", "trial": 5, "reaction_time_ms": 1212, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:45.641Z", "finger_mm": 70.0}, {"student_name": "Soumaya", "trial": 6, "reaction_time_ms": 1063, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:45.641Z", "finger_mm": 70.0}, {"student_name": "Soumaya", "trial": 7, "reaction_time_ms": 3390, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:45.641Z", "finger_mm": 70.0}, {"student_name": "Rosie Birch", "trial": 1, "reaction_time_ms": 282, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:48.356Z", "finger_mm": 74.0}, {"student_name": "Soumaya", "trial": 8, "reaction_time_ms": 7743, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:45.641Z", "finger_mm": 70.0}, {"student_name": "Rosie Birch", "trial": 2, "reaction_time_ms": 322, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:48.356Z", "finger_mm": 74.0}, {"student_name": "Soumaya", "trial": 9, "reaction_time_ms": 4766, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:45.641Z", "finger_mm": 70.0}, {"student_name": "Rosie Birch", "trial": 3, "reaction_time_ms": 259, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:48.356Z", "finger_mm": 74.0}, {"student_name": "Rosie Birch", "trial": 4, "reaction_time_ms": 283, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:48.356Z", "finger_mm": 74.0}, {"student_name": "Soumaya", "trial": 10, "reaction_time_ms": 3446, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:21:45.641Z", "finger_mm": 70.0}, {"student_name": "Emmanuela Odoh", "trial": 1, "reaction_time_ms": 2917, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:49.683Z", "finger_mm": 6.9}, {"student_name": "Emmanuela Odoh", "trial": 2, "reaction_time_ms": 2228, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:49.683Z", "finger_mm": 6.9}, {"student_name": "Emmanuela Odoh", "trial": 3, "reaction_time_ms": 609, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:49.683Z", "finger_mm": 6.9}, {"student_name": "Rosie Birch", "trial": 5, "reaction_time_ms": 275, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:48.356Z", "finger_mm": 74.0}, {"student_name": "Emmanuela Odoh", "trial": 4, "reaction_time_ms": 480, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:49.683Z", "finger_mm": 6.9}, {"student_name": "Rosie Birch", "trial": 6, "reaction_time_ms": 285, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:48.356Z", "finger_mm": 74.0}, {"student_name": "Emmanuela Odoh", "trial": 5, "reaction_time_ms": 534, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:49.683Z", "finger_mm": 6.9}, {"student_name": "Rosie Birch", "trial": 7, "reaction_time_ms": 272, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:48.356Z", "finger_mm": 74.0}, {"student_name": "Emmanuela Odoh", "trial": 6, "reaction_time_ms": 441, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:49.683Z", "finger_mm": 6.9}, {"student_name": "Rosie Birch", "trial": 8, "reaction_time_ms": 285, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:48.356Z", "finger_mm": 74.0}, {"student_name": "Emmanuela Odoh", "trial": 7, "reaction_time_ms": 494, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:49.683Z", "finger_mm": 6.9}, {"student_name": "Abderrahmane Boukhaled", "trial": 1, "reaction_time_ms": 6007, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:51.370Z", "finger_mm": 80.0}, {"student_name": "Rosie Birch", "trial": 9, "reaction_time_ms": 298, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:48.356Z", "finger_mm": 74.0}, {"student_name": "Abderrahmane Boukhaled", "trial": 2, "reaction_time_ms": 934, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:51.370Z", "finger_mm": 80.0}, {"student_name": "Rosie Birch", "trial": 10, "reaction_time_ms": 273, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:48.356Z", "finger_mm": 74.0}, {"student_name": "Abderrahmane Boukhaled", "trial": 3, "reaction_time_ms": 11199, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:51.370Z", "finger_mm": 80.0}, {"student_name": "Abderrahmane Boukhaled", "trial": 4, "reaction_time_ms": 1113, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:51.370Z", "finger_mm": 80.0}, {"student_name": "Emmanuela Odoh", "trial": 10, "reaction_time_ms": 946, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:49.683Z", "finger_mm": 6.9}, {"student_name": "Abderrahmane Boukhaled", "trial": 5, "reaction_time_ms": 696, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:51.370Z", "finger_mm": 80.0}, {"student_name": "Abderrahmane Boukhaled", "trial": 6, "reaction_time_ms": 2722, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:51.370Z", "finger_mm": 80.0}, {"student_name": "Abderrahmane Boukhaled", "trial": 7, "reaction_time_ms": 884, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:51.370Z", "finger_mm": 80.0}, {"student_name": "Abderrahmane Boukhaled", "trial": 8, "reaction_time_ms": 1006, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:51.370Z", "finger_mm": 80.0}, {"student_name": "Abderrahmane Boukhaled", "trial": 9, "reaction_time_ms": 2170, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:51.370Z", "finger_mm": 80.0}, {"student_name": "Abderrahmane Boukhaled", "trial": 10, "reaction_time_ms": 568, "device": "Phone", "caffeine": "No", "timestamp": "2026-09-25T12:21:51.370Z", "finger_mm": 80.0}, {"student_name": "Otito", "trial": 1, "reaction_time_ms": 7552, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:54.617Z", "finger_mm": 100.0}, {"student_name": "Otito", "trial": 2, "reaction_time_ms": 502, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:54.617Z", "finger_mm": 100.0}, {"student_name": "Otito", "trial": 3, "reaction_time_ms": 436, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:54.617Z", "finger_mm": 100.0}, {"student_name": "Otito", "trial": 4, "reaction_time_ms": 382, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:54.617Z", "finger_mm": 100.0}, {"student_name": "Otito", "trial": 5, "reaction_time_ms": 343, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:54.617Z", "finger_mm": 100.0}, {"student_name": "Otito", "trial": 6, "reaction_time_ms": 313, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:54.617Z", "finger_mm": 100.0}, {"student_name": "Otito", "trial": 7, "reaction_time_ms": 359, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:54.617Z", "finger_mm": 100.0}, {"student_name": "Otito", "trial": 8, "reaction_time_ms": 379, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:54.617Z", "finger_mm": 100.0}, {"student_name": "Otito", "trial": 9, "reaction_time_ms": 387, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:54.617Z", "finger_mm": 100.0}, {"student_name": "Otito", "trial": 10, "reaction_time_ms": 358, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:21:54.617Z", "finger_mm": 100.0}, {"student_name": "Rashida kinattingalakath", "trial": 1, "reaction_time_ms": 581, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:22:12.020Z", "finger_mm": 7.0}, {"student_name": "Rashida kinattingalakath", "trial": 2, "reaction_time_ms": 507, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:22:12.020Z", "finger_mm": 7.0}, {"student_name": "Rashida kinattingalakath", "trial": 3, "reaction_time_ms": 516, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:22:12.020Z", "finger_mm": 7.0}, {"student_name": "Rashida kinattingalakath", "trial": 4, "reaction_time_ms": 373, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:22:12.020Z", "finger_mm": 7.0}, {"student_name": "Rashida kinattingalakath", "trial": 5, "reaction_time_ms": 447, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:22:12.020Z", "finger_mm": 7.0}, {"student_name": "Rashida kinattingalakath", "trial": 6, "reaction_time_ms": 446, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:22:12.020Z", "finger_mm": 7.0}, {"student_name": "Rashida kinattingalakath", "trial": 7, "reaction_time_ms": 368, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:22:12.020Z", "finger_mm": 7.0}, {"student_name": "Rashida kinattingalakath", "trial": 8, "reaction_time_ms": 358, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:22:12.020Z", "finger_mm": 7.0}, {"student_name": "Eno-obong Udofia", "trial": 1, "reaction_time_ms": 4562, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:22:13.849Z", "finger_mm": 95.0}, {"student_name": "Rashida kinattingalakath", "trial": 9, "reaction_time_ms": 349, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:22:12.020Z", "finger_mm": 7.0}, {"student_name": "Eno-obong Udofia", "trial": 2, "reaction_time_ms": 8297, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:22:13.849Z", "finger_mm": 95.0}, {"student_name": "Rashida kinattingalakath", "trial": 10, "reaction_time_ms": 724, "device": "Phone", "caffeine": "Yes", "timestamp": "2026-09-25T12:22:12.020Z", "finger_mm": 7.0}, {"student_name": "Eno-obong Udofia", "trial": 3, "reaction_time_ms": 739, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:22:13.849Z", "finger_mm": 95.0}, {"student_name": "Eno-obong Udofia", "trial": 4, "reaction_time_ms": 4329, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:22:13.849Z", "finger_mm": 95.0}, {"student_name": "Eno-obong Udofia", "trial": 5, "reaction_time_ms": 13031, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:22:13.849Z", "finger_mm": 95.0}, {"student_name": "Eno-obong Udofia", "trial": 6, "reaction_time_ms": 1545, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:22:13.849Z", "finger_mm": 95.0}, {"student_name": "Eno-obong Udofia", "trial": 7, "reaction_time_ms": 8888, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:22:13.849Z", "finger_mm": 95.0}, {"student_name": "Eno-obong Udofia", "trial": 8, "reaction_time_ms": 2075, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:22:13.849Z", "finger_mm": 95.0}, {"student_name": "Eno-obong Udofia", "trial": 9, "reaction_time_ms": 534, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:22:13.849Z", "finger_mm": 95.0}, {"student_name": "Eno-obong Udofia", "trial": 10, "reaction_time_ms": 2198, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:22:13.849Z", "finger_mm": 95.0}, {"student_name": "Sally Muinami", "trial": 1, "reaction_time_ms": 608, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:23:17.180Z", "finger_mm": 80.0}, {"student_name": "Sally Muinami", "trial": 2, "reaction_time_ms": 305, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:23:17.180Z", "finger_mm": 80.0}, {"student_name": "Sally Muinami", "trial": 3, "reaction_time_ms": 313, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:23:17.180Z", "finger_mm": 80.0}, {"student_name": "Sally Muinami", "trial": 4, "reaction_time_ms": 391, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:23:17.180Z", "finger_mm": 80.0}, {"student_name": "Sally Muinami", "trial": 5, "reaction_time_ms": 449, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:23:17.180Z", "finger_mm": 80.0}, {"student_name": "Sally Muinami", "trial": 6, "reaction_time_ms": 436, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:23:17.180Z", "finger_mm": 80.0}, {"student_name": "Sally Muinami", "trial": 7, "reaction_time_ms": 321, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:23:17.180Z", "finger_mm": 80.0}, {"student_name": "Sally Muinami", "trial": 8, "reaction_time_ms": 406, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:23:17.180Z", "finger_mm": 80.0}, {"student_name": "Sally Muinami", "trial": 9, "reaction_time_ms": 357, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:23:17.180Z", "finger_mm": 80.0}, {"student_name": "Sally Muinami", "trial": 10, "reaction_time_ms": 275, "device": "Laptop", "caffeine": "No", "timestamp": "2026-09-25T12:23:17.180Z", "finger_mm": 80.0}]}]}</script>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb1" data-startfrom="46" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 45;"><span id="cb1-46"><a></a><span class="kw">function</span> <span class="fu">accessibleChart</span>(node<span class="op">,</span> label) {</span>
+<span id="cb1-47"><a></a>  node<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">"aria-hidden"</span><span class="op">,</span> <span class="st">"true"</span>)</span>
+<span id="cb1-48"><a></a>  <span class="kw">const</span> wrapper <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">"div"</span>)</span>
+<span id="cb1-49"><a></a>  wrapper<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">"role"</span><span class="op">,</span> <span class="st">"img"</span>)</span>
+<span id="cb1-50"><a></a>  wrapper<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">"aria-label"</span><span class="op">,</span> label)</span>
+<span id="cb1-51"><a></a>  wrapper<span class="op">.</span><span class="fu">appendChild</span>(node)</span>
+<span id="cb1-52"><a></a>  <span class="cf">return</span> wrapper</span>
+<span id="cb1-53"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="57" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 56;"><span id="cb2-57"><a></a><span class="co">// Everything on this deck is computed live from the real data — nothing</span></span>
+<span id="cb2-58"><a></a><span class="co">// here is a hardcoded number from a one-off analysis, so this stays</span></span>
+<span id="cb2-59"><a></a><span class="co">// accurate if the Sheet is ever refreshed or corrected.</span></span>
+<span id="cb2-60"><a></a>analysis <span class="op">=</span> {</span>
+<span id="cb2-61"><a></a>  <span class="kw">const</span> vals <span class="op">=</span> data<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">reaction_time_ms</span>)</span>
+<span id="cb2-62"><a></a>  <span class="kw">const</span> sorted <span class="op">=</span> [<span class="op">...</span>vals]<span class="op">.</span><span class="fu">sort</span>((a<span class="op">,</span> b) <span class="kw">=&gt;</span> a <span class="op">-</span> b)</span>
+<span id="cb2-63"><a></a>  <span class="kw">const</span> n <span class="op">=</span> vals<span class="op">.</span><span class="at">length</span></span>
+<span id="cb2-64"><a></a>  <span class="kw">const</span> mean <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(vals)</span>
+<span id="cb2-65"><a></a>  <span class="kw">const</span> median <span class="op">=</span> d3<span class="op">.</span><span class="fu">median</span>(vals)</span>
+<span id="cb2-66"><a></a>  <span class="kw">const</span> sd <span class="op">=</span> d3<span class="op">.</span><span class="fu">deviation</span>(vals)</span>
+<span id="cb2-67"><a></a>  <span class="kw">const</span> q1 <span class="op">=</span> d3<span class="op">.</span><span class="fu">quantile</span>(sorted<span class="op">,</span> <span class="fl">0.25</span>)</span>
+<span id="cb2-68"><a></a>  <span class="kw">const</span> q3 <span class="op">=</span> d3<span class="op">.</span><span class="fu">quantile</span>(sorted<span class="op">,</span> <span class="fl">0.75</span>)</span>
+<span id="cb2-69"><a></a>  <span class="kw">const</span> iqr <span class="op">=</span> q3 <span class="op">-</span> q1</span>
+<span id="cb2-70"><a></a>  <span class="kw">const</span> fenceHi <span class="op">=</span> q3 <span class="op">+</span> <span class="fl">1.5</span> <span class="op">*</span> iqr</span>
+<span id="cb2-71"><a></a></span>
+<span id="cb2-72"><a></a>  <span class="kw">const</span> outliers <span class="op">=</span> data<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">reaction_time_ms</span> <span class="op">&gt;</span> fenceHi)</span>
+<span id="cb2-73"><a></a>  <span class="kw">const</span> nOut <span class="op">=</span> outliers<span class="op">.</span><span class="at">length</span></span>
+<span id="cb2-74"><a></a>  <span class="kw">const</span> pctOut <span class="op">=</span> (nOut <span class="op">/</span> n) <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb2-75"><a></a></span>
+<span id="cb2-76"><a></a>  <span class="kw">const</span> studentsAll <span class="op">=</span> <span class="kw">new</span> <span class="bu">Set</span>(data<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">student_name</span>))</span>
+<span id="cb2-77"><a></a>  <span class="kw">const</span> studentsOut <span class="op">=</span> <span class="kw">new</span> <span class="bu">Set</span>(outliers<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">student_name</span>))</span>
+<span id="cb2-78"><a></a></span>
+<span id="cb2-79"><a></a>  <span class="kw">const</span> byTrial <span class="op">=</span> d3<span class="op">.</span><span class="fu">rollup</span>(outliers<span class="op">,</span> v <span class="kw">=&gt;</span> v<span class="op">.</span><span class="at">length</span><span class="op">,</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">trial</span>)</span>
+<span id="cb2-80"><a></a>  <span class="kw">const</span> byDeviceOut <span class="op">=</span> d3<span class="op">.</span><span class="fu">rollup</span>(outliers<span class="op">,</span> v <span class="kw">=&gt;</span> v<span class="op">.</span><span class="at">length</span><span class="op">,</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">device</span>)</span>
+<span id="cb2-81"><a></a>  <span class="kw">const</span> byDeviceAll <span class="op">=</span> d3<span class="op">.</span><span class="fu">rollup</span>(data<span class="op">,</span> v <span class="kw">=&gt;</span> v<span class="op">.</span><span class="at">length</span><span class="op">,</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">device</span>)</span>
+<span id="cb2-82"><a></a>  <span class="kw">const</span> byCaffOut <span class="op">=</span> d3<span class="op">.</span><span class="fu">rollup</span>(outliers<span class="op">,</span> v <span class="kw">=&gt;</span> v<span class="op">.</span><span class="at">length</span><span class="op">,</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">caffeine</span>)</span>
+<span id="cb2-83"><a></a>  <span class="kw">const</span> byCaffAll <span class="op">=</span> d3<span class="op">.</span><span class="fu">rollup</span>(data<span class="op">,</span> v <span class="kw">=&gt;</span> v<span class="op">.</span><span class="at">length</span><span class="op">,</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">caffeine</span>)</span>
+<span id="cb2-84"><a></a></span>
+<span id="cb2-85"><a></a>  <span class="kw">const</span> perStudentOutCount <span class="op">=</span> d3<span class="op">.</span><span class="fu">rollup</span>(outliers<span class="op">,</span> v <span class="kw">=&gt;</span> v<span class="op">.</span><span class="at">length</span><span class="op">,</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">student_name</span>)</span>
+<span id="cb2-86"><a></a>  <span class="kw">const</span> buckets <span class="op">=</span> { <span class="dt">zero</span><span class="op">:</span> <span class="dv">0</span><span class="op">,</span> <span class="dt">oneTwo</span><span class="op">:</span> <span class="dv">0</span><span class="op">,</span> <span class="dt">threePlus</span><span class="op">:</span> <span class="dv">0</span> }</span>
+<span id="cb2-87"><a></a>  <span class="cf">for</span> (<span class="kw">const</span> s <span class="kw">of</span> studentsAll) {</span>
+<span id="cb2-88"><a></a>    <span class="kw">const</span> c <span class="op">=</span> perStudentOutCount<span class="op">.</span><span class="fu">get</span>(s) <span class="op">||</span> <span class="dv">0</span></span>
+<span id="cb2-89"><a></a>    <span class="cf">if</span> (c <span class="op">===</span> <span class="dv">0</span>) buckets<span class="op">.</span><span class="at">zero</span><span class="op">++</span></span>
+<span id="cb2-90"><a></a>    <span class="cf">else</span> <span class="cf">if</span> (c <span class="op">&lt;=</span> <span class="dv">2</span>) buckets<span class="op">.</span><span class="at">oneTwo</span><span class="op">++</span></span>
+<span id="cb2-91"><a></a>    <span class="cf">else</span> buckets<span class="op">.</span><span class="at">threePlus</span><span class="op">++</span></span>
+<span id="cb2-92"><a></a>  }</span>
+<span id="cb2-93"><a></a></span>
+<span id="cb2-94"><a></a>  <span class="co">// Trials 1–2 share of all outliers, vs. the 20% you'd expect if outliers</span></span>
+<span id="cb2-95"><a></a>  <span class="co">// were spread evenly across all 10 trial positions.</span></span>
+<span id="cb2-96"><a></a>  <span class="kw">const</span> earlyOutliers <span class="op">=</span> (byTrial<span class="op">.</span><span class="fu">get</span>(<span class="dv">1</span>) <span class="op">||</span> <span class="dv">0</span>) <span class="op">+</span> (byTrial<span class="op">.</span><span class="fu">get</span>(<span class="dv">2</span>) <span class="op">||</span> <span class="dv">0</span>)</span>
+<span id="cb2-97"><a></a>  <span class="kw">const</span> earlyPct <span class="op">=</span> nOut <span class="op">?</span> (earlyOutliers <span class="op">/</span> nOut) <span class="op">*</span> <span class="dv">100</span> <span class="op">:</span> <span class="dv">0</span></span>
+<span id="cb2-98"><a></a></span>
+<span id="cb2-99"><a></a>  <span class="cf">return</span> {</span>
+<span id="cb2-100"><a></a>    n<span class="op">,</span> mean<span class="op">,</span> median<span class="op">,</span> sd<span class="op">,</span> q1<span class="op">,</span> q3<span class="op">,</span> iqr<span class="op">,</span> fenceHi<span class="op">,</span></span>
+<span id="cb2-101"><a></a>    nOut<span class="op">,</span> pctOut<span class="op">,</span> earlyOutliers<span class="op">,</span> earlyPct<span class="op">,</span></span>
+<span id="cb2-102"><a></a>    <span class="dt">studentsAllCount</span><span class="op">:</span> studentsAll<span class="op">.</span><span class="at">size</span><span class="op">,</span> <span class="dt">studentsOutCount</span><span class="op">:</span> studentsOut<span class="op">.</span><span class="at">size</span><span class="op">,</span></span>
+<span id="cb2-103"><a></a>    byTrial<span class="op">,</span> byDeviceOut<span class="op">,</span> byDeviceAll<span class="op">,</span> byCaffOut<span class="op">,</span> byCaffAll<span class="op">,</span> buckets</span>
+<span id="cb2-104"><a></a>  }</span>
+<span id="cb2-105"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+</section>
+<section id="section" class="slide level2" data-background-color="#1a1a2e">
+<h2></h2>
+<div style="text-align: center; padding-top: 180px;">
+<p><span style="font-size: 2.2em; color: white;"><strong>Addendum: what our real data actually showed</strong></span></p>
+<p><span style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;">In the workshop, we excluded one obvious outlier. That wasn’t the whole story.</span></p>
+</div>
+</section>
+<section id="quick-recap" class="slide level2">
+<h2>Quick recap</h2>
+<div class="instructions-box">
+<p>In the Week 1 workshop, we spotted one clearly broken trial — one value at around 56 seconds, obviously not a real reaction time — and excluded it live so the histogram and box plot were readable.</p>
+</div>
+<div class="fragment">
+<p>If you explore the full class dataset yourself, you’ll find that single exclusion wasn’t the whole story. This addendum walks through what’s actually in the data, and what it means for the module’s own outlier framework.</p>
+</div>
+</section>
+<section id="the-headline-numbers" class="slide level2">
+<h2>The headline numbers</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb3" data-startfrom="129" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 128;"><span id="cb3-129"><a></a><span class="fu">html</span><span class="vs">`&lt;div class="stat-row"&gt;</span></span>
+<span id="cb3-130"><a></a><span class="vs">  &lt;div class="stat-chip chip-red"&gt;Mean: </span><span class="sc">${</span>analysis<span class="op">.</span><span class="at">mean</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">0</span>)<span class="sc">}</span><span class="vs"> ms&lt;/div&gt;</span></span>
+<span id="cb3-131"><a></a><span class="vs">  &lt;div class="stat-chip chip-orange"&gt;Median: </span><span class="sc">${</span>analysis<span class="op">.</span><span class="at">median</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">0</span>)<span class="sc">}</span><span class="vs"> ms&lt;/div&gt;</span></span>
+<span id="cb3-132"><a></a><span class="vs">  &lt;div class="stat-chip chip-red"&gt;SD: </span><span class="sc">${</span>analysis<span class="op">.</span><span class="at">sd</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">0</span>)<span class="sc">}</span><span class="vs"> ms&lt;/div&gt;</span></span>
+<span id="cb3-133"><a></a><span class="vs">&lt;/div&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-3" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<p>For genuine human reaction times, the mean should sit close to the median, and the standard deviation should be a fraction of the mean — not larger than it.</p>
+<div class="fragment">
+<p>Here, the mean is <strong><span><span id="ojs-element-id-1"></span>×</span> the median</strong>, and the standard deviation is <strong>larger than the mean itself</strong>. That’s not a rounding quirk — it’s a sign the data is being pulled around by more than one extreme value.</p>
+</div>
+</section>
+<section id="how-much-of-the-data-is-affected" class="slide level2">
+<h2>How much of the data is affected?</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb4" data-startfrom="145" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 144;"><span id="cb4-145"><a></a>{</span>
+<span id="cb4-146"><a></a>  <span class="kw">const</span> vals <span class="op">=</span> data<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">reaction_time_ms</span>)</span>
+<span id="cb4-147"><a></a>  <span class="kw">const</span> filtered <span class="op">=</span> vals<span class="op">.</span><span class="fu">filter</span>(v <span class="kw">=&gt;</span> v <span class="op">&lt;=</span> analysis<span class="op">.</span><span class="at">fenceHi</span>)</span>
+<span id="cb4-148"><a></a>  <span class="kw">const</span> pad <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">max</span>(<span class="dv">20</span><span class="op">,</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">round</span>((d3<span class="op">.</span><span class="fu">max</span>(filtered) <span class="op">-</span> d3<span class="op">.</span><span class="fu">min</span>(filtered)) <span class="op">*</span> <span class="fl">0.1</span>))</span>
+<span id="cb4-149"><a></a>  <span class="kw">const</span> xmin <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">floor</span>((d3<span class="op">.</span><span class="fu">min</span>(filtered) <span class="op">-</span> pad) <span class="op">/</span> <span class="dv">10</span>) <span class="op">*</span> <span class="dv">10</span></span>
+<span id="cb4-150"><a></a>  <span class="kw">const</span> xmax <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">ceil</span>((analysis<span class="op">.</span><span class="at">fenceHi</span> <span class="op">+</span> pad) <span class="op">/</span> <span class="dv">10</span>) <span class="op">*</span> <span class="dv">10</span></span>
+<span id="cb4-151"><a></a></span>
+<span id="cb4-152"><a></a>  <span class="kw">const</span> chartLabel <span class="op">=</span> <span class="vs">`This histogram shows the data within the standard outlier fence, with the excluded count marked. </span><span class="sc">${</span>analysis<span class="op">.</span><span class="at">nOut</span><span class="sc">}</span><span class="vs"> of </span><span class="sc">${</span>analysis<span class="op">.</span><span class="at">n</span><span class="sc">}</span><span class="vs"> trials — </span><span class="sc">${</span>analysis<span class="op">.</span><span class="at">pctOut</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">0</span>)<span class="sc">}</span><span class="vs"> percent — sit beyond the 1.5 times IQR fence at </span><span class="sc">${</span>analysis<span class="op">.</span><span class="at">fenceHi</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">0</span>)<span class="sc">}</span><span class="vs"> milliseconds.`</span></span>
+<span id="cb4-153"><a></a></span>
+<span id="cb4-154"><a></a>  <span class="cf">return</span> <span class="fu">accessibleChart</span>(Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb4-155"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">340</span><span class="op">,</span></span>
+<span id="cb4-156"><a></a>    <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">55</span><span class="op">,</span></span>
+<span id="cb4-157"><a></a>    <span class="dt">marginBottom</span><span class="op">:</span> <span class="dv">32</span><span class="op">,</span></span>
+<span id="cb4-158"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Reaction time (ms)"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [xmin<span class="op">,</span> xmax] }<span class="op">,</span></span>
+<span id="cb4-159"><a></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Count"</span> }<span class="op">,</span></span>
+<span id="cb4-160"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb4-161"><a></a>      Plot<span class="op">.</span><span class="fu">rectY</span>(filtered<span class="op">,</span> Plot<span class="op">.</span><span class="fu">binX</span>({ <span class="dt">y</span><span class="op">:</span> <span class="st">"count"</span> }<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">,</span> <span class="dt">thresholds</span><span class="op">:</span> <span class="dv">20</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#457b9d"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.75</span> }))<span class="op">,</span></span>
+<span id="cb4-162"><a></a>      Plot<span class="op">.</span><span class="fu">ruleX</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb4-163"><a></a>      Plot<span class="op">.</span><span class="fu">text</span>([{ <span class="dt">x</span><span class="op">:</span> xmax<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="dv">0</span> }]<span class="op">,</span> {</span>
+<span id="cb4-164"><a></a>        <span class="dt">text</span><span class="op">:</span> () <span class="kw">=&gt;</span> <span class="vs">`</span><span class="sc">${</span>analysis<span class="op">.</span><span class="at">nOut</span><span class="sc">}</span><span class="vs"> of </span><span class="sc">${</span>analysis<span class="op">.</span><span class="at">n</span><span class="sc">}</span><span class="vs"> trials (</span><span class="sc">${</span>analysis<span class="op">.</span><span class="at">pctOut</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">0</span>)<span class="sc">}</span><span class="vs">%) excluded`</span><span class="op">,</span></span>
+<span id="cb4-165"><a></a>        <span class="dt">x</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span> <span class="dt">frameAnchor</span><span class="op">:</span> <span class="st">"top-right"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#e63946"</span><span class="op">,</span> <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">13</span><span class="op">,</span> <span class="dt">fontStyle</span><span class="op">:</span> <span class="st">"italic"</span> })<span class="op">,</span></span>
+<span id="cb4-166"><a></a>    ]</span>
+<span id="cb4-167"><a></a>  })<span class="op">,</span> chartLabel)</span>
+<span id="cb4-168"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-4" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>That’s <strong>not one value — it’s a real chunk of the dataset</strong>, beyond the same 1.5×IQR fence this module already teaches on box plots.</p>
+</div>
+</section>
+<section id="how-many-students-were-affected" class="slide level2">
+<h2>How many students were affected?</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb5" data-startfrom="178" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 177;"><span id="cb5-178"><a></a><span class="fu">html</span><span class="vs">`&lt;div class="stat-row"&gt;</span></span>
+<span id="cb5-179"><a></a><span class="vs">  &lt;div class="stat-chip chip-red"&gt;</span><span class="sc">${</span>analysis<span class="op">.</span><span class="at">studentsOutCount</span><span class="sc">}</span><span class="vs"> of </span><span class="sc">${</span>analysis<span class="op">.</span><span class="at">studentsAllCount</span><span class="sc">}</span><span class="vs"> students have at least one flagged trial&lt;/div&gt;</span></span>
+<span id="cb5-180"><a></a><span class="vs">&lt;/div&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-5" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb6" data-startfrom="184" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 183;"><span id="cb6-184"><a></a>{</span>
+<span id="cb6-185"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> [</span>
+<span id="cb6-186"><a></a>    { <span class="dt">label</span><span class="op">:</span> <span class="st">"No flagged trials"</span><span class="op">,</span> <span class="dt">count</span><span class="op">:</span> analysis<span class="op">.</span><span class="at">buckets</span><span class="op">.</span><span class="at">zero</span> }<span class="op">,</span></span>
+<span id="cb6-187"><a></a>    { <span class="dt">label</span><span class="op">:</span> <span class="st">"1–2 flagged trials"</span><span class="op">,</span> <span class="dt">count</span><span class="op">:</span> analysis<span class="op">.</span><span class="at">buckets</span><span class="op">.</span><span class="at">oneTwo</span> }<span class="op">,</span></span>
+<span id="cb6-188"><a></a>    { <span class="dt">label</span><span class="op">:</span> <span class="st">"3+ flagged trials"</span><span class="op">,</span> <span class="dt">count</span><span class="op">:</span> analysis<span class="op">.</span><span class="at">buckets</span><span class="op">.</span><span class="at">threePlus</span> }<span class="op">,</span></span>
+<span id="cb6-189"><a></a>  ]</span>
+<span id="cb6-190"><a></a>  <span class="cf">return</span> <span class="fu">accessibleChart</span>(Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb6-191"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">260</span><span class="op">,</span></span>
+<span id="cb6-192"><a></a>    <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">140</span><span class="op">,</span></span>
+<span id="cb6-193"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Students"</span> }<span class="op">,</span></span>
+<span id="cb6-194"><a></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="kw">null</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> rows<span class="op">.</span><span class="fu">map</span>(r <span class="kw">=&gt;</span> r<span class="op">.</span><span class="at">label</span>) }<span class="op">,</span></span>
+<span id="cb6-195"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb6-196"><a></a>      Plot<span class="op">.</span><span class="fu">barX</span>(rows<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"count"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"label"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#457b9d"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.75</span> })<span class="op">,</span></span>
+<span id="cb6-197"><a></a>      Plot<span class="op">.</span><span class="fu">ruleX</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb6-198"><a></a>      Plot<span class="op">.</span><span class="fu">text</span>(rows<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"count"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"label"</span><span class="op">,</span> <span class="dt">text</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">count</span><span class="op">,</span> <span class="dt">dx</span><span class="op">:</span> <span class="dv">14</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#333"</span><span class="op">,</span> <span class="dt">fontWeight</span><span class="op">:</span> <span class="dv">600</span> })<span class="op">,</span></span>
+<span id="cb6-199"><a></a>    ]</span>
+<span id="cb6-200"><a></a>  })<span class="op">,</span> <span class="vs">`This chart groups students by how many of their own trials were flagged as outliers, without naming anyone individually. </span><span class="sc">${</span>rows<span class="op">.</span><span class="fu">map</span>(r <span class="kw">=&gt;</span> <span class="vs">`</span><span class="sc">${</span>r<span class="op">.</span><span class="at">count</span><span class="sc">}</span><span class="vs"> students had </span><span class="sc">${</span>r<span class="op">.</span><span class="at">label</span><span class="op">.</span><span class="fu">toLowerCase</span>()<span class="sc">}</span><span class="vs">`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">"; "</span>)<span class="sc">}</span><span class="vs">.`</span>)</span>
+<span id="cb6-201"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-6" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>This isn’t spread evenly — a handful of students account for most of the flagged trials, while most students have none at all.</p>
+</div>
+</section>
+<section id="ruling-out-the-easy-explanations" class="slide level2">
+<h2>Ruling out the easy explanations</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="211" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 210;"><span id="cb7-211"><a></a>{</span>
+<span id="cb7-212"><a></a>  <span class="kw">const</span> devices <span class="op">=</span> [<span class="st">"Phone"</span><span class="op">,</span> <span class="st">"Laptop"</span>]</span>
+<span id="cb7-213"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> devices<span class="op">.</span><span class="fu">flatMap</span>(dev <span class="kw">=&gt;</span> [</span>
+<span id="cb7-214"><a></a>    { <span class="dt">device</span><span class="op">:</span> dev<span class="op">,</span> <span class="dt">group</span><span class="op">:</span> <span class="st">"All trials"</span><span class="op">,</span> <span class="dt">pct</span><span class="op">:</span> <span class="dv">100</span> <span class="op">*</span> (analysis<span class="op">.</span><span class="at">byDeviceAll</span><span class="op">.</span><span class="fu">get</span>(dev) <span class="op">||</span> <span class="dv">0</span>) <span class="op">/</span> analysis<span class="op">.</span><span class="at">n</span> }<span class="op">,</span></span>
+<span id="cb7-215"><a></a>    { <span class="dt">device</span><span class="op">:</span> dev<span class="op">,</span> <span class="dt">group</span><span class="op">:</span> <span class="st">"Flagged trials"</span><span class="op">,</span> <span class="dt">pct</span><span class="op">:</span> <span class="dv">100</span> <span class="op">*</span> (analysis<span class="op">.</span><span class="at">byDeviceOut</span><span class="op">.</span><span class="fu">get</span>(dev) <span class="op">||</span> <span class="dv">0</span>) <span class="op">/</span> analysis<span class="op">.</span><span class="at">nOut</span> }<span class="op">,</span></span>
+<span id="cb7-216"><a></a>  ])</span>
+<span id="cb7-217"><a></a>  <span class="cf">return</span> <span class="fu">accessibleChart</span>(Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb7-218"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">220</span><span class="op">,</span></span>
+<span id="cb7-219"><a></a>    <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">90</span><span class="op">,</span></span>
+<span id="cb7-220"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"% of trials"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">100</span>] }<span class="op">,</span></span>
+<span id="cb7-221"><a></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="kw">null</span> }<span class="op">,</span></span>
+<span id="cb7-222"><a></a>    <span class="dt">fy</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="kw">null</span> }<span class="op">,</span></span>
+<span id="cb7-223"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb7-224"><a></a>      Plot<span class="op">.</span><span class="fu">barX</span>(rows<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"pct"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"group"</span><span class="op">,</span> <span class="dt">fy</span><span class="op">:</span> <span class="st">"device"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#457b9d"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.75</span> })<span class="op">,</span></span>
+<span id="cb7-225"><a></a>      Plot<span class="op">.</span><span class="fu">ruleX</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb7-226"><a></a>      Plot<span class="op">.</span><span class="fu">text</span>(rows<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"pct"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"group"</span><span class="op">,</span> <span class="dt">fy</span><span class="op">:</span> <span class="st">"device"</span><span class="op">,</span> <span class="dt">text</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">pct</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">0</span>) <span class="op">+</span> <span class="st">"%"</span><span class="op">,</span> <span class="dt">dx</span><span class="op">:</span> <span class="dv">18</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#333"</span> })<span class="op">,</span></span>
+<span id="cb7-227"><a></a>    ]</span>
+<span id="cb7-228"><a></a>  })<span class="op">,</span> <span class="st">"This chart compares the device split of all trials against the device split of flagged trials — the two bars are nearly identical for both Phone and Laptop, showing device isn't the explanation."</span>)</span>
+<span id="cb7-229"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-7" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Device doesn’t explain it — flagged trials split between Phone and Laptop in almost the same proportion as the dataset overall. The same is true for caffeine.</p>
+</div>
+</section>
+<section id="the-one-real-pattern-we-did-find" class="slide level2">
+<h2>The one real pattern we did find</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb8" data-startfrom="239" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 238;"><span id="cb8-239"><a></a>{</span>
+<span id="cb8-240"><a></a>  <span class="kw">const</span> trials <span class="op">=</span> d3<span class="op">.</span><span class="fu">range</span>(<span class="dv">1</span><span class="op">,</span> <span class="dv">11</span>)</span>
+<span id="cb8-241"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> trials<span class="op">.</span><span class="fu">map</span>(t <span class="kw">=&gt;</span> ({ <span class="dt">trial</span><span class="op">:</span> t<span class="op">,</span> <span class="dt">count</span><span class="op">:</span> analysis<span class="op">.</span><span class="at">byTrial</span><span class="op">.</span><span class="fu">get</span>(t) <span class="op">||</span> <span class="dv">0</span> }))</span>
+<span id="cb8-242"><a></a>  <span class="cf">return</span> <span class="fu">accessibleChart</span>(Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb8-243"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">280</span><span class="op">,</span></span>
+<span id="cb8-244"><a></a>    <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">50</span><span class="op">,</span></span>
+<span id="cb8-245"><a></a>    <span class="dt">marginBottom</span><span class="op">:</span> <span class="dv">36</span><span class="op">,</span></span>
+<span id="cb8-246"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Trial number"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> trials<span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> d <span class="kw">=&gt;</span> d }<span class="op">,</span></span>
+<span id="cb8-247"><a></a>    <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Flagged trials"</span> }<span class="op">,</span></span>
+<span id="cb8-248"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb8-249"><a></a>      Plot<span class="op">.</span><span class="fu">rectY</span>(rows<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"trial"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"count"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">trial</span> <span class="op">&lt;=</span> <span class="dv">2</span> <span class="op">?</span> <span class="st">"#e63946"</span> <span class="op">:</span> <span class="st">"#457b9d"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.75</span><span class="op">,</span> <span class="dt">interval</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">inset</span><span class="op">:</span> <span class="dv">4</span> })<span class="op">,</span></span>
+<span id="cb8-250"><a></a>      Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>])<span class="op">,</span></span>
+<span id="cb8-251"><a></a>    ]</span>
+<span id="cb8-252"><a></a>  })<span class="op">,</span> <span class="vs">`This chart shows how many flagged trials occurred at each of the ten trial positions. Trials one and two account for </span><span class="sc">${</span>analysis<span class="op">.</span><span class="at">earlyOutliers</span><span class="sc">}</span><span class="vs"> of the </span><span class="sc">${</span>analysis<span class="op">.</span><span class="at">nOut</span><span class="sc">}</span><span class="vs"> flagged trials — </span><span class="sc">${</span>analysis<span class="op">.</span><span class="at">earlyPct</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">0</span>)<span class="sc">}</span><span class="vs"> percent — noticeably more than the 20 percent you'd expect if they were spread evenly across all ten positions.`</span>)</span>
+<span id="cb8-253"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-8" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Trials 1–2 account for <strong><span><span id="ojs-element-id-2"></span>%</span> of flagged trials</strong> — well above the 20% you’d expect by chance. This matches exactly what we noticed live, watching one student’s data: the first trial or two, before you’ve settled into the task, is genuinely slower.</p>
+</div>
+</section>
+<section id="what-explains-the-rest" class="slide level2">
+<h2>What explains the rest?</h2>
+<p>The trial-1–2 effect only accounts for part of the picture. The remaining flagged trials are scattered across trials 3–10, with no link to device or caffeine.</p>
+<div class="fragment">
+<p>The most honest explanation is the one already named live in the workshop: <strong>inattention</strong> — talking to a neighbour, looking away, getting distracted mid-task — just happening more often, across more of the room, than a single case.</p>
+</div>
+<div class="fragment">
+<p>That’s a real, human explanation. It’s also not something this data can <em>prove</em> — we didn’t measure distraction directly, so this is an inference from the pattern, not a fact we captured.</p>
+</div>
+</section>
+<section id="back-to-the-framework" class="slide level2">
+<h2>Back to the framework</h2>
+<p>For every extreme value, this module already asks three questions. Applied at this scale, not just to one point:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Question</th>
+<th>Applied here</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Is it an error?</strong></td>
+<td>A little of it — the single ~56-second trial almost certainly is</td>
+</tr>
+<tr class="even">
+<td><strong>Is it real, but not what we’re studying?</strong></td>
+<td>Most of it — genuine slow taps, but driven by distraction, not the underlying reaction-time ability the business actually cares about</td>
+</tr>
+<tr class="odd">
+<td><strong>Is it a genuine feature of the process?</strong></td>
+<td>Partly — the trial-1–2 warm-up effect is a real, relevant feature of how people perform this specific task</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<p>Notice this doesn’t collapse to one clean answer. <strong>Different flagged trials plausibly belong in different rows of this table</strong> — that’s the harder, more realistic version of the judgement call the workshop introduced.</p>
+</div>
+</section>
+<section id="bridge-to-week-2" class="slide level2">
+<h2>Bridge to Week 2</h2>
+<div class="instructions-box">
+<p>We’ve just seen that a sample this noisy can produce a mean that’s <span><span id="ojs-element-id-3"></span>×</span> the median, purely from a messy minority of trials.</p>
+</div>
+<div class="fragment">
+<p>That’s exactly why you can’t just eyeball a mean, or a difference between two groups, and call it real. Next week: how we decide, systematically, which differences in a sample are worth taking seriously — and which are just noise.</p>
+</div>
+</section>
+<section id="takeaways" class="slide level2">
+<h2>Takeaways</h2>
+<ul>
+<li>A single “obvious” outlier is the easy case. Real data is often messier — check for that explicitly, don’t assume you’re done after removing one point</li>
+<li>Always ask <em>how much</em> of the data is affected, and <em>how it’s distributed</em> across your groups (here: students, devices, trial position) — not just <em>whether</em> outliers exist</li>
+<li>The three-question outlier framework still applies, but different points in the same dataset can land in different answers</li>
+<li>Robust statistics — the median, the IQR — held up here exactly as intended. The mean and SD didn’t</li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:20px;">
+<p>Analysis computed live from the current class dataset.</p>
+</div>
+
+
+<div class="ojs-auto-generated hidden">
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6WyAgeyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiaW5saW5lIjoidHJ1ZSIsInNvdXJjZSI6Imh0bC5odG1sYDxzcGFuPiR7KGFuYWx5c2lzLm1lYW4gLyBhbmFseXNpcy5tZWRpYW4pLnRvRml4ZWQoMSl9PC9zcGFuPmAiLCAiY2VsbE5hbWUiOiJvanMtZWxlbWVudC1pZC0xIn0sICB7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJpbmxpbmUiOiJ0cnVlIiwic291cmNlIjoiaHRsLmh0bWxgPHNwYW4+JHthbmFseXNpcy5lYXJseVBjdC50b0ZpeGVkKDApfTwvc3Bhbj5gIiwgImNlbGxOYW1lIjoib2pzLWVsZW1lbnQtaWQtMiJ9LCAgeyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiaW5saW5lIjoidHJ1ZSIsInNvdXJjZSI6Imh0bC5odG1sYDxzcGFuPiR7KGFuYWx5c2lzLm1lYW4gLyBhbmFseXNpcy5tZWRpYW4pLnRvRml4ZWQoMSl9PC9zcGFuPmAiLCAiY2VsbE5hbWUiOiJvanMtZWxlbWVudC1pZC0zIn1dfQ==
+</script>
+</div>
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":false,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'fade',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1280,
+
+        height: 720,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 8.0e-2,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script type="ojs-module-contents">
+    eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6ImZ1bmN0aW9uIGFjY2Vzc2libGVDaGFydChub2RlLCBsYWJlbCkge1xuICBub2RlLnNldEF0dHJpYnV0ZShcImFyaWEtaGlkZGVuXCIsIFwidHJ1ZVwiKVxuICBjb25zdCB3cmFwcGVyID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudChcImRpdlwiKVxuICB3cmFwcGVyLnNldEF0dHJpYnV0ZShcInJvbGVcIiwgXCJpbWdcIilcbiAgd3JhcHBlci5zZXRBdHRyaWJ1dGUoXCJhcmlhLWxhYmVsXCIsIGxhYmVsKVxuICB3cmFwcGVyLmFwcGVuZENoaWxkKG5vZGUpXG4gIHJldHVybiB3cmFwcGVyXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiIvLyBFdmVyeXRoaW5nIG9uIHRoaXMgZGVjayBpcyBjb21wdXRlZCBsaXZlIGZyb20gdGhlIHJlYWwgZGF0YSDigJQgbm90aGluZ1xuLy8gaGVyZSBpcyBhIGhhcmRjb2RlZCBudW1iZXIgZnJvbSBhIG9uZS1vZmYgYW5hbHlzaXMsIHNvIHRoaXMgc3RheXNcbi8vIGFjY3VyYXRlIGlmIHRoZSBTaGVldCBpcyBldmVyIHJlZnJlc2hlZCBvciBjb3JyZWN0ZWQuXG5hbmFseXNpcyA9IHtcbiAgY29uc3QgdmFscyA9IGRhdGEubWFwKGQgPT4gZC5yZWFjdGlvbl90aW1lX21zKVxuICBjb25zdCBzb3J0ZWQgPSBbLi4udmFsc10uc29ydCgoYSwgYikgPT4gYSAtIGIpXG4gIGNvbnN0IG4gPSB2YWxzLmxlbmd0aFxuICBjb25zdCBtZWFuID0gZDMubWVhbih2YWxzKVxuICBjb25zdCBtZWRpYW4gPSBkMy5tZWRpYW4odmFscylcbiAgY29uc3Qgc2QgPSBkMy5kZXZpYXRpb24odmFscylcbiAgY29uc3QgcTEgPSBkMy5xdWFudGlsZShzb3J0ZWQsIDAuMjUpXG4gIGNvbnN0IHEzID0gZDMucXVhbnRpbGUoc29ydGVkLCAwLjc1KVxuICBjb25zdCBpcXIgPSBxMyAtIHExXG4gIGNvbnN0IGZlbmNlSGkgPSBxMyArIDEuNSAqIGlxclxuXG4gIGNvbnN0IG91dGxpZXJzID0gZGF0YS5maWx0ZXIoZCA9PiBkLnJlYWN0aW9uX3RpbWVfbXMgPiBmZW5jZUhpKVxuICBjb25zdCBuT3V0ID0gb3V0bGllcnMubGVuZ3RoXG4gIGNvbnN0IHBjdE91dCA9IChuT3V0IC8gbikgKiAxMDBcblxuICBjb25zdCBzdHVkZW50c0FsbCA9IG5ldyBTZXQoZGF0YS5tYXAoZCA9PiBkLnN0dWRlbnRfbmFtZSkpXG4gIGNvbnN0IHN0dWRlbnRzT3V0ID0gbmV3IFNldChvdXRsaWVycy5tYXAoZCA9PiBkLnN0dWRlbnRfbmFtZSkpXG5cbiAgY29uc3QgYnlUcmlhbCA9IGQzLnJvbGx1cChvdXRsaWVycywgdiA9PiB2Lmxlbmd0aCwgZCA9PiBkLnRyaWFsKVxuICBjb25zdCBieURldmljZU91dCA9IGQzLnJvbGx1cChvdXRsaWVycywgdiA9PiB2Lmxlbmd0aCwgZCA9PiBkLmRldmljZSlcbiAgY29uc3QgYnlEZXZpY2VBbGwgPSBkMy5yb2xsdXAoZGF0YSwgdiA9PiB2Lmxlbmd0aCwgZCA9PiBkLmRldmljZSlcbiAgY29uc3QgYnlDYWZmT3V0ID0gZDMucm9sbHVwKG91dGxpZXJzLCB2ID0+IHYubGVuZ3RoLCBkID0+IGQuY2FmZmVpbmUpXG4gIGNvbnN0IGJ5Q2FmZkFsbCA9IGQzLnJvbGx1cChkYXRhLCB2ID0+IHYubGVuZ3RoLCBkID0+IGQuY2FmZmVpbmUpXG5cbiAgY29uc3QgcGVyU3R1ZGVudE91dENvdW50ID0gZDMucm9sbHVwKG91dGxpZXJzLCB2ID0+IHYubGVuZ3RoLCBkID0+IGQuc3R1ZGVudF9uYW1lKVxuICBjb25zdCBidWNrZXRzID0geyB6ZXJvOiAwLCBvbmVUd286IDAsIHRocmVlUGx1czogMCB9XG4gIGZvciAoY29uc3QgcyBvZiBzdHVkZW50c0FsbCkge1xuICAgIGNvbnN0IGMgPSBwZXJTdHVkZW50T3V0Q291bnQuZ2V0KHMpIHx8IDBcbiAgICBpZiAoYyA9PT0gMCkgYnVja2V0cy56ZXJvKytcbiAgICBlbHNlIGlmIChjIDw9IDIpIGJ1Y2tldHMub25lVHdvKytcbiAgICBlbHNlIGJ1Y2tldHMudGhyZWVQbHVzKytcbiAgfVxuXG4gIC8vIFRyaWFscyAx4oCTMiBzaGFyZSBvZiBhbGwgb3V0bGllcnMsIHZzLiB0aGUgMjAlIHlvdSdkIGV4cGVjdCBpZiBvdXRsaWVyc1xuICAvLyB3ZXJlIHNwcmVhZCBldmVubHkgYWNyb3NzIGFsbCAxMCB0cmlhbCBwb3NpdGlvbnMuXG4gIGNvbnN0IGVhcmx5T3V0bGllcnMgPSAoYnlUcmlhbC5nZXQoMSkgfHwgMCkgKyAoYnlUcmlhbC5nZXQoMikgfHwgMClcbiAgY29uc3QgZWFybHlQY3QgPSBuT3V0ID8gKGVhcmx5T3V0bGllcnMgLyBuT3V0KSAqIDEwMCA6IDBcblxuICByZXR1cm4ge1xuICAgIG4sIG1lYW4sIG1lZGlhbiwgc2QsIHExLCBxMywgaXFyLCBmZW5jZUhpLFxuICAgIG5PdXQsIHBjdE91dCwgZWFybHlPdXRsaWVycywgZWFybHlQY3QsXG4gICAgc3R1ZGVudHNBbGxDb3VudDogc3R1ZGVudHNBbGwuc2l6ZSwgc3R1ZGVudHNPdXRDb3VudDogc3R1ZGVudHNPdXQuc2l6ZSxcbiAgICBieVRyaWFsLCBieURldmljZU91dCwgYnlEZXZpY2VBbGwsIGJ5Q2FmZk91dCwgYnlDYWZmQWxsLCBidWNrZXRzXG4gIH1cbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMyIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPGRpdiBjbGFzcz1cInN0YXQtcm93XCI+XG4gIDxkaXYgY2xhc3M9XCJzdGF0LWNoaXAgY2hpcC1yZWRcIj5NZWFuOiAke2FuYWx5c2lzLm1lYW4udG9GaXhlZCgwKX0gbXM8L2Rpdj5cbiAgPGRpdiBjbGFzcz1cInN0YXQtY2hpcCBjaGlwLW9yYW5nZVwiPk1lZGlhbjogJHthbmFseXNpcy5tZWRpYW4udG9GaXhlZCgwKX0gbXM8L2Rpdj5cbiAgPGRpdiBjbGFzcz1cInN0YXQtY2hpcCBjaGlwLXJlZFwiPlNEOiAke2FuYWx5c2lzLnNkLnRvRml4ZWQoMCl9IG1zPC9kaXY+XG48L2Rpdj5gXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTQiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIGNvbnN0IHZhbHMgPSBkYXRhLm1hcChkID0+IGQucmVhY3Rpb25fdGltZV9tcylcbiAgY29uc3QgZmlsdGVyZWQgPSB2YWxzLmZpbHRlcih2ID0+IHYgPD0gYW5hbHlzaXMuZmVuY2VIaSlcbiAgY29uc3QgcGFkID0gTWF0aC5tYXgoMjAsIE1hdGgucm91bmQoKGQzLm1heChmaWx0ZXJlZCkgLSBkMy5taW4oZmlsdGVyZWQpKSAqIDAuMSkpXG4gIGNvbnN0IHhtaW4gPSBNYXRoLmZsb29yKChkMy5taW4oZmlsdGVyZWQpIC0gcGFkKSAvIDEwKSAqIDEwXG4gIGNvbnN0IHhtYXggPSBNYXRoLmNlaWwoKGFuYWx5c2lzLmZlbmNlSGkgKyBwYWQpIC8gMTApICogMTBcblxuICBjb25zdCBjaGFydExhYmVsID0gYFRoaXMgaGlzdG9ncmFtIHNob3dzIHRoZSBkYXRhIHdpdGhpbiB0aGUgc3RhbmRhcmQgb3V0bGllciBmZW5jZSwgd2l0aCB0aGUgZXhjbHVkZWQgY291bnQgbWFya2VkLiAke2FuYWx5c2lzLm5PdXR9IG9mICR7YW5hbHlzaXMubn0gdHJpYWxzIOKAlCAke2FuYWx5c2lzLnBjdE91dC50b0ZpeGVkKDApfSBwZXJjZW50IOKAlCBzaXQgYmV5b25kIHRoZSAxLjUgdGltZXMgSVFSIGZlbmNlIGF0ICR7YW5hbHlzaXMuZmVuY2VIaS50b0ZpeGVkKDApfSBtaWxsaXNlY29uZHMuYFxuXG4gIHJldHVybiBhY2Nlc3NpYmxlQ2hhcnQoUGxvdC5wbG90KHtcbiAgICBoZWlnaHQ6IDM0MCxcbiAgICBtYXJnaW5MZWZ0OiA1NSxcbiAgICBtYXJnaW5Cb3R0b206IDMyLFxuICAgIHg6IHsgbGFiZWw6IFwiUmVhY3Rpb24gdGltZSAobXMpXCIsIGRvbWFpbjogW3htaW4sIHhtYXhdIH0sXG4gICAgeTogeyBsYWJlbDogXCJDb3VudFwiIH0sXG4gICAgbWFya3M6IFtcbiAgICAgIFBsb3QucmVjdFkoZmlsdGVyZWQsIFBsb3QuYmluWCh7IHk6IFwiY291bnRcIiB9LCB7IHg6IGQgPT4gZCwgdGhyZXNob2xkczogMjAsIGZpbGw6IFwiIzQ1N2I5ZFwiLCBmaWxsT3BhY2l0eTogMC43NSB9KSksXG4gICAgICBQbG90LnJ1bGVYKFswXSksXG4gICAgICBQbG90LnRleHQoW3sgeDogeG1heCwgeTogMCB9XSwge1xuICAgICAgICB0ZXh0OiAoKSA9PiBgJHthbmFseXNpcy5uT3V0fSBvZiAke2FuYWx5c2lzLm59IHRyaWFscyAoJHthbmFseXNpcy5wY3RPdXQudG9GaXhlZCgwKX0lKSBleGNsdWRlZGAsXG4gICAgICAgIHg6IFwieFwiLCBmcmFtZUFuY2hvcjogXCJ0b3AtcmlnaHRcIiwgZmlsbDogXCIjZTYzOTQ2XCIsIGZvbnRTaXplOiAxMywgZm9udFN0eWxlOiBcIml0YWxpY1wiIH0pLFxuICAgIF1cbiAgfSksIGNoYXJ0TGFiZWwpXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTUiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJodG1sYDxkaXYgY2xhc3M9XCJzdGF0LXJvd1wiPlxuICA8ZGl2IGNsYXNzPVwic3RhdC1jaGlwIGNoaXAtcmVkXCI+JHthbmFseXNpcy5zdHVkZW50c091dENvdW50fSBvZiAke2FuYWx5c2lzLnN0dWRlbnRzQWxsQ291bnR9IHN0dWRlbnRzIGhhdmUgYXQgbGVhc3Qgb25lIGZsYWdnZWQgdHJpYWw8L2Rpdj5cbjwvZGl2PmBcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNiIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgY29uc3Qgcm93cyA9IFtcbiAgICB7IGxhYmVsOiBcIk5vIGZsYWdnZWQgdHJpYWxzXCIsIGNvdW50OiBhbmFseXNpcy5idWNrZXRzLnplcm8gfSxcbiAgICB7IGxhYmVsOiBcIjHigJMyIGZsYWdnZWQgdHJpYWxzXCIsIGNvdW50OiBhbmFseXNpcy5idWNrZXRzLm9uZVR3byB9LFxuICAgIHsgbGFiZWw6IFwiMysgZmxhZ2dlZCB0cmlhbHNcIiwgY291bnQ6IGFuYWx5c2lzLmJ1Y2tldHMudGhyZWVQbHVzIH0sXG4gIF1cbiAgcmV0dXJuIGFjY2Vzc2libGVDaGFydChQbG90LnBsb3Qoe1xuICAgIGhlaWdodDogMjYwLFxuICAgIG1hcmdpbkxlZnQ6IDE0MCxcbiAgICB4OiB7IGxhYmVsOiBcIlN0dWRlbnRzXCIgfSxcbiAgICB5OiB7IGxhYmVsOiBudWxsLCBkb21haW46IHJvd3MubWFwKHIgPT4gci5sYWJlbCkgfSxcbiAgICBtYXJrczogW1xuICAgICAgUGxvdC5iYXJYKHJvd3MsIHsgeDogXCJjb3VudFwiLCB5OiBcImxhYmVsXCIsIGZpbGw6IFwiIzQ1N2I5ZFwiLCBmaWxsT3BhY2l0eTogMC43NSB9KSxcbiAgICAgIFBsb3QucnVsZVgoWzBdKSxcbiAgICAgIFBsb3QudGV4dChyb3dzLCB7IHg6IFwiY291bnRcIiwgeTogXCJsYWJlbFwiLCB0ZXh0OiBkID0+IGQuY291bnQsIGR4OiAxNCwgZmlsbDogXCIjMzMzXCIsIGZvbnRXZWlnaHQ6IDYwMCB9KSxcbiAgICBdXG4gIH0pLCBgVGhpcyBjaGFydCBncm91cHMgc3R1ZGVudHMgYnkgaG93IG1hbnkgb2YgdGhlaXIgb3duIHRyaWFscyB3ZXJlIGZsYWdnZWQgYXMgb3V0bGllcnMsIHdpdGhvdXQgbmFtaW5nIGFueW9uZSBpbmRpdmlkdWFsbHkuICR7cm93cy5tYXAociA9PiBgJHtyLmNvdW50fSBzdHVkZW50cyBoYWQgJHtyLmxhYmVsLnRvTG93ZXJDYXNlKCl9YCkuam9pbihcIjsgXCIpfS5gKVxufVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC03IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICBjb25zdCBkZXZpY2VzID0gW1wiUGhvbmVcIiwgXCJMYXB0b3BcIl1cbiAgY29uc3Qgcm93cyA9IGRldmljZXMuZmxhdE1hcChkZXYgPT4gW1xuICAgIHsgZGV2aWNlOiBkZXYsIGdyb3VwOiBcIkFsbCB0cmlhbHNcIiwgcGN0OiAxMDAgKiAoYW5hbHlzaXMuYnlEZXZpY2VBbGwuZ2V0KGRldikgfHwgMCkgLyBhbmFseXNpcy5uIH0sXG4gICAgeyBkZXZpY2U6IGRldiwgZ3JvdXA6IFwiRmxhZ2dlZCB0cmlhbHNcIiwgcGN0OiAxMDAgKiAoYW5hbHlzaXMuYnlEZXZpY2VPdXQuZ2V0KGRldikgfHwgMCkgLyBhbmFseXNpcy5uT3V0IH0sXG4gIF0pXG4gIHJldHVybiBhY2Nlc3NpYmxlQ2hhcnQoUGxvdC5wbG90KHtcbiAgICBoZWlnaHQ6IDIyMCxcbiAgICBtYXJnaW5MZWZ0OiA5MCxcbiAgICB4OiB7IGxhYmVsOiBcIiUgb2YgdHJpYWxzXCIsIGRvbWFpbjogWzAsIDEwMF0gfSxcbiAgICB5OiB7IGxhYmVsOiBudWxsIH0sXG4gICAgZnk6IHsgbGFiZWw6IG51bGwgfSxcbiAgICBtYXJrczogW1xuICAgICAgUGxvdC5iYXJYKHJvd3MsIHsgeDogXCJwY3RcIiwgeTogXCJncm91cFwiLCBmeTogXCJkZXZpY2VcIiwgZmlsbDogXCIjNDU3YjlkXCIsIGZpbGxPcGFjaXR5OiAwLjc1IH0pLFxuICAgICAgUGxvdC5ydWxlWChbMF0pLFxuICAgICAgUGxvdC50ZXh0KHJvd3MsIHsgeDogXCJwY3RcIiwgeTogXCJncm91cFwiLCBmeTogXCJkZXZpY2VcIiwgdGV4dDogZCA9PiBkLnBjdC50b0ZpeGVkKDApICsgXCIlXCIsIGR4OiAxOCwgZmlsbDogXCIjMzMzXCIgfSksXG4gICAgXVxuICB9KSwgXCJUaGlzIGNoYXJ0IGNvbXBhcmVzIHRoZSBkZXZpY2Ugc3BsaXQgb2YgYWxsIHRyaWFscyBhZ2FpbnN0IHRoZSBkZXZpY2Ugc3BsaXQgb2YgZmxhZ2dlZCB0cmlhbHMg4oCUIHRoZSB0d28gYmFycyBhcmUgbmVhcmx5IGlkZW50aWNhbCBmb3IgYm90aCBQaG9uZSBhbmQgTGFwdG9wLCBzaG93aW5nIGRldmljZSBpc24ndCB0aGUgZXhwbGFuYXRpb24uXCIpXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTgiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIGNvbnN0IHRyaWFscyA9IGQzLnJhbmdlKDEsIDExKVxuICBjb25zdCByb3dzID0gdHJpYWxzLm1hcCh0ID0+ICh7IHRyaWFsOiB0LCBjb3VudDogYW5hbHlzaXMuYnlUcmlhbC5nZXQodCkgfHwgMCB9KSlcbiAgcmV0dXJuIGFjY2Vzc2libGVDaGFydChQbG90LnBsb3Qoe1xuICAgIGhlaWdodDogMjgwLFxuICAgIG1hcmdpbkxlZnQ6IDUwLFxuICAgIG1hcmdpbkJvdHRvbTogMzYsXG4gICAgeDogeyBsYWJlbDogXCJUcmlhbCBudW1iZXJcIiwgZG9tYWluOiB0cmlhbHMsIHRpY2tGb3JtYXQ6IGQgPT4gZCB9LFxuICAgIHk6IHsgbGFiZWw6IFwiRmxhZ2dlZCB0cmlhbHNcIiB9LFxuICAgIG1hcmtzOiBbXG4gICAgICBQbG90LnJlY3RZKHJvd3MsIHsgeDogXCJ0cmlhbFwiLCB5OiBcImNvdW50XCIsIGZpbGw6IGQgPT4gZC50cmlhbCA8PSAyID8gXCIjZTYzOTQ2XCIgOiBcIiM0NTdiOWRcIiwgZmlsbE9wYWNpdHk6IDAuNzUsIGludGVydmFsOiAxLCBpbnNldDogNCB9KSxcbiAgICAgIFBsb3QucnVsZVkoWzBdKSxcbiAgICBdXG4gIH0pLCBgVGhpcyBjaGFydCBzaG93cyBob3cgbWFueSBmbGFnZ2VkIHRyaWFscyBvY2N1cnJlZCBhdCBlYWNoIG9mIHRoZSB0ZW4gdHJpYWwgcG9zaXRpb25zLiBUcmlhbHMgb25lIGFuZCB0d28gYWNjb3VudCBmb3IgJHthbmFseXNpcy5lYXJseU91dGxpZXJzfSBvZiB0aGUgJHthbmFseXNpcy5uT3V0fSBmbGFnZ2VkIHRyaWFscyDigJQgJHthbmFseXNpcy5lYXJseVBjdC50b0ZpeGVkKDApfSBwZXJjZW50IOKAlCBub3RpY2VhYmx5IG1vcmUgdGhhbiB0aGUgMjAgcGVyY2VudCB5b3UnZCBleHBlY3QgaWYgdGhleSB3ZXJlIHNwcmVhZCBldmVubHkgYWNyb3NzIGFsbCB0ZW4gcG9zaXRpb25zLmApXG59XG4ifV19
+    </script>
+    <script type="module">
+    if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+    window._ojs.paths.runtimeToDoc = "../..";
+    window._ojs.paths.runtimeToRoot = "../..";
+    window._ojs.paths.docToRoot = "";
+    window._ojs.selfContained = false;
+    window._ojs.runtime.interpretFromScriptTags();
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
+              }
+            }
+            return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>

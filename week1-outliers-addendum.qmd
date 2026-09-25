@@ -1,0 +1,306 @@
+---
+title: "Addendum: What Our Real Data Actually Showed"
+subtitle: "7002LBSAI Research Methods in Analytics — Week 1"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="stylesheet" href="styles-slides.css?v=20260914-2-2">
+    menu:
+      useTextContentForMissingTitles: false
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{python}
+import pandas as pd
+
+# This addendum only makes sense against the real, collected class data —
+# unlike every other Week 1 file, there's no synthetic-placeholder toggle
+# here. It reads the live Sheet directly.
+df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIOZ03GpUJgqvGVmI9cih169mMq0ajLMj6a0VTd2tytB3K5BmX5AUiKQ8FKIL6KUKEcgb-1LR-1eM/pub?gid=0&single=true&output=csv")
+
+if 'name' in df.columns and 'student_name' not in df.columns:
+    df = df.rename(columns={'name': 'student_name'})
+if 'caffeine' not in df.columns:
+    df['caffeine'] = 'Unknown'
+df['caffeine'] = df['caffeine'].fillna('Unknown')
+
+df_clean = df.astype(object).where(df.notna(), None)
+
+ojs_define(
+    data = df_clean.to_dict(orient="records"),
+)
+```
+
+```{ojs}
+function accessibleChart(node, label) {
+  node.setAttribute("aria-hidden", "true")
+  const wrapper = document.createElement("div")
+  wrapper.setAttribute("role", "img")
+  wrapper.setAttribute("aria-label", label)
+  wrapper.appendChild(node)
+  return wrapper
+}
+```
+
+```{ojs}
+// Everything on this deck is computed live from the real data — nothing
+// here is a hardcoded number from a one-off analysis, so this stays
+// accurate if the Sheet is ever refreshed or corrected.
+analysis = {
+  const vals = data.map(d => d.reaction_time_ms)
+  const sorted = [...vals].sort((a, b) => a - b)
+  const n = vals.length
+  const mean = d3.mean(vals)
+  const median = d3.median(vals)
+  const sd = d3.deviation(vals)
+  const q1 = d3.quantile(sorted, 0.25)
+  const q3 = d3.quantile(sorted, 0.75)
+  const iqr = q3 - q1
+  const fenceHi = q3 + 1.5 * iqr
+
+  const outliers = data.filter(d => d.reaction_time_ms > fenceHi)
+  const nOut = outliers.length
+  const pctOut = (nOut / n) * 100
+
+  const studentsAll = new Set(data.map(d => d.student_name))
+  const studentsOut = new Set(outliers.map(d => d.student_name))
+
+  const byTrial = d3.rollup(outliers, v => v.length, d => d.trial)
+  const byDeviceOut = d3.rollup(outliers, v => v.length, d => d.device)
+  const byDeviceAll = d3.rollup(data, v => v.length, d => d.device)
+  const byCaffOut = d3.rollup(outliers, v => v.length, d => d.caffeine)
+  const byCaffAll = d3.rollup(data, v => v.length, d => d.caffeine)
+
+  const perStudentOutCount = d3.rollup(outliers, v => v.length, d => d.student_name)
+  const buckets = { zero: 0, oneTwo: 0, threePlus: 0 }
+  for (const s of studentsAll) {
+    const c = perStudentOutCount.get(s) || 0
+    if (c === 0) buckets.zero++
+    else if (c <= 2) buckets.oneTwo++
+    else buckets.threePlus++
+  }
+
+  // Trials 1–2 share of all outliers, vs. the 20% you'd expect if outliers
+  // were spread evenly across all 10 trial positions.
+  const earlyOutliers = (byTrial.get(1) || 0) + (byTrial.get(2) || 0)
+  const earlyPct = nOut ? (earlyOutliers / nOut) * 100 : 0
+
+  return {
+    n, mean, median, sd, q1, q3, iqr, fenceHi,
+    nOut, pctOut, earlyOutliers, earlyPct,
+    studentsAllCount: studentsAll.size, studentsOutCount: studentsOut.size,
+    byTrial, byDeviceOut, byDeviceAll, byCaffOut, byCaffAll, buckets
+  }
+}
+```
+
+## {background-color="#1a1a2e"}
+
+::: {style="text-align: center; padding-top: 180px;"}
+[**Addendum: what our real data actually showed**]{style="font-size: 2.2em; color: white;"}
+
+[In the workshop, we excluded one obvious outlier. That wasn't the whole story.]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+:::
+
+## Quick recap
+
+::: {.instructions-box}
+In the Week 1 workshop, we spotted one clearly broken trial — one value at around 56 seconds, obviously not a real reaction time — and excluded it live so the histogram and box plot were readable.
+:::
+
+::: {.fragment}
+If you explore the full class dataset yourself, you'll find that single exclusion wasn't the whole story. This addendum walks through what's actually in the data, and what it means for the module's own outlier framework.
+:::
+
+## The headline numbers
+
+```{ojs}
+html`<div class="stat-row">
+  <div class="stat-chip chip-red">Mean: ${analysis.mean.toFixed(0)} ms</div>
+  <div class="stat-chip chip-orange">Median: ${analysis.median.toFixed(0)} ms</div>
+  <div class="stat-chip chip-red">SD: ${analysis.sd.toFixed(0)} ms</div>
+</div>`
+```
+
+For genuine human reaction times, the mean should sit close to the median, and the standard deviation should be a fraction of the mean — not larger than it.
+
+::: {.fragment}
+Here, the mean is **${(analysis.mean / analysis.median).toFixed(1)}× the median**, and the standard deviation is **larger than the mean itself**. That's not a rounding quirk — it's a sign the data is being pulled around by more than one extreme value.
+:::
+
+## How much of the data is affected?
+
+```{ojs}
+{
+  const vals = data.map(d => d.reaction_time_ms)
+  const filtered = vals.filter(v => v <= analysis.fenceHi)
+  const pad = Math.max(20, Math.round((d3.max(filtered) - d3.min(filtered)) * 0.1))
+  const xmin = Math.floor((d3.min(filtered) - pad) / 10) * 10
+  const xmax = Math.ceil((analysis.fenceHi + pad) / 10) * 10
+
+  const chartLabel = `This histogram shows the data within the standard outlier fence, with the excluded count marked. ${analysis.nOut} of ${analysis.n} trials — ${analysis.pctOut.toFixed(0)} percent — sit beyond the 1.5 times IQR fence at ${analysis.fenceHi.toFixed(0)} milliseconds.`
+
+  return accessibleChart(Plot.plot({
+    height: 340,
+    marginLeft: 55,
+    marginBottom: 32,
+    x: { label: "Reaction time (ms)", domain: [xmin, xmax] },
+    y: { label: "Count" },
+    marks: [
+      Plot.rectY(filtered, Plot.binX({ y: "count" }, { x: d => d, thresholds: 20, fill: "#457b9d", fillOpacity: 0.75 })),
+      Plot.ruleX([0]),
+      Plot.text([{ x: xmax, y: 0 }], {
+        text: () => `${analysis.nOut} of ${analysis.n} trials (${analysis.pctOut.toFixed(0)}%) excluded`,
+        x: "x", frameAnchor: "top-right", fill: "#e63946", fontSize: 13, fontStyle: "italic" }),
+    ]
+  }), chartLabel)
+}
+```
+
+::: {.fragment}
+That's **not one value — it's a real chunk of the dataset**, beyond the same 1.5×IQR fence this module already teaches on box plots.
+:::
+
+## How many students were affected?
+
+```{ojs}
+html`<div class="stat-row">
+  <div class="stat-chip chip-red">${analysis.studentsOutCount} of ${analysis.studentsAllCount} students have at least one flagged trial</div>
+</div>`
+```
+
+```{ojs}
+{
+  const rows = [
+    { label: "No flagged trials", count: analysis.buckets.zero },
+    { label: "1–2 flagged trials", count: analysis.buckets.oneTwo },
+    { label: "3+ flagged trials", count: analysis.buckets.threePlus },
+  ]
+  return accessibleChart(Plot.plot({
+    height: 260,
+    marginLeft: 140,
+    x: { label: "Students" },
+    y: { label: null, domain: rows.map(r => r.label) },
+    marks: [
+      Plot.barX(rows, { x: "count", y: "label", fill: "#457b9d", fillOpacity: 0.75 }),
+      Plot.ruleX([0]),
+      Plot.text(rows, { x: "count", y: "label", text: d => d.count, dx: 14, fill: "#333", fontWeight: 600 }),
+    ]
+  }), `This chart groups students by how many of their own trials were flagged as outliers, without naming anyone individually. ${rows.map(r => `${r.count} students had ${r.label.toLowerCase()}`).join("; ")}.`)
+}
+```
+
+::: {.fragment}
+This isn't spread evenly — a handful of students account for most of the flagged trials, while most students have none at all.
+:::
+
+## Ruling out the easy explanations
+
+```{ojs}
+{
+  const devices = ["Phone", "Laptop"]
+  const rows = devices.flatMap(dev => [
+    { device: dev, group: "All trials", pct: 100 * (analysis.byDeviceAll.get(dev) || 0) / analysis.n },
+    { device: dev, group: "Flagged trials", pct: 100 * (analysis.byDeviceOut.get(dev) || 0) / analysis.nOut },
+  ])
+  return accessibleChart(Plot.plot({
+    height: 220,
+    marginLeft: 90,
+    x: { label: "% of trials", domain: [0, 100] },
+    y: { label: null },
+    fy: { label: null },
+    marks: [
+      Plot.barX(rows, { x: "pct", y: "group", fy: "device", fill: "#457b9d", fillOpacity: 0.75 }),
+      Plot.ruleX([0]),
+      Plot.text(rows, { x: "pct", y: "group", fy: "device", text: d => d.pct.toFixed(0) + "%", dx: 18, fill: "#333" }),
+    ]
+  }), "This chart compares the device split of all trials against the device split of flagged trials — the two bars are nearly identical for both Phone and Laptop, showing device isn't the explanation.")
+}
+```
+
+::: {.fragment}
+Device doesn't explain it — flagged trials split between Phone and Laptop in almost the same proportion as the dataset overall. The same is true for caffeine.
+:::
+
+## The one real pattern we did find
+
+```{ojs}
+{
+  const trials = d3.range(1, 11)
+  const rows = trials.map(t => ({ trial: t, count: analysis.byTrial.get(t) || 0 }))
+  return accessibleChart(Plot.plot({
+    height: 280,
+    marginLeft: 50,
+    marginBottom: 36,
+    x: { label: "Trial number", domain: trials, tickFormat: d => d },
+    y: { label: "Flagged trials" },
+    marks: [
+      Plot.rectY(rows, { x: "trial", y: "count", fill: d => d.trial <= 2 ? "#e63946" : "#457b9d", fillOpacity: 0.75, interval: 1, inset: 4 }),
+      Plot.ruleY([0]),
+    ]
+  }), `This chart shows how many flagged trials occurred at each of the ten trial positions. Trials one and two account for ${analysis.earlyOutliers} of the ${analysis.nOut} flagged trials — ${analysis.earlyPct.toFixed(0)} percent — noticeably more than the 20 percent you'd expect if they were spread evenly across all ten positions.`)
+}
+```
+
+::: {.fragment}
+Trials 1–2 account for **${analysis.earlyPct.toFixed(0)}% of flagged trials** — well above the 20% you'd expect by chance. This matches exactly what we noticed live, watching one student's data: the first trial or two, before you've settled into the task, is genuinely slower.
+:::
+
+## What explains the rest?
+
+The trial-1–2 effect only accounts for part of the picture. The remaining flagged trials are scattered across trials 3–10, with no link to device or caffeine.
+
+::: {.fragment}
+The most honest explanation is the one already named live in the workshop: **inattention** — talking to a neighbour, looking away, getting distracted mid-task — just happening more often, across more of the room, than a single case.
+:::
+
+::: {.fragment}
+That's a real, human explanation. It's also not something this data can *prove* — we didn't measure distraction directly, so this is an inference from the pattern, not a fact we captured.
+:::
+
+## Back to the framework
+
+For every extreme value, this module already asks three questions. Applied at this scale, not just to one point:
+
+| Question | Applied here |
+|---|---|
+| **Is it an error?** | A little of it — the single ~56-second trial almost certainly is |
+| **Is it real, but not what we're studying?** | Most of it — genuine slow taps, but driven by distraction, not the underlying reaction-time ability the business actually cares about |
+| **Is it a genuine feature of the process?** | Partly — the trial-1–2 warm-up effect is a real, relevant feature of how people perform this specific task |
+
+::: {.fragment}
+Notice this doesn't collapse to one clean answer. **Different flagged trials plausibly belong in different rows of this table** — that's the harder, more realistic version of the judgement call the workshop introduced.
+:::
+
+## Bridge to Week 2
+
+::: {.instructions-box}
+We've just seen that a sample this noisy can produce a mean that's ${(analysis.mean / analysis.median).toFixed(1)}× the median, purely from a messy minority of trials.
+:::
+
+::: {.fragment}
+That's exactly why you can't just eyeball a mean, or a difference between two groups, and call it real. Next week: how we decide, systematically, which differences in a sample are worth taking seriously — and which are just noise.
+:::
+
+## Takeaways
+
+- A single "obvious" outlier is the easy case. Real data is often messier — check for that explicitly, don't assume you're done after removing one point
+- Always ask *how much* of the data is affected, and *how it's distributed* across your groups (here: students, devices, trial position) — not just *whether* outliers exist
+- The three-question outlier framework still applies, but different points in the same dataset can land in different answers
+- Robust statistics — the median, the IQR — held up here exactly as intended. The mean and SD didn't
+
+::: {style="font-size:0.75em;color:#999;margin-top:20px;"}
+Analysis computed live from the current class dataset.
+:::
