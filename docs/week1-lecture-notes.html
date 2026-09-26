@@ -656,7 +656,7 @@
 <p><strong>Variance</strong> is the average <em>squared</em> deviation from the mean &mdash; squared partly so positive and negative deviations don't just cancel out to zero, and partly because it makes the algebra behind everything from regression to hypothesis testing far more tractable later in the module. It's harder to interpret directly, precisely because squaring the deviations also squares their units. <strong>Standard deviation</strong> undoes that by taking the square root, landing back in the original units &mdash; roughly, the typical distance between a randomly chosen observation and the mean.</p>
 
 <div class="callout">
-  This module divides by \(n-1\), not \(n\) &mdash; the standard convention, and what Python's own statistical functions use by default. B&eacute;k&eacute;s &amp; K&eacute;zdi's textbook divides by \(n\) instead; the difference is genuinely tiny once your sample is reasonably large, and Week 2 explains precisely why the \(n-1\) correction exists.
+  This module divides by \(n-1\), not \(n\) &mdash; the standard convention, and what Python's pandas library uses by default. B&eacute;k&eacute;s &amp; K&eacute;zdi's textbook divides by \(n\) instead; the difference is genuinely tiny once your sample is reasonably large, and Week 2 explains precisely why the \(n-1\) correction exists.
 </div>
 
 <p>In finance, standard deviation <em>is</em> volatility, quoted directly: a higher SD on an asset's price literally means it jumps around more relative to its own average. The same idea, unchanged, describes a call centre's response times, a factory's output, or a portfolio's returns.</p>
