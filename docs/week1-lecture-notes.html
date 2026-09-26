@@ -1,0 +1,1220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Distributions &amp; Summarising Data</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.17/dist/plot.umd.min.js"></script>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['$$', '$$']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #fdfbf6;
+    --paper-raised: #ffffff;
+    --paper-sunk: #f6f1e7;
+    --ink: #1a1a2e;
+    --ink-soft: #4a4d63;
+    --ink-faint: #86869c;
+    --rule: #e6ddc9;
+    --accent: #2f6690;
+    --accent-soft: #e8f0f5;
+    --warm: #c8373f;
+    --warm-soft: #fbeceb;
+    --gold: #c97f31;
+    --green: #2d6a4f;
+    --green-soft: #eaf5ef;
+    --quote-bg: #eef7f7;
+    --quote-border: #bfe0df;
+    --quote-ink: #1e4a49;
+    --chip-bg: #f1ece0;
+    --code-bg: #f4f0e6;
+    --shadow: 0 1px 2px rgba(26,26,46,0.06), 0 8px 24px -12px rgba(26,26,46,0.18);
+    --serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    --sans: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #14151f;
+      --paper-raised: #1c1e2b;
+      --paper-sunk: #10111a;
+      --ink: #eef0f6;
+      --ink-soft: #b7bbcf;
+      --ink-faint: #7c8098;
+      --rule: #303350;
+      --accent: #7fb2d9;
+      --accent-soft: #1c2c38;
+      --warm: #ff8a86;
+      --warm-soft: #2e1c1d;
+      --gold: #f2b872;
+      --green: #6fbb95;
+      --green-soft: #14261f;
+      --quote-bg: #142726;
+      --quote-border: #29504c;
+      --quote-ink: #bfe7e2;
+      --chip-bg: #23253a;
+      --code-bg: #191b2a;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #14151f;
+    --paper-raised: #1c1e2b;
+    --paper-sunk: #10111a;
+    --ink: #eef0f6;
+    --ink-soft: #b7bbcf;
+    --ink-faint: #7c8098;
+    --rule: #303350;
+    --accent: #7fb2d9;
+    --accent-soft: #1c2c38;
+    --warm: #ff8a86;
+    --warm-soft: #2e1c1d;
+    --gold: #f2b872;
+    --green: #6fbb95;
+    --green-soft: #14261f;
+    --quote-bg: #142726;
+    --quote-border: #29504c;
+    --quote-ink: #bfe7e2;
+    --chip-bg: #23253a;
+    --code-bg: #191b2a;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--accent-soft); color: var(--ink); }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  h1, h2, h3, h4 { font-family: var(--serif); color: var(--ink); text-wrap: balance; line-height: 1.18; font-weight: 600; }
+  p { line-height: 1.68; color: var(--ink-soft); }
+  strong { color: var(--ink); font-weight: 600; }
+
+  /* ---------- shell layout ---------- */
+  .shell {
+    display: grid;
+    grid-template-columns: 240px minmax(0,1fr);
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  @media (max-width: 880px) {
+    .shell { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    padding: 56px 16px 38px;
+    border-bottom: 1px solid var(--rule);
+    background:
+      radial-gradient(ellipse 900px 320px at 15% -10%, var(--accent-soft), transparent 60%),
+      var(--paper);
+  }
+  .hero-inner { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; display:flex; align-items:center; gap: 10px; flex-wrap: wrap;
+  }
+  .eyebrow .dot { width:5px; height:5px; border-radius:50%; background: var(--warm); display:inline-block; }
+  .hero h1 { font-size: clamp(2.1rem, 4.6vw, 3.1rem); margin: 14px 0 10px; max-width: 16ch; }
+  .hero .dek { font-size: 1.15rem; color: var(--ink-soft); max-width: 62ch; line-height: 1.55; margin: 0 0 26px; }
+  .hero .dek em { color: var(--ink); font-style: normal; border-bottom: 2px solid var(--gold); }
+
+  .headline-strip {
+    display: flex; gap: 0; flex-wrap: wrap;
+    border: 1px solid var(--rule); border-radius: 14px; overflow: hidden;
+    background: var(--paper-raised); box-shadow: var(--shadow);
+    max-width: 780px;
+  }
+  .headline-strip .stat {
+    flex: 1 1 150px; padding: 16px 20px; border-right: 1px solid var(--rule);
+  }
+  .headline-strip .stat:last-child { border-right: none; }
+  .headline-strip .stat .n {
+    font-family: var(--serif); font-size: 1.7rem; font-weight: 700; color: var(--accent);
+    font-variant-numeric: tabular-nums; display:block;
+  }
+  .headline-strip .stat .n.warm { color: var(--warm); }
+  .headline-strip .stat .l { font-size: 12.5px; color: var(--ink-faint); margin-top: 2px; }
+
+  /* ---------- TOC ---------- */
+  nav.toc {
+    padding: 34px 20px 40px 24px;
+    font-family: var(--sans);
+  }
+  nav.toc .toc-label { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 10px; display:block; }
+  nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: sec; }
+  nav.toc li { counter-increment: sec; margin-bottom: 2px; }
+  nav.toc a {
+    display: flex; gap: 9px; padding: 6px 8px; border-radius: 7px;
+    color: var(--ink-soft); text-decoration: none; font-size: 13.5px; line-height: 1.35;
+  }
+  nav.toc a:before {
+    content: counter(sec, decimal-leading-zero); font-family: var(--mono); font-size: 11px;
+    color: var(--ink-faint); padding-top: 1px; flex-shrink: 0;
+  }
+  nav.toc a:hover { background: var(--paper-sunk); color: var(--ink); }
+  nav.toc a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  nav.toc a.active:before { color: var(--accent); }
+  @media (max-width: 880px) {
+    nav.toc { position: static; border-bottom: 1px solid var(--rule); padding: 18px 20px; }
+    nav.toc ol { columns: 2; column-gap: 20px; }
+    nav.toc.desktop-sticky { display: none; }
+  }
+  @media (min-width: 881px) {
+    nav.toc.desktop-sticky { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; }
+    .mobile-toc { display: none; }
+  }
+
+  /* ---------- main column ---------- */
+  main { padding: 8px 24px 100px; min-width: 0; }
+  .col { max-width: 700px; margin: 0 auto; }
+
+  section.chapter { padding-top: 54px; scroll-margin-top: 14px; }
+  section.chapter:first-of-type { padding-top: 40px; }
+  .chapter-kicker {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 6px;
+  }
+  section.chapter h2 { font-size: clamp(1.5rem, 3vw, 1.95rem); margin: 0 0 18px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  section.chapter h3 { font-size: 1.18rem; margin: 34px 0 12px; }
+  section.chapter > p { margin: 0 0 16px; font-size: 1.02rem; }
+  section.chapter ul, section.chapter ol { color: var(--ink-soft); line-height: 1.68; padding-left: 22px; }
+  section.chapter li { margin-bottom: 6px; }
+  section.chapter li strong { color: var(--ink); }
+
+  /* first-paragraph drop treatment on the very first section only */
+  #why-eda > p:first-of-type::first-letter {
+    font-family: var(--serif); font-size: 3.6em; float: left; line-height: 0.85; padding: 6px 8px 0 0;
+    color: var(--warm); font-weight: 700;
+  }
+
+  /* ---------- inline components ---------- */
+  .lede-figure {
+    display: flex; gap: 20px; align-items: flex-start; margin: 0 0 20px; padding-bottom: 4px;
+  }
+  .lede-figure .art {
+    flex: 0 0 168px; width: 168px; height: 168px; border-radius: 12px; overflow: hidden;
+    background: linear-gradient(150deg, var(--accent-soft), var(--paper-sunk));
+    display:flex; align-items:center; justify-content:center; box-shadow: var(--shadow);
+  }
+  @media (max-width: 560px) { .lede-figure { flex-direction: column; } .lede-figure .art { width: 100%; height: 150px; } }
+
+  blockquote.field-note {
+    margin: 24px 0; padding: 16px 20px 16px 18px;
+    background: var(--quote-bg); border-left: 3px solid var(--quote-border); border-radius: 4px 10px 10px 4px;
+  }
+  blockquote.field-note .tag {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--quote-ink); opacity: 0.85; display: block; margin-bottom: 6px;
+  }
+  blockquote.field-note p { margin: 0; color: var(--quote-ink); font-size: 0.98rem; font-style: italic; line-height: 1.6; }
+  blockquote.field-note p + p { margin-top: 8px; }
+
+  .callout {
+    margin: 22px 0; padding: 16px 20px; border-radius: 10px; border: 1px solid var(--rule);
+    background: var(--paper-sunk); font-size: 0.96rem; color: var(--ink-soft); line-height: 1.6;
+  }
+  .callout strong { color: var(--ink); }
+  .callout.gold { border-color: color-mix(in srgb, var(--gold) 40%, var(--rule)); background: color-mix(in srgb, var(--gold) 10%, var(--paper-sunk)); }
+
+  .formula-block {
+    margin: 20px 0; padding: 18px 22px; background: var(--code-bg); border-radius: 10px;
+    border: 1px solid var(--rule); overflow-x: auto; text-align: center; font-size: 1.05rem;
+  }
+  .formula-caption { text-align: center; font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin-top: -12px; margin-bottom: 20px; }
+
+  code, .inline-code { font-family: var(--mono); font-size: 0.86em; background: var(--code-bg); padding: 2px 6px; border-radius: 4px; color: var(--ink); }
+  pre.code-block {
+    font-family: var(--mono); font-size: 0.82rem; background: var(--code-bg); border: 1px solid var(--rule);
+    border-radius: 10px; padding: 16px 18px; overflow-x: auto; line-height: 1.55; color: var(--ink);
+    margin: 16px 0;
+  }
+  pre.code-block .c { color: var(--ink-faint); }
+  pre.code-block .k { color: var(--accent); }
+
+  table.data-table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 0.92rem; overflow-x: auto; display: block; }
+  table.data-table thead, table.data-table tbody { display: table; width: 100%; table-layout: fixed; }
+  table.data-table th { text-align: left; font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 600; padding: 8px 12px; border-bottom: 2px solid var(--ink); }
+  table.data-table td { padding: 9px 12px; border-bottom: 1px solid var(--rule); color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data-table tr:last-child td { border-bottom: none; }
+  table.data-table td:first-child, table.data-table th:first-child { color: var(--ink); font-weight: 500; }
+
+  .term-list { list-style: none; padding: 0; margin: 18px 0; }
+  .term-list li { display: grid; grid-template-columns: 140px 1fr; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .term-list li:last-child { border-bottom: none; }
+  .term-list dt, .term-list .term { font-weight: 600; color: var(--ink); font-family: var(--serif); }
+  @media (max-width: 560px) { .term-list li { grid-template-columns: 1fr; gap: 3px; } }
+
+  /* ---------- interactive figure shell ---------- */
+  .figure {
+    margin: 26px 0; background: var(--paper-raised); border: 1px solid var(--rule); border-radius: 14px;
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .figure-head { padding: 16px 20px 12px; border-bottom: 1px solid var(--rule); }
+  .figure-head .flabel { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .figure-head h4 { margin: 4px 0 0; font-size: 1.05rem; }
+  .figure-body { padding: 16px 20px; }
+  .figure-caption { padding: 0 20px 18px; font-size: 0.86rem; color: var(--ink-faint); line-height: 1.5; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 16px 22px; align-items: center; padding: 12px 4px 18px; font-size: 13px; }
+  .ctl { display: flex; align-items: center; gap: 8px; }
+  .ctl .lbl { color: var(--ink-soft); white-space: nowrap; }
+  .ctl input[type=range] { accent-color: var(--accent); cursor: pointer; width: 110px; }
+  .ctl .val { font-family: var(--mono); font-weight: 600; min-width: 46px; color: var(--accent); font-size: 12.5px; }
+  .ctl label.chk { display:flex; align-items:center; gap:6px; cursor:pointer; color: var(--ink-soft); }
+  .ctl input[type=checkbox] { accent-color: var(--accent); cursor: pointer; }
+  select.picker {
+    font-family: var(--sans); font-size: 13.5px; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--rule);
+    background: var(--paper-sunk); color: var(--ink); cursor: pointer;
+  }
+  .seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+  .seg button {
+    font-family: var(--sans); font-size: 12.5px; padding: 7px 13px; border: none; background: var(--paper-sunk);
+    color: var(--ink-soft); cursor: pointer; border-right: 1px solid var(--rule);
+  }
+  .seg button:last-child { border-right: none; }
+  .seg button.on { background: var(--accent); color: white; font-weight: 600; }
+
+  .chart-wrap { overflow-x: auto; }
+  .chart-wrap svg { display: block; margin: 0 auto; }
+  .chart-row { display: flex; gap: 20px; flex-wrap: wrap; }
+  .chart-row > div { flex: 1 1 260px; min-width: 0; }
+
+  .mini-table-wrap { overflow-x: auto; }
+
+  /* ---------- divider ---------- */
+  .divider {
+    margin: 60px 0 0; padding: 46px 24px; background: var(--ink); border-radius: 16px; text-align: center;
+    color: #f2f2f6;
+  }
+  .divider .k { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: #8fb4cc; }
+  .divider h3 { color: #fff; font-size: 1.5rem; margin: 10px 0 0; }
+  .divider p { color: #c3c4d6; max-width: 46ch; margin: 10px auto 0; }
+
+  /* ---------- footer ---------- */
+  footer.colophon {
+    max-width: 700px; margin: 70px auto 0; padding: 26px 0 0; border-top: 1px solid var(--rule);
+    font-size: 0.86rem; color: var(--ink-faint); line-height: 1.6;
+  }
+  footer.colophon strong { color: var(--ink-soft); }
+
+  @media (max-width: 400px) {
+    .hero { padding: 40px 12px 30px; }
+    main { padding: 8px 14px 80px; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="toc desktop-sticky" id="toc"></nav>
+
+  <main>
+    <div class="hero" style="margin: -8px -24px 30px; border-radius: 0;">
+      <div class="hero-inner" style="padding:0;">
+        <div class="eyebrow"><span class="dot"></span>7002LBSAI &middot; Research Methods in Analytics &middot; Week One</div>
+        <h1>Distributions and Summarising Data</h1>
+        <p class="dek">Lecture notes reconstructed from the workshop itself &mdash; the live transcript, the slide deck, and the <em>class's own reaction-time data</em>, collected on a Friday afternoon in a room in the Redmonds Building.</p>
+        <div class="headline-strip">
+          <div class="stat"><span class="n">24</span><span class="l">students, one dataset</span></div>
+          <div class="stat"><span class="n">217</span><span class="l">reaction-time trials</span></div>
+          <div class="stat"><span class="n warm">56.2s</span><span class="l">the outlier that started it</span></div>
+          <div class="stat"><span class="n">259ms</span><span class="l">the fastest reflex in the room</span></div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="toc mobile-toc" id="toc-mobile"></nav>
+
+    <div class="col">
+
+<section class="chapter" id="why-eda">
+<div class="chapter-kicker">Part One</div>
+<h2>Why Explore Before You Model</h2>
+
+<div class="lede-figure">
+  <p>Ten years ago, the man giving this workshop was sitting more or less where you are. Starting a master's in economics, grey hairs not yet arrived, mildly terrified, with only the vaguest idea what the next twelve months held. What got him through it, by his own account, was a handful of tutors who were willing to explain things properly rather than just wave at the textbook. That's the model for these sessions, and for these notes: not a shortcut past the statistics, but a proper explanation of it, built from data you can actually see.</p>
+</div>
+
+<p>This module goes by the name Research Methods in Analytics, which is really a slightly formal way of asking one question: <strong>what can we do with data to help us make better decisions?</strong> Over eleven weeks that question runs from the simplest possible description of a single variable through to the kind of inference and modelling that lets you say something about a population you never directly observed. It starts here, with the least glamorous and most consequential step in the whole pipeline &mdash; looking properly at your data before you do anything else with it.</p>
+
+<p>The formal name for that step is <strong>exploratory data analysis</strong>, or EDA. B&eacute;k&eacute;s &amp; K&eacute;zdi define it plainly: it is the process of describing your variables &mdash; the values they take, how often they take them, and whether anything about them is unusual.<sup>1</sup> That sounds almost too simple to spend a whole workshop on. It isn't. Before you fit a model, run a test, or make a claim, you have to know what your data actually looks like, and that turns out to be a much deeper task than opening a spreadsheet and skimming a few rows.</p>
+
+<p>B&eacute;k&eacute;s &amp; K&eacute;zdi frame the whole exercise as three questions you should be able to answer before any modelling begins:</p>
+<ul>
+  <li>How should you start the analysis itself?</li>
+  <li>How do you describe the data and present its key features?</li>
+  <li>How do you explore the data and check whether it's clean enough for further analysis?</li>
+</ul>
+
+<p>This module takes data cleaning as a given &mdash; by the time a dataset reaches you here, assume someone has already done the unglamorous work of fixing malformed entries and missing fields. (Your Programming for Business Analytics module is where that skill actually gets built.) But even a perfectly clean dataset still needs exploring, and there are five distinct reasons it's worth the time:</p>
+
+<ol>
+  <li><strong>It sense-checks your cleaning.</strong> EDA isn't a one-off step before cleaning starts &mdash; it's part of an iterative loop. Exploring the data can reveal that it needs more cleaning than you thought.</li>
+  <li><strong>It guides what comes next.</strong> What you see shapes what you do. A skewed variable, a suspicious cluster, an unexpected gap &mdash; each one changes the questions worth asking.</li>
+  <li><strong>It gives you context.</strong> Statistical and econometric modelling are tools in service of a question, not the point of the exercise. Understanding the data's context makes your eventual insights richer and more relevant to whoever has to act on them.</li>
+  <li><strong>It can refine the research question itself.</strong> Research is rarely a single moment of inspiration followed by a straight line to an answer &mdash; it's iterative, and exploration is often what sharpens a vague question into a useful one.</li>
+  <li><strong>Occasionally, it just answers the question.</strong> Not often. But sometimes a good look at the data is all it takes.</li>
+</ol>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;One of the things you're going to be learning to be is an analyst &mdash; and one thing you have to understand is the limits of what we can understand. When you're presenting your results, in a workshop or a conference, it's important not to overplay the confidence you have in them.&rdquo;</p>
+</blockquote>
+
+<p>Everything that follows in this chapter is really an extended answer to that first, deceptively simple instruction: look at your data properly, before you do anything else with it.</p>
+</section>
+
+<section class="chapter" id="business-question">
+<div class="chapter-kicker">Part Two</div>
+<h2>The Business Question</h2>
+
+<div class="callout">
+  <strong>The scenario.</strong> A regional bank's customer service centre measures agent <strong>response time</strong> &mdash; how quickly an agent reacts to an incoming alert. It's treated as a key operational metric. HR's current process records <strong>one test score per agent</strong>, taken once at onboarding, and uses that single number to rank and place staff.
+</div>
+
+<p>The question this workshop exists to answer is whether that's remotely sensible: <strong>is a single measurement an adequate way to capture this metric?</strong> Rather than take the question on faith, the class spent the first twenty minutes turning itself into the dataset needed to answer it &mdash; standing in for the bank's agents, and generating real evidence rather than debating the point in the abstract.</p>
+
+<p>This is a deliberately hackneyed scenario &mdash; a fairly ordinary problem, chosen precisely because ordinary problems are where most business analytics work actually happens. Nobody is curing anything. But the reasoning that follows from it &mdash; about single measurements, noise, and what a distribution can tell you that one number can't &mdash; generalises far beyond reaction times. It's the same logic behind why a single sales figure doesn't tell you a rep's true performance, why one satisfaction survey response doesn't tell you how a customer really feels, and why a single A/B test result on its own rarely settles anything.</p>
+</section>
+
+<section class="chapter" id="collecting-data">
+<div class="chapter-kicker">Part Three</div>
+<h2>Generating Our Own Data</h2>
+
+<p>Each student worked through a short reaction-time tool on their own phone or laptop: enter your name, pick your device, answer whether you'd had caffeine in the last two hours, measure your own index finger in millimetres, then complete ten trials &mdash; tap as soon as the screen turns from red to green. Results saved automatically to a shared, live dataset the moment each student finished.</p>
+
+<p>It was, by design, a slightly rough first attempt &mdash; and that turned out to be its own useful lesson. The instructions didn't specify exactly where to measure a finger from, or make it obvious the test had to run all ten times before results counted. A few students improvised. That's not really a flaw in the exercise; it's what a <strong>pilot</strong> is for. Running something for the first time reliably surfaces the ambiguities you didn't know you'd left in, and the honest response &mdash; in this room and in your own future projects &mdash; is not to pretend everything went perfectly, but to notice what went wrong, say so, and account for it in what you do next.</p>
+
+<h3>What are we actually measuring?</h3>
+
+<p>One question from the room cut straight to the heart of a genuinely important idea: given that the instructions weren't perfectly precise, might the class be measuring the wrong thing? Finger length is a real, physical, measurable quantity &mdash; it isn't drifting up and down over the course of the workshop &mdash; but the tool used to capture it (a ruler, in the hands of a slightly rushed workshop partner) introduces the possibility of <strong>measurement error</strong>: a gap between the true value of the thing you care about and the number you actually record.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;The bank isn't really interested in your index finger. It's a proxy for your speed, your ability, the physical limits on how fast you can react. That's something we can measure directly in a classroom &mdash; but sometimes the thing you actually want to know is one you can't observe at all, and you're stuck relying on a proxy for it, like using someone's qualifications as a proxy for their ability. Those proxies are sometimes useful and sometimes not. Knowing which is part of the job.&rdquo;</p>
+</blockquote>
+
+<p>Keep that distinction in mind for the rest of the module: the variable in a spreadsheet is never quite the same thing as the real-world quantity it's standing in for, and the gap between the two &mdash; how it opened up, how large it might be &mdash; is something every analyst has to reason about explicitly, not assume away.</p>
+
+<h3>From ten numbers to a table</h3>
+
+<p>Ten reaction times from one student, on their own, are a limited way to tell a story. They can hint at something &mdash; a slow first attempt as someone gets a feel for the task, then a settling-in &mdash; but they don't summarise well, and multiplied by twenty-four students they're unmanageable. The fix is a data format every business analyst ends up living in: <strong>tidy data</strong>, where every row is one observation and every column is one variable.</p>
+
+<p>Here, every row is one trial: one tap, by one student, with that trial's own reaction time, and that student's device, caffeine status, and finger length copied alongside it. Ten trials per student means ten rows per student. It's a format that looks almost too plain to be worth naming, but it's what makes the rest of this chapter possible &mdash; filtering, grouping, and plotting all become a matter of picking a column, once the data is shaped this way.</p>
+</section>
+
+<section class="chapter" id="variable-types">
+<div class="chapter-kicker">Part Four</div>
+<h2>Types of Variable</h2>
+
+<p>The reaction-time tool captured five variables per trial, and each one behaves differently &mdash; which matters, because the type of a variable determines which summaries and visualisations are even meaningful for it.</p>
+
+<table class="data-table">
+  <thead><tr><th>Variable</th><th>Type</th><th>Scale</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td>Name</td><td>Categorical</td><td>Nominal</td><td>Labels with no inherent order</td></tr>
+    <tr><td>Reaction time</td><td>Continuous</td><td>Ratio</td><td>Any value down to the millisecond; zero has a true meaning</td></tr>
+    <tr><td>Device</td><td>Categorical</td><td>Nominal</td><td>Phone vs. laptop &mdash; describes, doesn't rank</td></tr>
+    <tr><td>Caffeine</td><td>Binary</td><td>Nominal</td><td>Exactly two possible states</td></tr>
+    <tr><td>Finger length</td><td>Continuous</td><td>Ratio</td><td>Same reasoning as reaction time</td></tr>
+  </tbody>
+</table>
+
+<p>The distinction worth dwelling on is between a plain <strong>nominal</strong> categorical variable, like device, and an <strong>ordinal</strong> one, where the order genuinely carries information &mdash; the classic example is a Likert-scale survey response (strongly disagree &hellip; strongly agree), where reordering the categories would make the variable meaningless. Trial number, in this dataset, is a quiet example of an ordinal variable that isn't obviously one at first glance: it isn't just a label, because later trials plausibly mean something different from earlier ones, as a student settles into the task.</p>
+
+<div class="callout gold">
+  <strong>Why this matters in practice:</strong> it is entirely possible to ask statistical software to compute the mean of <em>device</em>, once it's coded numerically (laptop = 1, phone = 2, say). Python will not stop you. It will hand back a number like 1.75. That number describes nothing real &mdash; there is no such thing as "a bit more phone than laptop." Knowing a variable's type isn't academic box-ticking; it's what stops you from reporting nonsense with a straight face.
+</div>
+
+<p>One genuinely useful special case, worth flagging now and returning to properly later in this chapter: a <strong>binary</strong> variable coded 0/1 behaves unusually well under a mean. Averaging a column of 0s and 1s doesn't produce nonsense the way averaging device does &mdash; it produces the <strong>proportion</strong> of the sample coded 1. That single fact is going to do a surprising amount of work later on.</p>
+
+<h3>One student, in full</h3>
+
+<p>Before collapsing anything, it's worth looking at one full, un-summarised record. Pick a name from the dropdown below and you'll see exactly what the reaction-time tool actually captured for that student &mdash; ten trials, ten times, nothing smoothed over yet.</p>
+
+<div class="figure" id="fig-raw">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>One student's raw data</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Student</span><select class="picker" id="sel-raw"></select></div>
+    </div>
+    <div class="chart-row">
+      <div class="mini-table-wrap"><div id="raw-table"></div></div>
+      <div class="chart-wrap" id="raw-trend"></div>
+    </div>
+  </div>
+  <p class="figure-caption">Left: the ten raw trials for the selected student, exactly as the tool recorded them. Right: the same ten values plotted against trial order &mdash; a first hint that reaction time isn't a fixed quantity, even for one person.</p>
+</div>
+</section>
+
+<section class="chapter" id="tidy-data">
+<div class="chapter-kicker">Part Five</div>
+<h2>Tidy Data, in the Flesh</h2>
+
+<p>Here's what the whole dataset looks like once every student's trials are stacked into one table &mdash; the actual shape that every chart and statistic in the rest of this chapter is computed from.</p>
+
+<div class="mini-table-wrap" id="tidy-table"></div>
+
+<p>A business survey is the more common version of this shape you'll meet outside a classroom: if a customer questionnaire has fifty questions, tidy format gives you fifty columns and one row per respondent. The mechanics don't change &mdash; only the fact that most surveys give you one row per person rather than ten.</p>
+</section>
+
+<section class="chapter" id="frequency">
+<div class="chapter-kicker">Part Six</div>
+<h2>Frequency, Probability, and Distribution</h2>
+
+<p>With the data assembled, the workshop's first real analytical act was almost absurdly simple: count how many students used a laptop, and how many used a phone. Simple, but worth doing carefully, because the vocabulary built here &mdash; absolute frequency, relative frequency, probability &mdash; is going to reappear constantly for the rest of the module.</p>
+
+<ul>
+  <li><strong>Absolute frequency</strong> &mdash; the raw count of observations with a particular value.</li>
+  <li><strong>Relative frequency</strong> &mdash; that count expressed as a proportion or percentage of all observations.</li>
+  <li><strong>Probability</strong> generalises relative frequency: a measure of likelihood, always between 0 and 1, that &mdash; unlike relative frequency &mdash; can describe an event without needing a dataset in hand at all.</li>
+  <li>The <strong>distribution</strong> of a variable is the frequency of every value it takes, independent of what any other variable in the data shows.</li>
+</ul>
+
+<p>Getting there from the raw, ten-rows-per-student data took an honest, unglamorous detour through Excel &mdash; select the data, insert a pivot table, drag <em>Device</em> into rows, and (after a couple of false starts on exactly which aggregation to use, since "sum" and "average" both make no sense for a category) settle on a count. It's not elegant. It's also exactly the kind of rough, get-an-answer-now tool every analyst reaches for constantly, right alongside the more sophisticated code you'll build up over the rest of this module.</p>
+
+<div class="figure" id="fig-freq">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>What the room actually looked like</h4></div>
+  <div class="figure-body">
+    <div class="chart-row" id="freq-tables"></div>
+  </div>
+  <p class="figure-caption">Absolute and relative frequency for device and caffeine, computed from the real class data behind these notes.</p>
+</div>
+
+<p>The device split works out to sixteen laptops against eight phones &mdash; a relative frequency of <strong>66.7% laptop, 33.3% phone</strong>. Caffeine is more one-sided still: only six of twenty-four students, a flat <strong>25%</strong>, had had any in the two hours before the workshop.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Relative frequency is often far more powerful than the raw number. I can tell you UK national debt is about &pound;1.4 trillion, and that sounds enormous &mdash; but on its own it doesn't mean much unless you already live in these figures. What people actually report, almost always, is debt as a percentage of GDP: how much the country owes relative to what it produces in a year. The relative version is what gives you context.&rdquo;</p>
+</blockquote>
+
+<p>Probability slots in naturally once a variable is binary. If caffeine is coded 0/1, then the relative frequency of the "1" category &mdash; 25% here &mdash; is exactly what you'd call the <strong>probability</strong> that a student picked at random from this room had had caffeine recently. Same number, two different names, depending on whether you're describing a sample you've already collected or reasoning about a future draw from it.</p>
+</section>
+
+<section class="chapter" id="histograms">
+<div class="chapter-kicker">Part Seven</div>
+<h2>Seeing a Distribution: Histograms</h2>
+
+<p>Statistics condense; they don't replace looking. However good your summary numbers are, it is <em>always</em> worth actually looking at the data &mdash; and the single most useful way to look at one continuous variable's distribution is the <strong>histogram</strong>: a bar chart where bars show how many observations (or what percentage) fall into each of a series of equal-width <em>bins</em>.</p>
+
+<p>Reading one well means looking for four things at once:</p>
+
+<table class="data-table">
+  <thead><tr><th>Feature</th><th>What to look for</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Modes</strong></td><td>Peaks that stand out from their neighbourhood</td></tr>
+    <tr><td><strong>Centre &amp; tails</strong></td><td>Where most of the mass sits, and how it thins out</td></tr>
+    <tr><td><strong>Symmetry</strong></td><td>Roughly balanced, or a long tail to one side?</td></tr>
+    <tr><td><strong>Extreme values</strong></td><td>Points sitting far out from everything else</td></tr>
+  </tbody>
+</table>
+
+<p>The figure below rebuilds the workshop's own pooled histogram, live, from the real 217 trials behind this chapter. It opens with the exclusion threshold set at the same fence used throughout this chapter, so the shape is legible on first look &mdash; drag it upward and the most extreme trials come back into view, and watch what that does to both the shape of the bars and the gap between the mean and median lines.</p>
+
+<div class="figure" id="fig-hist">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Pooled histogram &mdash; the whole class</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Bin width</span><input type="range" id="hist-binwidth" min="10" max="80" step="10" value="30"><span class="val" id="hist-binwidth-val">30 ms</span></div>
+      <div class="ctl"><span class="lbl" style="color:var(--warm);font-weight:600;">Exclude above</span><input type="range" id="hist-threshold" min="0" max="0" step="10" value="0"><span class="val" id="hist-threshold-val" style="color:var(--warm);"></span></div>
+      <label class="chk"><input type="checkbox" id="hist-mean" checked> Mean</label>
+      <label class="chk"><input type="checkbox" id="hist-median"> Median</label>
+      <label class="chk"><input type="checkbox" id="hist-kde"> KDE</label>
+      <label class="chk"><input type="checkbox" id="hist-pct"> Show as %</label>
+    </div>
+    <div class="chart-wrap" id="hist-chart"></div>
+  </div>
+  <p class="figure-caption" id="hist-caption"></p>
+</div>
+
+<p>Even with the long tail trimmed off for readability, the shape is unmistakably <strong>right-skewed</strong>: most trials cluster in a tight band at the low end, and a thinning tail extends out toward slower and slower times. That shape isn't an accident of this particular class &mdash; it's close to universal for reaction-time data, and worth understanding why. There's a hard physical floor (nobody can react in zero milliseconds; brain-to-finger signalling takes a genuine, roughly fixed minimum), but no equivalent ceiling &mdash; distraction, hesitation, a missed tap, a conversation with a neighbour can all stretch a trial arbitrarily far to the right. Floors without ceilings produce right skew almost by construction.</p>
+
+<h3>Bin width is a choice, not a default</h3>
+
+<p>Drag the bin-width slider from 10ms up to 80ms and the same 217 numbers tell noticeably different stories. Too narrow, and the bars become spiky and hard to read as one coherent shape. Too wide, and real structure &mdash; a genuine second cluster, a gap &mdash; gets smoothed away into something that looks more gradual and more boring than the data actually is. There's no universally correct bin width; there's only a choice, made deliberately, with an eye on what it does to the story the chart tells.</p>
+
+<p>Toggling on the <strong>KDE</strong> (kernel density estimate) shows an alternative to binning entirely: instead of sorting values into fixed buckets, it places a small smooth "bump" over every single observation and sums them, producing a continuous curve rather than a bar chart. It avoids the arbitrariness of a bin-width choice, and it's genuinely good for comparing two distributions side by side where two overlapping sets of bars would turn into visual noise. But it comes at a cost: a KDE can visually smooth away real, sharp structure &mdash; a hard floor at 259ms, for instance, doesn't come through as sharply in the smoothed curve as it does in the bars. Treat the histogram as the primary source of truth, and the KDE as a secondary, headline view of its shape.</p>
+</section>
+
+<section class="chapter" id="outliers">
+<div class="chapter-kicker">Part Eight</div>
+<h2>What Do We Do With an Outlier?</h2>
+
+<p>Turn the exclusion threshold on the histogram above all the way up, and one trial sits dramatically apart from everything else &mdash; not a little slower than the rest, but on a completely different scale. Where the bulk of the class's reaction times cluster under a second, this single trial clocked in north of <strong>fifty-six seconds</strong>.</p>
+
+<div class="figure" id="fig-outlier">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>Spotting the outlier</h4></div>
+  <div class="figure-body"><div class="chart-wrap" id="outlier-chart"></div></div>
+  <p class="figure-caption" id="outlier-caption"></p>
+</div>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;This is about as slam-dunk a case as you'll ever get. Whoever produced that trial almost certainly got distracted, or forgot to complete it, or simply hadn't understood the task properly &mdash; and the fact that it sits sixty times further out than the next-slowest trial tells you that on its own. It's as if I set out to measure everyone's height in this room, was doing perfectly well, and then a fifteen-metre person walked in. That one observation would wreck every statistic I tried to compute afterwards.&rdquo;</p>
+</blockquote>
+
+<p>The instinct to just delete anything that looks strange is understandable, but resist it as a reflex. Every extreme value deserves the same three questions, asked in this order:</p>
+
+<table class="data-table">
+  <thead><tr><th>Question</th><th>If yes&hellip;</th><th>Reaction-time example</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Is it an error?</strong></td><td>Drop it, or fix it</td><td>A 4ms trial &mdash; almost certainly a mis-click before the screen actually turned green</td></tr>
+    <tr><td><strong>Is it real, but not what we're studying?</strong></td><td>Drop it, with a note</td><td>A slow trial because the student was mid-conversation with a neighbour</td></tr>
+    <tr><td><strong>Is it a genuine feature of the process?</strong></td><td>Keep it</td><td>A slow trial from real hesitation &mdash; that <em>is</em> operational variability worth measuring</td></tr>
+  </tbody>
+</table>
+
+<p>The 56-second trial clears the first bar easily &mdash; it is, by any reasonable account, an error, not a genuine reaction time. But the second question is where the real judgement lives, and it doesn't have a formula. Suppose a trial came in unusually slow not because of a technical glitch, but because the student was genuinely talking to a neighbour mid-experiment. That response is real &mdash; nobody mis-clicked &mdash; but it's measuring something the study was never designed to capture (distraction), not the quantity of actual interest (reaction speed). Dropping it is defensible, but only <em>with a stated reason</em>, not as an unexplained deletion.</p>
+
+<div class="callout">
+  <strong>The default, stated plainly:</strong> always work from the position that you keep as much of your data as you possibly can. Treat every exclusion as something that needs a justification strong enough to survive someone else reading your working, not as a housekeeping step you wave through by default. Different analysts, working from the same raw data, can reasonably reach different decisions about the same outlier &mdash; which is precisely why documenting <em>why</em> you dropped or kept something matters as much as the decision itself.
+</div>
+
+<p>And the context genuinely changes the right call. A cluster of ten trials all sitting around the one-minute mark for a single student wouldn't look like ten separate errors &mdash; it would look like one student who takes their time, which might be exactly the operational information a business wants to know about their staff. The decision isn't a fixed rule waiting to be looked up; it depends on domain knowledge, on the shape of the rest of the distribution, and on what the eventual answer is actually going to be used for.</p>
+</section>
+
+<section class="chapter" id="centre">
+<div class="chapter-kicker">Part Nine</div>
+<h2>Summary Statistics I: Measuring the Centre</h2>
+
+<p>A <strong>statistic</strong> is any meaningful number you can compute from data. <strong>Summary statistics</strong> are the ones that describe the most important features of a distribution &mdash; its centre, its spread, its shape &mdash; collapsing a whole column of numbers into a handful worth reporting.</p>
+
+<h3>The mean, and the idea behind it</h3>
+
+<p>The workshop's one real concession to notation: writing a variable as \(x\), its mean (or average) is</p>
+<div class="formula-block">$$\bar{x} = \frac{\sum x_i}{n}$$</div>
+<p class="formula-caption">sum every observation, divide by how many there are</p>
+
+<p>In words rather than symbols: add up every single reaction time in the room, and divide by the number of trials that went into that sum. Two small algebraic properties fall straight out of this and are worth keeping in your back pocket for when regression arrives in a few weeks &mdash; if \(a\) and \(b\) are fixed while \(x\) varies, then \(\overline{x+a} = \bar{x} + a\) and \(\overline{x \cdot b} = \bar{x} \cdot b\).</p>
+
+<p>The deeper idea sitting underneath the mean is the <strong>expected value</strong>, \(E[x]\): the value you'd expect from one randomly chosen observation. The class's own mean reaction time is mildly interesting in its own right, but it only becomes properly useful once you treat it as an estimate of something bigger than the room &mdash; the expected response time of a wider population this class is standing in for.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;If I grab one of you at random and ask whether you've had coffee in the last two hours, you'll give me a yes or a no &mdash; not a percentage. But the <em>expected value</em> of that binary variable, across the room, is a probability: it's asking, if I reached into this room and pulled out one person at random, what's the chance they'd say yes? Based on what we actually collected, that's 25%.&rdquo;</p>
+</blockquote>
+
+<p>That's the payoff promised back in the variable-types section: for a quantitative variable, \(E[x]\) is just the mean. For a <strong>binary</strong> variable coded 0/1, the mean stops being a meaningless average of labels and becomes something genuinely useful &mdash; the probability, or relative frequency, of the category coded 1.</p>
+
+<h3>Median, quantiles, mode</h3>
+
+<ul class="term-list">
+  <li><span class="term">Median</span><span>The middle value once sorted &mdash; exactly half the observations lie below it, half above.</span></li>
+  <li><span class="term">Quantiles</span><span>Any division of sorted data into proportions. Quartiles cut it into fourths (the median is the 2nd quartile, the 50th percentile); deciles into tenths; percentiles into hundredths.</span></li>
+  <li><span class="term">Mode</span><span>The single most frequent value. Some distributions genuinely have more than one.</span></li>
+</ul>
+
+<p>Pick a student below and watch where the mean and median land on their own ten trials &mdash; then try a student whose data includes a noticeably slow outlier, and watch the gap between the two open up.</p>
+
+<div class="figure" id="fig-centre">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Centre: mean vs. median</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Student</span><select class="picker" id="sel-centre"></select></div>
+    </div>
+    <div class="chart-wrap" id="centre-chart"></div>
+  </div>
+  <p class="figure-caption" id="centre-caption"></p>
+</div>
+
+<p><strong>Mean</strong> &mdash; sum &divide; \(n\). The balance point of the data; sensitive to every single value, including the extreme ones. <strong>Median</strong> &mdash; the middle value; robust to extremes almost by construction, since moving the largest value further out doesn't move the middle at all. <strong>Mode</strong> &mdash; most useful for discrete or categorical data, where "the average category" wouldn't mean anything but "the most common one" clearly does.</p>
+
+<p>When mean and median pull apart, that gap is not noise to be explained away &mdash; it is information. It is, almost always, a direct symptom of the shape of the underlying distribution, and specifically of skew.</p>
+</section>
+
+<section class="chapter" id="spread">
+<div class="chapter-kicker">Part Ten</div>
+<h2>Summary Statistics II: Measuring the Spread</h2>
+
+<p>Two datasets can share an identical mean and still look nothing alike &mdash; one tightly clustered, one scattered wide. Centre alone never tells you that; you need a separate measure of <strong>spread</strong>.</p>
+
+<div class="formula-block">
+  $$Var[x] = \frac{\sum (x_i - \bar{x})^2}{n-1}$$
+  <div style="height:10px;"></div>
+  $$SD[x] = \sqrt{\frac{\sum (x_i - \bar{x})^2}{n-1}}$$
+</div>
+<p class="formula-caption">variance, and its square root, standard deviation</p>
+
+<p><strong>Variance</strong> is the average <em>squared</em> deviation from the mean &mdash; squared partly so positive and negative deviations don't just cancel out to zero, and partly because it makes the algebra behind everything from regression to hypothesis testing far more tractable later in the module. It's harder to interpret directly, precisely because squaring the deviations also squares their units. <strong>Standard deviation</strong> undoes that by taking the square root, landing back in the original units &mdash; roughly, the typical distance between a randomly chosen observation and the mean.</p>
+
+<div class="callout">
+  This module divides by \(n-1\), not \(n\) &mdash; the standard convention, and what Python's own statistical functions use by default. B&eacute;k&eacute;s &amp; K&eacute;zdi's textbook divides by \(n\) instead; the difference is genuinely tiny once your sample is reasonably large, and Week 2 explains precisely why the \(n-1\) correction exists.
+</div>
+
+<p>In finance, standard deviation <em>is</em> volatility, quoted directly: a higher SD on an asset's price literally means it jumps around more relative to its own average. The same idea, unchanged, describes a call centre's response times, a factory's output, or a portfolio's returns.</p>
+
+<p>SD and variance aren't the only way to describe spread, and each of the alternatives makes a different trade-off against sensitivity to extreme values. Step through the four below on one student's own ten trials, and notice how the highlighted band changes &mdash; and how much that outlier-sensitive stripe of "&plusmn;1 SD" shifts compared to the sturdier IQR band once a slow trial is in the mix.</p>
+
+<div class="figure" id="fig-spread">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Spread: SD and IQR</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Student</span><select class="picker" id="sel-spread"></select></div>
+      <div class="seg" id="spread-seg">
+        <button data-stage="range">Range</button>
+        <button data-stage="sd">SD</button>
+        <button data-stage="iqr">IQR</button>
+        <button data-stage="90-10">90&ndash;10</button>
+      </div>
+    </div>
+    <div class="chart-wrap" id="spread-chart"></div>
+  </div>
+  <p class="figure-caption" id="spread-caption"></p>
+</div>
+
+<ul class="term-list">
+  <li><span class="term">Range</span><span>Max &minus; min. The simplest measure there is, and entirely dominated by whatever the most extreme point happens to be.</span></li>
+  <li><span class="term">SD</span><span>&radic;variance, in the data's own units. Sensitive to outliers &mdash; every observation, including the extreme ones, pulls on it.</span></li>
+  <li><span class="term">IQR</span><span>Q3 &minus; Q1, the spread of the middle 50% of the data. Genuinely robust to outliers &mdash; the top and bottom quarters can do almost anything without moving it.</span></li>
+  <li><span class="term">90&ndash;10 range</span><span>90th percentile minus 10th. A middle ground: trims the most extreme 20% without narrowing all the way down to the IQR's middle 50%.</span></li>
+</ul>
+
+<h3>Standardising, and a first word on skew</h3>
+
+<p>Expressing a value in units of standard deviation &mdash; <strong>standardising</strong> it &mdash; makes values from entirely different scales directly comparable:</p>
+
+<div class="formula-block">$$x_{\text{standardised}} = \frac{x - \bar{x}}{SD[x]}$$</div>
+
+<p>A standardised value of 1 reads as "one SD above the mean"; &minus;1 as "one SD below." This idea returns properly once the module starts comparing variables measured on genuinely different scales.</p>
+
+<p>Skew gets a simple, working definition here (a fuller statistical treatment can wait): a distribution is skewed if it isn't symmetric, and a serviceable measure of how skewed is</p>
+
+<div class="formula-block">$$\text{Skewness} \approx \frac{\bar{x} - \text{median}(x)}{SD[x]}$$</div>
+
+<p>When a long right tail drags the mean up above the median, this comes out positive &mdash; exactly the story the pooled reaction-time histogram already told, before it had a number attached to it.</p>
+</section>
+
+<section class="chapter" id="boxplots">
+<div class="chapter-kicker">Part Eleven</div>
+<h2>Box Plots and Group Comparisons</h2>
+
+<p>A <strong>box plot</strong> packages several of the statistics from the last two sections into one compact, comparable picture &mdash; genuinely useful the moment you want to line up more than one group side by side, which a single histogram does badly.</p>
+
+<div class="chart-row" style="margin: 20px 0;">
+  <div class="art-panel" id="svg-box"></div>
+  <div class="art-panel" id="svg-violin"></div>
+</div>
+
+<p>The whiskers reach to the most extreme point still within <strong>1.5&times;IQR</strong> of the box &mdash; not the fence itself, and not the true min/max. Anything further out is drawn as its own separate point, an <em>outside value</em>: the same fence, in other words, that flagged the 56-second trial two sections ago. A <strong>violin plot</strong> carries the same median and IQR, but replaces the box with the full smoothed shape of the distribution &mdash; the same kernel-density idea from the histogram section, mirrored either side of a centre line.</p>
+
+<p>Building one by hand is mostly arithmetic: sort your ten values, and Excel's own box-and-whisker chart takes Q1 as the median of the bottom half and Q3 as the median of the top half (not the interpolated result <code>QUARTILE()</code> would give you &mdash; a genuine, easy-to-miss mismatch between the formula and the chart, worth knowing before you're confused by your own numbers disagreeing with your own plot).</p>
+
+<p>Applied to the class's actual data, grouped by device or by whether a student had had caffeine, the box plot becomes the tool for answering the workshop's real running question.</p>
+
+<div class="figure" id="fig-box">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Box plot: our data</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Group by</span>
+        <div class="seg" id="box-seg">
+          <button data-group="device" class="on">Device</button>
+          <button data-group="caffeine">Caffeine</button>
+        </div>
+      </div>
+      <label class="chk"><input type="checkbox" id="box-points" checked> Show individual trials</label>
+    </div>
+    <div class="chart-wrap" id="box-chart"></div>
+  </div>
+  <p class="figure-caption" id="box-caption"></p>
+</div>
+
+<div class="mini-table-wrap" id="group-table"></div>
+
+<p>By device: phone users show a slightly <em>faster</em> median (446ms) than laptop users (498.5ms). By caffeine: students who'd had some in the last two hours were also slightly faster on average (median 458ms vs. 490ms without). Both differences are visible, real numbers, sitting right there in the table. Neither one, on its own, tells you whether it's a real effect or an accident of which twenty-four people happened to be in the room that day &mdash; which is exactly the question this chapter hands off to the next one.</p>
+</section>
+
+<section class="chapter" id="answer">
+<div class="chapter-kicker">Part Twelve</div>
+<h2>So &mdash; Was One Test Score Enough?</h2>
+
+<p>Back to HR's onboarding test: one trial, one number, one ranking. Every student in the room just produced ten. Look back at your own numbers &mdash; how does the spread between your own fastest and slowest trial compare with the differences visible between different students entirely?</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;A single measurement doesn't tell you someone's true, typical response time. It tells you where one random draw from their own distribution happened to land. What we're really after is the <strong>signal</strong> &mdash; a person's genuine, underlying reaction time &mdash; and every individual trial carries some amount of <strong>noise</strong> on top of it: sometimes a little faster, sometimes a little slower, and every so often, a lot slower. One of the central jobs of an analyst is learning not to mistake the noise for the signal.&rdquo;</p>
+</blockquote>
+
+<p>Ranking twenty-four agents on a single tap each would have meant ranking them substantially on <em>who happened to get a lucky or unlucky draw that morning</em>, not on any real, stable difference in ability. Ten trials, and a distribution built from them, is a materially better estimate of the signal than any one of those ten numbers taken alone. That's not a subtle statistical nicety &mdash; it's the entire answer to the business question this chapter opened with.</p>
+
+<p>And this is exactly the point where the honest caveat has to arrive: this room is not the population anyone actually cares about. Twenty-four master's students on a Friday afternoon are not the bank's real agent workforce, and even within this room, the phone-versus-laptop gap and the caffeine gap, real as the numbers are, are being read off a <strong>sample</strong>, not the full population of interest. Any sample will show differences between groups purely by chance &mdash; run this exact experiment again next week with the same twenty-four people, and the numbers would move even if nothing about them had genuinely changed.</p>
+
+<p>Deciding which differences are worth taking seriously, and which are just the ordinary noise of sampling, is precisely the inference question &mdash; and it's where Week 2 picks up: sampling distributions, confidence intervals, and the beginnings of a systematic answer to "how do we know?"</p>
+
+<h3>The six steps, in one place</h3>
+
+<ol>
+  <li>Start with the variables that matter most.</li>
+  <li>Qualitative variables &mdash; list their frequencies.</li>
+  <li>Quantitative variables &mdash; look at the histogram.</li>
+  <li>Check for extreme values, and decide deliberately what to do with each one.</li>
+  <li>Look at the summary statistics &mdash; let them guide the questions you ask next.</li>
+  <li>Explore further if needed &mdash; by group, over time, or otherwise.</li>
+</ol>
+
+<p>Every one of those six steps happened in this chapter, in order, on data the room generated for itself. That's the whole method &mdash; not a checklist to memorise, but a habit of mind worth building before anything gets modelled.</p>
+
+</section>
+
+<footer class="colophon">
+  <p><strong>A note on these notes.</strong> This chapter was assembled from three sources: the Week 1 workshop slide deck, the session's own live transcript (auto-generated, lightly cleaned for readability &mdash; quoted passages are close to verbatim but not a certified transcript), and the class's real, anonymised reaction-time data collected that afternoon (217 trials, 24 students). Numbers and charts throughout reflect that specific dataset as it stood at the time of writing; they will not update themselves if the underlying data is later revised. Framework and definitions follow B&eacute;k&eacute;s &amp; K&eacute;zdi, <em>Data Analysis for Business, Economics, and Policy</em> (2021), Ch. 3, as taught in the workshop itself.</p>
+  <p>Built as a drafting experiment &mdash; not yet reviewed for publication to students.</p>
+</footer>
+
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= embedded class data ================= */
+  const RAW = [{"student_name": "Student 24", "trial": 1, "reaction_time_ms": 1282, "device": "Laptop", "caffeine": "Yes", "finger_mm": 81.0}, {"student_name": "Student 24", "trial": 2, "reaction_time_ms": 495, "device": "Laptop", "caffeine": "Yes", "finger_mm": 81.0}, {"student_name": "Student 24", "trial": 3, "reaction_time_ms": 438, "device": "Laptop", "caffeine": "Yes", "finger_mm": 81.0}, {"student_name": "Student 24", "trial": 4, "reaction_time_ms": 468, "device": "Laptop", "caffeine": "Yes", "finger_mm": 81.0}, {"student_name": "Student 24", "trial": 5, "reaction_time_ms": 429, "device": "Laptop", "caffeine": "Yes", "finger_mm": 81.0}, {"student_name": "Student 24", "trial": 6, "reaction_time_ms": 432, "device": "Laptop", "caffeine": "Yes", "finger_mm": 81.0}, {"student_name": "Student 24", "trial": 7, "reaction_time_ms": 416, "device": "Laptop", "caffeine": "Yes", "finger_mm": 81.0}, {"student_name": "Student 24", "trial": 8, "reaction_time_ms": 422, "device": "Laptop", "caffeine": "Yes", "finger_mm": 81.0}, {"student_name": "Student 24", "trial": 9, "reaction_time_ms": 450, "device": "Laptop", "caffeine": "Yes", "finger_mm": 81.0}, {"student_name": "Student 24", "trial": 10, "reaction_time_ms": 452, "device": "Laptop", "caffeine": "Yes", "finger_mm": 81.0}, {"student_name": "Student 9", "trial": 1, "reaction_time_ms": 477, "device": "Phone", "caffeine": "Yes", "finger_mm": 68.0}, {"student_name": "Student 9", "trial": 2, "reaction_time_ms": 389, "device": "Phone", "caffeine": "Yes", "finger_mm": 68.0}, {"student_name": "Student 9", "trial": 3, "reaction_time_ms": 462, "device": "Phone", "caffeine": "Yes", "finger_mm": 68.0}, {"student_name": "Student 9", "trial": 4, "reaction_time_ms": 336, "device": "Phone", "caffeine": "Yes", "finger_mm": 68.0}, {"student_name": "Student 9", "trial": 5, "reaction_time_ms": 434, "device": "Phone", "caffeine": "Yes", "finger_mm": 68.0}, {"student_name": "Student 9", "trial": 6, "reaction_time_ms": 395, "device": "Phone", "caffeine": "Yes", "finger_mm": 68.0}, {"student_name": "Student 9", "trial": 7, "reaction_time_ms": 428, "device": "Phone", "caffeine": "Yes", "finger_mm": 68.0}, {"student_name": "Student 9", "trial": 8, "reaction_time_ms": 485, "device": "Phone", "caffeine": "Yes", "finger_mm": 68.0}, {"student_name": "Student 9", "trial": 9, "reaction_time_ms": 435, "device": "Phone", "caffeine": "Yes", "finger_mm": 68.0}, {"student_name": "Student 9", "trial": 10, "reaction_time_ms": 421, "device": "Phone", "caffeine": "Yes", "finger_mm": 68.0}, {"student_name": "Student 20", "trial": 1, "reaction_time_ms": 1737, "device": "Laptop", "caffeine": "No", "finger_mm": 700.0}, {"student_name": "Student 20", "trial": 2, "reaction_time_ms": 14567, "device": "Laptop", "caffeine": "No", "finger_mm": 700.0}, {"student_name": "Student 20", "trial": 3, "reaction_time_ms": 1045, "device": "Laptop", "caffeine": "No", "finger_mm": 700.0}, {"student_name": "Student 20", "trial": 4, "reaction_time_ms": 776, "device": "Laptop", "caffeine": "No", "finger_mm": 700.0}, {"student_name": "Student 20", "trial": 5, "reaction_time_ms": 996, "device": "Laptop", "caffeine": "No", "finger_mm": 700.0}, {"student_name": "Student 20", "trial": 6, "reaction_time_ms": 1081, "device": "Laptop", "caffeine": "No", "finger_mm": 700.0}, {"student_name": "Student 20", "trial": 7, "reaction_time_ms": 1253, "device": "Laptop", "caffeine": "No", "finger_mm": 700.0}, {"student_name": "Student 20", "trial": 8, "reaction_time_ms": 758, "device": "Laptop", "caffeine": "No", "finger_mm": 700.0}, {"student_name": "Student 20", "trial": 9, "reaction_time_ms": 624, "device": "Laptop", "caffeine": "No", "finger_mm": 700.0}, {"student_name": "Student 20", "trial": 10, "reaction_time_ms": 556, "device": "Laptop", "caffeine": "No", "finger_mm": 700.0}, {"student_name": "Student 18", "trial": 1, "reaction_time_ms": 612, "device": "Phone", "caffeine": "No", "finger_mm": 82.0}, {"student_name": "Student 18", "trial": 2, "reaction_time_ms": 767, "device": "Phone", "caffeine": "No", "finger_mm": 82.0}, {"student_name": "Student 18", "trial": 3, "reaction_time_ms": 379, "device": "Phone", "caffeine": "No", "finger_mm": 82.0}, {"student_name": "Student 18", "trial": 4, "reaction_time_ms": 372, "device": "Phone", "caffeine": "No", "finger_mm": 82.0}, {"student_name": "Student 18", "trial": 5, "reaction_time_ms": 379, "device": "Phone", "caffeine": "No", "finger_mm": 82.0}, {"student_name": "Student 18", "trial": 6, "reaction_time_ms": 382, "device": "Phone", "caffeine": "No", "finger_mm": 82.0}, {"student_name": "Student 18", "trial": 7, "reaction_time_ms": 351, "device": "Phone", "caffeine": "No", "finger_mm": 82.0}, {"student_name": "Student 18", "trial": 8, "reaction_time_ms": 381, "device": "Phone", "caffeine": "No", "finger_mm": 82.0}, {"student_name": "Student 18", "trial": 9, "reaction_time_ms": 371, "device": "Phone", "caffeine": "No", "finger_mm": 82.0}, {"student_name": "Student 18", "trial": 10, "reaction_time_ms": 360, "device": "Phone", "caffeine": "No", "finger_mm": 82.0}, {"student_name": "Student 11", "trial": 1, "reaction_time_ms": 4719, "device": "Laptop", "caffeine": "Yes", "finger_mm": 80.0}, {"student_name": "Student 11", "trial": 2, "reaction_time_ms": 3646, "device": "Laptop", "caffeine": "Yes", "finger_mm": 80.0}, {"student_name": "Student 11", "trial": 3, "reaction_time_ms": 835, "device": "Laptop", "caffeine": "Yes", "finger_mm": 80.0}, {"student_name": "Student 11", "trial": 4, "reaction_time_ms": 458, "device": "Laptop", "caffeine": "Yes", "finger_mm": 80.0}, {"student_name": "Student 11", "trial": 5, "reaction_time_ms": 419, "device": "Laptop", "caffeine": "Yes", "finger_mm": 80.0}, {"student_name": "Student 12", "trial": 1, "reaction_time_ms": 527, "device": "Phone", "caffeine": "No", "finger_mm": 94.0}, {"student_name": "Student 11", "trial": 6, "reaction_time_ms": 406, "device": "Laptop", "caffeine": "Yes", "finger_mm": 80.0}, {"student_name": "Student 12", "trial": 2, "reaction_time_ms": 363, "device": "Phone", "caffeine": "No", "finger_mm": 94.0}, {"student_name": "Student 11", "trial": 7, "reaction_time_ms": 491, "device": "Laptop", "caffeine": "Yes", "finger_mm": 80.0}, {"student_name": "Student 12", "trial": 3, "reaction_time_ms": 868, "device": "Phone", "caffeine": "No", "finger_mm": 94.0}, {"student_name": "Student 12", "trial": 4, "reaction_time_ms": 646, "device": "Phone", "caffeine": "No", "finger_mm": 94.0}, {"student_name": "Student 8", "trial": 1, "reaction_time_ms": 439, "device": "Phone", "caffeine": "No", "finger_mm": 79.0}, {"student_name": "Student 11", "trial": 8, "reaction_time_ms": 560, "device": "Laptop", "caffeine": "Yes", "finger_mm": 80.0}, {"student_name": "Student 12", "trial": 5, "reaction_time_ms": 337, "device": "Phone", "caffeine": "No", "finger_mm": 94.0}, {"student_name": "Student 8", "trial": 2, "reaction_time_ms": 360, "device": "Phone", "caffeine": "No", "finger_mm": 79.0}, {"student_name": "Student 11", "trial": 9, "reaction_time_ms": 682, "device": "Laptop", "caffeine": "Yes", "finger_mm": 80.0}, {"student_name": "Student 12", "trial": 7, "reaction_time_ms": 398, "device": "Phone", "caffeine": "No", "finger_mm": 94.0}, {"student_name": "Student 10", "trial": 1, "reaction_time_ms": 6630, "device": "Laptop", "caffeine": "No", "finger_mm": 8.2}, {"student_name": "Student 11", "trial": 10, "reaction_time_ms": 1322, "device": "Laptop", "caffeine": "Yes", "finger_mm": 80.0}, {"student_name": "Student 12", "trial": 8, "reaction_time_ms": 425, "device": "Phone", "caffeine": "No", "finger_mm": 94.0}, {"student_name": "Student 3", "trial": 3, "reaction_time_ms": 415, "device": "Laptop", "caffeine": "Yes", "finger_mm": 72.0}, {"student_name": "Student 10", "trial": 2, "reaction_time_ms": 3170, "device": "Laptop", "caffeine": "No", "finger_mm": 8.2}, {"student_name": "Student 12", "trial": 9, "reaction_time_ms": 479, "device": "Phone", "caffeine": "No", "finger_mm": 94.0}, {"student_name": "Student 3", "trial": 4, "reaction_time_ms": 344, "device": "Laptop", "caffeine": "Yes", "finger_mm": 72.0}, {"student_name": "Student 12", "trial": 10, "reaction_time_ms": 433, "device": "Phone", "caffeine": "No", "finger_mm": 94.0}, {"student_name": "Student 8", "trial": 5, "reaction_time_ms": 390, "device": "Phone", "caffeine": "No", "finger_mm": 79.0}, {"student_name": "Student 3", "trial": 5, "reaction_time_ms": 378, "device": "Laptop", "caffeine": "Yes", "finger_mm": 72.0}, {"student_name": "Student 22", "trial": 2, "reaction_time_ms": 400, "device": "Laptop", "caffeine": "No", "finger_mm": 76.0}, {"student_name": "Student 10", "trial": 4, "reaction_time_ms": 849, "device": "Laptop", "caffeine": "No", "finger_mm": 8.2}, {"student_name": "Student 8", "trial": 6, "reaction_time_ms": 437, "device": "Phone", "caffeine": "No", "finger_mm": 79.0}, {"student_name": "Student 3", "trial": 7, "reaction_time_ms": 396, "device": "Laptop", "caffeine": "Yes", "finger_mm": 72.0}, {"student_name": "Student 10", "trial": 5, "reaction_time_ms": 672, "device": "Laptop", "caffeine": "No", "finger_mm": 8.2}, {"student_name": "Student 8", "trial": 7, "reaction_time_ms": 384, "device": "Phone", "caffeine": "No", "finger_mm": 79.0}, {"student_name": "Student 10", "trial": 6, "reaction_time_ms": 603, "device": "Laptop", "caffeine": "No", "finger_mm": 8.2}, {"student_name": "Student 3", "trial": 8, "reaction_time_ms": 530, "device": "Laptop", "caffeine": "Yes", "finger_mm": 72.0}, {"student_name": "Student 10", "trial": 7, "reaction_time_ms": 3473, "device": "Laptop", "caffeine": "No", "finger_mm": 8.2}, {"student_name": "Student 8", "trial": 8, "reaction_time_ms": 361, "device": "Phone", "caffeine": "No", "finger_mm": 79.0}, {"student_name": "Student 3", "trial": 9, "reaction_time_ms": 408, "device": "Laptop", "caffeine": "Yes", "finger_mm": 72.0}, {"student_name": "Student 16", "trial": 3, "reaction_time_ms": 1748, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 10", "trial": 8, "reaction_time_ms": 3072, "device": "Laptop", "caffeine": "No", "finger_mm": 8.2}, {"student_name": "Student 14", "trial": 1, "reaction_time_ms": 56249, "device": "Laptop", "caffeine": "No", "finger_mm": 900.0}, {"student_name": "Student 3", "trial": 10, "reaction_time_ms": 373, "device": "Laptop", "caffeine": "Yes", "finger_mm": 72.0}, {"student_name": "Student 10", "trial": 9, "reaction_time_ms": 602, "device": "Laptop", "caffeine": "No", "finger_mm": 8.2}, {"student_name": "Student 14", "trial": 2, "reaction_time_ms": 8077, "device": "Laptop", "caffeine": "No", "finger_mm": 900.0}, {"student_name": "Student 22", "trial": 8, "reaction_time_ms": 407, "device": "Laptop", "caffeine": "No", "finger_mm": 76.0}, {"student_name": "Student 10", "trial": 10, "reaction_time_ms": 545, "device": "Laptop", "caffeine": "No", "finger_mm": 8.2}, {"student_name": "Student 16", "trial": 5, "reaction_time_ms": 1211, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 14", "trial": 3, "reaction_time_ms": 2080, "device": "Laptop", "caffeine": "No", "finger_mm": 900.0}, {"student_name": "Student 22", "trial": 9, "reaction_time_ms": 313, "device": "Laptop", "caffeine": "No", "finger_mm": 76.0}, {"student_name": "Student 16", "trial": 6, "reaction_time_ms": 899, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 14", "trial": 4, "reaction_time_ms": 787, "device": "Laptop", "caffeine": "No", "finger_mm": 900.0}, {"student_name": "Student 22", "trial": 10, "reaction_time_ms": 374, "device": "Laptop", "caffeine": "No", "finger_mm": 76.0}, {"student_name": "Student 14", "trial": 5, "reaction_time_ms": 979, "device": "Laptop", "caffeine": "No", "finger_mm": 900.0}, {"student_name": "Student 14", "trial": 6, "reaction_time_ms": 1030, "device": "Laptop", "caffeine": "No", "finger_mm": 900.0}, {"student_name": "Student 14", "trial": 7, "reaction_time_ms": 693, "device": "Laptop", "caffeine": "No", "finger_mm": 900.0}, {"student_name": "Student 14", "trial": 8, "reaction_time_ms": 1165, "device": "Laptop", "caffeine": "No", "finger_mm": 900.0}, {"student_name": "Student 13", "trial": 1, "reaction_time_ms": 5201, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 14", "trial": 9, "reaction_time_ms": 1061, "device": "Laptop", "caffeine": "No", "finger_mm": 900.0}, {"student_name": "Student 13", "trial": 2, "reaction_time_ms": 2439, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 14", "trial": 10, "reaction_time_ms": 2158, "device": "Laptop", "caffeine": "No", "finger_mm": 900.0}, {"student_name": "Student 13", "trial": 3, "reaction_time_ms": 674, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 7", "trial": 1, "reaction_time_ms": 333, "device": "Laptop", "caffeine": "No", "finger_mm": 71.0}, {"student_name": "Student 13", "trial": 4, "reaction_time_ms": 1251, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 16", "trial": 9, "reaction_time_ms": 1191, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 7", "trial": 3, "reaction_time_ms": 322, "device": "Laptop", "caffeine": "No", "finger_mm": 71.0}, {"student_name": "Student 16", "trial": 10, "reaction_time_ms": 1251, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 7", "trial": 4, "reaction_time_ms": 288, "device": "Laptop", "caffeine": "No", "finger_mm": 71.0}, {"student_name": "Student 7", "trial": 5, "reaction_time_ms": 349, "device": "Laptop", "caffeine": "No", "finger_mm": 71.0}, {"student_name": "Student 13", "trial": 5, "reaction_time_ms": 793, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 7", "trial": 6, "reaction_time_ms": 293, "device": "Laptop", "caffeine": "No", "finger_mm": 71.0}, {"student_name": "Student 13", "trial": 6, "reaction_time_ms": 690, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 7", "trial": 7, "reaction_time_ms": 506, "device": "Laptop", "caffeine": "No", "finger_mm": 71.0}, {"student_name": "Student 7", "trial": 8, "reaction_time_ms": 647, "device": "Laptop", "caffeine": "No", "finger_mm": 71.0}, {"student_name": "Student 7", "trial": 9, "reaction_time_ms": 288, "device": "Laptop", "caffeine": "No", "finger_mm": 71.0}, {"student_name": "Student 13", "trial": 7, "reaction_time_ms": 443, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 7", "trial": 10, "reaction_time_ms": 305, "device": "Laptop", "caffeine": "No", "finger_mm": 71.0}, {"student_name": "Student 13", "trial": 8, "reaction_time_ms": 533, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 13", "trial": 9, "reaction_time_ms": 486, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 13", "trial": 10, "reaction_time_ms": 635, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 2", "trial": 1, "reaction_time_ms": 639, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 2", "trial": 2, "reaction_time_ms": 476, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 2", "trial": 3, "reaction_time_ms": 437, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 2", "trial": 4, "reaction_time_ms": 313, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 2", "trial": 5, "reaction_time_ms": 330, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 2", "trial": 6, "reaction_time_ms": 338, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 2", "trial": 7, "reaction_time_ms": 433, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 2", "trial": 8, "reaction_time_ms": 435, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 2", "trial": 9, "reaction_time_ms": 327, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 2", "trial": 10, "reaction_time_ms": 468, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 4", "trial": 1, "reaction_time_ms": 419, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 4", "trial": 2, "reaction_time_ms": 364, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 4", "trial": 3, "reaction_time_ms": 360, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 4", "trial": 4, "reaction_time_ms": 449, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 4", "trial": 5, "reaction_time_ms": 391, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 4", "trial": 6, "reaction_time_ms": 344, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 4", "trial": 7, "reaction_time_ms": 368, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 23", "trial": 1, "reaction_time_ms": 4761, "device": "Phone", "caffeine": "Yes", "finger_mm": 70.0}, {"student_name": "Student 4", "trial": 8, "reaction_time_ms": 459, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 4", "trial": 9, "reaction_time_ms": 367, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 23", "trial": 2, "reaction_time_ms": 7777, "device": "Phone", "caffeine": "Yes", "finger_mm": 70.0}, {"student_name": "Student 4", "trial": 10, "reaction_time_ms": 642, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 23", "trial": 3, "reaction_time_ms": 2828, "device": "Phone", "caffeine": "Yes", "finger_mm": 70.0}, {"student_name": "Student 23", "trial": 4, "reaction_time_ms": 1454, "device": "Phone", "caffeine": "Yes", "finger_mm": 70.0}, {"student_name": "Student 23", "trial": 5, "reaction_time_ms": 1212, "device": "Phone", "caffeine": "Yes", "finger_mm": 70.0}, {"student_name": "Student 23", "trial": 6, "reaction_time_ms": 1063, "device": "Phone", "caffeine": "Yes", "finger_mm": 70.0}, {"student_name": "Student 23", "trial": 7, "reaction_time_ms": 3390, "device": "Phone", "caffeine": "Yes", "finger_mm": 70.0}, {"student_name": "Student 19", "trial": 1, "reaction_time_ms": 282, "device": "Laptop", "caffeine": "No", "finger_mm": 74.0}, {"student_name": "Student 23", "trial": 8, "reaction_time_ms": 7743, "device": "Phone", "caffeine": "Yes", "finger_mm": 70.0}, {"student_name": "Student 19", "trial": 2, "reaction_time_ms": 322, "device": "Laptop", "caffeine": "No", "finger_mm": 74.0}, {"student_name": "Student 23", "trial": 9, "reaction_time_ms": 4766, "device": "Phone", "caffeine": "Yes", "finger_mm": 70.0}, {"student_name": "Student 19", "trial": 3, "reaction_time_ms": 259, "device": "Laptop", "caffeine": "No", "finger_mm": 74.0}, {"student_name": "Student 19", "trial": 4, "reaction_time_ms": 283, "device": "Laptop", "caffeine": "No", "finger_mm": 74.0}, {"student_name": "Student 23", "trial": 10, "reaction_time_ms": 3446, "device": "Phone", "caffeine": "Yes", "finger_mm": 70.0}, {"student_name": "Student 5", "trial": 1, "reaction_time_ms": 2917, "device": "Laptop", "caffeine": "No", "finger_mm": 6.9}, {"student_name": "Student 5", "trial": 2, "reaction_time_ms": 2228, "device": "Laptop", "caffeine": "No", "finger_mm": 6.9}, {"student_name": "Student 5", "trial": 3, "reaction_time_ms": 609, "device": "Laptop", "caffeine": "No", "finger_mm": 6.9}, {"student_name": "Student 19", "trial": 5, "reaction_time_ms": 275, "device": "Laptop", "caffeine": "No", "finger_mm": 74.0}, {"student_name": "Student 5", "trial": 4, "reaction_time_ms": 480, "device": "Laptop", "caffeine": "No", "finger_mm": 6.9}, {"student_name": "Student 19", "trial": 6, "reaction_time_ms": 285, "device": "Laptop", "caffeine": "No", "finger_mm": 74.0}, {"student_name": "Student 5", "trial": 5, "reaction_time_ms": 534, "device": "Laptop", "caffeine": "No", "finger_mm": 6.9}, {"student_name": "Student 19", "trial": 7, "reaction_time_ms": 272, "device": "Laptop", "caffeine": "No", "finger_mm": 74.0}, {"student_name": "Student 5", "trial": 6, "reaction_time_ms": 441, "device": "Laptop", "caffeine": "No", "finger_mm": 6.9}, {"student_name": "Student 19", "trial": 8, "reaction_time_ms": 285, "device": "Laptop", "caffeine": "No", "finger_mm": 74.0}, {"student_name": "Student 5", "trial": 7, "reaction_time_ms": 494, "device": "Laptop", "caffeine": "No", "finger_mm": 6.9}, {"student_name": "Student 1", "trial": 1, "reaction_time_ms": 6007, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 19", "trial": 9, "reaction_time_ms": 298, "device": "Laptop", "caffeine": "No", "finger_mm": 74.0}, {"student_name": "Student 1", "trial": 2, "reaction_time_ms": 934, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 19", "trial": 10, "reaction_time_ms": 273, "device": "Laptop", "caffeine": "No", "finger_mm": 74.0}, {"student_name": "Student 1", "trial": 3, "reaction_time_ms": 11199, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 1", "trial": 4, "reaction_time_ms": 1113, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 5", "trial": 10, "reaction_time_ms": 946, "device": "Laptop", "caffeine": "No", "finger_mm": 6.9}, {"student_name": "Student 1", "trial": 5, "reaction_time_ms": 696, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 1", "trial": 6, "reaction_time_ms": 2722, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 1", "trial": 7, "reaction_time_ms": 884, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 1", "trial": 8, "reaction_time_ms": 1006, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 1", "trial": 9, "reaction_time_ms": 2170, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 1", "trial": 10, "reaction_time_ms": 568, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 15", "trial": 1, "reaction_time_ms": 7552, "device": "Laptop", "caffeine": "No", "finger_mm": 100.0}, {"student_name": "Student 15", "trial": 2, "reaction_time_ms": 502, "device": "Laptop", "caffeine": "No", "finger_mm": 100.0}, {"student_name": "Student 15", "trial": 3, "reaction_time_ms": 436, "device": "Laptop", "caffeine": "No", "finger_mm": 100.0}, {"student_name": "Student 15", "trial": 4, "reaction_time_ms": 382, "device": "Laptop", "caffeine": "No", "finger_mm": 100.0}, {"student_name": "Student 15", "trial": 5, "reaction_time_ms": 343, "device": "Laptop", "caffeine": "No", "finger_mm": 100.0}, {"student_name": "Student 15", "trial": 6, "reaction_time_ms": 313, "device": "Laptop", "caffeine": "No", "finger_mm": 100.0}, {"student_name": "Student 15", "trial": 7, "reaction_time_ms": 359, "device": "Laptop", "caffeine": "No", "finger_mm": 100.0}, {"student_name": "Student 15", "trial": 8, "reaction_time_ms": 379, "device": "Laptop", "caffeine": "No", "finger_mm": 100.0}, {"student_name": "Student 15", "trial": 9, "reaction_time_ms": 387, "device": "Laptop", "caffeine": "No", "finger_mm": 100.0}, {"student_name": "Student 15", "trial": 10, "reaction_time_ms": 358, "device": "Laptop", "caffeine": "No", "finger_mm": 100.0}, {"student_name": "Student 17", "trial": 1, "reaction_time_ms": 581, "device": "Phone", "caffeine": "Yes", "finger_mm": 7.0}, {"student_name": "Student 17", "trial": 2, "reaction_time_ms": 507, "device": "Phone", "caffeine": "Yes", "finger_mm": 7.0}, {"student_name": "Student 17", "trial": 3, "reaction_time_ms": 516, "device": "Phone", "caffeine": "Yes", "finger_mm": 7.0}, {"student_name": "Student 17", "trial": 4, "reaction_time_ms": 373, "device": "Phone", "caffeine": "Yes", "finger_mm": 7.0}, {"student_name": "Student 17", "trial": 5, "reaction_time_ms": 447, "device": "Phone", "caffeine": "Yes", "finger_mm": 7.0}, {"student_name": "Student 17", "trial": 6, "reaction_time_ms": 446, "device": "Phone", "caffeine": "Yes", "finger_mm": 7.0}, {"student_name": "Student 17", "trial": 7, "reaction_time_ms": 368, "device": "Phone", "caffeine": "Yes", "finger_mm": 7.0}, {"student_name": "Student 17", "trial": 8, "reaction_time_ms": 358, "device": "Phone", "caffeine": "Yes", "finger_mm": 7.0}, {"student_name": "Student 6", "trial": 1, "reaction_time_ms": 4562, "device": "Laptop", "caffeine": "No", "finger_mm": 95.0}, {"student_name": "Student 17", "trial": 9, "reaction_time_ms": 349, "device": "Phone", "caffeine": "Yes", "finger_mm": 7.0}, {"student_name": "Student 6", "trial": 2, "reaction_time_ms": 8297, "device": "Laptop", "caffeine": "No", "finger_mm": 95.0}, {"student_name": "Student 17", "trial": 10, "reaction_time_ms": 724, "device": "Phone", "caffeine": "Yes", "finger_mm": 7.0}, {"student_name": "Student 6", "trial": 3, "reaction_time_ms": 739, "device": "Laptop", "caffeine": "No", "finger_mm": 95.0}, {"student_name": "Student 6", "trial": 4, "reaction_time_ms": 4329, "device": "Laptop", "caffeine": "No", "finger_mm": 95.0}, {"student_name": "Student 6", "trial": 5, "reaction_time_ms": 13031, "device": "Laptop", "caffeine": "No", "finger_mm": 95.0}, {"student_name": "Student 6", "trial": 6, "reaction_time_ms": 1545, "device": "Laptop", "caffeine": "No", "finger_mm": 95.0}, {"student_name": "Student 6", "trial": 7, "reaction_time_ms": 8888, "device": "Laptop", "caffeine": "No", "finger_mm": 95.0}, {"student_name": "Student 6", "trial": 8, "reaction_time_ms": 2075, "device": "Laptop", "caffeine": "No", "finger_mm": 95.0}, {"student_name": "Student 6", "trial": 9, "reaction_time_ms": 534, "device": "Laptop", "caffeine": "No", "finger_mm": 95.0}, {"student_name": "Student 6", "trial": 10, "reaction_time_ms": 2198, "device": "Laptop", "caffeine": "No", "finger_mm": 95.0}, {"student_name": "Student 21", "trial": 1, "reaction_time_ms": 608, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 21", "trial": 2, "reaction_time_ms": 305, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 21", "trial": 3, "reaction_time_ms": 313, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 21", "trial": 4, "reaction_time_ms": 391, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 21", "trial": 5, "reaction_time_ms": 449, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 21", "trial": 6, "reaction_time_ms": 436, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 21", "trial": 7, "reaction_time_ms": 321, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 21", "trial": 8, "reaction_time_ms": 406, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 21", "trial": 9, "reaction_time_ms": 357, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 21", "trial": 10, "reaction_time_ms": 275, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}];
+
+  function natStudentSort(a, b) {
+    const na = parseInt(a.replace(/\D/g, ''), 10);
+    const nb = parseInt(b.replace(/\D/g, ''), 10);
+    return na - nb;
+  }
+  const students = [...new Set(RAW.map(d => d.student_name))].sort(natStudentSort);
+
+  const accentInk = () => getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#1a1a2e';
+  const plotStyle = () => ({ color: 'var(--ink-soft)', fontFamily: "'Public Sans', sans-serif", fontSize: '12px' });
+
+  const COL = { Phone: '#2f6690', Laptop: '#2d6a4f', Yes: '#c8373f', No: '#2f6690' };
+
+  function accessibleChart(node, label) {
+    node.setAttribute('aria-hidden', 'true');
+    const wrap = document.createElement('div');
+    wrap.setAttribute('role', 'img');
+    wrap.setAttribute('aria-label', label);
+    wrap.appendChild(node);
+    return wrap;
+  }
+  function mount(id, node) {
+    const el = document.getElementById(id);
+    el.innerHTML = '';
+    el.appendChild(node);
+  }
+
+  /* ================= pool-level stats (mirrors pool_fence in the deck) ================= */
+  const poolVals = RAW.map(d => d.reaction_time_ms);
+  const poolSorted = [...poolVals].sort((a, b) => a - b);
+  const poolMin = d3.min(poolVals), poolMax = d3.max(poolVals);
+  const poolQ1 = d3.quantile(poolSorted, 0.25), poolQ3 = d3.quantile(poolSorted, 0.75);
+  const poolIQR = poolQ3 - poolQ1;
+  const poolFenceHi = poolQ3 + 1.5 * poolIQR;
+  const thrMax = Math.ceil(poolMax / 10) * 10 + 10;
+  const poolFence = Math.min(thrMax, Math.ceil(poolFenceHi / 10) * 10);
+
+  /* box-plot axis cap, mirrors bv_axis */
+  const bvPad = Math.max(30, Math.round(poolFence * 0.08));
+  const bvMin = Math.floor((poolMin - bvPad) / 10) * 10;
+  const bvMax = poolFence + bvPad;
+  const bvHidden = poolVals.filter(v => v > bvMax).length;
+
+  /* ================= TOC ================= */
+  const sections = [...document.querySelectorAll('section.chapter')].map(s => ({
+    id: s.id, title: s.querySelector('h2').textContent
+  }));
+  function buildTOC(container) {
+    const label = document.createElement('span');
+    label.className = 'toc-label';
+    label.textContent = 'Contents';
+    container.appendChild(label);
+    const ol = document.createElement('ol');
+    sections.forEach(s => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = '#' + s.id; a.textContent = s.title; a.dataset.id = s.id;
+      li.appendChild(a); ol.appendChild(li);
+    });
+    container.appendChild(ol);
+  }
+  buildTOC(document.getElementById('toc'));
+  buildTOC(document.getElementById('toc-mobile'));
+
+  const allTocLinks = () => [...document.querySelectorAll('nav.toc a')];
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        allTocLinks().forEach(a => a.classList.toggle('active', a.dataset.id === id));
+      }
+    });
+  }, { rootMargin: '-10% 0px -70% 0px' });
+  sections.forEach(s => io.observe(document.getElementById(s.id)));
+
+  /* ================= student pickers ================= */
+  function fillSelect(sel, defaultStudent) {
+    sel.innerHTML = '';
+    students.forEach(s => {
+      const o = document.createElement('option');
+      o.value = s; o.textContent = s;
+      sel.appendChild(o);
+    });
+    sel.value = defaultStudent;
+  }
+  const selRaw = document.getElementById('sel-raw');
+  const selCentre = document.getElementById('sel-centre');
+  const selSpread = document.getElementById('sel-spread');
+  fillSelect(selRaw, students[2] || students[0]);
+  fillSelect(selCentre, students[2] || students[0]);
+  fillSelect(selSpread, students[4] || students[0]);
+
+  /* ================= Figure: one student's raw data ================= */
+  function renderRaw() {
+    const s = selRaw.value;
+    const rows = RAW.filter(d => d.student_name === s).sort((a, b) => a.trial - b.trial);
+
+    const tbl = document.createElement('table');
+    tbl.className = 'data-table';
+    tbl.innerHTML = `<thead><tr><th>Trial</th><th>Time (ms)</th></tr></thead>
+      <tbody>${rows.map(r => `<tr><td>${r.trial}</td><td style="color:var(--accent);font-weight:600;">${r.reaction_time_ms}</td></tr>`).join('')}</tbody>`;
+    document.getElementById('raw-table').innerHTML = '';
+    document.getElementById('raw-table').appendChild(tbl);
+
+    const vals = rows.map(d => d.reaction_time_ms);
+    const lo = d3.min(vals), hi = d3.max(vals);
+    const pad = Math.max(20, Math.round((hi - lo) * 0.15));
+    const svg = Plot.plot({
+      width: 380, height: 260, marginLeft: 55, marginBottom: 36,
+      style: plotStyle(),
+      x: { label: 'Trial', tickFormat: d => d, ticks: rows.length },
+      y: { label: 'Reaction time (ms)', domain: [lo - pad, hi + pad] },
+      marks: [
+        Plot.line(rows, { x: 'trial', y: 'reaction_time_ms', stroke: '#ccc', strokeWidth: 1.5 }),
+        Plot.dot(rows, { x: 'trial', y: 'reaction_time_ms', fill: '#2f6690', r: 6, tip: true, title: d => `Trial ${d.trial}: ${d.reaction_time_ms} ms` }),
+      ]
+    });
+    mount('raw-trend', accessibleChart(svg, `Reaction time by trial number for ${s}.`));
+  }
+  selRaw.addEventListener('input', renderRaw);
+
+  /* ================= Tidy table ================= */
+  (function renderTidy() {
+    const first = RAW.slice(0, 6);
+    const tbl = document.createElement('table');
+    tbl.className = 'data-table';
+    tbl.innerHTML = `<thead><tr><th>student_name</th><th>trial</th><th>reaction_time_ms</th><th>device</th><th>caffeine</th><th>finger_mm</th></tr></thead>
+      <tbody>${first.map(r => `<tr><td>${r.student_name}</td><td>${r.trial}</td><td style="color:var(--accent);font-weight:600;">${r.reaction_time_ms}</td><td>${r.device}</td><td>${r.caffeine}</td><td>${r.finger_mm ?? '\u2014'}</td></tr>`).join('')}
+      <tr><td colspan="6" style="color:var(--ink-faint);font-style:italic;">&hellip; ${RAW.length} rows total (10 trials &times; ${students.length} students)</td></tr></tbody>`;
+    document.getElementById('tidy-table').appendChild(tbl);
+  })();
+
+  /* ================= Frequency tables ================= */
+  (function renderFreq() {
+    function freqTable(field, title) {
+      const counts = d3.rollup(RAW.filter((d, i, arr) => arr.findIndex(x => x.student_name === d.student_name) === i), v => v.length, d => d[field]);
+      const total = d3.sum([...counts.values()]);
+      const rows = [...counts.entries()].map(([k, v]) => `<tr><td>${k}</td><td style="text-align:right;font-weight:600;">${v}</td><td style="text-align:right;color:var(--accent);">${(v / total * 100).toFixed(1)}%</td></tr>`).join('');
+      return `<div style="flex:1 1 220px;"><p style="font-weight:600;font-family:var(--serif);margin:0 0 8px;">${title}</p>
+        <table class="data-table"><thead><tr><th>${field}</th><th style="text-align:right;">Count</th><th style="text-align:right;">%</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    }
+    document.getElementById('freq-tables').innerHTML = freqTable('device', 'Device') + freqTable('caffeine', 'Caffeine (last 2h)');
+  })();
+
+  /* ================= Figure: pooled histogram ================= */
+  const histBW = document.getElementById('hist-binwidth');
+  const histBWVal = document.getElementById('hist-binwidth-val');
+  const histThr = document.getElementById('hist-threshold');
+  const histThrVal = document.getElementById('hist-threshold-val');
+  const histMean = document.getElementById('hist-mean');
+  const histMedian = document.getElementById('hist-median');
+  const histKde = document.getElementById('hist-kde');
+  const histPct = document.getElementById('hist-pct');
+
+  histThr.min = poolMin; histThr.max = thrMax; histThr.step = 10; histThr.value = poolFence;
+
+  function renderHist() {
+    const thr = +histThr.value;
+    histThrVal.textContent = thr >= thrMax ? 'All' : thr + ' ms';
+    histBWVal.textContent = histBW.value + ' ms';
+
+    const filtered = RAW.filter(d => d.reaction_time_ms <= thr);
+    const vals = filtered.map(d => d.reaction_time_ms);
+    const mu = d3.mean(vals), med = d3.median(vals), sigma = d3.deviation(vals);
+    const excluded = RAW.length - filtered.length;
+    const bw = +histBW.value;
+    const pct = histPct.checked;
+
+    const pad = Math.max(20, Math.round((d3.max(vals) - d3.min(vals)) * 0.1));
+    const xmin = Math.floor((d3.min(vals) - pad) / 10) * 10;
+    const xmax = Math.ceil((thr + pad) / 10) * 10;
+
+    const h = sigma * 1.06 * Math.pow(vals.length, -0.2);
+    const kdePoints = d3.range(xmin, xmax, 2).map(x => {
+      const density = d3.mean(vals, v => { const u = (x - v) / h; return Math.abs(u) <= 1 ? 0.75 * (1 - u * u) / h : 0; });
+      return { x, y: pct ? density * bw : density * filtered.length * bw };
+    });
+
+    const svg = Plot.plot({
+      width: 640, height: 380, marginLeft: 55, marginBottom: 36,
+      style: plotStyle(),
+      x: { label: 'Reaction time (ms)', domain: [xmin, xmax] },
+      y: pct ? { label: '% of trials', percent: true } : { label: 'Count' },
+      marks: [
+        Plot.rectY(filtered, Plot.binX({ y: pct ? 'proportion' : 'count' }, { x: 'reaction_time_ms', thresholds: d3.range(xmin, xmax + bw, bw), fill: '#2f6690', fillOpacity: 0.78 })),
+        Plot.ruleX([0]),
+        histMean.checked ? Plot.ruleX([mu], { stroke: '#c8373f', strokeWidth: 2.5, strokeDasharray: '6,4', tip: true, title: () => `Mean: ${mu.toFixed(1)} ms` }) : null,
+        histMedian.checked ? Plot.ruleX([med], { stroke: '#c97f31', strokeWidth: 2.5, strokeDasharray: '6,4', tip: true, title: () => `Median: ${med.toFixed(1)} ms` }) : null,
+        histKde.checked ? Plot.line(kdePoints, { x: 'x', y: 'y', stroke: '#2d6a4f', strokeWidth: 2.5 }) : null,
+        excluded > 0 ? Plot.text([{ x: xmax, y: 0 }], { text: () => `${excluded} value${excluded > 1 ? 's' : ''} excluded`, x: 'x', frameAnchor: 'top-right', fill: '#c8373f', fontSize: 12, fontStyle: 'italic' }) : null,
+      ]
+    });
+
+    const label = `Bins ${bw} ms wide` + (excluded > 0 ? `, with ${excluded} value${excluded > 1 ? 's' : ''} above ${thr} ms excluded.` : ', with no values excluded.') +
+      (histMean.checked ? ` Mean ${mu.toFixed(1)} ms.` : '') + (histMedian.checked ? ` Median ${med.toFixed(1)} ms.` : '');
+    mount('hist-chart', accessibleChart(svg, 'Pooled histogram of class reaction times. ' + label));
+    document.getElementById('hist-caption').textContent = label;
+  }
+  [histBW, histThr, histMean, histMedian, histKde, histPct].forEach(el => el.addEventListener('input', renderHist));
+
+  /* ================= Figure: spotting the outlier ================= */
+  (function renderOutlier() {
+    const vals = poolVals;
+    const maxVal = poolMax;
+    const isOutlier = maxVal > poolFenceHi;
+    const pad = Math.max(20, Math.round((d3.max(vals) - d3.min(vals)) * 0.1));
+    const xmin = Math.floor((d3.min(vals) - pad) / 10) * 10;
+    const xmax = Math.ceil((maxVal + pad) / 10) * 10;
+    const bw = 30;
+    const bins = d3.bin().domain([xmin, xmax]).thresholds(d3.range(xmin, xmax + bw, bw))(vals);
+    const maxBinCount = d3.max(bins, b => b.length);
+    const topBin = bins.find(b => maxVal >= b.x0 && maxVal < b.x1) ?? bins[bins.length - 1];
+    const labelY = maxBinCount + Math.max(2, Math.round(maxBinCount * 0.35));
+
+    const marks = [Plot.rectY(bins, { x1: 'x0', x2: 'x1', y: 'length', fill: '#2f6690', fillOpacity: 0.78 }), Plot.ruleX([0])];
+    if (isOutlier) {
+      marks.push(
+        Plot.arrow([{ x1: maxVal, y1: labelY, x2: maxVal, y2: topBin.length + 0.3 }], { x1: 'x1', y1: 'y1', x2: 'x2', y2: 'y2', stroke: '#c8373f', strokeWidth: 2.5, headLength: 10, insetEnd: 2 }),
+        Plot.text([{ x: maxVal, y: labelY, label: `Highest: ${maxVal.toFixed(0)} ms` }], { x: 'x', y: 'y', text: 'label', dy: -10, fill: '#c8373f', fontSize: 13, fontWeight: 600 })
+      );
+    }
+    const svg = Plot.plot({ width: 640, height: 340, marginLeft: 55, marginTop: 45, style: plotStyle(), x: { label: 'Reaction time (ms)', domain: [xmin, xmax] }, y: { label: 'Count' }, marks });
+    const cap = isOutlier ? `The single most extreme trial, ${maxVal.toFixed(0)} ms, sits far beyond the 1.5\u00d7IQR fence (${poolFenceHi.toFixed(0)} ms) that flags it as a statistical outlier.` : `No value clears the 1.5\u00d7IQR fence in this data.`;
+    mount('outlier-chart', accessibleChart(svg, cap));
+    document.getElementById('outlier-caption').textContent = cap;
+  })();
+
+  /* ================= Figure: centre (mean vs median) ================= */
+  function renderCentre() {
+    const s = selCentre.value;
+    const vals = RAW.filter(d => d.student_name === s).map(d => d.reaction_time_ms).sort((a, b) => a - b);
+    const mu = d3.mean(vals), med = d3.median(vals);
+    const cPad = Math.max(30, Math.round((d3.max(vals) - d3.min(vals)) * 0.2));
+    const cMin = d3.min(vals) - cPad, cMax = d3.max(vals) + cPad;
+    const jittered = vals.map(v => ({ v, y: (Math.random() - 0.5) * 0.8 }));
+
+    const svg = Plot.plot({
+      width: 640, height: 220, marginLeft: 55, style: plotStyle(),
+      x: { label: 'Reaction time (ms)', domain: [cMin, cMax] },
+      y: { axis: null, domain: [-1, 1] },
+      marks: [
+        Plot.dot(jittered, { x: 'v', y: 'y', fill: '#2f6690', r: 5, fillOpacity: 0.65 }),
+        Plot.ruleX([mu], { stroke: '#c8373f', strokeWidth: 3 }),
+        Plot.ruleX([med], { stroke: '#c97f31', strokeWidth: 3 }),
+        Plot.text([{ x: mu, label: `Mean\n${mu.toFixed(1)}` }], { x: 'x', text: 'label', dy: -28, fill: '#c8373f', fontSize: 13, fontWeight: 700, stroke: 'var(--paper-raised)', strokeWidth: 4, paintOrder: 'stroke' }),
+        Plot.text([{ x: med, label: `Median\n${med.toFixed(1)}` }], { x: 'x', text: 'label', dy: 38, fill: '#c97f31', fontSize: 13, fontWeight: 700, stroke: 'var(--paper-raised)', strokeWidth: 4, paintOrder: 'stroke' }),
+      ]
+    });
+    const cap = `On ${s}'s ten trials: mean ${mu.toFixed(1)} ms, median ${med.toFixed(1)} ms.`;
+    mount('centre-chart', accessibleChart(svg, cap));
+    document.getElementById('centre-caption').textContent = cap;
+  }
+  selCentre.addEventListener('input', renderCentre);
+
+  /* ================= Figure: spread builder ================= */
+  let spreadStage = 'range';
+  function renderSpread() {
+    const s = selSpread.value;
+    const vals = RAW.filter(d => d.student_name === s).map(d => d.reaction_time_ms);
+    const sorted = vals.slice().sort((a, b) => a - b);
+    const mu = d3.mean(vals), sig = d3.deviation(vals);
+    const q1 = d3.quantile(sorted, 0.25), q3 = d3.quantile(sorted, 0.75);
+    const p10 = d3.quantile(sorted, 0.10), p90 = d3.quantile(sorted, 0.90);
+    const rMin = d3.min(vals), rMax = d3.max(vals);
+    const sPad = Math.max(30, Math.round((rMax - rMin) * 0.2));
+    const sMin = rMin - sPad, sMax = rMax + sPad;
+    const seeded = (seed) => { const x = Math.sin(seed * 12.9898) * 43758.5453; return x - Math.floor(x); };
+    const jittered = vals.map((v, i) => ({ v, y: (seeded(i) - 0.5) * 1.0 }));
+
+    const marks = [
+      spreadStage === 'range' ? Plot.rectX([{ x1: rMin, x2: rMax }], { x1: 'x1', x2: 'x2', y1: -0.6, y2: 0.6, fill: '#2d6a4f', fillOpacity: 0.15 }) : null,
+      spreadStage === 'iqr' ? Plot.rectX([{ x1: q1, x2: q3 }], { x1: 'x1', x2: 'x2', y1: -0.6, y2: 0.6, fill: '#c97f31', fillOpacity: 0.25 }) : null,
+      spreadStage === 'sd' ? Plot.rectX([{ x1: mu - sig, x2: mu + sig }], { x1: 'x1', x2: 'x2', y1: -0.6, y2: 0.6, fill: '#c8373f', fillOpacity: 0.15 }) : null,
+      spreadStage === '90-10' ? Plot.rectX([{ x1: p10, x2: p90 }], { x1: 'x1', x2: 'x2', y1: -0.6, y2: 0.6, fill: '#2f6690', fillOpacity: 0.18 }) : null,
+      Plot.dot(jittered, { x: 'v', y: 'y', fill: '#2f6690', r: 5, fillOpacity: 0.7 }),
+      spreadStage === 'sd' ? Plot.ruleX([mu], { stroke: '#c8373f', strokeWidth: 2.5 }) : null,
+      spreadStage === 'range' ? Plot.text([{ x: rMin, label: `Min (${rMin.toFixed(0)})` }, { x: rMax, label: `Max (${rMax.toFixed(0)})` }], { x: 'x', text: 'label', dy: -32, fill: '#2d6a4f', fontSize: 11 }) : null,
+      spreadStage === 'sd' ? Plot.text([{ x: mu, label: `Mean: ${mu.toFixed(1)}` }, { x: mu - sig, label: `\u22121 SD (${(mu - sig).toFixed(0)})` }, { x: mu + sig, label: `+1 SD (${(mu + sig).toFixed(0)})` }], { x: 'x', text: 'label', dy: -32, fill: '#c8373f', fontSize: 11 }) : null,
+      spreadStage === 'iqr' ? Plot.text([{ x: (q1 + q3) / 2, label: `IQR: ${q1.toFixed(0)}\u2013${q3.toFixed(0)} ms` }], { x: 'x', text: 'label', dy: 38, fill: '#c97f31', fontSize: 12 }) : null,
+      spreadStage === '90-10' ? Plot.text([{ x: p10, label: `P10 (${p10.toFixed(0)})` }, { x: p90, label: `P90 (${p90.toFixed(0)})` }], { x: 'x', text: 'label', dy: -32, fill: '#1d3557', fontSize: 11 }) : null,
+    ];
+    const svg = Plot.plot({ width: 640, height: 220, marginLeft: 55, style: plotStyle(), x: { label: 'Reaction time (ms)', domain: [sMin, sMax] }, y: { axis: null, domain: [-0.7, 0.7] }, marks });
+
+    const descr = {
+      range: `the full range, ${rMin.toFixed(0)}\u2013${rMax.toFixed(0)} ms`,
+      sd: `\u00b11 SD around the mean, ${(mu - sig).toFixed(0)}\u2013${(mu + sig).toFixed(0)} ms`,
+      iqr: `the interquartile range, ${q1.toFixed(0)}\u2013${q3.toFixed(0)} ms`,
+      '90-10': `the middle 80%, ${p10.toFixed(0)}\u2013${p90.toFixed(0)} ms`,
+    }[spreadStage];
+    const cap = `On ${s}'s ten trials, shading ${descr}.`;
+    mount('spread-chart', accessibleChart(svg, cap));
+    document.getElementById('spread-caption').textContent = cap;
+  }
+  selSpread.addEventListener('input', renderSpread);
+  document.querySelectorAll('#spread-seg button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#spread-seg button').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on'); spreadStage = btn.dataset.stage; renderSpread();
+    });
+  });
+  document.querySelector('#spread-seg button[data-stage="range"]').classList.add('on');
+
+  /* ================= Figure: box plot by group ================= */
+  let boxGroupField = 'device';
+  const boxPoints = document.getElementById('box-points');
+  function renderBox() {
+    const field = boxGroupField;
+    const groupsOrder = field === 'device' ? ['Phone', 'Laptop'] : ['Yes', 'No'];
+    const yLabel = field === 'device' ? null : 'Caffeine?';
+    const pointData = field === 'device' ? RAW : RAW.filter(d => d.caffeine === 'Yes' || d.caffeine === 'No');
+
+    const grouped = groupsOrder.map(g => {
+      const vals = RAW.filter(d => d[field] === g).map(d => d.reaction_time_ms).sort((a, b) => a - b);
+      if (!vals.length) return null;
+      const q1 = d3.quantile(vals, 0.25), q3 = d3.quantile(vals, 0.75);
+      const iqr = q3 - q1, fenceLo = q1 - 1.5 * iqr, fenceHi = q3 + 1.5 * iqr;
+      const inRange = vals.filter(v => v >= fenceLo && v <= fenceHi);
+      return { group: g, q1, q2: d3.quantile(vals, 0.5), q3, lo: d3.min(inRange), hi: d3.max(inRange), mean: d3.mean(vals) };
+    }).filter(Boolean);
+
+    const fenceLookup = Object.fromEntries(grouped.map(g => [g.group, g]));
+    const outliers = pointData.filter(d => { const g = fenceLookup[d[field]]; return g && (d.reaction_time_ms < g.lo || d.reaction_time_ms > g.hi); });
+
+    const svg = Plot.plot({
+      width: 640, height: 320, marginLeft: 80, style: plotStyle(),
+      x: { label: 'Reaction time (ms)', domain: [bvMin, bvMax] },
+      y: { label: yLabel, type: 'band', domain: groupsOrder },
+      marks: [
+        boxPoints.checked ? Plot.dot(pointData, { x: 'reaction_time_ms', y: field, fill: d => COL[d[field]] || '#2f6690', r: 4, fillOpacity: 0.2, jitter: 'y' }) : null,
+        Plot.ruleY(grouped, { y: 'group', x1: 'lo', x2: 'hi', stroke: d => COL[d.group] || '#2f6690', strokeWidth: 1.5 }),
+        Plot.barX(grouped, { x1: 'q1', x2: 'q3', y: 'group', insetTop: 22, insetBottom: 22, fill: d => COL[d.group] || '#2f6690', fillOpacity: 0.55, stroke: d => COL[d.group] || '#2f6690', strokeWidth: 2 }),
+        Plot.tickX(grouped, { x: 'q2', y: 'group', insetTop: 22, insetBottom: 22, stroke: 'white', strokeWidth: 3 }),
+        Plot.dot(grouped, { x: 'mean', y: 'group', fill: d => COL[d.group] || '#2f6690', stroke: 'white', strokeWidth: 1, r: 6, symbol: 'diamond' }),
+        Plot.dot(outliers, { x: 'reaction_time_ms', y: field, stroke: d => COL[d[field]] || '#2f6690', fill: 'white', r: 5, strokeWidth: 1.5 }),
+      ]
+    });
+    const cap = `Grouped by ${field}. ` + grouped.map(g => `${g.group} median ${g.q2.toFixed(0)} ms`).join(', ') + '.' + (bvHidden > 0 ? ` Axis capped for readability; ${bvHidden} extreme value${bvHidden === 1 ? '' : 's'} not shown.` : '');
+    mount('box-chart', accessibleChart(svg, cap));
+    document.getElementById('box-caption').textContent = cap;
+
+    /* summary table */
+    function summarise(vals) {
+      if (!vals.length) return { n: 0, mean: '\u2014', median: '\u2014', sd: '\u2014' };
+      const mu = d3.mean(vals), med = d3.median(vals), sig = d3.deviation(vals);
+      return { n: vals.length, mean: mu.toFixed(1), median: med.toFixed(1), sd: sig !== undefined ? sig.toFixed(1) : '\u2014' };
+    }
+    const rows = groupsOrder.map(g => ({ group: g, ...summarise(RAW.filter(d => d[field] === g).map(d => d.reaction_time_ms)) }));
+    const tbl = document.createElement('table');
+    tbl.className = 'data-table';
+    tbl.innerHTML = `<thead><tr><th>${field === 'device' ? 'Device' : 'Caffeine'}</th><th style="text-align:right;">N (trials)</th><th style="text-align:right;">Mean</th><th style="text-align:right;">Median</th><th style="text-align:right;">SD</th></tr></thead>
+      <tbody>${rows.map(r => `<tr><td>${r.group}</td><td style="text-align:right;">${r.n}</td><td style="text-align:right;">${r.mean}</td><td style="text-align:right;">${r.median}</td><td style="text-align:right;">${r.sd}</td></tr>`).join('')}</tbody>`;
+    const gt = document.getElementById('group-table'); gt.innerHTML = ''; gt.appendChild(tbl);
+  }
+  document.querySelectorAll('#box-seg button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#box-seg button').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on'); boxGroupField = btn.dataset.group; renderBox();
+    });
+  });
+  boxPoints.addEventListener('input', renderBox);
+
+  /* ================= box / violin anatomy SVGs ================= */
+  document.getElementById('svg-box').innerHTML = `
+  <div role="img" aria-label="Anatomy of a box plot: whiskers extending to the upper and lower adjacent values, a box spanning the 25th to 75th percentile with the median marked as a red line inside it, and an outside value shown as a separate red dot beyond the lower whisker." style="background:var(--paper-raised);border:1px solid var(--rule);border-radius:12px;padding:10px;box-shadow:var(--shadow);">
+  <svg viewBox="0 0 430 380" width="100%" style="max-height:340px;" aria-hidden="true">
+    <line x1="110" y1="40"  x2="110" y2="120" stroke="#2f6690" stroke-width="2"/>
+    <line x1="110" y1="240" x2="110" y2="320" stroke="#2f6690" stroke-width="2"/>
+    <line x1="75"  y1="40"  x2="145" y2="40"  stroke="#2f6690" stroke-width="2"/>
+    <line x1="75"  y1="320" x2="145" y2="320" stroke="#2f6690" stroke-width="2"/>
+    <rect x="60" y="120" width="100" height="120" fill="#2f6690" fill-opacity="0.22" stroke="#2f6690" stroke-width="2"/>
+    <line x1="60" y1="180" x2="160" y2="180" stroke="#c8373f" stroke-width="3"/>
+    <circle cx="110" cy="355" r="4" fill="#c8373f"/>
+    <line x1="145" y1="40"  x2="195" y2="40"  stroke="#999" stroke-width="1"/>
+    <text x="200" y="44" font-size="12" fill="currentColor">Upper adjacent value</text>
+    <line x1="110" y1="80"  x2="195" y2="80"  stroke="#999" stroke-width="1"/>
+    <text x="200" y="84" font-size="12" fill="currentColor">Whisker</text>
+    <line x1="160" y1="125" x2="195" y2="115" stroke="#999" stroke-width="1"/>
+    <text x="200" y="119" font-size="12" fill="currentColor">75th percentile</text>
+    <line x1="160" y1="180" x2="195" y2="180" stroke="#999" stroke-width="1"/>
+    <text x="200" y="184" font-size="12" fill="#c8373f" font-weight="600">Median</text>
+    <line x1="160" y1="235" x2="195" y2="245" stroke="#999" stroke-width="1"/>
+    <text x="200" y="249" font-size="12" fill="currentColor">25th percentile</text>
+    <line x1="110" y1="280" x2="195" y2="290" stroke="#999" stroke-width="1"/>
+    <text x="200" y="294" font-size="12" fill="currentColor">Whisker</text>
+    <line x1="145" y1="320" x2="195" y2="320" stroke="#999" stroke-width="1"/>
+    <text x="200" y="324" font-size="12" fill="currentColor">Lower adjacent value</text>
+    <line x1="114" y1="355" x2="195" y2="355" stroke="#999" stroke-width="1"/>
+    <text x="200" y="359" font-size="12" fill="#c8373f">Outside value</text>
+  </svg></div>`;
+
+  document.getElementById('svg-violin').innerHTML = `
+  <div role="img" aria-label="Anatomy of a violin plot: the full curved shape showing the density of the distribution, widest where values are most common, a narrower inner box marking the interquartile range around the median, and lighter bands above and below showing the 95 percent confidence interval." style="background:var(--paper-raised);border:1px solid var(--rule);border-radius:12px;padding:10px;box-shadow:var(--shadow);">
+  <svg viewBox="0 0 430 380" width="100%" style="max-height:340px;" aria-hidden="true">
+    <path d="M 150.0,40.0 L 155.4,48.0 L 161.4,56.0 L 168.0,64.0 L 176.2,72.0 L 185.2,80.0 L 192.0,88.0
+             L 196.6,96.0 L 199.7,104.0 L 198.6,112.0 L 193.4,120.0 L 189.3,128.0 L 186.5,136.0
+             L 184.5,144.0 L 183.8,152.0 L 183.4,160.0 L 183.2,168.0 L 183.0,176.0 L 183.0,184.0
+             L 183.2,192.0 L 183.4,200.0 L 183.8,208.0 L 184.5,216.0 L 186.5,224.0 L 189.3,232.0
+             L 193.4,240.0 L 198.6,248.0 L 199.7,256.0 L 196.2,264.0 L 191.4,272.0 L 184.5,280.0
+             L 175.9,288.0 L 168.0,296.0 L 161.5,304.0 L 155.5,312.0 L 150.0,320.0
+             L 150.0,320.0 L 144.5,312.0 L 138.5,304.0 L 132.0,296.0 L 124.1,288.0 L 115.5,280.0
+             L 108.6,272.0 L 103.8,264.0 L 100.3,256.0 L 101.4,248.0 L 106.6,240.0 L 110.7,232.0
+             L 113.5,224.0 L 115.5,216.0 L 116.2,208.0 L 116.6,200.0 L 116.8,192.0 L 117.0,184.0
+             L 117.0,176.0 L 116.8,168.0 L 116.6,160.0 L 116.2,152.0 L 115.5,144.0 L 113.5,136.0
+             L 110.7,128.0 L 106.6,120.0 L 101.4,112.0 L 100.3,104.0 L 103.4,96.0 L 108.0,88.0
+             L 114.8,80.0 L 123.8,72.0 L 132.0,64.0 L 138.6,56.0 L 144.6,48.0 L 150.0,40.0 Z"
+          fill="#2d6a4f" fill-opacity="0.18" stroke="#2d6a4f" stroke-width="2" stroke-linejoin="round"/>
+    <line x1="150" y1="40" x2="150" y2="320" stroke="#2d6a4f" stroke-width="1.5"/>
+    <rect x="115" y="140" width="70" height="40" fill="#2d6a4f" fill-opacity="0.45" stroke="#2d6a4f" stroke-width="2"/>
+    <rect x="115" y="180" width="70" height="40" fill="#2d6a4f" fill-opacity="0.75" stroke="#2d6a4f" stroke-width="2"/>
+    <line x1="150" y1="100" x2="195" y2="100" stroke="#999" stroke-width="1"/>
+    <text x="200" y="104" font-size="12" fill="currentColor">95% confidence interval</text>
+    <line x1="185" y1="155" x2="195" y2="150" stroke="#999" stroke-width="1"/>
+    <text x="200" y="154" font-size="12" fill="currentColor">Interquartile range</text>
+    <line x1="185" y1="180" x2="195" y2="180" stroke="#999" stroke-width="1"/>
+    <text x="200" y="184" font-size="12" fill="#c8373f" font-weight="600">Median</text>
+    <line x1="150" y1="260" x2="195" y2="260" stroke="#999" stroke-width="1"/>
+    <text x="200" y="264" font-size="12" fill="currentColor">95% confidence interval</text>
+  </svg></div>`;
+
+  /* ================= initial render ================= */
+  renderRaw();
+  renderHist();
+  renderCentre();
+  renderSpread();
+  renderBox();
+})();
+</script>
+
+</body>
+</html>
