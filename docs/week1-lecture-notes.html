@@ -331,7 +331,7 @@
       <div class="hero-inner" style="padding:0;">
         <div class="eyebrow"><span class="dot"></span>7002LBSAI &middot; Research Methods in Analytics &middot; Week One</div>
         <h1>Distributions and Summarising Data</h1>
-        <p class="dek">Lecture notes reconstructed from the workshop itself &mdash; the live transcript, the slide deck, and the <em>class's own reaction-time data</em>, collected on a Friday afternoon in a room in the Redmonds Building.</p>
+        <p class="dek">Lecture notes reconstructed from the workshop itself &ndash; the live transcript, the slide deck, and the <em>class's own reaction-time data</em>, collected on a Friday afternoon in a room in the Redmonds Building.</p>
         <div class="headline-strip">
           <div class="stat"><span class="n">24</span><span class="l">students, one dataset</span></div>
           <div class="stat"><span class="n">217</span><span class="l">reaction-time trials</span></div>
@@ -353,9 +353,9 @@
   <p>Ten years ago, the man giving this workshop was sitting more or less where you are. Starting a master's in economics, grey hairs not yet arrived, mildly terrified, with only the vaguest idea what the next twelve months held. What got him through it, by his own account, was a handful of tutors who were willing to explain things properly rather than just wave at the textbook. That's the model for these sessions, and for these notes: not a shortcut past the statistics, but a proper explanation of it, built from data you can actually see.</p>
 </div>
 
-<p>This module goes by the name Research Methods in Analytics, which is really a slightly formal way of asking one question: <strong>what can we do with data to help us make better decisions?</strong> Over eleven weeks that question runs from the simplest possible description of a single variable through to the kind of inference and modelling that lets you say something about a population you never directly observed. It starts here, with the least glamorous and most consequential step in the whole pipeline &mdash; looking properly at your data before you do anything else with it.</p>
+<p>This module goes by the name Research Methods in Analytics, which is really a slightly formal way of asking one question: <strong>what can we do with data to help us make better decisions?</strong> Over eleven weeks that question runs from the simplest possible description of a single variable through to the kind of inference and modelling that lets you say something about a population you never directly observed. It starts here, with the least glamorous and most consequential step in the whole pipeline &ndash; looking properly at your data before you do anything else with it.</p>
 
-<p>The formal name for that step is <strong>exploratory data analysis</strong>, or EDA. B&eacute;k&eacute;s &amp; K&eacute;zdi define it plainly: it is the process of describing your variables &mdash; the values they take, how often they take them, and whether anything about them is unusual. That sounds almost too simple to spend a whole workshop on. It isn't. Before you fit a model, run a test, or make a claim, you have to know what your data actually looks like, and that turns out to be a much deeper task than opening a spreadsheet and skimming a few rows.</p>
+<p>The formal name for that step is <strong>exploratory data analysis</strong>, or EDA. B&eacute;k&eacute;s &amp; K&eacute;zdi define it plainly: it is the process of describing your variables &ndash; the values they take, how often they take them, and whether anything about them is unusual. That sounds almost too simple to spend a whole workshop on. It isn't. Before you fit a model, run a test, or make a claim, you have to know what your data actually looks like, and that turns out to be a much deeper task than opening a spreadsheet and skimming a few rows.</p>
 
 <p>B&eacute;k&eacute;s &amp; K&eacute;zdi frame the whole exercise as three questions you should be able to answer before any modelling begins:</p>
 <ul>
@@ -364,19 +364,19 @@
   <li>How do you explore the data and check whether it's clean enough for further analysis?</li>
 </ul>
 
-<p>This module takes data cleaning as a given &mdash; by the time a dataset reaches you here, assume someone has already done the unglamorous work of fixing malformed entries and missing fields. (Your Programming for Business Analytics module is where that skill actually gets built.) But even a perfectly clean dataset still needs exploring, and there are five distinct reasons it's worth the time:</p>
+<p>This module takes data cleaning as a given &ndash; by the time a dataset reaches you here, assume someone has already done the unglamorous work of fixing malformed entries and missing fields. (Your Programming for Business Analytics module is where that skill actually gets built.) But even a perfectly clean dataset still needs exploring, and there are five distinct reasons it's worth the time:</p>
 
 <ol>
-  <li><strong>It sense-checks your cleaning.</strong> EDA isn't a one-off step before cleaning starts &mdash; it's part of an iterative loop. Exploring the data can reveal that it needs more cleaning than you thought.</li>
-  <li><strong>It guides what comes next.</strong> What you see shapes what you do. A skewed variable, a suspicious cluster, an unexpected gap &mdash; each one changes the questions worth asking.</li>
+  <li><strong>It sense-checks your cleaning.</strong> EDA isn't a one-off step before cleaning starts &ndash; it's part of an iterative loop. Exploring the data can reveal that it needs more cleaning than you thought.</li>
+  <li><strong>It guides what comes next.</strong> What you see shapes what you do. A skewed variable, a suspicious cluster, an unexpected gap &ndash; each one changes the questions worth asking.</li>
   <li><strong>It gives you context.</strong> Statistical and econometric modelling are tools in service of a question, not the point of the exercise. Understanding the data's context makes your eventual insights richer and more relevant to whoever has to act on them.</li>
-  <li><strong>It can refine the research question itself.</strong> Research is rarely a single moment of inspiration followed by a straight line to an answer &mdash; it's iterative, and exploration is often what sharpens a vague question into a useful one.</li>
+  <li><strong>It can refine the research question itself.</strong> Research is rarely a single moment of inspiration followed by a straight line to an answer &ndash; it's iterative, and exploration is often what sharpens a vague question into a useful one.</li>
   <li><strong>Occasionally, it just answers the question.</strong> Not often. But sometimes a good look at the data is all it takes.</li>
 </ol>
 
 <blockquote class="field-note">
   <span class="tag">From the workshop</span>
-  <p>&ldquo;One of the things you're going to be learning to be is an analyst &mdash; and one thing you have to understand is the limits of what we can understand. When you're presenting your results, in a workshop or a conference, it's important not to overplay the confidence you have in them.&rdquo;</p>
+  <p>&ldquo;One of the things you're going to be learning to be is an analyst &ndash; and one thing you have to understand is the limits of what we can understand. When you're presenting your results, in a workshop or a conference, it's important not to overplay the confidence you have in them.&rdquo;</p>
 </blockquote>
 
 <p>Everything that follows in this chapter is really an extended answer to that first, deceptively simple instruction: look at your data properly, before you do anything else with it.</p>
@@ -387,68 +387,68 @@
 <h2>The Business Question</h2>
 
 <div class="callout">
-  <strong>The scenario.</strong> A regional bank's customer service centre measures agent <strong>response time</strong> &mdash; how quickly an agent reacts to an incoming alert. It's treated as a key operational metric. HR's current process records <strong>one test score per agent</strong>, taken once at onboarding, and uses that single number to rank and place staff.
+  <strong>The scenario.</strong> A regional bank's customer service centre measures agent <strong>response time</strong> &ndash; how quickly an agent reacts to an incoming alert. It's treated as a key operational metric. HR's current process records <strong>one test score per agent</strong>, taken once at onboarding, and uses that single number to rank and place staff.
 </div>
 
-<p>The question this workshop exists to answer is whether that's remotely sensible: <strong>is a single measurement an adequate way to capture this metric?</strong> Rather than take the question on faith, the class spent the first twenty minutes turning itself into the dataset needed to answer it &mdash; standing in for the bank's agents, and generating real evidence rather than debating the point in the abstract.</p>
+<p>The question this workshop exists to answer is whether that's remotely sensible: <strong>is a single measurement an adequate way to capture this metric?</strong> Rather than take the question on faith, the class spent the first twenty minutes turning itself into the dataset needed to answer it &ndash; standing in for the bank's agents, and generating real evidence rather than debating the point in the abstract.</p>
 
-<p>This is a deliberately hackneyed scenario &mdash; a fairly ordinary problem, chosen precisely because ordinary problems are where most business analytics work actually happens. Nobody is curing anything. But the reasoning that follows from it &mdash; about single measurements, noise, and what a distribution can tell you that one number can't &mdash; generalises far beyond reaction times. It's the same logic behind why a single sales figure doesn't tell you a rep's true performance, why one satisfaction survey response doesn't tell you how a customer really feels, and why a single A/B test result on its own rarely settles anything.</p>
+<p>This is a deliberately hackneyed scenario &ndash; a fairly ordinary problem, chosen precisely because ordinary problems are where most business analytics work actually happens. Nobody is curing anything. But the reasoning that follows from it &ndash; about single measurements, noise, and what a distribution can tell you that one number can't &ndash; generalises far beyond reaction times. It's the same logic behind why a single sales figure doesn't tell you a rep's true performance, why one satisfaction survey response doesn't tell you how a customer really feels, and why a single A/B test result on its own rarely settles anything.</p>
 </section>
 
 <section class="chapter" id="collecting-data">
 <div class="chapter-kicker">Part Three</div>
 <h2>Generating Our Own Data</h2>
 
-<p>Each student worked through a short reaction-time tool on their own phone or laptop: enter your name, pick your device, answer whether you'd had caffeine in the last two hours, measure your own index finger in millimetres, then complete ten trials &mdash; tap as soon as the screen turns from red to green. Results saved automatically to a shared, live dataset the moment each student finished.</p>
+<p>Each student worked through a short reaction-time tool on their own phone or laptop: enter your name, pick your device, answer whether you'd had caffeine in the last two hours, measure your own index finger in millimetres, then complete ten trials &ndash; tap as soon as the screen turns from red to green. Results saved automatically to a shared, live dataset the moment each student finished.</p>
 
-<p>It was, by design, a slightly rough first attempt &mdash; and that turned out to be its own useful lesson. The instructions didn't specify exactly where to measure a finger from, or make it obvious the test had to run all ten times before results counted. A few students improvised. That's not really a flaw in the exercise; it's what a <strong>pilot</strong> is for. Running something for the first time reliably surfaces the ambiguities you didn't know you'd left in, and the honest response &mdash; in this room and in your own future projects &mdash; is not to pretend everything went perfectly, but to notice what went wrong, say so, and account for it in what you do next.</p>
+<p>It was, by design, a slightly rough first attempt &ndash; and that turned out to be its own useful lesson. The instructions didn't specify exactly where to measure a finger from, or make it obvious the test had to run all ten times before results counted. A few students improvised. That's not really a flaw in the exercise; it's what a <strong>pilot</strong> is for. Running something for the first time reliably surfaces the ambiguities you didn't know you'd left in, and the honest response &ndash; in this room and in your own future projects &ndash; is not to pretend everything went perfectly, but to notice what went wrong, say so, and account for it in what you do next.</p>
 
 <h3>What are we actually measuring?</h3>
 
-<p>One question from the room cut straight to the heart of a genuinely important idea: given that the instructions weren't perfectly precise, might the class be measuring the wrong thing? Finger length is a real, physical, measurable quantity &mdash; it isn't drifting up and down over the course of the workshop &mdash; but the tool used to capture it (a ruler, in the hands of a slightly rushed workshop partner) introduces the possibility of <strong>measurement error</strong>: a gap between the true value of the thing you care about and the number you actually record.</p>
+<p>One question from the room cut straight to the heart of a genuinely important idea: given that the instructions weren't perfectly precise, might the class be measuring the wrong thing? Finger length is a real, physical, measurable quantity &ndash; it isn't drifting up and down over the course of the workshop &ndash; but the tool used to capture it (a ruler, in the hands of a slightly rushed workshop partner) introduces the possibility of <strong>measurement error</strong>: a gap between the true value of the thing you care about and the number you actually record.</p>
 
 <blockquote class="field-note">
   <span class="tag">From the workshop</span>
-  <p>&ldquo;The bank isn't really interested in your index finger. It's a proxy for your speed, your ability, the physical limits on how fast you can react. That's something we can measure directly in a classroom &mdash; but sometimes the thing you actually want to know is one you can't observe at all, and you're stuck relying on a proxy for it, like using someone's qualifications as a proxy for their ability. Those proxies are sometimes useful and sometimes not. Knowing which is part of the job.&rdquo;</p>
+  <p>&ldquo;The bank isn't really interested in your index finger. It's a proxy for your speed, your ability, the physical limits on how fast you can react. That's something we can measure directly in a classroom &ndash; but sometimes the thing you actually want to know is one you can't observe at all, and you're stuck relying on a proxy for it, like using someone's qualifications as a proxy for their ability. Those proxies are sometimes useful and sometimes not. Knowing which is part of the job.&rdquo;</p>
 </blockquote>
 
-<p>Keep that distinction in mind for the rest of the module: the variable in a spreadsheet is never quite the same thing as the real-world quantity it's standing in for, and the gap between the two &mdash; how it opened up, how large it might be &mdash; is something every analyst has to reason about explicitly, not assume away.</p>
+<p>Keep that distinction in mind for the rest of the module: the variable in a spreadsheet is never quite the same thing as the real-world quantity it's standing in for, and the gap between the two &ndash; how it opened up, how large it might be &ndash; is something every analyst has to reason about explicitly, not assume away.</p>
 
 <h3>From ten numbers to a table</h3>
 
-<p>Ten reaction times from one student, on their own, are a limited way to tell a story. They can hint at something &mdash; a slow first attempt as someone gets a feel for the task, then a settling-in &mdash; but they don't summarise well, and multiplied by twenty-four students they're unmanageable. The fix is a data format every business analyst ends up living in: <strong>tidy data</strong>, where every row is one observation and every column is one variable.</p>
+<p>Ten reaction times from one student, on their own, are a limited way to tell a story. They can hint at something &ndash; a slow first attempt as someone gets a feel for the task, then a settling-in &ndash; but they don't summarise well, and multiplied by twenty-four students they're unmanageable. The fix is a data format every business analyst ends up living in: <strong>tidy data</strong>, where every row is one observation and every column is one variable.</p>
 
-<p>Here, every row is one trial: one tap, by one student, with that trial's own reaction time, and that student's device, caffeine status, and finger length copied alongside it. Ten trials per student means ten rows per student. It's a format that looks almost too plain to be worth naming, but it's what makes the rest of this chapter possible &mdash; filtering, grouping, and plotting all become a matter of picking a column, once the data is shaped this way.</p>
+<p>Here, every row is one trial: one tap, by one student, with that trial's own reaction time, and that student's device, caffeine status, and finger length copied alongside it. Ten trials per student means ten rows per student. It's a format that looks almost too plain to be worth naming, but it's what makes the rest of this chapter possible &ndash; filtering, grouping, and plotting all become a matter of picking a column, once the data is shaped this way.</p>
 </section>
 
 <section class="chapter" id="variable-types">
 <div class="chapter-kicker">Part Four</div>
 <h2>Types of Variable</h2>
 
-<p>The reaction-time tool captured five variables per trial, and each one behaves differently &mdash; which matters, because the type of a variable determines which summaries and visualisations are even meaningful for it.</p>
+<p>The reaction-time tool captured five variables per trial, and each one behaves differently &ndash; which matters, because the type of a variable determines which summaries and visualisations are even meaningful for it.</p>
 
 <table class="data-table">
   <thead><tr><th>Variable</th><th>Type</th><th>Scale</th><th>Why</th></tr></thead>
   <tbody>
     <tr><td>Name</td><td>Categorical</td><td>Nominal</td><td>Labels with no inherent order</td></tr>
     <tr><td>Reaction time</td><td>Continuous</td><td>Ratio</td><td>Any value down to the millisecond; zero has a true meaning</td></tr>
-    <tr><td>Device</td><td>Categorical</td><td>Nominal</td><td>Phone vs. laptop &mdash; describes, doesn't rank</td></tr>
+    <tr><td>Device</td><td>Categorical</td><td>Nominal</td><td>Phone vs. laptop &ndash; describes, doesn't rank</td></tr>
     <tr><td>Caffeine</td><td>Binary</td><td>Nominal</td><td>Exactly two possible states</td></tr>
     <tr><td>Finger length</td><td>Continuous</td><td>Ratio</td><td>Same reasoning as reaction time</td></tr>
   </tbody>
 </table>
 
-<p>The distinction worth dwelling on is between a plain <strong>nominal</strong> categorical variable, like device, and an <strong>ordinal</strong> one, where the order genuinely carries information &mdash; the classic example is a Likert-scale survey response (strongly disagree &hellip; strongly agree), where reordering the categories would make the variable meaningless. Trial number, in this dataset, is a quiet example of an ordinal variable that isn't obviously one at first glance: it isn't just a label, because later trials plausibly mean something different from earlier ones, as a student settles into the task.</p>
+<p>The distinction worth dwelling on is between a plain <strong>nominal</strong> categorical variable, like device, and an <strong>ordinal</strong> one, where the order genuinely carries information &ndash; the classic example is a Likert-scale survey response (strongly disagree &hellip; strongly agree), where reordering the categories would make the variable meaningless. Trial number, in this dataset, is a quiet example of an ordinal variable that isn't obviously one at first glance: it isn't just a label, because later trials plausibly mean something different from earlier ones, as a student settles into the task.</p>
 
 <div class="callout gold">
-  <strong>Why this matters in practice:</strong> it is entirely possible to ask statistical software to compute the mean of <em>device</em>, once it's coded numerically (laptop = 1, phone = 2, say). Python will not stop you. It will hand back a number like 1.75. That number describes nothing real &mdash; there is no such thing as "a bit more phone than laptop." Knowing a variable's type isn't academic box-ticking; it's what stops you from reporting nonsense with a straight face.
+  <strong>Why this matters in practice:</strong> it is entirely possible to ask statistical software to compute the mean of <em>device</em>, once it's coded numerically (laptop = 1, phone = 2, say). Python will not stop you. It will hand back a number like 1.75. That number describes nothing real &ndash; there is no such thing as "a bit more phone than laptop." Knowing a variable's type isn't academic box-ticking; it's what stops you from reporting nonsense with a straight face.
 </div>
 
-<p>One genuinely useful special case, worth flagging now and returning to properly later in this chapter: a <strong>binary</strong> variable coded 0/1 behaves unusually well under a mean. Averaging a column of 0s and 1s doesn't produce nonsense the way averaging device does &mdash; it produces the <strong>proportion</strong> of the sample coded 1. That single fact is going to do a surprising amount of work later on.</p>
+<p>One genuinely useful special case, worth flagging now and returning to properly later in this chapter: a <strong>binary</strong> variable coded 0/1 behaves unusually well under a mean. Averaging a column of 0s and 1s doesn't produce nonsense the way averaging device does &ndash; it produces the <strong>proportion</strong> of the sample coded 1. That single fact is going to do a surprising amount of work later on.</p>
 
 <h3>One student, in full</h3>
 
-<p>Before collapsing anything, it's worth looking at one full, un-summarised record. Pick a name from the dropdown below and you'll see exactly what the reaction-time tool actually captured for that student &mdash; ten trials, ten times, nothing smoothed over yet.</p>
+<p>Before collapsing anything, it's worth looking at one full, un-summarised record. Pick a name from the dropdown below and you'll see exactly what the reaction-time tool actually captured for that student &ndash; ten trials, ten times, nothing smoothed over yet.</p>
 
 <div class="figure" id="fig-raw">
   <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>One student's raw data</h4></div>
@@ -461,7 +461,7 @@
       <div class="chart-wrap" id="raw-trend"></div>
     </div>
   </div>
-  <p class="figure-caption">Left: the ten raw trials for the selected student, exactly as the tool recorded them. Right: the same ten values plotted against trial order &mdash; a first hint that reaction time isn't a fixed quantity, even for one person.</p>
+  <p class="figure-caption">Left: the ten raw trials for the selected student, exactly as the tool recorded them. Right: the same ten values plotted against trial order &ndash; a first hint that reaction time isn't a fixed quantity, even for one person.</p>
 </div>
 </section>
 
@@ -469,27 +469,27 @@
 <div class="chapter-kicker">Part Five</div>
 <h2>Tidy Data, in the Flesh</h2>
 
-<p>Here's what the whole dataset looks like once every student's trials are stacked into one table &mdash; the actual shape that every chart and statistic in the rest of this chapter is computed from.</p>
+<p>Here's what the whole dataset looks like once every student's trials are stacked into one table &ndash; the actual shape that every chart and statistic in the rest of this chapter is computed from.</p>
 
 <div class="mini-table-wrap" id="tidy-table"></div>
 
-<p>A business survey is the more common version of this shape you'll meet outside a classroom: if a customer questionnaire has fifty questions, tidy format gives you fifty columns and one row per respondent. The mechanics don't change &mdash; only the fact that most surveys give you one row per person rather than ten.</p>
+<p>A business survey is the more common version of this shape you'll meet outside a classroom: if a customer questionnaire has fifty questions, tidy format gives you fifty columns and one row per respondent. The mechanics don't change &ndash; only the fact that most surveys give you one row per person rather than ten.</p>
 </section>
 
 <section class="chapter" id="frequency">
 <div class="chapter-kicker">Part Six</div>
 <h2>Frequency, Probability, and Distribution</h2>
 
-<p>With the data assembled, the workshop's first real analytical act was almost absurdly simple: count how many students used a laptop, and how many used a phone. Simple, but worth doing carefully, because the vocabulary built here &mdash; absolute frequency, relative frequency, probability &mdash; is going to reappear constantly for the rest of the module.</p>
+<p>With the data assembled, the workshop's first real analytical act was almost absurdly simple: count how many students used a laptop, and how many used a phone. Simple, but worth doing carefully, because the vocabulary built here &ndash; absolute frequency, relative frequency, probability &ndash; is going to reappear constantly for the rest of the module.</p>
 
 <ul>
-  <li><strong>Absolute frequency</strong> &mdash; the raw count of observations with a particular value.</li>
-  <li><strong>Relative frequency</strong> &mdash; that count expressed as a proportion or percentage of all observations.</li>
-  <li><strong>Probability</strong> generalises relative frequency: a measure of likelihood, always between 0 and 1, that &mdash; unlike relative frequency &mdash; can describe an event without needing a dataset in hand at all.</li>
+  <li><strong>Absolute frequency</strong> &ndash; the raw count of observations with a particular value.</li>
+  <li><strong>Relative frequency</strong> &ndash; that count expressed as a proportion or percentage of all observations.</li>
+  <li><strong>Probability</strong> generalises relative frequency: a measure of likelihood, always between 0 and 1, that &ndash; unlike relative frequency &ndash; can describe an event without needing a dataset in hand at all.</li>
   <li>The <strong>distribution</strong> of a variable is the frequency of every value it takes, independent of what any other variable in the data shows.</li>
 </ul>
 
-<p>Getting there from the raw, ten-rows-per-student data took an honest, unglamorous detour through Excel &mdash; select the data, insert a pivot table, drag <em>Device</em> into rows, and (after a couple of false starts on exactly which aggregation to use, since "sum" and "average" both make no sense for a category) settle on a count. It's not elegant. It's also exactly the kind of rough, get-an-answer-now tool every analyst reaches for constantly, right alongside the more sophisticated code you'll build up over the rest of this module.</p>
+<p>Getting there from the raw, ten-rows-per-student data took an honest, unglamorous detour through Excel &ndash; select the data, insert a pivot table, drag <em>Device</em> into rows, and (after a couple of false starts on exactly which aggregation to use, since "sum" and "average" both make no sense for a category) settle on a count. It's not elegant. It's also exactly the kind of rough, get-an-answer-now tool every analyst reaches for constantly, right alongside the more sophisticated code you'll build up over the rest of this module.</p>
 
 <div class="figure" id="fig-freq">
   <div class="figure-head"><span class="flabel">Figure</span><h4>What the room actually looked like</h4></div>
@@ -499,21 +499,21 @@
   <p class="figure-caption">Absolute and relative frequency for device and caffeine, computed from the real class data behind these notes.</p>
 </div>
 
-<p>The device split works out to sixteen laptops against eight phones &mdash; a relative frequency of <strong>66.7% laptop, 33.3% phone</strong>. Caffeine is more one-sided still: only six of twenty-four students, a flat <strong>25%</strong>, had had any in the two hours before the workshop.</p>
+<p>The device split works out to sixteen laptops against eight phones &ndash; a relative frequency of <strong>66.7% laptop, 33.3% phone</strong>. Caffeine is more one-sided still: only six of twenty-four students, a flat <strong>25%</strong>, had had any in the two hours before the workshop.</p>
 
 <blockquote class="field-note">
   <span class="tag">From the workshop</span>
-  <p>&ldquo;Relative frequency is often far more powerful than the raw number. I can tell you UK national debt is about &pound;1.4 trillion, and that sounds enormous &mdash; but on its own it doesn't mean much unless you already live in these figures. What people actually report, almost always, is debt as a percentage of GDP: how much the country owes relative to what it produces in a year. The relative version is what gives you context.&rdquo;</p>
+  <p>&ldquo;Relative frequency is often far more powerful than the raw number. I can tell you UK national debt is about &pound;1.4 trillion, and that sounds enormous &ndash; but on its own it doesn't mean much unless you already live in these figures. What people actually report, almost always, is debt as a percentage of GDP: how much the country owes relative to what it produces in a year. The relative version is what gives you context.&rdquo;</p>
 </blockquote>
 
-<p>Probability slots in naturally once a variable is binary. If caffeine is coded 0/1, then the relative frequency of the "1" category &mdash; 25% here &mdash; is exactly what you'd call the <strong>probability</strong> that a student picked at random from this room had had caffeine recently. Same number, two different names, depending on whether you're describing a sample you've already collected or reasoning about a future draw from it.</p>
+<p>Probability slots in naturally once a variable is binary. If caffeine is coded 0/1, then the relative frequency of the "1" category &ndash; 25% here &ndash; is exactly what you'd call the <strong>probability</strong> that a student picked at random from this room had had caffeine recently. Same number, two different names, depending on whether you're describing a sample you've already collected or reasoning about a future draw from it.</p>
 </section>
 
 <section class="chapter" id="histograms">
 <div class="chapter-kicker">Part Seven</div>
 <h2>Seeing a Distribution: Histograms</h2>
 
-<p>Statistics condense; they don't replace looking. However good your summary numbers are, it is <em>always</em> worth actually looking at the data &mdash; and the single most useful way to look at one continuous variable's distribution is the <strong>histogram</strong>: a bar chart where bars show how many observations (or what percentage) fall into each of a series of equal-width <em>bins</em>.</p>
+<p>Statistics condense; they don't replace looking. However good your summary numbers are, it is <em>always</em> worth actually looking at the data &ndash; and the single most useful way to look at one continuous variable's distribution is the <strong>histogram</strong>: a bar chart where bars show how many observations (or what percentage) fall into each of a series of equal-width <em>bins</em>.</p>
 
 <p>Reading one well means looking for four things at once:</p>
 
@@ -527,10 +527,10 @@
   </tbody>
 </table>
 
-<p>The figure below rebuilds the workshop's own pooled histogram, live, from the real 217 trials behind this chapter. It opens with the exclusion threshold set at the same fence used throughout this chapter, so the shape is legible on first look &mdash; drag it upward and the most extreme trials come back into view, and watch what that does to both the shape of the bars and the gap between the mean and median lines.</p>
+<p>The figure below rebuilds the workshop's own pooled histogram, live, from the real 217 trials behind this chapter. It opens with the exclusion threshold set at the same fence used throughout this chapter, so the shape is legible on first look &ndash; drag it upward and the most extreme trials come back into view, and watch what that does to both the shape of the bars and the gap between the mean and median lines.</p>
 
 <div class="figure" id="fig-hist">
-  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Pooled histogram &mdash; the whole class</h4></div>
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Pooled histogram &ndash; the whole class</h4></div>
   <div class="figure-body">
     <div class="controls">
       <div class="ctl"><span class="lbl">Bin width</span><input type="range" id="hist-binwidth" min="10" max="80" step="10" value="30"><span class="val" id="hist-binwidth-val">30 ms</span></div>
@@ -545,20 +545,20 @@
   <p class="figure-caption" id="hist-caption"></p>
 </div>
 
-<p>Even with the long tail trimmed off for readability, the shape is unmistakably <strong>right-skewed</strong>: most trials cluster in a tight band at the low end, and a thinning tail extends out toward slower and slower times. That shape isn't an accident of this particular class &mdash; it's close to universal for reaction-time data, and worth understanding why. There's a hard physical floor (nobody can react in zero milliseconds; brain-to-finger signalling takes a genuine, roughly fixed minimum), but no equivalent ceiling &mdash; distraction, hesitation, a missed tap, a conversation with a neighbour can all stretch a trial arbitrarily far to the right. Floors without ceilings produce right skew almost by construction.</p>
+<p>Even with the long tail trimmed off for readability, the shape is unmistakably <strong>right-skewed</strong>: most trials cluster in a tight band at the low end, and a thinning tail extends out toward slower and slower times. That shape isn't an accident of this particular class &ndash; it's close to universal for reaction-time data, and worth understanding why. There's a hard physical floor (nobody can react in zero milliseconds; brain-to-finger signalling takes a genuine, roughly fixed minimum), but no equivalent ceiling &ndash; distraction, hesitation, a missed tap, a conversation with a neighbour can all stretch a trial arbitrarily far to the right. Floors without ceilings produce right skew almost by construction.</p>
 
 <h3>Bin width is a choice, not a default</h3>
 
-<p>Drag the bin-width slider from 10ms up to 80ms and the same 217 numbers tell noticeably different stories. Too narrow, and the bars become spiky and hard to read as one coherent shape. Too wide, and real structure &mdash; a genuine second cluster, a gap &mdash; gets smoothed away into something that looks more gradual and more boring than the data actually is. There's no universally correct bin width; there's only a choice, made deliberately, with an eye on what it does to the story the chart tells.</p>
+<p>Drag the bin-width slider from 10ms up to 80ms and the same 217 numbers tell noticeably different stories. Too narrow, and the bars become spiky and hard to read as one coherent shape. Too wide, and real structure &ndash; a genuine second cluster, a gap &ndash; gets smoothed away into something that looks more gradual and more boring than the data actually is. There's no universally correct bin width; there's only a choice, made deliberately, with an eye on what it does to the story the chart tells.</p>
 
-<p>Toggling on the <strong>KDE</strong> (kernel density estimate) shows an alternative to binning entirely: instead of sorting values into fixed buckets, it places a small smooth "bump" over every single observation and sums them, producing a continuous curve rather than a bar chart. It avoids the arbitrariness of a bin-width choice, and it's genuinely good for comparing two distributions side by side where two overlapping sets of bars would turn into visual noise. But it comes at a cost: a KDE can visually smooth away real, sharp structure &mdash; a hard floor at 259ms, for instance, doesn't come through as sharply in the smoothed curve as it does in the bars. Treat the histogram as the primary source of truth, and the KDE as a secondary, headline view of its shape.</p>
+<p>Toggling on the <strong>KDE</strong> (kernel density estimate) shows an alternative to binning entirely: instead of sorting values into fixed buckets, it places a small smooth "bump" over every single observation and sums them, producing a continuous curve rather than a bar chart. It avoids the arbitrariness of a bin-width choice, and it's genuinely good for comparing two distributions side by side where two overlapping sets of bars would turn into visual noise. But it comes at a cost: a KDE can visually smooth away real, sharp structure &ndash; a hard floor at 259ms, for instance, doesn't come through as sharply in the smoothed curve as it does in the bars. Treat the histogram as the primary source of truth, and the KDE as a secondary, headline view of its shape.</p>
 </section>
 
 <section class="chapter" id="outliers">
 <div class="chapter-kicker">Part Eight</div>
 <h2>What Do We Do With an Outlier?</h2>
 
-<p>Turn the exclusion threshold on the histogram above all the way up, and one trial sits dramatically apart from everything else &mdash; not a little slower than the rest, but on a completely different scale. Where the bulk of the class's reaction times cluster under a second, this single trial clocked in north of <strong>fifty-six seconds</strong>.</p>
+<p>Turn the exclusion threshold on the histogram above all the way up, and one trial sits dramatically apart from everything else &ndash; not a little slower than the rest, but on a completely different scale. Where the bulk of the class's reaction times cluster under a second, this single trial clocked in north of <strong>fifty-six seconds</strong>.</p>
 
 <div class="figure" id="fig-outlier">
   <div class="figure-head"><span class="flabel">Figure</span><h4>Spotting the outlier</h4></div>
@@ -568,7 +568,7 @@
 
 <blockquote class="field-note">
   <span class="tag">From the workshop</span>
-  <p>&ldquo;This is about as slam-dunk a case as you'll ever get. Whoever produced that trial almost certainly got distracted, or forgot to complete it, or simply hadn't understood the task properly &mdash; and the fact that it sits sixty times further out than the next-slowest trial tells you that on its own. It's as if I set out to measure everyone's height in this room, was doing perfectly well, and then a fifteen-metre person walked in. That one observation would wreck every statistic I tried to compute afterwards.&rdquo;</p>
+  <p>&ldquo;This is about as slam-dunk a case as you'll ever get. Whoever produced that trial almost certainly got distracted, or forgot to complete it, or simply hadn't understood the task properly &ndash; and the fact that it sits sixty times further out than the next-slowest trial tells you that on its own. It's as if I set out to measure everyone's height in this room, was doing perfectly well, and then a fifteen-metre person walked in. That one observation would wreck every statistic I tried to compute afterwards.&rdquo;</p>
 </blockquote>
 
 <p>The instinct to just delete anything that looks strange is understandable, but resist it as a reflex. Every extreme value deserves the same three questions, asked in this order:</p>
@@ -576,26 +576,26 @@
 <table class="data-table">
   <thead><tr><th>Question</th><th>If yes&hellip;</th><th>Reaction-time example</th></tr></thead>
   <tbody>
-    <tr><td><strong>Is it an error?</strong></td><td>Drop it, or fix it</td><td>A 4ms trial &mdash; almost certainly a mis-click before the screen actually turned green</td></tr>
+    <tr><td><strong>Is it an error?</strong></td><td>Drop it, or fix it</td><td>A 4ms trial &ndash; almost certainly a mis-click before the screen actually turned green</td></tr>
     <tr><td><strong>Is it real, but not what we're studying?</strong></td><td>Drop it, with a note</td><td>A slow trial because the student was mid-conversation with a neighbour</td></tr>
-    <tr><td><strong>Is it a genuine feature of the process?</strong></td><td>Keep it</td><td>A slow trial from real hesitation &mdash; that <em>is</em> operational variability worth measuring</td></tr>
+    <tr><td><strong>Is it a genuine feature of the process?</strong></td><td>Keep it</td><td>A slow trial from real hesitation &ndash; that <em>is</em> operational variability worth measuring</td></tr>
   </tbody>
 </table>
 
-<p>The 56-second trial clears the first bar easily &mdash; it is, by any reasonable account, an error, not a genuine reaction time. But the second question is where the real judgement lives, and it doesn't have a formula. Suppose a trial came in unusually slow not because of a technical glitch, but because the student was genuinely talking to a neighbour mid-experiment. That response is real &mdash; nobody mis-clicked &mdash; but it's measuring something the study was never designed to capture (distraction), not the quantity of actual interest (reaction speed). Dropping it is defensible, but only <em>with a stated reason</em>, not as an unexplained deletion.</p>
+<p>The 56-second trial clears the first bar easily &ndash; it is, by any reasonable account, an error, not a genuine reaction time. But the second question is where the real judgement lives, and it doesn't have a formula. Suppose a trial came in unusually slow not because of a technical glitch, but because the student was genuinely talking to a neighbour mid-experiment. That response is real &ndash; nobody mis-clicked &ndash; but it's measuring something the study was never designed to capture (distraction), not the quantity of actual interest (reaction speed). Dropping it is defensible, but only <em>with a stated reason</em>, not as an unexplained deletion.</p>
 
 <div class="callout">
-  <strong>The default, stated plainly:</strong> always work from the position that you keep as much of your data as you possibly can. Treat every exclusion as something that needs a justification strong enough to survive someone else reading your working, not as a housekeeping step you wave through by default. Different analysts, working from the same raw data, can reasonably reach different decisions about the same outlier &mdash; which is precisely why documenting <em>why</em> you dropped or kept something matters as much as the decision itself.
+  <strong>The default, stated plainly:</strong> always work from the position that you keep as much of your data as you possibly can. Treat every exclusion as something that needs a justification strong enough to survive someone else reading your working, not as a housekeeping step you wave through by default. Different analysts, working from the same raw data, can reasonably reach different decisions about the same outlier &ndash; which is precisely why documenting <em>why</em> you dropped or kept something matters as much as the decision itself.
 </div>
 
-<p>And the context genuinely changes the right call. A cluster of ten trials all sitting around the one-minute mark for a single student wouldn't look like ten separate errors &mdash; it would look like one student who takes their time, which might be exactly the operational information a business wants to know about their staff. The decision isn't a fixed rule waiting to be looked up; it depends on domain knowledge, on the shape of the rest of the distribution, and on what the eventual answer is actually going to be used for.</p>
+<p>And the context genuinely changes the right call. A cluster of ten trials all sitting around the one-minute mark for a single student wouldn't look like ten separate errors &ndash; it would look like one student who takes their time, which might be exactly the operational information a business wants to know about their staff. The decision isn't a fixed rule waiting to be looked up; it depends on domain knowledge, on the shape of the rest of the distribution, and on what the eventual answer is actually going to be used for.</p>
 </section>
 
 <section class="chapter" id="centre">
 <div class="chapter-kicker">Part Nine</div>
 <h2>Summary Statistics I: Measuring the Centre</h2>
 
-<p>A <strong>statistic</strong> is any meaningful number you can compute from data. <strong>Summary statistics</strong> are the ones that describe the most important features of a distribution &mdash; its centre, its spread, its shape &mdash; collapsing a whole column of numbers into a handful worth reporting.</p>
+<p>A <strong>statistic</strong> is any meaningful number you can compute from data. <strong>Summary statistics</strong> are the ones that describe the most important features of a distribution &ndash; its centre, its spread, its shape &ndash; collapsing a whole column of numbers into a handful worth reporting.</p>
 
 <h3>The mean, and the idea behind it</h3>
 
@@ -603,26 +603,26 @@
 <div class="formula-block">$$\bar{x} = \frac{\sum x_i}{n}$$</div>
 <p class="formula-caption">sum every observation, divide by how many there are</p>
 
-<p>In words rather than symbols: add up every single reaction time in the room, and divide by the number of trials that went into that sum. Two small algebraic properties fall straight out of this and are worth keeping in your back pocket for when regression arrives in a few weeks &mdash; if \(a\) and \(b\) are fixed while \(x\) varies, then \(\overline{x+a} = \bar{x} + a\) and \(\overline{x \cdot b} = \bar{x} \cdot b\).</p>
+<p>In words rather than symbols: add up every single reaction time in the room, and divide by the number of trials that went into that sum. Two small algebraic properties fall straight out of this and are worth keeping in your back pocket for when regression arrives in a few weeks &ndash; if \(a\) and \(b\) are fixed while \(x\) varies, then \(\overline{x+a} = \bar{x} + a\) and \(\overline{x \cdot b} = \bar{x} \cdot b\).</p>
 
-<p>The deeper idea sitting underneath the mean is the <strong>expected value</strong>, \(E[x]\): the value you'd expect from one randomly chosen observation. The class's own mean reaction time is mildly interesting in its own right, but it only becomes properly useful once you treat it as an estimate of something bigger than the room &mdash; the expected response time of a wider population this class is standing in for.</p>
+<p>The deeper idea sitting underneath the mean is the <strong>expected value</strong>, \(E[x]\): the value you'd expect from one randomly chosen observation. The class's own mean reaction time is mildly interesting in its own right, but it only becomes properly useful once you treat it as an estimate of something bigger than the room &ndash; the expected response time of a wider population this class is standing in for.</p>
 
 <blockquote class="field-note">
   <span class="tag">From the workshop</span>
-  <p>&ldquo;If I grab one of you at random and ask whether you've had coffee in the last two hours, you'll give me a yes or a no &mdash; not a percentage. But the <em>expected value</em> of that binary variable, across the room, is a probability: it's asking, if I reached into this room and pulled out one person at random, what's the chance they'd say yes? Based on what we actually collected, that's 25%.&rdquo;</p>
+  <p>&ldquo;If I grab one of you at random and ask whether you've had coffee in the last two hours, you'll give me a yes or a no &ndash; not a percentage. But the <em>expected value</em> of that binary variable, across the room, is a probability: it's asking, if I reached into this room and pulled out one person at random, what's the chance they'd say yes? Based on what we actually collected, that's 25%.&rdquo;</p>
 </blockquote>
 
-<p>That's the payoff promised back in the variable-types section: for a quantitative variable, \(E[x]\) is just the mean. For a <strong>binary</strong> variable coded 0/1, the mean stops being a meaningless average of labels and becomes something genuinely useful &mdash; the probability, or relative frequency, of the category coded 1.</p>
+<p>That's the payoff promised back in the variable-types section: for a quantitative variable, \(E[x]\) is just the mean. For a <strong>binary</strong> variable coded 0/1, the mean stops being a meaningless average of labels and becomes something genuinely useful &ndash; the probability, or relative frequency, of the category coded 1.</p>
 
 <h3>Median, quantiles, mode</h3>
 
 <ul class="term-list">
-  <li><span class="term">Median</span><span>The middle value once sorted &mdash; exactly half the observations lie below it, half above.</span></li>
+  <li><span class="term">Median</span><span>The middle value once sorted &ndash; exactly half the observations lie below it, half above.</span></li>
   <li><span class="term">Quantiles</span><span>Any division of sorted data into proportions. Quartiles cut it into fourths (the median is the 2nd quartile, the 50th percentile); deciles into tenths; percentiles into hundredths.</span></li>
   <li><span class="term">Mode</span><span>The single most frequent value. Some distributions genuinely have more than one.</span></li>
 </ul>
 
-<p>Pick a student below and watch where the mean and median land on their own ten trials &mdash; then try a student whose data includes a noticeably slow outlier, and watch the gap between the two open up.</p>
+<p>Pick a student below and watch where the mean and median land on their own ten trials &ndash; then try a student whose data includes a noticeably slow outlier, and watch the gap between the two open up.</p>
 
 <div class="figure" id="fig-centre">
   <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Centre: mean vs. median</h4></div>
@@ -635,16 +635,16 @@
   <p class="figure-caption" id="centre-caption"></p>
 </div>
 
-<p><strong>Mean</strong> &mdash; sum &divide; \(n\). The balance point of the data; sensitive to every single value, including the extreme ones. <strong>Median</strong> &mdash; the middle value; robust to extremes almost by construction, since moving the largest value further out doesn't move the middle at all. <strong>Mode</strong> &mdash; most useful for discrete or categorical data, where "the average category" wouldn't mean anything but "the most common one" clearly does.</p>
+<p><strong>Mean</strong> &ndash; sum &divide; \(n\). The balance point of the data; sensitive to every single value, including the extreme ones. <strong>Median</strong> &ndash; the middle value; robust to extremes almost by construction, since moving the largest value further out doesn't move the middle at all. <strong>Mode</strong> &ndash; most useful for discrete or categorical data, where "the average category" wouldn't mean anything but "the most common one" clearly does.</p>
 
-<p>When mean and median pull apart, that gap is not noise to be explained away &mdash; it is information. It is, almost always, a direct symptom of the shape of the underlying distribution, and specifically of skew.</p>
+<p>When mean and median pull apart, that gap is not noise to be explained away &ndash; it is information. It is, almost always, a direct symptom of the shape of the underlying distribution, and specifically of skew.</p>
 </section>
 
 <section class="chapter" id="spread">
 <div class="chapter-kicker">Part Ten</div>
 <h2>Summary Statistics II: Measuring the Spread</h2>
 
-<p>Two datasets can share an identical mean and still look nothing alike &mdash; one tightly clustered, one scattered wide. Centre alone never tells you that; you need a separate measure of <strong>spread</strong>.</p>
+<p>Two datasets can share an identical mean and still look nothing alike &ndash; one tightly clustered, one scattered wide. Centre alone never tells you that; you need a separate measure of <strong>spread</strong>.</p>
 
 <div class="formula-block">
   $$Var[x] = \frac{\sum (x_i - \bar{x})^2}{n-1}$$
@@ -653,15 +653,15 @@
 </div>
 <p class="formula-caption">variance, and its square root, standard deviation</p>
 
-<p><strong>Variance</strong> is the average <em>squared</em> deviation from the mean &mdash; squared partly so positive and negative deviations don't just cancel out to zero, and partly because it makes the algebra behind everything from regression to hypothesis testing far more tractable later in the module. It's harder to interpret directly, precisely because squaring the deviations also squares their units. <strong>Standard deviation</strong> undoes that by taking the square root, landing back in the original units &mdash; roughly, the typical distance between a randomly chosen observation and the mean.</p>
+<p><strong>Variance</strong> is the average <em>squared</em> deviation from the mean &ndash; squared partly so positive and negative deviations don't just cancel out to zero, and partly because it makes the algebra behind everything from regression to hypothesis testing far more tractable later in the module. It's harder to interpret directly, precisely because squaring the deviations also squares their units. <strong>Standard deviation</strong> undoes that by taking the square root, landing back in the original units &ndash; roughly, the typical distance between a randomly chosen observation and the mean.</p>
 
 <div class="callout">
-  This module divides by \(n-1\), not \(n\) &mdash; the standard convention, and what Python's pandas library uses by default. B&eacute;k&eacute;s &amp; K&eacute;zdi's textbook divides by \(n\) instead; the difference is genuinely tiny once your sample is reasonably large, and Week 2 explains precisely why the \(n-1\) correction exists.
+  This module divides by \(n-1\), not \(n\) &ndash; the standard convention, and what Python's pandas library uses by default. B&eacute;k&eacute;s &amp; K&eacute;zdi's textbook divides by \(n\) instead; the difference is genuinely tiny once your sample is reasonably large, and Week 2 explains precisely why the \(n-1\) correction exists.
 </div>
 
 <p>In finance, standard deviation <em>is</em> volatility, quoted directly: a higher SD on an asset's price literally means it jumps around more relative to its own average. The same idea, unchanged, describes a call centre's response times, a factory's output, or a portfolio's returns.</p>
 
-<p>SD and variance aren't the only way to describe spread, and each of the alternatives makes a different trade-off against sensitivity to extreme values. Step through the four below on one student's own ten trials, and notice how the highlighted band changes &mdash; and how much that outlier-sensitive stripe of "&plusmn;1 SD" shifts compared to the sturdier IQR band once a slow trial is in the mix.</p>
+<p>SD and variance aren't the only way to describe spread, and each of the alternatives makes a different trade-off against sensitivity to extreme values. Step through the four below on one student's own ten trials, and notice how the highlighted band changes &ndash; and how much that outlier-sensitive stripe of "&plusmn;1 SD" shifts compared to the sturdier IQR band once a slow trial is in the mix.</p>
 
 <div class="figure" id="fig-spread">
   <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Spread: SD and IQR</h4></div>
@@ -682,14 +682,14 @@
 
 <ul class="term-list">
   <li><span class="term">Range</span><span>Max &minus; min. The simplest measure there is, and entirely dominated by whatever the most extreme point happens to be.</span></li>
-  <li><span class="term">SD</span><span>&radic;variance, in the data's own units. Sensitive to outliers &mdash; every observation, including the extreme ones, pulls on it.</span></li>
-  <li><span class="term">IQR</span><span>Q3 &minus; Q1, the spread of the middle 50% of the data. Genuinely robust to outliers &mdash; the top and bottom quarters can do almost anything without moving it.</span></li>
+  <li><span class="term">SD</span><span>&radic;variance, in the data's own units. Sensitive to outliers &ndash; every observation, including the extreme ones, pulls on it.</span></li>
+  <li><span class="term">IQR</span><span>Q3 &minus; Q1, the spread of the middle 50% of the data. Genuinely robust to outliers &ndash; the top and bottom quarters can do almost anything without moving it.</span></li>
   <li><span class="term">90&ndash;10 range</span><span>90th percentile minus 10th. A middle ground: trims the most extreme 20% without narrowing all the way down to the IQR's middle 50%.</span></li>
 </ul>
 
 <h3>Standardising, and a first word on skew</h3>
 
-<p>Expressing a value in units of standard deviation &mdash; <strong>standardising</strong> it &mdash; makes values from entirely different scales directly comparable:</p>
+<p>Expressing a value in units of standard deviation &ndash; <strong>standardising</strong> it &ndash; makes values from entirely different scales directly comparable:</p>
 
 <div class="formula-block">$$x_{\text{standardised}} = \frac{x - \bar{x}}{SD[x]}$$</div>
 
@@ -699,23 +699,23 @@
 
 <div class="formula-block">$$\text{Skewness} \approx \frac{\bar{x} - \text{median}(x)}{SD[x]}$$</div>
 
-<p>When a long right tail drags the mean up above the median, this comes out positive &mdash; exactly the story the pooled reaction-time histogram already told, before it had a number attached to it.</p>
+<p>When a long right tail drags the mean up above the median, this comes out positive &ndash; exactly the story the pooled reaction-time histogram already told, before it had a number attached to it.</p>
 </section>
 
 <section class="chapter" id="boxplots">
 <div class="chapter-kicker">Part Eleven</div>
 <h2>Box Plots and Group Comparisons</h2>
 
-<p>A <strong>box plot</strong> packages several of the statistics from the last two sections into one compact, comparable picture &mdash; genuinely useful the moment you want to line up more than one group side by side, which a single histogram does badly.</p>
+<p>A <strong>box plot</strong> packages several of the statistics from the last two sections into one compact, comparable picture &ndash; genuinely useful the moment you want to line up more than one group side by side, which a single histogram does badly.</p>
 
 <div class="chart-row" style="margin: 20px 0;">
   <div class="art-panel" id="svg-box"></div>
   <div class="art-panel" id="svg-violin"></div>
 </div>
 
-<p>The whiskers reach to the most extreme point still within <strong>1.5&times;IQR</strong> of the box &mdash; not the fence itself, and not the true min/max. Anything further out is drawn as its own separate point, an <em>outside value</em>: the same fence, in other words, that flagged the 56-second trial two sections ago. A <strong>violin plot</strong> carries the same median and IQR, but replaces the box with the full smoothed shape of the distribution &mdash; the same kernel-density idea from the histogram section, mirrored either side of a centre line.</p>
+<p>The whiskers reach to the most extreme point still within <strong>1.5&times;IQR</strong> of the box &ndash; not the fence itself, and not the true min/max. Anything further out is drawn as its own separate point, an <em>outside value</em>: the same fence, in other words, that flagged the 56-second trial two sections ago. A <strong>violin plot</strong> carries the same median and IQR, but replaces the box with the full smoothed shape of the distribution &ndash; the same kernel-density idea from the histogram section, mirrored either side of a centre line.</p>
 
-<p>Building one by hand is mostly arithmetic: sort your ten values, and Excel's own box-and-whisker chart takes Q1 as the median of the bottom half and Q3 as the median of the top half (not the interpolated result <code>QUARTILE()</code> would give you &mdash; a genuine, easy-to-miss mismatch between the formula and the chart, worth knowing before you're confused by your own numbers disagreeing with your own plot).</p>
+<p>Building one by hand is mostly arithmetic: sort your ten values, and Excel's own box-and-whisker chart takes Q1 as the median of the bottom half and Q3 as the median of the top half (not the interpolated result <code>QUARTILE()</code> would give you &ndash; a genuine, easy-to-miss mismatch between the formula and the chart, worth knowing before you're confused by your own numbers disagreeing with your own plot).</p>
 
 <p>Applied to the class's actual data, grouped by device or by whether a student had had caffeine, the box plot becomes the tool for answering the workshop's real running question.</p>
 
@@ -738,44 +738,44 @@
 
 <div class="mini-table-wrap" id="group-table"></div>
 
-<p>By device: phone users show a slightly <em>faster</em> median (446ms) than laptop users (498.5ms). By caffeine: students who'd had some in the last two hours were also slightly faster on average (median 458ms vs. 490ms without). Both differences are visible, real numbers, sitting right there in the table. Neither one, on its own, tells you whether it's a real effect or an accident of which twenty-four people happened to be in the room that day &mdash; which is exactly the question this chapter hands off to the next one.</p>
+<p>By device: phone users show a slightly <em>faster</em> median (446ms) than laptop users (498.5ms). By caffeine: students who'd had some in the last two hours were also slightly faster on average (median 458ms vs. 490ms without). Both differences are visible, real numbers, sitting right there in the table. Neither one, on its own, tells you whether it's a real effect or an accident of which twenty-four people happened to be in the room that day &ndash; which is exactly the question this chapter hands off to the next one.</p>
 </section>
 
 <section class="chapter" id="answer">
 <div class="chapter-kicker">Part Twelve</div>
-<h2>So &mdash; Was One Test Score Enough?</h2>
+<h2>So &ndash; Was One Test Score Enough?</h2>
 
-<p>Back to HR's onboarding test: one trial, one number, one ranking. Every student in the room just produced ten. Look back at your own numbers &mdash; how does the spread between your own fastest and slowest trial compare with the differences visible between different students entirely?</p>
+<p>Back to HR's onboarding test: one trial, one number, one ranking. Every student in the room just produced ten. Look back at your own numbers &ndash; how does the spread between your own fastest and slowest trial compare with the differences visible between different students entirely?</p>
 
 <blockquote class="field-note">
   <span class="tag">From the workshop</span>
-  <p>&ldquo;A single measurement doesn't tell you someone's true, typical response time. It tells you where one random draw from their own distribution happened to land. What we're really after is the <strong>signal</strong> &mdash; a person's genuine, underlying reaction time &mdash; and every individual trial carries some amount of <strong>noise</strong> on top of it: sometimes a little faster, sometimes a little slower, and every so often, a lot slower. One of the central jobs of an analyst is learning not to mistake the noise for the signal.&rdquo;</p>
+  <p>&ldquo;A single measurement doesn't tell you someone's true, typical response time. It tells you where one random draw from their own distribution happened to land. What we're really after is the <strong>signal</strong> &ndash; a person's genuine, underlying reaction time &ndash; and every individual trial carries some amount of <strong>noise</strong> on top of it: sometimes a little faster, sometimes a little slower, and every so often, a lot slower. One of the central jobs of an analyst is learning not to mistake the noise for the signal.&rdquo;</p>
 </blockquote>
 
-<p>Ranking twenty-four agents on a single tap each would have meant ranking them substantially on <em>who happened to get a lucky or unlucky draw that morning</em>, not on any real, stable difference in ability. Ten trials, and a distribution built from them, is a materially better estimate of the signal than any one of those ten numbers taken alone. That's not a subtle statistical nicety &mdash; it's the entire answer to the business question this chapter opened with.</p>
+<p>Ranking twenty-four agents on a single tap each would have meant ranking them substantially on <em>who happened to get a lucky or unlucky draw that morning</em>, not on any real, stable difference in ability. Ten trials, and a distribution built from them, is a materially better estimate of the signal than any one of those ten numbers taken alone. That's not a subtle statistical nicety &ndash; it's the entire answer to the business question this chapter opened with.</p>
 
-<p>And this is exactly the point where the honest caveat has to arrive: this room is not the population anyone actually cares about. Twenty-four master's students on a Friday afternoon are not the bank's real agent workforce, and even within this room, the phone-versus-laptop gap and the caffeine gap, real as the numbers are, are being read off a <strong>sample</strong>, not the full population of interest. Any sample will show differences between groups purely by chance &mdash; run this exact experiment again next week with the same twenty-four people, and the numbers would move even if nothing about them had genuinely changed.</p>
+<p>And this is exactly the point where the honest caveat has to arrive: this room is not the population anyone actually cares about. Twenty-four master's students on a Friday afternoon are not the bank's real agent workforce, and even within this room, the phone-versus-laptop gap and the caffeine gap, real as the numbers are, are being read off a <strong>sample</strong>, not the full population of interest. Any sample will show differences between groups purely by chance &ndash; run this exact experiment again next week with the same twenty-four people, and the numbers would move even if nothing about them had genuinely changed.</p>
 
-<p>Deciding which differences are worth taking seriously, and which are just the ordinary noise of sampling, is precisely the inference question &mdash; and it's where Week 2 picks up: sampling distributions, confidence intervals, and the beginnings of a systematic answer to "how do we know?"</p>
+<p>Deciding which differences are worth taking seriously, and which are just the ordinary noise of sampling, is precisely the inference question &ndash; and it's where Week 2 picks up: sampling distributions, confidence intervals, and the beginnings of a systematic answer to "how do we know?"</p>
 
 <h3>The six steps, in one place</h3>
 
 <ol>
   <li>Start with the variables that matter most.</li>
-  <li>Qualitative variables &mdash; list their frequencies.</li>
-  <li>Quantitative variables &mdash; look at the histogram.</li>
+  <li>Qualitative variables &ndash; list their frequencies.</li>
+  <li>Quantitative variables &ndash; look at the histogram.</li>
   <li>Check for extreme values, and decide deliberately what to do with each one.</li>
-  <li>Look at the summary statistics &mdash; let them guide the questions you ask next.</li>
-  <li>Explore further if needed &mdash; by group, over time, or otherwise.</li>
+  <li>Look at the summary statistics &ndash; let them guide the questions you ask next.</li>
+  <li>Explore further if needed &ndash; by group, over time, or otherwise.</li>
 </ol>
 
-<p>Every one of those six steps happened in this chapter, in order, on data the room generated for itself. That's the whole method &mdash; not a checklist to memorise, but a habit of mind worth building before anything gets modelled.</p>
+<p>Every one of those six steps happened in this chapter, in order, on data the room generated for itself. That's the whole method &ndash; not a checklist to memorise, but a habit of mind worth building before anything gets modelled.</p>
 
 </section>
 
 <footer class="colophon">
-  <p><strong>A note on these notes.</strong> This chapter was assembled from three sources: the Week 1 workshop slide deck, the session's own live transcript (auto-generated, lightly cleaned for readability &mdash; quoted passages are close to verbatim but not a certified transcript), and the class's real, anonymised reaction-time data collected that afternoon (217 trials, 24 students). Numbers and charts throughout reflect that specific dataset as it stood at the time of writing; they will not update themselves if the underlying data is later revised. Framework and definitions follow B&eacute;k&eacute;s &amp; K&eacute;zdi, <em>Data Analysis for Business, Economics, and Policy</em> (2021), Ch. 3, as taught in the workshop itself.</p>
-  <p>Built as a drafting experiment &mdash; not yet reviewed for publication to students.</p>
+  <p><strong>A note on these notes.</strong> This chapter was assembled from three sources: the Week 1 workshop slide deck, the session's own live transcript (auto-generated, lightly cleaned for readability &ndash; quoted passages are close to verbatim but not a certified transcript), and the class's real, anonymised reaction-time data collected that afternoon (217 trials, 24 students). Numbers and charts throughout reflect that specific dataset as it stood at the time of writing; they will not update themselves if the underlying data is later revised. Framework and definitions follow B&eacute;k&eacute;s &amp; K&eacute;zdi, <em>Data Analysis for Business, Economics, and Policy</em> (2021), Ch. 3, as taught in the workshop itself.</p>
+  <p>Built as a drafting experiment &ndash; not yet reviewed for publication to students.</p>
 </footer>
 
     </div>
