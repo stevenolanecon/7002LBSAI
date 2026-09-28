@@ -14,46 +14,64 @@ toc: false
 ```
 
 ::: {.page-intro}
-<p>This is the class's own reaction-time data — one row per trial, the same data used in the Week 1 slides and tools.</p>
+<h3 style="margin-top:0;">week1_reaction_times.csv</h3>
+<p>Every submitted trial exactly as collected — one row per trial, unfiltered. The same file the Week 1 slides and tools read from.</p>
 <p>
-  <button id="w1-download-btn" style="background:#1f7a79;color:#fff;border:none;border-radius:8px;padding:12px 24px;font-size:1em;cursor:pointer;font-family:inherit;">
+  <button class="data-download-btn" data-url="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week1_reaction_times.csv" data-filename="week1_reaction_times.csv" style="background:#1f7a79;color:#fff;border:none;border-radius:8px;padding:12px 24px;font-size:1em;cursor:pointer;font-family:inherit;">
     Download week1_reaction_times.csv
   </button>
 </p>
-<p id="w1-download-status" style="color:#888;font-size:0.9em;"></p>
+<p class="download-status" style="color:#888;font-size:0.9em;"></p>
 <p class="canvas-note">
   If the button doesn't work, right-click and choose "Save Link As…":
-  <a id="w1-download-fallback" href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week1_reaction_times.csv">week1_reaction_times.csv</a>
+  <a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week1_reaction_times.csv">week1_reaction_times.csv</a>
+</p>
+:::
+
+::: {.page-intro}
+<h3 style="margin-top:0;">week1_reaction_times_final.csv</h3>
+<p>The <strong>cleaned</strong> version — the raw data above, with the recommended treatment from the <a href="week1-outliers-addendum.html" style="color:#457b9d;">Week 1 outliers addendum</a> applied: one wildly extreme trial dropped (a measurement error), the flagged-but-real trials at positions 3–10 dropped with a note (distraction, not the ability being measured), the flagged trials at positions 1–2 kept (a genuine warm-up effect). This is the dataset Week 2 onward is built on.</p>
+<p>
+  <button class="data-download-btn" data-url="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week1_reaction_times_final.csv" data-filename="week1_reaction_times_final.csv" style="background:#1f7a79;color:#fff;border:none;border-radius:8px;padding:12px 24px;font-size:1em;cursor:pointer;font-family:inherit;">
+    Download week1_reaction_times_final.csv
+  </button>
+</p>
+<p class="download-status" style="color:#888;font-size:0.9em;"></p>
+<p class="canvas-note">
+  If the button doesn't work, right-click and choose "Save Link As…":
+  <a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week1_reaction_times_final.csv">week1_reaction_times_final.csv</a>
 </p>
 :::
 
 ```{=html}
 <script>
 (function () {
-  var csvUrl = "https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week1_reaction_times.csv";
-  var btn = document.getElementById("w1-download-btn");
-  var status = document.getElementById("w1-download-status");
-  btn.addEventListener("click", function () {
-    status.textContent = "Downloading…";
-    fetch(csvUrl)
-      .then(function (resp) {
-        if (!resp.ok) { throw new Error("HTTP " + resp.status); }
-        return resp.blob();
-      })
-      .then(function (blob) {
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement("a");
-        a.href = url;
-        a.download = "week1_reaction_times.csv";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-        status.textContent = "Downloaded — check your Downloads folder.";
-      })
-      .catch(function () {
-        status.textContent = "Something went wrong — use the link below instead.";
-      });
+  document.querySelectorAll(".data-download-btn").forEach(function (btn) {
+    var url = btn.getAttribute("data-url");
+    var filename = btn.getAttribute("data-filename");
+    var status = btn.parentElement.nextElementSibling;
+    btn.addEventListener("click", function () {
+      status.textContent = "Downloading…";
+      fetch(url)
+        .then(function (resp) {
+          if (!resp.ok) { throw new Error("HTTP " + resp.status); }
+          return resp.blob();
+        })
+        .then(function (blob) {
+          var objUrl = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          a.href = objUrl;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(objUrl);
+          status.textContent = "Downloaded — check your Downloads folder.";
+        })
+        .catch(function () {
+          status.textContent = "Something went wrong — use the link below instead.";
+        });
+    });
   });
 })();
 </script>

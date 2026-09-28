@@ -14,7 +14,7 @@ toc: false
 ```
 
 ::: {.page-intro}
-<p>This is the file used in Week 2's own sampling-distribution task — 1,000 simulated replays of a class like ours, built from the real, cleaned Week 1 reaction-time data.</p>
+<p>This is the file used in Week 2's own sampling-distribution task — 1,000 simulated replays of a class like ours, built from the real, cleaned Week 1 reaction-time data. Want the classroom data itself, not the simulation? Download <a href="week1-data-download.html" style="color:#457b9d;">the cleaned Week 1 data</a>.</p>
 :::
 
 ::: {.page-intro}
