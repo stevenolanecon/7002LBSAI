@@ -109,21 +109,14 @@ within_sd = float(
 )
 between_sd = float(np.sqrt(max(sd_pop**2 - (within_sd**2 / N_TRIALS), 1.0)))
 
-# Fictional names for the *simulated* samples.csv, deliberately distinct from
-# live_students — these represent hypothetical new classes, not the real
-# students (and for the live deck, real students' names have no business in
-# a fake dataset). Cycled/suffixed so this always covers n_students, however
-# many that turns out to be.
-_name_pool = [
-    "Alice Johnson", "Ben Okafor",    "Chloe Martinez", "David Kim",
-    "Emma Thompson", "Faisal Rahman", "Grace Chen",     "Harry Patel",
-    "Isabel Santos", "Jack Williams", "Kezia Adeyemi",  "Liam O'Brien",
-    "Maya Singh",    "Noah Clarke",   "Priya Sharma",   "Oscar Bennett",
-    "Ravi Kapoor",   "Sofia Lindqvist", "Tariq Hassan",  "Uma Devi",
-]
-sim_student_names = [_name_pool[i % len(_name_pool)] +
-                      (f" {i // len(_name_pool) + 1}" if i >= len(_name_pool) else "")
-                      for i in range(n_students)]
+# Our own students' real names, not a fictional pool — even though the
+# trial values below are simulated (repeated hypothetical replays, not
+# anyone's actual Week 1 performance), using our own class's names keeps
+# the exercise relatable: "what might OUR class's numbers look like if we
+# ran this again and again," not an abstract made-up class. The task
+# instructions keep the values/names distinction explicit ("simulated
+# replays of a class like ours, not our actual Week 1 results").
+sim_student_names = live_students
 
 # ── One consistent simulation mechanism, used everywhere below: n iid draws
 # from Normal(mu_pop, sd_pop), averaged. Every empirical SE shown or computed
@@ -173,9 +166,12 @@ for i in range(100):
     })
 
 # ── Task dataset: N_SIMS simulated replays of a class like ours ─────────────
-# Columns: sample, student_name, trial, reaction_time. Each replay = n new
-# hypothetical students (true means drawn from Normal(mu_pop, between_sd)),
-# each doing N_TRIALS trials (drawn from Normal(their true mean, within_sd)).
+# Columns: sample, student_name, trial, reaction_time. Each replay reuses
+# our own n_students' names, but draws a fresh simulated true mean per
+# student each time (from Normal(mu_pop, between_sd)), then N_TRIALS trials
+# around that (drawn from Normal(their true mean, within_sd)) — so the same
+# name appears in every one of the 1,000 replays, each time with different
+# simulated numbers, not their one real Week 1 result repeated.
 # By construction (see between_sd derivation above), a student correctly
 # averaging trials then averaging students recovers empirical SE ≈
 # sd_pop/sqrt(n) — this is what the later "does the formula match?" task
