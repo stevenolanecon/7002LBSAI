@@ -291,6 +291,32 @@ ojs_define(
 [Any sample varies by chance. Today we build the logic for telling a real difference from noise.]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
 :::
 
+## Before we start: what's in today's data {.smaller}
+
+::: {.instructions-box}
+Everything you'll see today is built on the **cleaned** Week 1 dataset, not the raw submissions exactly as they came in. Before we use it, here's what we changed, and why.
+:::
+
+::: {.fragment}
+Three decisions, applied consistently across the whole class — not case by case:
+
+- **Dropped** — a single, wildly extreme trial (a measurement error, not a real reaction time)
+- **Dropped, with a note** — real but distracted trials at positions 3–10 (talking, looking away, losing focus) — genuine values, but not the ability we're measuring
+- **Kept** — slower trials at positions 1–2 — a real warm-up effect, not noise to remove
+:::
+
+::: {.fragment}
+```{ojs}
+html`<div class="stat-row">
+  <div class="stat-chip chip-red">${live_pool_n} trials, ${live_students.length} students — the dataset used throughout today</div>
+</div>`
+```
+:::
+
+::: {.fragment}
+This wasn't a fixed millisecond cutoff — every flagged trial was judged with the same three-question framework from Week 1 (Is it an error? Is it real but not what we're studying? Is it a genuine feature of the process?). Full derivation and exact numbers: the [Week 1 outliers addendum](https://stevenolanecon.github.io/7002LBSAI/week1-outliers-addendum.html).
+:::
+
 ## Where we left things...
 
 ::: {.instructions-box}
