@@ -98,16 +98,57 @@ _student_mean_vals = np.array([d['mean_rt'] for d in live_student_means])
 mu_pop = float(_student_mean_vals.mean())
 sd_pop = float(_student_mean_vals.std(ddof=1))
 
-# Within-student trial noise and the implied between-student SD, both
-# estimated from the real data. Used only to regenerate a believable
-# trial-by-trial samples.csv for the Task below — everywhere else uses
-# mu_pop/sd_pop directly. Derived so that simulating (between-student noise)
-# + (within-student noise, averaged over N_TRIALS) reproduces sd_pop exactly:
-# between_sd^2 + within_sd^2/N_TRIALS = sd_pop^2.
+# Within-student trial noise, estimated from the real data. Used only to
+# regenerate a believable trial-by-trial samples.csv/sample_student_means.csv
+# for the Task below — everywhere else uses mu_pop/sd_pop directly.
 within_sd = float(
     live_df.groupby("student_name")["reaction_time_ms"].std(ddof=1).mean()
 )
-between_sd = float(np.sqrt(max(sd_pop**2 - (within_sd**2 / N_TRIALS), 1.0)))
+
+# Reaction time can't physically go negative or near-zero, but an unbounded
+# Normal(m, within_sd) occasionally draws below zero anyway when within_sd is
+# large relative to m -- floor at 100ms (well below any real observed trial,
+# so this never touches a plausible value, only the impossible tail).
+TRIAL_FLOOR_MS = 100
+
+# between_sd is NOT the closed-form between_sd^2 + within_sd^2/N_TRIALS =
+# sd_pop^2 solution -- that identity only holds for *unclipped* Normal
+# noise. With the real class data, within_sd (~1057ms) is almost as large
+# as mu_pop (~1070ms), so a large share of raw trial draws land below zero
+# and get clipped to TRIAL_FLOOR_MS -- clipping always shrinks realized
+# variance, and plugging the closed-form between_sd straight into the
+# simulator made the 1,000-sample "does the formula match?" task fail its
+# own check: the realized SD of the 1,000 collapsed sample-level means came
+# out ~20% below the theoretical sd_pop/sqrt(n) (145.85ms vs 181.38ms,
+# confirmed against real output on 2026-09-28 — with the synthetic
+# placeholder data, within_sd is small enough relative to mu_pop that
+# clipping barely triggers and this was never noticed). Fixed by
+# calibrating between_sd numerically instead of analytically: run the
+# actual clip-and-average pipeline at a candidate between_sd, bisect until
+# the realized SD of the simulated 1,000-sample aggregate matches the
+# target sd_pop/sqrt(n_students), then use that calibrated value for real.
+# Reduces to ~the old closed-form value when clipping barely matters (the
+# synthetic deck), and compensates for it when clipping is severe (the real
+# deck) — verified to land within a few percent of target across several
+# seeds, not just the one used to calibrate it.
+def _clipped_sample_sd(between_sd_try, reps, seed):
+    rng = np.random.default_rng(seed)
+    true_means = rng.normal(mu_pop, between_sd_try, (reps, n_students))
+    draws = np.clip(
+        rng.normal(true_means[:, :, None], within_sd, (reps, n_students, N_TRIALS)),
+        TRIAL_FLOOR_MS, None
+    )
+    return draws.mean(axis=2).mean(axis=1).std(ddof=1)
+
+_target_se = sd_pop / np.sqrt(n_students)
+_lo, _hi = 0.0, sd_pop * 5
+for _ in range(20):
+    _mid = (_lo + _hi) / 2
+    if _clipped_sample_sd(_mid, 3000, 123) < _target_se:
+        _lo = _mid
+    else:
+        _hi = _mid
+between_sd = (_lo + _hi) / 2
 
 # Our own students' real names, not a fictional pool — even though the
 # trial values below are simulated (repeated hypothetical replays, not
@@ -186,18 +227,14 @@ for i in range(100):
 # around that (drawn from Normal(their true mean, within_sd)) — so the same
 # name appears in every one of the 1,000 replays, each time with different
 # simulated numbers, not their one real Week 1 result repeated.
-# By construction (see between_sd derivation above), a student correctly
+# Since between_sd is calibrated (see above) to already compensate for
+# what clipping does to the realized variance, a student correctly
 # averaging trials then averaging students recovers empirical SE ≈
 # sd_pop/sqrt(n) — this is what the later "does the formula match?" task
-# checks, and it now actually holds (verified against real output, not just
-# assumed).
+# checks, and it now actually holds (verified against real output, not
+# just assumed — see the calibration note above for the numbers).
 np.random.seed(99)
 task_rows = []
-# Reaction time can't physically go negative or near-zero, but an unbounded
-# Normal(m, within_sd) occasionally draws below zero anyway when within_sd is
-# large relative to m -- floor at 100ms (well below any real observed trial,
-# so this never touches a plausible value, only the impossible tail).
-TRIAL_FLOOR_MS = 100
 for k in range(N_SIMS):
     sim_true_means = np.random.normal(mu_pop, between_sd, n_students)
     draws = np.clip(
