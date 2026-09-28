@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Data – 7002LBSAI</title>
+<title>Week 2 — Download the Data – 7002LBSAI</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -99,7 +99,7 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Topics</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./data.html" aria-current="page"> 
+    <a class="nav-link" href="./data.html"> 
 <span class="menu-text">Data</span></a>
   </li>  
 </ul>
@@ -126,8 +126,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Data</h1>
-<p class="subtitle lead">Datasets used across 7002LBSAI</p>
+<h1 class="title">Week 2 — Download the Data</h1>
 </div>
 
 
@@ -146,359 +145,83 @@ ul.task-list li input[type="checkbox"] {
 
 <div class="site-hero">
   <div class="hero-inner">
-    <p class="kicker">7002LBSAI</p>
-    <h1>Data</h1>
-    <p>Datasets used across the module, hosted here so notebooks can load them directly</p>
+    <p class="kicker">7002LBSAI — Week 2</p>
+    <h1>Download the sampling-distribution data</h1>
+    <p>The two files behind the "samples.csv" task</p>
   </div>
 </div>
 <div class="page-intro">
-<p>Grouped by the week each dataset was introduced. Use the <strong>raw</strong> link with <code>pd.read_csv()</code> — never a relative path, since opening a notebook via the Colab-from-GitHub link only fetches that one file, not the whole repo.</p>
+<p>
+These are the two files used in Week 2’s own sampling-distribution task — 1,000 simulated replays of a class like ours, built from the real, cleaned Week 1 reaction-time data.
+</p>
 </div>
-<div class="data-group">
-<h3 class="anchored">
-Week 1
-</h3>
-<table class="data-table">
-<tbody>
-<tr>
-<td class="fname">
-week1_reaction_times.csv
-</td>
-<td class="fdesc">
-The real reaction-time data collected in the Week 1 workshop
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week1_reaction_times.csv">raw ↗</a>
-</td>
-</tr>
-<tr>
-<td class="fname">
-synthetic_reaction_times.csv
-</td>
-<td class="fdesc">
-Placeholder reaction-time data used to build and test slides before the live class dataset exists
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/synthetic_reaction_times.csv">raw ↗</a>
-</td>
-</tr>
-<tr>
-<td class="fname">
-reaction_times.xlsx
-</td>
-<td class="fdesc">
-Generated test dataset — 16 students, 10 trials each — used for demos and dry runs
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/reaction_times.xlsx">raw ↗</a>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="data-group">
-<h3 class="anchored">
-Week 2
-</h3>
-<table class="data-table">
-<tbody>
-<tr>
-<td class="fname">
+<div class="page-intro">
+<h3 style="margin-top:0;" class="anchored">
 samples.csv
-</td>
-<td class="fdesc">
-1,000 simulated replays of a class like ours, trial-by-trial — the sampling-distribution task
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/samples.csv">raw ↗</a>
-</td>
-</tr>
-<tr>
-<td class="fname">
+</h3>
+<p>
+Trial-by-trial data: one row per (sample, student, trial). Used for the task’s first step — collapsing sample 1’s raw trials to student averages by hand.
+</p>
+<p>
+<button class="data-download-btn" data-url="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/samples.csv" data-filename="samples.csv" style="background:#1f7a79;color:#fff;border:none;border-radius:8px;padding:12px 24px;font-size:1em;cursor:pointer;font-family:inherit;">
+Download samples.csv
+</button>
+</p>
+<p class="download-status" style="color:#888;font-size:0.9em;">
+</p>
+<p class="canvas-note">
+If the button doesn’t work, right-click and choose “Save Link As…”: <a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/samples.csv">samples.csv</a>
+</p>
+</div>
+<div class="page-intro">
+<h3 style="margin-top:0;" class="anchored">
 sample_student_means.csv
-</td>
-<td class="fdesc">
-The same 1,000 replays, pre-collapsed to one row per (sample, student) — used for the rest of the sampling-distribution task
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/sample_student_means.csv">raw ↗</a>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="data-group">
-<h3 class="anchored">
-Week 4
 </h3>
-<table class="data-table">
-<tbody>
-<tr>
-<td class="fname">
-hotels_vienna.csv
-</td>
-<td class="fdesc">
-Hotel prices and star ratings for Vienna — Békés &amp; Kézdi’s own case study
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/hotels_vienna.csv">raw ↗</a>
-</td>
-</tr>
-<tr>
-<td class="fname">
-hotels_europe_nov2017_weekday.csv
-</td>
-<td class="fdesc">
-European hotel prices, Nov 2017 weekday stays, 46 cities
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/hotels_europe_nov2017_weekday.csv">raw ↗</a>
-</td>
-</tr>
-<tr>
-<td class="fname">
-used_cars_chicago.csv
-</td>
-<td class="fdesc">
-Toyota Camry listings from Chicago — age, mileage, price
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/used_cars_chicago.csv">raw ↗</a>
-</td>
-</tr>
-</tbody>
-</table>
+<p>
+Pre-collapsed data: one row per (sample, student), already averaged across that student’s 10 trials. Used for the rest of the task — averaging each sample’s student means down to one number, for 1, 10, 100, then all 1,000 samples.
+</p>
+<p>
+<button class="data-download-btn" data-url="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/sample_student_means.csv" data-filename="sample_student_means.csv" style="background:#1f7a79;color:#fff;border:none;border-radius:8px;padding:12px 24px;font-size:1em;cursor:pointer;font-family:inherit;">
+Download sample_student_means.csv
+</button>
+</p>
+<p class="download-status" style="color:#888;font-size:0.9em;">
+</p>
+<p class="canvas-note">
+If the button doesn’t work, right-click and choose “Save Link As…”: <a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/sample_student_means.csv">sample_student_means.csv</a>
+</p>
 </div>
-<div class="data-group">
-<h3 class="anchored">
-Week 5
-</h3>
-<table class="data-table">
-<tbody>
-<tr>
-<td class="fname">
-wms_management_2006.csv
-</td>
-<td class="fdesc">
-World Management Survey, 2006 wave, 13 countries
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/wms_management_2006.csv">raw ↗</a>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="data-group">
-<h3 class="anchored">
-Week 6
-</h3>
-<table class="data-table">
-<tbody>
-<tr>
-<td class="fname">
-cps_gender_pay_gap.csv
-</td>
-<td class="fdesc">
-US Current Population Survey earnings data — gender pay gap case study
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/cps_gender_pay_gap.csv">raw ↗</a>
-</td>
-</tr>
-<tr>
-<td class="fname">
-worldbank_lifeexp_2017.csv
-</td>
-<td class="fdesc">
-World Bank life expectancy and GDP data, 2017, with continent groupings
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/worldbank_lifeexp_2017.csv">raw ↗</a>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="data-group">
-<h3 class="anchored">
-Week 8
-</h3>
-<table class="data-table">
-<tbody>
-<tr>
-<td class="fname">
-share_health.csv
-</td>
-<td class="fdesc">
-Survey of Health, Ageing and Retirement in Europe — smoking and health outcomes
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/share_health.csv">raw ↗</a>
-</td>
-</tr>
-<tr>
-<td class="fname">
-bike_sharing_day.csv
-</td>
-<td class="fdesc">
-UCI daily bike-share rental counts
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/bike_sharing_day.csv">raw ↗</a>
-</td>
-</tr>
-<tr>
-<td class="fname">
-wms_management_2010_export.csv
-</td>
-<td class="fdesc">
-World Management Survey, 2010 wave, includes export share
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/wms_management_2010_export.csv">raw ↗</a>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="data-group">
-<h3 class="anchored">
-Week 9
-</h3>
-<table class="data-table">
-<tbody>
-<tr>
-<td class="fname">
-wfh_person.csv
-</td>
-<td class="fdesc">
-Bloom et al.’s Working from Home field experiment (Ctrip RCT)
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/wfh_person.csv">raw ↗</a>
-</td>
-</tr>
-<tr>
-<td class="fname">
-food_health.csv
-</td>
-<td class="fdesc">
-NHANES food intake and blood pressure data
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/food_health.csv">raw ↗</a>
-</td>
-</tr>
-<tr>
-<td class="fname">
-ab_test_social_media.csv
-</td>
-<td class="fdesc">
-Social media ad A/B test click-through data
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/ab_test_social_media.csv">raw ↗</a>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="data-group">
-<h3 class="anchored">
-Week 10
-</h3>
-<table class="data-table">
-<tbody>
-<tr>
-<td class="fname">
-cps_earnings_2014.csv
-</td>
-<td class="fdesc">
-Full 2014 CPS earnings sample — 149,316 individuals
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/cps_earnings_2014.csv">raw ↗</a>
-</td>
-</tr>
-<tr>
-<td class="fname">
-airbnb_hackney.csv
-</td>
-<td class="fdesc">
-Airbnb listings in the London borough of Hackney
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/airbnb_hackney.csv">raw ↗</a>
-</td>
-</tr>
-<tr>
-<td class="fname">
-airbnb_london.csv
-</td>
-<td class="fdesc">
-Airbnb listings across all of London, 33 boroughs
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/airbnb_london.csv">raw ↗</a>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="data-group">
-<h3 class="anchored">
-Week 11
-</h3>
-<table class="data-table">
-<tbody>
-<tr>
-<td class="fname">
-stocks_monthly.csv
-</td>
-<td class="fdesc">
-Monthly stock prices (MSFT, AAPL) and S&amp;P 500, with risk-free rate
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/stocks_monthly.csv">raw ↗</a>
-</td>
-</tr>
-<tr>
-<td class="fname">
-arizona_electricity.csv
-</td>
-<td class="fdesc">
-Arizona electricity demand and temperature data
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/arizona_electricity.csv">raw ↗</a>
-</td>
-</tr>
-<tr>
-<td class="fname">
-swim_tickets.csv
-</td>
-<td class="fdesc">
-Daily swimming-pool ticket sales — seasonality case study
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/swim_tickets.csv">raw ↗</a>
-</td>
-</tr>
-<tr>
-<td class="fname">
-case_shiller_la.csv
-</td>
-<td class="fdesc">
-Case-Shiller Los Angeles house price index
-</td>
-<td class="flink">
-<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/case_shiller_la.csv">raw ↗</a>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
+<script>
+(function () {
+  document.querySelectorAll(".data-download-btn").forEach(function (btn) {
+    var url = btn.getAttribute("data-url");
+    var filename = btn.getAttribute("data-filename");
+    var status = btn.parentElement.nextElementSibling;
+    btn.addEventListener("click", function () {
+      status.textContent = "Downloading…";
+      fetch(url)
+        .then(function (resp) {
+          if (!resp.ok) { throw new Error("HTTP " + resp.status); }
+          return resp.blob();
+        })
+        .then(function (blob) {
+          var objUrl = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          a.href = objUrl;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(objUrl);
+          status.textContent = "Downloaded — check your Downloads folder.";
+        })
+        .catch(function () {
+          status.textContent = "Something went wrong — use the link below instead.";
+        });
+    });
+  });
+})();
+</script>
 
 
 

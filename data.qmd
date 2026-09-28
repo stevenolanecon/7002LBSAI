@@ -32,6 +32,7 @@ data_groups = [
     ]),
     ("Week 2", [
         ("samples.csv", "1,000 simulated replays of a class like ours, trial-by-trial — the sampling-distribution task"),
+        ("sample_student_means.csv", "The same 1,000 replays, pre-collapsed to one row per (sample, student) — used for the rest of the sampling-distribution task"),
     ]),
     ("Week 4", [
         ("hotels_vienna.csv", "Hotel prices and star ratings for Vienna — Békés & Kézdi's own case study"),
