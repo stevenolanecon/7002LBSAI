@@ -909,14 +909,6 @@ SE = σ / √n. To **halve** the standard error, you need to **quadruple** the s
 
 ---
 
-
-
-
-
-
-
----
-
 ## Estimating uncertainty from real data
 
 ---
