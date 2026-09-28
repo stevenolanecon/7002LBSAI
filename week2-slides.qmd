@@ -781,7 +781,13 @@ An estimator whose expected value equals the true parameter is called **unbiased
   const all  = [...clt_n5, ...clt_n15, ...clt_n30]
   const xmin = Math.floor((d3.min(all) - 5) / 10) * 10
   const xmax = Math.ceil( (d3.max(all) + 5) / 10) * 10
-  const bw   = 8
+  // Bin width scales with the actual spread of the data rather than a
+  // fixed ms value — a width tuned for a small-SD dataset (like the
+  // synthetic placeholder) renders every bar sub-pixel-thin once a
+  // much-larger-SD dataset (like the real class data) is loaded instead,
+  // which looks like the histogram vanished and only the curve is left.
+  // Targeting ~25 bins across the shared domain keeps it legible either way.
+  const bw   = Math.max(5, Math.round((xmax - xmin) / 25 / 5) * 5)
 
   // Normal curve overlay
   function normalCurve(vals, n, bw) {
