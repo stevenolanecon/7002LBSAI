@@ -133,11 +133,25 @@ running_mean = (np.cumsum(sample_means) / np.arange(1, N_SIMS + 1)).tolist()
 # "second sample" comparison against live_student_means
 new_sample = np.random.normal(mu_pop, sd_pop, n_students).round(1)
 
-# Sampling distributions at three n values (CLT slide)
+# Sampling distributions at three n values (CLT slide) — deliberately NOT
+# simulate_means(). That draws from the assumed-Normal(mu_pop, sd_pop) DGP,
+# and an average of Normal draws is exactly Normal at every n by
+# construction — it can never show the low-n non-normality this slide's own
+# text claims ("regardless of the shape of the population"). Instead,
+# bootstrap-resample with replacement directly from the real 24 student-
+# level means (_student_mean_vals), which are genuinely skewed/bimodal (a
+# cluster around 300-500ms, another around 1000-3250ms). n=5 then shows
+# real skew that visibly smooths out by n=30 — an actual CLT demonstration.
+# Scoped to just this slide: every other simulated quantity in this deck
+# (1,000 samples, root-n, CI coverage, second-sample) still uses the
+# assumed-Normal DGP the "DGP — what we're assuming" slide states.
+def bootstrap_means(n, reps):
+    return np.random.choice(_student_mean_vals, size=(reps, n), replace=True).mean(axis=1)
+
 np.random.seed(99)
-clt_n5  = simulate_means(5,  2000).round(1).tolist()
-clt_n15 = simulate_means(15, 2000).round(1).tolist()
-clt_n30 = simulate_means(30, 2000).round(1).tolist()
+clt_n5  = bootstrap_means(5,  2000).round(1).tolist()
+clt_n15 = bootstrap_means(15, 2000).round(1).tolist()
+clt_n30 = bootstrap_means(30, 2000).round(1).tolist()
 
 # SE at increasing n (root-n slide)
 np.random.seed(13)
