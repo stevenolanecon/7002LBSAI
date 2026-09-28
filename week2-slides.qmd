@@ -27,10 +27,18 @@ import pandas as pd
 import numpy as np
 
 # ── Live Week 1 class data — the real dataset everything else is anchored to.
-# This is the TEST-DATA deck — always reads the synthetic placeholder, never
-# the live Google Sheet. See week2-live.qmd for the in-class version.
-live_df = pd.read_csv("data/synthetic_reaction_times.csv")
+# This is the LIVE deck — reads the *cleaned* Week 1 dataset (the outliers
+# addendum's recommended treatment applied: the one wildly-separated error
+# trial and the trials-3-10 flagged-but-irrelevant values dropped, the
+# trial-1-2 warm-up values kept), not the raw Google Sheet directly. Raw
+# per-student means were badly distorted by a handful of contaminated
+# trials (one student's mean alone was pulled up by +5,458ms), which broke
+# the Normal-DGP fit this whole deck is built around. See week2.qmd for the
+# synthetic test-data version, and CLAUDE.md's 2026-09-25 entry for how
+# week1_reaction_times_final.csv itself was built.
+live_df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week1_reaction_times_final.csv")
 # live_df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIOZ03GpUJgqvGVmI9cih169mMq0ajLMj6a0VTd2tytB3K5BmX5AUiKQ8FKIL6KUKEcgb-1LR-1eM/pub?gid=0&single=true&output=csv")
+# live_df = pd.read_csv("data/synthetic_reaction_times.csv")
 
 if 'name' in live_df.columns and 'student_name' not in live_df.columns:
     live_df = live_df.rename(columns={'name': 'student_name'})
@@ -153,7 +161,7 @@ ci_rows = []
 for i in range(100):
     s  = np.random.normal(mu_pop, sd_pop, n_students)
     m  = float(s.mean())
-    se = float(s.std() / np.sqrt(n_students))
+    se = float(s.std(ddof=1) / np.sqrt(n_students))
     ci_rows.append({
         'i':      i,
         'mean':   round(m, 1),
@@ -1136,7 +1144,7 @@ Wider interval → more confident it contains the truth, but less precise about 
 For a 95% confidence level, the precise critical value is 1.96 — but 2 is a decent rule of thumb.
 :::
 
-## Confidence intervals
+## Confidence intervals {.smaller}
 
 Does that 95% promise actually hold? Let's check: simulate 100 samples from the same DGP, build a 95% CI from each one the way we just described, and see how many actually contain the true mean.
 
@@ -1149,10 +1157,10 @@ Does that 95% promise actually hold? Let's check: simulate 100 samples from the 
   const colours = { true: "#2a6f97", false: "#e07a3f" }
 
   return Plot.plot({
-    height: 420,
+    height: 260,
     marginLeft: 40,
     marginRight: 10,
-    marginBottom: 36,
+    marginBottom: 30,
     x: { label: "Reaction time (ms)",
          domain: [d3.min(data95, d => d.lo95) - 5,
                   d3.max(data95, d => d.hi95) + 5] },
@@ -1187,6 +1195,12 @@ html`<div style="display:flex;gap:28px;font-family:sans-serif;font-size:0.88em;m
   <span style="color:#555;">95% CI = x̄ ± 1.96 × SE &nbsp;|&nbsp; 99% CI = x̄ ± 2.576 × SE</span>
 </div>`
 ```
+
+:::: {.fragment}
+::: {.callout-note}
+Don't expect exactly 95/100, and don't expect this count to average to exactly 95% either: the ±1.96 rule is itself an approximation that gets sharper as the sample gets larger. At a class our size it runs a little optimistic — the true long-run rate here is closer to 93–94%. The exact small-sample fix comes in Week 5.
+:::
+::::
 
 ## Task — calculate our CI
 
