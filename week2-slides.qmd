@@ -471,6 +471,23 @@ ojs_define(
 }
 ```
 
+```{ojs}
+// Screen readers walk into an SVG's own children unless told otherwise —
+// Observable Plot gives every mark and axis tick its own generic aria-label
+// ("dot", "x-axis tick", ...), so without this wrapper a screen reader reads
+// through dozens of those instead of one meaningful description. Wrapping in
+// a role="img" container and hiding the SVG itself (aria-hidden) makes the
+// wrapper's one aria-label the whole story. Same helper as wk1/week1.qmd.
+function accessibleChart(node, label) {
+  node.setAttribute("aria-hidden", "true")
+  const wrapper = document.createElement("div")
+  wrapper.setAttribute("role", "img")
+  wrapper.setAttribute("aria-label", label)
+  wrapper.appendChild(node)
+  return wrapper
+}
+```
+
 ## {background-color="#1a1a2e"}
 
 ::: {style="text-align: center; padding-top: 180px;"}
@@ -514,11 +531,12 @@ Week 1 ended with a gap between phone and laptop users in our own data — one d
 {
   const rows = live_device_stats
   return html`<table style="width:85%;margin:14px auto 2px;border-collapse:collapse;font-family:sans-serif;font-size:0.9em;">
+    <caption class="visually-hidden">Mean reaction time, number of trial observations, and number of students for each device group, showing the gap between phone and laptop users that this workshop investigates.</caption>
     <thead><tr style="background:#1a1a2e;color:white;">
-      <th style="padding:7px 16px;text-align:left;">Device</th>
-      <th style="padding:7px 16px;text-align:right;">Mean reaction time (ms)</th>
-      <th style="padding:7px 16px;text-align:right;">Observations (n)</th>
-      <th style="padding:7px 16px;text-align:right;">Students</th>
+      <th scope="col" style="padding:7px 16px;text-align:left;">Device</th>
+      <th scope="col" style="padding:7px 16px;text-align:right;">Mean reaction time (ms)</th>
+      <th scope="col" style="padding:7px 16px;text-align:right;">Observations (n)</th>
+      <th scope="col" style="padding:7px 16px;text-align:right;">Students</th>
     </tr></thead>
     <tbody>
       ${rows.map((r,i) => `<tr style="${i%2===1?'background:rgba(69,123,157,0.08);':''}border-bottom:1px solid #dde3ea;">
@@ -609,9 +627,10 @@ Source: Békés & Kézdi (2021), Ch. 5
   const shown = live_student_means.slice(0, 5)
   if (shown.length < 2) return html`<p style="color:#aaa;">Need at least two students' data — check back once more of the class has submitted.</p>`
   return html`<table style="width:60%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;">
+    <caption class="visually-hidden">The five students' own average reaction times used for the enumerate-the-pairs task — write out every possible pair from these five values and compute each pair's average.</caption>
     <thead><tr style="background:#1a1a2e;color:white;">
-      <th style="padding:10px 20px;text-align:left;">Student</th>
-      <th style="padding:10px 20px;text-align:right;">Mean reaction time (ms)</th>
+      <th scope="col" style="padding:10px 20px;text-align:left;">Student</th>
+      <th scope="col" style="padding:10px 20px;text-align:right;">Mean reaction time (ms)</th>
     </tr></thead>
     <tbody>
       ${shown.map((r,i) => `<tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
@@ -653,7 +672,7 @@ On paper: write out **every possible pair**, and compute each pair's average.
   const xmin = d3.min(pairs, d => d.avg) - pad
   const xmax = d3.max(pairs, d => d.avg) + pad
 
-  return Plot.plot({
+  return accessibleChart(Plot.plot({
     height: 520,
     marginLeft: 55,
     marginBottom: 40,
@@ -667,7 +686,7 @@ On paper: write out **every possible pair**, and compute each pair's average.
       Plot.text([{ x: truth, label: `True mean of all 5 = ${truth.toFixed(1)} ms` }],
                 { x: "x", text: "label", dy: -110, fill: "#e63946", fontSize: 12 }),
     ]
-  })
+  }), `This chart shows that averaging different pairs of students gives different answers, even though every pair comes from the same five-student population — that spread is the sampling distribution in miniature. It plots all ${pairs.length} pair-average reaction times as dots along a single axis, with a dashed line marking the true mean of all five students at ${truth.toFixed(1)} ms.`)
 }
 ```
 :::
@@ -705,7 +724,7 @@ Ten possible pairs, ten different averages — some closer to the true mean of a
        Math.exp(-0.5 * ((x - mu) / sigma) ** 2)
   }))
 
-  return Plot.plot({
+  return accessibleChart(Plot.plot({
     height: 560,
     marginLeft: 55,
     marginBottom: 36,
@@ -727,7 +746,7 @@ Ten possible pairs, ten different averages — some closer to the true mean of a
         { x: mu + sigma, label: `μ + σ`                    },
       ], { x: "x", text: "label", dy: -14, fill: "#e63946", fontSize: 11 }),
     ]
-  })
+  }), `This chart shows the shape of the distribution we're assuming as our data-generating process — a histogram of all ${vals.length} students' average reaction times, with a Normal curve fitted to it. The mean μ is ${mu.toFixed(1)} ms and the standard deviation σ is ${sigma.toFixed(1)} ms.`)
 }
 ```
 :::
@@ -769,6 +788,7 @@ html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;font-family
   <div style="background:#f8f8fa;border-radius:10px;padding:22px 26px;border-left:5px solid #e63946;">
     <p style="font-weight:700;font-size:1em;margin-bottom:14px;color:#1a1a2e;">DGP parameters (from Week 1)</p>
     <table style="width:100%;border-collapse:collapse;font-size:0.92em;">
+      <caption class="visually-hidden">The assumed data-generating process's parameters: a Normal distribution with mean μ, standard deviation σ, and sample size n, all taken from the real Week 1 class data.</caption>
       <tr style="border-bottom:1px solid #eee;">
         <td style="padding:8px 0;color:#666;">Distribution</td>
         <td style="padding:8px 0;font-weight:700;text-align:right;">Normal</td>
@@ -834,7 +854,7 @@ html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;font-family
                                    strokeDasharray: "6,4", fy: () => label }),
   ]
 
-  return Plot.plot({
+  return accessibleChart(Plot.plot({
     height: 480,
     marginLeft: 80,
     marginRight: 90,
@@ -847,7 +867,7 @@ html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;font-family
       ...panel(w2, "#2d6a4f", "Simulated sample 2"),
       Plot.ruleX([0]),
     ]
-  })
+  }), `This chart compares our real Week 1 class to one simulated replay of a class the same size, both drawn from the same assumed data-generating process — showing that a fresh sample looks different in its specific numbers but similar in its overall shape. Two stacked histograms of ${w1.length} students each: the Week 1 class has a mean of ${d3.mean(w1).toFixed(1)} ms, and the simulated sample 2 has a mean of ${d3.mean(w2).toFixed(1)} ms.`)
 }
 ```
 :::
@@ -863,6 +883,7 @@ html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;font-family
     return `<div style="background:#f8f8fa;border-radius:8px;padding:12px 18px;border-left:4px solid ${col};">
       <strong style="color:${col};">${label}</strong>
       <table style="width:100%;margin-top:8px;border-collapse:collapse;">
+        <caption class="visually-hidden">Mean, standard deviation, minimum, and maximum for ${label}, for comparing this panel against the other one.</caption>
         <tr><td style="color:#666;padding:3px 0;">Mean</td><td style="font-weight:700;text-align:right;">${d3.mean(vals).toFixed(1)} ms</td></tr>
         <tr><td style="color:#666;padding:3px 0;">SD</td><td style="font-weight:700;text-align:right;">${d3.deviation(vals).toFixed(1)} ms</td></tr>
         <tr><td style="color:#666;padding:3px 0;">Min</td><td style="font-weight:700;text-align:right;">${d3.min(vals).toFixed(0)} ms</td></tr>
@@ -934,7 +955,7 @@ viewof n_shown = {
   const xmax   = Math.ceil( (d3.max(shown) + pad) / 5) * 5
   const bw     = Math.max(5, Math.round((xmax - xmin) / 20))
 
-  return Plot.plot({
+  return accessibleChart(Plot.plot({
     height: 450,
     marginLeft: 60,
     marginBottom: 36,
@@ -952,7 +973,7 @@ viewof n_shown = {
       Plot.text([{ x: mu_pop, label: `True μ` }],
                 { x: "x", text: "label", dy: -14, fill: "#1a1a2e", fontSize: 11 }),
     ]
-  })
+  }), `This chart shows the sampling distribution of the mean building up as more simulated classes are added, clustering tightly around the true population mean rather than spreading out widely. A histogram of ${shown.length} simulated sample means, centred close to the true μ of ${mu_pop} ms, with a mean of means of ${mu_sm.toFixed(1)} ms.`)
 }
 ```
 
@@ -969,7 +990,7 @@ viewof n_shown = {
   const n_pts = Math.min(running_mean.length, 1000)
   const pts   = running_mean.slice(0, n_pts).map((y, i) => ({ x: i + 1, y }))
 
-  return Plot.plot({
+  return accessibleChart(Plot.plot({
     height: 520,
     marginLeft: 70,
     marginBottom: 36,
@@ -983,7 +1004,7 @@ viewof n_shown = {
                 { x: "x", y: "y", text: "label", dy: -12, textAnchor: "start",
                   fill: "#e63946", fontSize: 12, fontWeight: 700 }),
     ]
-  })
+  }), `This chart shows the running average of simulated sample means converging on the true population mean as more samples are included, demonstrating unbiasedness. A line tracking the running mean across ${n_pts} samples, settling toward the true μ of ${mu_pop} ms as the sample count grows.`)
 }
 ```
 :::
@@ -1033,7 +1054,7 @@ An estimator whose expected value equals the true parameter is called **unbiased
     }))
   }
 
-  return Plot.plot({
+  return accessibleChart(Plot.plot({
     height: 480,
     marginLeft: 60,
     marginBottom: 36,
@@ -1050,7 +1071,7 @@ An estimator whose expected value equals the true parameter is called **unbiased
           stroke: "#e63946", strokeWidth: 2 }),
       Plot.ruleX([d3.mean(vals)], { fx: () => label, stroke: "#1a1a2e", strokeWidth: 1.5, strokeDasharray: "3,3" }),
     ])
-  })
+  }), "This chart shows three histograms of bootstrapped sample means side by side, for sample sizes 5, 15, and 30, each with a fitted Normal curve — demonstrating that the sampling distribution looks more Normal and less ragged as the sample size grows, even though our real students' own reaction times are skewed and bimodal, not Normal at all.")
 }
 ```
 :::
@@ -1105,7 +1126,7 @@ Source: Békés & Kézdi (2021), Ch. 5
   const colour = "#457b9d"
   const xmax   = d3.max(se_data, d => d.n) * 1.05
 
-  return Plot.plot({
+  return accessibleChart(Plot.plot({
     height: 520,
     marginLeft: 65,
     marginBottom: 40,
@@ -1125,7 +1146,7 @@ Source: Békés & Kézdi (2021), Ch. 5
       Plot.text([{ n: 105, se: sd_pop / Math.sqrt(100) + 3, label: "σ / √n" }],
                 { x: "n", y: "se", text: "label", fill: "#e63946", fontSize: 12 }),
     ]
-  })
+  }), `This chart shows the standard error shrinking as sample size grows, closely tracking the theoretical σ/√n curve. Observed standard errors at ${se_data.length} different sample sizes, from ${se_data[0].n} to ${se_data[se_data.length - 1].n}, plotted as dots against the smooth theoretical curve.`)
 }
 ```
 :::
@@ -1333,7 +1354,7 @@ viewof boot_controls = {
   const xmin = d3.min(means) - pad
   const xmax = d3.max(means) + pad
 
-  return Plot.plot({
+  return accessibleChart(Plot.plot({
     height: 450,
     marginLeft: 55,
     marginBottom: 36,
@@ -1347,7 +1368,7 @@ viewof boot_controls = {
       Plot.text([{ x: xmax, y: 0, label: `bootstrap mean = ${mu.toFixed(1)} · bootstrap SE = ${se.toFixed(1)}` }],
                 { x: "x", text: "label", frameAnchor: "top-right", dy: 10, fill: "#333", fontSize: 12 }),
     ]
-  })
+  }), `This chart shows the bootstrap resampling distribution built without ever assuming a data-generating process, approximating the same sampling distribution the formula and simulation both predict. At the current settings — sample size ${n}, ${B} resamples — the bootstrap mean is ${mu.toFixed(1)} ms and the bootstrap standard error is ${se.toFixed(1)} ms.`)
 }
 ```
 
@@ -1395,7 +1416,7 @@ Does that 95% promise actually hold? Let's check: simulate 100 samples from the 
   const covers  = data95.filter(d => d.covers).length
   const colours = { true: "#2a6f97", false: "#e07a3f" }
 
-  return Plot.plot({
+  return accessibleChart(Plot.plot({
     height: 260,
     marginLeft: 40,
     marginRight: 10,
@@ -1423,7 +1444,7 @@ Does that 95% promise actually hold? Let's check: simulate 100 samples from the 
                 { x: "x", y: "y", text: "label", dy: 0, fill: "#1a1a2e",
                   fontSize: 11, textAnchor: "middle" }),
     ]
-  })
+  }), `This chart shows 100 confidence intervals built from 100 simulated samples, most of which contain the true population mean and a few of which miss it, illustrating what "95% confidence" actually means in the long run. ${covers} of the 100 intervals contain the true μ of ${mu_pop} ms, shown in blue, and ${100 - covers} miss it, shown in orange.`)
 }
 ```
 
@@ -1592,11 +1613,12 @@ Note: **n** here counts *trials*, not students — different from the *n* = ${n_
     return html`<div class="instructions-box">Need data from both device groups to compute this live — check back once the whole class has submitted. The formulas above still apply once the numbers are in.</div>`
   }
   return html`<table style="width:75%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;">
+    <caption class="visually-hidden">Mean, standard deviation, and trial count for each device group, used to calculate the t-statistic for the device difference by hand.</caption>
     <thead><tr style="background:#1a1a2e;color:white;">
-      <th style="padding:10px 20px;text-align:left;">Device</th>
-      <th style="padding:10px 20px;text-align:right;">Mean (ms)</th>
-      <th style="padding:10px 20px;text-align:right;">SD (ms)</th>
-      <th style="padding:10px 20px;text-align:right;">n</th>
+      <th scope="col" style="padding:10px 20px;text-align:left;">Device</th>
+      <th scope="col" style="padding:10px 20px;text-align:right;">Mean (ms)</th>
+      <th scope="col" style="padding:10px 20px;text-align:right;">SD (ms)</th>
+      <th scope="col" style="padding:10px 20px;text-align:right;">n</th>
     </tr></thead>
     <tbody>
       ${rows.map((r,i) => `<tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
@@ -1660,7 +1682,7 @@ A commonly used critical value for a t-statistic is **±2** (more precisely 1.96
   const tail1L = grid.filter(d => d.x <= -2.576)
   const tail1R = grid.filter(d => d.x >=  2.576)
 
-  return Plot.plot({
+  return accessibleChart(Plot.plot({
     height: 420,
     marginLeft: 20,
     marginBottom: 40,
@@ -1684,7 +1706,7 @@ A commonly used critical value for a t-statistic is **±2** (more precisely 1.96
       Plot.text([{ x: 3.15, y: 0.025, label: "2.5%" }, { x: -3.15, y: 0.025, label: "2.5%" }],
                 { x: "x", y: "y", text: "label", fill: "#e07a3f", fontSize: 10 }),
     ]
-  })
+  }), "This chart shows a Normal curve with both the 5% and 1% rejection regions shaded in the tails, illustrating why ±1.96 (or ±2 as a rule of thumb) is the usual cutoff for a 5% false-positive rate, and ±2.576 for a stricter 1%. The shaded area beyond ±1.96 makes up 5% of the distribution; the darker area beyond ±2.576 makes up 1%.")
 }
 ```
 :::

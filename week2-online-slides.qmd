@@ -70,6 +70,23 @@ execute:
 }
 ```
 
+```{ojs}
+// Screen readers walk into an SVG's own children unless told otherwise —
+// Observable Plot gives every mark and axis tick its own generic aria-label
+// ("dot", "x-axis tick", ...), so without this wrapper a screen reader reads
+// through dozens of those instead of one meaningful description. Wrapping in
+// a role="img" container and hiding the SVG itself (aria-hidden) makes the
+// wrapper's one aria-label the whole story. Same helper as wk1/week1.qmd.
+function accessibleChart(node, label) {
+  node.setAttribute("aria-hidden", "true")
+  const wrapper = document.createElement("div")
+  wrapper.setAttribute("role", "img")
+  wrapper.setAttribute("aria-label", label)
+  wrapper.appendChild(node)
+  return wrapper
+}
+```
+
 ## {background-color="#1a1a2e"}
 
 ::: {style="text-align: center; padding-top: 180px;"}
@@ -198,7 +215,7 @@ viewof effect_size = {
   const size  = 2 * (1 - normCdf(crit))                             // both tails, under H0
   const power = (1 - normCdf(crit - mu1)) + normCdf(-crit - mu1)     // both tails, under H1
 
-  return Plot.plot({
+  return accessibleChart(Plot.plot({
     height: 460,
     marginLeft: 50,
     marginBottom: 34,
@@ -219,7 +236,7 @@ viewof effect_size = {
       Plot.text([{ x: -5, y: pdf(0,0)*0.94, label: `Power ≈ ${(power*100).toFixed(0)}%` }],
                 { x: "x", y: "y", text: "label", textAnchor: "start", fill: "#2d6a4f", fontSize: 13, fontWeight: 700 }),
     ]
-  })
+  }), `This chart shows two overlapping sampling distributions — one under the null hypothesis, one under the alternative — with the rejection region shaded to show how size and power relate to each other as the true effect size changes. At the current effect size of ${effect_size}, the test's size is ${(size*100).toFixed(1)}% and its power is ${(power*100).toFixed(0)}%.`)
 }
 ```
 :::
