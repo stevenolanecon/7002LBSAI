@@ -22,20 +22,32 @@ execute:
 ```{python}
 import pandas as pd
 
-# Live Google Sheet — the real, in-progress class data.
-live_df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIOZ03GpUJgqvGVmI9cih169mMq0ajLMj6a0VTd2tytB3K5BmX5AUiKQ8FKIL6KUKEcgb-1LR-1eM/pub?gid=0&single=true&output=csv")
+# Week 1's data collection is done and cleaned -- reads the same stable
+# week1_reaction_times_final.csv the main Week 2 deck uses now, not a live
+# in-progress Google Sheet (that made sense while Week 1 was still
+# collecting submissions; it no longer is).
+live_df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week1_reaction_times_final.csv")
 
 if 'name' in live_df.columns and 'student_name' not in live_df.columns:
     live_df = live_df.rename(columns={'name': 'student_name'})
 
-live_df_clean = live_df.astype(object).where(live_df.notna(), None)
+live_student_means = (
+    live_df.groupby("student_name")["reaction_time_ms"].mean().round(1)
+    .reset_index()
+    .rename(columns={"reaction_time_ms": "mean_rt"})
+    .to_dict(orient="records")
+)
+n_sample = len(live_student_means)
+mu_pop   = round(float(pd.DataFrame(live_student_means)["mean_rt"].mean()), 1)
 
 ojs_define(
-    live_data      = live_df_clean.to_dict(orient="records"),
-    live_pool_mean = round(float(live_df["reaction_time_ms"].mean()), 2),
-    live_pool_n    = int(len(live_df)),
+    live_student_means = live_student_means,
+    n_sample            = n_sample,
+    mu_pop              = mu_pop,
 )
 ```
+
+Resampling our 24 student averages — the same sampling unit as the workshop deck — with replacement, not the raw individual trials, since trials from the same student aren't independent of each other.
 
 ```{ojs}
 viewof boot_controls = {
@@ -44,10 +56,10 @@ viewof boot_controls = {
                               padding:6px 2px;color:#333;">
     <label style="display:flex;align-items:center;gap:8px;">
       <span style="color:#666;white-space:nowrap;">Sample size (n)</span>
-      <input type="range" name="n" min="5" max="${Math.max(5, live_pool_n)}" step="5"
-             value="${Math.max(5, live_pool_n)}"
+      <input type="range" name="n" min="5" max="${Math.max(5, n_sample)}" step="1"
+             value="${Math.max(5, n_sample)}"
              style="width:110px;cursor:pointer;accent-color:#457b9d;">
-      <span id="n-label" style="font-weight:600;min-width:34px;color:#457b9d;">${Math.max(5, live_pool_n)}</span>
+      <span id="n-label" style="font-weight:600;min-width:34px;color:#457b9d;">${Math.max(5, n_sample)}</span>
     </label>
     <label style="display:flex;align-items:center;gap:8px;">
       <span style="color:#2d6a4f;white-space:nowrap;">Resamples (B)</span>
@@ -69,8 +81,8 @@ viewof boot_controls = {
 
 ```{ojs}
 {
-  const vals = live_data.map(d => d.reaction_time_ms)
-  if (vals.length < 2) return html`<p style="color:#aaa;">Not enough data yet — check back once more of the class has submitted.</p>`
+  const vals = live_student_means.map(d => d.mean_rt)
+  if (vals.length < 2) return html`<p style="color:#aaa;">Not enough data yet.</p>`
   const n = Math.min(boot_controls.n, vals.length)
   const B = boot_controls.B
   const means = []
@@ -94,8 +106,8 @@ viewof boot_controls = {
     marks: [
       Plot.rectY(means, Plot.binX({ y: "count" }, { x: d => d, thresholds: 30, fill: "#457b9d", fillOpacity: 0.75 })),
       Plot.ruleX([0]),
-      Plot.ruleX([live_pool_mean], { stroke: "#e63946", strokeWidth: 2.5, strokeDasharray: "6,4",
-                                      tip: true, title: () => `Original sample mean: ${live_pool_mean} ms` }),
+      Plot.ruleX([mu_pop], { stroke: "#e63946", strokeWidth: 2.5, strokeDasharray: "6,4",
+                                      tip: true, title: () => `Original sample mean: ${mu_pop} ms` }),
       Plot.text([{ x: xmax, y: 0, label: `bootstrap mean = ${mu.toFixed(1)} · bootstrap SE = ${se.toFixed(1)}` }],
                 { x: "x", text: "label", frameAnchor: "top-right", dy: 10, fill: "#333", fontSize: 12 }),
     ]
