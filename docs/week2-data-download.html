@@ -146,19 +146,35 @@ ul.task-list li input[type="checkbox"] {
 <div class="site-hero">
   <div class="hero-inner">
     <p class="kicker">7002LBSAI — Week 2</p>
-    <h1>Download the sampling-distribution data</h1>
-    <p>The file behind the sampling-distribution task</p>
+    <h1>Download the Week 2 data</h1>
+    <p>The classroom data these slides use, and the file behind the sampling-distribution task</p>
   </div>
 </div>
 <div class="page-intro">
+<h3 style="margin-top:0;" class="anchored">
+week1_reaction_times_final.csv
+</h3>
 <p>
-This is the file used in Week 2’s own sampling-distribution task — 1,000 simulated replays of a class like ours, built from the real, cleaned Week 1 reaction-time data. Want the classroom data itself, not the simulation? Download <a href="week1-data-download.html" style="color:#457b9d;">the cleaned Week 1 data</a>.
+The <strong>cleaned</strong> Week 1 classroom data these slides are built on — the raw submissions with the recommended treatment from the <a href="week1-outliers-addendum.html" style="color:#457b9d;">Week 1 outliers addendum</a> applied: one wildly extreme trial dropped (a measurement error), the flagged-but-real trials at positions 3–10 dropped with a note (distraction, not the ability being measured), the flagged trials at positions 1–2 kept (a genuine warm-up effect). Want the unfiltered raw submissions instead? Download those from the <a href="week1-data-download.html" style="color:#457b9d;">Week 1 data page</a>.
+</p>
+<p>
+<button class="data-download-btn" data-url="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week1_reaction_times_final.csv" data-filename="week1_reaction_times_final.csv" style="background:#1f7a79;color:#fff;border:none;border-radius:8px;padding:12px 24px;font-size:1em;cursor:pointer;font-family:inherit;">
+Download week1_reaction_times_final.csv
+</button>
+</p>
+<p class="download-status" style="color:#888;font-size:0.9em;">
+</p>
+<p class="canvas-note">
+If the button doesn’t work, right-click and choose “Save Link As…”: <a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week1_reaction_times_final.csv">week1_reaction_times_final.csv</a>
 </p>
 </div>
 <div class="page-intro">
 <h3 style="margin-top:0;" class="anchored">
 sample_student_means.csv
 </h3>
+<p>
+This is the file used in Week 2’s own sampling-distribution task — 1,000 simulated replays of a class like ours, built from the real, cleaned Week 1 reaction-time data above.
+</p>
 <p>
 One row per (sample, student), already averaged across that student’s 10 trials. The task asks you to average each sample’s student means down to one number, for 1, 10, 100, then all 1,000 samples.
 </p>
