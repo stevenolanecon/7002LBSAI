@@ -1,6 +1,7 @@
 ---
 title: "Functional Form: Why We Log"
 subtitle: "7002LBSAI Research Methods in Analytics — Week 3 Online Session"
+search: false
 format:
   revealjs:
     theme: simple

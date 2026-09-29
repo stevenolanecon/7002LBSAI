@@ -1,6 +1,7 @@
 ---
 title: "Multiple Regression, Worked Through"
 subtitle: "7002LBSAI Research Methods in Analytics — Week 6 Online Session"
+search: false
 format:
   revealjs:
     theme: simple

@@ -1,6 +1,7 @@
 ---
 title: "Model Problems & Inference"
 subtitle: "7002LBSAI Research Methods in Analytics — Week 5"
+search: false
 format:
   revealjs:
     theme: simple

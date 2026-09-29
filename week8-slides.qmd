@@ -1,6 +1,7 @@
 ---
 title: "GLMs — Binary Outcomes"
 subtitle: "7002LBSAI Research Methods in Analytics — Week 8"
+search: false
 format:
   revealjs:
     theme: simple

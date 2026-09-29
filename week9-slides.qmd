@@ -1,6 +1,7 @@
 ---
 title: "Causal Analysis and Experiments"
 subtitle: "7002LBSAI Research Methods in Analytics — Week 9"
+search: false
 format:
   revealjs:
     theme: simple

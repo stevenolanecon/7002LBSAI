@@ -1,6 +1,7 @@
 ---
 title: "Time Series Regression"
 subtitle: "7002LBSAI Research Methods in Analytics — Week 11"
+search: false
 format:
   revealjs:
     theme: simple

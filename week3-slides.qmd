@@ -1,6 +1,7 @@
 ---
 title: "When y Met x: Correlation and Covariance"
 subtitle: "7002LBSAI Research Methods in Analytics — Week 3"
+search: false
 format:
   revealjs:
     theme: simple
