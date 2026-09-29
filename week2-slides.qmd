@@ -418,14 +418,30 @@ ojs_define(
   // handles show/hide, once, for every wrapper on the page, so adding a new
   // chart to this pattern never means touching this cell.
   const wrapperFor = (fragId) => document.querySelector(`.shrink-on-reveal[data-frag="${fragId}"]`)
+  const syncAll = () => {
+    document.querySelectorAll('.fragment[id]').forEach(frag =>
+      wrapperFor(frag.id)?.classList.toggle('is-small', frag.classList.contains('visible'))
+    )
+  }
 
   // Sets each wrapper's correct starting state immediately, including on a
-  // reload or direct navigation to a slide whose fragment is already shown
-  // — matters because this cell (no reactive deps) only runs once, at load.
-  document.querySelectorAll('.shrink-on-reveal[data-frag]').forEach(el => {
-    const frag = document.getElementById(el.dataset.frag)
-    el.classList.toggle('is-small', !!frag?.classList.contains('visible'))
-  })
+  // reload or direct navigation to a slide whose fragment is already shown.
+  syncAll()
+
+  // A PDF export (decktape/reveal.js print-pdf mode) needs every fragment
+  // visible everywhere, which it achieves by substantially rebuilding the
+  // slide DOM into one long linear stack rather than mutating each existing
+  // fragment element's class in place -- confirmed via a real PDF export:
+  // fragments ended up correctly `.visible` on inspection, but a
+  // MutationObserver watching those *original* fragment nodes never fired
+  // (the nodes it was watching had already been replaced), so wrappers
+  // stayed at their large size while the now-visible text also showed,
+  // overflowing the page. Watching the whole document for any DOM change
+  // (not just class changes on nodes that existed at load time) and
+  // re-syncing everything on any change is more expensive but catches this
+  // regardless of how reveal.js's print mode actually rebuilds the page.
+  const observer = new MutationObserver(syncAll)
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] })
 
   Reveal.on('fragmentshown', (event) => {
     wrapperFor(event.fragment.id)?.classList.add('is-small')
