@@ -675,7 +675,12 @@ Ten possible pairs, ten different averages — some closer to the true mean of a
   const pad   = Math.max(10, Math.round((d3.max(vals) - d3.min(vals)) * 0.12))
   const xmin  = Math.floor((d3.min(vals) - pad) / 10) * 10
   const xmax  = Math.ceil( (d3.max(vals) + pad) / 10) * 10
-  const bw    = 15
+  // Bin width scales with the actual spread of the data rather than a fixed
+  // ms value -- a width tuned for the old synthetic placeholder data (a
+  // narrow spread) renders every bar sub-pixel-thin once the real class
+  // data (spread over ~3000ms) is loaded instead. Targeting ~15 bins for
+  // this chart's 24 data points keeps individual bars wide enough to read.
+  const bw    = Math.max(20, Math.round((xmax - xmin) / 15 / 10) * 10)
 
   // Fitted normal curve
   const curve = d3.range(xmin, xmax, 2).map(x => ({
@@ -799,7 +804,10 @@ html`<div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;font-family
   const pad  = Math.max(10, Math.round((d3.max(both) - d3.min(both)) * 0.12))
   const xmin = Math.floor((d3.min(both) - pad) / 10) * 10
   const xmax = Math.ceil( (d3.max(both) + pad) / 10) * 10
-  const bw   = 15
+  // Same dynamic bin-width fix as "What we measured in Week 1" -- a fixed
+  // 15ms width (tuned for the old, narrow-spread synthetic data) renders
+  // every bar sub-pixel-thin against the real class data's ~3000ms+ spread.
+  const bw   = Math.max(20, Math.round((xmax - xmin) / 15 / 10) * 10)
 
   const panel = (vals, colour, label) => [
     Plot.rectY(vals.map(v => ({x: v})),
@@ -934,7 +942,7 @@ viewof n_shown = {
 
 ---
 
-## 1. Unbiasedness
+## Unbiasedness
 
 **The mean of the sampling distribution equals the true population mean.**
 
@@ -972,7 +980,7 @@ An estimator whose expected value equals the true parameter is called **unbiased
 
 ---
 
-## 2. Asymptotic normality
+## Asymptotic normality
 
 **The sampling distribution of the mean approaches normal as sample size grows — regardless of the shape of the population.**
 
@@ -1054,11 +1062,12 @@ In reality, we have **one dataset**: the reaction-time data collected last week.
 
 ## The standard error formula
 
-Based on everything we've just seen — what do you think the formula for the standard error looks like?
+The standard error can be calculated using a simple formula. 
 
-:::: {.fragment}
+
 $$SE(\bar{x}) = \frac{1}{\sqrt{n}} \, SD[x]$$
 
+:::: {.fragment}
 - Larger when the data is more spread out (`SD[x]` larger)
 - Smaller when the sample is bigger (`n` larger)
 
@@ -1069,7 +1078,7 @@ Source: Békés & Kézdi (2021), Ch. 5
 
 ---
 
-## 3. Root-*n* convergence
+## Root-*n* convergence
 
 **The standard error shrinks as sample size grows — proportionally to √n.**
 
@@ -1419,7 +1428,7 @@ Don't expect exactly 95/100, and don't expect this count to average to exactly 9
 ## Task — calculate our CI
 
 ::: {.instructions-box}
-Using our own Week 1 data (not a number we hand you): collapse the raw trials down to one **average reaction time per student**, as we did on "What we measured in Week 1," then find the **mean**, **SD**, and **n** of those student averages, and use them to calculate **SE(x̄)** and the **95% CI** for mean reaction time. By hand, in Excel, or in Python.
+Using our own Week 1 data: collapse the raw trials down to one **average reaction time per student**, as we did on "What we measured in Week 1," then find the **mean**, **SD**, and **n** of those student averages, and use them to calculate **SE(x̄)** and the **95% CI** for mean reaction time. By hand or in Excel.
 :::
 
 ::: {.fragment}
@@ -1455,7 +1464,7 @@ html`<p style="font-family:sans-serif;">You should have found: mean = <strong st
 
 ::: {.instructions-box}
 1. **n** starts at our real class sample size, but with only 10 resamples — read off the bootstrap SE.
-2. Drag **B** (resamples) up towards 2,000. Does the bootstrap SE settle down, or keep jumping around at just 10?
+2. Drag **B** (resamples) up towards 2,000. Does the bootstrap SE settle down, or keep jumping around?
 3. Once it's settled, compare it to the formula SE you calculated on the previous slide. Close?
 4. Now drag **n** down to a small value. What happens to the spread of the histogram? Which property of the sampling distribution does that demonstrate?
 :::
@@ -1558,6 +1567,8 @@ Source: Békés & Kézdi (2021), Ch. 6
 
 ## Our device data
 
+Note: **n** here counts *trials*, not students — different from the *n* = ${n_sample} we've used everywhere else today.
+
 ```{ojs}
 {
   const rows = live_device_stats.filter(d => d.n >= 2)
@@ -1584,7 +1595,7 @@ Source: Békés & Kézdi (2021), Ch. 6
 ```
 
 ::: {.fragment}
-**A real limitation, worth naming honestly:** these n's count *trials*, not independent students — each of our ${n_sample} students contributes several correlated trials, not separate independent observations. Treating them as independent understates the SE and can make a difference look more significant than it is. Averaging each student down to one number first would fix that, but with only a handful of students per device group, we'd be relying on the CLT to rescue normality with far fewer than the "dozens of trials" that made it a safe bet earlier — there's no clean fix within what we've covered so far, and that trade-off is the actual lesson here.
+**A simplifying assumption:** to keep this calculation straightforward, we're treating every trial as its own independent observation. In reality, each of our ${n_sample} students contributed several trials, so trials from the same student aren't truly independent of each other — a simplification we're making on purpose, not something that holds in the real world.
 :::
 
 ## Task — calculate the t-statistic
@@ -1686,18 +1697,43 @@ Source: Békés & Kézdi (2021), Ch. 6
 
 The p-value is the smallest level of significance at which we could still reject $H_0$ — the probability of seeing a test statistic this extreme, or more extreme, if $H_0$ were true.
 
-```{ojs}
-html`<div style="font-family: monospace; font-size: 0.78em; background: #f8f8f8; border-left: 4px solid #457b9d; padding: 14px 20px; border-radius: 4px; line-height: 1.9; width: 60%; margin: 12px auto;">
-coef &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-38.200<br>
-std_err &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;14.900<br>
-t &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-2.564<br>
-p&gt;|t| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.011<br>
-[0.025 &nbsp;0.975] &nbsp;&nbsp;-67.4 &nbsp;-9.0
-</div>`
+Python gets there in one line, using the same unpooled-variance formula we just did by hand:
+
+```python
+from scipy.stats import ttest_ind
+
+laptop = df.loc[df['device'] == 'Laptop', 'reaction_time_ms']
+phone  = df.loc[df['device'] == 'Phone',  'reaction_time_ms']
+
+t_stat, p_value = ttest_ind(laptop, phone, equal_var=False)
+print("t:", round(t_stat, 3))
+print("p-value:", round(p_value, 4))
+```
+
+```{python}
+#| output: asis
+from scipy.stats import ttest_ind
+
+_laptop = live_df.loc[live_df['device'] == 'Laptop', 'reaction_time_ms']
+_phone  = live_df.loc[live_df['device'] == 'Phone',  'reaction_time_ms']
+_t_stat, _p_value = ttest_ind(_laptop, _phone, equal_var=False)
+_pv_lines = (
+    f"t:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{_t_stat:.3f}<br>"
+    f"p-value:&nbsp;{_p_value:.4f}"
+)
+print(
+    '::: {style="font-family: monospace; font-size: 0.85em; background: #f8f8f8; '
+    'border-left: 4px solid #457b9d; padding: 14px 20px; border-radius: 4px; line-height: 1.9;"}\n'
+    f'{_pv_lines}\n:::'
+)
+
+ojs_define(device_p_value=round(float(_p_value), 4))
 ```
 
 ::: {.fragment}
-A p-value of 0.011 means: if there truly were no device effect, we'd see a gap this large (or larger) only 1.1% of the time by chance. Small p → strong evidence against $H_0$.
+```{ojs}
+html`<p>Same t we calculated by hand two slides ago (allowing for rounding). What this p-value means: if there truly were no device effect, we'd see a gap this large (or larger) by chance with probability ${device_p_value}. Small p &rarr; strong evidence against H&#8320; — is ours actually small?</p>`
+```
 :::
 
 ## Task — reject, or not?
