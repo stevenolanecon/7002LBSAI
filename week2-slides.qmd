@@ -64,6 +64,10 @@ live_device_stats = (
     .agg(mean="mean", sd="std", n="count")
     .reset_index()
     .round(2)
+    .merge(
+        live_df.groupby("device")["student_name"].nunique().rename("n_students"),
+        on="device"
+    )
     .to_dict(orient="records")
 )
 
@@ -487,17 +491,19 @@ Week 1 ended with a gap between phone and laptop users in our own data — one d
 ```{ojs}
 {
   const rows = live_device_stats
-  return html`<table style="width:75%;margin:14px auto 2px;border-collapse:collapse;font-family:sans-serif;font-size:0.9em;">
+  return html`<table style="width:85%;margin:14px auto 2px;border-collapse:collapse;font-family:sans-serif;font-size:0.9em;">
     <thead><tr style="background:#1a1a2e;color:white;">
       <th style="padding:7px 16px;text-align:left;">Device</th>
       <th style="padding:7px 16px;text-align:right;">Mean reaction time (ms)</th>
-      <th style="padding:7px 16px;text-align:right;">n</th>
+      <th style="padding:7px 16px;text-align:right;">Observations (n)</th>
+      <th style="padding:7px 16px;text-align:right;">Students</th>
     </tr></thead>
     <tbody>
       ${rows.map((r,i) => `<tr style="${i%2===1?'background:rgba(69,123,157,0.08);':''}border-bottom:1px solid #dde3ea;">
         <td style="padding:6px 16px;">${r.device}</td>
         <td style="padding:6px 16px;text-align:right;font-weight:700;color:#457b9d;">${r.mean.toFixed(1)}</td>
         <td style="padding:6px 16px;text-align:right;">${r.n}</td>
+        <td style="padding:6px 16px;text-align:right;">${r.n_students}</td>
       </tr>`).join('')}
     </tbody>
   </table>`
@@ -711,7 +717,7 @@ wk2_recap_sigma = d3.deviation(live_student_means.map(d => d.mean_rt))
 ```
 
 ::: {.fragment #wk2-week1recap-frag}
-Here we have the distribution of all students' average reaction time captured last week. So rather than a distribution of the raw observations we average the responses for each of the ${live_pool_n} students and look at that.
+Here we have the distribution of all students' average reaction time captured last week. So rather than a distribution of the raw observations we average the responses for each of the ${n_sample} students and look at that.
 
 The red curve is a the **normal distribution** with mean μ and standard deviation σ fitted to it. μ = ${wk2_recap_mu.toFixed(1)} is the average of the students' average. σ = ${wk2_recap_sigma.toFixed(1)} is the standard deviation.
 
