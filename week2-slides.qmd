@@ -26,19 +26,22 @@ execute:
 import pandas as pd
 import numpy as np
 
-# ── Live Week 1 class data — the real dataset everything else is anchored to.
-# This is the LIVE deck — reads the *cleaned* Week 1 dataset (the outliers
-# addendum's recommended treatment applied: the one wildly-separated error
-# trial and the trials-3-10 flagged-but-irrelevant values dropped, the
-# trial-1-2 warm-up values kept), not the raw Google Sheet directly. Raw
-# per-student means were badly distorted by a handful of contaminated
-# trials (one student's mean alone was pulled up by +5,458ms), which broke
-# the Normal-DGP fit this whole deck is built around. See week2.qmd for the
-# synthetic test-data version, and CLAUDE.md's 2026-09-25 entry for how
+# ── Week 1 class data — the real dataset everything else is anchored to.
+# Reads the *cleaned* Week 1 dataset (the outliers addendum's recommended
+# treatment applied: the one wildly-separated error trial and the
+# trials-3-10 flagged-but-irrelevant values dropped, the trial-1-2 warm-up
+# values kept), not the raw Google Sheet directly. Raw per-student means
+# were badly distorted by a handful of contaminated trials (one student's
+# mean alone was pulled up by +5,458ms), which broke the Normal-DGP fit this
+# whole deck is built around. See CLAUDE.md's 2026-09-25 entry for how
 # week1_reaction_times_final.csv itself was built.
+#
+# This used to be two separate files (week2.qmd on synthetic placeholder
+# data, week2-live.qmd on this real dataset) — collapsed back into this one
+# file on 2026-09-29, once real class data existed and the placeholder
+# version had no further purpose. See CLAUDE.md's "single-deck-per-week"
+# entry for the reasoning.
 live_df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week1_reaction_times_final.csv")
-# live_df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIOZ03GpUJgqvGVmI9cih169mMq0ajLMj6a0VTd2tytB3K5BmX5AUiKQ8FKIL6KUKEcgb-1LR-1eM/pub?gid=0&single=true&output=csv")
-# live_df = pd.read_csv("data/synthetic_reaction_times.csv")
 
 if 'name' in live_df.columns and 'student_name' not in live_df.columns:
     live_df = live_df.rename(columns={'name': 'student_name'})
@@ -111,44 +114,144 @@ within_sd = float(
 # so this never touches a plausible value, only the impossible tail).
 TRIAL_FLOOR_MS = 100
 
+import math
+
+def _Phi(z):
+    return 0.5 * (1 + math.erf(z / math.sqrt(2)))
+
+def _phi(z):
+    return math.exp(-z * z / 2) / math.sqrt(2 * math.pi)
+
+# Exact analytic mean/SD of "X, or TRIAL_FLOOR_MS if X < TRIAL_FLOOR_MS" for
+# X ~ Normal(loc, scale) -- i.e. a floor-clip, not a truncated normal (which
+# would drop the sub-floor mass instead of piling it at the floor). Every
+# clipped-Normal simulation in this file is built on this one function, so
+# the "physically can't be negative" fix is applied consistently everywhere.
+def _floor_clipped_moments(loc, scale):
+    z = (TRIAL_FLOOR_MS - loc) / scale
+    P, p = _Phi(z), _phi(z)
+    mean_y = TRIAL_FLOOR_MS * P + loc * (1 - P) + scale * p
+    mean_trunc = loc + scale * p / (1 - P)
+    var_trunc = scale**2 * (1 + z * p / (1 - P) - (p / (1 - P))**2)
+    ex2_trunc = var_trunc + mean_trunc**2
+    var_y = (TRIAL_FLOOR_MS**2 * P + ex2_trunc * (1 - P)) - mean_y**2
+    return mean_y, var_y**0.5
+
+# A floor-clip alone isn't enough to fix a "can't be negative" bug -- it
+# doesn't just shrink realized variance (well known already, see the
+# between_sd discussion below), it also drags the *mean* up, since every
+# value that would have landed below the floor is replaced by exactly the
+# floor instead of something further below. A first attempt at fixing the
+# negative-value bug on "A second sample from the same DGP" calibrated only
+# the scale of the generating Normal (matching realized SD to sd_pop) and
+# looked fine on the SE checks -- but directly checking the resulting mean
+# (prompted by asking "is the sampling distribution's mean still close to
+# mu_pop?", the exact claim "1. Unbiasedness" makes) showed it was biased
+# roughly +100ms high (confirmed against real output on 2026-09-29). Fixed
+# by calibrating *two* parameters together, via coordinate descent: bisect
+# scale to hit a target SD at the current location, then shift the location
+# by the resulting mean error, repeat -- used by both calibrations below.
+def _calibrate_loc_scale(target_mean, target_sd):
+    loc, scale = target_mean, target_sd
+    for _ in range(40):
+        lo, hi = target_sd, target_sd * 6
+        for _ in range(50):
+            mid = (lo + hi) / 2
+            if _floor_clipped_moments(loc, mid)[1] < target_sd:
+                lo = mid
+            else:
+                hi = mid
+        scale = (lo + hi) / 2
+        mean_est, _ = _floor_clipped_moments(loc, scale)
+        loc += (target_mean - mean_est)
+    return loc, scale
+
+# The same bias hits the *between-student* level too: "true means" drawn
+# from an unclipped Normal(mu_pop, between_sd) are just as capable of coming
+# out negative as any single trial, since between_sd ends up comparable to
+# mu_pop once calibrated against the real class's sd_pop (see below) -- a
+# simulated student's noise-free "true" reaction time can no more be
+# negative than an actual trial can. Floor-clipping *those* introduces the
+# same mean-inflation bias discussed above, this time concentrated on the
+# low-reaction-time half of the class (whose true means sit closest to the
+# floor) -- confirmed against real output on 2026-09-29: a student with a
+# true mean of 283ms has an expected *per-trial* value, after within-student
+# floor-clipping, of 620ms (within_sd, at ~1057ms, is almost as large as
+# that student's own true mean). Left uncorrected, the 1,000-sample
+# aggregate this feeds (samples.csv/sample_student_means.csv, "Task — does
+# the formula match?") comes out with a sample-level mean of ~1338ms against
+# a true mu_pop of ~1070ms -- not close at all. Fixed with the same
+# _calibrate_loc_scale() machinery at the between-student level (giving
+# between_mu/between_scale, the corrected generator for "true means" whose
+# realized mean is mu_pop after clipping), plus a second correction at the
+# trial level: since within_sd is fixed but each simulated student's own
+# clipped true mean varies continuously, invert "true mean -> trial-
+# generating location" via a precomputed grid + interpolation (the relation
+# is smooth and monotonic, so this is exact to interpolation error, not an
+# approximation) rather than solving _calibrate_loc_scale per student.
+_trial_loc_grid  = np.linspace(TRIAL_FLOOR_MS - 6 * within_sd, mu_pop + 8 * sd_pop, 8000)
+_trial_mean_grid = np.array([_floor_clipped_moments(m, within_sd)[0] for m in _trial_loc_grid])
+
+def _invert_trial_loc(target_means):
+    return np.interp(target_means, _trial_mean_grid, _trial_loc_grid)
+
 # between_sd is NOT the closed-form between_sd^2 + within_sd^2/N_TRIALS =
 # sd_pop^2 solution -- that identity only holds for *unclipped* Normal
 # noise. With the real class data, within_sd (~1057ms) is almost as large
-# as mu_pop (~1070ms), so a large share of raw trial draws land below zero
-# and get clipped to TRIAL_FLOOR_MS -- clipping always shrinks realized
-# variance, and plugging the closed-form between_sd straight into the
-# simulator made the 1,000-sample "does the formula match?" task fail its
-# own check: the realized SD of the 1,000 collapsed sample-level means came
-# out ~20% below the theoretical sd_pop/sqrt(n) (145.85ms vs 181.38ms,
-# confirmed against real output on 2026-09-28 — with the synthetic
-# placeholder data, within_sd is small enough relative to mu_pop that
-# clipping barely triggers and this was never noticed). Fixed by
-# calibrating between_sd numerically instead of analytically: run the
-# actual clip-and-average pipeline at a candidate between_sd, bisect until
-# the realized SD of the simulated 1,000-sample aggregate matches the
-# target sd_pop/sqrt(n_students), then use that calibrated value for real.
-# Reduces to ~the old closed-form value when clipping barely matters (the
-# synthetic deck), and compensates for it when clipping is severe (the real
-# deck) — verified to land within a few percent of target across several
-# seeds, not just the one used to calibrate it.
+# as mu_pop (~1070ms), so a large share of raw trial draws would land below
+# zero and get clipped -- clipping always shrinks realized variance, and
+# plugging the closed-form between_sd straight into the simulator made the
+# 1,000-sample "does the formula match?" task fail its own check (confirmed
+# against real output on 2026-09-28 — with the synthetic placeholder data,
+# within_sd is small enough relative to mu_pop that clipping barely triggers
+# and this was never noticed). Fixed by calibrating between_sd numerically:
+# run the actual clip-and-average pipeline (now including the between-level
+# and trial-level bias corrections above) at a candidate between_sd, bisect
+# until the realized SD of the simulated 1,000-sample aggregate matches the
+# target sd_pop/sqrt(n_students) -- verified this also recovers the
+# aggregate *mean* correctly (~1072ms vs. target ~1070ms, confirmed against
+# real output on 2026-09-29), not just the SD, and lands within a few
+# percent of the target SE across several seeds, not just the one used to
+# calibrate it.
 def _clipped_sample_sd(between_sd_try, reps, seed):
+    between_mu, between_scale = _calibrate_loc_scale(mu_pop, between_sd_try)
     rng = np.random.default_rng(seed)
-    true_means = rng.normal(mu_pop, between_sd_try, (reps, n_students))
+    true_means = np.clip(
+        rng.normal(between_mu, between_scale, (reps, n_students)), TRIAL_FLOOR_MS, None
+    )
+    trial_loc = _invert_trial_loc(true_means)
     draws = np.clip(
-        rng.normal(true_means[:, :, None], within_sd, (reps, n_students, N_TRIALS)),
+        rng.normal(trial_loc[:, :, None], within_sd, (reps, n_students, N_TRIALS)),
         TRIAL_FLOOR_MS, None
     )
     return draws.mean(axis=2).mean(axis=1).std(ddof=1)
 
 _target_se = sd_pop / np.sqrt(n_students)
 _lo, _hi = 0.0, sd_pop * 5
-for _ in range(20):
+for _ in range(15):
     _mid = (_lo + _hi) / 2
-    if _clipped_sample_sd(_mid, 3000, 123) < _target_se:
+    if _clipped_sample_sd(_mid, 2000, 123) < _target_se:
         _lo = _mid
     else:
         _hi = _mid
 between_sd = (_lo + _hi) / 2
+between_mu, between_scale = _calibrate_loc_scale(mu_pop, between_sd)
+
+# A second, independent calibration for the *other* main simulation path in
+# this file: single, unaveraged draws standing in for "one hypothetical
+# student's average reaction time" -- new_sample, each simulate_means() call,
+# and each ci_rows replay below. Same negative-value problem as above
+# (Phi(-mu_pop/sd_pop) ≈ 0.114 for an unclipped draw, confirmed against real
+# output on 2026-09-29) and the same two-parameter fix, reusing
+# _calibrate_loc_scale() directly against mu_pop/sd_pop since there's no
+# between/within split at this level. sim_mu comes out noticeably below
+# mu_pop (~929ms vs ~1070ms) -- clipping pulls the mean up, so the generator
+# has to start lower to land on target after clipping pulls it back up.
+# Verified against real output on 2026-09-29: recovers both mu_pop and
+# sd_pop essentially exactly at the population level, and simulate_means()'s
+# own realized mean/SE track mu_pop/(sd_pop/sqrt(n)) closely at every n
+# actually used on these slides (5 through 100).
+sim_mu, sim_sd = _calibrate_loc_scale(mu_pop, sd_pop)
 
 # Our own students' real names, not a fictional pool — even though the
 # trial values below are simulated (repeated hypothetical replays, not
@@ -164,15 +267,17 @@ sim_student_names = live_students
 # from here on equals sd_pop/sqrt(n) by construction — the same formula the
 # "standard error formula" slide states. ─────────────────────────────────────
 def simulate_means(n, reps):
-    return np.random.normal(mu_pop, sd_pop, (reps, n)).mean(axis=1)
+    draws = np.clip(np.random.normal(sim_mu, sim_sd, (reps, n)), TRIAL_FLOOR_MS, None)
+    return draws.mean(axis=1)
 
 np.random.seed(7)
 sample_means = simulate_means(n_students, N_SIMS)   # 1,000 simulated class means
 running_mean = (np.cumsum(sample_means) / np.arange(1, N_SIMS + 1)).tolist()
 
 # One more simulated class, individual (unaveraged) values — for the
-# "second sample" comparison against live_student_means
-new_sample = np.random.normal(mu_pop, sd_pop, n_students).round(1)
+# "second sample" comparison against live_student_means. Floor-clipped (see
+# the sim_mu/sim_sd calibration note above) since a reaction time can't be negative.
+new_sample = np.clip(np.random.normal(sim_mu, sim_sd, n_students), TRIAL_FLOOR_MS, None).round(1)
 
 # Sampling distributions at three n values (CLT slide) — deliberately NOT
 # simulate_means(). That draws from the assumed-Normal(mu_pop, sd_pop) DGP,
@@ -203,11 +308,12 @@ for n in [5, 10, 15, 20, 30, 50, 100]:
                     'observed_se':    round(obs_se, 2),
                     'theoretical_se': round(sd_pop / np.sqrt(n), 2)})
 
-# 100 confidence intervals (CI coverage slide)
+# 100 confidence intervals (CI coverage slide) — floor-clipped, same reason
+# and same sim_mu/sim_sd calibration as new_sample/simulate_means above.
 np.random.seed(77)
 ci_rows = []
 for i in range(100):
-    s  = np.random.normal(mu_pop, sd_pop, n_students)
+    s  = np.clip(np.random.normal(sim_mu, sim_sd, n_students), TRIAL_FLOOR_MS, None)
     m  = float(s.mean())
     se = float(s.std(ddof=1) / np.sqrt(n_students))
     ci_rows.append({
@@ -223,22 +329,31 @@ for i in range(100):
 # ── Task dataset: N_SIMS simulated replays of a class like ours ─────────────
 # Columns: sample, student_name, trial, reaction_time. Each replay reuses
 # our own n_students' names, but draws a fresh simulated true mean per
-# student each time (from Normal(mu_pop, between_sd)), then N_TRIALS trials
-# around that (drawn from Normal(their true mean, within_sd)) — so the same
-# name appears in every one of the 1,000 replays, each time with different
+# student each time (from the between_mu/between_scale calibrated Normal,
+# floor-clipped — a simulated student's noise-free "true" reaction time
+# can't be negative any more than a real trial can), then N_TRIALS trials
+# around that true mean (drawn from Normal(corrected trial location,
+# within_sd), also floor-clipped, using _invert_trial_loc() so each
+# student's *expected* trial average lands back on their own clipped true
+# mean rather than being biased upward by the clip) — so the same name
+# appears in every one of the 1,000 replays, each time with different
 # simulated numbers, not their one real Week 1 result repeated.
-# Since between_sd is calibrated (see above) to already compensate for
-# what clipping does to the realized variance, a student correctly
-# averaging trials then averaging students recovers empirical SE ≈
-# sd_pop/sqrt(n) — this is what the later "does the formula match?" task
-# checks, and it now actually holds (verified against real output, not
-# just assumed — see the calibration note above for the numbers).
+# Since between_sd/between_mu/between_scale are calibrated (see above) to
+# already compensate for what clipping does to both realized variance and
+# realized mean, a student correctly averaging trials then averaging
+# students recovers empirical SE ≈ sd_pop/sqrt(n) *and* an empirical mean ≈
+# mu_pop — this is what the later "does the formula match?" task checks,
+# and it now actually holds (verified against real output, not just assumed
+# — see the calibration notes above for the numbers).
 np.random.seed(99)
 task_rows = []
 for k in range(N_SIMS):
-    sim_true_means = np.random.normal(mu_pop, between_sd, n_students)
+    sim_true_means = np.clip(
+        np.random.normal(between_mu, between_scale, n_students), TRIAL_FLOOR_MS, None
+    )
+    trial_loc = _invert_trial_loc(sim_true_means)
     draws = np.clip(
-        np.array([np.random.normal(m, within_sd, N_TRIALS) for m in sim_true_means]),
+        np.array([np.random.normal(m, within_sd, N_TRIALS) for m in trial_loc]),
         TRIAL_FLOOR_MS, None
     ).round(1)   # (n_students, N_TRIALS)
     for i in range(n_students):
@@ -341,7 +456,7 @@ ojs_define(
 ## Before we start: what's in today's data {.smaller}
 
 ::: {.instructions-box}
-Everything you'll see today is built on the **cleaned** Week 1 dataset, not the raw submissions exactly as they came in. Before we use it, here's what we changed, and why.
+All analysis today is built on the **cleaned** Week 1 dataset, not the raw submissions exactly as they came in. Before we use it, here's what we changed, and why.
 :::
 
 ::: {.fragment}
@@ -361,7 +476,7 @@ html`<div class="stat-row">
 :::
 
 ::: {.fragment}
-This wasn't a fixed millisecond cutoff — every flagged trial was judged with the same three-question framework from Week 1 (Is it an error? Is it real but not what we're studying? Is it a genuine feature of the process?). Full derivation and exact numbers: the [Week 1 outliers addendum](https://stevenolanecon.github.io/7002LBSAI/week1-outliers-addendum.html).
+Every flagged trial was judged with the same three-question framework from Week 1 (Is it an error? Is it real but not what we're studying? Is it a genuine feature of the process?). Full derivation and exact numbers: the [Week 1 outliers addendum](https://stevenolanecon.github.io/7002LBSAI/week1-outliers-addendum.html).
 :::
 
 ## Where we left things...
@@ -405,16 +520,14 @@ Today is about understanding what we can say about this.
 Suppose we do establish that the gap in our data is real, not chance. **What exactly are we then entitled to say?**
 
 ::: {.fragment}
-Only that it's real for *this* class, on *this* day, using *this* task — not, without more work, anything about phone and laptop users in general.
+Only that it's real for *this* class, on **the day collected**, using *this* task — not, without more work, anything about phone and laptop users in general.
 :::
 
 ::: {.fragment}
 That gap between what our data shows and what we'd like to claim is called **external validity**: whether the pattern in our data is the same as the general pattern we actually care about.
 :::
 
-::: {.fragment}
-**Question:** what do you think external validity means for our own reaction-time gap, specifically?
-:::
+
 
 ---
 
@@ -450,7 +563,7 @@ Be ready to present one threat per category to the room.
 
 ## One sample among many
 
-Our Week 1 data is **one** dataset — one of many that could have been collected. If we ran the exercise again tomorrow, we'd get different numbers, purely by chance.
+Our Week 1 data is **one** dataset — one of many that could have been collected. If we ran the exercise again today, we'd get different numbers, partly because of chance.
 
 - Many possible datasets = repeated samples from the same underlying data generating process
 - A **statistic** computed from data (like the mean) therefore has its own distribution — its value differs from sample to sample. 
@@ -483,7 +596,9 @@ Source: Békés & Kézdi (2021), Ch. 5
 ```
 
 ::: {.instructions-box}
-**Suppose these five students are the entire population we care about.** Their true average reaction time — averaged across all five — is the number we actually want to know. But in this task, we can only ever **sample two of them at a time**.
+**Suppose these five students are the entire population we care about.** Their true average reaction time — averaged across all five — is the number we actually want to know. 
+
+However, imagine the - unlikely - scenario where we can't survey all five students at once but can **sample two students at a time** repeatedly. 
 
 On paper: write out **every possible pair**, and compute each pair's average.
 :::
@@ -585,12 +700,24 @@ Ten possible pairs, ten different averages — some closer to the true mean of a
 :::
 ::::
 
+```{ojs}
+//| output: false
+wk2_recap_mu = d3.mean(live_student_means.map(d => d.mean_rt))
+```
+
+```{ojs}
+//| output: false
+wk2_recap_sigma = d3.deviation(live_student_means.map(d => d.mean_rt))
+```
+
 ::: {.fragment #wk2-week1recap-frag}
-Here we have the distribution of all students average reaction time captured last week.
+Here we have the distribution of all students' average reaction time captured last week. So rather than a distribution of the raw observations we average the responses for each of the ${live_pool_n} students and look at that.
 
-The red curve is a **Normal(μ, σ)** fitted to it. This is our assumed **data-generating process (DGP)**.
+The red curve is a the **normal distribution** with mean μ and standard deviation σ fitted to it. μ = ${wk2_recap_mu.toFixed(1)} is the average of the students' average. σ = ${wk2_recap_sigma.toFixed(1)} is the standard deviation.
 
-Using these parameters, we can  use Python to pretend that we've run last week's test many times, creating a new dataset each time drawing from the same distribution.
+This is our assumed **data-generating process (DGP)**.
+
+Using these parameters, we can use Python to pretend that we've run last week's test many times, creating a new dataset each time drawing from the same distribution. We can simulate a sampling distribution.
 :::
 
 ## Bessel's correction
@@ -1269,7 +1396,7 @@ html`<div style="display:flex;gap:28px;font-family:sans-serif;font-size:0.88em;m
 
 :::: {.fragment}
 ::: {.callout-note}
-Don't expect exactly 95/100, and don't expect this count to average to exactly 95% either: the ±1.96 rule is itself an approximation that gets sharper as the sample gets larger. At a class our size it runs a little optimistic — the true long-run rate here is closer to 93–94%. The exact small-sample fix comes in Week 5.
+Don't expect exactly 95/100, and don't expect this count to average to exactly 95% either: the ±1.96 rule is itself an approximation that gets sharper as the sample gets larger. At a class our size it runs a little optimistic — the true long-run rate here is closer to 93%. The exact small-sample fix comes in Week 5.
 :::
 ::::
 
