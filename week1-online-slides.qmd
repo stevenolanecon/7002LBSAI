@@ -25,10 +25,9 @@ execute:
 ```{python}
 import pandas as pd
 
-# Live Google Sheet (switch back to this once the module is running):
-# df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIOZ03GpUJgqvGVmI9cih169mMq0ajLMj6a0VTd2tytB3K5BmX5AUiKQ8FKIL6KUKEcgb-1LR-1eM/pub?gid=0&single=true&output=csv")
-# Synthetic data for building/testing slides before the module runs:
-df = pd.read_csv("data/synthetic_reaction_times.csv")
+# Week 1 has now run — read the real, cleaned class data directly
+# (same file and source Week 2 onward reads; see CLAUDE.md's "week1_reaction_times_final.csv" entry).
+df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week1_reaction_times_final.csv")
 
 ojs_define(
     rt = df["reaction_time_ms"].tolist(),
@@ -78,19 +77,74 @@ Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Pol
 :::
 ::: {.col}
 ```{ojs}
+viewof mu_normal = {
+  const f = html`<div style="display:flex;align-items:center;gap:14px;font-size:13px;
+                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;">
+    <span style="color:#666;white-space:nowrap;">Mean (&mu;)</span>
+    <input type="range" min="-3" max="3" step="0.5" value="0"
+           style="width:160px;cursor:pointer;accent-color:#457b9d;">
+    <span id="mn-label" style="font-weight:700;min-width:28px;color:#457b9d;">0.0</span>
+  </div>`
+  const slider = f.querySelector('input')
+  const label  = f.querySelector('#mn-label')
+  slider.addEventListener('input', () => {
+    label.textContent = (+slider.value).toFixed(1)
+    f.dispatchEvent(new CustomEvent('input'))
+  })
+  Object.defineProperty(f, 'value', { get: () => +slider.value })
+  return f
+}
+```
+
+```{ojs}
+viewof sigma_normal = {
+  const f = html`<div style="display:flex;align-items:center;gap:14px;font-size:13px;
+                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;">
+    <span style="color:#666;white-space:nowrap;">SD (&sigma;)</span>
+    <input type="range" min="0.3" max="2" step="0.1" value="1"
+           style="width:160px;cursor:pointer;accent-color:#457b9d;">
+    <span id="sg-label" style="font-weight:700;min-width:28px;color:#457b9d;">1.0</span>
+  </div>`
+  const slider = f.querySelector('input')
+  const label  = f.querySelector('#sg-label')
+  slider.addEventListener('input', () => {
+    label.textContent = (+slider.value).toFixed(1)
+    f.dispatchEvent(new CustomEvent('input'))
+  })
+  Object.defineProperty(f, 'value', { get: () => +slider.value })
+  return f
+}
+```
+
+```{ojs}
 {
-  const rng = d3.randomNormal(0, 1)
-  const sample = Array.from({ length: 4000 }, rng)
+  // Fixed domain on both axes, not re-centred on mu or rescaled to sigma —
+  // a domain that followed mu would always show the bell sitting in the
+  // middle, hiding the one thing this slider is meant to demonstrate
+  // (the whole shape sliding left/right). Bins built explicitly over that
+  // fixed range, for the same reason as the other distributions on this
+  // page: Plot.binX's own automatic thresholding sizes bins to the DATA's
+  // extent, not the chart's declared domain, which breaks badly once a
+  // fixed domain is added on top.
+  const FIXED_MIN = -11, FIXED_MAX = 11, NBINS = 40
+  const binWidth = (FIXED_MAX - FIXED_MIN) / NBINS
+  const sample = Array.from({ length: 4000 }, d3.randomNormal(mu_normal, sigma_normal))
+  const counts = new Array(NBINS).fill(0)
+  for (const d of sample) {
+    if (d < FIXED_MIN || d > FIXED_MAX) continue
+    counts[Math.min(Math.floor((d - FIXED_MIN) / binWidth), NBINS - 1)]++
+  }
+  const rows = counts.map((c, i) => ({ x0: FIXED_MIN + i * binWidth, x1: FIXED_MIN + (i + 1) * binWidth, prop: c / sample.length }))
   return accessibleChart(Plot.plot({
     height: 420,
-    x: { label: "x", domain: [-4, 4] },
+    x: { label: "x", domain: [FIXED_MIN, FIXED_MAX] },
+    // y left auto-scaling (unlike the x-axis) — the taller/shorter peak as
+    // sigma changes is fine to see relative to each chart's own height.
     y: { label: "% of draws", percent: true },
     marks: [
-      Plot.rectY(sample, Plot.binX({ y: "proportion" },
-        { x: d => d, thresholds: 30, fill: "#457b9d", fillOpacity: 0.8 })),
-      Plot.ruleX([0]),
+      Plot.rectY(rows, { x1: d => d.x0, x2: d => d.x1, y: d => d.prop, fill: "#457b9d", fillOpacity: 0.8 }),
     ]
-  }), "This chart shows the characteristic bell shape of a normal distribution, so it can be recognised later in real data. 4,000 simulated draws, symmetric and peaking at zero.")
+  }), `This chart shows the characteristic bell shape of a normal distribution, so it can be recognised later in real data. 4,000 simulated draws with mean ${mu_normal.toFixed(1)} and standard deviation ${sigma_normal.toFixed(1)}, symmetric and peaking at ${mu_normal.toFixed(1)}.`)
 }
 ```
 :::
@@ -106,20 +160,75 @@ Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Pol
 :::
 ::: {.col}
 ```{ojs}
+viewof mu_lognormal = {
+  const f = html`<div style="display:flex;align-items:center;gap:14px;font-size:13px;
+                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;">
+    <span style="color:#666;white-space:nowrap;">Log-mean (&mu;)</span>
+    <input type="range" min="-0.3" max="1" step="0.1" value="0"
+           style="width:160px;cursor:pointer;accent-color:#2d6a4f;">
+    <span id="mln-label" style="font-weight:700;min-width:28px;color:#2d6a4f;">0.0</span>
+  </div>`
+  const slider = f.querySelector('input')
+  const label  = f.querySelector('#mln-label')
+  slider.addEventListener('input', () => {
+    label.textContent = (+slider.value).toFixed(1)
+    f.dispatchEvent(new CustomEvent('input'))
+  })
+  Object.defineProperty(f, 'value', { get: () => +slider.value })
+  return f
+}
+```
+
+```{ojs}
+viewof sigma_lognormal = {
+  const f = html`<div style="display:flex;align-items:center;gap:14px;font-size:13px;
+                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;">
+    <span style="color:#666;white-space:nowrap;">Log-SD (&sigma;)</span>
+    <input type="range" min="0.2" max="1" step="0.1" value="0.5"
+           style="width:160px;cursor:pointer;accent-color:#2d6a4f;">
+    <span id="sln-label" style="font-weight:700;min-width:28px;color:#2d6a4f;">0.5</span>
+  </div>`
+  const slider = f.querySelector('input')
+  const label  = f.querySelector('#sln-label')
+  slider.addEventListener('input', () => {
+    label.textContent = (+slider.value).toFixed(1)
+    f.dispatchEvent(new CustomEvent('input'))
+  })
+  Object.defineProperty(f, 'value', { get: () => +slider.value })
+  return f
+}
+```
+
+```{ojs}
 {
-  const rng = d3.randomLogNormal(0, 0.5)
+  // Fixed x-domain, not rescaled to each combination's own 99th percentile —
+  // same reasoning as the normal distribution's sliders just above: a
+  // rescaling axis would hide the very shift/spread the sliders are meant
+  // to demonstrate. 30 comfortably covers the 99th percentile across the
+  // whole slider range (~1.2 at mu=-0.3,sigma=0.2, ~28 at mu=1,sigma=1 —
+  // computed directly, not guessed). y left auto-scaling, same as normal's.
+  const FIXED_MAX = 30, NBINS = 40
+  const binWidth = FIXED_MAX / NBINS
+  const rng = d3.randomLogNormal(mu_lognormal, sigma_lognormal)
   const sample = Array.from({ length: 4000 }, rng)
-  const cutoff = d3.quantile(sample.slice().sort(d3.ascending), 0.99)
+  // Bins built explicitly over the fixed range — Plot.binX's own automatic
+  // thresholding sizes bins to the DATA's extent, not the chart's declared
+  // domain, which breaks badly once a fixed domain differs from that extent
+  // (the exact bug hit and fixed on the power-law chart earlier).
+  const counts = new Array(NBINS).fill(0)
+  for (const d of sample) {
+    if (d > FIXED_MAX) continue
+    counts[Math.min(Math.floor(d / binWidth), NBINS - 1)]++
+  }
+  const rows = counts.map((c, i) => ({ x0: i * binWidth, x1: (i + 1) * binWidth, prop: c / sample.length }))
   return accessibleChart(Plot.plot({
-    height: 420,
-    x: { label: "x", domain: [0, cutoff] },
+    height: 380,
+    x: { label: "x", domain: [0, FIXED_MAX] },
     y: { label: "% of draws", percent: true },
     marks: [
-      Plot.rectY(sample.filter(d => d <= cutoff), Plot.binX({ y: "proportion" },
-        { x: d => d, thresholds: 30, fill: "#2d6a4f", fillOpacity: 0.8 })),
-      Plot.ruleX([0]),
+      Plot.rectY(rows, { x1: d => d.x0, x2: d => d.x1, y: d => d.prop, fill: "#2d6a4f", fillOpacity: 0.8 }),
     ]
-  }), "This chart shows the characteristic right-skewed shape of a log-normal distribution, for comparison with the normal distribution shown earlier. 4,000 simulated draws, most values near zero with a long tail of larger ones.")
+  }), `This chart shows the characteristic right-skewed shape of a log-normal distribution, for comparison with the normal distribution shown earlier. 4,000 simulated draws with log-mean ${mu_lognormal.toFixed(1)} and log-SD ${sigma_lognormal.toFixed(1)}, most values near zero with a long tail of larger ones.`)
 }
 ```
 :::
@@ -135,7 +244,7 @@ Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Pol
 ::: {.col}
 ```{ojs}
 {
-  const alpha = 2.5, xmin = 1
+  const alpha = 1.6, xmin = 1
   const sample = Array.from({ length: 4000 }, () => xmin * Math.pow(1 - Math.random(), -1 / alpha))
   const cutoff = d3.quantile(sample.slice().sort(d3.ascending), 0.97)
   return accessibleChart(Plot.plot({
@@ -145,9 +254,8 @@ Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Pol
     marks: [
       Plot.rectY(sample.filter(d => d <= cutoff), Plot.binX({ y: "proportion" },
         { x: d => d, thresholds: 30, fill: "#e63946", fillOpacity: 0.8 })),
-      Plot.ruleX([0]),
     ]
-  }), "This chart shows the characteristic shape of a power-law distribution, where extreme values are far more common than in a normal or log-normal distribution. 4,000 simulated draws, almost all small with a very long thin tail of much larger values.")
+  }), "This chart shows the characteristic shape of a power-law distribution, where extreme values are far more common than in a normal or log-normal distribution. 4,000 simulated draws, almost all small with a very long fat tail of much larger values.")
 }
 ```
 :::
@@ -178,7 +286,6 @@ Source: Békés & Kézdi (2021), Ch. 3 — shapes simulated here to show each fa
     marks: [
       Plot.rectY(sample, Plot.binX({ y: "proportion" },
         { x: d => d, thresholds: 20, fill: "#f4a261", fillOpacity: 0.8 })),
-      Plot.ruleX([0]),
     ]
   }), "This chart shows the characteristic flat shape of a uniform distribution, where every value in a range is equally likely. 4,000 simulated draws between 0 and 10, bars roughly the same height across the whole range.")
 }
@@ -191,7 +298,7 @@ Source: Békés & Kézdi (2021), Ch. 3 — shapes simulated here to show each fa
 ::: {.two-col}
 ::: {.col}
 - The simplest distribution — a single trial with two possible outcomes
-- Fully described by one parameter: $p$, the probability of success
+- Think of an **unfair coin**: heads = success. Fully described by one parameter, $p$ — here $p = 0.3$, so heads comes up on average 30% of the time, tails the other 70%
 - The building block every other distribution on this page is made from
 - Examples: a single coin flip, one pass/fail test, one yes/no question
 :::
@@ -200,14 +307,17 @@ Source: Békés & Kézdi (2021), Ch. 3 — shapes simulated here to show each fa
 {
   const p = 0.3
   const sample = Array.from({ length: 4000 }, d3.randomBernoulli(p))
+  // Bars are built with explicit x1/x2 centred on each outcome (0 or 1) rather
+  // than Plot's own interval-binning, which left-aligns each bar to its value —
+  // on a continuous-looking axis that reads as ambiguous which bar is which.
+  const counts = d3.rollup(sample, v => v.length / sample.length, d => d)
+  const rows = Array.from(counts, ([k, prop]) => ({ k, prop }))
   return accessibleChart(Plot.plot({
     height: 420,
-    x: { label: "Outcome", domain: [-0.5, 1.5], ticks: [0, 1] },
+    x: { label: "Outcome", domain: [-0.5, 1.5], ticks: [0, 1], tickFormat: d3.format("d") },
     y: { label: "% of draws", percent: true },
     marks: [
-      Plot.rectY(sample, Plot.groupX({ y: "proportion" },
-        { x: d => d, interval: 1, fill: "#1d3557", fillOpacity: 0.8 })),
-      Plot.ruleX([0]),
+      Plot.rectY(rows, { x1: d => d.k - 0.5, x2: d => d.k + 0.5, y: d => d.prop, fill: "#1d3557", fillOpacity: 0.8 }),
     ]
   }), "This chart shows the simplest possible distribution — a single trial with two outcomes — as the building block every other distribution on this page is made from. 4,000 simulated draws with a 30% success probability: the failure bar at zero is taller, roughly 70% of draws, the success bar at one shorter, roughly 30%.")
 }
@@ -219,30 +329,75 @@ Source: Békés & Kézdi (2021), Ch. 3 — shapes simulated here to show each fa
 
 ::: {.two-col}
 ::: {.col}
-- The number of successes across $n$ independent Bernoulli trials
-- Described by two parameters: $n$ (number of trials) and $p$ (probability of success on each)
+- The number of successes across $n$ independent Bernoulli trials — the same unfair coin as before, heads = success, now flipped $n$ times
+- Described by two parameters: $n$ (number of trials) and $p$ (probability of success on each) — still $p = 0.3$ here
 - As $n$ grows, its shape approaches the normal distribution — a preview of why the normal shows up so often
 - Examples: defective items in a batch, correct answers on a multiple-choice test
 :::
 ::: {.col}
 ```{ojs}
+viewof n_binom = {
+  const f = html`<div style="display:flex;align-items:center;gap:14px;font-size:13px;
+                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;">
+    <span style="color:#666;white-space:nowrap;">Number of trials (n)</span>
+    <input type="range" min="1" max="200" step="1" value="1"
+           style="width:200px;cursor:pointer;accent-color:#e9c46a;">
+    <span id="nb-label" style="font-weight:700;min-width:36px;color:#b8860b;">1</span>
+  </div>`
+  const slider = f.querySelector('input')
+  const label  = f.querySelector('#nb-label')
+  slider.addEventListener('input', () => {
+    label.textContent = slider.value
+    f.dispatchEvent(new CustomEvent('input'))
+  })
+  Object.defineProperty(f, 'value', { get: () => +slider.value })
+  return f
+}
+```
+
+```{ojs}
 {
-  const n = 20, p = 0.3
-  const sample = Array.from({ length: 4000 }, d3.randomBinomial(n, p))
+  const p = 0.3
+  const sample = Array.from({ length: 4000 }, d3.randomBinomial(n_binom, p))
+  // Bars are built with explicit x1/x2 centred on each count rather than Plot's
+  // own interval-binning, which left-aligns each bar to its value — on a
+  // continuous-looking axis that's ambiguous which bar is which, especially
+  // obvious at small n where there are only a handful of wide bars.
+  const counts = d3.rollup(sample, v => v.length / sample.length, d => d)
+  const rows = Array.from(counts, ([k, prop]) => ({ k, prop }))
+  // Force whole-number ticks (Plot's default would pick "nice" steps like 0.5,
+  // which don't correspond to any possible count of successes) — capped at
+  // roughly 10 labels so large n doesn't crowd the axis.
+  // Evenly spaced from 0 — not forced to also land exactly on n_binom, which
+  // (when the step doesn't divide it cleanly) used to add a cramped extra
+  // tick right next to the one before it.
+  const tickStep = Math.max(1, Math.round(n_binom / 10))
+  const xTicks = d3.range(0, n_binom + 1, tickStep)
   return accessibleChart(Plot.plot({
-    height: 420,
-    x: { label: "Number of successes (out of 20)", domain: [-0.5, n + 0.5] },
+    height: 380,
+    x: { label: `Number of successes (out of ${n_binom})`, domain: [-0.5, n_binom + 0.5], ticks: xTicks, tickFormat: d3.format("d") },
     y: { label: "% of draws", percent: true },
     marks: [
-      Plot.rectY(sample, Plot.groupX({ y: "proportion" },
-        { x: d => d, interval: 1, fill: "#e9c46a", fillOpacity: 0.8 })),
-      Plot.ruleX([0]),
+      Plot.rectY(rows, { x1: d => d.k - 0.5, x2: d => d.k + 0.5, y: d => d.prop, fill: "#e9c46a", fillOpacity: 0.8 }),
     ]
-  }), "This chart shows how the binomial distribution's shape approaches the normal as the number of trials grows. 4,000 simulated draws of successes in 20 trials at 30% probability, roughly symmetric and bell-shaped, peaking around 6.")
+  }), `This chart shows how the binomial distribution's shape approaches the normal as the number of trials grows. 4,000 simulated draws of successes in ${n_binom} trials at 30% probability, peaking around ${Math.round(n_binom * p)}.`)
 }
 ```
 :::
 :::
+
+## The binomial distribution — working out the probabilities
+
+With $n = 2$ trials and $p = 0.3$, there are **two different orders** that both give exactly one success — so their probabilities get added, not counted once.
+
+| Sequence | Probability | Successes |
+|---|---|---|
+| Fail, fail | $0.7 \times 0.7 = 0.49$ | 0 |
+| **Success, fail** | $0.3 \times 0.7 = 0.21$ | 1 |
+| **Fail, success** | $0.7 \times 0.3 = 0.21$ | 1 |
+| Success, success | $0.3 \times 0.3 = 0.09$ | 2 |
+
+$0.21 + 0.21 = 0.42$ — exactly the "1 success" bar on the chart.
 
 ## The Poisson distribution
 
@@ -252,23 +407,70 @@ Source: Békés & Kézdi (2021), Ch. 3 — shapes simulated here to show each fa
 - Described by a single parameter: $\lambda$ (lambda), the average rate itself
 - Mean and variance are both exactly $\lambda$ — a distinctive fingerprint of this distribution
 - Examples: customer arrivals per hour, emails per day, typos per page
+- **Try the slider** — see what changes on the next slide
 :::
 ::: {.col}
 ```{ojs}
+viewof lambda_poisson = {
+  const f = html`<div style="display:flex;align-items:center;gap:14px;font-size:13px;
+                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;">
+    <span style="color:#666;white-space:nowrap;">Average rate (&lambda;)</span>
+    <input type="range" min="1" max="20" step="1" value="4"
+           style="width:200px;cursor:pointer;accent-color:#e63946;">
+    <span id="lp-label" style="font-weight:700;min-width:24px;color:#e63946;">4</span>
+  </div>`
+  const slider = f.querySelector('input')
+  const label  = f.querySelector('#lp-label')
+  slider.addEventListener('input', () => {
+    label.textContent = slider.value
+    f.dispatchEvent(new CustomEvent('input'))
+  })
+  Object.defineProperty(f, 'value', { get: () => +slider.value })
+  return f
+}
+```
+
+```{ojs}
+// A named, shared variable (not a local inside the chart cell) so the
+// min/max readout below can reuse the exact same 4,000 draws the chart
+// itself is showing, rather than each computing its own separate sample.
+poisson_sample = Array.from({ length: 4000 }, d3.randomPoisson(lambda_poisson))
+```
+
+```{ojs}
 {
-  const lambda = 4
-  const sample = Array.from({ length: 4000 }, d3.randomPoisson(lambda))
+  const sample = poisson_sample
+  // Bars are built with explicit x1/x2 centred on each count rather than Plot's
+  // own interval-binning, which left-aligns each bar to its value — on a
+  // continuous-looking axis that's ambiguous which bar is which (same fix as
+  // the Bernoulli and binomial charts above).
+  const counts = d3.rollup(sample, v => v.length / sample.length, d => d)
+  const rows = Array.from(counts, ([k, prop]) => ({ k, prop }))
+  // Domain and ticks grow with lambda (mean AND spread both increase with it)
+  // rather than staying fixed at 15, which would clip the tail once lambda
+  // gets large — floored at 15 so small-lambda shapes don't look cramped.
+  const xMax = Math.max(15, Math.ceil(lambda_poisson + 4 * Math.sqrt(lambda_poisson)))
+  // Evenly spaced from 0 — not forced to also land exactly on xMax, which
+  // (when the step doesn't divide it cleanly) used to add a cramped extra
+  // tick right next to the one before it.
+  const tickStep = Math.max(1, Math.round(xMax / 10))
+  const xTicks = d3.range(0, xMax + 1, tickStep)
   return accessibleChart(Plot.plot({
-    height: 420,
-    x: { label: "Number of events", domain: [-0.5, 15.5] },
+    height: 380,
+    x: { label: "Number of events", domain: [-0.5, xMax + 0.5], ticks: xTicks, tickFormat: d3.format("d") },
     y: { label: "% of draws", percent: true },
     marks: [
-      Plot.rectY(sample, Plot.groupX({ y: "proportion" },
-        { x: d => d, interval: 1, fill: "#e63946", fillOpacity: 0.8 })),
-      Plot.ruleX([0]),
+      Plot.rectY(rows, { x1: d => d.k - 0.5, x2: d => d.k + 0.5, y: d => d.prop, fill: "#e63946", fillOpacity: 0.8 }),
     ]
-  }), "This chart shows the characteristic shape of a Poisson distribution, concentrated on small counts with a right skew. 4,000 simulated draws with an average rate of 4 events, peaking around 3 to 4.")
+  }), `This chart shows the characteristic shape of a Poisson distribution, concentrated on small counts with a right skew. 4,000 simulated draws with an average rate of ${lambda_poisson} events, peaking around ${lambda_poisson}.`)
 }
+```
+
+```{ojs}
+html`<p style="font-family:sans-serif;font-size:0.85em;color:#555;margin-top:4px;">
+  In these 4,000 simulated days: fewest ever seen = <strong style="color:#e63946;">${d3.min(poisson_sample)}</strong>,
+  most ever seen = <strong style="color:#e63946;">${d3.max(poisson_sample)}</strong>.
+</p>`
 ```
 :::
 :::
@@ -277,46 +479,68 @@ Source: Békés & Kézdi (2021), Ch. 3 — shapes simulated here to show each fa
 Not covered in this chapter of the textbook, but useful to have in view.
 :::
 
+## The Poisson distribution — what changes with $\lambda$?
+
+Dragging $\lambda$ on the last slide changes two things at once:
+
+- The whole distribution **shifts right** — a higher average rate means more events are expected, so the peak moves from wherever it was to wherever $\lambda$ now sits
+- It also **spreads wider** — variance equals $\lambda$ too, so a higher average rate also comes with more uncertainty around it
+
+By around $\lambda \approx 15$–$20$, the shape is already hard to tell apart from a normal distribution — the same pattern we just saw with the binomial as $n$ grew. That's not a coincidence: both are examples of the same general fact — many distributions start looking normal once their parameters get large enough, which is a big part of why the normal distribution shows up everywhere.
+
+## The Poisson distribution — a "thin tail"
+
+At $\lambda = 4$, values far from 4 don't just get *rare* — they get rare **fast**. In a real 4,000-draw simulation, the count never once went above 13.
+
+The true probability of seeing, say, 100 is about $3 \times 10^{-100}$ — a decimal point, 99 zeros, then a digit. For contrast, that's smaller than 1 in the number of atoms in the observable universe.
+
+::: {.fragment}
+This is the opposite of the **power-law** distribution from earlier in this session: there, big outliers stayed plausible at *every* scale. Not every right-skewed shape behaves the same way in its tail — worth checking which kind you actually have before trusting how far a value "could" go.
+:::
+
 ## Our data, and its log
 
 If reaction times are log-normal, the **log** of reaction time should look roughly normal.
 
-Let's work through this together in Excel — a histogram of the raw reaction times, then a histogram of their log. Compare the shapes before we look at the answer.
+A handful of trials run well over a second — much slower than the rest, and enough to dominate a raw histogram on their own. We'll set those aside for now, and work with trials under 800ms.
 
-::: {.fragment}
+Let's work through this together in Excel — filter to `reaction_time_ms` under 800ms, then a histogram of those raw times, then a histogram of their log. Compare the shapes before we look at the answer.
+
+## Our data, and its log — the answer
+
 ```{ojs}
 {
-  const rtSorted = rt.slice().sort(d3.ascending)
-  const rtCut    = d3.quantile(rtSorted, 0.98)
-  const logRt    = rt.map(Math.log)
+  const RT_FILTER_CUTOFF = 800
+  const rtFiltered = rt.filter(d => d < RT_FILTER_CUTOFF)
+  const logRt = rtFiltered.map(Math.log)
+  const logDomain = d3.extent(logRt)
 
   const p1 = accessibleChart(Plot.plot({
-    height: 320, width: 420,
-    x: { label: "Reaction time (ms)", domain: [0, rtCut] },
+    height: 380, width: 420,
+    x: { label: "Reaction time (ms)", domain: [0, RT_FILTER_CUTOFF] },
     y: { label: "% of trials", percent: true },
     marks: [
-      Plot.rectY(rt.filter(d => d <= rtCut), Plot.binX({ y: "proportion" },
+      Plot.rectY(rtFiltered, Plot.binX({ y: "proportion" },
         { x: d => d, thresholds: 20, fill: "#457b9d", fillOpacity: 0.8 })),
       Plot.ruleX([0]),
     ]
-  }), "This chart tests the log-normal claim by showing the actual shape of the class's raw reaction times, for comparison with their log beside it. Trimmed to the bottom 98% to exclude the most extreme outlier, the shape is right-skewed.")
+  }), "This chart tests the log-normal claim by showing the actual shape of the class's raw reaction times, for comparison with their log beside it. Trials of 800 milliseconds or more are set aside first, since a handful of much slower trials would otherwise dominate the shape; among the rest, the shape is right-skewed.")
   const p2 = accessibleChart(Plot.plot({
-    height: 320, width: 420,
-    x: { label: "log(reaction time)" },
+    height: 380, width: 420,
+    x: { label: "log(reaction time)", domain: logDomain },
     y: { label: "% of trials", percent: true },
     marks: [
       Plot.rectY(logRt, Plot.binX({ y: "proportion" },
         { x: d => d, thresholds: 20, fill: "#2d6a4f", fillOpacity: 0.8 })),
       Plot.ruleX([0]),
     ]
-  }), "This chart tests the log-normal claim by showing the class's reaction times after a log transform, for comparison with the raw shape beside it. The shape is much closer to symmetric and bell-shaped, supporting the log-normal claim.")
+  }), "This chart tests the log-normal claim by showing the class's reaction times after a log transform, for comparison with the raw shape beside it. The shape is closer to symmetric and bell-shaped, supporting the log-normal claim.")
 
   return html`<div style="display:flex;gap:24px;justify-content:center;">${p1}${p2}</div>`
 }
 ```
 
-Raw reaction times (blue) are right-skewed with a long tail. Their log (green) looks far closer to symmetric and bell-shaped — exactly what the log-normal claim predicts.
-:::
+Raw reaction times (blue) are right-skewed with a long tail. Their log (green) looks closer to symmetric and bell-shaped — exactly what the log-normal claim predicts.
 
 ## Coming up: Week 2
 
