@@ -1592,13 +1592,21 @@ No true difference in reaction time by device, versus: there is one.
 
 ---
 
-## The t-statistic
+## The t-statistic {.smaller}
 
 The test statistic measures how far our estimate is from what $H_0$ predicts, in units of standard error.
 
 $$t = \frac{\hat{s}}{SE(\hat{s})}$$
 
-For a difference between two averages, $\bar{x}_A$ and $\bar{x}_B$:
+::: {.callout-note}
+$\hat{s}$ stands for **any estimated statistic** — a mean, a difference in means, or (in later weeks) a regression coefficient. The hat ($\hat{}$) is standard notation throughout this module: it marks an *estimate*, computed from our sample, as distinct from the true, unobserved population value it stands in for.
+:::
+
+**One average against a fixed number**, $\mu_0$:
+
+$$t = \frac{\bar{x} - \mu_0}{SE(\bar{x})} \qquad SE(\bar{x}) = \frac{SD}{\sqrt{n}}$$
+
+**A difference between two averages**, $\bar{x}_A$ and $\bar{x}_B$:
 
 $$t = \frac{\bar{x}_A - \bar{x}_B}{SE(\bar{x}_A - \bar{x}_B)} \qquad SE(\bar{x}_A - \bar{x}_B) = \sqrt{\frac{SD_A^2}{n_A} + \frac{SD_B^2}{n_B}}$$
 
