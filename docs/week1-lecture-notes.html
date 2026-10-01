@@ -331,7 +331,7 @@
       <div class="hero-inner" style="padding:0;">
         <div class="eyebrow"><span class="dot"></span>7002LBSAI &middot; Research Methods in Analytics &middot; Week One</div>
         <h1>Distributions and Summarising Data</h1>
-        <p class="dek">Lecture notes reconstructed from the workshop itself &ndash; the live transcript, the slide deck, and the <em>class's own reaction-time data</em>, collected on a Friday afternoon in a room in the Redmonds Building.</p>
+        <p class="dek">Lecture notes reconstructed from both sessions &ndash; the Friday workshop and its online follow-up &ndash; built from their live transcripts, slide decks, and the <em>class's own reaction-time data</em>, collected that Friday afternoon in a room in the Redmonds Building.</p>
         <div class="headline-strip">
           <div class="stat"><span class="n">24</span><span class="l">students, one dataset</span></div>
           <div class="stat"><span class="n">217</span><span class="l">reaction-time trials</span></div>
@@ -773,8 +773,217 @@
 
 </section>
 
+<section class="chapter" id="distribution-families">
+<div class="chapter-kicker">Part Thirteen</div>
+<h2>From One Histogram to a Family of Shapes</h2>
+
+<div class="lede-figure">
+<p>A few days after the Friday workshop, the module leader tried to deliver this same material live, online &ndash; and partway through a live demonstration, something went visibly wrong. Rather than let a garbled recording stand as the only record of it, he re-recorded the whole session from scratch: calmer, slower, with the mistake fixed rather than quietly edited away. These notes are built from that second, cleaner take, but the honesty of the first attempt is worth keeping in view &ndash; even the person running this module gets things wrong sometimes, live, in front of people, and the right response is to go back and do it properly rather than pretend otherwise.</p>
+</div>
+
+<p>The workshop looked at one histogram &ndash; the class's own 217 reaction-time trials, bunched up at the low end with a long tail stretching out to the right. That shape told a story on its own, but a single shape, on its own, is also just <em>one dataset</em>. To actually interpret it &ndash; to know whether it is ordinary or unusual, and what that implies for the statistical tests this module builds toward &ndash; the shape needs something to be compared against. That something is a family of <strong>theoretical distributions</strong>: not frequencies counted from one real dataset, but idealised, abstract descriptions of how likely different values are across a whole population, fully specified by a small handful of <strong>parameters</strong>.</p>
+
+<p>B&eacute;k&eacute;s &amp; K&eacute;zdi's own example makes the distinction concrete: the distribution of height across the whole of planet Earth is a theoretical object, and a different one from the distribution of height within the UK alone, or within France, or Spain. Which theoretical distribution a real variable most resembles shapes a great deal of what comes later in this module &ndash; which statistical tests make sense, which assumptions are safe to lean on, and which transformations (logging a variable, for instance) are worth trying before modelling it at all.</p>
+</section>
+
+<section class="chapter" id="normal-distribution">
+<div class="chapter-kicker">Part Fourteen</div>
+<h2>The Normal Distribution</h2>
+
+<p>Start with the shape everyone in the room had already half-met, even if not by name: the <strong>normal distribution</strong>, bell-shaped and symmetric, one half a mirror of the other. That symmetry has a direct consequence for the three measures of centre from the workshop &ndash; mean, median, and mode all land in exactly the same place. The mean sits in the middle because half the distribution's mass lies to its left and half to its right (which makes it the median too), and because the bell peaks at its own centre, that same point is also the single most likely value &ndash; the mode.</p>
+
+<p>Two parameters fully describe it: the mean, \(\mu\) (<em>mu</em>), fixing where the centre sits, and the standard deviation, \(\sigma\) (<em>sigma</em>), fixing how wide the bell is. Drag the mean below and the whole shape slides left or right without changing width; drag the standard deviation and the shape stretches or compresses around a fixed centre.</p>
+
+<div class="figure" id="fig-normal">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>The normal distribution</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Mean (&mu;)</span><input type="range" id="normal-mu" min="-3" max="3" step="0.5" value="0"><span class="val" id="normal-mu-val">0.0</span></div>
+      <div class="ctl"><span class="lbl">SD (&sigma;)</span><input type="range" id="normal-sigma" min="0.3" max="2" step="0.1" value="1"><span class="val" id="normal-sigma-val">1.0</span></div>
+    </div>
+    <div class="chart-wrap" id="normal-chart"></div>
+  </div>
+  <p class="figure-caption" id="normal-caption"></p>
+</div>
+
+<p>Set \(\mu = 0\) and \(\sigma = 1\) and you get the <strong>standard normal distribution</strong> &ndash; the one specific case so widely used that, before cheap computing, students were simply handed a printed table of it and told to look values up by hand.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the online session</span>
+  <p>&ldquo;A lot of why the normal distribution is so common comes from the fact that it arises from adding up lots of small impacts, each of which might not be normally distributed on its own &ndash; but adding them together, the additive nature of it leads to an outcome that is normally distributed. The influences on height &ndash; genetics, diet, hundreds of other things &ndash; add up together, and the outcome, height, ends up distributed normally.&rdquo;</p>
+</blockquote>
+
+<p>Height, IQ, and measurement error are the three examples that recur most often, and all three share that additive structure: lots of small, mostly independent nudges, summed together. Keep that word &ndash; <em>summed</em> &ndash; in mind. It's exactly what the next distribution does differently.</p>
+</section>
+
+<section class="chapter" id="lognormal-distribution">
+<div class="chapter-kicker">Part Fifteen</div>
+<h2>The Log-Normal Distribution &ndash; and Why We Log Reaction Time</h2>
+
+<p>If the normal distribution comes from <strong>summing</strong> lots of small effects, the <strong>log-normal distribution</strong> comes from <strong>multiplying</strong> them instead &ndash; and the shape changes dramatically as a result. Where the normal is symmetric, the log-normal is pushed hard toward the low end, with a long right tail of larger, rarer values.</p>
+
+<p>The two are related by a small, genuinely elegant piece of mathematics: the log of a product is the sum of the logs, \(\log(a \times b) = \log a + \log b\). So if a variable is itself the product of many small multiplicative factors, its <em>log</em> is a sum of many small factors &ndash; exactly the additive structure that produces a normal shape. Take a normally distributed variable \(x\) and transform it with \(e^x\) (the exponential function) and the result is, by construction, log-normal: always positive, with a long right tail.</p>
+
+<div class="callout">
+  <strong>A live example of getting this backwards, on camera.</strong> The quickest way to misunderstand a log-normal distribution is to try to build one by <em>logging</em> a normal variable &ndash; the wrong direction entirely, and exactly the mistake made in the first, live attempt at this session. Building a log-normal distribution means <strong>exponentiating</strong> a normal variable (\(e^x\)), not logging it. Reversing that afterwards &ndash; taking the natural log, <code>LN()</code>, of an already log-normal variable &ndash; is what pushes it back toward normal, and is exactly the transformation this chapter reaches for on reaction time below.
+</div>
+
+<p>Income, firm size, and &ndash; the workshop's own running example &ndash; reaction time all tend toward this shape, for the same underlying reason: each is the outcome of several factors that compound rather than simply add.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the online session</span>
+  <p>&ldquo;Think about the factors feeding into reaction time. It isn't that one factor just adds on to another &ndash; attention, the noise in the room, distraction, your own motor speed &ndash; those effects compound. All those factors multiplied together produce a distribution something like this.&rdquo;</p>
+</blockquote>
+
+<div class="figure" id="fig-lognormal">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>The log-normal distribution</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Log-mean (&mu;)</span><input type="range" id="lognormal-mu" min="-0.3" max="1" step="0.1" value="0"><span class="val" id="lognormal-mu-val">0.0</span></div>
+      <div class="ctl"><span class="lbl">Log-SD (&sigma;)</span><input type="range" id="lognormal-sigma" min="0.2" max="1" step="0.1" value="0.5"><span class="val" id="lognormal-sigma-val">0.5</span></div>
+    </div>
+    <div class="chart-wrap" id="lognormal-chart"></div>
+  </div>
+  <p class="figure-caption" id="lognormal-caption"></p>
+</div>
+
+<p>The practical payoff arrives once a variable shaped like this needs to go into a statistical model: log it first, and a distribution dragging a long tail of extreme values behind it moves toward something closer to the well-behaved, symmetric shape most classical statistical tests are built to assume. It won't always get there completely &ndash; but moving in that direction is frequently worth the modest cost of having to interpret logged, rather than raw, units. This module comes back to that trade-off properly in later weeks.</p>
+</section>
+
+<section class="chapter" id="more-distributions">
+<div class="chapter-kicker">Part Sixteen</div>
+<h2>Four More Distributions Worth Knowing</h2>
+
+<h3>Power-law (Pareto) &ndash; when extremes stay plausible at any scale</h3>
+
+<p>The <strong>power-law</strong>, or Pareto, distribution is similar in silhouette to the log-normal &ndash; strongly right-skewed, most of the mass down at the low end &ndash; but its tail is a genuinely different kind of thing. In a log-normal distribution, extreme values get rarer at an accelerating rate the further out you look. In a power-law distribution, they don't: a very large value stays <em>plausible at any scale</em>, not just rare-but-possible near the body of the distribution.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the online session</span>
+  <p>&ldquo;Think about a distribution of wealth. Most people are down at the bottom &ndash; but you've got a very long tail, where you're bringing in your billionaires, right out the window over there, and you find Musk and people like that. That's the Pareto distribution: similar in shape to log-normal, but those extreme values are even more common, and they're common at any scale.&rdquo;</p>
+</blockquote>
+
+<div class="figure" id="fig-powerlaw">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>The power-law distribution</h4></div>
+  <div class="figure-body"><div class="chart-wrap" id="powerlaw-chart"></div></div>
+  <p class="figure-caption">4,000 simulated draws from a power-law distribution: almost all small, with a very long, fat tail of much larger values &ndash; city population, word frequency, and wealth are the examples that recur most often. Our own reaction-time data, with its one truly extreme trial, has something of this shape too.</p>
+</div>
+
+<h3>Uniform &ndash; when nothing is more typical than anything else</h3>
+
+<p>The <strong>uniform</strong> distribution is flat: every value between some minimum and maximum is exactly as likely as every other. It's fully described by just those two numbers.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the online session</span>
+  <p>&ldquo;If I go into a bag that's got numbers 0 to 10 in it &ndash; eleven balls &ndash; I want the probability I pick out a five to be exactly the same as the probability I pick out any other number. That's what the uniform distribution shows: no peak, nothing more typical than anything else.&rdquo;</p>
+</blockquote>
+
+<p>Mean and median both sit at the midpoint of the range, but &ndash; unlike every other distribution in this chapter &ndash; there's no mode worth naming, because nothing stands out as more common. The clearest real-world use is a random number generator, where you specifically don't want any number favoured over another; it also turns up describing waiting time within a fixed interval, or rounding error.</p>
+
+<h3>Bernoulli &ndash; the building block everything else is made from</h3>
+
+<p>The <strong>Bernoulli</strong> distribution is about as simple as a distribution gets: one trial, two possible outcomes, described by a single parameter &ndash; the probability of success, \(p\). Think of an unfair coin, heads counted as success: with \(p = 0.3\), heads comes up on average 30% of the time, tails the other 70%. A single coin flip, one pass/fail test, one yes/no survey question &ndash; each of these is Bernoulli-distributed.</p>
+
+<p>On its own, a Bernoulli trial is almost too simple to be interesting. It becomes interesting the moment you stop doing it once.</p>
+
+<h3>Binomial &ndash; counting successes across many trials</h3>
+
+<p>The <strong>binomial</strong> distribution is the number of successes across \(n\) independent Bernoulli trials &ndash; the same unfair coin as before, now flipped \(n\) times instead of once. It's described by two parameters: \(n\) (the number of trials) and \(p\) (the probability of success on each one, still 0.3 here).</p>
+
+<p>With just \(n = 2\) trials, the full arithmetic is small enough to do by hand &ndash; and worth doing once, because it's the same logic that scales up to any \(n\):</p>
+
+<table class="data-table">
+  <thead><tr><th>Sequence</th><th>Probability</th><th>Successes</th></tr></thead>
+  <tbody>
+    <tr><td>Fail, fail</td><td>0.7 &times; 0.7 = 0.49</td><td>0</td></tr>
+    <tr><td>Success, fail</td><td>0.3 &times; 0.7 = 0.21</td><td>1</td></tr>
+    <tr><td>Fail, success</td><td>0.7 &times; 0.3 = 0.21</td><td>1</td></tr>
+    <tr><td>Success, success</td><td>0.3 &times; 0.3 = 0.09</td><td>2</td></tr>
+  </tbody>
+</table>
+
+<p>Two different orders &ndash; success-then-fail, and fail-then-success &ndash; both land exactly one success, so their probabilities get <em>added</em>, not counted once: \(0.21 + 0.21 = 0.42\). That's not an approximation; it's exactly the "1 success" bar you'll see on the chart below once \(n = 2\).</p>
+
+<p>The genuinely useful part is what happens as \(n\) grows. Drag the slider up from 1 toward 200 and watch the shape change.</p>
+
+<div class="figure" id="fig-binomial">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>The binomial distribution</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Number of trials (n)</span><input type="range" id="binomial-n" min="1" max="200" step="1" value="1"><span class="val" id="binomial-n-val">1</span></div>
+    </div>
+    <div class="chart-wrap" id="binomial-chart"></div>
+  </div>
+  <p class="figure-caption" id="binomial-caption"></p>
+</div>
+
+<p>As \(n\) grows, the binomial's blocky, discrete shape smooths out into something that looks unmistakably like the normal distribution from two chapters ago. That's not a coincidence specific to coin flips &ndash; it's a first preview of a much more general fact this module returns to directly in Week 2, and it's a large part of why the normal distribution shows up so persistently across entirely unrelated problems: identifying defective items in a batch, or the distribution of correct answers on a multiple-choice test, both lean on exactly this shape.</p>
+</section>
+
+<section class="chapter" id="poisson-distribution">
+<div class="chapter-kicker">Part Seventeen</div>
+<h2>The Poisson Distribution</h2>
+
+<p>The <strong>Poisson</strong> distribution answers a different kind of question: not successes out of a fixed number of trials, but the number of events in a fixed interval, given some constant average rate &ndash; customers arriving at a coffee shop per hour, emails per day, typos per page. It's described by a single parameter, \(\lambda\) (<em>lambda</em>), the average rate itself &ndash; and, distinctively, \(\lambda\) is <em>both</em> the mean and the variance of the distribution at once.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the online session</span>
+  <p>&ldquo;Say there's a coffee shop with an average rate of four people arriving per hour. Simulate that over 4,000 days and this is the distribution you get &ndash; most of the time it's about four, some days low, a high percentage of days around one. As we go into the extreme, the most ever seen out of 4,000 simulated days is some small number &ndash; nowhere close to what you'd see with a log-normal or a power-law.&rdquo;</p>
+</blockquote>
+
+<div class="figure" id="fig-poisson">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>The Poisson distribution</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Average rate (&lambda;)</span><input type="range" id="poisson-lambda" min="1" max="20" step="1" value="4"><span class="val" id="poisson-lambda-val">4</span></div>
+    </div>
+    <div class="chart-wrap" id="poisson-chart"></div>
+  </div>
+  <p class="figure-caption" id="poisson-caption"></p>
+</div>
+
+<p>Dragging \(\lambda\) up changes two things at once: the whole distribution shifts right (a higher average rate means more events are expected, so the peak moves to wherever \(\lambda\) now sits), and it spreads wider too (since the variance, also equal to \(\lambda\), grows right along with the mean). By around \(\lambda \approx 15\)&ndash;20, the shape is already hard to tell apart from a normal distribution &ndash; the same underlying pattern just seen with the binomial as \(n\) grew. Two unrelated-looking distributions converging on the same shape, for related reasons, is not a coincidence; it's a big part of why the normal distribution shows up everywhere once you start looking for it.</p>
+
+<p>At small \(\lambda\), though, the Poisson has a distinctive signature worth naming: a genuinely <strong>thin tail</strong>. Values far from the average don't just get rare &ndash; they get rare <em>fast</em>. The live readout above shows the most extreme count actually seen in this run's own 4,000 simulated days; the true probability of seeing something like 100 arrivals, against an average of 4, works out to roughly 3 &times; 10<sup>&minus;100</sup> &ndash; a decimal point, 99 zeros, then a digit. That's smaller than one divided by the number of atoms in the observable universe.</p>
+
+<div class="callout gold">
+  This is the direct opposite of the power-law distribution from earlier in this chapter. There, big outliers stayed plausible at <em>every</em> scale. Here, they become all but impossible, fast, once you're a handful of standard deviations out. Not every right-skewed shape behaves the same way in its tail &ndash; worth checking which kind you actually have before trusting how far a value "could" plausibly go.
+</div>
+</section>
+
+<section class="chapter" id="online-back-to-data">
+<div class="chapter-kicker">Part Eighteen</div>
+<h2>Back to Our Own Data &ndash; and What's Next</h2>
+
+<p>All of that theory exists to answer one practical question about the class's own reaction-time data: if it really is log-normal, as the workshop's pooled histogram already suggested, then its <strong>log</strong> should look roughly normal. The session worked through this live in Excel &ndash; filter out the handful of trials running well over a second (they'd otherwise dominate the shape on their own, exactly as the 56-second trial did back in the workshop), histogram the rest, then histogram their log, and compare.</p>
+
+<p>The figure below rebuilds that same comparison, live, from the real 217 trials behind this whole chapter &ndash; filtered to trials under 800 milliseconds, the exact threshold the session's own slides settled on.</p>
+
+<div class="figure" id="fig-ourdata">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>Our data, and its log</h4></div>
+  <div class="figure-body">
+    <div class="chart-row">
+      <div class="chart-wrap" id="ourdata-raw"></div>
+      <div class="chart-wrap" id="ourdata-log"></div>
+    </div>
+  </div>
+  <p class="figure-caption" id="ourdata-caption"></p>
+</div>
+
+<p>Raw reaction times (blue, left) are right-skewed with a long tail, exactly as the workshop's own pooled histogram already showed. Their log (green, right) looks noticeably closer to symmetric and bell-shaped &ndash; not perfectly normal, but measurably less skewed by the same (mean &minus; median) &divide; SD measure of skew introduced back in the workshop. That's exactly what the log-normal claim predicts, and it's the same reasoning this module will lean on every time it logs a variable in a later week: not because logging is a ritual worth doing automatically, but because it's solving a specific, checkable problem &ndash; a long right tail that would otherwise distort a model built on it.</p>
+
+<p>Part Twelve of this chapter ended on an open question: the phone-versus-laptop gap and the caffeine gap in the class's own box plots are real numbers, but neither one, on its own, says whether it's a genuine effect or just the ordinary noise of which twenty-four people happened to be in the room that day. The online session closes on exactly that same note, in the instructor's own words:</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the online session</span>
+  <p>&ldquo;From the next workshop, in Week 2, we'll be looking at this: we saw a difference between groups &ndash; say, laptop users and phone users. But how do we know it's real? What does 'real' even mean here? Is it just chance? That's what we're going to be exploring, and a lot of it is going to be underpinned by these theoretical distributions &ndash; most specifically, the normal distribution we've explored today.&rdquo;</p>
+</blockquote>
+
+<p>Every tool introduced in this chapter &ndash; the bell curve, its mean and standard deviation, the idea that many unrelated processes converge on the same normal shape &ndash; turns out to be exactly the machinery Week 2 needs to answer "is it real?" properly, rather than by eye.</p>
+</section>
+
 <footer class="colophon">
-  <p><strong>A note on these notes.</strong> This chapter was assembled from three sources: the Week 1 workshop slide deck, the session's own live transcript (auto-generated, lightly cleaned for readability &ndash; quoted passages are close to verbatim but not a certified transcript), and the class's real, anonymised reaction-time data collected that afternoon (217 trials, 24 students). Numbers and charts throughout reflect that specific dataset as it stood at the time of writing; they will not update themselves if the underlying data is later revised. Framework and definitions follow B&eacute;k&eacute;s &amp; K&eacute;zdi, <em>Data Analysis for Business, Economics, and Policy</em> (2021), Ch. 3, as taught in the workshop itself.</p>
+  <p><strong>A note on these notes.</strong> This chapter was assembled from the Week 1 workshop and its online follow-up session together: both slide decks, both sessions' own live transcripts (auto-generated, lightly cleaned for readability &ndash; quoted passages are close to verbatim but not a certified transcript), and the class's real, anonymised reaction-time data collected in the workshop (217 trials, 24 students), which the online session reuses to test its own distributional claims. Numbers and charts throughout reflect that specific dataset as it stood at the time of writing; they will not update themselves if the underlying data is later revised. The online session was re-recorded after a live technical issue, which these notes reflect honestly rather than edit around. Framework and definitions follow B&eacute;k&eacute;s &amp; K&eacute;zdi, <em>Data Analysis for Business, Economics, and Policy</em> (2021), Ch. 3, as taught in both sessions.</p>
   <p>Built as a drafting experiment &ndash; not yet reviewed for publication to students.</p>
 </footer>
 
@@ -1207,12 +1416,197 @@
     <text x="200" y="264" font-size="12" fill="currentColor">95% confidence interval</text>
   </svg></div>`;
 
+  /* ================= Online session: distribution families ================= */
+  const normalMu = document.getElementById('normal-mu');
+  const normalMuVal = document.getElementById('normal-mu-val');
+  const normalSigma = document.getElementById('normal-sigma');
+  const normalSigmaVal = document.getElementById('normal-sigma-val');
+
+  function renderNormal() {
+    const mu = +normalMu.value, sigma = +normalSigma.value;
+    normalMuVal.textContent = mu.toFixed(1);
+    normalSigmaVal.textContent = sigma.toFixed(1);
+
+    const FIXED_MIN = -11, FIXED_MAX = 11, NBINS = 40;
+    const binWidth = (FIXED_MAX - FIXED_MIN) / NBINS;
+    const sample = Array.from({ length: 4000 }, d3.randomNormal(mu, sigma));
+    const counts = new Array(NBINS).fill(0);
+    for (const d of sample) {
+      if (d < FIXED_MIN || d > FIXED_MAX) continue;
+      counts[Math.min(Math.floor((d - FIXED_MIN) / binWidth), NBINS - 1)]++;
+    }
+    const rows = counts.map((c, i) => ({ x0: FIXED_MIN + i * binWidth, x1: FIXED_MIN + (i + 1) * binWidth, prop: c / sample.length }));
+
+    const svg = Plot.plot({
+      width: 640, height: 320, marginLeft: 55, marginBottom: 36,
+      style: plotStyle(),
+      x: { label: 'x', domain: [FIXED_MIN, FIXED_MAX] },
+      y: { label: '% of draws', percent: true },
+      marks: [
+        Plot.rectY(rows, { x1: d => d.x0, x2: d => d.x1, y: d => d.prop, fill: '#2f6690', fillOpacity: 0.8 }),
+        Plot.ruleX([0]),
+      ]
+    });
+    const label = `4,000 simulated draws with mean ${mu.toFixed(1)} and standard deviation ${sigma.toFixed(1)}, symmetric and peaking at ${mu.toFixed(1)}.`;
+    mount('normal-chart', accessibleChart(svg, 'This chart shows the characteristic bell shape of a normal distribution. ' + label));
+    document.getElementById('normal-caption').textContent = label;
+  }
+  [normalMu, normalSigma].forEach(el => el.addEventListener('input', renderNormal));
+
+  const lnMu = document.getElementById('lognormal-mu');
+  const lnMuVal = document.getElementById('lognormal-mu-val');
+  const lnSigma = document.getElementById('lognormal-sigma');
+  const lnSigmaVal = document.getElementById('lognormal-sigma-val');
+
+  function renderLognormal() {
+    const mu = +lnMu.value, sigma = +lnSigma.value;
+    lnMuVal.textContent = mu.toFixed(1);
+    lnSigmaVal.textContent = sigma.toFixed(1);
+
+    const FIXED_MAX = 30, NBINS = 40;
+    const binWidth = FIXED_MAX / NBINS;
+    const rng = d3.randomLogNormal(mu, sigma);
+    const sample = Array.from({ length: 4000 }, rng);
+    const counts = new Array(NBINS).fill(0);
+    for (const d of sample) {
+      if (d > FIXED_MAX) continue;
+      counts[Math.min(Math.floor(d / binWidth), NBINS - 1)]++;
+    }
+    const rows = counts.map((c, i) => ({ x0: i * binWidth, x1: (i + 1) * binWidth, prop: c / sample.length }));
+    const svg = Plot.plot({
+      width: 640, height: 300, marginLeft: 55, marginBottom: 36,
+      style: plotStyle(),
+      x: { label: 'x', domain: [0, FIXED_MAX] },
+      y: { label: '% of draws', percent: true },
+      marks: [
+        Plot.rectY(rows, { x1: d => d.x0, x2: d => d.x1, y: d => d.prop, fill: '#2d6a4f', fillOpacity: 0.8 }),
+      ]
+    });
+    const label = `4,000 simulated draws with log-mean ${mu.toFixed(1)} and log-SD ${sigma.toFixed(1)}, most values near zero with a long tail of larger ones.`;
+    mount('lognormal-chart', accessibleChart(svg, 'This chart shows the characteristic right-skewed shape of a log-normal distribution. ' + label));
+    document.getElementById('lognormal-caption').textContent = label;
+  }
+  [lnMu, lnSigma].forEach(el => el.addEventListener('input', renderLognormal));
+
+  function renderPowerLaw() {
+    const alpha = 1.6, xmin = 1;
+    const sample = Array.from({ length: 4000 }, () => xmin * Math.pow(1 - Math.random(), -1 / alpha));
+    const sorted = sample.slice().sort(d3.ascending);
+    const cutoff = d3.quantile(sorted, 0.97);
+    const svg = Plot.plot({
+      width: 640, height: 280, marginLeft: 55, marginBottom: 36,
+      style: plotStyle(),
+      x: { label: 'x', domain: [0, cutoff] },
+      y: { label: '% of draws', percent: true },
+      marks: [
+        Plot.rectY(sample.filter(d => d <= cutoff), Plot.binX({ y: 'proportion' }, { x: d => d, thresholds: 30, fill: '#c8373f', fillOpacity: 0.8 })),
+      ]
+    });
+    mount('powerlaw-chart', accessibleChart(svg, 'This chart shows the characteristic shape of a power-law distribution, where extreme values stay far more common than in a normal or log-normal distribution. 4,000 simulated draws, almost all small, with a very long, fat tail of much larger values.'));
+  }
+
+  const binomN = document.getElementById('binomial-n');
+  const binomNVal = document.getElementById('binomial-n-val');
+
+  function renderBinomial() {
+    const n = +binomN.value, p = 0.3;
+    binomNVal.textContent = n;
+    const sample = Array.from({ length: 4000 }, d3.randomBinomial(n, p));
+    const counts = d3.rollup(sample, v => v.length / sample.length, d => d);
+    const rows = Array.from(counts, ([k, prop]) => ({ k, prop }));
+    const tickStep = Math.max(1, Math.round(n / 10));
+    const xTicks = d3.range(0, n + 1, tickStep);
+    const svg = Plot.plot({
+      width: 640, height: 300, marginLeft: 55, marginBottom: 36,
+      style: plotStyle(),
+      x: { label: `Number of successes (out of ${n})`, domain: [-0.5, n + 0.5], ticks: xTicks, tickFormat: d3.format('d') },
+      y: { label: '% of draws', percent: true },
+      marks: [
+        Plot.rectY(rows, { x1: d => d.k - 0.5, x2: d => d.k + 0.5, y: d => d.prop, fill: '#c97f31', fillOpacity: 0.8 }),
+      ]
+    });
+    const label = `4,000 simulated draws of successes in ${n} trial${n === 1 ? '' : 's'} at 30% probability, peaking around ${Math.round(n * p)}.`;
+    mount('binomial-chart', accessibleChart(svg, 'This chart shows how the shape of a binomial distribution approaches the normal as the number of trials grows. ' + label));
+    document.getElementById('binomial-caption').textContent = label;
+  }
+  binomN.addEventListener('input', renderBinomial);
+
+  const poisLambda = document.getElementById('poisson-lambda');
+  const poisLambdaVal = document.getElementById('poisson-lambda-val');
+
+  function renderPoisson() {
+    const lambda = +poisLambda.value;
+    poisLambdaVal.textContent = lambda;
+    const sample = Array.from({ length: 4000 }, d3.randomPoisson(lambda));
+    const counts = d3.rollup(sample, v => v.length / sample.length, d => d);
+    const rows = Array.from(counts, ([k, prop]) => ({ k, prop }));
+    const xMax = Math.max(15, Math.ceil(lambda + 4 * Math.sqrt(lambda)));
+    const tickStep = Math.max(1, Math.round(xMax / 10));
+    const xTicks = d3.range(0, xMax + 1, tickStep);
+    const svg = Plot.plot({
+      width: 640, height: 300, marginLeft: 55, marginBottom: 36,
+      style: plotStyle(),
+      x: { label: 'Number of events', domain: [-0.5, xMax + 0.5], ticks: xTicks, tickFormat: d3.format('d') },
+      y: { label: '% of draws', percent: true },
+      marks: [
+        Plot.rectY(rows, { x1: d => d.k - 0.5, x2: d => d.k + 0.5, y: d => d.prop, fill: '#c8373f', fillOpacity: 0.8 }),
+      ]
+    });
+    const label = `4,000 simulated draws with an average rate of ${lambda} events, peaking around ${lambda}. In this run, the fewest ever seen was ${d3.min(sample)}, the most ever seen was ${d3.max(sample)}.`;
+    mount('poisson-chart', accessibleChart(svg, 'This chart shows the characteristic shape of a Poisson distribution, concentrated on small counts with a right skew. ' + label));
+    document.getElementById('poisson-caption').textContent = label;
+  }
+  poisLambda.addEventListener('input', renderPoisson);
+
+  function renderOurData() {
+    const RT_FILTER_CUTOFF = 800;
+    const rtFiltered = poolVals.filter(d => d < RT_FILTER_CUTOFF);
+    const logRt = rtFiltered.map(Math.log);
+    const logDomain = d3.extent(logRt);
+    const excluded = poolVals.length - rtFiltered.length;
+
+    const p1 = Plot.plot({
+      width: 330, height: 300, marginLeft: 50, marginBottom: 36,
+      style: plotStyle(),
+      x: { label: 'Reaction time (ms)', domain: [0, RT_FILTER_CUTOFF] },
+      y: { label: '% of trials', percent: true },
+      marks: [
+        Plot.rectY(rtFiltered, Plot.binX({ y: 'proportion' }, { x: d => d, thresholds: 20, fill: '#2f6690', fillOpacity: 0.8 })),
+        Plot.ruleX([0]),
+      ]
+    });
+    const p2 = Plot.plot({
+      width: 330, height: 300, marginLeft: 50, marginBottom: 36,
+      style: plotStyle(),
+      x: { label: 'log(reaction time)', domain: logDomain },
+      y: { label: '% of trials', percent: true },
+      marks: [
+        Plot.rectY(logRt, Plot.binX({ y: 'proportion' }, { x: d => d, thresholds: 20, fill: '#2d6a4f', fillOpacity: 0.8 })),
+        Plot.ruleX([0]),
+      ]
+    });
+    mount('ourdata-raw', accessibleChart(p1, `Raw reaction times under ${RT_FILTER_CUTOFF} milliseconds, right-skewed with a long tail.`));
+    mount('ourdata-log', accessibleChart(p2, 'The same trials after a log transform, closer to symmetric and bell-shaped.'));
+
+    const meanRaw = d3.mean(rtFiltered), medRaw = d3.median(rtFiltered), sdRaw = d3.deviation(rtFiltered);
+    const meanLog = d3.mean(logRt), medLog = d3.median(logRt), sdLog = d3.deviation(logRt);
+    const skewRaw = (meanRaw - medRaw) / sdRaw, skewLog = (meanLog - medLog) / sdLog;
+    const label = `${rtFiltered.length} of ${poolVals.length} trials kept (${excluded} trials of ${RT_FILTER_CUTOFF}ms or slower set aside). Skewness falls from about ${skewRaw.toFixed(2)} on the raw scale to about ${skewLog.toFixed(2)} once logged.`;
+    document.getElementById('ourdata-caption').textContent = label;
+  }
+
   /* ================= initial render ================= */
   renderRaw();
   renderHist();
   renderCentre();
   renderSpread();
   renderBox();
+  renderNormal();
+  renderLognormal();
+  renderPowerLaw();
+  renderBinomial();
+  renderPoisson();
+  renderOurData();
 })();
 </script>
 
