@@ -676,7 +676,7 @@ On paper: write out **every possible pair**, and compute each pair's average.
   for (let i = 0; i < shown.length; i++)
     for (let j = i + 1; j < shown.length; j++)
       pairs.push({
-        pair: `${shown[i].student_name.split(' ')[0]} & ${shown[j].student_name.split(' ')[0]}`,
+        pair: `${shown[i].student_name} & ${shown[j].student_name}`,
         avg: (shown[i].mean_rt + shown[j].mean_rt) / 2,
       })
 
