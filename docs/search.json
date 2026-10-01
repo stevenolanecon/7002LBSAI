@@ -1082,7 +1082,7 @@
     "href": "week2-slides.html#the-t-statistic",
     "title": "Inference: When is a Difference Real?",
     "section": "The t-statistic",
-    "text": "The t-statistic\nThe test statistic measures how far our estimate is from what \\(H_0\\) predicts, in units of standard error.\n\\[t = \\frac{\\hat{s}}{SE(\\hat{s})}\\]\n\n\n\n\n\n\nNote\n\n\n\\(\\hat{s}\\) stands for any estimated statistic — a mean, a difference in means, or (in later weeks) a regression coefficient. The hat (\\(\\hat{}\\)) is standard notation throughout this module: it marks an estimate, computed from our sample, as distinct from the true, unobserved population value it stands in for.\n\n\n\nOne average against a fixed number, \\(\\mu_0\\):\n\\[t = \\frac{\\bar{x} - \\mu_0}{SE(\\bar{x})} \\qquad SE(\\bar{x}) = \\frac{SD}{\\sqrt{n}}\\]\nA difference between two averages, \\(\\bar{x}_A\\) and \\(\\bar{x}_B\\):\n\\[t = \\frac{\\bar{x}_A - \\bar{x}_B}{SE(\\bar{x}_A - \\bar{x}_B)} \\qquad SE(\\bar{x}_A - \\bar{x}_B) = \\sqrt{\\frac{SD_A^2}{n_A} + \\frac{SD_B^2}{n_B}}\\]\n\n\n\n\n\n\nNote\n\n\nThis needs the sampling distribution of \\(\\bar{x}_A - \\bar{x}_B\\) to be approximately normal — not reaction time itself, which we already know is right-skewed. With dozens of trials in each group, the CLT (see “2. Asymptotic normality” earlier) makes that a safe bet regardless of the raw variable’s shape.\n\n\n\n\nSource: Békés & Kézdi (2021), Ch. 6"
+    "text": "The t-statistic\nThe test statistic measures how far our estimate is from what \\(H_0\\) predicts, in units of standard error.\n\\[t = \\frac{\\hat{s}}{SE(\\hat{s})}\\]\n\n\n\n\n\n\nNote\n\n\n\\(\\hat{s}\\) stands for any estimated statistic — a mean, a difference in means, or (in later weeks) a regression coefficient. The hat (\\(\\hat{}\\)) is standard notation throughout this module: it marks an estimate, computed from our sample, as distinct from the true, unobserved population value it stands in for.\n\n\n\nOne average against a fixed number, \\(\\mu_0\\):\n\\[t = \\frac{\\bar{x} - \\mu_0}{SE(\\bar{x})} \\qquad SE(\\bar{x}) = \\frac{SD}{\\sqrt{n}}\\]"
   },
   {
     "objectID": "week2-slides.html#our-device-data",
@@ -1454,5 +1454,33 @@
     "title": "Types of Distribution",
     "section": "Our data, and its log — the answer",
     "text": "Our data, and its log — the answer\n\n{\n  const RT_FILTER_CUTOFF = 800\n  const rtFiltered = rt.filter(d =&gt; d &lt; RT_FILTER_CUTOFF)\n  const logRt = rtFiltered.map(Math.log)\n  const logDomain = d3.extent(logRt)\n\n  const p1 = accessibleChart(Plot.plot({\n    height: 380, width: 420,\n    x: { label: \"Reaction time (ms)\", domain: [0, RT_FILTER_CUTOFF] },\n    y: { label: \"% of trials\", percent: true },\n    marks: [\n      Plot.rectY(rtFiltered, Plot.binX({ y: \"proportion\" },\n        { x: d =&gt; d, thresholds: 20, fill: \"#457b9d\", fillOpacity: 0.8 })),\n      Plot.ruleX([0]),\n    ]\n  }), \"This chart tests the log-normal claim by showing the actual shape of the class's raw reaction times, for comparison with their log beside it. Trials of 800 milliseconds or more are set aside first, since a handful of much slower trials would otherwise dominate the shape; among the rest, the shape is right-skewed.\")\n  const p2 = accessibleChart(Plot.plot({\n    height: 380, width: 420,\n    x: { label: \"log(reaction time)\", domain: logDomain },\n    y: { label: \"% of trials\", percent: true },\n    marks: [\n      Plot.rectY(logRt, Plot.binX({ y: \"proportion\" },\n        { x: d =&gt; d, thresholds: 20, fill: \"#2d6a4f\", fillOpacity: 0.8 })),\n      Plot.ruleX([0]),\n    ]\n  }), \"This chart tests the log-normal claim by showing the class's reaction times after a log transform, for comparison with the raw shape beside it. The shape is closer to symmetric and bell-shaped, supporting the log-normal claim.\")\n\n  return html`&lt;div style=\"display:flex;gap:24px;justify-content:center;\"&gt;${p1}${p2}&lt;/div&gt;`\n}\n\n\n\n\n\n\nRaw reaction times (blue) are right-skewed with a long tail. Their log (green) looks closer to symmetric and bell-shaped — exactly what the log-normal claim predicts."
+  },
+  {
+    "objectID": "week2-slides.html#section-1",
+    "href": "week2-slides.html#section-1",
+    "title": "Inference: When is a Difference Real?",
+    "section": "",
+    "text": "Testing a hypothesis"
+  },
+  {
+    "objectID": "week2-slides.html#the-logic-of-hypothesis-testing-the-setup",
+    "href": "week2-slides.html#the-logic-of-hypothesis-testing-the-setup",
+    "title": "Inference: When is a Difference Real?",
+    "section": "The logic of hypothesis testing: the setup",
+    "text": "The logic of hypothesis testing: the setup\n\nDefine the statistic we want to test, \\(s\\) — a mean, a difference in means, anything we can estimate from data\nWe’re interested in its true value, \\(s_{\\text{true}}\\) — the value in the population, or general pattern, our data represents\nThe value \\(s\\) takes in our own data is an estimate of it, denoted with a hat: \\(\\hat{s}\\)\n\n\nSource: Békés & Kézdi (2021), Ch. 6"
+  },
+  {
+    "objectID": "week2-slides.html#the-logic-of-hypothesis-testing-h_0-vs-h_a",
+    "href": "week2-slides.html#the-logic-of-hypothesis-testing-h_0-vs-h_a",
+    "title": "Inference: When is a Difference Real?",
+    "section": "The logic of hypothesis testing: \\(H_0\\) vs \\(H_A\\)",
+    "text": "The logic of hypothesis testing: \\(H_0\\) vs \\(H_A\\)\n\nState the question as two competing hypotheses about \\(s_{\\text{true}}\\) — only one can be true\n\\(H_0\\), the null hypothesis, specifies a value (or range); \\(H_A\\), the alternative, specifies the other possible values\nTogether, \\(H_0\\) and \\(H_A\\) cover every possibility we’re interested in\n\n\\[H_0: \\; s_{\\text{true}} = 0 \\qquad H_A: \\; s_{\\text{true}} \\neq 0\\]\n\nSource: Békés & Kézdi (2021), Ch. 6"
+  },
+  {
+    "objectID": "week2-slides.html#the-t-statistic-a-difference-between-two-averages",
+    "href": "week2-slides.html#the-t-statistic-a-difference-between-two-averages",
+    "title": "Inference: When is a Difference Real?",
+    "section": "The t-statistic — a difference between two averages",
+    "text": "The t-statistic — a difference between two averages\nFor \\(\\bar{x}_A\\) and \\(\\bar{x}_B\\):\n\\[t = \\frac{\\bar{x}_A - \\bar{x}_B}{SE(\\bar{x}_A - \\bar{x}_B)} \\qquad SE(\\bar{x}_A - \\bar{x}_B) = \\sqrt{\\frac{SD_A^2}{n_A} + \\frac{SD_B^2}{n_B}}\\]\n\n\n\n\n\n\nNote\n\n\nThis needs the sampling distribution of \\(\\bar{x}_A - \\bar{x}_B\\) to be approximately normal — not reaction time itself, which we already know is right-skewed. With dozens of trials in each group, the CLT (see “2. Asymptotic normality” earlier) makes that a safe bet regardless of the raw variable’s shape.\n\n\n\n\nSource: Békés & Kézdi (2021), Ch. 6"
   }
 ]

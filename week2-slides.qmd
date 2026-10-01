@@ -1528,11 +1528,13 @@ Dragging **n** down widens the bootstrap histogram — the same **root-*n* conve
 - A **95% CI** is the estimate ± 2 × SE — a range we expect to contain the true value, and 95% of intervals built this way actually do
 - Using the CI, we can now make a statement about the population, or general pattern, that our data represents
 
----
+## {background-color="#1a1a2e"}
 
-## Testing a hypothesis
+::: {style="text-align: center; padding-top: 180px;"}
+[**Testing a hypothesis**]{style="font-size: 2.2em; color: white;"}
 
----
+
+:::
 
 ## Fisher's tea test
 
@@ -1546,6 +1548,28 @@ Ronald Fisher didn't just take her word for it — and he didn't dismiss her eit
 If she's just guessing, we can calculate exactly how likely she is to get them all right by chance. If she does far better than chance predicts, that's evidence for her claim.
 
 **This is the entire logic of hypothesis testing**, built from one experiment in 1920s Cambridge.
+:::
+
+## The logic of hypothesis testing: the setup
+
+- Define the **statistic** we want to test, $s$ — a mean, a difference in means, anything we can estimate from data
+- We're interested in its **true value**, $s_{\text{true}}$ — the value in the population, or general pattern, our data represents
+- The value $s$ takes *in our own data* is an **estimate** of it, denoted with a hat: $\hat{s}$
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 6
+:::
+
+## The logic of hypothesis testing: $H_0$ vs $H_A$
+
+- State the question as two competing hypotheses about $s_{\text{true}}$ — only one can be true
+- $H_0$, the **null hypothesis**, specifies a value (or range); $H_A$, the **alternative**, specifies the other possible values
+- Together, $H_0$ and $H_A$ cover every possibility we're interested in
+
+$$H_0: \; s_{\text{true}} = 0 \qquad H_A: \; s_{\text{true}} \neq 0$$
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 6
 :::
 
 ## The null is protected
@@ -1592,7 +1616,7 @@ No true difference in reaction time by device, versus: there is one.
 
 ---
 
-## The t-statistic {.smaller}
+## The t-statistic
 
 The test statistic measures how far our estimate is from what $H_0$ predicts, in units of standard error.
 
@@ -1606,7 +1630,9 @@ $\hat{s}$ stands for **any estimated statistic** — a mean, a difference in mea
 
 $$t = \frac{\bar{x} - \mu_0}{SE(\bar{x})} \qquad SE(\bar{x}) = \frac{SD}{\sqrt{n}}$$
 
-**A difference between two averages**, $\bar{x}_A$ and $\bar{x}_B$:
+## The t-statistic — a difference between two averages
+
+For $\bar{x}_A$ and $\bar{x}_B$:
 
 $$t = \frac{\bar{x}_A - \bar{x}_B}{SE(\bar{x}_A - \bar{x}_B)} \qquad SE(\bar{x}_A - \bar{x}_B) = \sqrt{\frac{SD_A^2}{n_A} + \frac{SD_B^2}{n_B}}$$
 
