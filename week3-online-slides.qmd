@@ -38,11 +38,8 @@ df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/mai
 if 'name' in df.columns and 'student_name' not in df.columns:
     df = df.rename(columns={'name': 'student_name'})
 
-# Anonymise real names to Student 1, Student 2, ... — same fixed mapping
-# (alphabetical order of real names) used by the main Week 3 deck, so
-# "Student N" means the same real person in both files.
-_anon_map = {name: f"Student {i + 1}" for i, name in enumerate(sorted(df['student_name'].unique()))}
-df['student_name'] = df['student_name'].map(_anon_map)
+# week1_reaction_times_final.csv's own name/student_name values are already
+# anonymised at the source (Student 1, Student 2, ...).
 
 if 'finger_mm' not in df.columns:
     df['finger_mm'] = None

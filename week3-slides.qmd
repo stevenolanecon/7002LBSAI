@@ -40,14 +40,10 @@ if 'caffeine' not in df.columns:
     df['caffeine'] = 'Unknown'
 df['caffeine'] = df['caffeine'].fillna('Unknown')
 
-# ── Anonymise real student names to Student 1, Student 2, ... ──────────────
-# Fixed mapping: alphabetical order of the real names in the cleaned Week 1
-# dataset — the same rule Week 2's deck uses — so "Student N" means the
-# same real person in both files. The underlying Google Sheet and
-# week1_reaction_times_final.csv itself keep real names; only what this
-# file computes, displays, and publishes from here on is anonymised.
-_anon_map = {name: f"Student {i + 1}" for i, name in enumerate(sorted(df['student_name'].unique()))}
-df['student_name'] = df['student_name'].map(_anon_map)
+# week1_reaction_times_final.csv's own name/student_name values are already
+# anonymised at the source (Student 1, Student 2, ... — real names were
+# never in this file to begin with, only in the live Google Sheet and
+# Week 1's own already-published content).
 
 # finger_mm may not exist on older submissions — coerce and tolerate absence
 if 'finger_mm' not in df.columns:
