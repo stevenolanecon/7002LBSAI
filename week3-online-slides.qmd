@@ -26,13 +26,24 @@ execute:
 ```{python}
 import pandas as pd
 
-# This is the TEST-DATA deck — always reads the synthetic placeholder, never
-# the live Google Sheet. See week3-online-live.qmd for the in-class version.
-df = pd.read_csv("data/synthetic_reaction_times.csv")
-# df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIOZ03GpUJgqvGVmI9cih169mMq0ajLMj6a0VTd2tytB3K5BmX5AUiKQ8FKIL6KUKEcgb-1LR-1eM/pub?gid=0&single=true&output=csv")
+# Week 1's data collection is done and cleaned -- reads the same stable
+# week1_reaction_times_final.csv the Week 2 deck uses, not a synthetic
+# placeholder or a live in-progress Google Sheet. This used to be two
+# separate files (week3-online.qmd on synthetic data, week3-online-live.qmd
+# on the live sheet) -- collapsed back into this one file once real class
+# data existed, same reasoning as Week 2 (see CLAUDE.md's "Single deck per
+# week" entry).
+df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week1_reaction_times_final.csv")
 
 if 'name' in df.columns and 'student_name' not in df.columns:
     df = df.rename(columns={'name': 'student_name'})
+
+# Anonymise real names to Student 1, Student 2, ... — same fixed mapping
+# (alphabetical order of real names) used by the main Week 3 deck, so
+# "Student N" means the same real person in both files.
+_anon_map = {name: f"Student {i + 1}" for i, name in enumerate(sorted(df['student_name'].unique()))}
+df['student_name'] = df['student_name'].map(_anon_map)
+
 if 'finger_mm' not in df.columns:
     df['finger_mm'] = None
 df['finger_mm'] = pd.to_numeric(df['finger_mm'], errors='coerce')
@@ -42,6 +53,19 @@ student_summary = (
     .agg(mean_rt=('reaction_time_ms', 'mean'), finger_mm=('finger_mm', 'first'))
     .reset_index()
     .round(1)
+)
+
+# Same finger_mm correction as the main workshop deck (see week3.qmd's own
+# comment for the full story): 5 of 24 real students have implausible
+# values -- 3 too small (centimetres typed as millimetres), 2 too large (an
+# extra digit) -- imputed here via the same x10/÷10 rule so this file's own
+# finger-length scatter isn't distorted by them. The workshop deck is where
+# students actually work through deciding this; this file just needs the
+# corrected numbers, not a repeat of the task.
+FINGER_LOW_MM, FINGER_HIGH_MM = 40, 150
+student_summary['finger_mm'] = student_summary['finger_mm'].apply(
+    lambda x: x * 10 if pd.notna(x) and x < FINGER_LOW_MM
+    else (x / 10 if pd.notna(x) and x > FINGER_HIGH_MM else x)
 )
 
 # NaN is not valid JSON — clean before ojs_define

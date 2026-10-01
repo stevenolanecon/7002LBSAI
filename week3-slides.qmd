@@ -26,10 +26,13 @@ execute:
 ```{python}
 import pandas as pd
 
-# This is the TEST-DATA deck — always reads the synthetic placeholder, never
-# the live Google Sheet. See week3-live.qmd for the in-class version.
-df = pd.read_csv("data/synthetic_reaction_times.csv")
-# df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIOZ03GpUJgqvGVmI9cih169mMq0ajLMj6a0VTd2tytB3K5BmX5AUiKQ8FKIL6KUKEcgb-1LR-1eM/pub?gid=0&single=true&output=csv")
+# Week 1's data collection is done and cleaned -- reads the same stable
+# week1_reaction_times_final.csv the Week 2 deck uses, not a synthetic
+# placeholder or a live in-progress Google Sheet. This used to be two
+# separate files (week3.qmd on synthetic data, week3-live.qmd on the live
+# sheet) -- collapsed back into this one file once real class data existed,
+# same reasoning as Week 2 (see CLAUDE.md's "Single deck per week" entry).
+df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week1_reaction_times_final.csv")
 
 if 'name' in df.columns and 'student_name' not in df.columns:
     df = df.rename(columns={'name': 'student_name'})
@@ -37,12 +40,21 @@ if 'caffeine' not in df.columns:
     df['caffeine'] = 'Unknown'
 df['caffeine'] = df['caffeine'].fillna('Unknown')
 
+# ── Anonymise real student names to Student 1, Student 2, ... ──────────────
+# Fixed mapping: alphabetical order of the real names in the cleaned Week 1
+# dataset — the same rule Week 2's deck uses — so "Student N" means the
+# same real person in both files. The underlying Google Sheet and
+# week1_reaction_times_final.csv itself keep real names; only what this
+# file computes, displays, and publishes from here on is anonymised.
+_anon_map = {name: f"Student {i + 1}" for i, name in enumerate(sorted(df['student_name'].unique()))}
+df['student_name'] = df['student_name'].map(_anon_map)
+
 # finger_mm may not exist on older submissions — coerce and tolerate absence
 if 'finger_mm' not in df.columns:
     df['finger_mm'] = None
 df['finger_mm'] = pd.to_numeric(df['finger_mm'], errors='coerce')
 
-students = sorted(df['student_name'].unique().tolist())
+students = sorted(df['student_name'].unique().tolist(), key=lambda s: int(s.split()[-1]))
 
 # One row per student: mean reaction time, device, caffeine, finger length
 student_summary = (
@@ -53,6 +65,40 @@ student_summary = (
          finger_mm=('finger_mm', 'first'))
     .reset_index()
     .round(1)
+)
+
+# Real data-quality issue, found while building this deck: 5 of our real
+# students' finger_mm values are physically implausible for an adult index
+# finger (roughly 60-100mm) -- 3 far too small (under 10mm, consistent with
+# being entered in centimetres rather than millimetres) and 2 far too large
+# (700-900mm, consistent with an extra typed digit). Left uncorrected, these
+# 5 points alone were driving the covariance/correlation numbers this
+# session computes downstream (0.36/66,893 with them in, vs ~0.18-0.20/
+# ~1,400-1,500 once corrected -- a real difference in what the slide
+# teaches, not a cosmetic one). Rather than silently fix it, this is turned
+# into the student task below ("Task — what's wrong with our finger-length
+# data?") -- students see the raw, anonymised values first and decide for
+# themselves what's wrong and what to do about it, before the actual
+# resolution (impute, not drop) is revealed. finger_mm_raw is kept
+# unmodified for that task's own table; finger_mm itself is corrected here
+# so every later slide (binning, the scatter, covariance, correlation)
+# already uses the imputed values, matching the resolution the task reveals.
+FINGER_LOW_MM, FINGER_HIGH_MM = 40, 150
+student_summary['finger_mm_raw'] = student_summary['finger_mm']
+student_summary['finger_mm'] = student_summary['finger_mm_raw'].apply(
+    lambda x: x * 10 if pd.notna(x) and x < FINGER_LOW_MM
+    else (x / 10 if pd.notna(x) and x > FINGER_HIGH_MM else x)
+)
+
+# Order-scrambled view of the raw finger-length values for the task slide —
+# student_name is already the anonymised Student-N label from above; rows
+# are shuffled (not shown in Student-1..N order) so the 5 bad values aren't
+# trivially obvious just from their position in the list.
+finger_task_rows = (
+    student_summary[['student_name', 'finger_mm_raw']]
+    .rename(columns={'finger_mm_raw': 'finger_mm'})
+    .sample(frac=1, random_state=7)
+    .reset_index(drop=True)
 )
 
 # Joint device x caffeine counts, one row per student (not per trial)
@@ -68,49 +114,71 @@ joint_table = (
 df_clean = df.astype(object).where(df.notna(), None)
 student_summary_clean = student_summary.astype(object).where(student_summary.notna(), None)
 joint_table_clean = joint_table.astype(object).where(joint_table.notna(), None)
+finger_task_rows_clean = finger_task_rows.astype(object).where(finger_task_rows.notna(), None)
 
 ojs_define(
-    data            = df_clean.to_dict(orient='records'),
-    students        = students,
-    student_summary = student_summary_clean.to_dict(orient='records'),
-    joint_table     = joint_table_clean.to_dict(orient='records'),
+    data              = df_clean.to_dict(orient='records'),
+    students          = students,
+    student_summary   = student_summary_clean.to_dict(orient='records'),
+    joint_table       = joint_table_clean.to_dict(orient='records'),
+    finger_task_rows  = finger_task_rows_clean.to_dict(orient='records'),
 )
 ```
 
 ```{python}
 import numpy as np
 
-# ── A second, separate illustrative dataset for the scatter / bin-scatter /
-# log-transform teaching sequence ("Scatterplot and bin-scatter", "Does
-# logging reaction time help?"). Deliberately NOT finger length -- students
-# are set a task later to build exactly that scatter themselves, so the
-# worked example here uses a different x (a plausible, separate driver of
-# reaction time: hours of sleep the night before), generated to reliably
-# show what logging is *for*. First version used a handful of moderately
-# slow trials -- the resulting raw/log contrast was real but too subtle to
-# read at a glance (R^2 improved only ~1.8x, main cluster still occupied
-# ~60% of either axis). Rebuilt with a few *severe* "very bad day" outliers
-# instead: the main cluster now occupies only ~22% of the raw axis (crushed
-# by the outliers stretching it) vs ~39% of the log axis -- a genuinely
-# visible difference in how much of the chart the actual pattern gets to
-# use, not just a marginally-better R^2. Verified numerically before
-# committing: skew 3.85, log-linear R^2 (~0.24) still roughly 2.4x the raw
-# fit's (~0.10).
+# ── A second, separate, deliberately SYNTHETIC (not our class data) dataset
+# for the scatter / bin-scatter / log-transform teaching sequence
+# ("Scatterplot and bin-scatter", "Does logging reaction time help?").
+# Deliberately NOT finger length -- students are set a task later to build
+# exactly that scatter themselves, so the worked example here uses a
+# different x (a plausible, separate driver of reaction time: hours of
+# sleep the night before), generated to reliably show what logging is
+# *for*. Tried and rejected assigning made-up sleep hours to our own real
+# reaction-time data instead (2026-09-29): with no genuine relationship
+# between the two, raw and logged R^2 came out identical (~0.025 each) --
+# logging can only sharpen a relationship that's actually there, it can't
+# invent one, so this has to stay a fully synthetic illustration.
+#
+# Sizing history, each round verified numerically before committing, not
+# just eyeballed: v1 used a handful of moderately slow trials -- real but
+# too subtle (R^2 improved only ~1.8x, main cluster still occupied ~60% of
+# either axis). v2 used a few *severe* outliers on a 66-point, ~380ms-
+# baseline sample -- better (~22% vs ~39% of axis, R^2 0.10 -> 0.24, a
+# 2.4x gap) but still not dramatic. v3 (current): more points (150, so 2-3
+# extreme outliers are a smaller share of the total and don't wreck the
+# log fit's own R^2 the way they did at n=66), a steeper underlying slope,
+# tighter non-outlier noise, and only 2 but much more severe outliers
+# (2000-2800ms against a ~150-300ms main cluster). This pushes raw R^2 down
+# to ~0.02 -- genuinely undetectable, not just weak -- while log R^2 holds
+# at ~0.22, a qualitative "can't see it" vs "can see it" contrast rather
+# than a "weaker" vs "stronger" one. Confirmed the bin-scatter's own bins
+# still average at least 12 trials each at this larger n (previously 4+).
 np.random.seed(21)
-n_sleep = 66
+n_sleep = 150
 sleep_hours = np.round(np.random.uniform(4, 9.5, n_sleep), 1)
-_a, _b, _sigma = 5.95, 0.09, 0.075
+_a, _b, _sigma = 5.95, 0.12, 0.05
 _log_rt = _a - _b * sleep_hours + np.random.normal(0, _sigma, n_sleep)
 sleep_rt = np.clip(np.exp(_log_rt), 150, None).round(1)
 
-# A few severe "very bad day" trials -- the real-world reason reaction time
+# Two severe "very bad day" trials -- the real-world reason reaction time
 # has a long right tail, deliberately extreme here so the raw-vs-logged
-# contrast is unmistakable rather than subtle
-_rng = np.random.default_rng(5)
-_n_out = 3
+# contrast is unmistakable rather than subtle. Not the first seed tried:
+# seed_out=5 put both outliers in the same 1h sleep bin, producing a
+# visible spike on "The bin-scatter" that undercut that slide's own point
+# about bins being robust to individual lapses; seed_out=9 fixed the spike
+# but the bin-scatter's own mean still wasn't monotonically decreasing.
+# seed_out=15 puts both outliers at the low-sleep end (4.4-4.6h) --
+# narratively coherent (a bad night's sleep coinciding with a bad trial
+# isn't a stretch) -- and gives a genuinely clean, monotonically
+# decreasing bin-scatter with an even stronger R^2 contrast (raw ~0.08,
+# log ~0.35), confirmed against real computed output before committing.
+_rng = np.random.default_rng(15)
+_n_out = 2
 _idx_out = _rng.choice(n_sleep, _n_out, replace=False)
 sleep_hours = np.concatenate([sleep_hours, sleep_hours[_idx_out]])
-sleep_rt    = np.concatenate([sleep_rt, _rng.uniform(650, 900, _n_out).round(1)])
+sleep_rt    = np.concatenate([sleep_rt, _rng.uniform(2000, 2800, _n_out).round(1)])
 
 sleep_scatter_data = [
     {'sleep_hours': float(sleep_hours[i]), 'reaction_time_ms': float(sleep_rt[i])}
@@ -336,10 +404,59 @@ $$E[y \mid x]$$
 Source: Békés & Kézdi (2021), Ch. 4
 :::
 
+## Task — what's wrong with our finger-length data?
+
+::: {.instructions-box}
+Before we use it: here are all ${finger_task_rows.length} of our finger-length measurements, anonymised. Something is wrong with **5 of them**. In pairs: find them, and decide what you'd do about it — drop those students, or try to correct the values? If you'd correct them, what would you correct them *to*, and how confident are you?
+:::
+
+```{ojs}
+{
+  const cols = 4
+  const rows = finger_task_rows
+  const perCol = Math.ceil(rows.length / cols)
+  const columns = Array.from({ length: cols }, (_, c) => rows.slice(c * perCol, (c + 1) * perCol))
+  return html`<div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:0 24px;font-family:sans-serif;font-size:0.9em;margin-top:16px;">
+    ${columns.map(col => `<table style="border-collapse:collapse;width:100%;">
+      <caption class="visually-hidden">Anonymised finger-length measurements, one column of the full class list.</caption>
+      <thead><tr style="border-bottom:2px solid #1a1a2e;">
+        <th scope="col" style="text-align:left;padding:4px 8px;">Student</th>
+        <th scope="col" style="text-align:right;padding:4px 8px;">mm</th>
+      </tr></thead>
+      <tbody>
+        ${col.map(r => `<tr style="border-bottom:1px solid #eee;">
+          <td style="padding:4px 8px;color:#666;">${r.student_name}</td>
+          <td style="padding:4px 8px;text-align:right;font-weight:700;">${r.finger_mm}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`).join('')}
+  </div>`
+}
+```
+
+## What we'll actually do {.smaller}
+
+::: {.instructions-box}
+Two error patterns, not one random mess:
+:::
+
+::: {.fragment}
+- **Too small** (under 10mm): almost certainly **centimetres entered where millimetres were asked for** — a 6.9 is very plausibly a real 69mm finger, just in the wrong unit
+- **Too large** (700–900mm): almost certainly **an extra typed digit** — 900 is very plausibly a real 90mm finger with a stray zero
+:::
+
+::: {.fragment}
+**We impute, not drop.** Both patterns have an identifiable, high-confidence correction (×10 or ÷10) that lands the value squarely back in the range every other student's real measurement falls in — dropping 5 of 24 students (over 20% of the class) would throw away perfectly good reaction-time data for those students, for a finger-length problem that's actually fixable.
+:::
+
+::: {.fragment}
+This wouldn't be the right call for every data problem — imputation only makes sense when you have a **specific, well-justified reason** to believe what the correct value should be. A value that's merely unusual, with no diagnosable cause, is a much better candidate for dropping (or for the "keep it, it's a genuine feature of the process" option from Week 1's own three-question framework) than for guessing a replacement.
+:::
+
 ## Task — compute the conditional mean, by hand
 
 ::: {.instructions-box}
-Using the class's finger-length and reaction-time data: split students into three roughly equal-sized groups by finger length (short / medium / long), then compute the mean reaction time within each group. Compare to the chart on the next slide.
+Using the class's finger-length and reaction-time data (corrected, as we just agreed): split students into three roughly equal-sized groups by finger length (short / medium / long), then compute the mean reaction time within each group. Compare to the chart on the next slide.
 :::
 
 ## Binning finger length
@@ -384,7 +501,7 @@ Using the class's finger-length and reaction-time data: split students into thre
 A **scatterplot** puts two variables on two axes, one dot per observation. It's one of the most powerful ways to see whether a relationship exists between two variables — no formula required, just look.
 
 ::: {.fragment}
-Not finger length this time — you'll build that scatter yourselves shortly. Here it's a separate illustrative case: **hours of sleep the night before**, against reaction time, for 69 trials.
+Not finger length this time — you'll build that scatter yourselves shortly. Here it's a **simulated, illustrative case, not our own class data**: hours of sleep the night before, against reaction time, for 152 made-up trials.
 :::
 
 :::: {.shrink-on-reveal data-frag="wk3-scatter-frag" style="--large-height:460px;--small-height:300px;--shrink-scale:0.6522;"}
@@ -444,7 +561,7 @@ The **conditional mean per bin** — like the finger-length "Short / Medium / Lo
 ::::
 
 ::: {.fragment #wk3-binscatter-frag}
-Every bin here is an average of at least 4 trials (labelled above each dot) — a lapse trial can still pull a bin's mean up a little, but it can no longer dominate the whole chart the way it did as a single raw point. The downward trend reads far more clearly than in the raw scatter.
+Every bin here is an average of at least a dozen trials (labelled above each dot) — a lapse trial can still pull a bin's mean up a little, but it can no longer dominate the whole chart the way it did as a single raw point. The downward trend reads far more clearly than in the raw scatter.
 :::
 
 ## Does logging reaction time help? {.smaller}
@@ -516,7 +633,7 @@ function fitLine(rows, yOf) {
 :::
 
 ::: {.fragment data-fragment-index="1"}
-Same data, same kind of fitted line, side by side. The lapse trials are still there on both — logging doesn't delete them — but the logged fit's R² is genuinely higher: logging didn't just move the dots around, it made the linear relationship measurably tighter. Logging a skewed variable is a tool, not a rule: it helps here only because it actually improves the fit, and the online session goes further into why.
+Same data, same kind of fitted line, side by side. The lapse trials are still there on both — logging doesn't delete them — but look at what they do to each scale: on the **raw** axis they're so extreme the whole relationship is barely visible (R² ≈ 0.08 — weak). **Logged**, the same two points barely stretch the axis, and the downward trend most students missed on the raw scatter is suddenly obvious (R² ≈ 0.35 — over four times stronger). Logging a skewed variable is a tool, not a rule: it helps here only because it actually improves the fit, and the online session goes further into why.
 :::
 
 ## Task — plot finger length against reaction time
@@ -562,7 +679,7 @@ $$Cov[x,y] = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{n-1}$$
 - Can be any positive or negative number — units depend on the units of x and y
 - Like the SD back in Week 1, this divides by $n-1$, not $n$ — the same small-sample correction, applied here too
 
-:::: {.shrink-on-reveal data-frag="wk3-covviz-frag" style="--large-height:340px;--small-height:230px;--shrink-scale:0.6765;"}
+:::: {.shrink-on-reveal data-frag="wk3-covviz-frag" style="--large-height:352px;--small-height:225px;--shrink-scale:0.6392;"}
 ::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
@@ -572,7 +689,7 @@ $$Cov[x,y] = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{n-1}$$
   const colored = rows.map(d => ({ ...d, sign: (d.finger_mm - mx) * (d.mean_rt - my) >= 0 ? "Same sign (+)" : "Opposite sign (−)" }))
 
   return Plot.plot({
-    height: 340,
+    height: 310,
     marginLeft: 60,
     x: { label: "Finger length (mm)" },
     y: { label: "Mean reaction time (ms)" },
@@ -732,6 +849,60 @@ It's simple, and sometimes good enough. But a single proxy only ever captures **
 :::
 :::
 
+## Standardisation — the z-score
+
+Sleep (hours), energy (1–10), grip strength (kg) — three completely different scales. You can't just add 8.5 hours of sleep to a grip strength of 33kg and call the result "alertness." **Standardisation** fixes this: it converts any variable onto one common, unit-free scale, based on how far each value sits from its own average.
+
+$$z = \frac{x - \bar{x}}{SD[x]}$$
+
+- Subtract the mean: $z = 0$ sits exactly at the average
+- Divide by the SD: $z$ is now measured in **"number of SDs from the mean"** — the same scale, whatever the variable's original units
+- $z = +1$ means one SD above average; $z = -1.5$ means one and a half SDs below
+- Every standardised variable now lives on the same scale, and can be safely compared or averaged
+
+## Standardisation — worked example
+
+Sleep hours for the six people we'll use next:
+
+```{ojs}
+{
+  const people = [
+    { name: "Amara", sleep: 8.5 },
+    { name: "Ben",    sleep: 5.0 },
+    { name: "Chidi",  sleep: 7.0 },
+    { name: "Dana",   sleep: 4.5 },
+    { name: "Elin",   sleep: 9.0 },
+    { name: "Femi",   sleep: 6.0 },
+  ]
+  const vals = people.map(p => p.sleep)
+  const m = d3.mean(vals)
+  const s = d3.deviation(vals) * Math.sqrt((vals.length - 1) / vals.length)
+  const rows = people.map(p => ({ ...p, z: (p.sleep - m) / s }))
+
+  return html`<p style="font-family:sans-serif;font-size:0.85em;margin-bottom:6px;">Mean = ${m.toFixed(2)}h, SD = ${s.toFixed(2)}h</p>
+  <table style="width:70%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.8em;">
+    <thead><tr style="background:#1a1a2e;color:white;">
+      <th style="padding:1px 14px;text-align:left;">Person</th>
+      <th style="padding:1px 14px;text-align:right;">Sleep (h)</th>
+      <th style="padding:1px 14px;text-align:right;">z(sleep)</th>
+    </tr></thead>
+    <tbody>
+      ${rows.map((r,i) => `<tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
+        <td style="padding:1px 14px;">${r.name}</td>
+        <td style="padding:1px 14px;text-align:right;">${r.sleep}</td>
+        <td style="padding:1px 14px;text-align:right;${r.z>=0?'color:#2d6a4f;':'color:#e63946;'}">${r.z >= 0 ? '+' : ''}${r.z.toFixed(2)}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table>`
+}
+```
+
+Amara slept the most, and her $z\approx+1.1$ says so directly: about one SD above the group's own average. Dana's $z\approx-1.3$ says the opposite. That's the whole idea — the raw hours are gone, replaced by a common yardstick.
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 4
+:::
+
 ## Average several (as z-scores) {.smaller}
 
 Suppose we want one "alertness" score for six people, from three imperfect proxies: hours of sleep, self-rated energy (1–10), and grip strength (kg).
@@ -766,7 +937,7 @@ Suppose we want one "alertness" score for six people, from three imperfect proxi
 ```
 
 ::: {.fragment}
-Different units, different scales — can't just add them. **Standardise each to a z-score first**, $z = (x - \bar{x}) / SD[x]$, then average the three z-scores per person.
+Apply the same z-score formula to all three proxies, then average the three z-scores per person.
 
 ```{ojs}
 {

@@ -31,6 +31,12 @@ live_df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSA
 if 'name' in live_df.columns and 'student_name' not in live_df.columns:
     live_df = live_df.rename(columns={'name': 'student_name'})
 
+# Anonymise real names to Student 1, Student 2, ... — same fixed mapping
+# (alphabetical order of real names) used by the main Week 2 deck, so
+# "Student N" means the same real person in both places.
+_anon_map = {name: f"Student {i + 1}" for i, name in enumerate(sorted(live_df['student_name'].unique()))}
+live_df['student_name'] = live_df['student_name'].map(_anon_map)
+
 live_student_means = (
     live_df.groupby("student_name")["reaction_time_ms"].mean().round(1)
     .reset_index()

@@ -49,11 +49,23 @@ if 'caffeine' not in live_df.columns:
     live_df['caffeine'] = 'Unknown'
 live_df['caffeine'] = live_df['caffeine'].fillna('Unknown')
 
-live_students = sorted(live_df["student_name"].unique().tolist())
+# ── Anonymise real student names to Student 1, Student 2, ... ──────────────
+# Fixed mapping: alphabetical order of the real names in the cleaned Week 1
+# dataset, so "Student N" means the same real person in every file that
+# reads this same CSV the same way (Week 2 onward — see Week 3's own
+# anonymisation comment for the matching mapping there). The underlying
+# Google Sheet and week1_reaction_times_final.csv itself keep real names —
+# Week 1's own already-published content isn't being changed — only what
+# gets computed, displayed, and published from here on is anonymised.
+_anon_map = {name: f"Student {i + 1}" for i, name in enumerate(sorted(live_df['student_name'].unique()))}
+live_df['student_name'] = live_df['student_name'].map(_anon_map)
+
+live_students = sorted(live_df["student_name"].unique().tolist(), key=lambda s: int(s.split()[-1]))
 n_students    = len(live_students)   # actual class size — not assumed to be 15
 
 live_student_means = (
     live_df.groupby("student_name")["reaction_time_ms"].mean().round(1)
+    .reindex(live_students)  # numeric Student-N order, not alphabetical-string order
     .reset_index()
     .rename(columns={"reaction_time_ms": "mean_rt"})
     .to_dict(orient="records")
