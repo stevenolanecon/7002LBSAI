@@ -561,7 +561,7 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
 
 <h3>Asymptotic normality (the Central Limit Theorem)</h3>
 
-<p><strong>The sampling distribution of the mean approaches Normal as sample size grows &ndash; regardless of the shape of the underlying population.</strong> This is the genuinely surprising part. Our own class's reaction times are not Normal at all &ndash; Week 1's own histogram was sharply right-skewed, with a long tail. It doesn't matter. Resample from our real, skewed 24 student-means at three different sample sizes and watch the shape change anyway.</p>
+<p><strong>The sampling distribution of the mean approaches Normal as sample size grows &ndash; regardless of the shape of the underlying population.</strong> This is the genuinely surprising part. Our own class's reaction times are not Normal at all &ndash; Week 1's own histogram was sharply right-skewed, with a long tail. It doesn't matter. Simulate samples from a right-skewed distribution shaped like our own data (same mean, same spread), at three different sample sizes, and compare each histogram against the theoretical Normal curve the CLT predicts.</p>
 
 <div class="figure" id="fig-clt">
   <div class="figure-head"><span class="flabel">Figure</span><h4>From lumpy to Normal, regardless of the starting shape</h4></div>
@@ -569,7 +569,7 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
   <p class="figure-caption" id="clt-caption"></p>
 </div>
 
-<p>At n&nbsp;=&nbsp;5 the shape is genuinely uneven. By n&nbsp;=&nbsp;30 it's unmistakably bell-shaped, even though every single draw still comes from the same skewed, bimodal real data. This is the <strong>Central Limit Theorem</strong>, and it is one of the most useful facts in all of statistics: it's the reason the Normal distribution underpins so much of frequentist statistical testing, even when the raw data it's built from looks nothing like a bell curve.</p>
+<p>At n&nbsp;=&nbsp;5 the histogram is genuinely uneven, and only loosely follows the dashed Normal curve. By n&nbsp;=&nbsp;30 the two are hard to tell apart, even though every draw still comes from the same right-skewed population. This is the <strong>Central Limit Theorem</strong>, and it is one of the most useful facts in all of statistics: it's the reason the Normal distribution underpins so much of frequentist statistical testing, even when the raw data it's built from looks nothing like a bell curve.</p>
 
 <div class="callout">
   Neither of these results needed the DGP to actually be Normal &ndash; only that it has a finite mean and variance, and that enough independent draws get averaged together. That's a far weaker requirement than it might feel like on first encounter, which is exactly why it shows up everywhere.
@@ -785,16 +785,12 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
 
 <h3>Does the 95% promise actually hold?</h3>
 
-<p>Simulate 100 samples from the same DGP, build a 95% CI from each one the way just described, and count how many actually contain the true mean. The honest answer, checked directly rather than assumed: a little under 95% of the time, not exactly 95%.</p>
+<p>Simulate 100 samples from the same DGP, build a 95% CI from each one the way just described, and count how many actually contain the true mean.</p>
 
 <div class="figure" id="fig-ci-coverage">
   <div class="figure-head"><span class="flabel">Figure</span><h4>100 confidence intervals, built from 100 simulated samples</h4></div>
   <div class="figure-body"><div class="chart-wrap" id="ci-coverage-chart"></div></div>
   <p class="figure-caption" id="ci-coverage-caption"></p>
-</div>
-
-<div class="callout gold">
-  <strong>93%, not 95%.</strong> The &plusmn;1.96 rule is itself an approximation that only becomes exact as the sample gets large. At a class our size (n&nbsp;=&nbsp;24), it runs a touch optimistic &ndash; the real long-run coverage is closer to 93%. The exact small-sample fix for this is still ahead, later in the module. For now, the honest headline number is 93%, and it's worth sitting with that rather than quietly rounding it up to the clean 95%.
 </div>
 
 <blockquote class="field-note">
@@ -813,7 +809,7 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
   <li>We want to generalise from our data &ndash; that's statistical inference, and the gap between what we can claim and what we actually measured is <strong>external validity</strong>.</li>
   <li>Any statistic computed from a sample has its own <strong>sampling distribution</strong> &ndash; a genuinely different object from the distribution of the raw variable.</li>
   <li>Two ways to estimate the uncertainty in a statistic: a <strong>formula</strong> ($SE = SD/\sqrt{n}$) or the <strong>bootstrap</strong> (resample with replacement, look at the spread). Under the right conditions, they agree.</li>
-  <li>A <strong>95% CI</strong> is the estimate &plusmn; (critical value &times; SE) &ndash; a range we expect to contain the true value, though at a class our size the real long-run rate is closer to 93%.</li>
+  <li>A <strong>95% CI</strong> is the estimate &plusmn; (critical value &times; SE) &ndash; a range we expect to contain the true value.</li>
   <li>Using that CI, we can finally make a statement about the population &ndash; not just the room.</li>
 </ul>
 
@@ -841,6 +837,15 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
   ];
 
   const MU_POP = 1070.1, SD_POP = 888.6, N_STUDENTS = 24;
+
+  // 1,000 simulated class-means reproducing the deck's own "Unbiasedness"
+  // slide exactly — same simulate_means() algorithm, same sim_mu/sim_sd
+  // bias-correction and floor-clip, same np.random.seed(7) — computed once
+  // offline in Python and embedded here, since this is the deck's own
+  // internal chart variable and was never itself published as a file (unlike
+  // SAMPLE_MEANS below, which is the real, separately-generated download the
+  // samples.csv task uses).
+  const DECK_SAMPLE_MEANS = [1104.34,978.08,956.97,1246.49,1205.43,794.78,1094.48,950.72,991.43,1099.16,1027.52,990.58,1087.05,974.43,1010.3,971.69,1028.92,742.21,1033.36,959.03,1058.24,859.61,875.68,1136.31,1406.04,1121.77,1004.3,1032.6,789.19,1285.55,842.22,1122.2,857.03,822.16,934.2,1368.94,889.94,1038.92,1088.52,1260.28,1182.77,1347.13,1168.64,800.24,967.41,1106.36,1084.15,1279.79,763.07,1300.13,917.7,1316.82,1125.58,1072.68,1043.68,1073.29,946.73,708.09,1267.14,1345.81,1336.22,1046.89,1009.89,839.71,846.41,1215.12,1404.46,1057.82,874.84,946.46,1183.18,744.5,946.24,809.18,892.39,972.75,878.01,1306.93,1021.57,815.15,889.5,984.99,1027.34,998.41,966.32,803.0,1346.0,1326.32,961.31,1220.08,1109.32,692.8,1383.04,1526.14,862.96,1259.96,999.78,1052.32,1231.84,1164.61,1187.63,1362.35,1275.19,854.17,1262.41,1225.0,1439.15,1246.65,963.16,1062.33,940.0,1040.13,981.14,1022.87,931.02,982.33,1163.32,1158.29,894.56,965.59,1041.71,1016.74,793.76,1002.43,971.23,1188.14,953.16,802.76,1197.08,889.88,887.46,1363.28,719.46,697.76,1088.94,818.08,1144.34,1230.93,1165.32,991.73,807.79,1422.15,831.8,1140.32,936.22,1540.4,1211.56,1048.17,1041.12,1225.86,918.69,808.1,1189.6,1187.89,1152.89,838.05,1183.98,827.78,1047.47,834.91,1020.13,1147.38,1008.77,767.41,1346.6,1295.91,1317.07,1218.49,910.74,830.79,1061.85,1110.27,529.27,1122.72,958.04,789.32,920.19,830.01,1364.19,876.84,1279.82,857.87,1233.21,1234.38,1268.12,1131.06,1050.6,1145.58,1150.8,1007.79,976.71,798.28,837.21,1131.4,1092.95,1143.09,1275.84,1043.8,1124.41,1006.53,1191.88,677.25,1058.08,1204.73,1214.54,1247.78,872.65,1203.79,1294.18,1178.69,1101.73,1274.4,790.59,930.19,893.99,1150.04,957.05,836.88,1012.39,877.93,1032.97,982.26,958.54,1118.64,1242.5,1055.77,1007.84,1182.1,980.62,1072.23,1165.81,1105.57,1135.01,1020.88,1082.18,1039.81,1032.27,924.9,1306.92,1051.11,1263.92,1312.81,1109.77,1384.12,1091.1,700.69,1482.3,1206.2,901.78,937.28,1041.38,907.48,822.94,850.38,978.14,1132.4,880.15,1063.13,989.14,1010.38,924.1,1005.27,1260.79,1105.85,1211.45,1292.46,946.8,1104.05,1069.17,1179.23,1175.0,935.73,998.94,1265.12,945.14,1015.78,1068.96,944.45,1313.71,1514.4,843.31,894.8,991.13,1009.43,1414.29,1186.77,1043.46,1127.01,790.98,1231.78,1116.04,836.79,1050.92,657.4,1104.79,991.75,866.95,1272.29,909.36,967.76,982.88,1022.18,1287.79,790.18,1100.41,1122.14,1021.39,881.64,783.86,1128.66,906.78,949.98,1068.53,949.39,1073.97,1103.65,814.8,1087.0,1563.26,943.11,1063.49,1517.04,1188.52,1076.47,1148.83,940.04,980.25,1430.46,1097.54,1047.77,810.46,1281.45,1208.86,998.5,639.51,1187.17,901.28,1191.88,1157.67,1251.92,1037.79,1218.79,1220.46,1195.43,1050.41,814.81,833.95,951.99,731.57,1201.02,1232.85,841.29,981.19,1192.04,798.65,978.29,906.08,1148.34,860.55,1250.43,1002.2,1397.4,1555.1,1253.24,1066.54,1013.86,975.0,1029.7,1226.04,794.43,1315.77,1213.74,917.51,1040.41,1406.48,861.32,1112.62,1390.33,1342.81,1238.53,1105.47,955.31,947.08,1075.37,782.07,1039.89,964.03,1227.03,1263.22,990.29,1165.69,1208.2,938.55,1018.65,1155.4,1074.64,1219.96,1415.14,1229.22,1021.39,948.77,915.88,1280.57,1059.93,1397.14,1026.96,879.93,988.14,1032.04,1077.34,1061.41,1288.7,980.81,1079.7,1049.53,846.38,1292.9,1012.55,1003.15,944.28,1220.63,1267.62,904.43,1121.62,1388.41,928.69,1051.84,1262.62,934.69,1104.54,1110.49,822.03,1225.26,1408.46,1139.0,1177.6,951.11,1119.48,778.21,1053.44,1507.45,1049.81,1125.07,937.72,1003.15,1141.21,847.49,792.47,1247.09,953.5,957.48,1251.08,668.36,953.85,996.3,662.14,1215.85,929.26,938.27,1415.19,962.2,1059.3,1131.39,847.62,1006.42,1082.93,1257.07,1003.81,1070.92,1197.73,1030.52,1211.69,1027.39,849.96,983.44,1186.22,1115.14,735.33,1011.27,1141.15,1122.83,1386.34,1177.29,692.71,842.45,768.5,997.33,1066.86,1057.39,1343.39,819.98,1324.67,1069.53,1191.82,985.26,1176.89,905.74,1024.48,860.99,1137.09,1155.24,957.62,948.24,1103.68,1161.17,927.29,856.36,1291.08,971.37,881.21,961.24,1082.03,995.14,924.61,701.32,1334.3,940.76,1394.28,693.43,735.59,980.91,868.12,740.24,924.29,1060.48,1232.9,1428.73,878.18,1190.18,1038.84,1349.1,1223.57,1019.42,1351.62,1168.51,1206.22,1097.75,865.89,1107.61,1049.93,873.01,813.34,772.04,958.68,884.08,1413.41,982.14,1407.43,1099.2,739.64,745.98,1104.73,1074.45,941.78,1104.14,726.69,1321.67,769.37,1076.68,1158.87,933.25,1119.63,739.24,843.95,840.81,1005.92,948.86,998.51,1252.84,1133.64,1370.55,1455.9,1417.65,927.98,894.89,1107.94,1358.08,1133.32,983.84,1172.15,1245.22,1078.29,1225.63,1290.79,1066.43,1114.54,1374.67,1201.46,959.96,1093.95,1327.36,1064.2,1251.95,1119.78,1361.46,772.65,1514.7,864.04,884.05,1144.16,1014.53,1217.01,871.25,924.32,930.24,1036.92,868.74,1195.78,806.23,1085.18,1081.32,1061.5,1144.71,1375.82,1227.16,1068.23,952.46,1121.48,918.58,1095.13,1175.63,972.37,986.6,689.32,1002.08,1152.59,1111.3,1023.41,1251.83,1323.83,846.6,1003.7,1243.47,1257.99,1078.67,1073.45,821.11,770.56,961.9,1016.23,1280.78,1056.3,1110.63,1066.06,859.72,961.55,1192.88,1048.42,799.57,1056.36,1110.54,964.41,1122.61,1124.02,1054.04,819.69,962.27,915.15,1262.07,1540.84,850.96,1167.88,929.85,1635.04,1013.76,1326.24,993.13,798.44,1126.96,1098.3,995.05,1120.66,1459.9,960.6,1102.0,1217.15,965.8,1025.59,1161.17,932.98,971.48,943.62,797.93,1151.19,1021.25,845.53,1010.19,1113.04,1068.54,806.12,1273.54,964.74,1452.53,897.17,1391.76,991.04,917.72,1271.43,1076.65,1242.2,995.3,1173.0,953.88,843.46,1319.04,705.59,1117.93,850.32,1014.9,967.32,1183.48,1079.63,929.09,1085.46,1256.67,754.27,1258.2,1066.69,1094.79,1508.02,1096.23,1141.22,975.45,1202.23,1111.9,1022.27,1103.95,941.72,915.48,943.36,824.37,970.69,1101.62,827.48,1173.55,952.93,1193.32,1088.61,808.55,1217.74,1053.22,1011.65,1057.81,927.45,1266.64,883.19,1342.72,1258.44,992.2,1150.42,979.07,726.44,1237.94,1119.63,1277.06,916.1,1130.28,1010.1,949.04,1200.54,975.8,1037.4,977.36,1183.58,1316.71,1311.69,1017.31,820.69,1111.84,1066.31,1249.73,1145.89,1164.13,1253.89,1463.53,947.83,1005.27,1156.01,946.42,1274.86,1009.27,1321.74,1097.55,1099.22,829.19,1149.38,1143.4,785.8,821.31,1046.31,1222.38,1391.3,802.6,918.91,927.48,1092.56,939.88,871.26,1041.34,968.57,887.0,1024.48,1366.5,773.22,1041.15,836.87,1018.85,1266.5,1195.74,947.14,1079.75,1275.44,1048.22,1266.35,1073.34,1432.4,1132.09,1332.34,1193.3,979.16,1010.76,1091.48,858.11,1332.53,1062.87,950.35,859.5,966.2,839.22,681.02,868.71,1201.5,977.05,831.05,978.57,912.49,1227.28,1042.0,753.13,912.79,1109.99,977.31,1277.11,977.11,1177.14,748.52,1064.24,1277.21,1380.08,1305.3,992.18,1062.55,1193.26,547.63,1191.05,996.24,1183.46,816.81,1169.63,1239.32,934.29,1405.21,1223.35,1000.43,1091.45,781.21,936.78,1150.96,1096.6,1152.82,1324.25,1099.3,1201.15,1042.5,995.26,1522.23,1171.79,876.02,744.0,1060.46,933.6,821.01,1078.89,1302.5,743.85,1226.85,1041.12,1065.8,1093.38,1097.16,1472.95,1012.85,1310.18,1136.09,972.73,911.47,937.75,1161.39,1157.61,1274.82,1102.35,708.51,953.86,974.65,1350.17,922.69,672.32,1060.0,1252.23,763.58,1020.86,1006.97,1557.73,1130.68,1335.11,1444.88,1214.04,1115.37,985.54,1093.38,1124.35,853.16,1142.35,1261.92,1239.81,868.71,1052.65,946.39,889.91,1028.38,740.51,1027.06,987.92,1021.68,993.53,1469.18,853.31,1199.74,1226.92,1368.47,889.09,1085.44,935.97,1158.15,1130.1,1203.94,1348.46,1021.89,1169.79,713.28,538.22,941.63,1250.86,1171.14,618.51,932.89,1230.85,1232.45,1125.47,1333.1,1359.39,706.92,1093.6,1250.15,997.15,1041.95,1126.17,862.24,1222.47,806.39,978.87,1179.02,1112.71,1089.01,933.0,872.91,1300.57,955.43,1070.7,944.86,1141.83,1191.06,1069.02,1118.97,1209.97,783.61,1269.23,1608.27,1094.29,1160.53,1040.83,817.49,673.39,1064.45,1005.3,1294.38,1038.83,865.74,1177.4,1054.81];
 
   // 1,000 real simulated class-means, generated by the deck's own Python
   // pipeline and published as data/sample_student_means.csv — collapsed
@@ -1038,12 +1043,19 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
       `The dashed line marks the true mean, 1,070.1 ms, in all three panels. Shape and centre, side by side: ${summaries.join('; ')}. The true population SD is 888.6 ms.`;
   }
 
-  /* ================= Part Seven: Unbiasedness ================= */
+  /* ================= Part Seven: Unbiasedness =================
+     Uses DECK_SAMPLE_MEANS (defined above) rather than the published
+     sample_student_means.csv. That file is a real, genuine simulation too,
+     but it's a *different* one: it's generated by the deck's own two-level
+     between/within-student calibration, built specifically for the download
+     task, not the single-level simulate_means() the deck's own "Unbiasedness"
+     slide actually runs. Reusing the task CSV here gave a visibly different
+     (though equally real) convergence line from the one in the slides. */
   function renderUnbiased() {
-    const n = SAMPLE_MEANS.length;
+    const n = DECK_SAMPLE_MEANS.length;
     const running = [];
     let sum = 0;
-    for (let i = 0; i < n; i++) { sum += SAMPLE_MEANS[i]; running.push(sum / (i + 1)); }
+    for (let i = 0; i < n; i++) { sum += DECK_SAMPLE_MEANS[i]; running.push(sum / (i + 1)); }
     const pts = running.map((y, i) => ({ x: i + 1, y }));
 
     const svg = Plot.plot({
@@ -1063,7 +1075,62 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
     document.getElementById('unbiased-caption').textContent = label;
   }
 
-  /* ================= Part Seven: CLT (bootstrap-resampled from real 24 students) ================= */
+  /* ================= Part Seven: CLT (skewed distribution vs. theoretical Normal) =================
+     Deliberately not a bootstrap resample of the 24 real students — that
+     technique (sampling with replacement from a fixed dataset) isn't
+     introduced until Part Nine, and using it silently here to build this
+     chart would smuggle in a method before it's been explained. Instead,
+     this draws fresh values from a right-skewed Log-Normal distribution
+     calibrated to our own data's real mean and spread (so the shape is
+     genuinely non-Normal, matching the real right skew of reaction time,
+     without relying on a technique not yet taught), and overlays the
+     theoretical Normal(MU_POP, SD_POP/sqrt(n)) curve the CLT predicts. */
+  function simulateSkewedMeans(n, reps) {
+    const sigmaLN = Math.sqrt(Math.log(1 + (SD_POP / MU_POP) ** 2));
+    const muLN = Math.log(MU_POP) - sigmaLN ** 2 / 2;
+    const rng = d3.randomLogNormal(muLN, sigmaLN);
+    const out = new Array(reps);
+    for (let r = 0; r < reps; r++) {
+      let sum = 0;
+      for (let i = 0; i < n; i++) sum += rng();
+      out[r] = sum / n;
+    }
+    return out;
+  }
+  function renderCLT() {
+    const panels = [5, 15, 30].map(n => ({ n, vals: simulateSkewedMeans(n, 2000), se: SD_POP / Math.sqrt(n) }));
+    const row = document.getElementById('clt-chart-row');
+    row.innerHTML = '';
+    panels.forEach(p => {
+      const xmin = 0, xmax = Math.ceil(d3.max(p.vals) / 100) * 100 + 200;
+      const bw = Math.max(50, Math.round(xmax / 18 / 10) * 10);
+      const curve = d3.range(xmin, xmax, (xmax - xmin) / 120).map(x => ({
+        x, y: (p.vals.length * bw) * (1 / (p.se * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * ((x - MU_POP) / p.se) ** 2)
+      }));
+      const svg = Plot.plot({
+        width: 210, height: 220, marginLeft: 38, marginBottom: 32,
+        style: plotStyle(),
+        x: { label: null, domain: [xmin, xmax], ticks: 3 },
+        y: { label: null },
+        marks: [
+          Plot.rectY(p.vals.map(v => ({ x: v })), Plot.binX({ y: 'count' }, { x: 'x', thresholds: d3.range(xmin, xmax + bw, bw), fill: '#e63946', fillOpacity: 0.7 })),
+          Plot.line(curve, { x: 'x', y: 'y', stroke: '#1a1a2e', strokeWidth: 1.8, strokeDasharray: '4,3' }),
+          Plot.ruleX([0]),
+        ]
+      });
+      const div = document.createElement('div');
+      const cap = document.createElement('p');
+      cap.style.cssText = 'text-align:center;font-size:0.8em;color:var(--ink-faint);margin-top:6px;';
+      cap.innerHTML = `<strong style="color:var(--ink);">n = ${p.n}</strong>`;
+      div.appendChild(accessibleChart(svg, `Sampling distribution of the mean at n = ${p.n}, 2,000 simulated samples, with the theoretical Normal curve overlaid as a dashed line.`));
+      div.appendChild(cap);
+      row.appendChild(div);
+    });
+    document.getElementById('clt-caption').textContent =
+      '2,000 simulated samples at three different sample sizes, drawn from a right-skewed distribution matching our class’s own mean and spread. The dashed line is the theoretical Normal curve the CLT predicts – a loose fit at n = 5, barely distinguishable from the histogram by n = 30.';
+  }
+
+  /* ================= Part Nine: bootstrap (interactive) ================= */
   function bootstrapMeans(vals, n, reps) {
     const out = new Array(reps);
     for (let r = 0; r < reps; r++) {
@@ -1073,37 +1140,6 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
     }
     return out;
   }
-  function renderCLT() {
-    const vals = STUDENT_MEANS.map(d => d.mean_rt);
-    const panels = [5, 15, 30].map(n => ({ n, vals: bootstrapMeans(vals, n, 2000) }));
-    const row = document.getElementById('clt-chart-row');
-    row.innerHTML = '';
-    panels.forEach(p => {
-      const xmin = 0, xmax = Math.ceil(d3.max(p.vals) / 100) * 100 + 200;
-      const bw = Math.max(50, Math.round(xmax / 18 / 10) * 10);
-      const svg = Plot.plot({
-        width: 210, height: 220, marginLeft: 38, marginBottom: 32,
-        style: plotStyle(),
-        x: { label: null, domain: [xmin, xmax], ticks: 3 },
-        y: { label: null },
-        marks: [
-          Plot.rectY(p.vals.map(v => ({ x: v })), Plot.binX({ y: 'count' }, { x: 'x', thresholds: d3.range(xmin, xmax + bw, bw), fill: '#e63946', fillOpacity: 0.7 })),
-          Plot.ruleX([0]),
-        ]
-      });
-      const div = document.createElement('div');
-      const cap = document.createElement('p');
-      cap.style.cssText = 'text-align:center;font-size:0.8em;color:var(--ink-faint);margin-top:6px;';
-      cap.innerHTML = `<strong style="color:var(--ink);">n = ${p.n}</strong>`;
-      div.appendChild(accessibleChart(svg, `Sampling distribution of the mean at n = ${p.n}, from 2,000 resamples of our real 24 students.`));
-      div.appendChild(cap);
-      row.appendChild(div);
-    });
-    document.getElementById('clt-caption').textContent =
-      '2,000 resamples (with replacement) from our real, right-skewed 24 student-means, at three different sample sizes. The shape visibly smooths toward Normal as n grows from 5 to 30, even though every draw comes from the same skewed real data.';
-  }
-
-  /* ================= Part Nine: bootstrap (interactive) ================= */
   const bootB = document.getElementById('boot-B');
   const bootBVal = document.getElementById('boot-B-val');
   function renderBootstrap() {
