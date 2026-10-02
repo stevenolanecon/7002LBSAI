@@ -1,0 +1,1310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Inference: When Is a Difference Real?</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.17/dist/plot.umd.min.js"></script>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['$$', '$$']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #fdfbf6;
+    --paper-raised: #ffffff;
+    --paper-sunk: #f6f1e7;
+    --ink: #1a1a2e;
+    --ink-soft: #4a4d63;
+    --ink-faint: #86869c;
+    --rule: #e6ddc9;
+    --accent: #2f6690;
+    --accent-soft: #e8f0f5;
+    --warm: #c8373f;
+    --warm-soft: #fbeceb;
+    --gold: #c97f31;
+    --green: #2d6a4f;
+    --green-soft: #eaf5ef;
+    --quote-bg: #eef7f7;
+    --quote-border: #bfe0df;
+    --quote-ink: #1e4a49;
+    --chip-bg: #f1ece0;
+    --code-bg: #f4f0e6;
+    --shadow: 0 1px 2px rgba(26,26,46,0.06), 0 8px 24px -12px rgba(26,26,46,0.18);
+    --serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    --sans: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #14151f;
+      --paper-raised: #1c1e2b;
+      --paper-sunk: #10111a;
+      --ink: #eef0f6;
+      --ink-soft: #b7bbcf;
+      --ink-faint: #7c8098;
+      --rule: #303350;
+      --accent: #7fb2d9;
+      --accent-soft: #1c2c38;
+      --warm: #ff8a86;
+      --warm-soft: #2e1c1d;
+      --gold: #f2b872;
+      --green: #6fbb95;
+      --green-soft: #14261f;
+      --quote-bg: #142726;
+      --quote-border: #29504c;
+      --quote-ink: #bfe7e2;
+      --chip-bg: #23253a;
+      --code-bg: #191b2a;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #14151f;
+    --paper-raised: #1c1e2b;
+    --paper-sunk: #10111a;
+    --ink: #eef0f6;
+    --ink-soft: #b7bbcf;
+    --ink-faint: #7c8098;
+    --rule: #303350;
+    --accent: #7fb2d9;
+    --accent-soft: #1c2c38;
+    --warm: #ff8a86;
+    --warm-soft: #2e1c1d;
+    --gold: #f2b872;
+    --green: #6fbb95;
+    --green-soft: #14261f;
+    --quote-bg: #142726;
+    --quote-border: #29504c;
+    --quote-ink: #bfe7e2;
+    --chip-bg: #23253a;
+    --code-bg: #191b2a;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--accent-soft); color: var(--ink); }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  h1, h2, h3, h4 { font-family: var(--serif); color: var(--ink); text-wrap: balance; line-height: 1.18; font-weight: 600; }
+  p { line-height: 1.68; color: var(--ink-soft); }
+  strong { color: var(--ink); font-weight: 600; }
+
+  /* ---------- shell layout ---------- */
+  .shell {
+    display: grid;
+    grid-template-columns: 240px minmax(0,1fr);
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  @media (max-width: 880px) {
+    .shell { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    padding: 56px 16px 38px;
+    border-bottom: 1px solid var(--rule);
+    background:
+      radial-gradient(ellipse 900px 320px at 15% -10%, var(--accent-soft), transparent 60%),
+      var(--paper);
+  }
+  .hero-inner { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; display:flex; align-items:center; gap: 10px; flex-wrap: wrap;
+  }
+  .eyebrow .dot { width:5px; height:5px; border-radius:50%; background: var(--warm); display:inline-block; }
+  .hero h1 { font-size: clamp(2.1rem, 4.6vw, 3.1rem); margin: 14px 0 10px; max-width: 16ch; }
+  .hero .dek { font-size: 1.15rem; color: var(--ink-soft); max-width: 62ch; line-height: 1.55; margin: 0 0 26px; }
+  .hero .dek em { color: var(--ink); font-style: normal; border-bottom: 2px solid var(--gold); }
+
+  .headline-strip {
+    display: flex; gap: 0; flex-wrap: wrap;
+    border: 1px solid var(--rule); border-radius: 14px; overflow: hidden;
+    background: var(--paper-raised); box-shadow: var(--shadow);
+    max-width: 780px;
+  }
+  .headline-strip .stat {
+    flex: 1 1 150px; padding: 16px 20px; border-right: 1px solid var(--rule);
+  }
+  .headline-strip .stat:last-child { border-right: none; }
+  .headline-strip .stat .n {
+    font-family: var(--serif); font-size: 1.7rem; font-weight: 700; color: var(--accent);
+    font-variant-numeric: tabular-nums; display:block;
+  }
+  .headline-strip .stat .n.warm { color: var(--warm); }
+  .headline-strip .stat .l { font-size: 12.5px; color: var(--ink-faint); margin-top: 2px; }
+
+  /* ---------- TOC ---------- */
+  nav.toc {
+    padding: 34px 20px 40px 24px;
+    font-family: var(--sans);
+  }
+  nav.toc .toc-label { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 10px; display:block; }
+  .toc-block.chapter-nav { padding-bottom: 18px; margin-bottom: 18px; border-bottom: 1px solid var(--rule); }
+  nav.toc ol.chapter-list { list-style: none; margin: 0; padding: 0; columns: 1; }
+  nav.toc ol.chapter-list li { margin-bottom: 2px; }
+  nav.toc .chapter-link { display: block; padding: 8px 10px; border-radius: 8px; text-decoration: none; }
+  nav.toc .chapter-link strong { display: block; font-family: var(--serif); font-size: 13.5px; color: var(--ink); font-weight: 600; }
+  nav.toc .chapter-link .chapter-sub { display: block; font-size: 11px; color: var(--ink-faint); margin-top: 1px; line-height: 1.3; }
+  nav.toc a.chapter-link:hover { background: var(--paper-sunk); }
+  nav.toc .chapter-link.current { background: var(--accent-soft); cursor: default; }
+  nav.toc .chapter-link.current strong { color: var(--accent); }
+  nav.toc .chapter-link:before { content: none; }
+  nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: sec; }
+  nav.toc li { counter-increment: sec; margin-bottom: 2px; }
+  nav.toc a {
+    display: flex; gap: 9px; padding: 6px 8px; border-radius: 7px;
+    color: var(--ink-soft); text-decoration: none; font-size: 13.5px; line-height: 1.35;
+  }
+  nav.toc a:before {
+    content: counter(sec, decimal-leading-zero); font-family: var(--mono); font-size: 11px;
+    color: var(--ink-faint); padding-top: 1px; flex-shrink: 0;
+  }
+  nav.toc a:hover { background: var(--paper-sunk); color: var(--ink); }
+  nav.toc a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  nav.toc a.active:before { color: var(--accent); }
+  @media (max-width: 880px) {
+    nav.toc { position: static; border-bottom: 1px solid var(--rule); padding: 18px 20px; }
+    nav.toc ol { columns: 2; column-gap: 20px; }
+    nav.toc.desktop-sticky { display: none; }
+  }
+  @media (min-width: 881px) {
+    nav.toc.desktop-sticky { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; }
+    .mobile-toc { display: none; }
+  }
+
+  /* ---------- main column ---------- */
+  main { padding: 8px 24px 100px; min-width: 0; }
+  .col { max-width: 700px; margin: 0 auto; }
+
+  section.chapter { padding-top: 54px; scroll-margin-top: 14px; }
+  section.chapter:first-of-type { padding-top: 40px; }
+  .chapter-kicker {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 6px;
+  }
+  section.chapter h2 { font-size: clamp(1.5rem, 3vw, 1.95rem); margin: 0 0 18px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  section.chapter h3 { font-size: 1.18rem; margin: 34px 0 12px; }
+  section.chapter > p { margin: 0 0 16px; font-size: 1.02rem; }
+  section.chapter ul, section.chapter ol { color: var(--ink-soft); line-height: 1.68; padding-left: 22px; }
+  section.chapter li { margin-bottom: 6px; }
+  section.chapter li strong { color: var(--ink); }
+
+  /* first-paragraph drop treatment on the very first section only */
+  #real-or-noise > p:first-of-type::first-letter {
+    font-family: var(--serif); font-size: 3.6em; float: left; line-height: 0.85; padding: 6px 8px 0 0;
+    color: var(--warm); font-weight: 700;
+  }
+
+  /* ---------- inline components ---------- */
+  .lede-figure {
+    display: flex; gap: 20px; align-items: flex-start; margin: 0 0 20px; padding-bottom: 4px;
+  }
+  .lede-figure .art {
+    flex: 0 0 168px; width: 168px; height: 168px; border-radius: 12px; overflow: hidden;
+    background: linear-gradient(150deg, var(--accent-soft), var(--paper-sunk));
+    display:flex; align-items:center; justify-content:center; box-shadow: var(--shadow);
+  }
+  @media (max-width: 560px) { .lede-figure { flex-direction: column; } .lede-figure .art { width: 100%; height: 150px; } }
+
+  blockquote.field-note {
+    margin: 24px 0; padding: 16px 20px 16px 18px;
+    background: var(--quote-bg); border-left: 3px solid var(--quote-border); border-radius: 4px 10px 10px 4px;
+  }
+  blockquote.field-note .tag {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--quote-ink); opacity: 0.85; display: block; margin-bottom: 6px;
+  }
+  blockquote.field-note p { margin: 0; color: var(--quote-ink); font-size: 0.98rem; font-style: italic; line-height: 1.6; }
+  blockquote.field-note p + p { margin-top: 8px; }
+
+  .callout {
+    margin: 22px 0; padding: 16px 20px; border-radius: 10px; border: 1px solid var(--rule);
+    background: var(--paper-sunk); font-size: 0.96rem; color: var(--ink-soft); line-height: 1.6;
+  }
+  .callout strong { color: var(--ink); }
+  .callout.gold { border-color: color-mix(in srgb, var(--gold) 40%, var(--rule)); background: color-mix(in srgb, var(--gold) 10%, var(--paper-sunk)); }
+
+  .formula-block {
+    margin: 20px 0; padding: 18px 22px; background: var(--code-bg); border-radius: 10px;
+    border: 1px solid var(--rule); overflow-x: auto; text-align: center; font-size: 1.05rem;
+  }
+  .formula-caption { text-align: center; font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin-top: -12px; margin-bottom: 20px; }
+
+  code, .inline-code { font-family: var(--mono); font-size: 0.86em; background: var(--code-bg); padding: 2px 6px; border-radius: 4px; color: var(--ink); }
+  pre.code-block {
+    font-family: var(--mono); font-size: 0.82rem; background: var(--code-bg); border: 1px solid var(--rule);
+    border-radius: 10px; padding: 16px 18px; overflow-x: auto; line-height: 1.55; color: var(--ink);
+    margin: 16px 0;
+  }
+  pre.code-block .c { color: var(--ink-faint); }
+  pre.code-block .k { color: var(--accent); }
+
+  table.data-table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 0.92rem; overflow-x: auto; display: block; }
+  table.data-table thead, table.data-table tbody { display: table; width: 100%; table-layout: fixed; }
+  table.data-table th { text-align: left; font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 600; padding: 8px 12px; border-bottom: 2px solid var(--ink); }
+  table.data-table td { padding: 9px 12px; border-bottom: 1px solid var(--rule); color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data-table tr:last-child td { border-bottom: none; }
+  table.data-table td:first-child, table.data-table th:first-child { color: var(--ink); font-weight: 500; }
+
+  .term-list { list-style: none; padding: 0; margin: 18px 0; }
+  .term-list li { display: grid; grid-template-columns: 170px 1fr; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .term-list li:last-child { border-bottom: none; }
+  .term-list dt, .term-list .term { font-weight: 600; color: var(--ink); font-family: var(--serif); }
+  @media (max-width: 560px) { .term-list li { grid-template-columns: 1fr; gap: 3px; } }
+
+  /* ---------- interactive figure shell ---------- */
+  .figure {
+    margin: 26px 0; background: var(--paper-raised); border: 1px solid var(--rule); border-radius: 14px;
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .figure-head { padding: 16px 20px 12px; border-bottom: 1px solid var(--rule); }
+  .figure-head .flabel { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .figure-head h4 { margin: 4px 0 0; font-size: 1.05rem; }
+  .figure-body { padding: 16px 20px; }
+  .figure-caption { padding: 0 20px 18px; font-size: 0.86rem; color: var(--ink-faint); line-height: 1.5; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 16px 22px; align-items: center; padding: 12px 4px 18px; font-size: 13px; }
+  .ctl { display: flex; align-items: center; gap: 8px; }
+  .ctl .lbl { color: var(--ink-soft); white-space: nowrap; }
+  .ctl input[type=range] { accent-color: var(--accent); cursor: pointer; width: 110px; }
+  .ctl .val { font-family: var(--mono); font-weight: 600; min-width: 46px; color: var(--accent); font-size: 12.5px; }
+
+  .chart-wrap { overflow-x: auto; }
+  .chart-wrap svg { display: block; margin: 0 auto; }
+  .chart-row { display: flex; gap: 20px; flex-wrap: wrap; }
+  .chart-row > div { flex: 1 1 200px; min-width: 0; }
+
+  .mini-table-wrap { overflow-x: auto; }
+
+  /* ---------- collapsible code box ---------- */
+  details.code-reveal {
+    margin: 20px 0; border: 1px solid var(--rule); border-radius: 10px; overflow: hidden;
+    background: var(--paper-raised);
+  }
+  details.code-reveal summary {
+    cursor: pointer; padding: 12px 18px; font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
+    color: var(--accent); list-style: none; display: flex; align-items: center; gap: 9px;
+    background: var(--paper-sunk); user-select: none;
+  }
+  details.code-reveal summary::-webkit-details-marker { display: none; }
+  details.code-reveal summary::before { content: '\25B8'; font-size: 0.85em; transition: transform 0.15s ease; display: inline-block; }
+  details.code-reveal[open] summary::before { transform: rotate(90deg); }
+  details.code-reveal .code-reveal-body { padding: 2px 18px 16px; }
+  details.code-reveal .code-reveal-body p { font-size: 0.9rem; margin: 12px 0 0; }
+
+  /* ---------- divider ---------- */
+  .divider {
+    margin: 60px 0 0; padding: 46px 24px; background: var(--ink); border-radius: 16px; text-align: center;
+    color: #f2f2f6;
+  }
+  .divider .k { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: #8fb4cc; }
+  .divider h3 { color: #fff; font-size: 1.5rem; margin: 10px 0 0; }
+  .divider p { color: #c3c4d6; max-width: 46ch; margin: 10px auto 0; }
+
+  /* ---------- footer ---------- */
+  footer.colophon {
+    max-width: 700px; margin: 70px auto 0; padding: 26px 0 0; border-top: 1px solid var(--rule);
+    font-size: 0.86rem; color: var(--ink-faint); line-height: 1.6;
+  }
+  footer.colophon strong { color: var(--ink-soft); }
+
+  @media (max-width: 400px) {
+    .hero { padding: 40px 12px 30px; }
+    main { padding: 8px 14px 80px; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="toc desktop-sticky" id="toc"></nav>
+
+  <main>
+    <div class="hero" style="margin: -8px -24px 30px; border-radius: 0;">
+      <div class="hero-inner" style="padding:0;">
+        <div class="eyebrow"><span class="dot"></span>7002LBSAI &middot; Research Methods in Analytics &middot; Chapter Two</div>
+        <h1>Inference: When Is a Difference Real?</h1>
+        <p class="dek">Lecture notes reconstructed from the Week 2 workshop &ndash; built from the live transcript, the slide deck, and the <em>class's own reaction-time data</em>. This chapter covers everything the workshop reached: the sampling distribution, the standard error, the bootstrap, and confidence intervals. Hypothesis testing itself is still to come.</p>
+        <div class="headline-strip">
+          <div class="stat"><span class="n">24</span><span class="l">students, one real class</span></div>
+          <div class="stat"><span class="n">1,070ms</span><span class="l">our assumed true mean</span></div>
+          <div class="stat"><span class="n">1,000</span><span class="l">simulated replays of our class</span></div>
+          <div class="stat"><span class="n">715&ndash;1,426ms</span><span class="l">our 95% confidence interval</span></div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="toc mobile-toc" id="toc-mobile"></nav>
+
+    <div class="col">
+
+<section class="chapter" id="real-or-noise">
+<div class="chapter-kicker">Part One</div>
+<h2>Is the Gap Real, or Just Noise?</h2>
+
+<p>I was sitting more or less where you are, ten years ago, doing a similar kind of module. I'm not going to pretend it came easily. I have my old marks from that first undergraduate econometrics course somewhere, and the first time I sat it I scraped a 42. I went back for a master's, the same stuff came around again, and that time I came away with a distinction. Nothing about my brain changed in between &ndash; I just kept plugging away at it until it clicked. If this chapter feels hard in places, that's not a sign you're doing it wrong. It's a sign you're doing a master's.</p>
+
+<p>Week 1 ended with a real, visible gap in our own data: phone users looked faster than laptop users, by something like 300 milliseconds. That gap is not in dispute &ndash; it is sitting right there in the numbers we collected. The question this chapter exists to answer is a different one entirely: <strong>if we ran the exact same exercise again next week, with the same twenty-four of us, would that gap look the same? Bigger? Smaller? Could it even flip direction?</strong></p>
+
+<div class="mini-table-wrap" id="devicetable"></div>
+
+<p>Nobody in the room can answer that question by staring harder at the table above. Answering it properly is the whole business of statistical <strong>inference</strong>: using the one dataset we actually have to say something responsible about a world we didn't get to fully observe. That's what this chapter builds, piece by piece.</p>
+</section>
+
+<section class="chapter" id="external-validity">
+<div class="chapter-kicker">Part Two</div>
+<h2>What Are We Allowed to Claim? (External Validity)</h2>
+
+<p>Suppose, for the sake of argument, that the device gap turns out to be real and not chance. What, exactly, would that actually entitle us to say? Only this: that the gap is real for <em>this</em> class, on <em>the day</em> it was collected, using <em>this</em> specific task. Nothing yet about phone and laptop users in general &ndash; twenty-four self-selecting business analytics master's students on one Friday afternoon are a long way from "everyone."</p>
+
+<p>That gap &ndash; between what a dataset can actually show and what we'd like to claim from it &ndash; has a name: <strong>external validity</strong>. It asks whether the pattern sitting in our data is the same as the general pattern we actually care about. It is a genuinely different question from <strong>internal validity</strong> (did we run the experiment itself correctly &ndash; were we measuring what we thought we were measuring, the way Week 1's finger-length discussion raised).</p>
+
+<h3>Three places the threat usually hides</h3>
+
+<ul class="term-list">
+  <li><span class="term">Time</span><span>We have data from the past, or from one specific session. We usually care about the future.</span></li>
+  <li><span class="term">Space</span><span>Our data is one class, in one room, on one day. Would the same pattern hold somewhere else?</span></li>
+  <li><span class="term">Sub-groups</span><span>Our data is this cohort. Would it hold for a different group of people?</span></li>
+</ul>
+
+<p>I set groups loose on exactly this question for our own data, and the real answers the room came back with are worth keeping, because they're sharper than anything I could invent as a textbook example.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;You'd just done three hours of learning Python, then I came in and said, right, do this reaction-time experiment. If you'd done it at nine in the morning, fresh, I'd say more than likely those reaction times would be quicker. Most people in the universe haven't just sat through a three-hour Python class before they react to something.&rdquo;</p>
+</blockquote>
+
+<p>That's a real <strong>time</strong> threat, specific to our own data, not a generic textbook warning. The same groups raised a real <strong>space</strong> threat (the room itself, the specific laptops and phones on hand) and a real <strong>sub-groups</strong> threat (this is a notably young, tech-comfortable cohort &ndash; gaming experience in particular came up as something that could easily be pushing reaction times faster than a more representative population would show).</p>
+
+<div class="callout">
+  <strong>There's no tick-box version of this.</strong> You run an experiment, and you keep asking how what you measured here might fail to generalise, staying honest about the specific threats rather than pretending you've eliminated them. Every real dataset carries some of these threats somewhere. The job is knowing which ones apply to yours.
+</div>
+
+<div class="callout">
+  <strong>Task, in the workshop.</strong> Groups of 3&ndash;4, five minutes: using Time / Space / Sub-groups, list the threats to external validity in the reaction-time data we collected, and be ready to present one threat per category.
+</div>
+
+<div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), <em>Data Analysis for Business, Economics, and Policy</em>, Ch. 5</div>
+</section>
+
+<section class="chapter" id="sampling-distribution">
+<div class="chapter-kicker">Part Three</div>
+<h2>One Sample Among Many</h2>
+
+<p>Our Week 1 data is one dataset &ndash; one of many that could have been collected. Run the exercise again next week and the numbers move, partly just by chance. Those many possible datasets are, conceptually, repeated samples from the same underlying <strong>data-generating process (DGP)</strong>: the whole tangle of eyesight, dexterity, finger length, attention, and hundreds of other things that combine to produce a reaction time.</p>
+
+<p>Because the data could have come out differently, any <strong>statistic</strong> computed from it &ndash; the mean, say &ndash; has its own distribution too. Today's mean differs from next week's mean, which differs from the week after's. That distribution of a statistic, across repeated samples, is called its <strong>sampling distribution</strong>, and it is worth being completely explicit about why it keeps tripping people up: it is a genuinely different object from the distribution of the variable itself.</p>
+
+<div class="callout gold">
+  <strong>Two distributions, not one.</strong> This is the single idea worth slowing down for in this whole chapter.
+  <ul style="margin:10px 0 0;">
+    <li><strong>The distribution of the variable</strong> &ndash; Week 1's own histogram, 217 individual reaction times, each one a single tap.</li>
+    <li><strong>The sampling distribution of the mean</strong> &ndash; what you'd get if you repeated the whole 24-student exercise many times and plotted <em>each repetition's own mean</em>, once per repetition.</li>
+  </ul>
+  The first is built from individual observations. The second is built from <em>statistics</em>, one per imagined repeat of the entire experiment. Mixing the two up is the most common way to get lost in what follows.
+</div>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;This is what we call pedagogy &ndash; this is understanding what a sampling distribution is. And speaking personally, I really struggled to understand this concept myself. So we're going to go through it step by step.&rdquo;</p>
+</blockquote>
+
+<div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 5</div>
+</section>
+
+<section class="chapter" id="pairs-by-hand">
+<div class="chapter-kicker">Part Four</div>
+<h2>Building a Sampling Distribution by Hand</h2>
+
+<p>Before touching a computer, it's worth building one sampling distribution by hand, on a population small enough to see completely. Take five real students from our own Week 1 data and <em>pretend</em> &ndash; just for this exercise &ndash; that these five are the <em>entire</em> population we care about. Their true average, across all five, is the one number we actually want.</p>
+
+<div class="mini-table-wrap" id="pairs-population-table"></div>
+
+<p>Now impose an artificial restriction: you're only allowed to sample <strong>two</strong> of the five at a time. Write out every possible pair, and compute each pair's own average.</p>
+
+<div class="figure" id="fig-pairs">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>Ten pairs, ten different averages</h4></div>
+  <div class="figure-body"><div class="chart-wrap" id="pairs-chart"></div></div>
+  <p class="figure-caption" id="pairs-caption"></p>
+</div>
+
+<p>Ten possible pairs from five people, and ten different averages &ndash; some close to the true mean of all five, some a long way off. That spread, from a sample of just two, is the sampling distribution in miniature. Scale this exact idea up to repeated classes of twenty-four, sampled from a much larger population, and you have the real thing.</p>
+</section>
+
+<section class="chapter" id="week1-dgp">
+<div class="chapter-kicker">Part Five</div>
+<h2>Our Assumed Data-Generating Process</h2>
+
+<p>Collapse last week's raw trials down to one average reaction time per student, and the 24 resulting numbers have their own shape &ndash; a mean, a spread, a distribution. Fit a Normal curve to that shape (two parameters, mean and standard deviation, exactly as Week 1's Online Session covered) and you get something you can actually simulate from.</p>
+
+<div class="figure" id="fig-dgp">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>The distribution we're assuming</h4></div>
+  <div class="figure-body"><div class="chart-wrap" id="dgp-chart"></div></div>
+  <p class="figure-caption" id="dgp-caption"></p>
+</div>
+
+<div class="callout">
+  You may notice this curve allows for negative reaction times &ndash; a real side effect of fitting a Normal distribution whose standard deviation (888.6ms) is nearly as large as its own mean (1,070.1ms). Obviously, that can't happen in the real world, and we haven't allowed it in any of the simulated data used in this chapter &ndash; every simulated value is floor-clipped at a small positive minimum before use. The underlying statistical ideas we're exploring are unaffected either way.
+</div>
+
+<div class="callout">
+  A quick footnote: this is also where the <strong>n&minus;1</strong> correction from Week 1's standard-deviation formula actually earns its keep &ndash; the real reason it exists is covered properly in <a href="week1-lecture-notes.html#spread" target="_blank" rel="noopener">Chapter One, "Measuring the Spread"</a>, rather than repeated here.
+</div>
+
+<p>This Normal(μ, σ) curve <em>is</em> our assumed data-generating process: an assumption we're choosing to make, because we have no way to observe the real one directly. We wouldn't normally treat the result of a one-off data-collection exercise like our reaction-time test this way &ndash; but doing so here helps us understand some genuinely powerful underlying statistics, which is exactly why it's worth the slightly artificial setup. Everything else in this chapter follows from taking that assumption seriously enough to compute with it.</p>
+
+<div class="mini-table-wrap" id="dgp-panel"></div>
+</section>
+
+<section class="chapter" id="thousand-samples">
+<div class="chapter-kicker">Part Six</div>
+<h2>A Thousand Simulated Classes</h2>
+
+<p>Here is the payoff of assuming a DGP: a computer can pretend to rerun last week's experiment. Draw 24 values from Normal(1070.1, 888.6) and average them, and you have one simulated class's mean &ndash; a single fresh draw from the sampling distribution, standing in for "what if we did this again next week?"</p>
+
+<details class="code-reveal">
+  <summary>Show the Python behind the simulation</summary>
+  <div class="code-reveal-body">
+    <pre class="code-block">import numpy as np
+
+<span class="c"># mu_pop, sd_pop, n_students all come from our own Week 1 data</span>
+def simulate_means(n, reps):
+    draws = np.random.normal(mu_pop, sd_pop, (reps, n))
+    return draws.mean(axis=1)
+
+sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulated class means</span></pre>
+    <p>This is the core idea, simplified for reading. The real deck's version adds a floor-clip and a small calibration step, because our class's standard deviation (888.6ms) is almost as large as its mean (1,070.1ms) &ndash; left unclipped, an occasional simulated reaction time would come out negative, which isn't physically possible. That correction doesn't change the concept above, just keeps every simulated value plausible.</p>
+  </div>
+</details>
+
+<div class="figure" id="fig-second-sample">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>One simulated replay, against our real class</h4></div>
+  <div class="figure-body"><div class="chart-wrap" id="second-sample-chart"></div></div>
+  <p class="figure-caption" id="second-sample-caption"></p>
+</div>
+
+<p>Same <em>n</em> both times &ndash; our real class of 24, and one simulated class of 24 &ndash; so the two panels are directly comparable. The simulated class is different in its specific numbers, as it should be, but similar in its overall shape: that's the DGP assumption doing its job.</p>
+
+<div class="callout">
+  <strong>Task, in the workshop.</strong> Download the pre-generated <code>sample_student_means.csv</code>: 1,000 simulated replays of a class like ours, already collapsed to one row per sample &times; student. For each sample, average its 24 student means down to one number &ndash; that sample's own overall mean &ndash; for samples 1&ndash;10, then 1&ndash;100, then all 1,000, plotting a histogram at each stage. What is the mean of those sample-level means? The standard deviation? You are not plotting raw reaction times &ndash; what are you plotting the distribution <em>of</em>?
+</div>
+
+<p>Do that once, and one simulated class is a curiosity. Do it <strong>a thousand times</strong>, and you can watch the sampling distribution build itself in front of you &ndash; which is exactly what the figure below does, from the real simulated data behind that task.</p>
+
+<div class="figure" id="fig-samples">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>The sampling distribution, building up</h4></div>
+  <div class="figure-body">
+    <div class="chart-row" id="samples-chart-row"></div>
+  </div>
+  <p class="figure-caption" id="samples-caption"></p>
+</div>
+
+<p>Two things happen at once as the sample count climbs from 10 to 1,000, and it's worth naming both separately, because the task is really asking two different questions:</p>
+
+<ol>
+  <li><strong>The shape smooths out.</strong> Ten samples gives a lumpy, uneven histogram &ndash; not much more than a bar chart. By a thousand, it's unmistakably bell-shaped.</li>
+  <li><strong>The mean of the means converges on the true mean.</strong> With only 10 samples, the average of those averages can sit well away from 1,070.1ms. By 1,000, it's landed close.</li>
+</ol>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;A lot is flying at you fast at this point &ndash; these are not easy concepts to grasp. It's almost like watching a very weird TV series that you need to watch again a couple of times to get the full plot. You will get there.&rdquo;</p>
+</blockquote>
+
+<div class="callout gold">
+  <strong>Two different numbers, both called "n" &ndash; don't conflate them.</strong> A question from the room, almost word for word: <em>"why does the mean get closer to the truth the more we have?"</em> It's worth being precise about <em>what</em> is growing.
+  <ul style="margin:10px 0 0;">
+    <li><strong>Sample size</strong> (24 here) &ndash; how many <em>students</em> are averaged together inside <em>one</em> simulated class.</li>
+    <li><strong>Number of samples</strong> (10, 100, 1,000 here) &ndash; how many <em>separate simulated classes</em> you've run, each with its own mean.</li>
+  </ul>
+  Growing the <em>number of samples</em> is what smooths the histogram above and pulls the mean-of-means toward the truth. Growing the <em>sample size</em> does something related but different &ndash; it's covered on its own in Part Eight, "The Standard Error."
+</div>
+</section>
+
+<section class="chapter" id="unbiased-clt">
+<div class="chapter-kicker">Part Seven</div>
+<h2>Why This Works: Unbiasedness and the Central Limit Theorem</h2>
+
+<p>The two things Part Six just showed happening both have names, and both are doing real, load-bearing work for the rest of this module.</p>
+
+<h3>Unbiasedness</h3>
+
+<p><strong>The mean of the sampling distribution equals the true population mean.</strong> Track the running average of the simulated class-means as more and more of them accumulate, and watch it settle toward the true 1,070.1ms.</p>
+
+<div class="figure" id="fig-unbiased">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>Converging on the truth</h4></div>
+  <div class="figure-body"><div class="chart-wrap" id="unbiased-chart"></div></div>
+  <p class="figure-caption" id="unbiased-caption"></p>
+</div>
+
+<p>This is the <strong>Law of Large Numbers</strong>: as the number of independent draws increases, the sample mean converges to the true mean. An estimator whose expected value equals the true parameter is called <strong>unbiased</strong>.</p>
+
+<h3>Asymptotic normality (the Central Limit Theorem)</h3>
+
+<p><strong>The sampling distribution of the mean approaches Normal as sample size grows &ndash; regardless of the shape of the underlying population.</strong> This is the genuinely surprising part. Our own class's reaction times are not Normal at all &ndash; Week 1's own histogram was sharply right-skewed, with a long tail. It doesn't matter. Resample from our real, skewed 24 student-means at three different sample sizes and watch the shape change anyway.</p>
+
+<div class="figure" id="fig-clt">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>From lumpy to Normal, regardless of the starting shape</h4></div>
+  <div class="figure-body"><div class="chart-row" id="clt-chart-row"></div></div>
+  <p class="figure-caption" id="clt-caption"></p>
+</div>
+
+<p>At n&nbsp;=&nbsp;5 the shape is genuinely uneven. By n&nbsp;=&nbsp;30 it's unmistakably bell-shaped, even though every single draw still comes from the same skewed, bimodal real data. This is the <strong>Central Limit Theorem</strong>, and it is one of the most useful facts in all of statistics: it's the reason the Normal distribution underpins so much of frequentist statistical testing, even when the raw data it's built from looks nothing like a bell curve.</p>
+
+<div class="callout">
+  Neither of these results needed the DGP to actually be Normal &ndash; only that it has a finite mean and variance, and that enough independent draws get averaged together. That's a far weaker requirement than it might feel like on first encounter, which is exactly why it shows up everywhere.
+</div>
+
+<div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 5</div>
+</section>
+
+<section class="chapter" id="standard-error">
+<div class="chapter-kicker">Part Eight</div>
+<h2>The Standard Error</h2>
+
+<p>Everything in Parts Six and Seven assumed a known population &ndash; Normal(1070.1, 888.6) &ndash; so we could watch a thousand simulated samples land around the <em>true</em> value. In reality, we have one dataset: the reaction-time data collected last week. No known population mean, no known population standard deviation, and no ability to simulate a thousand more classes. From here there are two ways forward: a formula, or a computational trick called the bootstrap. This part covers the formula; Part Nine covers the bootstrap.</p>
+
+<p>Here's a quietly satisfying fact: by the end of Part Six, you'd already calculated a standard error three times over, without it having a name yet. The standard deviation of your own 10, 100, and 1,000 sample-means <em>is</em> the standard error &ndash; a genuinely different quantity from the plain standard deviation of one sample's raw data.</p>
+
+<ul class="term-list">
+  <li><span class="term">Standard deviation</span><span>The spread of individual observations within <em>one</em> sample &ndash; the 24 students in our own room.</span></li>
+  <li><span class="term">Standard error</span><span>The spread of the <em>sampling distribution</em> itself &ndash; how much the sample mean would bounce around if you reran the whole experiment many times.</span></li>
+</ul>
+
+<p>The useful part: you don't need a thousand simulated classes to get it. There's a formula, built directly from the one sample you actually have.</p>
+
+<div class="formula-block">$$SE(\bar{x}) = \frac{SD[x]}{\sqrt{n}}$$</div>
+<p class="formula-caption">larger when the data is more spread out, smaller when the sample is bigger</p>
+
+<p>Plugged in with our own numbers &ndash; SD&nbsp;=&nbsp;888.6ms, n&nbsp;=&nbsp;24 &ndash; that gives <strong>SE&nbsp;&asymp;&nbsp;181.4ms</strong>. Checked against the real spread of the 1,000-sample simulation from Part Six (188.5ms), the two land close together &ndash; simulation always carries some noise, so they were never going to match to the decimal, but close enough that the agreement itself is the real teaching point.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;We went round the houses a lot on this one &ndash; remember, you got that standard deviation from made-up, simulated data. And then this simple formula comes along, and it's only about five milliseconds off. How does that work?&rdquo;</p>
+</blockquote>
+
+<div class="callout">
+  <strong>Task, in the workshop.</strong> Go back to the standard error you calculated earlier from <code>sample_student_means.csv</code> &ndash; the SD of your 1,000 sample means. Now calculate SE&nbsp;=&nbsp;&sigma;/&radic;n by hand, using the DGP numbers from Part Five. Compare it to the SD from the simulated samples. Should they match exactly, or only approximately &ndash; and why?
+</div>
+
+<h3>Root-<em>n</em> convergence</h3>
+
+<p>Bigger samples buy precision &ndash; but not for free, and not in a straight line. To <strong>halve</strong> the standard error, you need to <strong>quadruple</strong> the sample size, because the formula divides by the <em>square root</em> of n, not n itself.</p>
+
+<div class="figure" id="fig-rootn">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>The standard error shrinks &ndash; but not in a straight line</h4></div>
+  <div class="figure-body"><div class="chart-wrap" id="rootn-chart"></div></div>
+  <p class="figure-caption" id="rootn-caption"></p>
+</div>
+
+<p>Going from 24 students to 100 would help a reasonable amount; going from 1,000 to 4,000 would barely move the needle. Precision is genuinely expensive, and it gets more expensive the more of it you already have.</p>
+
+<div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 5</div>
+</section>
+
+<section class="chapter" id="bootstrap">
+<div class="chapter-kicker">Part Nine</div>
+<h2>The Bootstrap</h2>
+
+<p>The formula above needs a known SD and a sample size &ndash; both of which we happen to have. But there's a second route to exactly the same destination, one that works even when no formula exists: the <strong>bootstrap</strong>.</p>
+
+<p>Take the original 24 student-means, and draw a fresh sample of 24 <em>from that same set</em>, <strong>with replacement</strong>: each draw can be picked more than once, and some of the original 24 might not get picked at all. Compute the mean of that resample. Repeat a few thousand times, and look at the spread of the resulting means &ndash; that spread <em>is</em> the bootstrap's own estimate of the standard error, built without ever assuming a DGP at all.</p>
+
+<div class="figure" id="fig-bootstrap-diagram">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>How a bootstrap sample is built</h4></div>
+  <div class="figure-body">
+    <div role="img" aria-label="Diagram of the bootstrap process. A column of six numbered circles labelled Original sample feeds three resample rows, each drawn with replacement so some numbers repeat and others are skipped entirely – row three draws 4 three times and never draws 3 or 5. Each resample row produces its own sample statistic, and the three statistics converge into a box labelled Bootstrap distribution of statistic.">
+    <svg viewBox="0 0 1120 440" width="100%" style="max-height:420px;" aria-hidden="true">
+      <defs>
+        <marker id="wk2-boot-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#888"/>
+        </marker>
+      </defs>
+      <text x="100"  y="24" font-size="15" font-weight="700" fill="#1a1a2e" text-anchor="middle" font-family="sans-serif">Original sample</text>
+      <text x="480"  y="24" font-size="15" font-weight="700" fill="#1a1a2e" text-anchor="middle" font-family="sans-serif">Bootstrap samples</text>
+      <text x="845"  y="24" font-size="15" font-weight="700" fill="#1a1a2e" text-anchor="middle" font-family="sans-serif">Bootstrap statistics</text>
+
+      <rect x="45" y="40" width="110" height="320" rx="10" fill="none" stroke="#1a1a2e" stroke-width="1.5"/>
+      <g font-family="sans-serif" font-size="13" fill="white" text-anchor="middle">
+        <circle cx="100" cy="70"  r="17" fill="#457b9d"/><text x="100" y="75">1</text>
+        <circle cx="100" cy="115" r="17" fill="#457b9d"/><text x="100" y="120">2</text>
+        <circle cx="100" cy="160" r="17" fill="#457b9d"/><text x="100" y="165">3</text>
+        <circle cx="100" cy="205" r="17" fill="#457b9d"/><text x="100" y="210">4</text>
+        <circle cx="100" cy="250" r="17" fill="#457b9d"/><text x="100" y="255">5</text>
+        <circle cx="100" cy="295" r="17" fill="#457b9d"/><text x="100" y="300">6</text>
+      </g>
+      <rect x="35" y="385" width="130" height="42" rx="6" fill="none" stroke="#1a1a2e" stroke-width="1.5"/>
+      <text x="100" y="410" font-size="12" font-family="sans-serif" text-anchor="middle" fill="#1a1a2e">Statistic from original</text>
+      <line x1="100" y1="360" x2="100" y2="385" stroke="#888" stroke-width="1.5" marker-end="url(#wk2-boot-arrow)"/>
+
+      <g font-family="sans-serif" font-size="16" font-weight="700" fill="#1a1a2e">
+        <text x="480" y="65"  text-anchor="middle">Sample 1</text>
+        <text x="480" y="205" text-anchor="middle">Sample 2</text>
+        <text x="480" y="345" text-anchor="middle">Sample 3</text>
+      </g>
+
+      <rect x="280" y="75" width="400" height="60" rx="10" fill="#f4f6f5" stroke="#2d6a4f" stroke-width="1.5" stroke-dasharray="5,4"/>
+      <g font-family="sans-serif" font-size="13" fill="white" text-anchor="middle">
+        <circle cx="320" cy="105" r="17" fill="#2d6a4f"/><text x="320" y="110">3</text>
+        <circle cx="380" cy="105" r="17" fill="#2d6a4f"/><text x="380" y="110">1</text>
+        <circle cx="440" cy="105" r="17" fill="#2d6a4f"/><text x="440" y="110">6</text>
+        <circle cx="500" cy="105" r="17" fill="#2d6a4f"/><text x="500" y="110">3</text>
+        <circle cx="560" cy="105" r="17" fill="#2d6a4f"/><text x="560" y="110">4</text>
+        <circle cx="620" cy="105" r="17" fill="#2d6a4f"/><text x="620" y="110">2</text>
+      </g>
+
+      <rect x="280" y="215" width="400" height="60" rx="10" fill="#f4f6f5" stroke="#2d6a4f" stroke-width="1.5" stroke-dasharray="5,4"/>
+      <g font-family="sans-serif" font-size="13" fill="white" text-anchor="middle">
+        <circle cx="320" cy="245" r="17" fill="#2d6a4f"/><text x="320" y="250">2</text>
+        <circle cx="380" cy="245" r="17" fill="#2d6a4f"/><text x="380" y="250">5</text>
+        <circle cx="440" cy="245" r="17" fill="#2d6a4f"/><text x="440" y="250">5</text>
+        <circle cx="500" cy="245" r="17" fill="#2d6a4f"/><text x="500" y="250">1</text>
+        <circle cx="560" cy="245" r="17" fill="#2d6a4f"/><text x="560" y="250">3</text>
+        <circle cx="620" cy="245" r="17" fill="#2d6a4f"/><text x="620" y="250">6</text>
+      </g>
+
+      <rect x="280" y="355" width="400" height="60" rx="10" fill="#f4f6f5" stroke="#2d6a4f" stroke-width="1.5" stroke-dasharray="5,4"/>
+      <g font-family="sans-serif" font-size="13" fill="white" text-anchor="middle">
+        <circle cx="320" cy="385" r="17" fill="#2d6a4f"/><text x="320" y="390">4</text>
+        <circle cx="380" cy="385" r="17" fill="#2d6a4f"/><text x="380" y="390">4</text>
+        <circle cx="440" cy="385" r="17" fill="#2d6a4f"/><text x="440" y="390">6</text>
+        <circle cx="500" cy="385" r="17" fill="#2d6a4f"/><text x="500" y="390">2</text>
+        <circle cx="560" cy="385" r="17" fill="#2d6a4f"/><text x="560" y="390">1</text>
+        <circle cx="620" cy="385" r="17" fill="#2d6a4f"/><text x="620" y="390">4</text>
+      </g>
+
+      <line x1="160" y1="105" x2="270" y2="105" stroke="#888" stroke-width="1.5" marker-end="url(#wk2-boot-arrow)"/>
+      <line x1="160" y1="160" x2="270" y2="245" stroke="#888" stroke-width="1.5" marker-end="url(#wk2-boot-arrow)"/>
+      <line x1="160" y1="215" x2="270" y2="385" stroke="#888" stroke-width="1.5" marker-end="url(#wk2-boot-arrow)"/>
+
+      <line x1="685" y1="105" x2="750" y2="105" stroke="#888" stroke-width="1.5" marker-end="url(#wk2-boot-arrow)"/>
+      <line x1="685" y1="245" x2="750" y2="245" stroke="#888" stroke-width="1.5" marker-end="url(#wk2-boot-arrow)"/>
+      <line x1="685" y1="385" x2="750" y2="385" stroke="#888" stroke-width="1.5" marker-end="url(#wk2-boot-arrow)"/>
+
+      <rect x="755" y="80"  width="175" height="50" rx="8" fill="#fdf3e8" stroke="#f4a261" stroke-width="1.5" stroke-dasharray="5,4"/>
+      <text x="842" y="110" font-size="13" font-family="sans-serif" text-anchor="middle" fill="#1a1a2e">Sample statistic 1</text>
+      <rect x="755" y="220" width="175" height="50" rx="8" fill="#fdf3e8" stroke="#f4a261" stroke-width="1.5" stroke-dasharray="5,4"/>
+      <text x="842" y="250" font-size="13" font-family="sans-serif" text-anchor="middle" fill="#1a1a2e">Sample statistic 2</text>
+      <rect x="755" y="360" width="175" height="50" rx="8" fill="#fdf3e8" stroke="#f4a261" stroke-width="1.5" stroke-dasharray="5,4"/>
+      <text x="842" y="390" font-size="13" font-family="sans-serif" text-anchor="middle" fill="#1a1a2e">Sample statistic 3</text>
+
+      <line x1="930" y1="105" x2="1005" y2="230" stroke="#888" stroke-width="1.5" marker-end="url(#wk2-boot-arrow)"/>
+      <line x1="930" y1="245" x2="1005" y2="245" stroke="#888" stroke-width="1.5" marker-end="url(#wk2-boot-arrow)"/>
+      <line x1="930" y1="385" x2="1005" y2="260" stroke="#888" stroke-width="1.5" marker-end="url(#wk2-boot-arrow)"/>
+
+      <rect x="1010" y="180" width="105" height="130" rx="10" fill="#fdecee" stroke="#e63946" stroke-width="2"/>
+      <text x="1062" y="235" font-size="13" font-weight="700" font-family="sans-serif" text-anchor="middle" fill="#1a1a2e">Bootstrap</text>
+      <text x="1062" y="253" font-size="13" font-weight="700" font-family="sans-serif" text-anchor="middle" fill="#1a1a2e">distribution</text>
+      <text x="1062" y="271" font-size="13" font-family="sans-serif" text-anchor="middle" fill="#1a1a2e">of statistic</text>
+    </svg>
+    </div>
+  </div>
+  <p class="figure-caption">Three resamples drawn with replacement from the same original sample of 6 &ndash; item 4 appears three times in Sample 3, while items 3 and 5 never get drawn there at all. The spread across the resulting statistics is the bootstrap's estimate of the sampling distribution.</p>
+</div>
+
+<div class="figure" id="fig-bootstrap">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Bootstrapping our own 24 students</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Resamples (B)</span><input type="range" id="boot-B" min="10" max="2000" step="10" value="10"><span class="val" id="boot-B-val">10</span></div>
+    </div>
+    <div class="chart-wrap" id="bootstrap-chart"></div>
+  </div>
+  <p class="figure-caption" id="bootstrap-caption"></p>
+</div>
+
+<p>Drag <strong>B</strong> up from 10 towards 2,000 and watch the bootstrap standard error settle down rather than jump around &ndash; once it's settled, it should land close to the 181.4ms the formula already gave. Under the conditions both methods need (a large enough sample, independent observations), the formula and the bootstrap converge on the same answer. The formula is faster to compute; the bootstrap keeps working in situations &ndash; more complex statistics, no known formula &ndash; where the formula simply doesn't exist.</p>
+
+<div class="callout">
+  <strong>Task, in the workshop.</strong> With B starting at only 10 resamples, read off the bootstrap SE. Drag B up towards 2,000 &ndash; does it settle down, or keep jumping around? Once settled, compare it to the formula SE from the previous task. Close? Now imagine dragging the sample size <em>n</em> down to something small &ndash; what would happen to the spread of the histogram, and which property of the sampling distribution would that demonstrate?
+</div>
+
+<div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 5 &ndash; recreated schematically (after Fig. 5.4, "Bootstrap samples")</div>
+</section>
+
+<section class="chapter" id="confidence-intervals">
+<div class="chapter-kicker">Part Ten</div>
+<h2>Confidence Intervals</h2>
+
+<p>With a mean and a standard error in hand &ndash; by formula or by bootstrap, it no longer matters which &ndash; the last step is turning them into a statement about the general pattern our data represents, not just the specific number we happened to measure.</p>
+
+<p>A <strong>confidence interval (CI)</strong> is a range built symmetrically around the estimate:</p>
+
+<div class="formula-block">$$CI = \text{statistic} \; \pm \; (\text{critical value} \times SE)$$</div>
+
+<table class="data-table">
+  <thead><tr><th>Confidence level</th><th>Critical value</th></tr></thead>
+  <tbody>
+    <tr><td>90%</td><td>1.6 &times; SE</td></tr>
+    <tr><td>95%</td><td>2 &times; SE (1.96, precisely)</td></tr>
+    <tr><td>99%</td><td>2.6 &times; SE</td></tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <strong>Task, in the workshop.</strong> Using our own Week 1 data: collapse the raw trials down to one average reaction time per student, find the mean, SD, and n of those student averages, and use them to calculate SE(x&#772;) and the 95% CI for mean reaction time &ndash; by hand or in Excel, before reading on.
+</div>
+
+<p>You should get roughly this: plugged in with our own numbers, 1,070.1 &plusmn; (1.96 &times; 181.4) gives a 95% confidence interval of <strong>[714.6, 1425.6] ms</strong>. In words: in the general pattern our data represents, we can be 95% confident the true average reaction time falls somewhere in that range.</p>
+
+<div class="callout">
+  Wider interval &rarr; more confident it contains the truth, but less precise about where. There's no free lunch: more confidence costs precision, every time.
+</div>
+
+<h3>Where the CI actually sits on the curve</h3>
+
+<p>The confidence interval isn't a separate idea from the Normal distribution &ndash; it's a direct slice of it. Here is the <em>sampling distribution</em> of our mean (Normal, centred on 1,070.1ms, spread by the standard error of 181.4ms &ndash; not the raw DGP from Part Five, the narrower distribution of the <em>mean itself</em>), with the 95% CI shaded as the middle region it actually is.</p>
+
+<div class="figure" id="fig-ci-normal">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>The 95% CI, shaded on its own sampling distribution</h4></div>
+  <div class="figure-body"><div class="chart-wrap" id="ci-normal-chart"></div></div>
+  <p class="figure-caption" id="ci-normal-caption"></p>
+</div>
+
+<p>The shaded region holds 95% of the area under the curve; the two unshaded tails hold 2.5% each. The critical value, 1.96, is simply how many standard errors out from the centre you have to go before you've cut off exactly those tails.</p>
+
+<h3>Does the 95% promise actually hold?</h3>
+
+<p>Simulate 100 samples from the same DGP, build a 95% CI from each one the way just described, and count how many actually contain the true mean. The honest answer, checked directly rather than assumed: a little under 95% of the time, not exactly 95%.</p>
+
+<div class="figure" id="fig-ci-coverage">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>100 confidence intervals, built from 100 simulated samples</h4></div>
+  <div class="figure-body"><div class="chart-wrap" id="ci-coverage-chart"></div></div>
+  <p class="figure-caption" id="ci-coverage-caption"></p>
+</div>
+
+<div class="callout gold">
+  <strong>93%, not 95%.</strong> The &plusmn;1.96 rule is itself an approximation that only becomes exact as the sample gets large. At a class our size (n&nbsp;=&nbsp;24), it runs a touch optimistic &ndash; the real long-run coverage is closer to 93%. The exact small-sample fix for this is still ahead, later in the module. For now, the honest headline number is 93%, and it's worth sitting with that rather than quietly rounding it up to the clean 95%.
+</div>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;We're confident because 95 is a lot bigger than five. That's genuinely most of the intuition &ndash; it's more likely we're in the 95% case than the 5% case, but we can never know for certain which one we're actually in.&rdquo;</p>
+</blockquote>
+
+<div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 5</div>
+</section>
+
+<section class="chapter" id="recap-chapter2">
+<div class="chapter-kicker">Part Eleven</div>
+<h2>Quick Recap &ndash; and What's Next</h2>
+
+<ul>
+  <li>We want to generalise from our data &ndash; that's statistical inference, and the gap between what we can claim and what we actually measured is <strong>external validity</strong>.</li>
+  <li>Any statistic computed from a sample has its own <strong>sampling distribution</strong> &ndash; a genuinely different object from the distribution of the raw variable.</li>
+  <li>Two ways to estimate the uncertainty in a statistic: a <strong>formula</strong> ($SE = SD/\sqrt{n}$) or the <strong>bootstrap</strong> (resample with replacement, look at the spread). Under the right conditions, they agree.</li>
+  <li>A <strong>95% CI</strong> is the estimate &plusmn; (critical value &times; SE) &ndash; a range we expect to contain the true value, though at a class our size the real long-run rate is closer to 93%.</li>
+  <li>Using that CI, we can finally make a statement about the population &ndash; not just the room.</li>
+</ul>
+
+<p>Nearly three hours of workshop led up to one sentence: we can be 95% confident the true average reaction time lies between roughly 715 and 1,426 milliseconds. It doesn't sound like much. It's the first time in this module anything has been said about a population we never directly measured &ndash; and everything from here on builds on exactly that move.</p>
+</section>
+
+<footer class="colophon">
+  <p><strong>A note on these notes.</strong> This chapter was assembled from the Week 2 workshop: its slide deck, its own live transcript (auto-generated, lightly cleaned for readability &ndash; quoted passages are close to verbatim but not a certified transcript), and the class's real, anonymised data &ndash; both the Week 1 reaction-time dataset this chapter reuses, and the 1,000 simulated class-means generated for the in-class task. Numbers and charts throughout reflect that specific data as it stood at the time of writing. Framework and definitions follow B&eacute;k&eacute;s &amp; K&eacute;zdi, <em>Data Analysis for Business, Economics, and Policy</em> (2021), Ch. 5.</p>
+</footer>
+
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= embedded data ================= */
+  const STUDENT_MEANS = [{"student_name":"Student 1","mean_rt":1601.1},{"student_name":"Student 2","mean_rt":419.6},{"student_name":"Student 3","mean_rt":406.3},{"student_name":"Student 4","mean_rt":416.3},{"student_name":"Student 5","mean_rt":1081.1},{"student_name":"Student 6","mean_rt":3135.4},{"student_name":"Student 7","mean_rt":370.1},{"student_name":"Student 8","mean_rt":395.2},{"student_name":"Student 9","mean_rt":426.2},{"student_name":"Student 10","mean_rt":1867.3},{"student_name":"Student 11","mean_rt":1353.8},{"student_name":"Student 12","mean_rt":497.3},{"student_name":"Student 13","mean_rt":1314.5},{"student_name":"Student 14","mean_rt":1970.3},{"student_name":"Student 15","mean_rt":1101.1},{"student_name":"Student 16","mean_rt":1260.0},{"student_name":"Student 17","mean_rt":466.9},{"student_name":"Student 18","mean_rt":435.4},{"student_name":"Student 19","mean_rt":283.4},{"student_name":"Student 20","mean_rt":2339.3},{"student_name":"Student 21","mean_rt":386.1},{"student_name":"Student 22","mean_rt":373.5},{"student_name":"Student 23","mean_rt":3253.4},{"student_name":"Student 24","mean_rt":528.4}];
+
+  const DEVICE_STATS = [
+    { device: "Laptop", mean: 1078.94, sd: 1870.07, n: 132, n_students: 16 },
+    { device: "Phone",  mean: 772.69,  sd: 1231.31, n: 67,  n_students: 8  },
+  ];
+
+  const MU_POP = 1070.1, SD_POP = 888.6, N_STUDENTS = 24;
+
+  // 1,000 real simulated class-means, generated by the deck's own Python
+  // pipeline and published as data/sample_student_means.csv — collapsed
+  // here to one value per sample, in original generation order, so the
+  // first 10 / first 100 / all 1,000 slices below match exactly what a
+  // student doing the in-class task themselves would have gotten.
+  const SAMPLE_MEANS = [1091.6,1515.1,1307.3,1182.1,1034.7,1142.6,1036.9,837.8,1159.0,1222.5,1285.4,1395.6,1045.2,1041.1,1340.9,1337.9,1038.6,598.5,942.1,1060.8,1078.7,1113.0,1011.4,1176.2,1338.1,949.3,882.0,1141.0,1373.8,1261.0,1030.1,1286.0,851.6,817.4,1117.8,1229.4,1171.6,879.2,1384.7,933.8,1404.7,1189.4,1237.6,1157.6,1277.4,1084.4,1273.0,817.5,904.8,981.5,870.4,1203.0,1174.8,980.1,859.1,1263.6,981.0,1489.1,1043.4,1349.8,496.9,1218.7,783.9,889.6,780.0,1101.0,1131.3,1085.8,983.4,862.3,1228.5,1270.8,1172.0,816.3,1335.2,1177.6,766.8,919.4,1379.1,1137.7,1081.0,909.9,1414.4,1171.8,1089.6,1212.7,1062.1,1181.4,736.1,1168.4,1114.4,1214.0,1339.8,1076.5,1464.8,1030.2,1047.7,1018.2,810.6,827.4,1009.0,1215.9,1086.1,1059.9,1305.6,1260.0,732.8,1184.5,1061.8,1033.2,794.8,885.4,1093.1,964.6,1105.8,1390.7,1200.9,1281.1,1186.6,1108.2,933.0,1338.2,725.4,920.6,1287.2,1049.8,1104.8,1132.3,1285.0,1236.2,1044.8,1028.3,1087.8,1100.1,1211.9,1455.0,1124.9,1156.2,959.3,1356.2,1015.8,1067.4,1066.9,1370.5,1107.2,1094.8,1178.7,1088.6,1243.7,1320.2,1173.7,1014.5,850.1,1140.1,931.9,1064.0,1025.0,1019.0,1279.6,1020.6,984.7,1372.9,895.9,959.2,1159.7,929.5,1157.6,1255.4,863.7,1136.3,1007.0,1435.1,1039.0,926.8,1232.9,922.3,947.8,1339.0,883.6,1224.9,1138.7,1097.6,1043.3,1053.2,1017.8,982.2,1279.3,1034.5,916.5,882.8,1590.9,995.5,1122.0,1243.6,1106.3,1200.3,1115.2,1146.4,1062.8,1498.0,1323.5,1213.5,1026.4,890.6,1347.1,1191.0,788.0,1797.2,1276.0,1561.8,1123.3,1099.6,984.8,1146.1,909.9,991.7,1015.6,990.0,1019.0,1110.3,1165.0,1183.9,1149.6,1277.9,1090.7,1165.9,1246.1,932.2,1052.8,1148.1,1056.9,1156.1,1157.0,1010.8,1331.4,917.2,874.3,1212.7,1215.5,1069.1,1094.2,1089.9,1169.2,1171.0,1022.8,993.8,1381.4,864.3,1184.1,1140.4,1200.2,1093.6,994.3,1236.4,1094.8,1088.9,1263.3,1198.2,1441.2,1285.8,1044.4,1104.9,1109.7,1639.0,1070.6,1136.2,1062.8,1518.9,789.9,888.3,1257.5,576.7,1223.1,961.6,1121.0,1070.1,1110.5,1229.0,1205.9,1023.3,834.5,956.0,773.6,702.3,1012.2,754.6,1019.2,914.4,1251.0,873.4,1123.5,1314.6,888.0,1177.9,1299.2,1213.7,915.6,1288.3,1325.8,920.2,1086.6,940.2,1049.7,896.6,1162.8,1140.9,1220.0,1154.6,1196.4,1099.7,1039.0,1166.8,1425.3,1207.9,1377.3,803.8,1390.7,840.1,880.5,818.4,1081.9,1203.8,1266.1,1306.6,981.8,1420.9,1084.9,937.3,1254.0,1251.5,1129.0,645.3,894.5,889.3,981.5,1207.4,1118.0,1142.5,943.1,781.5,1244.1,1076.2,1316.2,1249.3,1137.1,1286.3,1250.9,993.5,725.0,971.0,1294.7,1122.4,874.1,1075.0,1109.2,1437.1,1015.8,861.0,1441.9,886.6,1517.4,916.0,910.7,1127.6,740.3,1326.2,953.2,1311.6,1090.5,945.3,1370.6,897.8,1339.3,944.7,877.7,948.4,1027.4,1090.9,676.8,974.8,994.5,1105.3,806.5,908.9,1097.1,1175.7,852.4,1127.9,1178.4,1046.5,1252.3,995.4,1493.3,986.3,1012.5,1166.6,803.8,1094.0,1477.7,844.1,911.6,1029.9,867.3,1269.1,1098.5,1271.7,665.0,1364.6,1028.7,1009.7,1132.2,1086.4,877.7,1193.5,1308.6,1120.6,1305.6,1141.1,1017.1,929.0,1181.8,1080.0,1276.2,1367.4,1276.0,909.8,856.8,891.9,919.4,1051.4,1314.7,991.7,1054.1,854.9,1207.8,1335.3,1349.0,1640.9,937.8,1355.4,1414.0,1028.2,958.5,1247.2,1056.8,1176.9,1071.8,740.2,968.6,792.2,1194.7,937.3,785.8,1119.8,1620.5,863.5,1491.7,1459.2,1017.3,733.5,1485.6,1249.2,1391.4,1265.6,905.0,1547.9,1256.2,979.3,1040.4,754.1,1048.3,1364.8,836.5,921.2,852.0,967.0,1278.7,1174.0,1009.5,1252.3,1421.1,1130.0,672.6,1135.7,940.3,1060.3,1182.7,1264.2,942.2,1163.1,910.3,1201.4,1124.6,1032.9,849.2,1259.7,1399.6,912.8,906.2,985.1,1418.9,783.3,1040.4,957.7,1049.4,801.4,1007.8,682.1,984.3,1247.2,1254.0,983.0,1266.9,963.0,1393.3,1327.2,1462.7,985.9,1171.7,1272.5,945.3,1158.6,1110.0,897.1,1070.5,960.6,1063.2,1008.2,871.0,1314.8,1136.9,991.2,768.1,979.3,1128.0,1249.2,935.9,796.9,923.8,1073.7,1060.1,964.1,1085.8,1167.1,1123.4,1602.4,1035.6,1328.3,855.0,1373.4,1407.3,1253.8,1337.5,1022.2,1283.4,1078.0,1108.0,1054.0,887.1,1062.1,860.0,762.0,916.3,993.1,837.2,828.6,804.8,1067.1,823.0,1162.4,919.2,875.4,1184.0,1074.7,1061.3,899.6,1088.3,926.8,1023.7,1251.6,1271.7,619.3,908.6,1396.2,1118.9,809.6,1280.7,887.0,1025.0,1057.8,932.5,877.6,1083.7,920.9,1289.8,1128.6,1244.4,1138.1,1057.8,1022.4,710.9,1267.0,1164.6,926.0,884.1,918.7,872.6,1236.1,1344.3,1088.0,1126.2,1237.5,1046.2,1189.1,1154.0,1049.2,1013.7,1108.1,1090.4,804.8,1528.7,1296.2,1095.6,1226.8,925.9,1021.5,1138.2,750.7,1280.6,942.8,896.1,966.0,1304.9,1017.4,810.8,1446.4,947.0,821.6,1311.5,891.6,1021.2,971.8,947.8,1160.4,1117.5,1133.1,1120.3,1269.6,1124.3,1183.8,1059.6,1200.0,851.0,819.4,1065.6,744.6,912.9,1335.2,776.6,714.7,668.3,1012.8,812.4,853.6,959.0,1041.9,1245.5,1031.0,794.2,1144.9,939.0,994.9,1000.3,1131.6,1160.6,1499.8,789.8,731.9,1128.0,878.0,1152.4,1343.7,1108.3,1152.5,830.6,984.2,1112.6,976.8,1285.6,1125.7,1303.5,1174.5,1332.4,1100.6,750.7,1144.9,960.0,833.7,1395.1,1233.0,613.6,1530.9,1042.0,1019.0,985.3,900.5,1290.4,1382.1,1242.2,875.8,1020.4,1113.1,941.5,1109.4,906.4,1107.7,745.2,1237.7,1337.0,969.9,1211.7,896.1,1222.8,1166.9,1314.0,1188.8,1189.4,1049.1,1198.4,798.3,1152.5,878.2,1049.8,1227.6,900.1,1146.8,1397.9,1264.2,984.1,1156.3,1202.6,1214.7,1133.6,1080.9,776.0,1160.4,1118.5,1006.5,1212.6,1083.5,1234.0,1373.9,983.3,1281.7,981.7,1095.1,1161.1,966.0,1490.9,996.4,1110.7,859.1,1080.2,1195.7,1220.1,989.2,1045.7,935.7,1053.7,1092.1,803.7,1088.2,1112.0,1121.7,1283.4,787.8,1141.4,924.9,1117.5,1700.7,842.7,1214.1,1128.5,807.9,1216.6,938.1,1288.6,898.5,893.6,981.5,1279.5,1031.5,1205.7,1182.7,866.6,727.3,895.7,841.1,1164.0,1046.9,912.1,937.8,1009.6,1208.8,973.8,1092.9,1262.5,1154.3,1088.1,1037.6,993.0,987.6,1076.8,773.9,1229.4,830.9,1219.3,1321.0,1255.5,1233.1,1242.2,873.9,841.7,1148.4,1513.3,1097.8,1407.2,1270.2,777.6,1129.3,1161.8,1201.0,1107.3,1085.0,1036.8,888.7,1179.4,901.6,858.6,1187.0,1196.5,901.7,906.9,1013.5,836.9,753.0,1146.0,1220.0,708.8,960.1,636.3,978.7,961.1,1362.7,1207.5,1215.5,896.8,1123.9,1146.3,947.3,1266.1,1092.2,1196.2,1304.4,1374.6,1182.5,1150.7,780.6,871.8,1015.6,1031.3,1267.8,788.2,905.4,1141.2,1122.7,1207.0,1078.6,1323.7,865.2,1217.8,737.2,884.2,1058.5,1007.8,1007.0,733.8,1065.7,1122.3,932.8,879.7,1049.3,1170.8,1021.0,724.5,1143.1,1021.1,1175.3,852.7,1172.5,1095.4,1382.8,961.2,977.4,1065.2,1109.1,950.1,1208.1,1495.2,1069.7,839.6,961.0,932.0,1034.1,938.0,1291.1,993.3,1128.9,1146.9,1214.2,959.4,1363.4,1125.1,820.9,1363.3,1010.9,1110.1,1162.1,933.1,1204.2,866.3,974.6,995.7,864.4,988.2,754.3,1304.1,1524.1,1139.5,910.8,996.3,1256.1,1383.5,1164.0,1021.3,1021.8,876.3,875.9,892.9,900.0,739.1,1237.3,913.4,835.6,1201.4,1287.4,995.1,962.1,997.4,919.5,1297.4,1056.7,1276.0,1379.2,949.8,1106.8,1041.1,1059.7,791.8,1009.9,1124.5,937.8,1419.2,1244.7,996.9,1131.5,1123.6,994.4,1101.9,995.4,1107.6,710.4,1130.0,882.3,1154.0,1105.2,948.6,1079.7,1085.1,1014.0,1052.9,1158.1,1056.4,879.7,1321.4,1047.2,949.1,1487.6,1026.3,1240.7];
+
+  function natStudentSort(a, b) {
+    const na = parseInt(a.replace(/\D/g, ''), 10);
+    const nb = parseInt(b.replace(/\D/g, ''), 10);
+    return na - nb;
+  }
+
+  const plotStyle = () => ({ color: 'var(--ink-soft)', fontFamily: "'Public Sans', sans-serif", fontSize: '12px' });
+
+  function accessibleChart(node, label) {
+    node.setAttribute('aria-hidden', 'true');
+    const wrap = document.createElement('div');
+    wrap.setAttribute('role', 'img');
+    wrap.setAttribute('aria-label', label);
+    wrap.appendChild(node);
+    return wrap;
+  }
+  function mount(id, node) {
+    const el = document.getElementById(id);
+    el.innerHTML = '';
+    el.appendChild(node);
+  }
+
+  /* ================= Chapter nav =================
+     Hardcoded, not derived from page content — there's no book-level index
+     to generate it from, each chapter is its own static file. Add a new
+     entry here (and to every other chapter's own copy of this array) when
+     Chapter Three exists. */
+  const CHAPTERS = [
+    { href: 'week1-lecture-notes.html', num: 'One', title: 'Distributions &amp; Summarising Data' },
+    { href: 'week2-lecture-notes.html', num: 'Two', title: 'Inference: When Is a Difference Real?' },
+  ];
+  const CURRENT_CHAPTER_HREF = 'week2-lecture-notes.html';
+  function buildChapterNav(container) {
+    const wrap = document.createElement('div');
+    wrap.className = 'toc-block chapter-nav';
+    const label = document.createElement('span');
+    label.className = 'toc-label';
+    label.textContent = 'Chapters';
+    wrap.appendChild(label);
+    const ol = document.createElement('ol');
+    ol.className = 'chapter-list';
+    CHAPTERS.forEach(c => {
+      const li = document.createElement('li');
+      const isCurrent = c.href === CURRENT_CHAPTER_HREF;
+      const el = document.createElement(isCurrent ? 'span' : 'a');
+      if (!isCurrent) el.href = c.href;
+      el.className = 'chapter-link' + (isCurrent ? ' current' : '');
+      el.innerHTML = `<strong>Chapter ${c.num}</strong><span class="chapter-sub">${c.title}</span>`;
+      li.appendChild(el);
+      ol.appendChild(li);
+    });
+    wrap.appendChild(ol);
+    container.appendChild(wrap);
+  }
+
+  /* ================= TOC ================= */
+  const sections = [...document.querySelectorAll('section.chapter')].map(s => ({
+    id: s.id, title: s.querySelector('h2').textContent
+  }));
+  function buildTOC(container) {
+    buildChapterNav(container);
+    const label = document.createElement('span');
+    label.className = 'toc-label';
+    label.textContent = 'Contents';
+    container.appendChild(label);
+    const ol = document.createElement('ol');
+    sections.forEach(s => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = '#' + s.id; a.textContent = s.title; a.dataset.id = s.id;
+      li.appendChild(a); ol.appendChild(li);
+    });
+    container.appendChild(ol);
+  }
+  buildTOC(document.getElementById('toc'));
+  buildTOC(document.getElementById('toc-mobile'));
+
+  const allTocLinks = () => [...document.querySelectorAll('nav.toc a')];
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        allTocLinks().forEach(a => a.classList.toggle('active', a.dataset.id === id));
+      }
+    });
+  }, { rootMargin: '-10% 0px -70% 0px' });
+  sections.forEach(s => io.observe(document.getElementById(s.id)));
+
+  /* ================= Part One: device table ================= */
+  function renderDeviceTable() {
+    const tbl = document.createElement('table');
+    tbl.className = 'data-table';
+    tbl.innerHTML = `<thead><tr><th scope="col">Device</th><th scope="col">Mean reaction time (ms)</th><th scope="col">Observations (n)</th><th scope="col">Students</th></tr></thead>
+      <tbody>${DEVICE_STATS.map(r => `<tr><td>${r.device}</td><td style="color:var(--accent);font-weight:700;">${r.mean.toFixed(1)}</td><td>${r.n}</td><td>${r.n_students}</td></tr>`).join('')}</tbody>`;
+    mount('devicetable', tbl);
+  }
+
+  /* ================= Part Four: pairs ================= */
+  function renderPairs() {
+    const five = STUDENT_MEANS.slice(0, 5);
+    const truth = d3.mean(five, d => d.mean_rt);
+    const pairs = [];
+    for (let i = 0; i < five.length; i++)
+      for (let j = i + 1; j < five.length; j++)
+        pairs.push({ pair: `${five[i].student_name} & ${five[j].student_name}`, avg: (five[i].mean_rt + five[j].mean_rt) / 2 });
+
+    const pad = Math.max(10, (d3.max(pairs, d => d.avg) - d3.min(pairs, d => d.avg)) * 0.25);
+    const xmin = d3.min(pairs, d => d.avg) - pad, xmax = d3.max(pairs, d => d.avg) + pad;
+
+    const svg = Plot.plot({
+      width: 640, height: 280, marginLeft: 55, marginBottom: 40,
+      style: plotStyle(),
+      x: { label: 'Pair average reaction time (ms)', domain: [xmin, xmax] },
+      y: { axis: null, domain: [-1, 1] },
+      marks: [
+        Plot.dot(pairs, { x: 'avg', y: () => (Math.random() - 0.5) * 0.7, fill: '#457b9d', r: 7, fillOpacity: 0.8, tip: true, title: d => `${d.pair}: ${d.avg.toFixed(1)} ms` }),
+        Plot.ruleX([truth], { stroke: '#e63946', strokeWidth: 2.5, strokeDasharray: '6,4' }),
+        Plot.text([{ x: truth, label: `True mean of all 5 = ${truth.toFixed(1)} ms` }], { x: 'x', text: 'label', dy: -90, fill: '#e63946', fontSize: 12 }),
+      ]
+    });
+    const label = `${pairs.length} pair-average reaction times, ranging from ${d3.min(pairs, d => d.avg).toFixed(1)} to ${d3.max(pairs, d => d.avg).toFixed(1)} ms, around a true mean of ${truth.toFixed(1)} ms.`;
+    mount('pairs-chart', accessibleChart(svg, 'This chart shows that averaging different pairs of students gives different answers, even though every pair comes from the same five-student population. ' + label));
+    document.getElementById('pairs-caption').textContent = label;
+  }
+
+  /* ================= Part Five: Week 1 DGP ================= */
+  function renderDGP() {
+    const vals = STUDENT_MEANS.map(d => d.mean_rt);
+    const mu = d3.mean(vals), sigma = d3.deviation(vals);
+    const pad = Math.max(10, Math.round((d3.max(vals) - d3.min(vals)) * 0.12));
+    const xmin = Math.floor((d3.min(vals) - pad) / 10) * 10, xmax = Math.ceil((d3.max(vals) + pad) / 10) * 10;
+    const bw = Math.max(20, Math.round((xmax - xmin) / 15 / 10) * 10);
+    const curve = d3.range(xmin, xmax, 2).map(x => ({ x, y: (vals.length * bw) * (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * ((x - mu) / sigma) ** 2) }));
+
+    const svg = Plot.plot({
+      width: 640, height: 340, marginLeft: 55, marginBottom: 36,
+      style: plotStyle(),
+      x: { label: 'Student average reaction time (ms)', domain: [xmin, xmax] },
+      y: { label: 'Count' },
+      marks: [
+        Plot.rectY(vals.map(v => ({ x: v })), Plot.binX({ y: 'count' }, { x: 'x', thresholds: d3.range(xmin, xmax + bw, bw), fill: '#457b9d', fillOpacity: 0.65 })),
+        Plot.line(curve, { x: 'x', y: 'y', stroke: '#e63946', strokeWidth: 2.5 }),
+        Plot.ruleX([mu], { stroke: '#e63946', strokeWidth: 2, strokeDasharray: '5,4' }),
+        Plot.ruleX([0]),
+      ]
+    });
+    const label = `A histogram of all ${vals.length} students' average reaction times, with a Normal curve fitted to it. Mean ${mu.toFixed(1)} ms, standard deviation ${sigma.toFixed(1)} ms.`;
+    mount('dgp-chart', accessibleChart(svg, 'This chart shows the distribution we are assuming as our data-generating process. ' + label));
+    document.getElementById('dgp-caption').textContent = label;
+  }
+
+  /* ================= Part Six: 10/100/1000 small multiples ================= */
+  function renderSamplesFlagship() {
+    const cuts = [10, 100, 1000];
+    const row = document.getElementById('samples-chart-row');
+    row.innerHTML = '';
+    const summaries = [];
+    cuts.forEach(cut => {
+      const shown = SAMPLE_MEANS.slice(0, cut);
+      const mu = d3.mean(shown), sd = cut > 1 ? d3.deviation(shown) : null;
+      const pad = Math.max(10, (d3.max(shown) - d3.min(shown)) * 0.08);
+      const xmin = Math.floor((d3.min(SAMPLE_MEANS) - pad) / 50) * 50;
+      const xmax = Math.ceil((d3.max(SAMPLE_MEANS) + pad) / 50) * 50;
+      const bw = Math.max(20, Math.round((xmax - xmin) / 18 / 10) * 10);
+
+      const svg = Plot.plot({
+        width: 210, height: 220, marginLeft: 38, marginBottom: 32,
+        style: plotStyle(),
+        x: { label: null, domain: [xmin, xmax], ticks: 3 },
+        y: { label: null },
+        marks: [
+          Plot.rectY(shown.map(v => ({ x: v })), Plot.binX({ y: 'count' }, { x: 'x', thresholds: d3.range(xmin, xmax + bw, bw), fill: '#2d6a4f', fillOpacity: 0.75 })),
+          Plot.ruleX([MU_POP], { stroke: '#1a1a2e', strokeWidth: 1.5, strokeDasharray: '3,3' }),
+          Plot.ruleX([0]),
+        ]
+      });
+      const div = document.createElement('div');
+      const cap = document.createElement('p');
+      cap.style.cssText = 'text-align:center;font-size:0.8em;color:var(--ink-faint);margin-top:6px;';
+      cap.innerHTML = `<strong style="color:var(--ink);">n = ${cut}</strong><br>mean of means: ${mu.toFixed(1)} ms${sd ? `<br>SD: ${sd.toFixed(1)} ms` : ''}`;
+      div.appendChild(accessibleChart(svg, `${cut} simulated class means, mean of means ${mu.toFixed(1)} ms.`));
+      div.appendChild(cap);
+      row.appendChild(div);
+      summaries.push(`at ${cut} samples, mean ${mu.toFixed(1)} ms${sd ? `, SD ${sd.toFixed(1)} ms` : ''}`);
+    });
+    document.getElementById('samples-caption').textContent =
+      `The dashed line marks the true mean, 1,070.1 ms, in all three panels. Shape and centre, side by side: ${summaries.join('; ')}. The true population SD is 888.6 ms.`;
+  }
+
+  /* ================= Part Seven: Unbiasedness ================= */
+  function renderUnbiased() {
+    const n = SAMPLE_MEANS.length;
+    const running = [];
+    let sum = 0;
+    for (let i = 0; i < n; i++) { sum += SAMPLE_MEANS[i]; running.push(sum / (i + 1)); }
+    const pts = running.map((y, i) => ({ x: i + 1, y }));
+
+    const svg = Plot.plot({
+      width: 640, height: 300, marginLeft: 65, marginBottom: 36,
+      style: plotStyle(),
+      x: { label: 'Number of samples', type: 'log' },
+      y: { label: 'Running mean of sample means (ms)', domain: [MU_POP - SD_POP * 0.5, MU_POP + SD_POP * 0.5] },
+      marks: [
+        Plot.line(pts, { x: 'x', y: 'y', stroke: '#457b9d', strokeWidth: 2 }),
+        Plot.ruleY([MU_POP], { stroke: '#e63946', strokeWidth: 2, strokeDasharray: '6,4' }),
+        Plot.text([{ x: 2, y: MU_POP, label: `True μ = ${MU_POP} ms` }], { x: 'x', y: 'y', text: 'label', dy: -12, textAnchor: 'start', fill: '#e63946', fontSize: 12, fontWeight: 700 }),
+      ]
+    });
+    const finalMean = running[running.length - 1];
+    const label = `The running mean across all ${n} samples settles at ${finalMean.toFixed(1)} ms, close to the true mean of ${MU_POP} ms.`;
+    mount('unbiased-chart', accessibleChart(svg, 'This chart shows the running average of simulated sample means converging on the true population mean as more samples are included. ' + label));
+    document.getElementById('unbiased-caption').textContent = label;
+  }
+
+  /* ================= Part Seven: CLT (bootstrap-resampled from real 24 students) ================= */
+  function bootstrapMeans(vals, n, reps) {
+    const out = new Array(reps);
+    for (let r = 0; r < reps; r++) {
+      let sum = 0;
+      for (let i = 0; i < n; i++) sum += vals[Math.floor(Math.random() * vals.length)];
+      out[r] = sum / n;
+    }
+    return out;
+  }
+  function renderCLT() {
+    const vals = STUDENT_MEANS.map(d => d.mean_rt);
+    const panels = [5, 15, 30].map(n => ({ n, vals: bootstrapMeans(vals, n, 2000) }));
+    const row = document.getElementById('clt-chart-row');
+    row.innerHTML = '';
+    panels.forEach(p => {
+      const xmin = 0, xmax = Math.ceil(d3.max(p.vals) / 100) * 100 + 200;
+      const bw = Math.max(50, Math.round(xmax / 18 / 10) * 10);
+      const svg = Plot.plot({
+        width: 210, height: 220, marginLeft: 38, marginBottom: 32,
+        style: plotStyle(),
+        x: { label: null, domain: [xmin, xmax], ticks: 3 },
+        y: { label: null },
+        marks: [
+          Plot.rectY(p.vals.map(v => ({ x: v })), Plot.binX({ y: 'count' }, { x: 'x', thresholds: d3.range(xmin, xmax + bw, bw), fill: '#e63946', fillOpacity: 0.7 })),
+          Plot.ruleX([0]),
+        ]
+      });
+      const div = document.createElement('div');
+      const cap = document.createElement('p');
+      cap.style.cssText = 'text-align:center;font-size:0.8em;color:var(--ink-faint);margin-top:6px;';
+      cap.innerHTML = `<strong style="color:var(--ink);">n = ${p.n}</strong>`;
+      div.appendChild(accessibleChart(svg, `Sampling distribution of the mean at n = ${p.n}, from 2,000 resamples of our real 24 students.`));
+      div.appendChild(cap);
+      row.appendChild(div);
+    });
+    document.getElementById('clt-caption').textContent =
+      '2,000 resamples (with replacement) from our real, right-skewed 24 student-means, at three different sample sizes. The shape visibly smooths toward Normal as n grows from 5 to 30, even though every draw comes from the same skewed real data.';
+  }
+
+  /* ================= Part Nine: bootstrap (interactive) ================= */
+  const bootB = document.getElementById('boot-B');
+  const bootBVal = document.getElementById('boot-B-val');
+  function renderBootstrap() {
+    const vals = STUDENT_MEANS.map(d => d.mean_rt);
+    const B = +bootB.value;
+    bootBVal.textContent = B;
+    const means = bootstrapMeans(vals, N_STUDENTS, B);
+    const mu = d3.mean(means), se = d3.deviation(means) || 0;
+    const pad = Math.max(10, (d3.max(means) - d3.min(means)) * 0.15);
+    const xmin = d3.min(means) - pad, xmax = d3.max(means) + pad;
+
+    const svg = Plot.plot({
+      width: 640, height: 320, marginLeft: 55, marginBottom: 36,
+      style: plotStyle(),
+      x: { label: 'Bootstrap sample mean (ms)', domain: [xmin, xmax] },
+      y: { label: 'Count' },
+      marks: [
+        Plot.rectY(means, Plot.binX({ y: 'count' }, { x: d => d, thresholds: 30, fill: '#457b9d', fillOpacity: 0.75 })),
+        Plot.ruleX([0]),
+        Plot.ruleX([MU_POP], { stroke: '#e63946', strokeWidth: 2.5, strokeDasharray: '6,4', tip: true, title: () => `Original sample mean: ${MU_POP} ms` }),
+      ]
+    });
+    const label = `At B = ${B} resamples, the bootstrap mean is ${mu.toFixed(1)} ms and the bootstrap standard error is ${se.toFixed(1)} ms.`;
+    mount('bootstrap-chart', accessibleChart(svg, 'This chart shows the bootstrap resampling distribution, approximating the sampling distribution without assuming a data-generating process. ' + label));
+    document.getElementById('bootstrap-caption').textContent = label + ' Compare this to the formula SE of 181.4 ms.';
+  }
+  bootB.addEventListener('input', renderBootstrap);
+
+  /* ================= Part Four: population table ================= */
+  function renderPairsPopulationTable() {
+    const five = STUDENT_MEANS.slice(0, 5);
+    const tbl = document.createElement('table');
+    tbl.className = 'data-table';
+    tbl.innerHTML = `<thead><tr><th scope="col">Student</th><th scope="col">Mean reaction time (ms)</th></tr></thead>
+      <tbody>${five.map(r => `<tr><td>${r.student_name}</td><td style="color:var(--accent);font-weight:700;">${r.mean_rt.toFixed(1)}</td></tr>`).join('')}</tbody>`;
+    mount('pairs-population-table', tbl);
+  }
+
+  /* ================= Part Five: DGP two-panel ================= */
+  function renderDGPPanel() {
+    const html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;font-family:inherit;">
+      <div style="background:var(--paper-sunk);border-radius:10px;padding:18px 20px;border-left:4px solid #e63946;">
+        <p style="font-weight:700;margin:0 0 10px;color:var(--ink);">DGP parameters (from Week 1)</p>
+        <table style="width:100%;border-collapse:collapse;font-size:0.9em;">
+          <tr style="border-bottom:1px solid var(--rule);"><td style="padding:6px 0;color:var(--ink-faint);">Distribution</td><td style="padding:6px 0;font-weight:700;text-align:right;">Normal</td></tr>
+          <tr style="border-bottom:1px solid var(--rule);"><td style="padding:6px 0;color:var(--ink-faint);">True mean &mu;</td><td style="padding:6px 0;font-weight:700;text-align:right;color:#e63946;">${MU_POP} ms</td></tr>
+          <tr style="border-bottom:1px solid var(--rule);"><td style="padding:6px 0;color:var(--ink-faint);">True SD &sigma;</td><td style="padding:6px 0;font-weight:700;text-align:right;color:#e63946;">${SD_POP} ms</td></tr>
+          <tr><td style="padding:6px 0;color:var(--ink-faint);">Sample size n</td><td style="padding:6px 0;font-weight:700;text-align:right;">${N_STUDENTS} students</td></tr>
+        </table>
+      </div>
+      <div style="background:var(--paper-sunk);border-radius:10px;padding:18px 20px;border-left:4px solid var(--accent);">
+        <p style="font-weight:700;margin:0 0 10px;color:var(--ink);">What the simulation does</p>
+        <ol style="font-size:0.88em;line-height:1.9;color:var(--ink-soft);padding-left:18px;margin:0;">
+          <li>Draw n = ${N_STUDENTS} values from Normal(${MU_POP}, ${SD_POP})</li>
+          <li>Compute the sample mean</li>
+          <li>Repeat 1,000 times</li>
+          <li>Plot the distribution of those 1,000 means</li>
+        </ol>
+        <p style="font-size:0.82em;color:var(--ink-faint);margin-top:12px;font-style:italic;">Each repetition stands for a hypothetical new class of ${N_STUDENTS} students running the same experiment. The true &mu; and &sigma; are fixed and known here &ndash; in the real world they never are. That's exactly why this exercise is useful.</p>
+      </div>
+    </div>`;
+    document.getElementById('dgp-panel').innerHTML = html;
+  }
+
+  /* ================= Part Six: second sample comparison ================= */
+  function renderSecondSample() {
+    const w1 = STUDENT_MEANS.map(d => d.mean_rt);
+    const w2 = Array.from({ length: N_STUDENTS }, () => Math.max(100, d3.randomNormal(MU_POP, SD_POP)())).map(v => Math.round(v * 10) / 10);
+    const both = [...w1, ...w2];
+    const pad = Math.max(10, Math.round((d3.max(both) - d3.min(both)) * 0.12));
+    const xmin = Math.floor((d3.min(both) - pad) / 10) * 10, xmax = Math.ceil((d3.max(both) + pad) / 10) * 10;
+    const bw = Math.max(20, Math.round((xmax - xmin) / 15 / 10) * 10);
+    const panel = (vals, colour, label) => [
+      Plot.rectY(vals.map(v => ({ x: v })), Plot.binX({ y: 'count' }, { x: 'x', thresholds: d3.range(xmin, xmax + bw, bw), fill: colour, fillOpacity: 0.7, fy: () => label })),
+      Plot.ruleX([d3.mean(vals)], { stroke: colour, strokeWidth: 2.5, strokeDasharray: '6,4', fy: () => label }),
+    ];
+    const svg = Plot.plot({
+      width: 640, height: 320, marginLeft: 90, marginRight: 130, marginBottom: 36,
+      style: plotStyle(),
+      fy: { label: null },
+      x: { label: 'Student average reaction time (ms)', domain: [xmin, xmax] },
+      y: { label: 'Count' },
+      marks: [...panel(w1, '#457b9d', 'Our real class'), ...panel(w2, '#2d6a4f', 'Simulated sample 2'), Plot.ruleX([0])]
+    });
+    const label = `Our real class has a mean of ${d3.mean(w1).toFixed(1)} ms; the simulated class has a mean of ${d3.mean(w2).toFixed(1)} ms.`;
+    mount('second-sample-chart', accessibleChart(svg, 'This chart compares our real class to one simulated replay of a class the same size, both drawn from the same assumed data-generating process. ' + label));
+    document.getElementById('second-sample-caption').textContent = label + ' Both panels show 24 students.';
+  }
+
+  /* ================= Part Eight: root-n chart ================= */
+  function renderRootN() {
+    const marks = [5, 24, 50, 100, 200];
+    const curve = d3.range(2, 210, 2).map(n => ({ n, se: SD_POP / Math.sqrt(n) }));
+    const dots = marks.map(n => ({ n, se: SD_POP / Math.sqrt(n) }));
+    const svg = Plot.plot({
+      width: 640, height: 300, marginLeft: 65, marginBottom: 40,
+      style: plotStyle(),
+      x: { label: 'Sample size (n)', domain: [0, 210] },
+      y: { label: 'Standard error (ms)', domain: [0, SD_POP / Math.sqrt(2) * 1.05] },
+      marks: [
+        Plot.line(curve, { x: 'n', y: 'se', stroke: '#e63946', strokeWidth: 2 }),
+        Plot.dot(dots, { x: 'n', y: 'se', fill: '#457b9d', r: 6, tip: true, title: d => `n = ${d.n}\nSE = ${d.se.toFixed(1)} ms` }),
+        Plot.text([{ n: 150, se: SD_POP / Math.sqrt(150) + 20, label: 'SE = σ / √n' }], { x: 'n', y: 'se', text: 'label', fill: '#e63946', fontSize: 12 }),
+      ]
+    });
+    const label = `At n = 24 (our class), SE is ${(SD_POP / Math.sqrt(24)).toFixed(1)} ms. At n = 100, it falls to ${(SD_POP / Math.sqrt(100)).toFixed(1)} ms – less than half, for roughly four times the students.`;
+    mount('rootn-chart', accessibleChart(svg, 'This chart shows the standard error shrinking as sample size grows, following the σ over root n curve, with the rate of improvement slowing as n gets larger. ' + label));
+    document.getElementById('rootn-caption').textContent = label;
+  }
+
+  /* ================= Part Ten: CI on the Normal curve ================= */
+  function renderCINormal() {
+    const SE = SD_POP / Math.sqrt(N_STUDENTS);
+    const z = 1.96;
+    const lo = MU_POP - z * SE, hi = MU_POP + z * SE;
+    const xmin = MU_POP - SE * 3.6, xmax = MU_POP + SE * 3.6;
+    const dens = x => Math.exp(-0.5 * ((x - MU_POP) / SE) ** 2) / (SE * Math.sqrt(2 * Math.PI));
+    const curve = d3.range(xmin, xmax, (xmax - xmin) / 300).map(x => ({ x, y: dens(x) }));
+    const middle = curve.filter(d => d.x >= lo && d.x <= hi);
+
+    const svg = Plot.plot({
+      width: 640, height: 320, marginLeft: 20, marginRight: 20, marginBottom: 40,
+      style: plotStyle(),
+      x: { label: 'Reaction time (ms)', domain: [xmin, xmax] },
+      y: { axis: null },
+      marks: [
+        Plot.areaY(middle, { x: 'x', y: 'y', fill: '#457b9d', fillOpacity: 0.35 }),
+        Plot.line(curve, { x: 'x', y: 'y', stroke: '#1a1a2e', strokeWidth: 2 }),
+        Plot.ruleX([MU_POP], { stroke: '#e63946', strokeWidth: 2, strokeDasharray: '6,4' }),
+        Plot.ruleX([lo, hi], { stroke: '#457b9d', strokeWidth: 1.5, strokeDasharray: '3,3' }),
+        Plot.text([{ x: MU_POP, y: dens(MU_POP) * 1.08, label: `μ = ${MU_POP}` }], { x: 'x', y: 'y', text: 'label', fill: '#e63946', fontSize: 12, fontWeight: 700 }),
+        Plot.text([{ x: lo, y: dens(lo) + dens(MU_POP) * 0.18, label: lo.toFixed(0) }], { x: 'x', y: 'y', text: 'label', fill: '#457b9d', fontSize: 11 }),
+        Plot.text([{ x: hi, y: dens(hi) + dens(MU_POP) * 0.18, label: hi.toFixed(0) }], { x: 'x', y: 'y', text: 'label', fill: '#457b9d', fontSize: 11 }),
+        Plot.text([{ x: MU_POP, y: dens(MU_POP) * 0.4, label: '95%' }], { x: 'x', y: 'y', text: 'label', fill: 'white', fontSize: 13, fontWeight: 700 }),
+        Plot.text([{ x: xmin + SE * 0.3, y: dens(xmin + SE * 0.9), label: '2.5%' }], { x: 'x', y: 'y', text: 'label', fill: 'var(--ink-faint)', fontSize: 11 }),
+        Plot.text([{ x: xmax - SE * 0.3, y: dens(xmax - SE * 0.9), label: '2.5%' }], { x: 'x', y: 'y', text: 'label', fill: 'var(--ink-faint)', fontSize: 11 }),
+      ]
+    });
+    const label = `The Normal(${MU_POP}, ${SE.toFixed(1)}) sampling distribution of the mean, with the 95% confidence interval [${lo.toFixed(0)}, ${hi.toFixed(0)}] ms shaded as the central 95% of the area under the curve, and 2.5% left in each tail.`;
+    mount('ci-normal-chart', accessibleChart(svg, 'This chart shows how a confidence interval is a direct slice of the Normal sampling distribution. ' + label));
+    document.getElementById('ci-normal-caption').textContent = label;
+  }
+
+  /* ================= Part Ten: 100 CI coverage ================= */
+  function mulberry32(seed) {
+    return function () {
+      seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function renderCICoverage() {
+    const rng = mulberry32(2026);
+    function randNormal() {
+      const u1 = Math.max(rng(), 1e-9), u2 = rng();
+      return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+    }
+    const rows = [];
+    for (let i = 0; i < 100; i++) {
+      const sample = Array.from({ length: N_STUDENTS }, () => Math.max(100, MU_POP + SD_POP * randNormal()));
+      const m = d3.mean(sample), se = d3.deviation(sample) / Math.sqrt(N_STUDENTS);
+      const lo = m - 1.96 * se, hi = m + 1.96 * se;
+      rows.push({ i, mean: m, lo, hi, covers: lo <= MU_POP && MU_POP <= hi });
+    }
+    const covers = rows.filter(d => d.covers).length;
+    const colours = { true: '#2a6f97', false: '#e07a3f' };
+
+    const svg = Plot.plot({
+      width: 640, height: 280, marginLeft: 20, marginRight: 20, marginBottom: 32,
+      style: plotStyle(),
+      x: { label: 'Reaction time (ms)', domain: [d3.min(rows, d => d.lo) - 10, d3.max(rows, d => d.hi) + 10] },
+      y: { axis: null, domain: [-1, 100] },
+      marks: [
+        Plot.ruleY(rows.slice().sort((a, b) => a.covers - b.covers), { y: 'i', x1: 'lo', x2: 'hi', stroke: d => colours[d.covers], strokeWidth: 2.5, strokeOpacity: 0.85 }),
+        Plot.dot(rows, { x: 'mean', y: 'i', fill: d => colours[d.covers], r: 2.8, stroke: 'white', strokeWidth: 0.8 }),
+        Plot.ruleX([MU_POP], { stroke: '#1a1a2e', strokeWidth: 2 }),
+        Plot.text([{ x: MU_POP, y: -0.5, label: `True μ = ${MU_POP}` }], { x: 'x', y: 'y', text: 'label', fill: '#1a1a2e', fontSize: 11, textAnchor: 'middle' }),
+      ]
+    });
+    const label = `${covers} of these 100 simulated 95% confidence intervals contain the true mean of ${MU_POP} ms (blue); ${100 - covers} miss it (orange).`;
+    mount('ci-coverage-chart', accessibleChart(svg, 'This chart shows 100 confidence intervals built from 100 simulated samples, most of which contain the true population mean and a few of which miss it. ' + label));
+    document.getElementById('ci-coverage-caption').textContent = label;
+  }
+
+  /* ================= initial render ================= */
+  renderDeviceTable();
+  renderPairsPopulationTable();
+  renderPairs();
+  renderDGP();
+  renderDGPPanel();
+  renderSecondSample();
+  renderSamplesFlagship();
+  renderUnbiased();
+  renderCLT();
+  renderRootN();
+  renderBootstrap();
+  renderCINormal();
+  renderCICoverage();
+})();
+</script>
+
+</body>
+</html>

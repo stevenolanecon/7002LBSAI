@@ -159,6 +159,16 @@
     font-family: var(--sans);
   }
   nav.toc .toc-label { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 10px; display:block; }
+  .toc-block.chapter-nav { padding-bottom: 18px; margin-bottom: 18px; border-bottom: 1px solid var(--rule); }
+  nav.toc ol.chapter-list { list-style: none; margin: 0; padding: 0; columns: 1; }
+  nav.toc ol.chapter-list li { margin-bottom: 2px; }
+  nav.toc .chapter-link { display: block; padding: 8px 10px; border-radius: 8px; text-decoration: none; }
+  nav.toc .chapter-link strong { display: block; font-family: var(--serif); font-size: 13.5px; color: var(--ink); font-weight: 600; }
+  nav.toc .chapter-link .chapter-sub { display: block; font-size: 11px; color: var(--ink-faint); margin-top: 1px; line-height: 1.3; }
+  nav.toc a.chapter-link:hover { background: var(--paper-sunk); }
+  nav.toc .chapter-link.current { background: var(--accent-soft); cursor: default; }
+  nav.toc .chapter-link.current strong { color: var(--accent); }
+  nav.toc .chapter-link:before { content: none; }
   nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: sec; }
   nav.toc li { counter-increment: sec; margin-bottom: 2px; }
   nav.toc a {
@@ -329,7 +339,7 @@
   <main>
     <div class="hero" style="margin: -8px -24px 30px; border-radius: 0;">
       <div class="hero-inner" style="padding:0;">
-        <div class="eyebrow"><span class="dot"></span>7002LBSAI &middot; Research Methods in Analytics &middot; Week One</div>
+        <div class="eyebrow"><span class="dot"></span>7002LBSAI &middot; Research Methods in Analytics &middot; Chapter One</div>
         <h1>Distributions and Summarising Data</h1>
         <p class="dek">Lecture notes reconstructed from both sessions &ndash; the Friday workshop and its online follow-up &ndash; built from their live transcripts, slide decks, and the <em>class's own reaction-time data</em>, collected that Friday afternoon in a room in the Redmonds Building.</p>
         <div class="headline-strip">
@@ -350,12 +360,12 @@
 <h2>Why Explore Before You Model</h2>
 
 <div class="lede-figure">
-  <p>Ten years ago, the man giving this workshop was sitting more or less where you are. Starting a master's in economics, grey hairs not yet arrived, mildly terrified, with only the vaguest idea what the next twelve months held. What got him through it, by his own account, was a handful of tutors who were willing to explain things properly rather than just wave at the textbook. That's the model for these sessions, and for these notes: not a shortcut past the statistics, but a proper explanation of it, built from data you can actually see.</p>
+  <p>Ten years ago, I was sitting more or less where you are. Starting a master's in economics, grey hairs not yet arrived, mildly terrified, with only the vaguest idea what the next twelve months held. What got me through it was a handful of tutors who were willing to explain things properly rather than just wave at the textbook. That's the model for this chapter: not a shortcut past the statistics, but a proper explanation of it, built from data you can actually see.</p>
 </div>
 
 <p>This module goes by the name Research Methods in Analytics, which is really a slightly formal way of asking one question: <strong>what can we do with data to help us make better decisions?</strong> Over eleven weeks that question runs from the simplest possible description of a single variable through to the kind of inference and modelling that lets you say something about a population you never directly observed. It starts here, with the least glamorous and most consequential step in the whole pipeline &ndash; looking properly at your data before you do anything else with it.</p>
 
-<p>The formal name for that step is <strong>exploratory data analysis</strong>, or EDA. B&eacute;k&eacute;s &amp; K&eacute;zdi define it plainly: it is the process of describing your variables &ndash; the values they take, how often they take them, and whether anything about them is unusual. That sounds almost too simple to spend a whole workshop on. It isn't. Before you fit a model, run a test, or make a claim, you have to know what your data actually looks like, and that turns out to be a much deeper task than opening a spreadsheet and skimming a few rows.</p>
+<p>The formal name for that step is <strong>exploratory data analysis</strong>, or EDA. B&eacute;k&eacute;s &amp; K&eacute;zdi define it plainly: it is the process of describing your variables &ndash; the values they take, how often they take them, and whether anything about them is unusual. That sounds almost too simple to spend a whole chapter on. It isn't. Before you fit a model, run a test, or make a claim, you have to know what your data actually looks like, and that turns out to be a much deeper task than opening a spreadsheet and skimming a few rows.</p>
 
 <p>B&eacute;k&eacute;s &amp; K&eacute;zdi frame the whole exercise as three questions you should be able to answer before any modelling begins:</p>
 <ul>
@@ -405,7 +415,7 @@
 
 <h3>What are we actually measuring?</h3>
 
-<p>One question from the room cut straight to the heart of a genuinely important idea: given that the instructions weren't perfectly precise, might the class be measuring the wrong thing? Finger length is a real, physical, measurable quantity &ndash; it isn't drifting up and down over the course of the workshop &ndash; but the tool used to capture it (a ruler, in the hands of a slightly rushed workshop partner) introduces the possibility of <strong>measurement error</strong>: a gap between the true value of the thing you care about and the number you actually record.</p>
+<p>This cuts straight to the heart of a genuinely important idea: given that the instructions weren't perfectly precise, might the class be measuring the wrong thing? Finger length is a real, physical, measurable quantity &ndash; it isn't drifting up and down over the course of the workshop &ndash; but the tool used to capture it (a ruler, in the hands of a slightly rushed workshop partner) introduces the possibility of <strong>measurement error</strong>: a gap between the true value of the thing you care about and the number you actually record.</p>
 
 <blockquote class="field-note">
   <span class="tag">From the workshop</span>
@@ -480,7 +490,7 @@
 <div class="chapter-kicker">Part Six</div>
 <h2>Frequency, Probability, and Distribution</h2>
 
-<p>With the data assembled, the workshop's first real analytical act was almost absurdly simple: count how many students used a laptop, and how many used a phone. Simple, but worth doing carefully, because the vocabulary built here &ndash; absolute frequency, relative frequency, probability &ndash; is going to reappear constantly for the rest of the module.</p>
+<p>With the data assembled, our first real analytical act was almost absurdly simple: count how many students used a laptop, and how many used a phone. Simple, but worth doing carefully, because the vocabulary built here &ndash; absolute frequency, relative frequency, probability &ndash; is going to reappear constantly for the rest of the module.</p>
 
 <ul>
   <li><strong>Absolute frequency</strong> &ndash; the raw count of observations with a particular value.</li>
@@ -527,7 +537,7 @@
   </tbody>
 </table>
 
-<p>The figure below rebuilds the workshop's own pooled histogram, live, from the real 217 trials behind this chapter. It opens with the exclusion threshold set at the same fence used throughout this chapter, so the shape is legible on first look &ndash; drag it upward and the most extreme trials come back into view, and watch what that does to both the shape of the bars and the gap between the mean and median lines.</p>
+<p>The figure below is a live, interactive version of the class's pooled histogram, built from the real 217 trials behind this chapter. It opens with the exclusion threshold set at the same fence used throughout this chapter, so the shape is legible on first look &ndash; drag it upward and the most extreme trials come back into view, and watch what that does to both the shape of the bars and the gap between the mean and median lines.</p>
 
 <div class="figure" id="fig-hist">
   <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Pooled histogram &ndash; the whole class</h4></div>
@@ -603,7 +613,7 @@
 <div class="formula-block">$$\bar{x} = \frac{\sum x_i}{n}$$</div>
 <p class="formula-caption">sum every observation, divide by how many there are</p>
 
-<p>In words rather than symbols: add up every single reaction time in the room, and divide by the number of trials that went into that sum. Two small algebraic properties fall straight out of this and are worth keeping in your back pocket for when regression arrives in a few weeks &ndash; if \(a\) and \(b\) are fixed while \(x\) varies, then \(\overline{x+a} = \bar{x} + a\) and \(\overline{x \cdot b} = \bar{x} \cdot b\).</p>
+<p>In words rather than symbols: add up every single reaction time in the dataset, and divide by the number of trials that went into that sum. Two small algebraic properties fall straight out of this and are worth keeping in your back pocket for when regression arrives in a few weeks &ndash; if \(a\) and \(b\) are fixed while \(x\) varies, then \(\overline{x+a} = \bar{x} + a\) and \(\overline{x \cdot b} = \bar{x} \cdot b\).</p>
 
 <p>The deeper idea sitting underneath the mean is the <strong>expected value</strong>, \(E[x]\): the value you'd expect from one randomly chosen observation. The class's own mean reaction time is mildly interesting in its own right, but it only becomes properly useful once you treat it as an estimate of something bigger than the room &ndash; the expected response time of a wider population this class is standing in for.</p>
 
@@ -656,7 +666,7 @@
 <p><strong>Variance</strong> is the average <em>squared</em> deviation from the mean &ndash; squared partly so positive and negative deviations don't just cancel out to zero, and partly because it makes the algebra behind everything from regression to hypothesis testing far more tractable later in the module. It's harder to interpret directly, precisely because squaring the deviations also squares their units. <strong>Standard deviation</strong> undoes that by taking the square root, landing back in the original units &ndash; roughly, the typical distance between a randomly chosen observation and the mean.</p>
 
 <div class="callout">
-  This module divides by \(n-1\), not \(n\) &ndash; the standard convention, and what Python's pandas library uses by default. B&eacute;k&eacute;s &amp; K&eacute;zdi's textbook divides by \(n\) instead; the difference is genuinely tiny once your sample is reasonably large, and Week 2 explains precisely why the \(n-1\) correction exists.
+  <strong>Why \(n-1\), not \(n\)?</strong> This module divides by \(n-1\) &ndash; the standard convention, and what Python's pandas library uses by default. B&eacute;k&eacute;s &amp; K&eacute;zdi's own textbook divides by \(n\) instead, which is harmless at the scale of their case studies but genuinely matters at the scale of a 24-person class. The reason is called <strong>Bessel's correction</strong>: an unbiased estimate of the population variance divides squared deviations by \(n-1\), not \(n\), because the sample mean \(\bar{x}\) already fits this exact sample as closely as possible &ndash; squared deviations measured from it slightly understate the true spread. Dividing by \(n-1\) corrects for spending one number's worth of information calculating \(\bar{x}\) from these same values in the first place. It's not a huge deal in practice &ndash; just worth knowing why the formula looks the way it does, rather than taking \(n-1\) on faith. (<a href="week2-lecture-notes.html#week1-dgp" target="_blank" rel="noopener">Chapter Two</a> puts this same correction to work on the class's own data.)
 </div>
 
 <p>In finance, standard deviation <em>is</em> volatility, quoted directly: a higher SD on an asset's price literally means it jumps around more relative to its own average. The same idea, unchanged, describes a call centre's response times, a factory's output, or a portfolio's returns.</p>
@@ -717,7 +727,7 @@
 
 <p>Building one by hand is mostly arithmetic: sort your ten values, and Excel's own box-and-whisker chart takes Q1 as the median of the bottom half and Q3 as the median of the top half (not the interpolated result <code>QUARTILE()</code> would give you &ndash; a genuine, easy-to-miss mismatch between the formula and the chart, worth knowing before you're confused by your own numbers disagreeing with your own plot).</p>
 
-<p>Applied to the class's actual data, grouped by device or by whether a student had had caffeine, the box plot becomes the tool for answering the workshop's real running question.</p>
+<p>Applied to the class's actual data, grouped by device or by whether a student had had caffeine, the box plot becomes the tool for answering this chapter's real running question.</p>
 
 <div class="figure" id="fig-box">
   <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Box plot: our data</h4></div>
@@ -745,7 +755,7 @@
 <div class="chapter-kicker">Part Twelve</div>
 <h2>So &ndash; Was One Test Score Enough?</h2>
 
-<p>Back to HR's onboarding test: one trial, one number, one ranking. Every student in the room just produced ten. Look back at your own numbers &ndash; how does the spread between your own fastest and slowest trial compare with the differences visible between different students entirely?</p>
+<p>Back to HR's onboarding test: one trial, one number, one ranking. Every one of you just produced ten. Look back at your own numbers &ndash; how does the spread between your own fastest and slowest trial compare with the differences visible between different students entirely?</p>
 
 <blockquote class="field-note">
   <span class="tag">From the workshop</span>
@@ -769,17 +779,13 @@
   <li>Explore further if needed &ndash; by group, over time, or otherwise.</li>
 </ol>
 
-<p>Every one of those six steps happened in this chapter, in order, on data the room generated for itself. That's the whole method &ndash; not a checklist to memorise, but a habit of mind worth building before anything gets modelled.</p>
+<p>Every one of those six steps happened in this chapter, in order, on data the class generated for itself. That's the whole method &ndash; not a checklist to memorise, but a habit of mind worth building before anything gets modelled.</p>
 
 </section>
 
 <section class="chapter" id="distribution-families">
 <div class="chapter-kicker">Part Thirteen</div>
 <h2>From One Histogram to a Family of Shapes</h2>
-
-<div class="lede-figure">
-<p>A few days after the Friday workshop, the module leader tried to deliver this same material live, online &ndash; and partway through a live demonstration, something went visibly wrong. Rather than let a garbled recording stand as the only record of it, he re-recorded the whole session from scratch: calmer, slower, with the mistake fixed rather than quietly edited away. These notes are built from that second, cleaner take, but the honesty of the first attempt is worth keeping in view &ndash; even the person running this module gets things wrong sometimes, live, in front of people, and the right response is to go back and do it properly rather than pretend otherwise.</p>
-</div>
 
 <p>The workshop looked at one histogram &ndash; the class's own 217 reaction-time trials, bunched up at the low end with a long tail stretching out to the right. That shape told a story on its own, but a single shape, on its own, is also just <em>one dataset</em>. To actually interpret it &ndash; to know whether it is ordinary or unusual, and what that implies for the statistical tests this module builds toward &ndash; the shape needs something to be compared against. That something is a family of <strong>theoretical distributions</strong>: not frequencies counted from one real dataset, but idealised, abstract descriptions of how likely different values are across a whole population, fully specified by a small handful of <strong>parameters</strong>.</p>
 
@@ -790,7 +796,7 @@
 <div class="chapter-kicker">Part Fourteen</div>
 <h2>The Normal Distribution</h2>
 
-<p>Start with the shape everyone in the room had already half-met, even if not by name: the <strong>normal distribution</strong>, bell-shaped and symmetric, one half a mirror of the other. That symmetry has a direct consequence for the three measures of centre from the workshop &ndash; mean, median, and mode all land in exactly the same place. The mean sits in the middle because half the distribution's mass lies to its left and half to its right (which makes it the median too), and because the bell peaks at its own centre, that same point is also the single most likely value &ndash; the mode.</p>
+<p>Start with the shape you've probably already half-met, even if not by name: the <strong>normal distribution</strong>, bell-shaped and symmetric, one half a mirror of the other. That symmetry has a direct consequence for the three measures of centre from earlier in this chapter &ndash; mean, median, and mode all land in exactly the same place. The mean sits in the middle because half the distribution's mass lies to its left and half to its right (which makes it the median too), and because the bell peaks at its own centre, that same point is also the single most likely value &ndash; the mode.</p>
 
 <p>Two parameters fully describe it: the mean, \(\mu\) (<em>mu</em>), fixing where the centre sits, and the standard deviation, \(\sigma\) (<em>sigma</em>), fixing how wide the bell is. Drag the mean below and the whole shape slides left or right without changing width; drag the standard deviation and the shape stretches or compresses around a fixed centre.</p>
 
@@ -825,10 +831,10 @@
 <p>The two are related by a small, genuinely elegant piece of mathematics: the log of a product is the sum of the logs, \(\log(a \times b) = \log a + \log b\). So if a variable is itself the product of many small multiplicative factors, its <em>log</em> is a sum of many small factors &ndash; exactly the additive structure that produces a normal shape. Take a normally distributed variable \(x\) and transform it with \(e^x\) (the exponential function) and the result is, by construction, log-normal: always positive, with a long right tail.</p>
 
 <div class="callout">
-  <strong>A live example of getting this backwards, on camera.</strong> The quickest way to misunderstand a log-normal distribution is to try to build one by <em>logging</em> a normal variable &ndash; the wrong direction entirely, and exactly the mistake made in the first, live attempt at this session. Building a log-normal distribution means <strong>exponentiating</strong> a normal variable (\(e^x\)), not logging it. Reversing that afterwards &ndash; taking the natural log, <code>LN()</code>, of an already log-normal variable &ndash; is what pushes it back toward normal, and is exactly the transformation this chapter reaches for on reaction time below.
+  <strong>A common mix-up, worth guarding against.</strong> The quickest way to misunderstand a log-normal distribution is to try to build one by <em>logging</em> a normal variable &ndash; the wrong direction entirely. Building a log-normal distribution means <strong>exponentiating</strong> a normal variable (\(e^x\)), not logging it. Reversing that afterwards &ndash; taking the natural log, <code>LN()</code>, of an already log-normal variable &ndash; is what pushes it back toward normal, and is exactly the transformation this chapter reaches for on reaction time below.
 </div>
 
-<p>Income, firm size, and &ndash; the workshop's own running example &ndash; reaction time all tend toward this shape, for the same underlying reason: each is the outcome of several factors that compound rather than simply add.</p>
+<p>Income, firm size, and &ndash; this chapter's own running example &ndash; reaction time all tend toward this shape, for the same underlying reason: each is the outcome of several factors that compound rather than simply add.</p>
 
 <blockquote class="field-note">
   <span class="tag">From the online session</span>
@@ -877,6 +883,12 @@
   <span class="tag">From the online session</span>
   <p>&ldquo;If I go into a bag that's got numbers 0 to 10 in it &ndash; eleven balls &ndash; I want the probability I pick out a five to be exactly the same as the probability I pick out any other number. That's what the uniform distribution shows: no peak, nothing more typical than anything else.&rdquo;</p>
 </blockquote>
+
+<div class="figure" id="fig-uniform">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>The uniform distribution</h4></div>
+  <div class="figure-body"><div class="chart-wrap" id="uniform-chart"></div></div>
+  <p class="figure-caption">4,000 simulated draws between 0 and 10, bars roughly the same height across the whole range &ndash; the flat silhouette that gives this distribution its name.</p>
+</div>
 
 <p>Mean and median both sit at the midpoint of the range, but &ndash; unlike every other distribution in this chapter &ndash; there's no mode worth naming, because nothing stands out as more common. The clearest real-world use is a random number generator, where you specifically don't want any number favoured over another; it also turns up describing waiting time within a fixed interval, or rounding error.</p>
 
@@ -955,9 +967,9 @@
 <div class="chapter-kicker">Part Eighteen</div>
 <h2>Back to Our Own Data &ndash; and What's Next</h2>
 
-<p>All of that theory exists to answer one practical question about the class's own reaction-time data: if it really is log-normal, as the workshop's pooled histogram already suggested, then its <strong>log</strong> should look roughly normal. The session worked through this live in Excel &ndash; filter out the handful of trials running well over a second (they'd otherwise dominate the shape on their own, exactly as the 56-second trial did back in the workshop), histogram the rest, then histogram their log, and compare.</p>
+<p>All of that theory exists to answer one practical question about the class's own reaction-time data: if it really is log-normal, as this chapter's pooled histogram already suggested, then its <strong>log</strong> should look roughly normal. Here's how to work through it in Excel &ndash; filter out the handful of trials running well over a second (they'd otherwise dominate the shape on their own, exactly as the 56-second trial did earlier in this chapter), histogram the rest, then histogram their log, and compare.</p>
 
-<p>The figure below rebuilds that same comparison, live, from the real 217 trials behind this whole chapter &ndash; filtered to trials under 800 milliseconds, the exact threshold the session's own slides settled on.</p>
+<p>The figure below rebuilds that same comparison, live, from the real 217 trials behind this whole chapter &ndash; filtered to trials under 800 milliseconds, the exact threshold used throughout this chapter.</p>
 
 <div class="figure" id="fig-ourdata">
   <div class="figure-head"><span class="flabel">Figure</span><h4>Our data, and its log</h4></div>
@@ -970,9 +982,9 @@
   <p class="figure-caption" id="ourdata-caption"></p>
 </div>
 
-<p>Raw reaction times (blue, left) are right-skewed with a long tail, exactly as the workshop's own pooled histogram already showed. Their log (green, right) looks noticeably closer to symmetric and bell-shaped &ndash; not perfectly normal, but measurably less skewed by the same (mean &minus; median) &divide; SD measure of skew introduced back in the workshop. That's exactly what the log-normal claim predicts, and it's the same reasoning this module will lean on every time it logs a variable in a later week: not because logging is a ritual worth doing automatically, but because it's solving a specific, checkable problem &ndash; a long right tail that would otherwise distort a model built on it.</p>
+<p>Raw reaction times (blue, left) are right-skewed with a long tail, exactly as this chapter's own pooled histogram already showed. Their log (green, right) looks noticeably closer to symmetric and bell-shaped &ndash; not perfectly normal, but measurably less skewed by the same (mean &minus; median) &divide; SD measure of skew introduced earlier in this chapter. That's exactly what the log-normal claim predicts, and it's the same reasoning this module will lean on every time it logs a variable in a later week: not because logging is a ritual worth doing automatically, but because it's solving a specific, checkable problem &ndash; a long right tail that would otherwise distort a model built on it.</p>
 
-<p>Part Twelve of this chapter ended on an open question: the phone-versus-laptop gap and the caffeine gap in the class's own box plots are real numbers, but neither one, on its own, says whether it's a genuine effect or just the ordinary noise of which twenty-four people happened to be in the room that day. The online session closes on exactly that same note, in the instructor's own words:</p>
+<p>Part Twelve of this chapter ended on an open question: the phone-versus-laptop gap and the caffeine gap in the class's own box plots are real numbers, but neither one, on its own, says whether it's a genuine effect or just the ordinary noise of which twenty-four people happened to be in the room that day. I like to close on exactly that same note, in my own words:</p>
 
 <blockquote class="field-note">
   <span class="tag">From the online session</span>
@@ -983,8 +995,7 @@
 </section>
 
 <footer class="colophon">
-  <p><strong>A note on these notes.</strong> This chapter was assembled from the Week 1 workshop and its online follow-up session together: both slide decks, both sessions' own live transcripts (auto-generated, lightly cleaned for readability &ndash; quoted passages are close to verbatim but not a certified transcript), and the class's real, anonymised reaction-time data collected in the workshop (217 trials, 24 students), which the online session reuses to test its own distributional claims. Numbers and charts throughout reflect that specific dataset as it stood at the time of writing; they will not update themselves if the underlying data is later revised. The online session was re-recorded after a live technical issue, which these notes reflect honestly rather than edit around. Framework and definitions follow B&eacute;k&eacute;s &amp; K&eacute;zdi, <em>Data Analysis for Business, Economics, and Policy</em> (2021), Ch. 3, as taught in both sessions.</p>
-  <p>Built as a drafting experiment &ndash; not yet reviewed for publication to students.</p>
+  <p><strong>A note on these notes.</strong> This chapter was assembled from the Week 1 workshop and its online follow-up session together: both slide decks, both sessions' own live transcripts (auto-generated, lightly cleaned for readability &ndash; quoted passages are close to verbatim but not a certified transcript), and the class's real, anonymised reaction-time data collected in the workshop (217 trials, 24 students), which the online session reuses to test its own distributional claims. Numbers and charts throughout reflect that specific dataset as it stood at the time of writing; they will not update themselves if the underlying data is later revised. Framework and definitions follow B&eacute;k&eacute;s &amp; K&eacute;zdi, <em>Data Analysis for Business, Economics, and Policy</em> (2021), Ch. 3, as taught in both sessions.</p>
 </footer>
 
     </div>
@@ -1040,11 +1051,45 @@
   const bvMax = poolFence + bvPad;
   const bvHidden = poolVals.filter(v => v > bvMax).length;
 
+  /* ================= Chapter nav =================
+     Hardcoded, not derived from page content — there's no book-level index
+     to generate it from, each chapter is its own static file. Add a new
+     entry here (and to every other chapter's own copy of this array) when
+     Chapter Three exists. */
+  const CHAPTERS = [
+    { href: 'week1-lecture-notes.html', num: 'One', title: 'Distributions &amp; Summarising Data' },
+    { href: 'week2-lecture-notes.html', num: 'Two', title: 'Inference: When Is a Difference Real?' },
+  ];
+  const CURRENT_CHAPTER_HREF = 'week1-lecture-notes.html';
+  function buildChapterNav(container) {
+    const wrap = document.createElement('div');
+    wrap.className = 'toc-block chapter-nav';
+    const label = document.createElement('span');
+    label.className = 'toc-label';
+    label.textContent = 'Chapters';
+    wrap.appendChild(label);
+    const ol = document.createElement('ol');
+    ol.className = 'chapter-list';
+    CHAPTERS.forEach(c => {
+      const li = document.createElement('li');
+      const isCurrent = c.href === CURRENT_CHAPTER_HREF;
+      const el = document.createElement(isCurrent ? 'span' : 'a');
+      if (!isCurrent) el.href = c.href;
+      el.className = 'chapter-link' + (isCurrent ? ' current' : '');
+      el.innerHTML = `<strong>Chapter ${c.num}</strong><span class="chapter-sub">${c.title}</span>`;
+      li.appendChild(el);
+      ol.appendChild(li);
+    });
+    wrap.appendChild(ol);
+    container.appendChild(wrap);
+  }
+
   /* ================= TOC ================= */
   const sections = [...document.querySelectorAll('section.chapter')].map(s => ({
     id: s.id, title: s.querySelector('h2').textContent
   }));
   function buildTOC(container) {
+    buildChapterNav(container);
     const label = document.createElement('span');
     label.className = 'toc-label';
     label.textContent = 'Contents';
@@ -1505,6 +1550,20 @@
     mount('powerlaw-chart', accessibleChart(svg, 'This chart shows the characteristic shape of a power-law distribution, where extreme values stay far more common than in a normal or log-normal distribution. 4,000 simulated draws, almost all small, with a very long, fat tail of much larger values.'));
   }
 
+  function renderUniform() {
+    const sample = Array.from({ length: 4000 }, d3.randomUniform(0, 10));
+    const svg = Plot.plot({
+      width: 640, height: 280, marginLeft: 55, marginBottom: 36,
+      style: plotStyle(),
+      x: { label: 'x', domain: [0, 10] },
+      y: { label: '% of draws', percent: true },
+      marks: [
+        Plot.rectY(sample, Plot.binX({ y: 'proportion' }, { x: d => d, thresholds: 20, fill: '#f4a261', fillOpacity: 0.8 })),
+      ]
+    });
+    mount('uniform-chart', accessibleChart(svg, 'This chart shows the characteristic flat shape of a uniform distribution, where every value in a range is equally likely. 4,000 simulated draws between 0 and 10, bars roughly the same height across the whole range.'));
+  }
+
   const binomN = document.getElementById('binomial-n');
   const binomNVal = document.getElementById('binomial-n-val');
 
@@ -1604,6 +1663,7 @@
   renderNormal();
   renderLognormal();
   renderPowerLaw();
+  renderUniform();
   renderBinomial();
   renderPoisson();
   renderOurData();
