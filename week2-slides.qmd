@@ -1380,6 +1380,21 @@ viewof boot_controls = {
 }
 ```
 
+## Task — does the bootstrap agree with the formula? {.smaller}
+
+::: {.instructions-box}
+1. **n** starts at our real class sample size, but with only 10 resamples — read off the bootstrap SE.
+2. Drag **B** (resamples) up towards 2,000. Does the bootstrap SE settle down, or keep jumping around?
+3. Once it's settled, compare it to the formula SE from "Task — does the formula match?" earlier. Close?
+4. Now drag **n** down to a small value. What happens to the spread of the histogram? Which property of the sampling distribution does that demonstrate?
+:::
+
+::: {.fragment}
+Under the conditions we need — large enough sample, independent observations — the bootstrap and the formula converge on the same answer. The formula is faster; the bootstrap works even when no formula exists.
+
+Dragging **n** down widens the bootstrap histogram — the same **root-*n* convergence** we saw earlier (SE shrinks as *n* grows), now showing up in a resampled statistic instead of a formula.
+:::
+
 ## What is a confidence interval?
 
 A **confidence interval (CI)** is a range where we expect the true value — in the population, or general pattern, that our data represents — to fall, with a probability we choose. Analysts typically pick 95%, sometimes 90% or 99%.
@@ -1503,21 +1518,6 @@ html`<p style="font-family:sans-serif;">You should have found: mean = <strong st
   return html`<div class="instructions-box">In words: in the general pattern our data represents, we can be <strong>95% confident</strong> that the true average reaction time lies between <strong>${lo} and ${hi} ms</strong>.</div>`
 }
 ```
-:::
-
-## Task — does the bootstrap agree with the formula? {.smaller}
-
-::: {.instructions-box}
-1. **n** starts at our real class sample size, but with only 10 resamples — read off the bootstrap SE.
-2. Drag **B** (resamples) up towards 2,000. Does the bootstrap SE settle down, or keep jumping around?
-3. Once it's settled, compare it to the formula SE you calculated on the previous slide. Close?
-4. Now drag **n** down to a small value. What happens to the spread of the histogram? Which property of the sampling distribution does that demonstrate?
-:::
-
-::: {.fragment}
-Under the conditions we need — large enough sample, independent observations — the bootstrap and the formula converge on the same answer. The formula is faster; the bootstrap works even when no formula exists.
-
-Dragging **n** down widens the bootstrap histogram — the same **root-*n* convergence** we saw earlier (SE shrinks as *n* grows), now showing up in a resampled statistic instead of a formula.
 :::
 
 ## Quick recap
