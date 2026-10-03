@@ -322,6 +322,18 @@
   .divider h3 { color: #fff; font-size: 1.5rem; margin: 10px 0 0; }
   .divider p { color: #c3c4d6; max-width: 46ch; margin: 10px auto 0; }
 
+  /* ---------- footnotes ---------- */
+  .footnote-ref { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .footnote-ref:hover { text-decoration: underline; }
+  .footnotes {
+    max-width: 700px; margin: 46px auto 0; padding: 18px 0 0; border-top: 1px solid var(--rule);
+    font-size: 0.86rem; color: var(--ink-soft); line-height: 1.6;
+  }
+  .footnotes ol { padding-left: 20px; margin: 0; }
+  .footnotes li { margin-bottom: 6px; }
+  .footnotes a.footnote-back { color: var(--ink-faint); text-decoration: none; margin-left: 4px; }
+  .footnotes a.footnote-back:hover { color: var(--accent); }
+
   /* ---------- footer ---------- */
   footer.colophon {
     max-width: 700px; margin: 70px auto 0; padding: 26px 0 0; border-top: 1px solid var(--rule);
@@ -344,7 +356,6 @@
       <div class="hero-inner" style="padding:0;">
         <div class="eyebrow"><span class="dot"></span>7002LBSAI &middot; Research Methods in Analytics &middot; Chapter Two</div>
         <h1>Inference: When Is a Difference Real?</h1>
-        <p class="dek">Lecture notes reconstructed from the Week 2 workshop &ndash; built from the live transcript, the slide deck, and the <em>class's own reaction-time data</em>. This chapter covers everything the workshop reached: the sampling distribution, the standard error, the bootstrap, and confidence intervals. Hypothesis testing itself is still to come.</p>
         <div class="headline-strip">
           <div class="stat"><span class="n">24</span><span class="l">students, one real class</span></div>
           <div class="stat"><span class="n">1,070ms</span><span class="l">our assumed true mean</span></div>
@@ -360,15 +371,13 @@
 
 <section class="chapter" id="real-or-noise">
 <div class="chapter-kicker">Part One</div>
-<h2>Is the Gap Real, or Just Noise?</h2>
+<h2>Mind the gap</h2>
 
-<p>I was sitting more or less where you are, ten years ago, doing a similar kind of module. I'm not going to pretend it came easily. I have my old marks from that first undergraduate econometrics course somewhere, and the first time I sat it I scraped a 42. I went back for a master's, the same stuff came around again, and that time I came away with a distinction. Nothing about my brain changed in between &ndash; I just kept plugging away at it until it clicked. If this chapter feels hard in places, that's not a sign you're doing it wrong. It's a sign you're doing a master's.</p>
-
-<p>Week 1 ended with a real, visible gap in our own data: phone users looked faster than laptop users, by something like 300 milliseconds. That gap is not in dispute &ndash; it is sitting right there in the numbers we collected. The question this chapter exists to answer is a different one entirely: <strong>if we ran the exact same exercise again next week, with the same twenty-four of us, would that gap look the same? Bigger? Smaller? Could it even flip direction?</strong></p>
+<p>Chapter 1 ended with what felt like a tentative finding in our own data: phone users looked faster than laptop users, by something like 300 milliseconds. The gap is not in dispute &ndash; it is sitting right there in the numbers we collected. The question this chapter exists to answer is a different one entirely: <strong>if we ran the exact same exercise again next week, with the same twenty-four of us, would that gap look the same? Bigger? Smaller? Could it even flip direction?</strong></p>
 
 <div class="mini-table-wrap" id="devicetable"></div>
 
-<p>Nobody in the room can answer that question by staring harder at the table above. Answering it properly is the whole business of statistical <strong>inference</strong>: using the one dataset we actually have to say something responsible about a world we didn't get to fully observe. That's what this chapter builds, piece by piece.</p>
+<p>Nobody in the room can answer that question by staring harder at the table above. Answering it properly is the whole business of statistical <strong>inference</strong>: using the one dataset we actually have to say something responsible about a world we didn't get to fully observe. That's what this chapter builds, piece by difficult piece.</p>
 </section>
 
 <section class="chapter" id="external-validity">
@@ -377,7 +386,7 @@
 
 <p>Suppose, for the sake of argument, that the device gap turns out to be real and not chance. What, exactly, would that actually entitle us to say? Only this: that the gap is real for <em>this</em> class, on <em>the day</em> it was collected, using <em>this</em> specific task. Nothing yet about phone and laptop users in general &ndash; twenty-four self-selecting business analytics master's students on one Friday afternoon are a long way from "everyone."</p>
 
-<p>That gap &ndash; between what a dataset can actually show and what we'd like to claim from it &ndash; has a name: <strong>external validity</strong>. It asks whether the pattern sitting in our data is the same as the general pattern we actually care about. It is a genuinely different question from <strong>internal validity</strong> (did we run the experiment itself correctly &ndash; were we measuring what we thought we were measuring, the way Week 1's finger-length discussion raised).</p>
+<p>That gap &ndash; between what a dataset can actually show and what we'd like to claim from it &ndash; has a name: <strong>external validity</strong>. It asks whether the pattern sitting in our data is the same as the general pattern we actually care about. It is a different question from <strong>internal validity</strong> (did we run the experiment itself correctly &ndash; were we measuring what we thought we were measuring, the way Week 1's finger-length discussion raised).</p>
 
 <h3>Three places the threat usually hides</h3>
 
@@ -387,7 +396,7 @@
   <li><span class="term">Sub-groups</span><span>Our data is this cohort. Would it hold for a different group of people?</span></li>
 </ul>
 
-<p>I set groups loose on exactly this question for our own data, and the real answers the room came back with are worth keeping, because they're sharper than anything I could invent as a textbook example.</p>
+<p>In the class students worked in groups on exactly this question for our own data. The first group pointed out the time of day might have had an influence.</p>
 
 <blockquote class="field-note">
   <span class="tag">From the workshop</span>
@@ -400,9 +409,7 @@
   <strong>There's no tick-box version of this.</strong> You run an experiment, and you keep asking how what you measured here might fail to generalise, staying honest about the specific threats rather than pretending you've eliminated them. Every real dataset carries some of these threats somewhere. The job is knowing which ones apply to yours.
 </div>
 
-<div class="callout">
-  <strong>Task, in the workshop.</strong> Groups of 3&ndash;4, five minutes: using Time / Space / Sub-groups, list the threats to external validity in the reaction-time data we collected, and be ready to present one threat per category.
-</div>
+
 
 <div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), <em>Data Analysis for Business, Economics, and Policy</em>, Ch. 5</div>
 </section>
@@ -411,12 +418,12 @@
 <div class="chapter-kicker">Part Three</div>
 <h2>One Sample Among Many</h2>
 
-<p>Our Week 1 data is one dataset &ndash; one of many that could have been collected. Run the exercise again next week and the numbers move, partly just by chance. Those many possible datasets are, conceptually, repeated samples from the same underlying <strong>data-generating process (DGP)</strong>: the whole tangle of eyesight, dexterity, finger length, attention, and hundreds of other things that combine to produce a reaction time.</p>
+<p>Our Week 1 data is one dataset &ndash; one of many that could have been collected. Run the exercise again next week and the numbers move, partly just by chance. Even more abstractly, imagine running history again – we may end with different numbers. Those many possible datasets are, conceptually, repeated samples from the same underlying <strong>data-generating process (DGP)</strong>: the whole tangle of eyesight, dexterity, finger length, attention, and hundreds of other things that combine to produce a reaction time.</p>
 
-<p>Because the data could have come out differently, any <strong>statistic</strong> computed from it &ndash; the mean, say &ndash; has its own distribution too. Today's mean differs from next week's mean, which differs from the week after's. That distribution of a statistic, across repeated samples, is called its <strong>sampling distribution</strong>, and it is worth being completely explicit about why it keeps tripping people up: it is a genuinely different object from the distribution of the variable itself.</p>
+<p>Because the data could have come out differently, any <strong>statistic</strong> computed from it &ndash; the mean, say &ndash; has its own distribution too. Today's mean differs from next week's mean, which differs from the week after's. That distribution of a statistic, across repeated samples, is called its <strong>sampling distribution</strong>. This is a different object from the distribution of the variable itself.</p>
 
 <div class="callout gold">
-  <strong>Two distributions, not one.</strong> This is the single idea worth slowing down for in this whole chapter.
+  <strong>Two distributions, not one.</strong> 
   <ul style="margin:10px 0 0;">
     <li><strong>The distribution of the variable</strong> &ndash; Week 1's own histogram, 217 individual reaction times, each one a single tap.</li>
     <li><strong>The sampling distribution of the mean</strong> &ndash; what you'd get if you repeated the whole 24-student exercise many times and plotted <em>each repetition's own mean</em>, once per repetition.</li>
@@ -424,10 +431,6 @@
   The first is built from individual observations. The second is built from <em>statistics</em>, one per imagined repeat of the entire experiment. Mixing the two up is the most common way to get lost in what follows.
 </div>
 
-<blockquote class="field-note">
-  <span class="tag">From the workshop</span>
-  <p>&ldquo;This is what we call pedagogy &ndash; this is understanding what a sampling distribution is. And speaking personally, I really struggled to understand this concept myself. So we're going to go through it step by step.&rdquo;</p>
-</blockquote>
 
 <div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 5</div>
 </section>
@@ -440,7 +443,7 @@
 
 <div class="mini-table-wrap" id="pairs-population-table"></div>
 
-<p>Now impose an artificial restriction: you're only allowed to sample <strong>two</strong> of the five at a time. Write out every possible pair, and compute each pair's own average.</p>
+<p>We could easily calculate it now but – to understand the concept of a sampling distribution – we are going to impose an artificial restriction: you're only allowed to sample <strong>two</strong> of the five at a time. We are also going to imagine that mean reaction time stays fixed (again, not very realistic – maybe this is a very small planet populated by five robots). We want to write out every possible pair, and compute each pair's own average.</p>
 
 <div class="figure" id="fig-pairs">
   <div class="figure-head"><span class="flabel">Figure</span><h4>Ten pairs, ten different averages</h4></div>
@@ -448,14 +451,14 @@
   <p class="figure-caption" id="pairs-caption"></p>
 </div>
 
-<p>Ten possible pairs from five people, and ten different averages &ndash; some close to the true mean of all five, some a long way off. That spread, from a sample of just two, is the sampling distribution in miniature. Scale this exact idea up to repeated classes of twenty-four, sampled from a much larger population, and you have the real thing.</p>
+<p>As you can see below, there are ten possible pairs from the population of five people. That is ten repeated samples and ten different averages, one from each sample &ndash; some close to the true mean of all five, some a long way off. That spread, from repeated samples of just two observations, is the sampling distribution in miniature. Scale this exact idea up to our example: repeated classes of twenty-four, sampled from a much larger population, and you have the real thing.</p>
 </section>
 
 <section class="chapter" id="week1-dgp">
 <div class="chapter-kicker">Part Five</div>
 <h2>Our Assumed Data-Generating Process</h2>
 
-<p>Collapse last week's raw trials down to one average reaction time per student, and the 24 resulting numbers have their own shape &ndash; a mean, a spread, a distribution. Fit a Normal curve to that shape (two parameters, mean and standard deviation, exactly as Week 1's Online Session covered) and you get something you can actually simulate from.</p>
+<p>Going forward we are going to collapse last chapter's raw trials down to one average reaction time per student, and the 24 resulting numbers have their own shape &ndash; a mean, a spread, a distribution. Fit a Normal curve to that shape (two parameters, mean and standard deviation, exactly as Chapter 1 covered) and you get something you can simulate from.</p>
 
 <div class="figure" id="fig-dgp">
   <div class="figure-head"><span class="flabel">Figure</span><h4>The distribution we're assuming</h4></div>
@@ -464,14 +467,10 @@
 </div>
 
 <div class="callout">
-  You may notice this curve allows for negative reaction times &ndash; a real side effect of fitting a Normal distribution whose standard deviation (888.6ms) is nearly as large as its own mean (1,070.1ms). Obviously, that can't happen in the real world, and we haven't allowed it in any of the simulated data used in this chapter &ndash; every simulated value is floor-clipped at a small positive minimum before use. The underlying statistical ideas we're exploring are unaffected either way.
+  You may notice this curve allows for negative reaction times &ndash; a side effect of fitting a Normal distribution whose standard deviation (888.6ms) is nearly as large as its own mean (1,070.1ms). Obviously, that can't happen in the real world, and we haven't allowed it in any of the simulated data used in this chapter &ndash; every simulated value is floor-clipped at a small positive minimum before use. The underlying statistical ideas we're exploring are unaffected either way.
 </div>
 
-<div class="callout">
-  A quick footnote: this is also where the <strong>n&minus;1</strong> correction from Week 1's standard-deviation formula actually earns its keep &ndash; the real reason it exists is covered properly in <a href="week1-lecture-notes.html#spread" target="_blank" rel="noopener">Chapter One, "Measuring the Spread"</a>, rather than repeated here.
-</div>
-
-<p>This Normal(μ, σ) curve <em>is</em> our assumed data-generating process: an assumption we're choosing to make, because we have no way to observe the real one directly. We wouldn't normally treat the result of a one-off data-collection exercise like our reaction-time test this way &ndash; but doing so here helps us understand some genuinely powerful underlying statistics, which is exactly why it's worth the slightly artificial setup. Everything else in this chapter follows from taking that assumption seriously enough to compute with it.</p>
+<p>This Normal(μ, σ) curve <em>is</em> our assumed data-generating process: an assumption we're choosing to make, because we have no way to observe the real one directly. We wouldn't normally treat the result of a one-off data-collection exercise like our reaction-time test this way &ndash; but doing so here helps us understand some genuinely powerful underlying statistics, which is exactly why it's worth the artificial setup. Everything else in this chapter follows from taking that assumption seriously enough to compute with it.</p>
 
 <div class="mini-table-wrap" id="dgp-panel"></div>
 </section>
@@ -480,7 +479,7 @@
 <div class="chapter-kicker">Part Six</div>
 <h2>A Thousand Simulated Classes</h2>
 
-<p>Here is the payoff of assuming a DGP: a computer can pretend to rerun last week's experiment. Draw 24 values from Normal(1070.1, 888.6) and average them, and you have one simulated class's mean &ndash; a single fresh draw from the sampling distribution, standing in for "what if we did this again next week?"</p>
+<p>Here is the payoff of assuming a DGP: a computer can pretend to rerun last week's experiment. Draw 24 values from Normal(1070.1, 888.6) and average them, and you have one simulated class's mean &ndash; a single fresh draw from the sampling distribution, standing in for "what if we did this again next week or what if we re-ran history using the Time Stone?"</p>
 
 <details class="code-reveal">
   <summary>Show the Python behind the simulation</summary>
@@ -503,11 +502,8 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
   <p class="figure-caption" id="second-sample-caption"></p>
 </div>
 
-<p>Same <em>n</em> both times &ndash; our real class of 24, and one simulated class of 24 &ndash; so the two panels are directly comparable. The simulated class is different in its specific numbers, as it should be, but similar in its overall shape: that's the DGP assumption doing its job.</p>
+<p>Same <em>n</em> (number of observations) both times &ndash; our real class of 24, and one simulated class of 24 &ndash; so the two panels are directly comparable. The simulated class is different in its specific numbers, as it should be, but similar in its overall shape: that's the DGP assumption doing its job.</p>
 
-<div class="callout">
-  <strong>Task, in the workshop.</strong> Download the pre-generated <code>sample_student_means.csv</code>: 1,000 simulated replays of a class like ours, already collapsed to one row per sample &times; student. For each sample, average its 24 student means down to one number &ndash; that sample's own overall mean &ndash; for samples 1&ndash;10, then 1&ndash;100, then all 1,000, plotting a histogram at each stage. What is the mean of those sample-level means? The standard deviation? You are not plotting raw reaction times &ndash; what are you plotting the distribution <em>of</em>?
-</div>
 
 <p>Do that once, and one simulated class is a curiosity. Do it <strong>a thousand times</strong>, and you can watch the sampling distribution build itself in front of you &ndash; which is exactly what the figure below does, from the real simulated data behind that task.</p>
 
@@ -519,17 +515,13 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
   <p class="figure-caption" id="samples-caption"></p>
 </div>
 
-<p>Two things happen at once as the sample count climbs from 10 to 1,000, and it's worth naming both separately, because the task is really asking two different questions:</p>
+<p>Two things happen at once as the sample count climbs from 10 to 1,000:</p>
 
 <ol>
   <li><strong>The shape smooths out.</strong> Ten samples gives a lumpy, uneven histogram &ndash; not much more than a bar chart. By a thousand, it's unmistakably bell-shaped.</li>
   <li><strong>The mean of the means converges on the true mean.</strong> With only 10 samples, the average of those averages can sit well away from 1,070.1ms. By 1,000, it's landed close.</li>
 </ol>
 
-<blockquote class="field-note">
-  <span class="tag">From the workshop</span>
-  <p>&ldquo;A lot is flying at you fast at this point &ndash; these are not easy concepts to grasp. It's almost like watching a very weird TV series that you need to watch again a couple of times to get the full plot. You will get there.&rdquo;</p>
-</blockquote>
 
 <div class="callout gold">
   <strong>Two different numbers, both called "n" &ndash; don't conflate them.</strong> A question from the room, almost word for word: <em>"why does the mean get closer to the truth the more we have?"</em> It's worth being precise about <em>what</em> is growing.
@@ -545,7 +537,7 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
 <div class="chapter-kicker">Part Seven</div>
 <h2>Why This Works: Unbiasedness and the Central Limit Theorem</h2>
 
-<p>The two things Part Six just showed happening both have names, and both are doing real, load-bearing work for the rest of this module.</p>
+<p>Let's get specific on the two effects we just discussed. </p>
 
 <h3>Unbiasedness</h3>
 
@@ -561,7 +553,7 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
 
 <h3>Asymptotic normality (the Central Limit Theorem)</h3>
 
-<p><strong>The sampling distribution of the mean approaches Normal as sample size grows &ndash; regardless of the shape of the underlying population.</strong> This is the genuinely surprising part. Our own class's reaction times are not Normal at all &ndash; Week 1's own histogram was sharply right-skewed, with a long tail. It doesn't matter. Simulate samples from a right-skewed distribution shaped like our own data (same mean, same spread), at three different sample sizes, and compare each histogram against the theoretical Normal curve the CLT predicts.</p>
+<p><strong>The sampling distribution of the mean approaches Normal as sample size grows (that's basically what asymptotic means) &ndash; regardless of the shape of the underlying population.</strong> This is the genuinely surprising part. Our own class's reaction times are not Normal at all &ndash; Chapter 1's histogram from the classroom-generated data was sharply right-skewed, with a long tail. It doesn't matter. Simulate samples from a right-skewed distribution shaped like our own data (same mean, same spread), at three different sample sizes, and compare each histogram against the theoretical Normal curve the CLT predicts.</p>
 
 <div class="figure" id="fig-clt">
   <div class="figure-head"><span class="flabel">Figure</span><h4>From lumpy to Normal, regardless of the starting shape</h4></div>
@@ -582,34 +574,33 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
 <div class="chapter-kicker">Part Eight</div>
 <h2>The Standard Error</h2>
 
-<p>Everything in Parts Six and Seven assumed a known population &ndash; Normal(1070.1, 888.6) &ndash; so we could watch a thousand simulated samples land around the <em>true</em> value. In reality, we have one dataset: the reaction-time data collected last week. No known population mean, no known population standard deviation, and no ability to simulate a thousand more classes. From here there are two ways forward: a formula, or a computational trick called the bootstrap. This part covers the formula; Part Nine covers the bootstrap.</p>
+<p>Everything in Parts Six and Seven assumed a known population &ndash; Normal(1070.1, 888.6) &ndash; so we could watch a thousand simulated samples land around the <em>true</em> value. In reality, we have one dataset: the reaction-time data collected last week. We still have no idea about the true population reaction times from the wider world that we want to capture. No known population mean, no known population standard deviation, and no ability to simulate a thousand more classes. So how can we use our sample to say anything about the population we care about? How do our sample mean and sample standard deviation relate to the underlying and unobservable sampling distribution?</p>
 
-<p>Here's a quietly satisfying fact: by the end of Part Six, you'd already calculated a standard error three times over, without it having a name yet. The standard deviation of your own 10, 100, and 1,000 sample-means <em>is</em> the standard error &ndash; a genuinely different quantity from the plain standard deviation of one sample's raw data.</p>
+<p>Here is where things get cool.<sup><a class="footnote-ref" id="fnref1" href="#fn1">1</a></sup> There are two ways forward: a formula, or a computational trick called the bootstrap. Let's start with the formula.</p>
+
+<p>Here's a quietly satisfying fact: by the end of Part Six, you'd actually already calculated a standard error of the sampling distribution three times over, without it having a name yet. The standard deviation of your own 10, 100, and 1,000 sample-means <em>is</em> the standard error &ndash; a different quantity from the plain standard deviation of one sample's raw data.</p>
 
 <ul class="term-list">
   <li><span class="term">Standard deviation</span><span>The spread of individual observations within <em>one</em> sample &ndash; the 24 students in our own room.</span></li>
   <li><span class="term">Standard error</span><span>The spread of the <em>sampling distribution</em> itself &ndash; how much the sample mean would bounce around if you reran the whole experiment many times.</span></li>
 </ul>
 
-<p>The useful part: you don't need a thousand simulated classes to get it. There's a formula, built directly from the one sample you actually have.</p>
+<p>The useful part: you don't need a thousand simulated classes to get it. That formula we mentioned builds it directly from the one sample you actually have.</p>
 
 <div class="formula-block">$$SE(\bar{x}) = \frac{SD[x]}{\sqrt{n}}$$</div>
 <p class="formula-caption">larger when the data is more spread out, smaller when the sample is bigger</p>
 
-<p>Plugged in with our own numbers &ndash; SD&nbsp;=&nbsp;888.6ms, n&nbsp;=&nbsp;24 &ndash; that gives <strong>SE&nbsp;&asymp;&nbsp;181.4ms</strong>. Checked against the real spread of the 1,000-sample simulation from Part Six (188.5ms), the two land close together &ndash; simulation always carries some noise, so they were never going to match to the decimal, but close enough that the agreement itself is the real teaching point.</p>
+<p>Plugged in with our own numbers &ndash; SD&nbsp;=&nbsp;888.6ms, n&nbsp;=&nbsp;24 &ndash; that gives <strong>SE&nbsp;&asymp;&nbsp;181.4ms</strong>. Checked against the real spread of the 1,000-sample simulation from Part Six (188.5ms), the two land close together &ndash; simulation always carries some noise, so they were never going to match to the decimal, but still close. As I said: Cool!</p>
 
 <blockquote class="field-note">
   <span class="tag">From the workshop</span>
   <p>&ldquo;We went round the houses a lot on this one &ndash; remember, you got that standard deviation from made-up, simulated data. And then this simple formula comes along, and it's only about five milliseconds off. How does that work?&rdquo;</p>
 </blockquote>
 
-<div class="callout">
-  <strong>Task, in the workshop.</strong> Go back to the standard error you calculated earlier from <code>sample_student_means.csv</code> &ndash; the SD of your 1,000 sample means. Now calculate SE&nbsp;=&nbsp;&sigma;/&radic;n by hand, using the DGP numbers from Part Five. Compare it to the SD from the simulated samples. Should they match exactly, or only approximately &ndash; and why?
-</div>
 
 <h3>Root-<em>n</em> convergence</h3>
 
-<p>Bigger samples buy precision &ndash; but not for free, and not in a straight line. To <strong>halve</strong> the standard error, you need to <strong>quadruple</strong> the sample size, because the formula divides by the <em>square root</em> of n, not n itself.</p>
+<p>As the number of observations you have – the sample size – increases the standard error decreases and so the sampling distribution you are drawing from is narrower. Therefore your sample mean is likely to be near to the true mean as the number of observations increase. Bigger samples buy precision &ndash; but not for free, and not in a straight line. To <strong>halve</strong> the standard error, you need to <strong>quadruple</strong> the sample size, because the formula divides by the <em>square root</em> of n, not n itself.</p>
 
 <div class="figure" id="fig-rootn">
   <div class="figure-head"><span class="flabel">Figure</span><h4>The standard error shrinks &ndash; but not in a straight line</h4></div>
@@ -735,9 +726,7 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
 
 <p>Drag <strong>B</strong> up from 10 towards 2,000 and watch the bootstrap standard error settle down rather than jump around &ndash; once it's settled, it should land close to the 181.4ms the formula already gave. Under the conditions both methods need (a large enough sample, independent observations), the formula and the bootstrap converge on the same answer. The formula is faster to compute; the bootstrap keeps working in situations &ndash; more complex statistics, no known formula &ndash; where the formula simply doesn't exist.</p>
 
-<div class="callout">
-  <strong>Task, in the workshop.</strong> With B starting at only 10 resamples, read off the bootstrap SE. Drag B up towards 2,000 &ndash; does it settle down, or keep jumping around? Once settled, compare it to the formula SE from the previous task. Close? Now imagine dragging the sample size <em>n</em> down to something small &ndash; what would happen to the spread of the histogram, and which property of the sampling distribution would that demonstrate?
-</div>
+
 
 <div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 5 &ndash; recreated schematically (after Fig. 5.4, "Bootstrap samples")</div>
 </section>
@@ -761,11 +750,7 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
   </tbody>
 </table>
 
-<div class="callout">
-  <strong>Task, in the workshop.</strong> Using our own Week 1 data: collapse the raw trials down to one average reaction time per student, find the mean, SD, and n of those student averages, and use them to calculate SE(x&#772;) and the 95% CI for mean reaction time &ndash; by hand or in Excel, before reading on.
-</div>
-
-<p>You should get roughly this: plugged in with our own numbers, 1,070.1 &plusmn; (1.96 &times; 181.4) gives a 95% confidence interval of <strong>[714.6, 1425.6] ms</strong>. In words: in the general pattern our data represents, we can be 95% confident the true average reaction time falls somewhere in that range.</p>
+<p>Plugged in with our own numbers from our sample, 1,070.1 &plusmn; (1.96 &times; 181.4) gives a 95% confidence interval of <strong>[714.6, 1425.6] ms</strong>. In words: in the general pattern our data represents, we can be 95% confident the true average reaction time falls somewhere in that range.</p>
 
 <div class="callout">
   Wider interval &rarr; more confident it contains the truth, but less precise about where. There's no free lunch: more confidence costs precision, every time.
@@ -773,7 +758,7 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
 
 <h3>Where the CI actually sits on the curve</h3>
 
-<p>The confidence interval isn't a separate idea from the Normal distribution &ndash; it's a direct slice of it. Here is the <em>sampling distribution</em> of our mean (Normal, centred on 1,070.1ms, spread by the standard error of 181.4ms &ndash; not the raw DGP from Part Five, the narrower distribution of the <em>mean itself</em>), with the 95% CI shaded as the middle region it actually is.</p>
+<p>The confidence interval isn't a separate idea from the Normal distribution &ndash; it's a direct slice of it. Here is the <em>sampling distribution</em> of our mean (Normal, centred on 1,070.1ms, spread by the standard error of 181.4ms), with the 95% CI shaded as the middle region it actually is.</p>
 
 <div class="figure" id="fig-ci-normal">
   <div class="figure-head"><span class="flabel">Figure</span><h4>The 95% CI, shaded on its own sampling distribution</h4></div>
@@ -785,7 +770,7 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
 
 <h3>Does the 95% promise actually hold?</h3>
 
-<p>Simulate 100 samples from the same DGP, build a 95% CI from each one the way just described, and count how many actually contain the true mean.</p>
+<p>Simulate 100 samples from the same DGP, build a 95% CI from each one the way just described, and count how many actually contain the true mean. As you'll see below, the orange confidence intervals are the ones that miss the true mean.</p>
 
 <div class="figure" id="fig-ci-coverage">
   <div class="figure-head"><span class="flabel">Figure</span><h4>100 confidence intervals, built from 100 simulated samples</h4></div>
@@ -807,14 +792,20 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
 
 <ul>
   <li>We want to generalise from our data &ndash; that's statistical inference, and the gap between what we can claim and what we actually measured is <strong>external validity</strong>.</li>
-  <li>Any statistic computed from a sample has its own <strong>sampling distribution</strong> &ndash; a genuinely different object from the distribution of the raw variable.</li>
+  <li>Any statistic computed from a sample has its own <strong>sampling distribution</strong> &ndash; a different object from the distribution of the raw variable.</li>
   <li>Two ways to estimate the uncertainty in a statistic: a <strong>formula</strong> (\(SE = SD/\sqrt{n}\)) or the <strong>bootstrap</strong> (resample with replacement, look at the spread). Under the right conditions, they agree.</li>
   <li>A <strong>95% CI</strong> is the estimate &plusmn; (critical value &times; SE) &ndash; a range we expect to contain the true value.</li>
   <li>Using that CI, we can finally make a statement about the population &ndash; not just the room.</li>
 </ul>
 
-<p>Nearly three hours of workshop led up to one sentence: we can be 95% confident the true average reaction time lies between roughly 715 and 1,426 milliseconds. It doesn't sound like much. It's the first time in this module anything has been said about a population we never directly measured &ndash; and everything from here on builds on exactly that move.</p>
+<p>Nearly three hours of workshop led up to one sentence: we can be 95% confident the true average reaction time lies between roughly 715 and 1,426 milliseconds. It doesn't sound like much – but it is huge. It's the first time in this module anything has been said about a population we never directly measured &ndash; and everything from here on builds on exactly that move.</p>
 </section>
+
+<div class="footnotes">
+<ol>
+<li id="fn1">Your definition of &ldquo;cool&rdquo; may differ from mine. <a class="footnote-back" href="#fnref1">&uarr;</a></li>
+</ol>
+</div>
 
 <footer class="colophon">
   <p><strong>A note on these notes.</strong> This chapter was assembled from the Week 2 workshop: its slide deck, its own live transcript (auto-generated, lightly cleaned for readability &ndash; quoted passages are close to verbatim but not a certified transcript), and the class's real, anonymised data &ndash; both the Week 1 reaction-time dataset this chapter reuses, and the 1,000 simulated class-means generated for the in-class task. Numbers and charts throughout reflect that specific data as it stood at the time of writing. Framework and definitions follow B&eacute;k&eacute;s &amp; K&eacute;zdi, <em>Data Analysis for Business, Economics, and Policy</em> (2021), Ch. 5.</p>
