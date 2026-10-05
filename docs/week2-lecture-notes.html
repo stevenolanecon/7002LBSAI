@@ -814,7 +814,7 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
   <p>&ldquo;If she was just guessing, then we can calculate how likely she would get them all right just by chance. And the point is &ndash; if she actually does far better than chance predicted, then this is evidence for her claim.&rdquo;</p>
 </blockquote>
 
-<p>That's the entire logic of hypothesis testing, built from one experiment in 1920s Cambridge: work out what pure chance would look like, then ask whether what actually happened is far enough from that to count as evidence against it.</p>
+<p>That's the entire logic of hypothesis testing, built from one experiment in 1920s Cambridge: work out what pure chance would look like, then ask whether what actually happened is far enough from that to count as evidence against it.<sup><a class="footnote-ref" id="fnref3" href="#fn3">3</a></sup></p>
 
 <h3>Putting the logic into symbols</h3>
 
@@ -1031,6 +1031,7 @@ t_stat, p_value = ttest_ind(laptop, phone, equal_var=False)
 <ol>
 <li id="fn1">Your definition of &ldquo;cool&rdquo; may differ from mine. <a class="footnote-back" href="#fnref1">&uarr;</a></li>
 <li id="fn2">Twenty tests at a 5% threshold: the chance of at least one false positive, by pure chance, is \(1 - 0.95^{20} \approx 64\%\) &ndash; not a near-miss, a coin flip. <a class="footnote-back" href="#fnref2">&uarr;</a></li>
+<li id="fn3">You can find out more about this story <a href="https://www.sciencehistory.org/stories/magazine/ronald-fisher-a-bad-cup-of-tea-and-the-birth-of-modern-statistics/" target="_blank" rel="noopener">here</a>. <a class="footnote-back" href="#fnref3">&uarr;</a></li>
 </ol>
 </div>
 
