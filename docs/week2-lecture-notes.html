@@ -814,7 +814,7 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
   <p>&ldquo;If she was just guessing, then we can calculate how likely she would get them all right just by chance. And the point is &ndash; if she actually does far better than chance predicted, then this is evidence for her claim.&rdquo;</p>
 </blockquote>
 
-<p>That's the entire logic of hypothesis testing, built from one experiment in 1920s Cambridge: work out what pure chance would look like, then ask whether what actually happened is far enough from that to count as evidence against it.<sup><a class="footnote-ref" id="fnref3" href="#fn3">3</a></sup></p>
+<p>That's the entire logic of hypothesis testing, built from one experiment in 1920s Cambridge: work out what pure chance would look like, then ask whether what actually happened is far enough from that to count as evidence against it.<sup><a class="footnote-ref" id="fnref2" href="#fn2">2</a></sup></p>
 
 <h3>Putting the logic into symbols</h3>
 
@@ -1005,7 +1005,7 @@ t_stat, p_value = ttest_ind(laptop, phone, equal_var=False)
   <strong>It probably isn't.</strong> Suppose, for the sake of argument, that none of the hundred features actually has any link to heart disease at all &ndash; every null hypothesis is true. A 5% false-positive rate means that, purely by chance, you'd still expect to reject about <strong>5 of the 100</strong> nulls, just from noise. Picking out "the six that worked" and writing them up as findings has the logic backwards: you started by assuming none of them was real, and chance alone explains roughly that many false alarms.
 </div>
 
-<p>Let's consider the same idea, <a href="https://xkcd.com/882/" target="_blank" rel="noopener">as a cartoon rather than a case study</a>: scientists test whether jelly beans cause acne and find no link. They test purple jelly beans &ndash; no link. Brown, pink, blue, and so on through twenty colours &ndash; until green jelly beans turn up a p-value just under 5%. It gets reported as a real discovery: <em>green jelly beans linked to acne</em>. Testing twenty hypotheses at the standard 5% threshold makes finding at least one "significant" result by pure chance alone genuinely likely &ndash; not a freak accident, just arithmetic.<sup><a class="footnote-ref" id="fnref2" href="#fn2">2</a></sup></p>
+<p>Let's consider the same idea, <a href="https://xkcd.com/882/" target="_blank" rel="noopener">as a cartoon rather than a case study</a>: scientists test whether jelly beans cause acne and find no link. They test purple jelly beans &ndash; no link. Brown, pink, blue, and so on through twenty colours &ndash; until green jelly beans turn up a p-value just under 5%. It gets reported as a real discovery: <em>green jelly beans linked to acne</em>. Testing twenty hypotheses at the standard 5% threshold makes finding at least one "significant" result by pure chance alone genuinely likely &ndash; not a freak accident, just arithmetic.<sup><a class="footnote-ref" id="fnref3" href="#fn3">3</a></sup></p>
 
 <p>Testing many hypotheses at once needs a stricter bar than testing one. A few dozen tests might call for 0.1&ndash;0.5% instead of 1&ndash;5%; the strictest common fix, the <strong>Bonferroni correction</strong>, divides your target p-value by the number of tests &ndash; 20 hypotheses aiming for 0.05 becomes a real bar of \(0.05/20 = 0.0025\). It's often criticised as too conservative, but the direction of the correction is the right instinct: be more sceptical, not less, the more chances you give yourself to get lucky.</p>
 
@@ -1030,8 +1030,8 @@ t_stat, p_value = ttest_ind(laptop, phone, equal_var=False)
 <div class="footnotes">
 <ol>
 <li id="fn1">Your definition of &ldquo;cool&rdquo; may differ from mine. <a class="footnote-back" href="#fnref1">&uarr;</a></li>
-<li id="fn2">Twenty tests at a 5% threshold: the chance of at least one false positive, by pure chance, is \(1 - 0.95^{20} \approx 64\%\) &ndash; not a near-miss, a coin flip. <a class="footnote-back" href="#fnref2">&uarr;</a></li>
-<li id="fn3">You can find out more about this story <a href="https://www.sciencehistory.org/stories/magazine/ronald-fisher-a-bad-cup-of-tea-and-the-birth-of-modern-statistics/" target="_blank" rel="noopener">here</a>. <a class="footnote-back" href="#fnref3">&uarr;</a></li>
+<li id="fn2">You can find out more about this story <a href="https://www.sciencehistory.org/stories/magazine/ronald-fisher-a-bad-cup-of-tea-and-the-birth-of-modern-statistics/" target="_blank" rel="noopener">here</a>. <a class="footnote-back" href="#fnref2">&uarr;</a></li>
+<li id="fn3">Twenty tests at a 5% threshold: the chance of at least one false positive, by pure chance, is \(1 - 0.95^{20} \approx 64\%\) &ndash; not a near-miss, a coin flip. <a class="footnote-back" href="#fnref3">&uarr;</a></li>
 </ol>
 </div>
 
