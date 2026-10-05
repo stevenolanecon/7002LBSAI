@@ -1164,84 +1164,84 @@
   {
     "objectID": "week2-online-slides.html#section",
     "href": "week2-online-slides.html#section",
-    "title": "Testing Pitfalls",
+    "title": "Testing a Hypothesis",
     "section": "",
-    "text": "Testing pitfalls\nThe workshop built the t-test. This session covers how it’s misused — and how to pick your thresholds properly."
+    "text": "Testing a hypothesis\nWe didn’t get here in the workshop — so we’re starting from scratch, then moving on to how this gets misused."
   },
   {
     "objectID": "week2-online-slides.html#one-sided-vs.-two-sided-tests",
     "href": "week2-online-slides.html#one-sided-vs.-two-sided-tests",
-    "title": "Testing Pitfalls",
+    "title": "Testing a Hypothesis",
     "section": "One-sided vs. two-sided tests",
     "text": "One-sided vs. two-sided tests\nSo far we’ve tested \\(H_0: s_{true} = 0\\) against \\(H_A: s_{true} \\neq 0\\) — a two-sided test, since we don’t care about the direction of the difference.\n\nExample: does device affect reaction time? We had no prior reason to expect phones faster than laptops, or vice versa — either direction would be a meaningful finding, so both tails count as evidence against \\(H_0\\).\nReject \\(H_0\\) if \\(|t| &gt; c\\) — the t-statistic is extreme in either direction. For a 5% test, \\(c \\approx 1.96\\): this is the same \\(\\pm 2\\) rule from the workshop, with the 5% split across both tails (2.5% each).\n\n\nSource: Békés & Kézdi (2021), Ch. 6"
   },
   {
     "objectID": "week2-online-slides.html#what-p-value-threshold-should-you-pick",
     "href": "week2-online-slides.html#what-p-value-threshold-should-you-pick",
-    "title": "Testing Pitfalls",
+    "title": "Testing a Hypothesis",
     "section": "What p-value threshold should you pick?",
     "text": "What p-value threshold should you pick?\nThere’s no universal answer — it’s a trade-off, and it depends on what’s at stake.\n\n\n\n\n\n\n\nScenario\nSuggested threshold\n\n\n\n\n“Guilty beyond reasonable doubt” — a costly, hard-to-reverse decision\nConservative: 1% or lower\n\n\n“Proof of concept” — deciding whether to investigate further\nLooser: 10–15% is often fine\n\n\n\n\nA result significant at 10–15% is still informative — it’s much more likely to be real than not. It just means: worth another look, more data, more experimentation, before betting the business on it.\n\n\nSource: Békés & Kézdi (2021), Ch. 6"
   },
   {
     "objectID": "week2-online-slides.html#size-and-power",
     "href": "week2-online-slides.html#size-and-power",
-    "title": "Testing Pitfalls",
+    "title": "Testing a Hypothesis",
     "section": "Size and power",
     "text": "Size and power\nSize of the test — under \\(H_0\\): the probability of a false positive. We fix this in advance (usually 5% or 1%) — the level of significance.\nPower of the test — under \\(H_A\\): the probability of avoiding a false negative.\n\nPower is higher when:\n\nthe sample is larger\nthe dispersion (SD) is smaller\nthe true effect is further from the null"
   },
   {
     "objectID": "week2-online-slides.html#visualising-size-and-power",
     "href": "week2-online-slides.html#visualising-size-and-power",
-    "title": "Testing Pitfalls",
+    "title": "Testing a Hypothesis",
     "section": "Visualising size and power",
     "text": "Visualising size and power\n\nviewof effect_size = {\n  const f = html`&lt;div style=\"display:flex;align-items:center;gap:14px;font-size:13px;\n                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;\"&gt;\n    &lt;span style=\"color:#666;white-space:nowrap;\"&gt;True effect (in SE units)&lt;/span&gt;\n    &lt;input type=\"range\" min=\"0\" max=\"5\" step=\"0.25\" value=\"2.5\"\n           style=\"width:180px;cursor:pointer;accent-color:#457b9d;\"&gt;\n    &lt;span id=\"es-label\" style=\"font-weight:700;min-width:32px;color:#457b9d;\"&gt;2.5&lt;/span&gt;\n  &lt;/div&gt;`\n  const slider = f.querySelector('input')\n  const label  = f.querySelector('#es-label')\n  slider.addEventListener('input', () =&gt; {\n    label.textContent = slider.value\n    f.dispatchEvent(new CustomEvent('input'))\n  })\n  Object.defineProperty(f, 'value', { get: () =&gt; +slider.value })\n  return f\n}\n\n\n\n\n\n\n\n\n\n{\n  // Two-sided throughout, matching the ±2 rule-of-thumb from the workshop:\n  // both the rejection region (size) and the power calculation need to\n  // account for BOTH tails, or the dashed lines at ±crit would be showing\n  // a boundary that the shaded regions and the power number don't actually\n  // use.\n  const mu0 = 0, mu1 = effect_size, sigma = 1, crit = 2\n  const xs = d3.range(-5, 7.51, 0.05)\n  const pdf = (x, mu) =&gt; (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * ((x - mu) / sigma) ** 2)\n  const nullCurve = xs.map(x =&gt; ({ x, y: pdf(x, mu0) }))\n  const altCurve  = xs.map(x =&gt; ({ x, y: pdf(x, mu1) }))\n\n  const nullRejectHi = xs.filter(x =&gt; x &gt; crit).map(x =&gt; ({ x, y: pdf(x, mu0) }))\n  const nullRejectLo = xs.filter(x =&gt; x &lt; -crit).map(x =&gt; ({ x, y: pdf(x, mu0) }))\n  const altMiss   = xs.filter(x =&gt; x &gt; -crit && x &lt; crit).map(x =&gt; ({ x, y: pdf(x, mu1) }))\n  const altHitHi  = xs.filter(x =&gt; x &gt; crit).map(x =&gt; ({ x, y: pdf(x, mu1) }))\n  const altHitLo  = xs.filter(x =&gt; x &lt; -crit).map(x =&gt; ({ x, y: pdf(x, mu1) }))\n\n  function normCdf(z) { return 0.5 * (1 + erf(z / Math.SQRT2)) }\n  function erf(x) {\n    const sign = x &lt; 0 ? -1 : 1\n    x = Math.abs(x)\n    const a1=0.254829592, a2=-0.284496736, a3=1.421413741, a4=-1.453152027, a5=1.061405429, p=0.3275911\n    const t = 1/(1+p*x)\n    const y = 1 - (((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x)\n    return sign*y\n  }\n\n  const size  = 2 * (1 - normCdf(crit))                             // both tails, under H0\n  const power = (1 - normCdf(crit - mu1)) + normCdf(-crit - mu1)     // both tails, under H1\n\n  return accessibleChart(Plot.plot({\n    height: 460,\n    marginLeft: 50,\n    marginBottom: 34,\n    x: { label: \"t-statistic\", domain: [-5, 7.5] },\n    y: { label: \"density\" },\n    marks: [\n      Plot.areaY(nullRejectHi, { x: \"x\", y: \"y\", fill: \"#e63946\", fillOpacity: 0.55 }),\n      Plot.areaY(nullRejectLo, { x: \"x\", y: \"y\", fill: \"#e63946\", fillOpacity: 0.55 }),\n      Plot.areaY(altMiss,      { x: \"x\", y: \"y\", fill: \"#f4a261\", fillOpacity: 0.45 }),\n      Plot.areaY(altHitHi,     { x: \"x\", y: \"y\", fill: \"#2d6a4f\", fillOpacity: 0.35 }),\n      Plot.areaY(altHitLo,     { x: \"x\", y: \"y\", fill: \"#2d6a4f\", fillOpacity: 0.35 }),\n      Plot.line(nullCurve, { x: \"x\", y: \"y\", stroke: \"#1a1a2e\", strokeWidth: 2 }),\n      Plot.line(altCurve,  { x: \"x\", y: \"y\", stroke: \"#457b9d\", strokeWidth: 2 }),\n      Plot.ruleX([crit, -crit], { stroke: \"#666\", strokeWidth: 1, strokeDasharray: \"4,3\" }),\n      Plot.ruleY([0]),\n      Plot.text([{ x: -5, y: pdf(0,0)*1.08, label: `Size ≈ ${(size*100).toFixed(1)}%` }],\n                { x: \"x\", y: \"y\", text: \"label\", textAnchor: \"start\", fill: \"#e63946\", fontSize: 13, fontWeight: 700 }),\n      Plot.text([{ x: -5, y: pdf(0,0)*0.94, label: `Power ≈ ${(power*100).toFixed(0)}%` }],\n                { x: \"x\", y: \"y\", text: \"label\", textAnchor: \"start\", fill: \"#2d6a4f\", fontSize: 13, fontWeight: 700 }),\n    ]\n  }), `This chart shows two overlapping sampling distributions — one under the null hypothesis, one under the alternative — with the rejection region shaded to show how size and power relate to each other as the true effect size changes. At the current effect size of ${effect_size}, the test's size is ${(size*100).toFixed(1)}% and its power is ${(power*100).toFixed(0)}%.`)\n}\n\n\n\n\n\n\n\n\n\nBlack = the sampling distribution under \\(H_0\\) (no effect). Blue = under \\(H_A\\), at whatever effect size the slider is set to. The dashed lines are the same \\(\\pm 2\\) critical values from the last slide — reject \\(H_0\\) outside them. Red = Type I error (size) — fixed by the critical value, not the slider. Orange = Type II error: alternative-curve mass still inside the “don’t reject” zone. Green = power: what’s left.\nDrag the slider right and the blue curve slides away from black — less of it falls between the dashed lines, more clears them. That’s “the true effect is further from the null” from two slides ago, made concrete. Drag to 0 and the curves merge completely: no real effect, so only the fixed false-positive rate remains.\n\n\nPattern after Békés & Kézdi (2021), Ch. 6"
   },
   {
     "objectID": "week2-online-slides.html#multiple-testing-the-motivation",
     "href": "week2-online-slides.html#multiple-testing-the-motivation",
-    "title": "Testing Pitfalls",
+    "title": "Testing a Hypothesis",
     "section": "Multiple testing: the motivation",
     "text": "Multiple testing: the motivation\nA medical dataset: 400 patients, a heart-disease indicator, and 100 lifestyle features — diet, exercise, income, sleep, dozens more.\n\nTest each feature against heart disease, one by one, at 5% significance. You find six with a “significant” link.\nIs that a discovery?"
   },
   {
     "objectID": "week2-online-slides.html#simply-by-chance",
     "href": "week2-online-slides.html#simply-by-chance",
-    "title": "Testing Pitfalls",
+    "title": "Testing a Hypothesis",
     "section": "Simply by chance",
     "text": "Simply by chance\nIf all 100 null hypotheses were actually true — no real links exist anywhere — a 5% false-positive rate means we’d still expect to reject 5 of them, purely by chance.\n\nPicking out those five and writing them up as findings is exactly backwards: we started by assuming none of them were real.\n\n\nSource: Békés & Kézdi (2021), Ch. 6"
   },
   {
     "objectID": "week2-online-slides.html#the-jelly-bean-problem",
     "href": "week2-online-slides.html#the-jelly-bean-problem",
-    "title": "Testing Pitfalls",
+    "title": "Testing a Hypothesis",
     "section": "The jelly bean problem",
     "text": "The jelly bean problem\n\n\n  \n\n\n\nXKCD #882, “Significant” — Randall Munroe, CC BY-NC 2.5 — click to view full size (1 of 2)"
   },
   {
     "objectID": "week2-online-slides.html#fixing-it",
     "href": "week2-online-slides.html#fixing-it",
-    "title": "Testing Pitfalls",
+    "title": "Testing a Hypothesis",
     "section": "Fixing it",
     "text": "Fixing it\nTesting many hypotheses at once needs a stricter bar than testing one.\n\nSimple fix: for a few dozen tests, use a much stricter threshold — 0.1–0.5% instead of 5%\nBonferroni correction: divide your target p-value by the number of tests. Aiming for 5% across 20 hypotheses → reject only below 0.05/20 = 0.0025\nOften criticised as too strict — but a reasonable default when you don’t know better\n\n\np-hacking: running many tests (or many versions of one test) and reporting only the ones that “worked.” The jelly-bean comic, deliberately.\n\n\nSource: Békés & Kézdi (2021), Ch. 6"
   },
   {
     "objectID": "week2-online-slides.html#testing-when-the-data-is-huge",
     "href": "week2-online-slides.html#testing-when-the-data-is-huge",
-    "title": "Testing Pitfalls",
+    "title": "Testing a Hypothesis",
     "section": "Testing when the data is huge",
     "text": "Testing when the data is huge\nWith millions of observations, statistical inference starts to lose relevance — confidence intervals become vanishingly narrow, and almost any difference becomes “statistically significant,” including ones too small to matter economically.\n\nThe question shifts from “is there a difference?” to “is the difference big enough to matter?” — look at the size of the effect, not just whether it clears a p-value bar.\nExternal validity remains just as important at scale as it was with 15 observations.\n\n\nSource: Békés & Kézdi (2021), Ch. 5 & 6"
   },
   {
     "objectID": "week2-online-slides.html#ai-asking-for-a-formula",
     "href": "week2-online-slides.html#ai-asking-for-a-formula",
-    "title": "Testing Pitfalls",
+    "title": "Testing a Hypothesis",
     "section": "AI: asking for a formula",
     "text": "AI: asking for a formula\nGabor & Kézdi tried asking an AI for the two-sample t-test formula. It came back mostly right — but “mostly” is the operative word.\n\nAI tools are good at explaining concepts, deriving formulas, and calculating statistics from data you give them. Use them that way — but check the output, the same way you’d check a classmate’s working. Wrong formulas read just as fluently as right ones.\n\n\nSource: Békés & Kézdi (2021), Ch. 5 & 6"
   },
   {
     "objectID": "week2-online-slides.html#coming-up-week-3",
     "href": "week2-online-slides.html#coming-up-week-3",
-    "title": "Testing Pitfalls",
+    "title": "Testing a Hypothesis",
     "section": "Coming up: Week 3",
     "text": "Coming up: Week 3\n\nWe now have a way to test whether one difference is real.\nBut most interesting questions involve the relationship between two variables.\nWhen y met x: correlation and covariance\n\nConditional probability · covariance · correlation · spurious correlation"
   },
@@ -1290,14 +1290,14 @@
   {
     "objectID": "week2-online-slides.html#one-sided-tests",
     "href": "week2-online-slides.html#one-sided-tests",
-    "title": "Testing Pitfalls",
+    "title": "Testing a Hypothesis",
     "section": "One-sided tests",
     "text": "One-sided tests\nA one-sided test focuses on one direction only:\n\\[H_0: s_{true} \\leq 0 \\quad \\text{vs.} \\quad H_A: s_{true} &gt; 0\\]\nExample: does caffeine reduce reaction time? Caffeine is a stimulant — we have a specific directional prediction going in, so only a large effect in that one predicted direction counts as evidence against \\(H_0\\).\nReject \\(H_0\\) if \\(t &gt; c\\) — extreme in the predicted direction only. For a 5% test, \\(c \\approx 1.645\\): smaller than the two-sided threshold, because all 5% sits in one tail instead of being split.\n\nSame overall false-positive rate (5%) either way — but the one-sided test is more powerful for an effect in the predicted direction (a smaller \\(t\\) clears the lower bar), at the cost of zero power to detect an effect in the other direction, however large.\n\n\nSource: Békés & Kézdi (2021), Ch. 6"
   },
   {
     "objectID": "week2-online-slides.html#the-jelly-bean-problem-continued",
     "href": "week2-online-slides.html#the-jelly-bean-problem-continued",
-    "title": "Testing Pitfalls",
+    "title": "Testing a Hypothesis",
     "section": "The jelly bean problem (continued)",
     "text": "The jelly bean problem (continued)\n\n\n  \n\n\n\nXKCD #882, “Significant” — Randall Munroe, CC BY-NC 2.5 — click to view full size (2 of 2)"
   },
@@ -1482,5 +1482,124 @@
     "title": "Inference: When is a Difference Real?",
     "section": "The t-statistic — a difference between two averages",
     "text": "The t-statistic — a difference between two averages\nFor \\(\\bar{x}_A\\) and \\(\\bar{x}_B\\):\n\\[t = \\frac{\\bar{x}_A - \\bar{x}_B}{SE(\\bar{x}_A - \\bar{x}_B)} \\qquad SE(\\bar{x}_A - \\bar{x}_B) = \\sqrt{\\frac{SD_A^2}{n_A} + \\frac{SD_B^2}{n_B}}\\]\n\n\n\n\n\n\nNote\n\n\nThis needs the sampling distribution of \\(\\bar{x}_A - \\bar{x}_B\\) to be approximately normal — not reaction time itself, which we already know is right-skewed. With dozens of trials in each group, the CLT (see “2. Asymptotic normality” earlier) makes that a safe bet regardless of the raw variable’s shape.\n\n\n\n\nSource: Békés & Kézdi (2021), Ch. 6"
+  },
+  {
+    "objectID": "week2-online-slides.html#fishers-tea-test",
+    "href": "week2-online-slides.html#fishers-tea-test",
+    "title": "Testing a Hypothesis",
+    "section": "Fisher’s tea test",
+    "text": "Fisher’s tea test\n\nA woman claims she can tell, by taste, whether the milk or the tea was poured into the cup first.\nRonald Fisher didn’t just take her word for it — and he didn’t dismiss her either. He designed a test: several cups, milk-first and tea-first in random order, unknown to her. She has to identify all of them correctly.\n\n\nIf she’s just guessing, we can calculate exactly how likely she is to get them all right by chance. If she does far better than chance predicts, that’s evidence for her claim.\nThis is the entire logic of hypothesis testing, built from one experiment in 1920s Cambridge."
+  },
+  {
+    "objectID": "week2-online-slides.html#the-logic-of-hypothesis-testing-the-setup",
+    "href": "week2-online-slides.html#the-logic-of-hypothesis-testing-the-setup",
+    "title": "Testing a Hypothesis",
+    "section": "The logic of hypothesis testing: the setup",
+    "text": "The logic of hypothesis testing: the setup\n\nDefine the statistic we want to test, \\(s\\) — a mean, a difference in means, anything we can estimate from data\nWe’re interested in its true value, \\(s_{\\text{true}}\\) — the value in the population, or general pattern, our data represents\nThe value \\(s\\) takes in our own data is an estimate of it, denoted with a hat: \\(\\hat{s}\\)\n\n\nSource: Békés & Kézdi (2021), Ch. 6"
+  },
+  {
+    "objectID": "week2-online-slides.html#the-logic-of-hypothesis-testing-h_0-vs-h_a",
+    "href": "week2-online-slides.html#the-logic-of-hypothesis-testing-h_0-vs-h_a",
+    "title": "Testing a Hypothesis",
+    "section": "The logic of hypothesis testing: \\(H_0\\) vs \\(H_A\\)",
+    "text": "The logic of hypothesis testing: \\(H_0\\) vs \\(H_A\\)\n\nState the question as two competing hypotheses about \\(s_{\\text{true}}\\) — only one can be true\n\\(H_0\\), the null hypothesis, specifies a value (or range); \\(H_A\\), the alternative, specifies the other possible values\nTogether, \\(H_0\\) and \\(H_A\\) cover every possibility we’re interested in\n\n\\[H_0: \\; s_{\\text{true}} = 0 \\qquad H_A: \\; s_{\\text{true}} \\neq 0\\]\n\nSource: Békés & Kézdi (2021), Ch. 6"
+  },
+  {
+    "objectID": "week2-online-slides.html#the-null-is-protected",
+    "href": "week2-online-slides.html#the-null-is-protected",
+    "title": "Testing a Hypothesis",
+    "section": "The null is protected",
+    "text": "The null is protected\nTesting a hypothesis means asking: is there enough evidence in the data to reject a default, protected assumption?\n\n\nCriminal court\n\nAssume innocence\nOnly convict if evidence is strong\n“Not guilty” ≠ proven innocent — just not enough evidence\n\n\n\nHypothesis testing\n\n\\(H_0\\) (null): protected, assumed true until shown otherwise\n\\(H_A\\) (alternative): what we suspect instead\nFailing to reject \\(H_0\\) ≠ proving it true — just not enough evidence\n\n\n\n\nSource: Békés & Kézdi (2021), Ch. 6"
+  },
+  {
+    "objectID": "week2-online-slides.html#task-state-our-hypothesis",
+    "href": "week2-online-slides.html#task-state-our-hypothesis",
+    "title": "Testing a Hypothesis",
+    "section": "Task — state our hypothesis",
+    "text": "Task — state our hypothesis\n\nWrite \\(H_0\\) and \\(H_A\\), in words and in symbols, for our own question: does device (phone vs. laptop) affect reaction time?\n\n\n\\[H_0: \\; \\bar{x}_{\\text{phone,true}} - \\bar{x}_{\\text{laptop,true}} = 0\\] \\[H_A: \\; \\bar{x}_{\\text{phone,true}} - \\bar{x}_{\\text{laptop,true}} \\neq 0\\]\nNo true difference in reaction time by device, versus: there is one."
+  },
+  {
+    "objectID": "week2-online-slides.html#the-t-test",
+    "href": "week2-online-slides.html#the-t-test",
+    "title": "Testing a Hypothesis",
+    "section": "The t-test",
+    "text": "The t-test"
+  },
+  {
+    "objectID": "week2-online-slides.html#the-t-statistic",
+    "href": "week2-online-slides.html#the-t-statistic",
+    "title": "Testing a Hypothesis",
+    "section": "The t-statistic",
+    "text": "The t-statistic\nThe test statistic measures how far our estimate is from what \\(H_0\\) predicts, in units of standard error.\n\\[t = \\frac{\\hat{s}}{SE(\\hat{s})}\\]\n\n\n\n\n\n\nNote\n\n\n\\(\\hat{s}\\) stands for any estimated statistic — a mean, a difference in means, or (in later weeks) a regression coefficient. The hat (\\(\\hat{}\\)) is standard notation throughout this module: it marks an estimate, computed from our sample, as distinct from the true, unobserved population value it stands in for.\n\n\n\nOne average against a fixed number, \\(\\mu_0\\):\n\\[t = \\frac{\\bar{x} - \\mu_0}{SE(\\bar{x})} \\qquad SE(\\bar{x}) = \\frac{SD}{\\sqrt{n}}\\]"
+  },
+  {
+    "objectID": "week2-online-slides.html#the-t-statistic-a-difference-between-two-averages",
+    "href": "week2-online-slides.html#the-t-statistic-a-difference-between-two-averages",
+    "title": "Testing a Hypothesis",
+    "section": "The t-statistic — a difference between two averages",
+    "text": "The t-statistic — a difference between two averages\nFor \\(\\bar{x}_A\\) and \\(\\bar{x}_B\\):\n\\[t = \\frac{\\bar{x}_A - \\bar{x}_B}{SE(\\bar{x}_A - \\bar{x}_B)} \\qquad SE(\\bar{x}_A - \\bar{x}_B) = \\sqrt{\\frac{SD_A^2}{n_A} + \\frac{SD_B^2}{n_B}}\\]\n\n\n\n\n\n\nNote\n\n\nThis needs the sampling distribution of \\(\\bar{x}_A - \\bar{x}_B\\) to be approximately normal — not reaction time itself, which we already know is right-skewed. With dozens of trials in each group, the CLT makes that a safe bet regardless of the raw variable’s shape.\n\n\n\n\nSource: Békés & Kézdi (2021), Ch. 6"
+  },
+  {
+    "objectID": "week2-online-slides.html#our-device-data",
+    "href": "week2-online-slides.html#our-device-data",
+    "title": "Testing a Hypothesis",
+    "section": "Our device data",
+    "text": "Our device data\nNote: n here counts trials, not students — different from the n =  students in our class.\n\n{\n  const rows = live_device_stats.filter(d =&gt; d.n &gt;= 2)\n  if (rows.length &lt; 2) {\n    return html`&lt;div class=\"instructions-box\"&gt;Need data from both device groups to compute this live — check back once the whole class has submitted. The formulas above still apply once the numbers are in.&lt;/div&gt;`\n  }\n  return html`&lt;table style=\"width:75%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;\"&gt;\n    &lt;caption class=\"visually-hidden\"&gt;Mean, standard deviation, and trial count for each device group, used to calculate the t-statistic for the device difference by hand.&lt;/caption&gt;\n    &lt;thead&gt;&lt;tr style=\"background:#1a1a2e;color:white;\"&gt;\n      &lt;th scope=\"col\" style=\"padding:10px 20px;text-align:left;\"&gt;Device&lt;/th&gt;\n      &lt;th scope=\"col\" style=\"padding:10px 20px;text-align:right;\"&gt;Mean (ms)&lt;/th&gt;\n      &lt;th scope=\"col\" style=\"padding:10px 20px;text-align:right;\"&gt;SD (ms)&lt;/th&gt;\n      &lt;th scope=\"col\" style=\"padding:10px 20px;text-align:right;\"&gt;n&lt;/th&gt;\n    &lt;/tr&gt;&lt;/thead&gt;\n    &lt;tbody&gt;\n      ${rows.map((r,i) =&gt; `&lt;tr style=\"${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;\"&gt;\n        &lt;td style=\"padding:9px 20px;font-weight:600;\"&gt;${r.device}&lt;/td&gt;\n        &lt;td style=\"padding:9px 20px;text-align:right;\"&gt;${r.mean}&lt;/td&gt;\n        &lt;td style=\"padding:9px 20px;text-align:right;\"&gt;${r.sd}&lt;/td&gt;\n        &lt;td style=\"padding:9px 20px;text-align:right;\"&gt;${r.n}&lt;/td&gt;\n      &lt;/tr&gt;`).join('')}\n    &lt;/tbody&gt;\n  &lt;/table&gt;`\n}\n\n\n\n\n\n\n\nA simplifying assumption: to keep this calculation straightforward, we’re treating every trial as its own independent observation. In reality, each of our  students contributed several trials, so trials from the same student aren’t truly independent of each other — a simplification we’re making on purpose, not something that holds in the real world."
+  },
+  {
+    "objectID": "week2-online-slides.html#task-calculate-the-t-statistic",
+    "href": "week2-online-slides.html#task-calculate-the-t-statistic",
+    "title": "Testing a Hypothesis",
+    "section": "Task — calculate the t-statistic",
+    "text": "Task — calculate the t-statistic\n\nBy hand or in Excel, using the table above: calculate \\(SE(\\bar{x}_A - \\bar{x}_B)\\), then the t-statistic for the device difference.\n\n\n\n{\n  const rows = live_device_stats.filter(d =&gt; d.n &gt;= 2)\n  if (rows.length &lt; 2) return html`&lt;p style=\"color:#aaa;\"&gt;Will compute automatically once both groups have data.&lt;/p&gt;`\n  const [a, b] = rows\n  const seDiff = Math.sqrt((a.sd ** 2) / a.n + (b.sd ** 2) / b.n)\n  const t = (a.mean - b.mean) / seDiff\n  return html`&lt;p style=\"font-family:sans-serif;\"&gt;t = (${a.mean} − ${b.mean}) / ${seDiff.toFixed(2)} = &lt;strong style=\"color:#e63946;font-size:1.2em;\"&gt;${t.toFixed(2)}&lt;/strong&gt;&lt;/p&gt;`\n}"
+  },
+  {
+    "objectID": "week2-online-slides.html#making-a-decision",
+    "href": "week2-online-slides.html#making-a-decision",
+    "title": "Testing a Hypothesis",
+    "section": "Making a decision",
+    "text": "Making a decision"
+  },
+  {
+    "objectID": "week2-online-slides.html#the-critical-value",
+    "href": "week2-online-slides.html#the-critical-value",
+    "title": "Testing a Hypothesis",
+    "section": "The critical value",
+    "text": "The critical value\nA commonly used critical value for a t-statistic is ±2 (more precisely 1.96).\n\nReject \\(H_0\\) if the t-statistic is smaller than −2 or larger than +2\nDon’t reject \\(H_0\\) if it falls between −2 and +2\nThis corresponds to a 5% chance of a false positive if \\(H_0\\) is actually true\n\n\n\n\n{\n  const phi  = x =&gt; Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI)\n  const grid = d3.range(-3.6, 3.601, 0.02).map(x =&gt; ({ x, y: phi(x) }))\n  // Split each tail at x=0 so the area mark never draws a connecting\n  // line across the gap in the middle of the distribution.\n  const tail5L = grid.filter(d =&gt; d.x &lt;= -1.96)\n  const tail5R = grid.filter(d =&gt; d.x &gt;=  1.96)\n  const tail1L = grid.filter(d =&gt; d.x &lt;= -2.576)\n  const tail1R = grid.filter(d =&gt; d.x &gt;=  2.576)\n\n  return accessibleChart(Plot.plot({\n    height: 420,\n    marginLeft: 20,\n    marginBottom: 40,\n    x: { label: \"t-statistic\", domain: [-3.6, 3.6] },\n    y: { axis: null },\n    marks: [\n      Plot.areaY(tail5L, { x: \"x\", y: \"y\", fill: \"#e07a3f\", fillOpacity: 0.3 }),\n      Plot.areaY(tail5R, { x: \"x\", y: \"y\", fill: \"#e07a3f\", fillOpacity: 0.3 }),\n      Plot.areaY(tail1L, { x: \"x\", y: \"y\", fill: \"#e07a3f\", fillOpacity: 0.6 }),\n      Plot.areaY(tail1R, { x: \"x\", y: \"y\", fill: \"#e07a3f\", fillOpacity: 0.6 }),\n      Plot.line(grid, { x: \"x\", y: \"y\", stroke: \"#1a1a2e\", strokeWidth: 2 }),\n      Plot.ruleX([1.96, -1.96], { stroke: \"#2a6f97\", strokeWidth: 1.5, strokeDasharray: \"5,4\" }),\n      Plot.ruleX([2.576, -2.576], { stroke: \"#e07a3f\", strokeWidth: 1.5, strokeDasharray: \"2,3\" }),\n      Plot.text([{ x: 1.96, label: \"1.96\" }, { x: -1.96, label: \"−1.96\" }],\n                { x: \"x\", y: () =&gt; phi(1.96) + 0.045, text: \"label\",\n                  fill: \"#2a6f97\", fontSize: 11, fontWeight: 700 }),\n      Plot.text([{ x: 2.576, label: \"2.576\" }, { x: -2.576, label: \"−2.576\" }],\n                { x: \"x\", y: () =&gt; phi(2.576) + 0.05, text: \"label\",\n                  fill: \"#e07a3f\", fontSize: 11, fontWeight: 700 }),\n      Plot.text([{ x: 0, y: 0.18, label: \"95%\" }], { x: \"x\", y: \"y\", text: \"label\", fontSize: 12, fontWeight: 700 }),\n      Plot.text([{ x: 3.15, y: 0.025, label: \"2.5%\" }, { x: -3.15, y: 0.025, label: \"2.5%\" }],\n                { x: \"x\", y: \"y\", text: \"label\", fill: \"#e07a3f\", fontSize: 10 }),\n    ]\n  }), \"This chart shows a Normal curve with both the 5% and 1% rejection regions shaded in the tails, illustrating why ±1.96 (or ±2 as a rule of thumb) is the usual cutoff for a 5% false-positive rate, and ±2.576 for a stricter 1%. The shaded area beyond ±1.96 makes up 5% of the distribution; the darker area beyond ±2.576 makes up 1%.\")\n}\n\n\n\n\n\n\n\n\n\nStricter critical values (±2.6) bring the false-positive rate down to 1% — at the cost of being harder to detect a real effect when one exists. The dark tails above are that stricter 1% cutoff; the light + dark together are the 5% cutoff we’ve been using."
+  },
+  {
+    "objectID": "week2-online-slides.html#two-ways-to-be-wrong",
+    "href": "week2-online-slides.html#two-ways-to-be-wrong",
+    "title": "Testing a Hypothesis",
+    "section": "Two ways to be wrong",
+    "text": "Two ways to be wrong\n\n\n\n\n\\(H_0\\) is true\n\\(H_0\\) is false\n\n\n\n\nDon’t reject\nTrue negative\nFalse negative (Type II error)\n\n\nReject\nFalse positive (Type I error)\nTrue positive\n\n\n\n\nThe test is designed to make false positives rare — the null is protected, so we deliberately make Type I errors less likely than Type II.\n\n\nSource: Békés & Kézdi (2021), Ch. 6"
+  },
+  {
+    "objectID": "week2-online-slides.html#the-p-value",
+    "href": "week2-online-slides.html#the-p-value",
+    "title": "Testing a Hypothesis",
+    "section": "The p-value",
+    "text": "The p-value\nThe p-value is the smallest level of significance at which we could still reject \\(H_0\\) — the probability of seeing a test statistic this extreme, or more extreme, if \\(H_0\\) were true.\nPython gets there in one line, using the same unpooled-variance formula we just did by hand:\nfrom scipy.stats import ttest_ind\n\nlaptop = df.loc[df['device'] == 'Laptop', 'reaction_time_ms']\nphone  = df.loc[df['device'] == 'Phone',  'reaction_time_ms']\n\nt_stat, p_value = ttest_ind(laptop, phone, equal_var=False)\nprint(\"t:\", round(t_stat, 3))\nprint(\"p-value:\", round(p_value, 4))\n\nt:         1.382p-value: 0.1687\n\n\n\n\nhtml`&lt;p&gt;Same t we calculated by hand two slides ago (allowing for rounding). What this p-value means: if there truly were no device effect, we'd see a gap this large (or larger) by chance with probability ${device_p_value}. Small p &rarr; strong evidence against H&#8320; — is ours actually small?&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week2-online-slides.html#task-reject-or-not",
+    "href": "week2-online-slides.html#task-reject-or-not",
+    "title": "Testing a Hypothesis",
+    "section": "Task — reject, or not?",
+    "text": "Task — reject, or not?\n\nCompare the t-statistic you calculated two slides ago to ±2. Reject \\(H_0\\), or not? Write one sentence explaining what your decision means for the original business question — “is a phone-vs-laptop difference real?”"
+  },
+  {
+    "objectID": "week2-online-slides.html#what-if-we-had-15000-students-not-n_sample",
+    "href": "week2-online-slides.html#what-if-we-had-15000-students-not-n_sample",
+    "title": "Testing a Hypothesis",
+    "section": "What if we had 15,000 students, not ?",
+    "text": "What if we had 15,000 students, not ?\n\nWith a huge sample, almost any difference becomes statistically significant — the CI narrows to nearly nothing, and even a 1ms gap could reject \\(H_0\\).\n\n\nStatistical significance ≠ practical significance. At scale, the question shifts from “is there a difference?” to “is the difference big enough to matter?” — external validity remains just as important as it was at n=."
+  },
+  {
+    "objectID": "week2-online-slides.html#section-1",
+    "href": "week2-online-slides.html#section-1",
+    "title": "Testing a Hypothesis",
+    "section": "",
+    "text": "Testing pitfalls\nWe’ve just built the t-test together. Now: how it’s misused — and how to pick your thresholds properly."
   }
 ]
