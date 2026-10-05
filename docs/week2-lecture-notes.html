@@ -798,7 +798,7 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
 <div class="divider">
   <div class="k">Online Session</div>
   <h3>Testing a Hypothesis</h3>
-  <p>The workshop ran out of road before reaching this part &ndash; so the online session that follows starts here from scratch, then moves on to how a hypothesis test gets misused.</p>
+  
 </div>
 
 <section class="chapter" id="fishers-tea">
@@ -860,9 +860,9 @@ $$H_A: \; \bar{x}_{\text{phone,true}} - \bar{x}_{\text{laptop,true}} \neq 0$$</d
 
 <p>This needs the <em>sampling distribution</em> of \(\bar{x}_A - \bar{x}_B\) to be approximately Normal &ndash; not reaction time itself, which Chapter 1 already showed is sharply right-skewed. With dozens of trials in each group, Part Seven's Central Limit Theorem makes that a safe bet regardless of the raw variable's shape.</p>
 
-<h3>A simplifying assumption, named honestly</h3>
+<h3>A simplifying assumption</h3>
 
-<p>Here's where it gets a little uncomfortable, deliberately. To use that formula at all, every trial has to count as its own independent observation &ndash; which means treating the device data not as 24 students, but as 132 independent laptop observations and 67 independent phone observations.</p>
+<p>To use that formula at all, every trial has to count as its own independent observation &ndash; which means treating the device data not as 24 students, but as 132 independent laptop observations and 67 independent phone observations.</p>
 
 <div class="mini-table-wrap" id="devicetable-trials"></div>
 
@@ -871,7 +871,6 @@ $$H_A: \; \bar{x}_{\text{phone,true}} - \bar{x}_{\text{laptop,true}} \neq 0$$</d
   <p>&ldquo;Now, we know, because we created this data ourselves, that this is not true. We had 24 students, and a lot of these observations are repeated observations from students in the classroom. The reason I'm making this assumption is to demonstrate something that relates to the Central Limit Theorem &ndash; by the central limit theorem, we need n to be getting up to about 30 to be confident of a broadly Normal sampling distribution. If we only had 24 students and were looking at each student's own average, we'd have something like 16 for laptops and about 8 for phones. Those are low numbers, and a lot of the statistical theory underlying these tests breaks down when you have very low numbers. So for the means of demonstration here, I'm just assuming our data is independent.&rdquo;</p>
 </blockquote>
 
-<p>It's a genuine trade-off, not a mistake quietly swept under the rug: student-level counts (16 and 8) are the <em>honest</em> unit of independence, but far too small for the CLT to kick in reliably; trial-level counts (132 and 67) are large enough for the CLT, but overstate how much genuinely independent evidence the data contains. The module makes the second choice here, on purpose, to let the rest of the machinery run &ndash; and says so plainly, rather than pretending the problem isn't there.</p>
 
 <div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 6</div>
 </section>
@@ -880,7 +879,7 @@ $$H_A: \; \bar{x}_{\text{phone,true}} - \bar{x}_{\text{laptop,true}} \neq 0$$</d
 <div class="chapter-kicker">Part Fourteen</div>
 <h2>Calculating It, and Making a Decision</h2>
 
-<p>With the formula settled, the only thing left is arithmetic &ndash; done live, in Excel, against our own real numbers.</p>
+<p>With the formula settled, the only thing left is arithmetic.</p>
 
 <div class="mini-table-wrap" id="devicetable-calc"></div>
 
@@ -933,7 +932,7 @@ t_stat, p_value = ttest_ind(laptop, phone, equal_var=False)
 <p>A p-value of 0.1687 means: if there truly were no device effect, we'd see a gap this large &ndash; or larger &ndash; by chance with probability 16.87%. That's not low. For a 95% test we'd need it below 5%; for 99%, below 1%.</p>
 
 <div class="callout">
-  <strong>So: fail to reject.</strong> We're not saying straight up that there's definitely no effect &ndash; we're saying we haven't got the evidence, from this data, to say a phone-versus-laptop difference is real. That's a genuinely different claim, and the distinction is the whole point of Part Twelve's criminal-court analogy.
+  <strong>So: fail to reject.</strong> We're not saying straight up that there's definitely no effect &ndash; we're saying we haven't got the evidence, from this data, to say a phone-versus-laptop difference is real.
 </div>
 
 <div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 6</div>
@@ -943,7 +942,7 @@ t_stat, p_value = ttest_ind(laptop, phone, equal_var=False)
 <div class="chapter-kicker">Part Fifteen</div>
 <h2>One-Sided Tests, and Picking a Threshold</h2>
 
-<p>Before moving on to how tests get misused, one honest footnote on the test we just ran: everything above depends on sample size. A lot of the formulas &ndash; standard error, standard deviation from the sample &ndash; are driven by how many observations you have. With 24 students in the room, almost any effect has to be fairly large to clear the bar. With 50,000, the bar gets trivially easy to clear &ndash; the confidence interval narrows to nearly nothing, and even a one-millisecond gap could reject \(H_0\). At that point <strong>statistical significance stops being the interesting question</strong>: the question shifts from <em>is there a difference</em> to <em>is the difference big enough to matter</em>, and external validity (Part Two) is exactly as important as it ever was.</p>
+
 
 <h3>Not every test is two-sided</h3>
 
@@ -966,7 +965,17 @@ t_stat, p_value = ttest_ind(laptop, phone, equal_var=False)
 
 <h3>Size and power</h3>
 
-<p>Two numbers summarise everything a test is trying to balance. The <strong>size</strong> of a test is the probability, under \(H_0\), of a false positive &ndash; fixed in advance, usually at 5% or 1%. The <strong>power</strong> of a test is the probability, under \(H_A\), of <em>avoiding</em> a false negative. Power rises when the sample is larger, the spread is smaller, or the true effect sits further from the null &ndash; the bigger the real effect, the easier it is to tell apart from noise. To keep one picture readable, the figure below uses the one-sided 1.645 critical value from a few paragraphs up, rather than redrawing both tails of a two-sided test.</p>
+<p>Two numbers summarise everything a test is trying to balance.</p>
+
+<div class="callout">
+  <strong>Size.</strong> The probability, under \(H_0\), of a false positive &ndash; fixed in advance, usually at 5% or 1%.
+</div>
+
+<div class="callout">
+  <strong>Power.</strong> The probability, under \(H_A\), of <em>avoiding</em> a false negative.
+</div>
+
+<p>Power rises when the sample is larger, the spread is smaller, or the true effect sits further from the null &ndash; the bigger the real effect, the easier it is to tell apart from noise. To keep one picture readable, the figure below uses the one-sided 1.645 critical value from a few paragraphs up, rather than redrawing both tails of a two-sided test.</p>
 
 <div class="figure" id="fig-power">
   <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Size and power, side by side</h4></div>
@@ -996,7 +1005,7 @@ t_stat, p_value = ttest_ind(laptop, phone, equal_var=False)
   <strong>It probably isn't.</strong> Suppose, for the sake of argument, that none of the hundred features actually has any link to heart disease at all &ndash; every null hypothesis is true. A 5% false-positive rate means that, purely by chance, you'd still expect to reject about <strong>5 of the 100</strong> nulls, just from noise. Picking out "the six that worked" and writing them up as findings has the logic backwards: you started by assuming none of them was real, and chance alone explains roughly that many false alarms.
 </div>
 
-<p>The same idea, told as a cartoon rather than a case study: scientists test whether jelly beans cause acne and find no link. They test purple jelly beans &ndash; no link. Brown, pink, blue, and so on through twenty colours &ndash; until green jelly beans turn up a p-value just under 5%. It gets reported as a real discovery: <em>green jelly beans linked to acne</em>. Testing twenty hypotheses at the standard 5% threshold makes finding at least one "significant" result by pure chance alone genuinely likely &ndash; not a freak accident, just arithmetic.<sup><a class="footnote-ref" id="fnref2" href="#fn2">2</a></sup></p>
+<p>Let's consider the same idea, <a href="https://xkcd.com/882/" target="_blank" rel="noopener">as a cartoon rather than a case study</a>: scientists test whether jelly beans cause acne and find no link. They test purple jelly beans &ndash; no link. Brown, pink, blue, and so on through twenty colours &ndash; until green jelly beans turn up a p-value just under 5%. It gets reported as a real discovery: <em>green jelly beans linked to acne</em>. Testing twenty hypotheses at the standard 5% threshold makes finding at least one "significant" result by pure chance alone genuinely likely &ndash; not a freak accident, just arithmetic.<sup><a class="footnote-ref" id="fnref2" href="#fn2">2</a></sup></p>
 
 <p>Testing many hypotheses at once needs a stricter bar than testing one. A few dozen tests might call for 0.1&ndash;0.5% instead of 1&ndash;5%; the strictest common fix, the <strong>Bonferroni correction</strong>, divides your target p-value by the number of tests &ndash; 20 hypotheses aiming for 0.05 becomes a real bar of \(0.05/20 = 0.0025\). It's often criticised as too conservative, but the direction of the correction is the right instinct: be more sceptical, not less, the more chances you give yourself to get lucky.</p>
 
@@ -1006,20 +1015,14 @@ t_stat, p_value = ttest_ind(laptop, phone, equal_var=False)
 
 <h3>Testing when the data is huge</h3>
 
-<p>One last pitfall, echoing Part Fifteen's opening note. With millions of observations, statistical inference starts to lose relevance &ndash; confidence intervals shrink to almost nothing, and almost any difference becomes statistically significant, including ones too small to matter economically. The question shifts, again, from <em>is there a difference</em> to <em>is the difference big enough to matter</em> &ndash; look at the size of the effect, not just whether it clears a p-value.</p>
+<p>One last pitfall: with millions of observations, statistical inference starts to lose relevance &ndash; confidence intervals shrink to almost nothing, and almost any difference becomes statistically significant, including ones too small to matter economically. The question shifts from <em>is there a difference</em> to <em>is the difference big enough to matter</em> &ndash; look at the size of the effect, not just whether it clears a p-value.</p>
 
 <div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 6; the jelly-bean illustration is a well-known internet cartoon, not from the textbook</div>
 </section>
 
 <section class="chapter" id="ai-and-next">
 <div class="chapter-kicker">Part Seventeen</div>
-<h2>Using AI, and What's Next</h2>
-
-<p>Since this module sits inside a Business Analytics and AI degree, it's worth asking the obvious question directly: can AI just do this for you? Ask it for the two-sample t-test formula, and &ndash; per the textbook's own test of this &ndash; it comes back mostly right.</p>
-
-<div class="callout">
-  <strong>Mostly is the operative word.</strong> AI is a genuinely useful companion for explaining concepts, and there's nothing wrong with feeding it this module's own materials to help something click. But you will always have to verify its output &ndash; the same way you'd check a classmate's working. A beautifully written, fluently-explained formula can still be the wrong formula, and it will run (or read) just as confidently either way.
-</div>
+<h2>What's Next</h2>
 
 <p>With that, the module has its first complete, working test of whether one difference is real &ndash; built from a 1920s tea party, our own class's device data, and a healthy list of ways the whole machinery can go wrong. Week 3 moves from asking whether <em>one</em> difference is real to asking what happens when two variables move together &ndash; relationships, not just gaps.</p>
 </section>
@@ -1031,9 +1034,7 @@ t_stat, p_value = ttest_ind(laptop, phone, equal_var=False)
 </ol>
 </div>
 
-<footer class="colophon">
-  <p><strong>A note on these notes.</strong> This chapter was assembled from both of Week 2's sessions: the workshop (Parts One&ndash;Eleven) and the online session that followed (Parts Twelve&ndash;Seventeen), each with its own slide deck and its own live transcript (auto-generated, lightly cleaned for readability &ndash; quoted passages are close to verbatim but not a certified transcript), plus the class's real, anonymised data &ndash; the Week 1 reaction-time dataset this chapter reuses throughout, and the 1,000 simulated class-means generated for the in-class task. Numbers and charts throughout reflect that specific data as it stood at the time of writing. Framework and definitions follow B&eacute;k&eacute;s &amp; K&eacute;zdi, <em>Data Analysis for Business, Economics, and Policy</em> (2021), Ch. 5 (Parts One&ndash;Eleven) and Ch. 6 (Parts Twelve&ndash;Seventeen) &ndash; Fisher's tea test and the jelly-bean cartoon are the instructor's own additions, not the textbook's.</p>
-</footer>
+
 
     </div>
   </main>
