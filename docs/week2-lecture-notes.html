@@ -795,14 +795,244 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
 <p>Nearly three hours of workshop led up to one sentence: we can be 95% confident the true average reaction time lies between roughly 715 and 1,426 milliseconds. It doesn't sound like much – but it is huge. It's the first time in this module anything has been said about a population we never directly measured &ndash; and everything from here on builds on exactly that move.</p>
 </section>
 
+<div class="divider">
+  <div class="k">Online Session</div>
+  <h3>Testing a Hypothesis</h3>
+  <p>The workshop ran out of road before reaching this part &ndash; so the online session that follows starts here from scratch, then moves on to how a hypothesis test gets misused.</p>
+</div>
+
+<section class="chapter" id="fishers-tea">
+<div class="chapter-kicker">Part Twelve</div>
+<h2>Fisher's Tea Test</h2>
+
+<p>In 1920s Cambridge, a woman at an afternoon tea party made a claim: she could tell, just by taste, whether the milk or the tea had gone into the cup first. Ronald Fisher &ndash; a founding figure of a great deal of modern statistics, for good and for bad &ndash; was there, and didn't believe her. Neither did his companions. But being statisticians, they didn't just dismiss her either. They designed a test.</p>
+
+<p>Several cups were made, some milk-first, some tea-first, and delivered to her in a random order she didn't know. She had to identify all of them correctly, from taste alone.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the online session</span>
+  <p>&ldquo;If she was just guessing, then we can calculate how likely she would get them all right just by chance. And the point is &ndash; if she actually does far better than chance predicted, then this is evidence for her claim.&rdquo;</p>
+</blockquote>
+
+<p>That's the entire logic of hypothesis testing, built from one experiment in 1920s Cambridge: work out what pure chance would look like, then ask whether what actually happened is far enough from that to count as evidence against it.</p>
+
+<h3>Putting the logic into symbols</h3>
+
+<p>Formalising this needs three pieces of notation, and they'll recur for the rest of the module. Define the <strong>statistic</strong> you want to test &ndash; call it \(s\). It could be a mean, a difference of two means (our own device question), or, in later weeks, a regression coefficient. What you actually care about is its <strong>true value</strong>, \(s_{\text{true}}\) &ndash; the value in the population, or general pattern, your data represents. This is the same idea Part Five called \(\mu\), just given its fully general name: not every statistic you'll ever test is a mean. What your own data gives you is only an <strong>estimate</strong> of that true value, written with a hat: \(\hat{s}\).</p>
+
+<p>Testing a hypothesis means stating the question as two competing possibilities about \(s_{\text{true}}\), only one of which can be true: a <strong>null hypothesis</strong> \(H_0\) and an <strong>alternative hypothesis</strong> \(H_A\). Together they have to cover every possibility you're interested in. The most common shape, and the one almost every test in this module will almost implicitly use, sets the null at zero:</p>
+
+<div class="formula-block">$$H_0: \; s_{\text{true}} = 0 \qquad H_A: \; s_{\text{true}} \neq 0$$</div>
+
+<h3>The null is protected</h3>
+
+<p>Designing a hypothesis test means thinking about the null as something <strong>protected</strong> &ndash; you have to gather real evidence to overturn it, not just a hunch. Békés &amp; Kézdi's own textbook uses an analogy worth keeping close: a criminal court. Everyone goes in presumed innocent, and is only convicted if the evidence is strong enough to overcome that presumption.</p>
+
+<div class="callout">
+  <strong>Mind the wording.</strong> A verdict of "not guilty" never means "proven innocent" &ndash; it means there wasn't enough evidence to overcome the presumption. Hypothesis testing uses exactly the same asymmetry. If we don't have enough evidence against \(H_0\), we say we <strong>fail to reject</strong> it &ndash; not that we've proven it true. If we do have enough evidence, we <strong>reject</strong> \(H_0\) &ndash; not that we've proven \(H_A\). Testing can only ever tell you whether the evidence clears a bar you set in advance.
+</div>
+
+<div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 6</div>
+</section>
+
+<section class="chapter" id="stating-hypothesis">
+<div class="chapter-kicker">Part Thirteen</div>
+<h2>Stating Our Own Hypothesis</h2>
+
+<p>Back to the question Part One opened with: does device &ndash; phone versus laptop &ndash; affect reaction time? The statistic is the difference in average reaction time between the two groups. The null hypothesis makes the strongest possible default claim: there is no difference at all.</p>
+
+<div class="formula-block">$$H_0: \; \bar{x}_{\text{phone,true}} - \bar{x}_{\text{laptop,true}} = 0$$
+$$H_A: \; \bar{x}_{\text{phone,true}} - \bar{x}_{\text{laptop,true}} \neq 0$$</div>
+
+<p>In words: there's no true difference in reaction time by device, in the wider population of JMU students this class represents &ndash; versus there is one. The test's whole job is to determine which of these two we actually have enough evidence for.</p>
+
+<h3>The t-statistic</h3>
+
+<p>The tool for doing that is the <strong>t-statistic</strong> &ndash; a <em>test statistic</em>, which measures how far our estimate sits from what \(H_0\) predicts, in units of standard error.</p>
+
+<div class="formula-block">$$t = \frac{\hat{s}}{SE(\hat{s})}$$</div>
+<p class="formula-caption">\(\hat{s}\) stands for any estimated statistic &ndash; a mean, a difference in means, or, in later weeks, a regression coefficient</p>
+
+<p>For a difference between two averages &ndash; our own case &ndash; the standard error needs a little more work than Part Eight's single-sample formula:</p>
+
+<div class="formula-block">$$t = \frac{\bar{x}_A - \bar{x}_B}{SE(\bar{x}_A - \bar{x}_B)}$$</div>
+<div class="formula-block">$$SE(\bar{x}_A - \bar{x}_B) = \sqrt{\frac{SD_A^2}{n_A} + \frac{SD_B^2}{n_B}}$$</div>
+
+<p>This needs the <em>sampling distribution</em> of \(\bar{x}_A - \bar{x}_B\) to be approximately Normal &ndash; not reaction time itself, which Chapter 1 already showed is sharply right-skewed. With dozens of trials in each group, Part Seven's Central Limit Theorem makes that a safe bet regardless of the raw variable's shape.</p>
+
+<h3>A simplifying assumption, named honestly</h3>
+
+<p>Here's where it gets a little uncomfortable, deliberately. To use that formula at all, every trial has to count as its own independent observation &ndash; which means treating the device data not as 24 students, but as 132 independent laptop observations and 67 independent phone observations.</p>
+
+<div class="mini-table-wrap" id="devicetable-trials"></div>
+
+<blockquote class="field-note">
+  <span class="tag">From the online session</span>
+  <p>&ldquo;Now, we know, because we created this data ourselves, that this is not true. We had 24 students, and a lot of these observations are repeated observations from students in the classroom. The reason I'm making this assumption is to demonstrate something that relates to the Central Limit Theorem &ndash; by the central limit theorem, we need n to be getting up to about 30 to be confident of a broadly Normal sampling distribution. If we only had 24 students and were looking at each student's own average, we'd have something like 16 for laptops and about 8 for phones. Those are low numbers, and a lot of the statistical theory underlying these tests breaks down when you have very low numbers. So for the means of demonstration here, I'm just assuming our data is independent.&rdquo;</p>
+</blockquote>
+
+<p>It's a genuine trade-off, not a mistake quietly swept under the rug: student-level counts (16 and 8) are the <em>honest</em> unit of independence, but far too small for the CLT to kick in reliably; trial-level counts (132 and 67) are large enough for the CLT, but overstate how much genuinely independent evidence the data contains. The module makes the second choice here, on purpose, to let the rest of the machinery run &ndash; and says so plainly, rather than pretending the problem isn't there.</p>
+
+<div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 6</div>
+</section>
+
+<section class="chapter" id="making-decision">
+<div class="chapter-kicker">Part Fourteen</div>
+<h2>Calculating It, and Making a Decision</h2>
+
+<p>With the formula settled, the only thing left is arithmetic &ndash; done live, in Excel, against our own real numbers.</p>
+
+<div class="mini-table-wrap" id="devicetable-calc"></div>
+
+<p>The difference in means is \(1{,}078.94 - 772.69 = 306.25\) ms &ndash; a sizeable-looking gap, though we still can't say for certain it's real until the test is actually run. The standard error, from the formula above, comes to \(221.64\) ms. Put the two together:</p>
+
+<div class="formula-block">$$t = \frac{306.25}{221.64} \approx 1.38$$</div>
+
+<p>A number on its own means nothing yet &ndash; it's a ratio of milliseconds to milliseconds, so the units cancel. What matters is where it falls against a <strong>critical value</strong>, the same idea Part Ten used to build a confidence interval, now flipped around to make a reject/don't-reject call.</p>
+
+<div class="figure" id="fig-critval">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>Where our own t-statistic lands</h4></div>
+  <div class="figure-body"><div class="chart-wrap" id="critval-chart"></div></div>
+  <p class="figure-caption" id="critval-caption"></p>
+</div>
+
+<p>For a 5% test, the critical value is \(\pm 1.96\) &ndash; the same 1.96 Part Ten already used to build a 95% CI, since the two ideas are two sides of one curve. Reject \(H_0\) if \(t\) falls beyond that line in either direction; don't reject it if \(t\) falls inside. Our own \(t = 1.38\) sits comfortably inside &ndash; nowhere near either tail.</p>
+
+<h3>Two ways to be wrong</h3>
+
+<p>Before reading off a verdict, it's worth being precise about what could go wrong with it. There are exactly two kinds of mistake a test can make, and they are not equally serious by design.</p>
+
+<table class="data-table">
+  <thead><tr><th scope="col"></th><th scope="col">\(H_0\) is true</th><th scope="col">\(H_0\) is false</th></tr></thead>
+  <tbody>
+    <tr><td>Don't reject</td><td>True negative</td><td>False negative &ndash; Type II error</td></tr>
+    <tr><td>Reject</td><td>False positive &ndash; Type I error</td><td>True positive</td></tr>
+  </tbody>
+</table>
+
+<p>Think of it as the criminal court again: convicting an innocent person is a false positive, a Type I error &ndash; and it's treated as the far worse mistake. A test saying "not pregnant" is pregnant is the same shape of error. The null is protected precisely to keep this kind of mistake rare &ndash; deliberately rarer than its counterpart, a false negative.</p>
+
+<h3>The p-value</h3>
+
+<p>Everything above can also be read off a single number: the <strong>p-value</strong> &ndash; the smallest level of significance at which we could still reject \(H_0\), or equivalently, the probability of seeing a test statistic this extreme (or more extreme) if \(H_0\) were actually true. Small p, strong evidence against \(H_0\).</p>
+
+<details class="code-reveal">
+  <summary>Show the Python</summary>
+  <div class="code-reveal-body">
+    <pre class="code-block">from scipy.stats import ttest_ind
+
+laptop = df.loc[df['device'] == 'Laptop', 'reaction_time_ms']
+phone  = df.loc[df['device'] == 'Phone',  'reaction_time_ms']
+
+t_stat, p_value = ttest_ind(laptop, phone, equal_var=False)
+<span class="c"># t_stat: 1.382, p_value: 0.1687</span></pre>
+    <p>Same t we calculated by hand above (allowing for rounding) &ndash; Python's <code>ttest_ind</code> is doing exactly the same unpooled-variance formula, in one line instead of several.</p>
+  </div>
+</details>
+
+<p>A p-value of 0.1687 means: if there truly were no device effect, we'd see a gap this large &ndash; or larger &ndash; by chance with probability 16.87%. That's not low. For a 95% test we'd need it below 5%; for 99%, below 1%.</p>
+
+<div class="callout">
+  <strong>So: fail to reject.</strong> We're not saying straight up that there's definitely no effect &ndash; we're saying we haven't got the evidence, from this data, to say a phone-versus-laptop difference is real. That's a genuinely different claim, and the distinction is the whole point of Part Twelve's criminal-court analogy.
+</div>
+
+<div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 6</div>
+</section>
+
+<section class="chapter" id="testing-pitfalls">
+<div class="chapter-kicker">Part Fifteen</div>
+<h2>One-Sided Tests, and Picking a Threshold</h2>
+
+<p>Before moving on to how tests get misused, one honest footnote on the test we just ran: everything above depends on sample size. A lot of the formulas &ndash; standard error, standard deviation from the sample &ndash; are driven by how many observations you have. With 24 students in the room, almost any effect has to be fairly large to clear the bar. With 50,000, the bar gets trivially easy to clear &ndash; the confidence interval narrows to nearly nothing, and even a one-millisecond gap could reject \(H_0\). At that point <strong>statistical significance stops being the interesting question</strong>: the question shifts from <em>is there a difference</em> to <em>is the difference big enough to matter</em>, and external validity (Part Two) is exactly as important as it ever was.</p>
+
+<h3>Not every test is two-sided</h3>
+
+<p>Our device test was <strong>two-sided</strong>: we had no prior reason to expect phones faster than laptops or vice versa, so either direction counted as evidence. Not every question works that way. Ask instead: <em>does caffeine reduce reaction time?</em> Caffeine is a stimulant &ndash; there's a specific directional prediction going in, so only a large effect in that one predicted direction counts as evidence.</p>
+
+<div class="formula-block">$$H_0: \; s_{\text{true}} \leq 0 \qquad H_A: \; s_{\text{true}} > 0$$</div>
+
+<p>Reject \(H_0\) now only if \(t\) is large and <em>positive</em> &ndash; extreme in the predicted direction only. The 5% critical value shrinks to about 1.64, smaller than the two-sided 1.96, because the whole 5% now sits in one tail instead of being split across both. Same overall false-positive rate either way, but the one-sided test is more powerful for an effect in the predicted direction &ndash; at the cost of zero power to detect an effect in the <em>other</em> direction, however large, because the test was never built to look for it there.</p>
+
+<h3>What p-value threshold should you actually pick?</h3>
+
+<p>There's no universal answer, and the "5% is significant" convention is, frankly, arbitrary &ndash; a p-value of 0.051 is barely distinguishable from 0.049, yet only one crosses the textbook line. What should actually guide the choice is what's at stake.</p>
+
+<ul class="term-list">
+  <li><span class="term">Guilty beyond reasonable doubt</span><span>A costly, hard-to-reverse decision. Pick a conservative threshold &ndash; 1% or lower.</span></li>
+  <li><span class="term">Proof of concept</span><span>Deciding whether to investigate further. 10&ndash;15% is often fine &ndash; not slam-dunk evidence, but a real signal worth another look, more data, or another experiment before betting the business on it.</span></li>
+</ul>
+
+<div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 6</div>
+
+<h3>Size and power</h3>
+
+<p>Two numbers summarise everything a test is trying to balance. The <strong>size</strong> of a test is the probability, under \(H_0\), of a false positive &ndash; fixed in advance, usually at 5% or 1%. The <strong>power</strong> of a test is the probability, under \(H_A\), of <em>avoiding</em> a false negative. Power rises when the sample is larger, the spread is smaller, or the true effect sits further from the null &ndash; the bigger the real effect, the easier it is to tell apart from noise. To keep one picture readable, the figure below uses the one-sided 1.645 critical value from a few paragraphs up, rather than redrawing both tails of a two-sided test.</p>
+
+<div class="figure" id="fig-power">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Size and power, side by side</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">True effect (in SE units)</span><input type="range" id="power-delta" min="0" max="4" step="0.1" value="1.5"><span class="val" id="power-delta-val">1.5</span></div>
+    </div>
+    <div class="chart-wrap" id="power-chart"></div>
+  </div>
+  <p class="figure-caption" id="power-caption"></p>
+</div>
+
+<p>Drag the slider to 0 and the two curves sit exactly on top of each other &ndash; there's no real effect to find, so power collapses to the same 5% as the size. Drag it up towards 4 and the green region swallows almost the whole alternative curve: a large enough effect is nearly impossible to miss. The red region barely moves at all &ndash; that's size, fixed by the critical value, not by how real the effect is. Size is a promise you make in advance; power is something the world hands you, or doesn't.</p>
+</section>
+
+<section class="chapter" id="when-testing-breaks">
+<div class="chapter-kicker">Part Sixteen</div>
+<h2>When Testing Breaks Down</h2>
+
+<p>Everything so far has quietly assumed you're running <em>one</em> test. Run many at once, and the 5%-false-positive promise stops meaning what it sounds like it means.</p>
+
+<h3>The 400-patient problem</h3>
+
+<p>Here's Békés &amp; Kézdi's own case: a medical dataset of 400 patients, a heart-disease indicator, and a hundred lifestyle features &ndash; diet, exercise, income, sleep, and dozens more. Test each feature against the indicator, one at a time, at the usual 5% level, and suppose you find six with a significant link. That feels like a real discovery.</p>
+
+<div class="callout gold">
+  <strong>It probably isn't.</strong> Suppose, for the sake of argument, that none of the hundred features actually has any link to heart disease at all &ndash; every null hypothesis is true. A 5% false-positive rate means that, purely by chance, you'd still expect to reject about <strong>5 of the 100</strong> nulls, just from noise. Picking out "the six that worked" and writing them up as findings has the logic backwards: you started by assuming none of them was real, and chance alone explains roughly that many false alarms.
+</div>
+
+<p>The same idea, told as a cartoon rather than a case study: scientists test whether jelly beans cause acne and find no link. They test purple jelly beans &ndash; no link. Brown, pink, blue, and so on through twenty colours &ndash; until green jelly beans turn up a p-value just under 5%. It gets reported as a real discovery: <em>green jelly beans linked to acne</em>. Testing twenty hypotheses at the standard 5% threshold makes finding at least one "significant" result by pure chance alone genuinely likely &ndash; not a freak accident, just arithmetic.<sup><a class="footnote-ref" id="fnref2" href="#fn2">2</a></sup></p>
+
+<p>Testing many hypotheses at once needs a stricter bar than testing one. A few dozen tests might call for 0.1&ndash;0.5% instead of 1&ndash;5%; the strictest common fix, the <strong>Bonferroni correction</strong>, divides your target p-value by the number of tests &ndash; 20 hypotheses aiming for 0.05 becomes a real bar of \(0.05/20 = 0.0025\). It's often criticised as too conservative, but the direction of the correction is the right instinct: be more sceptical, not less, the more chances you give yourself to get lucky.</p>
+
+<h3>P-hacking</h3>
+
+<p>Related, and more deliberate: <strong>p-hacking</strong> &ndash; running many versions of one test and only reporting the ones that worked. It's the jelly-bean comic's logic, but done on purpose rather than by accident. It happens more often than anyone would like to admit, and avoiding it is less a technical fix than a professional habit: do the analysis from an honest place, and report what you actually found, not what you went looking for.</p>
+
+<h3>Testing when the data is huge</h3>
+
+<p>One last pitfall, echoing Part Fifteen's opening note. With millions of observations, statistical inference starts to lose relevance &ndash; confidence intervals shrink to almost nothing, and almost any difference becomes statistically significant, including ones too small to matter economically. The question shifts, again, from <em>is there a difference</em> to <em>is the difference big enough to matter</em> &ndash; look at the size of the effect, not just whether it clears a p-value.</p>
+
+<div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 6; the jelly-bean illustration is a well-known internet cartoon, not from the textbook</div>
+</section>
+
+<section class="chapter" id="ai-and-next">
+<div class="chapter-kicker">Part Seventeen</div>
+<h2>Using AI, and What's Next</h2>
+
+<p>Since this module sits inside a Business Analytics and AI degree, it's worth asking the obvious question directly: can AI just do this for you? Ask it for the two-sample t-test formula, and &ndash; per the textbook's own test of this &ndash; it comes back mostly right.</p>
+
+<div class="callout">
+  <strong>Mostly is the operative word.</strong> AI is a genuinely useful companion for explaining concepts, and there's nothing wrong with feeding it this module's own materials to help something click. But you will always have to verify its output &ndash; the same way you'd check a classmate's working. A beautifully written, fluently-explained formula can still be the wrong formula, and it will run (or read) just as confidently either way.
+</div>
+
+<p>With that, the module has its first complete, working test of whether one difference is real &ndash; built from a 1920s tea party, our own class's device data, and a healthy list of ways the whole machinery can go wrong. Week 3 moves from asking whether <em>one</em> difference is real to asking what happens when two variables move together &ndash; relationships, not just gaps.</p>
+</section>
+
 <div class="footnotes">
 <ol>
 <li id="fn1">Your definition of &ldquo;cool&rdquo; may differ from mine. <a class="footnote-back" href="#fnref1">&uarr;</a></li>
+<li id="fn2">Twenty tests at a 5% threshold: the chance of at least one false positive, by pure chance, is \(1 - 0.95^{20} \approx 64\%\) &ndash; not a near-miss, a coin flip. <a class="footnote-back" href="#fnref2">&uarr;</a></li>
 </ol>
 </div>
 
 <footer class="colophon">
-  <p><strong>A note on these notes.</strong> This chapter was assembled from the Week 2 workshop: its slide deck, its own live transcript (auto-generated, lightly cleaned for readability &ndash; quoted passages are close to verbatim but not a certified transcript), and the class's real, anonymised data &ndash; both the Week 1 reaction-time dataset this chapter reuses, and the 1,000 simulated class-means generated for the in-class task. Numbers and charts throughout reflect that specific data as it stood at the time of writing. Framework and definitions follow B&eacute;k&eacute;s &amp; K&eacute;zdi, <em>Data Analysis for Business, Economics, and Policy</em> (2021), Ch. 5.</p>
+  <p><strong>A note on these notes.</strong> This chapter was assembled from both of Week 2's sessions: the workshop (Parts One&ndash;Eleven) and the online session that followed (Parts Twelve&ndash;Seventeen), each with its own slide deck and its own live transcript (auto-generated, lightly cleaned for readability &ndash; quoted passages are close to verbatim but not a certified transcript), plus the class's real, anonymised data &ndash; the Week 1 reaction-time dataset this chapter reuses throughout, and the 1,000 simulated class-means generated for the in-class task. Numbers and charts throughout reflect that specific data as it stood at the time of writing. Framework and definitions follow B&eacute;k&eacute;s &amp; K&eacute;zdi, <em>Data Analysis for Business, Economics, and Policy</em> (2021), Ch. 5 (Parts One&ndash;Eleven) and Ch. 6 (Parts Twelve&ndash;Seventeen) &ndash; Fisher's tea test and the jelly-bean cartoon are the instructor's own additions, not the textbook's.</p>
 </footer>
 
     </div>
@@ -1310,6 +1540,106 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
     document.getElementById('ci-coverage-caption').textContent = label;
   }
 
+  /* ================= Part Thirteen: trials vs. students table ================= */
+  function renderDeviceTrialsTable() {
+    const tbl = document.createElement('table');
+    tbl.className = 'data-table';
+    tbl.innerHTML = `<thead><tr><th scope="col">Device</th><th scope="col">Trials treated as n</th><th scope="col">Real students</th></tr></thead>
+      <tbody>${DEVICE_STATS.map(r => `<tr><td>${r.device}</td><td style="color:var(--accent);font-weight:700;">${r.n}</td><td>${r.n_students}</td></tr>`).join('')}</tbody>`;
+    mount('devicetable-trials', tbl);
+  }
+
+  /* ================= Part Fourteen: mean/SD/n for the hand calculation ================= */
+  function renderDeviceCalcTable() {
+    const tbl = document.createElement('table');
+    tbl.className = 'data-table';
+    tbl.innerHTML = `<thead><tr><th scope="col">Device</th><th scope="col">Mean (ms)</th><th scope="col">SD (ms)</th><th scope="col">n</th></tr></thead>
+      <tbody>${DEVICE_STATS.map(r => `<tr><td>${r.device}</td><td style="color:var(--accent);font-weight:700;">${r.mean.toFixed(2)}</td><td>${r.sd.toFixed(2)}</td><td>${r.n}</td></tr>`).join('')}</tbody>`;
+    mount('devicetable-calc', tbl);
+  }
+
+  /* ================= Part Fourteen: critical value, with our own t marked ================= */
+  function renderCritVal() {
+    const phi = x => Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI);
+    const grid = d3.range(-3.6, 3.601, 0.02).map(x => ({ x, y: phi(x) }));
+    const tailL = grid.filter(d => d.x <= -1.96);
+    const tailR = grid.filter(d => d.x >= 1.96);
+    const ourT = 1.38;
+
+    const svg = Plot.plot({
+      width: 640, height: 320, marginLeft: 20, marginRight: 20, marginBottom: 40,
+      style: plotStyle(),
+      x: { label: 't-statistic', domain: [-3.6, 3.6] },
+      y: { axis: null },
+      marks: [
+        Plot.areaY(tailL, { x: 'x', y: 'y', fill: '#e07a3f', fillOpacity: 0.45 }),
+        Plot.areaY(tailR, { x: 'x', y: 'y', fill: '#e07a3f', fillOpacity: 0.45 }),
+        Plot.line(grid, { x: 'x', y: 'y', stroke: '#1a1a2e', strokeWidth: 2 }),
+        Plot.ruleX([1.96, -1.96], { stroke: '#e07a3f', strokeWidth: 1.5, strokeDasharray: '5,4' }),
+        Plot.ruleX([ourT], { stroke: '#2d6a4f', strokeWidth: 2.5 }),
+        Plot.text([{ x: 1.96, label: '1.96' }, { x: -1.96, label: '−1.96' }], { x: 'x', y: () => phi(1.96) + 0.045, text: 'label', fill: '#e07a3f', fontSize: 11, fontWeight: 700 }),
+        Plot.text([{ x: ourT, label: `Our t = ${ourT}` }], { x: 'x', y: () => phi(ourT) + 0.11, text: 'label', fill: '#2d6a4f', fontSize: 12, fontWeight: 700 }),
+        Plot.text([{ x: 0, y: 0.18, label: "Don’t reject" }], { x: 'x', y: 'y', text: 'label', fontSize: 12, fontWeight: 700, fill: 'var(--ink-soft)' }),
+      ]
+    });
+    const label = `The sampling distribution of the t-statistic under H0, with the 5% rejection regions shaded beyond plus-or-minus 1.96. Our own t-statistic of ${ourT} falls well inside the don't-reject zone.`;
+    mount('critval-chart', accessibleChart(svg, 'This chart shows where our own t-statistic falls relative to the critical value, visualising why we fail to reject the null hypothesis. ' + label));
+    document.getElementById('critval-caption').textContent = label;
+  }
+
+  /* ================= Part Fifteen: size and power (interactive) =================
+     Deliberately one-sided (reusing the 1.645 critical value introduced just
+     above) rather than the deck's own two-sided version, so a single pair of
+     curves and two shaded regions tells the whole story without needing to
+     track four regions across two tails at once. */
+  function erf(x) {
+    const sign = x < 0 ? -1 : 1; x = Math.abs(x);
+    const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+    const t = 1 / (1 + p * x);
+    const y = 1 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+    return sign * y;
+  }
+  const PhiStd = x => 0.5 * (1 + erf(x / Math.SQRT2));
+  const powerDelta = document.getElementById('power-delta');
+  const powerDeltaVal = document.getElementById('power-delta-val');
+  function renderPower() {
+    const delta = +powerDelta.value;
+    powerDeltaVal.textContent = delta.toFixed(1);
+    const crit = 1.645;
+    const phi = (x, mu) => Math.exp(-0.5 * (x - mu) * (x - mu)) / Math.sqrt(2 * Math.PI);
+
+    const xmin = -4, xmax = Math.max(5.6, delta + 4);
+    const grid = d3.range(xmin, xmax, 0.03);
+    const nullCurve = grid.map(x => ({ x, y: phi(x, 0) }));
+    const altCurve = grid.map(x => ({ x, y: phi(x, delta) }));
+    const sizeRegion = nullCurve.filter(d => d.x >= crit);
+    const powerRegion = altCurve.filter(d => d.x >= crit);
+
+    const size = 1 - PhiStd(crit);
+    const power = 1 - PhiStd(crit - delta);
+
+    const peak = Math.max(phi(0, 0), phi(delta, delta));
+    const svg = Plot.plot({
+      width: 640, height: 320, marginTop: 28, marginLeft: 20, marginRight: 20, marginBottom: 40,
+      style: plotStyle(),
+      x: { label: 't-statistic', domain: [xmin, xmax] },
+      y: { axis: null, domain: [0, peak * 1.3] },
+      marks: [
+        Plot.line(nullCurve, { x: 'x', y: 'y', stroke: '#1a1a2e', strokeWidth: 2 }),
+        Plot.line(altCurve, { x: 'x', y: 'y', stroke: '#457b9d', strokeWidth: 2, strokeDasharray: '5,4' }),
+        Plot.areaY(sizeRegion, { x: 'x', y: 'y', fill: '#e07a3f', fillOpacity: 0.55 }),
+        Plot.areaY(powerRegion, { x: 'x', y: 'y', fill: '#2d6a4f', fillOpacity: 0.35 }),
+        Plot.ruleX([crit], { stroke: '#1a1a2e', strokeWidth: 1.2, strokeDasharray: '3,3' }),
+        Plot.text([{ x: 0, y: phi(0, 0) + peak * 0.12, label: 'H0' }], { x: 'x', y: 'y', text: 'label', fontSize: 12, fontWeight: 700, fill: '#1a1a2e' }),
+        Plot.text([{ x: delta, y: phi(delta, delta) + peak * 0.12, label: 'HA' }], { x: 'x', y: 'y', text: 'label', fontSize: 12, fontWeight: 700, fill: '#457b9d' }),
+      ]
+    });
+    const label = `With the true effect ${delta.toFixed(1)} standard errors from the null, size (the red region under H0) stays fixed at about ${(size * 100).toFixed(1)} percent, and power (the green region under HA) is ${(power * 100).toFixed(1)} percent.`;
+    mount('power-chart', accessibleChart(svg, 'This chart shows how size and power relate as the true effect size changes, with size fixed by the critical value and power growing as the effect moves further from the null. ' + label));
+    document.getElementById('power-caption').textContent = label;
+  }
+  powerDelta.addEventListener('input', renderPower);
+
   /* ================= initial render ================= */
   renderDeviceTable();
   renderPairsPopulationTable();
@@ -1324,6 +1654,10 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
   renderBootstrap();
   renderCINormal();
   renderCICoverage();
+  renderDeviceTrialsTable();
+  renderDeviceCalcTable();
+  renderCritVal();
+  renderPower();
 })();
 </script>
 
