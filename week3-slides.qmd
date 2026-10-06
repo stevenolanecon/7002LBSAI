@@ -896,7 +896,7 @@ function fitLine(rows, yOf) {
 :::
 
 ::: {.fragment data-fragment-index="1"}
-Same data, same kind of fitted line, side by side. The lapse trials are still there on both — logging doesn't delete them — but look at what they do to each scale: on the **raw** axis they're so extreme the whole relationship is barely visible (R² ≈ 0.08 — weak). **Logged**, the same two points barely stretch the axis, and the downward trend most students missed on the raw scatter is suddenly obvious (R² ≈ 0.35 — over four times stronger). Logging a skewed variable is a tool, not a rule: it helps here only because it actually improves the fit, and the online session goes further into why.
+Same data, same kind of fitted line, side by side. The lapse trials are still there on both — logging doesn't delete them — but look at what they do to each scale: on the **raw** axis they're so extreme the whole relationship is barely visible (R² ≈ 0.08 — weak). **Logged**, the same two points barely stretch the axis, and the downward trend most students missed on the raw scatter is suddenly obvious (R² ≈ 0.35 — over four times stronger). Logging a skewed variable is a tool, not a rule: it helps here only because it actually improves the fit, and Week 5 goes further into why.
 :::
 
 ## Task — plot finger length against reaction time
