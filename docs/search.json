@@ -676,7 +676,7 @@
     "href": "index.html#weeks",
     "title": "Research Methods in Analytics",
     "section": "Weeks",
-    "text": "Weeks\nWorkshop and online-session slides, published as each week runs.\n\n\n\n\nWeek 01Distributions and Summarising Data\n\nLive\n\n\nWorkshop slidesOnline sessionOutliers addendumReaction-time toolPooled histogram toolDownload the data\n\n\n\n\n\nWeek 02Inference\n\nLive\n\n\nWorkshop slidesOnline sessionBootstrap toolDownload the data\n\n\n\n\n\nWeek 03Relationships Between Variables\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 04Regression I — Fitting the Line\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 05Regression I — Model Problems & Inference\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 06Regression II — Multiple Regression\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\nWeek 07\n\nCurriculum Enrichment Week — no session\n\n\n\n\n\nWeek 08Other Models (GLMs)\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 09Causal Analysis and Experiments\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 10Prediction\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 11Time Series\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\nWeek 12\n\nPortfolio presentations — see Canvas"
+    "text": "Weeks\nWorkshop and online-session slides, published as each week runs.\n\n\n\n\nWeek 01Distributions and Summarising Data\n\nLive\n\n\nWorkshop slidesOnline sessionOutliers addendumReaction-time toolPooled histogram toolDownload the data\n\n\n\n\n\nWeek 02Inference\n\nLive\n\n\nWorkshop slidesOnline sessionBootstrap toolDownload the data\n\n\n\n\n\nWeek 03Relationships Between Variables\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 04Regression I — Fitting the Line\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 05Regression I — Model Problems & Inference\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 06Regression II — Multiple Regression\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\nWeek 07\n\nCurriculum Enrichment Week — no session\n\n\n\n\n\nWeek 08Other Models (GLMs)\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 09Causal Analysis and Experiments\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 10Prediction\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 11Time Series\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\nWeek 12\n\nPortfolio presentations — see Canvas"
   },
   {
     "objectID": "data.html",
@@ -1601,5 +1601,334 @@
     "title": "Testing a Hypothesis",
     "section": "",
     "text": "Testing pitfalls\nWe’ve just built the t-test together. Now: how it’s misused — and how to pick your thresholds properly."
+  },
+  {
+    "objectID": "week3-slides.html#section",
+    "href": "week3-slides.html#section",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "",
+    "text": "When y met x\nWeeks 1–2 looked at one variable at a time. Today: how do two variables move together — and when should we trust that?"
+  },
+  {
+    "objectID": "week3-slides.html#a-shortcut-for-hr",
+    "href": "week3-slides.html#a-shortcut-for-hr",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "A shortcut for HR",
+    "text": "A shortcut for HR\n\nThe reaction-time test works, but it takes ten trials per person to administer. HR wants something faster: “find us a quick physical measurement that predicts reaction time, and we’ll screen candidates on that instead.”\n\n\nThat’s why we collected index finger length back in Week 1.\nIs it a fast, reliable stand-in for the real test? Today gives us the tools to answer that properly — and the discipline not to answer it too quickly."
+  },
+  {
+    "objectID": "week3-slides.html#when-y-met-x",
+    "href": "week3-slides.html#when-y-met-x",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "When y met x",
+    "text": "When y met x"
+  },
+  {
+    "objectID": "week3-slides.html#the-y-and-the-x",
+    "href": "week3-slides.html#the-y-and-the-x",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "The y and the x",
+    "text": "The y and the x\nMuch of data analysis is about comparing values of a y variable across values of an x variable — uncovering patterns of association.\n\nBy convention, y is the variable we’re interested in; x is what we compare across\nGoal 1 — prediction: use x to predict y, without needing to know why\nGoal 2 — causal effect: learn what would happen to y if we changed x\n\n\nHR’s proxy-test idea is a prediction goal, dressed up as if it were free of that distinction. Keep watching for where the two goals get blurred.\n\n\nSource: Békés & Kézdi (2021), Data Analysis for Business, Economics, and Policy, Ch. 4"
+  },
+  {
+    "objectID": "week3-slides.html#conditional-probability",
+    "href": "week3-slides.html#conditional-probability",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Conditional probability",
+    "text": "Conditional probability"
+  },
+  {
+    "objectID": "week3-slides.html#conditioning-on-x",
+    "href": "week3-slides.html#conditioning-on-x",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Conditioning on x",
+    "text": "Conditioning on x\nComparison → conditioning. Comparing y by values of x means we condition y on x — x is the conditioning variable, y is the outcome variable.\nWorked example: 20 students, 12 use a Phone, and 9 of those 12 had caffeine.\n\nJoint probability — the chance both things happen together:\n\\[P(A \\text{ and } B) = \\frac{9}{20} = 0.45\\]\n\n\nConditional probability — the chance of A, restricted to the cases where B happened:\n\\[P(A \\mid B) = \\frac{P(A \\text{ and } B)}{P(B)} = \\frac{0.45}{12/20} = \\frac{0.45}{0.6} = 0.75\\]\n\n\nIndependence — A and B are independent if knowing one tells you nothing about the other: \\(P(A \\mid B) = P(A)\\). Here, overall \\(P(\\text{Caffeine}) = 11/20 = 0.55\\), but \\(P(\\text{Caffeine} \\mid \\text{Phone}) = 0.75\\) — not equal, so not independent in this example.\n\n\nWhen A and B are not independent, \\(P(A \\text{ and } B) \\neq P(A) \\times P(B)\\) — that shortcut only holds under independence (\\(0.6 \\times 0.55 = 0.33\\), not the real \\(0.45\\)). The formula that always holds is the one above, rearranged: \\(P(A \\text{ and } B) = P(A \\mid B) \\times P(B)\\).\n\n\nSource: Békés & Kézdi (2021), Ch. 4"
+  },
+  {
+    "objectID": "week3-slides.html#device-and-caffeine-our-own-joint-table",
+    "href": "week3-slides.html#device-and-caffeine-our-own-joint-table",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Device and caffeine: our own joint table",
+    "text": "Device and caffeine: our own joint table\n\n{\n  if (!joint_table.length) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n  const devices = [...new Set(joint_table.map(d =&gt; d.device))]\n  const caffs = [...new Set(joint_table.map(d =&gt; d.caffeine))]\n  const grandTotal = d3.sum(joint_table, d =&gt; d.count)\n  const cell = (dev, caf) =&gt; joint_table.find(r =&gt; r.device === dev && r.caffeine === caf)?.count ?? 0\n  const rowTotal = dev =&gt; d3.sum(caffs, c =&gt; cell(dev, c))\n  const colTotal = caf =&gt; d3.sum(devices, d =&gt; cell(d, caf))\n\n  return html`&lt;table style=\"width:80%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;\"&gt;\n    &lt;thead&gt;&lt;tr style=\"background:#1a1a2e;color:white;\"&gt;\n      &lt;th style=\"padding:10px 18px;text-align:left;\"&gt;Device \\\\ Caffeine&lt;/th&gt;\n      ${caffs.map(c =&gt; `&lt;th style=\"padding:10px 18px;text-align:right;\"&gt;${c}&lt;/th&gt;`).join('')}\n      &lt;th style=\"padding:10px 18px;text-align:right;background:#2d6a4f;\"&gt;Total&lt;/th&gt;\n    &lt;/tr&gt;&lt;/thead&gt;\n    &lt;tbody&gt;\n      ${devices.map((dev,i) =&gt; `&lt;tr style=\"${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;\"&gt;\n        &lt;td style=\"padding:9px 18px;font-weight:700;\"&gt;${dev}&lt;/td&gt;\n        ${caffs.map(c =&gt; `&lt;td style=\"padding:9px 18px;text-align:right;color:#457b9d;\"&gt;${cell(dev,c)}&lt;/td&gt;`).join('')}\n        &lt;td style=\"padding:9px 18px;text-align:right;font-weight:700;background:#f0f4f8;\"&gt;${rowTotal(dev)}&lt;/td&gt;\n      &lt;/tr&gt;`).join('')}\n      &lt;tr style=\"border-top:2px solid #1a1a2e;\"&gt;\n        &lt;td style=\"padding:9px 18px;font-weight:700;background:#f0f4f8;\"&gt;Total&lt;/td&gt;\n        ${caffs.map(c =&gt; `&lt;td style=\"padding:9px 18px;text-align:right;font-weight:700;background:#f0f4f8;\"&gt;${colTotal(c)}&lt;/td&gt;`).join('')}\n        &lt;td style=\"padding:9px 18px;text-align:right;font-weight:700;background:#e9edf1;\"&gt;${grandTotal}&lt;/td&gt;\n      &lt;/tr&gt;\n    &lt;/tbody&gt;\n  &lt;/table&gt;`\n}\n\n\n\n\n\n\n\nRow and column totals give you the marginal probabilities — \\(P(\\text{Device})\\) and \\(P(\\text{Caffeine})\\), each on its own, ignoring the other variable — directly, with no need to derive them separately before you can condition."
+  },
+  {
+    "objectID": "week3-slides.html#task-condition-on-our-own-data",
+    "href": "week3-slides.html#task-condition-on-our-own-data",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Task — condition on our own data",
+    "text": "Task — condition on our own data\n\nOn paper, using the table above: what is \\(P(\\text{Caffeine} = \\text{Yes} \\mid \\text{Device} = \\text{Phone})\\)?\nDoes knowing someone’s device change your guess about their caffeine use? How much would you trust that conclusion, given how many observations it’s based on?\n\n\nIndependence is not a yes/no question you can answer from a table this small. Any real sample will show some numerical gap between the conditional and marginal probabilities, purely by chance — even when the true population relationship is independence. Telling a real pattern from sampling noise is exactly what Week 2’s tools (standard errors, hypothesis tests) are for. With this few observations, “we can’t tell yet” is the honest answer, not a verdict either way."
+  },
+  {
+    "objectID": "week3-slides.html#visualising-with-a-stacked-bar-chart",
+    "href": "week3-slides.html#visualising-with-a-stacked-bar-chart",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Visualising with a stacked bar chart",
+    "text": "Visualising with a stacked bar chart\n\nstacked_data = {\n  if (!joint_table.length) return []\n  const devices = [...new Set(joint_table.map(d =&gt; d.device))]\n  return devices.flatMap(dev =&gt; {\n    const rows = joint_table.filter(d =&gt; d.device === dev)\n    const tot = d3.sum(rows, d =&gt; d.count)\n    return rows.map(r =&gt; ({ ...r, pct: r.count / tot }))\n  })\n}\n\n\n\n\n\n\n\n\n\n{\n  if (!stacked_data.length) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n  return Plot.plot({\n    height: 460,\n    marginLeft: 60,\n    x: { label: \"Device\" },\n    y: { label: \"% within device\", percent: true },\n    color: { legend: true, domain: [\"Yes\",\"No\",\"Unknown\"], range: [\"#e63946\",\"#457b9d\",\"#ccc\"] },\n    marks: [\n      Plot.barY(stacked_data, { x: \"device\", y: \"pct\", fill: \"caffeine\", order: \"caffeine\" }),\n      Plot.ruleY([0]),\n    ]\n  })\n}\n\n\n\n\n\n\n\n\n\nStacked to 100% within each device — this shows \\(P(\\text{Caffeine} \\mid \\text{Device})\\) directly, not the raw counts."
+  },
+  {
+    "objectID": "week3-slides.html#conditional-distribution-and-expectation",
+    "href": "week3-slides.html#conditional-distribution-and-expectation",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Conditional distribution and expectation",
+    "text": "Conditional distribution and expectation"
+  },
+  {
+    "objectID": "week3-slides.html#the-conditional-mean",
+    "href": "week3-slides.html#the-conditional-mean",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "The conditional mean",
+    "text": "The conditional mean\nThe conditional expectation of y for a given value of x:\n\\[E[y \\mid x]\\]\n\nThe mean of y, computed separately for each value (or group) of x\nWith few x values, a histogram or box plot per group works well (Week 1)\nWith many x values — like finger length in mm — group into bins first\n\n\nSource: Békés & Kézdi (2021), Ch. 4"
+  },
+  {
+    "objectID": "week3-slides.html#task-whats-wrong-with-our-finger-length-data",
+    "href": "week3-slides.html#task-whats-wrong-with-our-finger-length-data",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Task — what’s wrong with our finger-length data?",
+    "text": "Task — what’s wrong with our finger-length data?\n\nBefore we use it: here are all  of our finger-length measurements, anonymised. Something is wrong with 5 of them. In pairs: find them, and decide what you’d do about it — drop those students, or try to correct the values? If you’d correct them, what would you correct them to, and how confident are you?\n\n\n{\n  const cols = 4\n  const rows = finger_task_rows\n  const perCol = Math.ceil(rows.length / cols)\n  const columns = Array.from({ length: cols }, (_, c) =&gt; rows.slice(c * perCol, (c + 1) * perCol))\n  return html`&lt;div style=\"display:grid;grid-template-columns:repeat(${cols},1fr);gap:0 24px;font-family:sans-serif;font-size:0.9em;margin-top:16px;\"&gt;\n    ${columns.map(col =&gt; `&lt;table style=\"border-collapse:collapse;width:100%;\"&gt;\n      &lt;caption class=\"visually-hidden\"&gt;Anonymised finger-length measurements, one column of the full class list.&lt;/caption&gt;\n      &lt;thead&gt;&lt;tr style=\"border-bottom:2px solid #1a1a2e;\"&gt;\n        &lt;th scope=\"col\" style=\"text-align:left;padding:4px 8px;\"&gt;Student&lt;/th&gt;\n        &lt;th scope=\"col\" style=\"text-align:right;padding:4px 8px;\"&gt;mm&lt;/th&gt;\n      &lt;/tr&gt;&lt;/thead&gt;\n      &lt;tbody&gt;\n        ${col.map(r =&gt; `&lt;tr style=\"border-bottom:1px solid #eee;\"&gt;\n          &lt;td style=\"padding:4px 8px;color:#666;\"&gt;${r.student_name}&lt;/td&gt;\n          &lt;td style=\"padding:4px 8px;text-align:right;font-weight:700;\"&gt;${r.finger_mm}&lt;/td&gt;\n        &lt;/tr&gt;`).join('')}\n      &lt;/tbody&gt;\n    &lt;/table&gt;`).join('')}\n  &lt;/div&gt;`\n}"
+  },
+  {
+    "objectID": "week3-slides.html#what-well-actually-do",
+    "href": "week3-slides.html#what-well-actually-do",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "What we’ll actually do",
+    "text": "What we’ll actually do\n\nTwo error patterns, not one random mess:\n\n\n\nToo small (under 10mm): almost certainly centimetres entered where millimetres were asked for — a 6.9 is very plausibly a real 69mm finger, just in the wrong unit\nToo large (700–900mm): almost certainly an extra typed digit — 900 is very plausibly a real 90mm finger with a stray zero\n\n\n\nWe impute, not drop. Both patterns have an identifiable, high-confidence correction (×10 or ÷10) that lands the value squarely back in the range every other student’s real measurement falls in — dropping 5 of 24 students (over 20% of the class) would throw away perfectly good reaction-time data for those students, for a finger-length problem that’s actually fixable.\n\n\nThis wouldn’t be the right call for every data problem — imputation only makes sense when you have a specific, well-justified reason to believe what the correct value should be. A value that’s merely unusual, with no diagnosable cause, is a much better candidate for dropping (or for the “keep it, it’s a genuine feature of the process” option from Week 1’s own three-question framework) than for guessing a replacement."
+  },
+  {
+    "objectID": "week3-slides.html#task-compute-the-conditional-mean-by-hand",
+    "href": "week3-slides.html#task-compute-the-conditional-mean-by-hand",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Task — compute the conditional mean, by hand",
+    "text": "Task — compute the conditional mean, by hand\n\nUsing the class’s finger-length and reaction-time data (corrected, as we just agreed): split students into three roughly equal-sized groups by finger length (short / medium / long), then compute the mean reaction time within each group. Compare to the chart on the next slide."
+  },
+  {
+    "objectID": "week3-slides.html#binning-finger-length",
+    "href": "week3-slides.html#binning-finger-length",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Binning finger length",
+    "text": "Binning finger length\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) {\n    return html`&lt;div class=\"instructions-box\"&gt;Not enough finger-length data yet to bin — this will populate once more of the class has submitted through the updated tool.&lt;/div&gt;`\n  }\n  const vals = rows.map(d =&gt; d.finger_mm).sort((a,b) =&gt; a-b)\n  const q1 = d3.quantile(vals, 1/3), q2 = d3.quantile(vals, 2/3)\n  const binOf = f =&gt; f &lt;= q1 ? \"Short\" : f &lt;= q2 ? \"Medium\" : \"Long\"\n  const binned = rows.map(d =&gt; ({ ...d, bin: binOf(d.finger_mm) }))\n  const grouped = [\"Short\",\"Medium\",\"Long\"].map(b =&gt; {\n    const g = binned.filter(d =&gt; d.bin === b)\n    return { bin: b, n: g.length, mean_rt: g.length ? d3.mean(g, d =&gt; d.mean_rt) : null }\n  }).filter(g =&gt; g.n &gt; 0)\n\n  return Plot.plot({\n    height: 450,\n    marginLeft: 60,\n    x: { label: \"Finger length bin\", domain: [\"Short\",\"Medium\",\"Long\"] },\n    y: { label: \"E[reaction time | bin] (ms)\" },\n    marks: [\n      Plot.barY(grouped, { x: \"bin\", y: \"mean_rt\", fill: \"#457b9d\", fillOpacity: 0.8 }),\n      Plot.text(grouped, { x: \"bin\", y: \"mean_rt\", text: d =&gt; `n=${d.n}`, dy: -10, fill: \"#333\", fontSize: 12 }),\n      Plot.ruleY([0]),\n    ]\n  })\n}"
+  },
+  {
+    "objectID": "week3-slides.html#scatter-covariance-correlation",
+    "href": "week3-slides.html#scatter-covariance-correlation",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Scatter, covariance, correlation",
+    "text": "Scatter, covariance, correlation"
+  },
+  {
+    "objectID": "week3-slides.html#scatterplot-and-bin-scatter",
+    "href": "week3-slides.html#scatterplot-and-bin-scatter",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Scatterplot and bin-scatter",
+    "text": "Scatterplot and bin-scatter\nA scatterplot puts two variables on two axes, one dot per observation. It’s one of the most powerful ways to see whether a relationship exists between two variables — no formula required, just look.\n\nNot finger length this time — you’ll build that scatter yourselves shortly. Here it’s a simulated, illustrative case, not our own class data: hours of sleep the night before, against reaction time, for 152 made-up trials.\n\n\n\n\n{\n  return Plot.plot({\n    height: 460,\n    marginLeft: 60,\n    x: { label: \"Sleep the night before (hours)\" },\n    y: { label: \"Reaction time (ms)\" },\n    marks: [\n      Plot.dot(sleep_scatter_data, { x: \"sleep_hours\", y: \"reaction_time_ms\", fill: \"#457b9d\", r: 5, fillOpacity: 0.75,\n                       tip: true, title: d =&gt; `${d.sleep_hours}h sleep, ${d.reaction_time_ms}ms` }),\n    ]\n  })\n}\n\n\n\n\n\n\n\n\n\nEvery dot is one trial. There’s a real pattern here, but a handful of slow “attention lapse” trials — everyone has them, however well-rested — stretch the top of the scale and make it hard to see. Often with more data this will struggle to fit on a scatter. In those cases, a bin-scatter can reveal the pattern without the clutter."
+  },
+  {
+    "objectID": "week3-slides.html#the-bin-scatter",
+    "href": "week3-slides.html#the-bin-scatter",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "The bin-scatter",
+    "text": "The bin-scatter\nThe conditional mean per bin — like the finger-length “Short / Medium / Long” buckets, but with more, narrower bins. A bin still needs to be wide enough to contain several trials — group by the exact observed sleep value and most bins would only ever hold one trial, which isn’t averaging away anything.\n\n\n\n{\n  const width = 1.0\n  const grouped = d3.rollups(\n      sleep_scatter_data,\n      v =&gt; ({ mean_rt: d3.mean(v, d =&gt; d.reaction_time_ms), n: v.length }),\n      d =&gt; Math.round(d.sleep_hours / width) * width\n    )\n    .map(([sleep_hours, { mean_rt, n }]) =&gt; ({ sleep_hours, mean_rt, n }))\n    .sort((a, b) =&gt; a.sleep_hours - b.sleep_hours)\n\n  return Plot.plot({\n    height: 500,\n    marginLeft: 60,\n    x: { label: \"Sleep the night before (hours, 1h bins)\" },\n    y: { label: \"E[reaction time | bin] (ms)\" },\n    marks: [\n      Plot.dot(grouped, { x: \"sleep_hours\", y: \"mean_rt\", fill: \"#2d6a4f\", r: 6, fillOpacity: 0.85,\n                       tip: true, title: d =&gt; `${d.sleep_hours}h bin (n=${d.n}): ${d.mean_rt.toFixed(0)}ms` }),\n      Plot.text(grouped, { x: \"sleep_hours\", y: \"mean_rt\", text: d =&gt; `n=${d.n}`, dy: -12, fill: \"#333\", fontSize: 11 }),\n    ]\n  })\n}\n\n\n\n\n\n\n\n\n\nEvery bin here is an average of at least a dozen trials (labelled above each dot) — a lapse trial can still pull a bin’s mean up a little, but it can no longer dominate the whole chart the way it did as a single raw point. The downward trend reads far more clearly than in the raw scatter."
+  },
+  {
+    "objectID": "week3-slides.html#does-logging-reaction-time-help",
+    "href": "week3-slides.html#does-logging-reaction-time-help",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Does logging reaction time help?",
+    "text": "Does logging reaction time help?\nWeek 1 found reaction time is closer to log-normal than normal — a floor, no ceiling, long right tail. Gabor’s own case study logs a skewed variable for exactly this reason: it stretches out the crowded end and compresses the tail, so a pattern against x is easier to read.\n\nfunction fitLine(rows, yOf) {\n  const xs = rows.map(d =&gt; d.sleep_hours), ys = rows.map(yOf)\n  const mx = d3.mean(xs), my = d3.mean(ys)\n  const b = d3.sum(xs.map((x, i) =&gt; (x - mx) * (ys[i] - my))) / d3.sum(xs.map(x =&gt; (x - mx) ** 2))\n  const a = my - b * mx\n  const yhat = xs.map(x =&gt; a + b * x)\n  const ssRes = d3.sum(ys.map((y, i) =&gt; (y - yhat[i]) ** 2))\n  const ssTot = d3.sum(ys.map(y =&gt; (y - my) ** 2))\n  const r2 = 1 - ssRes / ssTot\n  const [x0, x1] = d3.extent(xs)\n  return { line: [{ x: x0, y: a + b * x0 }, { x: x1, y: a + b * x1 }], r2 }\n}\n\n\n\n\n\n\n\n\nLogged\n\n{\n  const yOf = d =&gt; Math.log(d.reaction_time_ms)\n  const { line, r2 } = fitLine(sleep_scatter_data, yOf)\n  return Plot.plot({\n    height: 340,\n    marginLeft: 55,\n    x: { label: \"Sleep the night before (hours)\" },\n    y: { label: \"ln(reaction time)\" },\n    marks: [\n      Plot.dot(sleep_scatter_data, { x: \"sleep_hours\", y: yOf, fill: \"#2d6a4f\", r: 5, fillOpacity: 0.75,\n                       tip: true, title: d =&gt; `${d.sleep_hours}h sleep, ${d.reaction_time_ms}ms` }),\n      Plot.line(line, { x: \"x\", y: \"y\", stroke: \"#1a1a2e\", strokeWidth: 2, strokeDasharray: \"5,3\" }),\n      Plot.text([{ x: line[0].x, y: d3.max(sleep_scatter_data, yOf), label: `R² = ${r2.toFixed(2)}` }],\n                { x: \"x\", y: \"y\", text: \"label\", fill: \"#2d6a4f\", fontWeight: 700, fontSize: 13, textAnchor: \"start\" }),\n    ]\n  })\n}\n\n\n\n\n\n\n\n\nRaw scale\n\n{\n  const yOf = d =&gt; d.reaction_time_ms\n  const { line, r2 } = fitLine(sleep_scatter_data, yOf)\n  return Plot.plot({\n    height: 340,\n    marginLeft: 55,\n    x: { label: \"Sleep the night before (hours)\" },\n    y: { label: \"Reaction time (ms)\" },\n    marks: [\n      Plot.dot(sleep_scatter_data, { x: \"sleep_hours\", y: yOf, fill: \"#457b9d\", r: 5, fillOpacity: 0.75,\n                       tip: true, title: d =&gt; `${d.sleep_hours}h sleep, ${d.reaction_time_ms}ms` }),\n      Plot.line(line, { x: \"x\", y: \"y\", stroke: \"#1a1a2e\", strokeWidth: 2, strokeDasharray: \"5,3\" }),\n      Plot.text([{ x: line[0].x, y: d3.max(sleep_scatter_data, yOf), label: `R² = ${r2.toFixed(2)}` }],\n                { x: \"x\", y: \"y\", text: \"label\", fill: \"#457b9d\", fontWeight: 700, fontSize: 13, textAnchor: \"start\" }),\n    ]\n  })\n}\n\n\n\n\n\n\n\n\n\nSame data, same kind of fitted line, side by side. The lapse trials are still there on both — logging doesn’t delete them — but look at what they do to each scale: on the raw axis they’re so extreme the whole relationship is barely visible (R² ≈ 0.08 — weak). Logged, the same two points barely stretch the axis, and the downward trend most students missed on the raw scatter is suddenly obvious (R² ≈ 0.35 — over four times stronger). Logging a skewed variable is a tool, not a rule: it helps here only because it actually improves the fit, and the online session goes further into why."
+  },
+  {
+    "objectID": "week3-slides.html#task-plot-finger-length-against-reaction-time",
+    "href": "week3-slides.html#task-plot-finger-length-against-reaction-time",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Task — plot finger length against reaction time",
+    "text": "Task — plot finger length against reaction time\n\nUsing the class’s (finger length, mean reaction time) pairs — one point per student — build a scatterplot in Excel. Does a relationship look plausible before you calculate anything?"
+  },
+  {
+    "objectID": "week3-slides.html#finger-length-vs.-reaction-time-our-data",
+    "href": "week3-slides.html#finger-length-vs.-reaction-time-our-data",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Finger length vs. reaction time — our data",
+    "text": "Finger length vs. reaction time — our data\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) {\n    return html`&lt;div class=\"instructions-box\"&gt;Not enough finger-length data yet to plot — this will populate once more of the class has submitted through the updated tool.&lt;/div&gt;`\n  }\n  return Plot.plot({\n    height: 460,\n    marginLeft: 60,\n    x: { label: \"Finger length (mm)\" },\n    y: { label: \"Mean reaction time (ms)\" },\n    marks: [\n      Plot.dot(rows, { x: \"finger_mm\", y: \"mean_rt\", fill: \"#457b9d\", r: 6, fillOpacity: 0.8,\n                       tip: true, title: d =&gt; `${d.student_name}: ${d.finger_mm}mm, ${d.mean_rt.toFixed(0)}ms` }),\n    ]\n  })\n}\n\n\n\n\n\n\n\nA relationship might be visible here — or might not. Covariance and correlation, next, put a number on exactly how strong it is."
+  },
+  {
+    "objectID": "week3-slides.html#covariance",
+    "href": "week3-slides.html#covariance",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Covariance",
+    "text": "Covariance\nIn plain language: covariance asks whether x and y tend to move together — when one is above its own average, is the other usually above its average too?\n\n\\[Cov[x,y] = \\frac{\\sum_i (x_i - \\bar{x})(y_i - \\bar{y})}{n-1}\\]\n\nMultiplies each observation’s deviation from the x-mean by its deviation from the y-mean, and averages\nPositive when x and y tend to deviate from their means in the same direction\nCan be any positive or negative number — units depend on the units of x and y\nLike the SD back in Week 1, this divides by \\(n-1\\), not \\(n\\) — the same small-sample correction, applied here too\n\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;div class=\"instructions-box\"&gt;Not enough finger-length data yet.&lt;/div&gt;`\n  const mx = d3.mean(rows, d =&gt; d.finger_mm), my = d3.mean(rows, d =&gt; d.mean_rt)\n  const colored = rows.map(d =&gt; ({ ...d, sign: (d.finger_mm - mx) * (d.mean_rt - my) &gt;= 0 ? \"Same sign (+)\" : \"Opposite sign (−)\" }))\n\n  return Plot.plot({\n    height: 310,\n    marginLeft: 60,\n    x: { label: \"Finger length (mm)\" },\n    y: { label: \"Mean reaction time (ms)\" },\n    color: { domain: [\"Same sign (+)\", \"Opposite sign (−)\"], range: [\"#2d6a4f\", \"#e63946\"], legend: true },\n    marks: [\n      Plot.ruleX([mx], { stroke: \"#999\", strokeDasharray: \"4,3\" }),\n      Plot.ruleY([my], { stroke: \"#999\", strokeDasharray: \"4,3\" }),\n      Plot.dot(colored, { x: \"finger_mm\", y: \"mean_rt\", fill: \"sign\", r: 6, fillOpacity: 0.85,\n                       tip: true, title: d =&gt; `${d.student_name}: ${d.finger_mm}mm, ${d.mean_rt.toFixed(0)}ms` }),\n    ]\n  })\n}\n\n\n\n\n\n\n\n\n\n\nDashed lines = each variable’s own mean. A point’s contribution is \\((x_i - \\bar{x})(y_i - \\bar{y})\\) — green = both deviations the same sign, positive product; red = opposite signs, negative product. Covariance is the average of all these products.\n\n\nSource: Békés & Kézdi (2021), Ch. 4"
+  },
+  {
+    "objectID": "week3-slides.html#task-calculate-the-covariance",
+    "href": "week3-slides.html#task-calculate-the-covariance",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Task — calculate the covariance",
+    "text": "Task — calculate the covariance\n\nBy hand or in Excel, using the class’s (finger length, mean reaction time) pairs: calculate \\(Cov[\\text{finger length}, \\text{reaction time}]\\).\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;p style=\"color:#aaa;\"&gt;Will compute automatically once enough data is in.&lt;/p&gt;`\n  const xs = rows.map(d =&gt; d.finger_mm), ys = rows.map(d =&gt; d.mean_rt)\n  const mx = d3.mean(xs), my = d3.mean(ys)\n  const cov = d3.sum(xs.map((x,i) =&gt; (x - mx) * (ys[i] - my))) / (xs.length - 1)\n  return html`&lt;p style=\"font-family:sans-serif;\"&gt;Cov[finger length, reaction time] = &lt;strong style=\"color:#e63946;font-size:1.2em;\"&gt;${cov.toFixed(1)}&lt;/strong&gt;&lt;/p&gt;`\n}"
+  },
+  {
+    "objectID": "week3-slides.html#correlation",
+    "href": "week3-slides.html#correlation",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Correlation",
+    "text": "Correlation\nIn plain language: correlation asks the same question as covariance — do x and y move together — but reports the answer on a fixed scale from −1 to 1, so it’s comparable no matter what units x and y are measured in.\nThe standardised version of the covariance — divide by the product of the standard deviations:\n\\[Corr[x,y] = \\frac{Cov[x,y]}{SD[x] \\, SD[y]} \\qquad -1 \\leq Corr[x,y] \\leq 1\\]\nRough guide: below 0.2 is weak, above 0.7 is generally strong."
+  },
+  {
+    "objectID": "week3-slides.html#task-calculate-the-correlation",
+    "href": "week3-slides.html#task-calculate-the-correlation",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Task — calculate the correlation",
+    "text": "Task — calculate the correlation\n\nUsing your covariance from two slides ago, and the SD of each variable: calculate the correlation coefficient.\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;p style=\"color:#aaa;\"&gt;Will compute automatically once enough data is in.&lt;/p&gt;`\n  const xs = rows.map(d =&gt; d.finger_mm), ys = rows.map(d =&gt; d.mean_rt)\n  const mx = d3.mean(xs), my = d3.mean(ys)\n  const cov = d3.sum(xs.map((x,i) =&gt; (x - mx) * (ys[i] - my))) / (xs.length - 1)\n  const corr = cov / (d3.deviation(xs) * d3.deviation(ys))\n  return html`&lt;p style=\"font-family:sans-serif;\"&gt;Corr[finger length, reaction time] = &lt;strong style=\"color:#e63946;font-size:1.2em;\"&gt;${corr.toFixed(2)}&lt;/strong&gt;&lt;/p&gt;`\n}\n\n\n\n\n\n\n\n\nWhatever number comes back — is it strong enough, on its own, to justify HR replacing the real test with a ruler?"
+  },
+  {
+    "objectID": "week3-slides.html#is-it-causal",
+    "href": "week3-slides.html#is-it-causal",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Is it causal?",
+    "text": "Is it causal?"
+  },
+  {
+    "objectID": "week3-slides.html#where-does-the-variation-in-x-come-from",
+    "href": "week3-slides.html#where-does-the-variation-in-x-come-from",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Where does the variation in x come from?",
+    "text": "Where does the variation in x come from?\nComparison requires variation in the conditioning variable — and where that variation comes from matters enormously.\n\n\nExperimental data\n\nA treatment is assigned, often randomly\nDifferences in y are attributable to the treatment alone\ne.g. randomly assign aspirin vs. placebo\n\n\n\nObservational data\n\nx varies because of people’s own choices, circumstances, history\nMany other things may differ alongside x\ne.g. people who already take aspirin routinely may do so because of prior health risk\n\n\n\n\nAlmost everything in business analytics is observational. Finger length is one of the few genuinely fixed, “as-if-random” variables we’re likely to find — most x’s we’ll meet from here on are not.\n\n\nSource: Békés & Kézdi (2021), Ch. 4"
+  },
+  {
+    "objectID": "week3-slides.html#task-find-a-spurious-correlation",
+    "href": "week3-slides.html#task-find-a-spurious-correlation",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Task — find a spurious correlation",
+    "text": "Task — find a spurious correlation\n\nGo to tylervigen.com/spurious-correlations. Find one example. In one sentence, explain why the two variables move together despite having no plausible causal link.\n\n\nCorrelation, on its own, never tells you which of these is true: x causes y, y causes x, both are caused by something else, or coincidence."
+  },
+  {
+    "objectID": "week3-slides.html#measuring-what-you-cant-observe-directly",
+    "href": "week3-slides.html#measuring-what-you-cant-observe-directly",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Measuring what you can’t observe directly",
+    "text": "Measuring what you can’t observe directly"
+  },
+  {
+    "objectID": "week3-slides.html#latent-variables",
+    "href": "week3-slides.html#latent-variables",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Latent variables",
+    "text": "Latent variables\nSome concepts — attitude, ability, management quality — can’t be measured with a single variable. They’re latent: real, but only indirectly observable through several proxies at once.\n\nUse one variable — simple, but throws away information\nAverage several (as z-scores) — standardise first, then average; simple and transparent\nPCA — weights each variable by how well it captures the shared pattern; typically close to the simple average in practice\n\n\nSource: Békés & Kézdi (2021), Ch. 4"
+  },
+  {
+    "objectID": "week3-slides.html#use-one-variable",
+    "href": "week3-slides.html#use-one-variable",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Use one variable",
+    "text": "Use one variable\nThe simplest approach: pick a single observable variable and treat it as a stand-in for the thing you can’t measure directly.\n\nPostcode as a proxy for socioeconomic background\nJob tenure as a proxy for “experience”\nFinger length as a proxy for manual dexterity — this module’s own opening example\n\n\nIt’s simple, and sometimes good enough. But a single proxy only ever captures part of the underlying concept — whatever it misses is thrown away, and if the proxy is a weak one, most of the concept goes with it.\n\n\n\nTask — our own reaction times aren’t purely mechanical. What latent variables might actually be driving them — alertness, familiarity with the device, motivation on the day? What proxies do we already have sitting in our own data for any of these?"
+  },
+  {
+    "objectID": "week3-slides.html#standardisation-the-z-score",
+    "href": "week3-slides.html#standardisation-the-z-score",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Standardisation — the z-score",
+    "text": "Standardisation — the z-score\nSleep (hours), energy (1–10), grip strength (kg) — three completely different scales. You can’t just add 8.5 hours of sleep to a grip strength of 33kg and call the result “alertness.” Standardisation fixes this: it converts any variable onto one common, unit-free scale, based on how far each value sits from its own average.\n\\[z = \\frac{x - \\bar{x}}{SD[x]}\\]\n\nSubtract the mean: \\(z = 0\\) sits exactly at the average\nDivide by the SD: \\(z\\) is now measured in “number of SDs from the mean” — the same scale, whatever the variable’s original units\n\\(z = +1\\) means one SD above average; \\(z = -1.5\\) means one and a half SDs below\nEvery standardised variable now lives on the same scale, and can be safely compared or averaged"
+  },
+  {
+    "objectID": "week3-slides.html#standardisation-worked-example",
+    "href": "week3-slides.html#standardisation-worked-example",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Standardisation — worked example",
+    "text": "Standardisation — worked example\nSleep hours for the six people we’ll use next:\n\n{\n  const people = [\n    { name: \"Amara\", sleep: 8.5 },\n    { name: \"Ben\",    sleep: 5.0 },\n    { name: \"Chidi\",  sleep: 7.0 },\n    { name: \"Dana\",   sleep: 4.5 },\n    { name: \"Elin\",   sleep: 9.0 },\n    { name: \"Femi\",   sleep: 6.0 },\n  ]\n  const vals = people.map(p =&gt; p.sleep)\n  const m = d3.mean(vals)\n  const s = d3.deviation(vals) * Math.sqrt((vals.length - 1) / vals.length)\n  const rows = people.map(p =&gt; ({ ...p, z: (p.sleep - m) / s }))\n\n  return html`&lt;p style=\"font-family:sans-serif;font-size:0.85em;margin-bottom:6px;\"&gt;Mean = ${m.toFixed(2)}h, SD = ${s.toFixed(2)}h&lt;/p&gt;\n  &lt;table style=\"width:70%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.8em;\"&gt;\n    &lt;thead&gt;&lt;tr style=\"background:#1a1a2e;color:white;\"&gt;\n      &lt;th style=\"padding:1px 14px;text-align:left;\"&gt;Person&lt;/th&gt;\n      &lt;th style=\"padding:1px 14px;text-align:right;\"&gt;Sleep (h)&lt;/th&gt;\n      &lt;th style=\"padding:1px 14px;text-align:right;\"&gt;z(sleep)&lt;/th&gt;\n    &lt;/tr&gt;&lt;/thead&gt;\n    &lt;tbody&gt;\n      ${rows.map((r,i) =&gt; `&lt;tr style=\"${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;\"&gt;\n        &lt;td style=\"padding:1px 14px;\"&gt;${r.name}&lt;/td&gt;\n        &lt;td style=\"padding:1px 14px;text-align:right;\"&gt;${r.sleep}&lt;/td&gt;\n        &lt;td style=\"padding:1px 14px;text-align:right;${r.z&gt;=0?'color:#2d6a4f;':'color:#e63946;'}\"&gt;${r.z &gt;= 0 ? '+' : ''}${r.z.toFixed(2)}&lt;/td&gt;\n      &lt;/tr&gt;`).join('')}\n    &lt;/tbody&gt;\n  &lt;/table&gt;`\n}\n\n\n\n\n\n\nAmara slept the most, and her \\(z\\approx+1.1\\) says so directly: about one SD above the group’s own average. Dana’s \\(z\\approx-1.3\\) says the opposite. That’s the whole idea — the raw hours are gone, replaced by a common yardstick.\n\nSource: Békés & Kézdi (2021), Ch. 4"
+  },
+  {
+    "objectID": "week3-slides.html#average-several-as-z-scores",
+    "href": "week3-slides.html#average-several-as-z-scores",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Average several (as z-scores)",
+    "text": "Average several (as z-scores)\nSuppose we want one “alertness” score for six people, from three imperfect proxies: hours of sleep, self-rated energy (1–10), and grip strength (kg).\n\n{\n  const people = [\n    { name: \"Amara\", sleep: 8.5, energy: 9, grip: 33 },\n    { name: \"Ben\",    sleep: 5.0, energy: 4, grip: 32 },\n    { name: \"Chidi\",  sleep: 7.0, energy: 6, grip: 35 },\n    { name: \"Dana\",   sleep: 4.5, energy: 3, grip: 30 },\n    { name: \"Elin\",   sleep: 9.0, energy: 8, grip: 31 },\n    { name: \"Femi\",   sleep: 6.0, energy: 5, grip: 34 },\n  ]\n  return html`&lt;table style=\"width:80%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.78em;\"&gt;\n    &lt;thead&gt;&lt;tr style=\"background:#1a1a2e;color:white;\"&gt;\n      &lt;th style=\"padding:1px 14px;text-align:left;\"&gt;Person&lt;/th&gt;\n      &lt;th style=\"padding:1px 14px;text-align:right;\"&gt;Sleep (h)&lt;/th&gt;\n      &lt;th style=\"padding:1px 14px;text-align:right;\"&gt;Energy (1&ndash;10)&lt;/th&gt;\n      &lt;th style=\"padding:1px 14px;text-align:right;\"&gt;Grip (kg)&lt;/th&gt;\n    &lt;/tr&gt;&lt;/thead&gt;\n    &lt;tbody&gt;\n      ${people.map((p,i) =&gt; `&lt;tr style=\"${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;\"&gt;\n        &lt;td style=\"padding:1px 14px;\"&gt;${p.name}&lt;/td&gt;\n        &lt;td style=\"padding:1px 14px;text-align:right;\"&gt;${p.sleep}&lt;/td&gt;\n        &lt;td style=\"padding:1px 14px;text-align:right;\"&gt;${p.energy}&lt;/td&gt;\n        &lt;td style=\"padding:1px 14px;text-align:right;\"&gt;${p.grip}&lt;/td&gt;\n      &lt;/tr&gt;`).join('')}\n    &lt;/tbody&gt;\n  &lt;/table&gt;`\n}\n\n\n\n\n\n\n\nApply the same z-score formula to all three proxies, then average the three z-scores per person.\n\n{\n  const people = [\n    { name: \"Amara\", sleep: 8.5, energy: 9, grip: 33 },\n    { name: \"Ben\",    sleep: 5.0, energy: 4, grip: 32 },\n    { name: \"Chidi\",  sleep: 7.0, energy: 6, grip: 35 },\n    { name: \"Dana\",   sleep: 4.5, energy: 3, grip: 30 },\n    { name: \"Elin\",   sleep: 9.0, energy: 8, grip: 31 },\n    { name: \"Femi\",   sleep: 6.0, energy: 5, grip: 34 },\n  ]\n  const z = vals =&gt; { const m = d3.mean(vals), s = d3.deviation(vals) * Math.sqrt((vals.length-1)/vals.length); return vals.map(v =&gt; (v - m) / s) }\n  const zs = z(people.map(p =&gt; p.sleep)), ze = z(people.map(p =&gt; p.energy))\n  const rows = people.map((p,i) =&gt; ({ name: p.name, zs: zs[i], ze: ze[i] }))\n\n  return html`&lt;table style=\"width:70%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.78em;\"&gt;\n    &lt;thead&gt;&lt;tr style=\"background:#1a1a2e;color:white;\"&gt;\n      &lt;th style=\"padding:1px 14px;text-align:left;\"&gt;Person&lt;/th&gt;\n      &lt;th style=\"padding:1px 14px;text-align:right;\"&gt;z(sleep)&lt;/th&gt;\n      &lt;th style=\"padding:1px 14px;text-align:right;\"&gt;z(energy)&lt;/th&gt;\n      &lt;th style=\"padding:1px 14px;text-align:right;color:#999;\"&gt;z(grip)&lt;/th&gt;\n      &lt;th style=\"padding:1px 14px;text-align:right;color:#999;\"&gt;Average z&lt;/th&gt;\n    &lt;/tr&gt;&lt;/thead&gt;\n    &lt;tbody&gt;\n      ${rows.map((r,i) =&gt; `&lt;tr style=\"${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;\"&gt;\n        &lt;td style=\"padding:1px 14px;\"&gt;${r.name}&lt;/td&gt;\n        &lt;td style=\"padding:1px 14px;text-align:right;\"&gt;${r.zs.toFixed(2)}&lt;/td&gt;\n        &lt;td style=\"padding:1px 14px;text-align:right;\"&gt;${r.ze.toFixed(2)}&lt;/td&gt;\n        &lt;td style=\"padding:1px 14px;text-align:right;color:#ccc;\"&gt;?&lt;/td&gt;\n        &lt;td style=\"padding:1px 14px;text-align:right;color:#ccc;\"&gt;?&lt;/td&gt;\n      &lt;/tr&gt;`).join('')}\n    &lt;/tbody&gt;\n  &lt;/table&gt;`\n}\n\n\n\n\n\n\n\n\n\nTask — using the same formula and the grip-strength values from the table above, calculate \\(z(\\text{grip})\\) for each person. Then average all three z-scores to get one “alertness” score per person."
+  },
+  {
+    "objectID": "week3-slides.html#average-several-as-z-scores-answer",
+    "href": "week3-slides.html#average-several-as-z-scores-answer",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Average several (as z-scores) — answer",
+    "text": "Average several (as z-scores) — answer\n\n{\n  const people = [\n    { name: \"Amara\", sleep: 8.5, energy: 9, grip: 33 },\n    { name: \"Ben\",    sleep: 5.0, energy: 4, grip: 32 },\n    { name: \"Chidi\",  sleep: 7.0, energy: 6, grip: 35 },\n    { name: \"Dana\",   sleep: 4.5, energy: 3, grip: 30 },\n    { name: \"Elin\",   sleep: 9.0, energy: 8, grip: 31 },\n    { name: \"Femi\",   sleep: 6.0, energy: 5, grip: 34 },\n  ]\n  const z = vals =&gt; { const m = d3.mean(vals), s = d3.deviation(vals) * Math.sqrt((vals.length-1)/vals.length); return vals.map(v =&gt; (v - m) / s) }\n  const zs = z(people.map(p =&gt; p.sleep)), ze = z(people.map(p =&gt; p.energy)), zg = z(people.map(p =&gt; p.grip))\n  const rows = people.map((p,i) =&gt; ({ name: p.name, zs: zs[i], ze: ze[i], zg: zg[i], avg: (zs[i]+ze[i]+zg[i])/3 }))\n\n  return html`&lt;table style=\"width:85%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.82em;\"&gt;\n    &lt;thead&gt;&lt;tr style=\"background:#1a1a2e;color:white;\"&gt;\n      &lt;th style=\"padding:4px 16px;text-align:left;\"&gt;Person&lt;/th&gt;\n      &lt;th style=\"padding:4px 16px;text-align:right;\"&gt;z(sleep)&lt;/th&gt;\n      &lt;th style=\"padding:4px 16px;text-align:right;\"&gt;z(energy)&lt;/th&gt;\n      &lt;th style=\"padding:4px 16px;text-align:right;\"&gt;z(grip)&lt;/th&gt;\n      &lt;th style=\"padding:4px 16px;text-align:right;background:#2d6a4f;\"&gt;Average z&lt;/th&gt;\n    &lt;/tr&gt;&lt;/thead&gt;\n    &lt;tbody&gt;\n      ${rows.map((r,i) =&gt; `&lt;tr style=\"${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;\"&gt;\n        &lt;td style=\"padding:3px 16px;\"&gt;${r.name}&lt;/td&gt;\n        &lt;td style=\"padding:3px 16px;text-align:right;\"&gt;${r.zs.toFixed(2)}&lt;/td&gt;\n        &lt;td style=\"padding:3px 16px;text-align:right;\"&gt;${r.ze.toFixed(2)}&lt;/td&gt;\n        &lt;td style=\"padding:3px 16px;text-align:right;\"&gt;${r.zg.toFixed(2)}&lt;/td&gt;\n        &lt;td style=\"padding:3px 16px;text-align:right;font-weight:700;background:#f0f4f8;color:#2d6a4f;\"&gt;${r.avg.toFixed(2)}&lt;/td&gt;\n      &lt;/tr&gt;`).join('')}\n    &lt;/tbody&gt;\n  &lt;/table&gt;`\n}"
+  },
+  {
+    "objectID": "week3-slides.html#pca",
+    "href": "week3-slides.html#pca",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "PCA",
+    "text": "PCA\nSame six people, same three proxies. Instead of weighting every variable equally, PCA looks at how the variables correlate with each other, and finds the one weighted combination that captures as much of their shared variation as possible.\n\n{\n  const rows = [\n    { v: \"Sleep\",  sleep: 1.00, energy: 0.97, grip: 0.20 },\n    { v: \"Energy\", sleep: 0.97, energy: 1.00, grip: 0.25 },\n    { v: \"Grip\",   sleep: 0.20, energy: 0.25, grip: 1.00 },\n  ]\n  return html`&lt;table style=\"width:60%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.9em;\"&gt;\n    &lt;thead&gt;&lt;tr style=\"background:#1a1a2e;color:white;\"&gt;\n      &lt;th style=\"padding:8px 16px;text-align:left;\"&gt;Correlation&lt;/th&gt;\n      &lt;th style=\"padding:8px 16px;text-align:right;\"&gt;Sleep&lt;/th&gt;\n      &lt;th style=\"padding:8px 16px;text-align:right;\"&gt;Energy&lt;/th&gt;\n      &lt;th style=\"padding:8px 16px;text-align:right;\"&gt;Grip&lt;/th&gt;\n    &lt;/tr&gt;&lt;/thead&gt;\n    &lt;tbody&gt;\n      ${rows.map((r,i) =&gt; `&lt;tr style=\"${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;\"&gt;\n        &lt;td style=\"padding:7px 16px;font-weight:700;\"&gt;${r.v}&lt;/td&gt;\n        &lt;td style=\"padding:7px 16px;text-align:right;\"&gt;${r.sleep.toFixed(2)}&lt;/td&gt;\n        &lt;td style=\"padding:7px 16px;text-align:right;\"&gt;${r.energy.toFixed(2)}&lt;/td&gt;\n        &lt;td style=\"padding:7px 16px;text-align:right;\"&gt;${r.grip.toFixed(2)}&lt;/td&gt;\n      &lt;/tr&gt;`).join('')}\n    &lt;/tbody&gt;\n  &lt;/table&gt;`\n}\n\n\n\n\n\n\n\nSleep and energy move together closely (0.97); grip strength barely tracks either (0.20–0.25) — a noisier signal for the same underlying “alertness.”\n\n\nPCA notices this automatically:\n\n\n\nVariable\nEqual-weight average\nPCA weight\n\n\n\n\nSleep\n0.33\n0.41\n\n\nEnergy\n0.33\n0.41\n\n\nGrip\n0.33\n0.18\n\n\n\nIt down-weights the noisier proxy — something a simple average, by construction, can’t do.\n\n\nThe two composite scores still end up highly correlated (≈0.98 here) — usually true in practice. That’s exactly why Gabor & Kézdi recommend the z-score average for everyday use, and treat PCA as a robustness check rather than a first choice.\n\n\nSource: Békés & Kézdi (2021), Ch. 4"
+  },
+  {
+    "objectID": "week3-slides.html#ai-and-finding-patterns",
+    "href": "week3-slides.html#ai-and-finding-patterns",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "AI and finding patterns",
+    "text": "AI and finding patterns\nGenAI is genuinely useful for a first pass over a new dataset — spotting candidate patterns quickly, the way a quick script or profiler would.\n\nWhere it’s weaker: judging whether a correlation is meaningfully weak or strong, and knowing which pattern is worth pursuing in the first place. That judgment is still yours.\n\n\nSource: Békés & Kézdi (2021), Ch. 4"
+  },
+  {
+    "objectID": "week3-slides.html#online-session-functional-form",
+    "href": "week3-slides.html#online-session-functional-form",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Online session — Functional form",
+    "text": "Online session — Functional form\nA closer look at log transformations: why they approximate percentage differences, and where that approximation breaks down."
+  },
+  {
+    "objectID": "week3-slides.html#coming-up-week-4",
+    "href": "week3-slides.html#coming-up-week-4",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Coming up: Week 4",
+    "text": "Coming up: Week 4\n\nWe can now describe a relationship between two variables.\nNext: turn that relationship into a model we can use to predict and interpret.\nSimple regression: the OLS estimator\n\nLinear regression · fitting a line · interpreting the slope"
+  },
+  {
+    "objectID": "week3-online-slides.html#section",
+    "href": "week3-online-slides.html#section",
+    "title": "Functional Form: Why We Log",
+    "section": "",
+    "text": "Why we log\nThe workshop used the log of reaction time to see a pattern more clearly. This session looks at why that works — and when it stops working."
+  },
+  {
+    "objectID": "week3-online-slides.html#why-transform-at-all",
+    "href": "week3-online-slides.html#why-transform-at-all",
+    "title": "Functional Form: Why We Log",
+    "section": "Why transform at all?",
+    "text": "Why transform at all?\nA “% change” needs a baseline — a “before” to measure against. Time series has one built in: this year’s GDP vs. last year’s.\n\nCross-sectional data doesn’t. Student A’s finger length isn’t “before” Student B’s — there’s no natural reference point to build a percentage difference from.\n\n\nThe natural logarithm sidesteps the problem: on a log scale, the difference between any two values approximates their percentage difference — no designated baseline required. It has a second payoff too: frequent nonlinear patterns are often far better approximated once we look at relative differences instead of raw ones.\n\n\nSource: Békés & Kézdi (2021), Data Analysis for Business, Economics, and Policy, Ch. 4"
+  },
+  {
+    "objectID": "week3-online-slides.html#what-lnx-actually-buys-you",
+    "href": "week3-online-slides.html#what-lnx-actually-buys-you",
+    "title": "Functional Form: Why We Log",
+    "section": "What ln(x) actually buys you",
+    "text": "What ln(x) actually buys you\n\n\\(\\ln(x)\\) = the natural logarithm of \\(x\\) — \\(x\\) must be a positive number: \\(\\ln(0)\\) and \\(\\ln(\\text{negative})\\) don’t exist, so a variable with zeros (e.g. income including the unemployed) can’t be logged as-is\nThe claim: differences in natural logs approximate relative (percentage) differences\n\n\\[\\ln(x + \\Delta x) - \\ln(x) \\approx \\frac{\\Delta x}{x}\\]\n\nNumerically: \\(\\ln(1.01) = 0.0099 \\approx 0.01\\) — a 1% increase. \\(\\ln(1.1) = 0.095 \\approx 0.1\\) — close to a 10% increase, already a little off.\n\n\nSource: Békés & Kézdi (2021), Ch. 4"
+  },
+  {
+    "objectID": "week3-online-slides.html#where-it-comes-from",
+    "href": "week3-online-slides.html#where-it-comes-from",
+    "title": "Functional Form: Why We Log",
+    "section": "Where it comes from",
+    "text": "Where it comes from\nFrom calculus: the derivative of \\(\\ln(x)\\) is \\(\\dfrac{1}{x}\\).\n\\[\\frac{d\\ln(x)}{dx} = \\frac{1}{x} \\quad\\Rightarrow\\quad \\ln(x+\\Delta x) - \\ln(x) \\approx \\frac{1}{x}\\Delta x = \\frac{\\Delta x}{x}\\]\n\nThat’s the whole trick: a log difference is approximately a relative difference, for small changes. The approximation is a straight line touching the curve — it only stays close nearby."
+  },
+  {
+    "objectID": "week3-online-slides.html#read-the-gap-yourself",
+    "href": "week3-online-slides.html#read-the-gap-yourself",
+    "title": "Functional Form: Why We Log",
+    "section": "Read the gap yourself",
+    "text": "Read the gap yourself\n\nviewof relx = {\n  const f = html`&lt;div style=\"display:flex;align-items:center;gap:14px;font-size:13px;\n                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;\"&gt;\n    &lt;span style=\"color:#666;white-space:nowrap;\"&gt;Relative change (Δx / x)&lt;/span&gt;\n    &lt;input type=\"range\" min=\"0.01\" max=\"1.5\" step=\"0.01\" value=\"0.1\"\n           style=\"width:220px;cursor:pointer;accent-color:#457b9d;\"&gt;\n    &lt;span id=\"relx-label\" style=\"font-weight:700;min-width:50px;color:#457b9d;\"&gt;10%&lt;/span&gt;\n  &lt;/div&gt;`\n  const slider = f.querySelector('input')\n  const label  = f.querySelector('#relx-label')\n  slider.addEventListener('input', () =&gt; {\n    label.textContent = (slider.value * 100).toFixed(0) + '%'\n    f.dispatchEvent(new CustomEvent('input'))\n  })\n  Object.defineProperty(f, 'value', { get: () =&gt; +slider.value })\n  return f\n}\n\n\n\n\n\n\n\n\n\n{\n  const actual = Math.log(1 + relx)\n  const approx = relx\n  const pctError = Math.abs(actual - approx) / actual * 100\n\n  const xs = d3.range(0, 1.51, 0.01)\n  const lineData = xs.map(x =&gt; ({ x, y: x, series: \"Δx / x (the approximation)\" }))\n  const curveData = xs.map(x =&gt; ({ x, y: Math.log(1 + x), series: \"ln(1 + x) (the actual value)\" }))\n\n  return html`&lt;div&gt;\n    ${Plot.plot({\n      height: 480,\n      marginLeft: 55,\n      x: { label: \"x\" },\n      y: { label: \"value\" },\n      color: { legend: true, range: [\"#e63946\", \"#2d6a4f\"] },\n      marks: [\n        Plot.line(lineData, { x: \"x\", y: \"y\", stroke: \"series\", strokeDasharray: \"4,3\" }),\n        Plot.line(curveData, { x: \"x\", y: \"y\", stroke: \"series\" }),\n        Plot.ruleX([relx], { stroke: \"#999\", strokeDasharray: \"2,2\" }),\n        Plot.dot([{ x: relx, y: relx }], { x: \"x\", y: \"y\", fill: \"#e63946\", r: 5 }),\n        Plot.dot([{ x: relx, y: Math.log(1+relx) }], { x: \"x\", y: \"y\", fill: \"#2d6a4f\", r: 5 }),\n      ]\n    })}\n    &lt;p style=\"font-family:sans-serif;text-align:center;\"&gt;\n      At Δx/x = ${(relx*100).toFixed(0)}%: approximation = ${approx.toFixed(3)}, actual ln(1+x) = ${actual.toFixed(3)}\n      — off by &lt;strong style=\"color:${pctError &gt; 10 ? '#e63946' : '#2d6a4f'}\"&gt;${pctError.toFixed(1)}%&lt;/strong&gt;\n    &lt;/p&gt;\n  &lt;/div&gt;`\n}\n\n\n\n\n\n\n\n\n\nBelow about 0.3 (30%) the approximation is close. Beyond that, the gap grows — for a 100% increase, the log difference (0.69) badly understates the true relative change.\n\n\nPattern after Békés & Kézdi (2021), Ch. 4"
+  },
+  {
+    "objectID": "week3-online-slides.html#beyond-the-approximation-the-exact-conversion",
+    "href": "week3-online-slides.html#beyond-the-approximation-the-exact-conversion",
+    "title": "Functional Form: Why We Log",
+    "section": "Beyond the approximation: the exact conversion",
+    "text": "Beyond the approximation: the exact conversion\nFor an exact percentage change instead of the approximation, invert the log:\n\\[\\%\\Delta x = e^{\\,\\ln(x_2) - \\ln(x_1)} - 1\\]\n\n{\n  const diffs = [0.1, 0.3, 0.5, 1.0, -0.1, -0.3, -0.5, -1.0]\n  const rows = diffs.map(d =&gt; ({ diff: d, approx: d, exact: Math.exp(d) - 1 }))\n\n  return html`&lt;table style=\"width:75%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;\"&gt;\n    &lt;thead&gt;&lt;tr style=\"background:#1a1a2e;color:white;\"&gt;\n      &lt;th style=\"padding:10px 20px;text-align:right;\"&gt;Log difference&lt;/th&gt;\n      &lt;th style=\"padding:10px 20px;text-align:right;\"&gt;Approximation (Δx / x)&lt;/th&gt;\n      &lt;th style=\"padding:10px 20px;text-align:right;\"&gt;Exact % change&lt;/th&gt;\n    &lt;/tr&gt;&lt;/thead&gt;\n    &lt;tbody&gt;\n      ${rows.map((r,i) =&gt; `&lt;tr style=\"${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;\"&gt;\n        &lt;td style=\"padding:8px 20px;text-align:right;\"&gt;${r.diff &gt; 0 ? '+' : ''}${r.diff.toFixed(1)}&lt;/td&gt;\n        &lt;td style=\"padding:8px 20px;text-align:right;color:#999;\"&gt;${r.approx &gt; 0 ? '+' : ''}${(r.approx*100).toFixed(0)}%&lt;/td&gt;\n        &lt;td style=\"padding:8px 20px;text-align:right;font-weight:700;color:${Math.abs(r.exact - r.approx) &gt; 0.05 ? '#e63946' : '#2d6a4f'};\"&gt;${r.exact &gt; 0 ? '+' : ''}${(r.exact*100).toFixed(0)}%&lt;/td&gt;\n      &lt;/tr&gt;`).join('')}\n    &lt;/tbody&gt;\n  &lt;/table&gt;`\n}\n\n\n\n\n\n\n\nThe approximation isn’t just imprecise for large differences — it’s also asymmetric. A log difference of +1.0 is a +172% change, not +100%. A log difference of −1.0 is only −63%, not −100%: log differences are bounded below by −1 no matter how close x gets to zero, but unbounded above. The scale itself is lopsided.\n\n\nSource: Békés & Kézdi (2021), Ch. 4"
+  },
+  {
+    "objectID": "week3-online-slides.html#bringing-it-back-to-our-own-data",
+    "href": "week3-online-slides.html#bringing-it-back-to-our-own-data",
+    "title": "Functional Form: Why We Log",
+    "section": "Bringing it back to our own data",
+    "text": "Bringing it back to our own data\nBack in the workshop, we scattered finger length against raw reaction time — no logging. Week 1 found reaction time is skewed, though: logging stretches out the crowded low end and compresses the long right tail, which can make a pattern easier to see. Let’s check both, side by side, on our own data.\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) {\n    return html`&lt;div class=\"instructions-box\"&gt;Not enough finger-length data yet to demonstrate this live — check back once more of the class has submitted.&lt;/div&gt;`\n  }\n  const p1 = Plot.plot({\n    height: 420, width: 380,\n    x: { label: \"Finger length (mm)\" },\n    y: { label: \"Mean reaction time (ms)\" },\n    marks: [ Plot.dot(rows, { x: \"finger_mm\", y: \"mean_rt\", fill: \"#457b9d\", r: 6 }) ]\n  })\n  const p2 = Plot.plot({\n    height: 420, width: 380,\n    x: { label: \"Finger length (mm)\" },\n    y: { label: \"ln(mean reaction time)\" },\n    marks: [ Plot.dot(rows, { x: \"finger_mm\", y: d =&gt; Math.log(d.mean_rt), fill: \"#2d6a4f\", r: 6 }) ]\n  })\n  return html`&lt;div style=\"display:flex;gap:24px;justify-content:center;\"&gt;${p1}${p2}&lt;/div&gt;`\n}\n\n\n\n\n\n\n\n\n\nWhether logging our y variable actually helps depends on whether reaction time is skewed enough to matter here — recall Week 1’s online session found it’s closer to log-normal than normal. The same logic, a different variable."
+  },
+  {
+    "objectID": "week3-online-slides.html#coming-up-week-4",
+    "href": "week3-online-slides.html#coming-up-week-4",
+    "title": "Functional Form: Why We Log",
+    "section": "Coming up: Week 4",
+    "text": "Coming up: Week 4\n\nWe can now describe a relationship between two variables.\nNext: turn that relationship into a model we can use to predict and interpret.\nSimple regression: the OLS estimator\n\nLinear regression · fitting a line · interpreting the slope"
   }
 ]

@@ -47,7 +47,7 @@ weeks = [
          ("Bootstrap tool", "week2-bootstrap-tool.html", True),
          ("Download the data", "week2-data-download.html", True),
      ]},
-    {"n": 3, "topic": "Relationships Between Variables", "status": "pending",
+    {"n": 3, "topic": "Relationships Between Variables", "status": "live",
      "links": [
          ("Workshop slides", "week3-slides.html", False),
          ("Online session", "week3-online-slides.html", False),
