@@ -85,6 +85,23 @@ codeBox = (src) => html`<pre style="font-family:'SF Mono','Menlo',monospace;font
   background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;padding:8px 14px;overflow-x:auto;white-space:pre;">${src}</pre>`
 ```
 
+```{ojs}
+// Screen readers walk into an SVG's own children unless told otherwise --
+// Observable Plot gives every mark and axis tick its own generic aria-label
+// ("dot", "x-axis tick", ...), so without this wrapper a screen reader reads
+// through dozens of those instead of one meaningful description. Wrapping in
+// a role="img" container and hiding the SVG itself (aria-hidden) makes the
+// wrapper's one aria-label the whole story. Same helper as wk1/wk2.
+function accessibleChart(node, label) {
+  node.setAttribute("aria-hidden", "true")
+  const wrapper = document.createElement("div")
+  wrapper.setAttribute("role", "img")
+  wrapper.setAttribute("aria-label", label)
+  wrapper.appendChild(node)
+  return wrapper
+}
+```
+
 ## {background-color="#1a1a2e"}
 
 ::: {style="text-align: center; padding-top: 180px;"}
@@ -130,12 +147,12 @@ Our sample, exactly as in the textbook: **Mexican firms, 2013, with 100–5,000 
 
 ```{ojs}
 {
-  const a = Plot.plot({ height: 300, width: 520, marginLeft: 45,
+  const a = accessibleChart(Plot.plot({ height: 300, width: 520, marginLeft: 45,
     x: { label: "Management score (1–5)" }, y: { label: "Firms" },
-    marks: [Plot.rectY(firms, Plot.binX({ y: "count" }, { x: "management", thresholds: 20, fill: "#457b9d", inset: 1 })), Plot.ruleY([0])] })
-  const b = Plot.plot({ height: 300, width: 520, marginLeft: 45,
+    marks: [Plot.rectY(firms, Plot.binX({ y: "count" }, { x: "management", thresholds: 20, fill: "#457b9d", inset: 1 })), Plot.ruleY([0])] }), "Histogram of the management score for 300 firms: roughly symmetric and centred near 3, on a scale from 1 to 5.")
+  const b = accessibleChart(Plot.plot({ height: 300, width: 520, marginLeft: 45,
     x: { label: "Employees" }, y: { label: "Firms" },
-    marks: [Plot.rectY(firms, Plot.binX({ y: "count" }, { x: "emp_firm", thresholds: 20, fill: "#2d6a4f", inset: 1 })), Plot.ruleY([0])] })
+    marks: [Plot.rectY(firms, Plot.binX({ y: "count" }, { x: "emp_firm", thresholds: 20, fill: "#2d6a4f", inset: 1 })), Plot.ruleY([0])] }), "Histogram of firm size in employees: heavily right-skewed, with most firms under 1,000 employees and a long tail up to 5,000.")
   return html`<div style="display:flex;gap:30px;justify-content:center;">${a}${b}</div>`
 }
 ```
@@ -150,7 +167,7 @@ Our sample, exactly as in the textbook: **Mexican firms, 2013, with 100–5,000 
 Start simple. Take **one** of the 18 practices — **lean management**, scored 1 to 5 — and split firms into three size groups: small (100–199 employees), medium (200–999), large (1,000+).
 
 ```{ojs}
-Plot.plot({
+accessibleChart(Plot.plot({
   height: 330,
   width: 900,
   marginLeft: 70,
@@ -163,7 +180,7 @@ Plot.plot({
     Plot.barX(lean_cond, { y: "size", x: "share", fill: "lean", order: "lean" }),
     Plot.ruleX([0]),
   ]
-})
+}), "Horizontal stacked bars showing the share of firms at each lean-management score, from 1 to 5, within small, medium and large firms. Larger firms have fewer low scores and more high scores.")
 ```
 
 ::: {.fragment}
@@ -214,7 +231,7 @@ pd.crosstab(firms['size'], firms['lean1'], normalize='index').round(2)`)
 Now use the full management score — all 18 practices averaged — and take its **mean within each size group**: $E[\text{management} \mid \text{size}]$.
 
 ```{ojs}
-Plot.plot({
+accessibleChart(Plot.plot({
   height: 320,
   width: 700,
   marginLeft: 60,
@@ -225,7 +242,7 @@ Plot.plot({
     Plot.barY(size_means, { x: "size", y: "mean", fill: "#457b9d", fillOpacity: 0.85 }),
     Plot.text(size_means, { x: "size", y: "mean", text: d => `${d.mean.toFixed(2)} (n=${d.count})`, dy: -12, fontSize: 14 }),
   ]
-})
+}), `Bar chart of mean management score by firm size: ${size_means.map(d => `${d.size} ${d.mean.toFixed(2)}`).join(", ")}. The mean rises with firm size.`)
 ```
 
 ::: {.fragment}
@@ -237,25 +254,25 @@ Plot.plot({
 :::: {.two-col style="grid-template-columns: 1fr 1fr;"}
 ::: {}
 ```{ojs}
-Plot.plot({
+accessibleChart(Plot.plot({
   height: 380, width: 540, marginLeft: 45,
   x: { label: "Employees" }, y: { label: "Management score", domain: [1, 5] },
   marks: [Plot.dot(firms, { x: "emp_firm", y: "management", r: 3, fill: "#457b9d", fillOpacity: 0.5 })]
-})
+}), "Scatterplot of management score against number of employees, one dot per firm. Most firms are bunched on the left, so the pattern is hard to read.")
 ```
 **Scatterplot:** every firm. Lots of information, hard to read.
 :::
 
 ::: {}
 ```{ojs}
-Plot.plot({
+accessibleChart(Plot.plot({
   height: 380, width: 540, marginLeft: 45,
   x: { label: "Employees (median of each bin)" }, y: { label: "Mean management score", domain: [1, 5] },
   marks: [
     Plot.line(bins10, { x: "emp", y: "management", stroke: "#e63946", strokeOpacity: 0.4 }),
     Plot.dot(bins10, { x: "emp", y: "management", r: 7, fill: "#e63946" })
   ]
-})
+}), "Bin-scatter: mean management score in ten equal-sized groups of firms, ordered by employment. It rises steeply from the smallest to mid-sized firms, then flattens: a concave pattern.")
 ```
 **Bin-scatter:** 10 bins with equal numbers of firms, mean score in each.
 :::
@@ -272,20 +289,20 @@ Employment is heavily right-skewed. Taking its log stretches out the small firms
 :::: {.two-col style="grid-template-columns: 1fr 1fr;"}
 ::: {}
 ```{ojs}
-Plot.plot({
+accessibleChart(Plot.plot({
   height: 340, width: 540, marginLeft: 45,
   x: { label: "Employees" }, y: { label: "Management score", domain: [1, 5] },
   marks: [Plot.dot(firms, { x: "emp_firm", y: "management", r: 3, fill: "#457b9d", fillOpacity: 0.5 })]
-})
+}), "Scatterplot of management score against employees on the raw scale: most points are bunched on the left.")
 ```
 :::
 ::: {}
 ```{ojs}
-Plot.plot({
+accessibleChart(Plot.plot({
   height: 340, width: 540, marginLeft: 45,
   x: { label: "ln(employees)" }, y: { label: "Management score", domain: [1, 5] },
   marks: [Plot.dot(firms, { x: "ln_emp", y: "management", r: 3, fill: "#2d6a4f", fillOpacity: 0.5 })]
-})
+}), "The same scatterplot with employees on a log scale. The points spread out evenly and a gentle upward drift is easier to see.")
 ```
 :::
 ::::
@@ -299,7 +316,7 @@ Same firms, same data. On the log scale the points spread evenly and the upward 
 The conditional mean is one number per group. A box plot shows the **whole conditional distribution**.
 
 ```{ojs}
-Plot.plot({
+accessibleChart(Plot.plot({
   height: 330,
   width: 800,
   marginLeft: 70,
@@ -308,7 +325,7 @@ Plot.plot({
   x: { label: "Management score", domain: [1, 5] },
   y: { label: null, domain: ["Small", "Medium", "Large"] },
   marks: [Plot.boxX(firms, { x: "management", y: "size", fill: "#457b9d", fillOpacity: 0.3, stroke: "#1a1a2e" })]
-})
+}), "Box plots of management score for small, medium and large firms. The median and both quartiles shift to the right as firms get bigger, while the spread stays similar.")
 ```
 
 ::: {.fragment}
@@ -372,11 +389,9 @@ Firm size wasn't randomly assigned: this is **observational** data, so the varia
 Describing a pattern is only half the job. The other half is saying **what it means for the model you build next.**
 
 ::: {.fragment}
-| What we saw | What it means for the model |
-|---|---|
-| The bin-scatter **curves**: a big rise from small to medium, then it flattens | Don't fit a straight line in raw employees. Use a curve, or log employees first (Weeks 4–5) |
-| Employment is heavily **right-skewed** | Consider logging it: the pattern was clearer on the log scale |
-| The pattern **could be driven by something else**, e.g. industry | Hold that variable fixed, or check the pattern within each group (Week 6) |
+```{ojs}
+html`<table style="width:100%;border-collapse:collapse;font-family:sans-serif;font-size:0.9em;"><caption class="visually-hidden">Each pattern seen in the case study, paired with what it means for the model built next.</caption><thead><tr><th scope="col" style="padding:8px 14px;text-align:left;background:#f0f4f8;border-bottom:2px solid #1a1a2e;">What we saw</th><th scope="col" style="padding:8px 14px;text-align:left;background:#f0f4f8;border-bottom:2px solid #1a1a2e;">What it means for the model</th></tr></thead><tbody><tr style="border-bottom:1px solid #ddd;"><td style="padding:8px 14px;vertical-align:top;">The bin-scatter <strong>curves</strong>: a big rise from small to medium, then it flattens</td><td style="padding:8px 14px;vertical-align:top;">Don't fit a straight line in raw employees. Use a curve, or log employees first (Weeks 4–5)</td></tr><tr style="border-bottom:1px solid #ddd;"><td style="padding:8px 14px;vertical-align:top;">Employment is heavily <strong>right-skewed</strong></td><td style="padding:8px 14px;vertical-align:top;">Consider logging it: the pattern was clearer on the log scale</td></tr><tr style="border-bottom:1px solid #ddd;"><td style="padding:8px 14px;vertical-align:top;">The pattern <strong>could be driven by something else</strong>, e.g. industry</td><td style="padding:8px 14px;vertical-align:top;">Hold that variable fixed, or check the pattern within each group (Week 6)</td></tr></tbody></table>`
+```
 :::
 
 ::: {.fragment}
