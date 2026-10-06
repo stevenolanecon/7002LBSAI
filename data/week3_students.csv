@@ -1,0 +1,25 @@
+student,mean_reaction_time_ms,finger_length_corrected,finger_bin
+Student 1,1601.1,80.0,Medium
+Student 2,419.6,80.0,Medium
+Student 3,406.3,72.0,Short
+Student 4,416.3,80.0,Medium
+Student 5,1081.1,69.0,Short
+Student 6,3135.4,95.0,Long
+Student 7,370.1,71.0,Short
+Student 8,395.2,79.0,Medium
+Student 9,426.2,68.0,Short
+Student 10,1867.3,82.0,Long
+Student 11,1353.8,80.0,Medium
+Student 12,497.3,94.0,Long
+Student 13,1314.5,80.0,Medium
+Student 14,1970.3,90.0,Long
+Student 15,1101.1,100.0,Long
+Student 16,1260.0,80.0,Medium
+Student 17,466.9,70.0,Short
+Student 18,435.4,82.0,Long
+Student 19,283.4,74.0,Short
+Student 20,2339.3,70.0,Short
+Student 21,386.1,80.0,Medium
+Student 22,373.5,76.0,Medium
+Student 23,3253.4,70.0,Short
+Student 24,528.4,81.0,Long

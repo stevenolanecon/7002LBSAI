@@ -1642,7 +1642,7 @@
     "href": "week3-slides.html#conditioning-on-x",
     "title": "When y Met x: Correlation and Covariance",
     "section": "Conditioning on x",
-    "text": "Conditioning on x\nComparison → conditioning. Comparing y by values of x means we condition y on x — x is the conditioning variable, y is the outcome variable.\nWorked example: 20 students, 12 use a Phone, and 9 of those 12 had caffeine.\n\nJoint probability — the chance both things happen together:\n\\[P(A \\text{ and } B) = \\frac{9}{20} = 0.45\\]\n\n\nConditional probability — the chance of A, restricted to the cases where B happened:\n\\[P(A \\mid B) = \\frac{P(A \\text{ and } B)}{P(B)} = \\frac{0.45}{12/20} = \\frac{0.45}{0.6} = 0.75\\]\n\n\nIndependence — A and B are independent if knowing one tells you nothing about the other: \\(P(A \\mid B) = P(A)\\). Here, overall \\(P(\\text{Caffeine}) = 11/20 = 0.55\\), but \\(P(\\text{Caffeine} \\mid \\text{Phone}) = 0.75\\) — not equal, so not independent in this example.\n\n\nWhen A and B are not independent, \\(P(A \\text{ and } B) \\neq P(A) \\times P(B)\\) — that shortcut only holds under independence (\\(0.6 \\times 0.55 = 0.33\\), not the real \\(0.45\\)). The formula that always holds is the one above, rearranged: \\(P(A \\text{ and } B) = P(A \\mid B) \\times P(B)\\).\n\n\nSource: Békés & Kézdi (2021), Ch. 4"
+    "text": "Conditioning on x\nComparison → conditioning. Comparing y by values of x means we condition y on x — x is the conditioning variable, y is the outcome variable.\nWorked example: 20 students, 12 use a Phone, and 9 of those 12 had caffeine.\n\nJoint probability — the chance both things happen together: \\(P(A \\text{ and } B)\\)\n\n\nHere: \\(P(\\text{Caffeine and Phone}) = \\frac{9}{20} = 0.45\\)\n\n\nConditional probability — the chance of A, restricted to the cases where B happened: \\(P(A \\mid B) = \\frac{P(A \\text{ and } B)}{P(B)}\\)\n\n\nHere: \\(P(\\text{Caffeine} \\mid \\text{Phone}) = \\frac{0.45}{12/20} = \\frac{0.45}{0.6} = 0.75\\)\n\n\nIndependence — A and B are independent if knowing one tells you nothing about the other: \\(P(A \\mid B) = P(A)\\). If so, \\(P(A \\text{ and } B) = P(A) \\times P(B)\\); if not, use \\(P(A \\text{ and } B) = P(A \\mid B) \\times P(B)\\), which always holds.\n\n\nHere: overall \\(P(\\text{Caffeine}) = 11/20 = 0.55\\), but \\(P(\\text{Caffeine} \\mid \\text{Phone}) = 0.75\\) — not equal, so not independent. The shortcut would give \\(0.6 \\times 0.55 = 0.33\\), not the real \\(0.45\\).\n\n\nSource: Békés & Kézdi (2021), Ch. 4"
   },
   {
     "objectID": "week3-slides.html#device-and-caffeine-our-own-joint-table",
@@ -1663,7 +1663,7 @@
     "href": "week3-slides.html#visualising-with-a-stacked-bar-chart",
     "title": "When y Met x: Correlation and Covariance",
     "section": "Visualising with a stacked bar chart",
-    "text": "Visualising with a stacked bar chart\n\nstacked_data = {\n  if (!joint_table.length) return []\n  const devices = [...new Set(joint_table.map(d =&gt; d.device))]\n  return devices.flatMap(dev =&gt; {\n    const rows = joint_table.filter(d =&gt; d.device === dev)\n    const tot = d3.sum(rows, d =&gt; d.count)\n    return rows.map(r =&gt; ({ ...r, pct: r.count / tot }))\n  })\n}\n\n\n\n\n\n\n\n\n\n{\n  if (!stacked_data.length) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n  return Plot.plot({\n    height: 460,\n    marginLeft: 60,\n    x: { label: \"Device\" },\n    y: { label: \"% within device\", percent: true },\n    color: { legend: true, domain: [\"Yes\",\"No\",\"Unknown\"], range: [\"#e63946\",\"#457b9d\",\"#ccc\"] },\n    marks: [\n      Plot.barY(stacked_data, { x: \"device\", y: \"pct\", fill: \"caffeine\", order: \"caffeine\" }),\n      Plot.ruleY([0]),\n    ]\n  })\n}\n\n\n\n\n\n\n\n\n\nStacked to 100% within each device — this shows \\(P(\\text{Caffeine} \\mid \\text{Device})\\) directly, not the raw counts."
+    "text": "Visualising with a stacked bar chart\n\nstacked_data = {\n  if (!joint_table.length) return []\n  const devices = [...new Set(joint_table.map(d =&gt; d.device))]\n  return devices.flatMap(dev =&gt; {\n    const rows = joint_table.filter(d =&gt; d.device === dev)\n    const tot = d3.sum(rows, d =&gt; d.count)\n    return rows.map(r =&gt; ({ ...r, pct: r.count / tot }))\n  })\n}\n\n\n\n\n\n\n\n{\n  if (!stacked_data.length) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n  return Plot.plot({\n    height: 400,\n    marginLeft: 60,\n    marginBottom: 50,\n    style: { fontSize: \"15px\" },\n    x: { label: \"Device\", tickSize: 0 },\n    y: { label: \"% within device\", percent: true },\n    color: { legend: true, domain: [\"Yes\",\"No\",\"Unknown\"], range: [\"#e63946\",\"#457b9d\",\"#ccc\"] },\n    marks: [\n      Plot.barY(stacked_data, { x: \"device\", y: \"pct\", fill: \"caffeine\", order: \"caffeine\" }),\n      Plot.ruleY([0]),\n    ]\n  })\n}\n\n\n\n\n\n\n\nStacked to 100% within each device — this shows \\(P(\\text{Caffeine} \\mid \\text{Device})\\) directly, not the raw counts. If the two bars differ, device and caffeine are associated in our data."
   },
   {
     "objectID": "week3-slides.html#conditional-distribution-and-expectation",
@@ -1698,14 +1698,14 @@
     "href": "week3-slides.html#task-compute-the-conditional-mean-by-hand",
     "title": "When y Met x: Correlation and Covariance",
     "section": "Task — compute the conditional mean, by hand",
-    "text": "Task — compute the conditional mean, by hand\n\nUsing the class’s finger-length and reaction-time data (corrected, as we just agreed): split students into three roughly equal-sized groups by finger length (short / medium / long), then compute the mean reaction time within each group. Compare to the chart on the next slide."
+    "text": "Task — compute the conditional mean, by hand\n\nDownload week3_students.csv: one row per student, with their mean reaction time, their corrected finger length, and a finger_bin column that already splits the class into three roughly equal groups (Short / Medium / Long).\nCompute the mean reaction time within each bin (AVERAGEIF, or a PivotTable with finger_bin as rows). Compare to the chart on the next slide."
   },
   {
     "objectID": "week3-slides.html#binning-finger-length",
     "href": "week3-slides.html#binning-finger-length",
     "title": "When y Met x: Correlation and Covariance",
     "section": "Binning finger length",
-    "text": "Binning finger length\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) {\n    return html`&lt;div class=\"instructions-box\"&gt;Not enough finger-length data yet to bin — this will populate once more of the class has submitted through the updated tool.&lt;/div&gt;`\n  }\n  const vals = rows.map(d =&gt; d.finger_mm).sort((a,b) =&gt; a-b)\n  const q1 = d3.quantile(vals, 1/3), q2 = d3.quantile(vals, 2/3)\n  const binOf = f =&gt; f &lt;= q1 ? \"Short\" : f &lt;= q2 ? \"Medium\" : \"Long\"\n  const binned = rows.map(d =&gt; ({ ...d, bin: binOf(d.finger_mm) }))\n  const grouped = [\"Short\",\"Medium\",\"Long\"].map(b =&gt; {\n    const g = binned.filter(d =&gt; d.bin === b)\n    return { bin: b, n: g.length, mean_rt: g.length ? d3.mean(g, d =&gt; d.mean_rt) : null }\n  }).filter(g =&gt; g.n &gt; 0)\n\n  return Plot.plot({\n    height: 450,\n    marginLeft: 60,\n    x: { label: \"Finger length bin\", domain: [\"Short\",\"Medium\",\"Long\"] },\n    y: { label: \"E[reaction time | bin] (ms)\" },\n    marks: [\n      Plot.barY(grouped, { x: \"bin\", y: \"mean_rt\", fill: \"#457b9d\", fillOpacity: 0.8 }),\n      Plot.text(grouped, { x: \"bin\", y: \"mean_rt\", text: d =&gt; `n=${d.n}`, dy: -10, fill: \"#333\", fontSize: 12 }),\n      Plot.ruleY([0]),\n    ]\n  })\n}"
+    "text": "Binning finger length\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) {\n    return html`&lt;div class=\"instructions-box\"&gt;Not enough finger-length data yet to bin — this will populate once more of the class has submitted through the updated tool.&lt;/div&gt;`\n  }\n  const vals = rows.map(d =&gt; d.finger_mm).sort((a,b) =&gt; a-b)\n  const q1 = d3.quantile(vals, 1/3), q2 = d3.quantile(vals, 2/3)\n  const binOf = f =&gt; f &lt;= q1 ? \"Short\" : f &lt;= q2 ? \"Medium\" : \"Long\"\n  const binned = rows.map(d =&gt; ({ ...d, bin: binOf(d.finger_mm) }))\n  const grouped = [\"Short\",\"Medium\",\"Long\"].map(b =&gt; {\n    const g = binned.filter(d =&gt; d.bin === b)\n    return { bin: b, n: g.length, mean_rt: g.length ? d3.mean(g, d =&gt; d.mean_rt) : null }\n  }).filter(g =&gt; g.n &gt; 0)\n  // Show each bin's range: the two tercile cut points, plus the observed\n  // min/max at the ends -- same boundaries pd.qcut produces in the code beside it\n  const fmt = v =&gt; (+v.toFixed(1)).toString()\n  const range = {\n    Short:  `${fmt(vals[0])} to ${fmt(q1)} mm`,\n    Medium: `&gt;${fmt(q1)} to ${fmt(q2)} mm`,\n    Long:   `&gt;${fmt(q2)} to ${fmt(vals[vals.length-1])} mm`,\n  }\n\n  return Plot.plot({\n    height: 470,\n    width: 560,\n    marginLeft: 60,\n    marginBottom: 60,\n    style: { fontSize: \"14px\" },\n    x: { label: \"Finger length bin\", domain: [\"Short\",\"Medium\",\"Long\"], tickFormat: b =&gt; `${b}\\n${range[b]}` },\n    y: { label: \"E[reaction time | bin] (ms)\" },\n    marks: [\n      Plot.barY(grouped, { x: \"bin\", y: \"mean_rt\", fill: \"#457b9d\", fillOpacity: 0.8 }),\n      Plot.text(grouped, { x: \"bin\", y: \"mean_rt\", text: d =&gt; `n=${d.n}`, dy: -10, fill: \"#333\", fontSize: 12 }),\n      Plot.ruleY([0]),\n    ]\n  })\n}\n\n\n\n\n\n\n\n\n\n\nShow the Python code — how the bins were chosen\n\n\nhtml`&lt;pre style=\"font-family:'SF Mono','Menlo',monospace;font-size:0.45em;line-height:1.35;\n                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;\n                  padding:8px 14px;overflow-x:auto;white-space:pre;\"&gt;import pandas as pd\n\ndf = pd.read_csv(data_path)   # week3_reaction_times.csv (one row per trial)\n\n# Decision 1: one row per student, not per trial -- each student's\n# finger length is one value, so bin students, not trials\nstudents = (df.groupby('name')\n              .agg(mean_rt=('reaction_time_ms', 'mean'),\n                   finger=('finger_length_corrected', 'first'))\n              .reset_index())\n\n# Decision 2: three bins with roughly equal numbers of students\n# (terciles), not equal-width mm ranges -- so no bin ends up nearly empty\nstudents['bin'] = pd.qcut(students['finger'], q=3,\n                          labels=['Short', 'Medium', 'Long'])\npd.qcut(students['finger'], q=3).cat.categories   # the cut points\n\n# Decision 3: the conditional mean E[reaction time | bin], plus n per bin\nstudents.groupby('bin', observed=True)['mean_rt'].agg(['mean', 'count'])&lt;/pre&gt;`"
   },
   {
     "objectID": "week3-slides.html#scatter-covariance-correlation",
@@ -1740,42 +1740,42 @@
     "href": "week3-slides.html#task-plot-finger-length-against-reaction-time",
     "title": "When y Met x: Correlation and Covariance",
     "section": "Task — plot finger length against reaction time",
-    "text": "Task — plot finger length against reaction time\n\nUsing the class’s (finger length, mean reaction time) pairs — one point per student — build a scatterplot in Excel. Does a relationship look plausible before you calculate anything?"
+    "text": "Task — plot finger length against reaction time\n\nUsing week3_students.csv (one row per student), build a scatterplot of finger_length_corrected against mean_reaction_time_ms in Excel. Does a relationship look plausible before you calculate anything?"
   },
   {
     "objectID": "week3-slides.html#finger-length-vs.-reaction-time-our-data",
     "href": "week3-slides.html#finger-length-vs.-reaction-time-our-data",
     "title": "When y Met x: Correlation and Covariance",
     "section": "Finger length vs. reaction time — our data",
-    "text": "Finger length vs. reaction time — our data\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) {\n    return html`&lt;div class=\"instructions-box\"&gt;Not enough finger-length data yet to plot — this will populate once more of the class has submitted through the updated tool.&lt;/div&gt;`\n  }\n  return Plot.plot({\n    height: 460,\n    marginLeft: 60,\n    x: { label: \"Finger length (mm)\" },\n    y: { label: \"Mean reaction time (ms)\" },\n    marks: [\n      Plot.dot(rows, { x: \"finger_mm\", y: \"mean_rt\", fill: \"#457b9d\", r: 6, fillOpacity: 0.8,\n                       tip: true, title: d =&gt; `${d.student_name}: ${d.finger_mm}mm, ${d.mean_rt.toFixed(0)}ms` }),\n    ]\n  })\n}\n\n\n\n\n\n\n\nA relationship might be visible here — or might not. Covariance and correlation, next, put a number on exactly how strong it is."
+    "text": "Finger length vs. reaction time — our data\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) {\n    return html`&lt;div class=\"instructions-box\"&gt;Not enough finger-length data yet to plot — this will populate once more of the class has submitted through the updated tool.&lt;/div&gt;`\n  }\n  return Plot.plot({\n    height: 460,\n    marginLeft: 60,\n    x: { label: \"Finger length (mm)\" },\n    y: { label: \"Mean reaction time (ms)\" },\n    marks: [\n      Plot.dot(rows, { x: \"finger_mm\", y: \"mean_rt\", fill: \"#457b9d\", r: 6, fillOpacity: 0.8,\n                       tip: true, title: d =&gt; `${d.student_name}: ${d.finger_mm}mm, ${d.mean_rt.toFixed(0)}ms` }),\n    ]\n  })\n}\n\n\n\n\n\n\n\nCan we see a relationship here?"
   },
   {
     "objectID": "week3-slides.html#covariance",
     "href": "week3-slides.html#covariance",
     "title": "When y Met x: Correlation and Covariance",
     "section": "Covariance",
-    "text": "Covariance\nIn plain language: covariance asks whether x and y tend to move together — when one is above its own average, is the other usually above its average too?\n\n\\[Cov[x,y] = \\frac{\\sum_i (x_i - \\bar{x})(y_i - \\bar{y})}{n-1}\\]\n\nMultiplies each observation’s deviation from the x-mean by its deviation from the y-mean, and averages\nPositive when x and y tend to deviate from their means in the same direction\nCan be any positive or negative number — units depend on the units of x and y\nLike the SD back in Week 1, this divides by \\(n-1\\), not \\(n\\) — the same small-sample correction, applied here too\n\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;div class=\"instructions-box\"&gt;Not enough finger-length data yet.&lt;/div&gt;`\n  const mx = d3.mean(rows, d =&gt; d.finger_mm), my = d3.mean(rows, d =&gt; d.mean_rt)\n  const colored = rows.map(d =&gt; ({ ...d, sign: (d.finger_mm - mx) * (d.mean_rt - my) &gt;= 0 ? \"Same sign (+)\" : \"Opposite sign (−)\" }))\n\n  return Plot.plot({\n    height: 310,\n    marginLeft: 60,\n    x: { label: \"Finger length (mm)\" },\n    y: { label: \"Mean reaction time (ms)\" },\n    color: { domain: [\"Same sign (+)\", \"Opposite sign (−)\"], range: [\"#2d6a4f\", \"#e63946\"], legend: true },\n    marks: [\n      Plot.ruleX([mx], { stroke: \"#999\", strokeDasharray: \"4,3\" }),\n      Plot.ruleY([my], { stroke: \"#999\", strokeDasharray: \"4,3\" }),\n      Plot.dot(colored, { x: \"finger_mm\", y: \"mean_rt\", fill: \"sign\", r: 6, fillOpacity: 0.85,\n                       tip: true, title: d =&gt; `${d.student_name}: ${d.finger_mm}mm, ${d.mean_rt.toFixed(0)}ms` }),\n    ]\n  })\n}\n\n\n\n\n\n\n\n\n\n\nDashed lines = each variable’s own mean. A point’s contribution is \\((x_i - \\bar{x})(y_i - \\bar{y})\\) — green = both deviations the same sign, positive product; red = opposite signs, negative product. Covariance is the average of all these products.\n\n\nSource: Békés & Kézdi (2021), Ch. 4"
+    "text": "Covariance\nIn plain language: covariance asks whether x and y tend to move together — when one is above its own average, is the other usually above its average too?\n\n\\[Cov[x,y] = \\frac{\\sum_i (x_i - \\bar{x})(y_i - \\bar{y})}{n-1}\\]\n\nMultiplies each observation’s deviation from the x-mean by its deviation from the y-mean, and averages\nPositive when x and y tend to deviate from their means in the same direction\nCan be any positive or negative number — units depend on the units of x and y\nLike the SD back in Week 1, this divides by \\(n-1\\), not \\(n\\) — the same small-sample correction, applied here too\n\n\n\nSource: Békés & Kézdi (2021), Ch. 4"
   },
   {
     "objectID": "week3-slides.html#task-calculate-the-covariance",
     "href": "week3-slides.html#task-calculate-the-covariance",
     "title": "When y Met x: Correlation and Covariance",
     "section": "Task — calculate the covariance",
-    "text": "Task — calculate the covariance\n\nBy hand or in Excel, using the class’s (finger length, mean reaction time) pairs: calculate \\(Cov[\\text{finger length}, \\text{reaction time}]\\).\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;p style=\"color:#aaa;\"&gt;Will compute automatically once enough data is in.&lt;/p&gt;`\n  const xs = rows.map(d =&gt; d.finger_mm), ys = rows.map(d =&gt; d.mean_rt)\n  const mx = d3.mean(xs), my = d3.mean(ys)\n  const cov = d3.sum(xs.map((x,i) =&gt; (x - mx) * (ys[i] - my))) / (xs.length - 1)\n  return html`&lt;p style=\"font-family:sans-serif;\"&gt;Cov[finger length, reaction time] = &lt;strong style=\"color:#e63946;font-size:1.2em;\"&gt;${cov.toFixed(1)}&lt;/strong&gt;&lt;/p&gt;`\n}"
+    "text": "Task — calculate the covariance\n\nIn Excel, using week3_students.csv: calculate \\(Cov[\\text{finger length}, \\text{reaction time}]\\).\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;p style=\"color:#aaa;\"&gt;Will compute automatically once enough data is in.&lt;/p&gt;`\n  const xs = rows.map(d =&gt; d.finger_mm), ys = rows.map(d =&gt; d.mean_rt)\n  const mx = d3.mean(xs), my = d3.mean(ys)\n  const cov = d3.sum(xs.map((x,i) =&gt; (x - mx) * (ys[i] - my))) / (xs.length - 1)\n  return html`&lt;p style=\"font-family:sans-serif;\"&gt;Cov[finger length, reaction time] = &lt;strong style=\"color:#e63946;font-size:1.2em;\"&gt;${cov.toFixed(1)}&lt;/strong&gt;&lt;/p&gt;`\n}"
   },
   {
     "objectID": "week3-slides.html#correlation",
     "href": "week3-slides.html#correlation",
     "title": "When y Met x: Correlation and Covariance",
     "section": "Correlation",
-    "text": "Correlation\nIn plain language: correlation asks the same question as covariance — do x and y move together — but reports the answer on a fixed scale from −1 to 1, so it’s comparable no matter what units x and y are measured in.\nThe standardised version of the covariance — divide by the product of the standard deviations:\n\\[Corr[x,y] = \\frac{Cov[x,y]}{SD[x] \\, SD[y]} \\qquad -1 \\leq Corr[x,y] \\leq 1\\]\nRough guide: below 0.2 is weak, above 0.7 is generally strong."
+    "text": "Correlation\nIn plain language: correlation asks the same question as covariance — do x and y move together — but reports the answer on a fixed scale from −1 to 1, so it’s comparable no matter what units x and y are measured in.\nBoth covariance and correlation measure the direction and strength of a linear association. Correlation is the standardised version of the covariance — divide by the product of the standard deviations:\n\\[Corr[x,y] = \\frac{Cov[x,y]}{SD[x] \\, SD[y]} \\qquad -1 \\leq Corr[x,y] \\leq 1\\]\nRough guide: below 0.2 is weak, above 0.7 is generally strong."
   },
   {
     "objectID": "week3-slides.html#task-calculate-the-correlation",
     "href": "week3-slides.html#task-calculate-the-correlation",
     "title": "When y Met x: Correlation and Covariance",
     "section": "Task — calculate the correlation",
-    "text": "Task — calculate the correlation\n\nUsing your covariance from two slides ago, and the SD of each variable: calculate the correlation coefficient.\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;p style=\"color:#aaa;\"&gt;Will compute automatically once enough data is in.&lt;/p&gt;`\n  const xs = rows.map(d =&gt; d.finger_mm), ys = rows.map(d =&gt; d.mean_rt)\n  const mx = d3.mean(xs), my = d3.mean(ys)\n  const cov = d3.sum(xs.map((x,i) =&gt; (x - mx) * (ys[i] - my))) / (xs.length - 1)\n  const corr = cov / (d3.deviation(xs) * d3.deviation(ys))\n  return html`&lt;p style=\"font-family:sans-serif;\"&gt;Corr[finger length, reaction time] = &lt;strong style=\"color:#e63946;font-size:1.2em;\"&gt;${corr.toFixed(2)}&lt;/strong&gt;&lt;/p&gt;`\n}\n\n\n\n\n\n\n\n\nWhatever number comes back — is it strong enough, on its own, to justify HR replacing the real test with a ruler?"
+    "text": "Task — calculate the correlation\n\nNow the whole class: using your class covariance from earlier, and the SD of each variable, calculate the correlation coefficient between finger length and reaction time.\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;p style=\"color:#aaa;\"&gt;Will compute automatically once enough data is in.&lt;/p&gt;`\n  const xs = rows.map(d =&gt; d.finger_mm), ys = rows.map(d =&gt; d.mean_rt)\n  const mx = d3.mean(xs), my = d3.mean(ys)\n  const cov = d3.sum(xs.map((x,i) =&gt; (x - mx) * (ys[i] - my))) / (xs.length - 1)\n  const corr = cov / (d3.deviation(xs) * d3.deviation(ys))\n  return html`&lt;p style=\"font-family:sans-serif;\"&gt;Corr[finger length, reaction time] = &lt;strong style=\"color:#e63946;font-size:1.2em;\"&gt;${corr.toFixed(2)}&lt;/strong&gt;&lt;/p&gt;`\n}\n\n\n\n\n\n\n\n\nWhatever number comes back — is it strong enough, on its own, to justify HR replacing the real test with a ruler?"
   },
   {
     "objectID": "week3-slides.html#is-it-causal",
@@ -1878,9 +1878,9 @@
   {
     "objectID": "week3-online-slides.html#section",
     "href": "week3-online-slides.html#section",
-    "title": "Functional Form: Why We Log",
+    "title": "Are Bigger Firms Better Managed?",
     "section": "",
-    "text": "Why we log\nThe workshop used the log of reaction time to see a pattern more clearly. This session looks at why that works — and when it stops working."
+    "text": "Are bigger firms better managed?\nEverything from the workshop — conditional probability, conditional means, scatter, correlation — on one real business dataset."
   },
   {
     "objectID": "week3-online-slides.html#why-transform-at-all",
@@ -1927,8 +1927,211 @@
   {
     "objectID": "week3-online-slides.html#coming-up-week-4",
     "href": "week3-online-slides.html#coming-up-week-4",
-    "title": "Functional Form: Why We Log",
+    "title": "Are Bigger Firms Better Managed?",
     "section": "Coming up: Week 4",
     "text": "Coming up: Week 4\n\nWe can now describe a relationship between two variables.\nNext: turn that relationship into a model we can use to predict and interpret.\nSimple regression: the OLS estimator\n\nLinear regression · fitting a line · interpreting the slope"
+  },
+  {
+    "objectID": "week3-slides.html#association",
+    "href": "week3-slides.html#association",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Association",
+    "text": "Association\nTwo variables are associated when the values of y tend to differ across values of x: knowing x tells you something about y.\n\nPositive association: higher values of x go with higher values of y, on average\nNegative association: higher values of x go with lower values of y, on average\nNo association: y looks the same whatever the value of x (the variables are independent)\n\n\nEverything today measures association: conditional probabilities, conditional means, covariance and correlation are all ways of describing how y differs across x.\n\n\nAssociation is not causation. An association tells you two things move together in the data. On its own, it doesn’t tell you whether changing x would change y. We come back to that at the end of the session.\n\n\nSource: Békés & Kézdi (2021), Ch. 4"
+  },
+  {
+    "objectID": "week3-slides.html#task-flip-the-condition",
+    "href": "week3-slides.html#task-flip-the-condition",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Task — flip the condition",
+    "text": "Task — flip the condition\n\nSame table, the other way round. Calculate:\n\n\\(P(\\text{Phone} \\mid \\text{Caffeine} = \\text{Yes})\\) — of the caffeine drinkers, what share used a phone?\n\\(P(\\text{Phone})\\) — the share of the whole class who used a phone\n\nIs \\(P(\\text{Phone} \\mid \\text{Caffeine})\\) the same number as \\(P(\\text{Caffeine} \\mid \\text{Phone})\\) from the last task?\n\n\nflip = {\n  const n = (dev, caf) =&gt; d3.sum(joint_table.filter(r =&gt; (dev == null || r.device === dev) && (caf == null || r.caffeine === caf)), r =&gt; r.count)\n  const N = n(null, null)\n  return {\n    phoneGivenYes: n(\"Phone\",\"Yes\") / n(null,\"Yes\"),\n    pPhone: n(\"Phone\", null) / N,\n    yesGivenPhone: n(\"Phone\",\"Yes\") / n(\"Phone\", null),\n    nPhoneYes: n(\"Phone\",\"Yes\"), nYes: n(null,\"Yes\"), nPhone: n(\"Phone\", null), N\n  }\n}\n\n\n\n\n\n\n\n\nhtml`&lt;div style=\"font-family:sans-serif;font-size:0.95em;line-height:1.7;\"&gt;\n  &lt;div&gt;1. P(Phone | Caffeine) = ${flip.nPhoneYes} / ${flip.nYes} = &lt;strong style=\"color:#e63946;\"&gt;${flip.phoneGivenYes.toFixed(2)}&lt;/strong&gt;&lt;/div&gt;\n  &lt;div&gt;2. P(Phone) = ${flip.nPhone} / ${flip.N} = &lt;strong style=\"color:#e63946;\"&gt;${flip.pPhone.toFixed(2)}&lt;/strong&gt;&lt;/div&gt;\n  &lt;div style=\"margin-top:8px;\"&gt;Compare: P(Caffeine | Phone) = ${flip.nPhoneYes} / ${flip.nPhone} = &lt;strong&gt;${flip.yesGivenPhone.toFixed(2)}&lt;/strong&gt;&lt;/div&gt;\n&lt;/div&gt;`\n\n\n\n\n\n\nSame numerator, different denominator — the order matters. \\(P(A \\mid B)\\) and \\(P(B \\mid A)\\) answer different questions."
+  },
+  {
+    "objectID": "week3-slides.html#what-independence-would-look-like",
+    "href": "week3-slides.html#what-independence-would-look-like",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "What independence would look like",
+    "text": "What independence would look like\nIf device and caffeine were independent, knowing someone’s device would tell you nothing about their caffeine use — every device’s bar would look the same as the class overall.\n\n{\n  const caffs = [\"Yes\",\"No\",\"Unknown\"].filter(c =&gt; joint_table.some(r =&gt; r.caffeine === c))\n  const N = d3.sum(joint_table, r =&gt; r.count)\n  const overall = Object.fromEntries(caffs.map(c =&gt; [c, d3.sum(joint_table.filter(r =&gt; r.caffeine === c), r =&gt; r.count) / N]))\n  const devices = [...new Set(joint_table.map(d =&gt; d.device))]\n  const rows = [\n    ...stacked_data.map(d =&gt; ({ ...d, view: \"What we observed\" })),\n    ...devices.flatMap(dev =&gt; caffs.map(c =&gt; ({ device: dev, caffeine: c, pct: overall[c], view: \"If independent\" })))\n  ]\n  return Plot.plot({\n    height: 380,\n    width: 900,\n    marginLeft: 60,\n    marginBottom: 50,\n    style: { fontSize: \"15px\" },\n    fx: { label: null, domain: [\"What we observed\", \"If independent\"] },\n    x: { label: \"Device\", tickSize: 0 },\n    y: { label: \"% within device\", percent: true },\n    color: { legend: true, domain: [\"Yes\",\"No\",\"Unknown\"], range: [\"#e63946\",\"#457b9d\",\"#ccc\"] },\n    marks: [\n      Plot.barY(rows, { fx: \"view\", x: \"device\", y: \"pct\", fill: \"caffeine\", order: \"caffeine\" }),\n      Plot.ruleY([0]),\n    ]\n  })\n}\n\n\n\n\n\n\n\nIndependence = flat bars: \\(P(\\text{Caffeine} \\mid \\text{Laptop}) = P(\\text{Caffeine} \\mid \\text{Phone}) = P(\\text{Caffeine})\\). The further the left-hand bars are from the right-hand ones, the more the two variables depend on each other."
+  },
+  {
+    "objectID": "week3-slides.html#task-expected-counts-if-independent",
+    "href": "week3-slides.html#task-expected-counts-if-independent",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Task — expected counts if independent",
+    "text": "Task — expected counts if independent\n\nIf device and caffeine were independent, \\(P(\\text{Phone and Caffeine}) = P(\\text{Phone}) \\times P(\\text{Caffeine})\\).\nFor each of the four cells, calculate the count we’d expect under independence:\n\\[\\text{expected count} = N \\times P(\\text{Device}) \\times P(\\text{Caffeine}) = \\frac{\\text{row total} \\times \\text{column total}}{N}\\]\nThen compare with the counts we actually observed. Which cells are furthest apart?\n\n\n\n{\n  const devices = [...new Set(joint_table.map(d =&gt; d.device))]\n  const caffs = [...new Set(joint_table.map(d =&gt; d.caffeine))]\n  const N = d3.sum(joint_table, r =&gt; r.count)\n  const cell = (dev, caf) =&gt; joint_table.find(r =&gt; r.device === dev && r.caffeine === caf)?.count ?? 0\n  const rowT = dev =&gt; d3.sum(caffs, c =&gt; cell(dev, c)), colT = caf =&gt; d3.sum(devices, d =&gt; cell(d, caf))\n  return html`&lt;table style=\"width:85%;margin:8px auto;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;\"&gt;\n    &lt;caption class=\"visually-hidden\"&gt;Observed counts next to the counts expected if device and caffeine were independent.&lt;/caption&gt;\n    &lt;thead&gt;&lt;tr style=\"background:#1a1a2e;color:white;\"&gt;\n      &lt;th scope=\"col\" style=\"padding:8px 14px;text-align:left;\"&gt;Device&lt;/th&gt;\n      ${caffs.map(c =&gt; `&lt;th scope=\"col\" style=\"padding:8px 14px;text-align:right;\"&gt;Caffeine: ${c}&lt;br&gt;&lt;span style=\"font-weight:400;font-size:0.85em;\"&gt;observed / expected&lt;/span&gt;&lt;/th&gt;`).join('')}\n    &lt;/tr&gt;&lt;/thead&gt;\n    &lt;tbody&gt;${devices.map(dev =&gt; `&lt;tr style=\"border-bottom:1px solid #eee;\"&gt;\n      &lt;td style=\"padding:8px 14px;font-weight:700;\"&gt;${dev}&lt;/td&gt;\n      ${caffs.map(c =&gt; `&lt;td style=\"padding:8px 14px;text-align:right;\"&gt;&lt;strong style=\"color:#457b9d;\"&gt;${cell(dev,c)}&lt;/strong&gt; / &lt;span style=\"color:#e63946;\"&gt;${(rowT(dev)*colT(c)/N).toFixed(1)}&lt;/span&gt;&lt;/td&gt;`).join('')}\n    &lt;/tr&gt;`).join('')}&lt;/tbody&gt;\n  &lt;/table&gt;`\n}\n\n\n\n\n\n\nThe gaps are small in counts — with  students, a difference of one or two people per cell is exactly what chance alone produces. Same lesson as before: a table this small can’t tell real dependence from noise."
+  },
+  {
+    "objectID": "week3-slides.html#what-a-clear-relationship-looks-like",
+    "href": "week3-slides.html#what-a-clear-relationship-looks-like",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "What a clear relationship looks like",
+    "text": "What a clear relationship looks like\nA different (simulated) class of 24: hours awake before taking the test vs. mean reaction time.\n\nPlot.plot({\n  height: 470,\n  marginLeft: 60,\n  x: { label: \"Hours awake before the test\" },\n  y: { label: \"Mean reaction time (ms)\" },\n  marks: [\n    Plot.dot(awake_data, { x: \"hours_awake\", y: \"reaction_time_ms\", fill: \"#2d6a4f\", r: 6, fillOpacity: 0.85,\n                           tip: true, title: d =&gt; `${d.hours_awake}h awake, ${d.reaction_time_ms}ms` }),\n  ]\n})\n\n\n\n\n\n\n\nSimulated data, for illustration — not our class."
+  },
+  {
+    "objectID": "week3-slides.html#covariance-on-our-own-data",
+    "href": "week3-slides.html#covariance-on-our-own-data",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Covariance, on our own data",
+    "text": "Covariance, on our own data\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;div class=\"instructions-box\"&gt;Not enough finger-length data yet.&lt;/div&gt;`\n  const mx = d3.mean(rows, d =&gt; d.finger_mm), my = d3.mean(rows, d =&gt; d.mean_rt)\n  const colored = rows.map(d =&gt; ({ ...d, sign: (d.finger_mm - mx) * (d.mean_rt - my) &gt;= 0 ? \"Same sign (+)\" : \"Opposite sign (−)\" }))\n\n  return Plot.plot({\n    height: 470,\n    width: 620,\n    marginLeft: 60,\n    marginTop: 30,\n    marginRight: 34,\n    x: { label: \"Finger length (mm)\" },\n    y: { label: \"Mean reaction time (ms)\" },\n    color: { domain: [\"Same sign (+)\", \"Opposite sign (−)\"], range: [\"#2d6a4f\", \"#e63946\"], legend: true },\n    marks: [\n      Plot.ruleX([mx], { stroke: \"#1a1a2e\", strokeWidth: 1.5, strokeDasharray: \"5,4\" }),\n      Plot.ruleY([my], { stroke: \"#1a1a2e\", strokeWidth: 1.5, strokeDasharray: \"5,4\" }),\n      Plot.text([mx], { x: d =&gt; d, frameAnchor: \"top\", dy: -14, text: () =&gt; \"x̄\", fontSize: 20, fontWeight: 700, fill: \"#1a1a2e\" }),\n      Plot.text([my], { y: d =&gt; d, frameAnchor: \"right\", dx: 22, text: () =&gt; \"ȳ\", fontSize: 20, fontWeight: 700, fill: \"#1a1a2e\" }),\n      Plot.dot(colored, { x: \"finger_mm\", y: \"mean_rt\", fill: \"sign\", r: 6, fillOpacity: 0.85,\n                       tip: true, title: d =&gt; `${d.student_name}: ${d.finger_mm}mm, ${d.mean_rt.toFixed(0)}ms` }),\n    ]\n  })\n}\n\n\n\n\n\n\n\n\n\\[Cov[x,y] = \\frac{\\sum_i (x_i - \\bar{x})(y_i - \\bar{y})}{n-1}\\]\nThe dashed lines are the two means: \\(\\bar{x}\\) (vertical, mean finger length) and \\(\\bar{y}\\) (horizontal, mean reaction time).\n\nEach point’s contribution is \\((x_i - \\bar{x})(y_i - \\bar{y})\\):\n\nGreen — both deviations the same sign, positive product\nRed — opposite signs, negative product\n\nCovariance is the average of all these products."
+  },
+  {
+    "objectID": "week3-slides.html#task-covariance-by-hand-five-students",
+    "href": "week3-slides.html#task-covariance-by-hand-five-students",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Task — covariance by hand: five students",
+    "text": "Task — covariance by hand: five students\n\nFive students: hours spent revising (x) and quiz score out of 12 (y). With a pen, no Excel:\n\n\n\nStudent\nHours, \\(x\\)\nScore, \\(y\\)\n\n\n\n\n1\n2\n3\n\n\n2\n4\n7\n\n\n3\n6\n5\n\n\n4\n8\n11\n\n\n5\n10\n9\n\n\n\n\nFind \\(\\bar{x}\\) and \\(\\bar{y}\\)\nFor each student, work out \\((x_i - \\bar{x})\\), \\((y_i - \\bar{y})\\) and their product\nAdd up the products and divide by \\(n - 1\\)"
+  },
+  {
+    "objectID": "week3-slides.html#covariance-by-hand-answer",
+    "href": "week3-slides.html#covariance-by-hand-answer",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Covariance by hand — answer",
+    "text": "Covariance by hand — answer\n\\(\\bar{x} = 6\\), \\(\\bar{y} = 7\\)\n\n\n\nStudent\n\\(x_i - \\bar{x}\\)\n\\(y_i - \\bar{y}\\)\nProduct\n\n\n\n\n1\n−4\n−4\n16\n\n\n2\n−2\n0\n0\n\n\n3\n0\n−2\n0\n\n\n4\n2\n4\n8\n\n\n5\n4\n2\n8\n\n\n\n\nSum\n32\n\n\n\n\n\\[Cov[x,y] = \\frac{32}{5-1} = 8\\]\nEvery product is positive or zero: whenever a student is above average on hours, they’re above average on score too. Now do the same for the whole class."
+  },
+  {
+    "objectID": "week3-slides.html#task-correlation-by-hand-five-students",
+    "href": "week3-slides.html#task-correlation-by-hand-five-students",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Task — correlation by hand: five students",
+    "text": "Task — correlation by hand: five students\n\nSame five students. You already have \\(Cov[x,y] = 8\\).\n\nCalculate \\(SD[x]\\) and \\(SD[y]\\) — square each deviation from the last task, add them up, divide by \\(n-1\\), take the square root\nCalculate \\(Corr[x,y] = \\dfrac{Cov[x,y]}{SD[x]\\,SD[y]}\\)\nStrong, weak, or in between?\n\n\n\nSquared deviations: \\(x\\): 16 + 4 + 0 + 4 + 16 = 40; \\(y\\): 16 + 0 + 4 + 16 + 4 = 40\n\\[SD[x] = SD[y] = \\sqrt{40/4} = \\sqrt{10} \\approx 3.16 \\qquad Corr[x,y] = \\frac{8}{3.16 \\times 3.16} = \\frac{8}{10} = 0.8\\]\nAbove 0.7 — a strong positive association."
+  },
+  {
+    "objectID": "week3-slides.html#task-the-clear-relationship-as-a-number",
+    "href": "week3-slides.html#task-the-clear-relationship-as-a-number",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Task — the clear relationship, as a number",
+    "text": "Task — the clear relationship, as a number\n\n\n\nPlot.plot({\n  height: 400,\n  width: 520,\n  marginLeft: 60,\n  x: { label: \"Hours awake before the test\" },\n  y: { label: \"Mean reaction time (ms)\" },\n  marks: [\n    Plot.dot(awake_data, { x: \"hours_awake\", y: \"reaction_time_ms\", fill: \"#2d6a4f\", r: 6, fillOpacity: 0.85 }),\n  ]\n})\n\n\n\n\n\n\n\n\n\nBack to our simulated class of . You’re given:\n\n\\(Cov[\\text{hours awake}, \\text{reaction time}]\\) = \n\\(SD[\\text{hours awake}]\\) = \n\\(SD[\\text{reaction time}]\\) = \n\nCalculate the correlation coefficient.\n\n\n\\[Corr = \\frac{Cov}{SD_x \\, SD_y}\\]\n\nhtml`&lt;p style=\"font-family:sans-serif;\"&gt;${awake_stats.cov} ÷ (${awake_stats.sd_x} × ${awake_stats.sd_y}) = &lt;strong style=\"color:#e63946;font-size:1.3em;\"&gt;${awake_stats.corr.toFixed(2)}&lt;/strong&gt;&lt;/p&gt;`\n\n\n\n\n\n\nWell above 0.7 — strong, and it matches what your eye saw on the scatter."
+  },
+  {
+    "objectID": "week3-slides.html#task-guess-the-correlation",
+    "href": "week3-slides.html#task-guess-the-correlation",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Task — guess the correlation",
+    "text": "Task — guess the correlation\n\nFour scatterplots. Without calculating anything, guess the correlation for each: somewhere between −1 and 1.\n\n\nPlot.plot({\n  height: 300,\n  width: 1100,\n  marginLeft: 20,\n  style: { fontSize: \"15px\" },\n  fx: { label: null, domain: [\"A\",\"B\",\"C\",\"D\"], tickFormat: d =&gt; `Panel ${d}` },\n  x: { label: null, ticks: [] },\n  y: { label: null, ticks: [] },\n  marks: [\n    Plot.frame({ stroke: \"#ddd\" }),\n    Plot.dot(guess_data, { fx: \"panel\", x: \"x\", y: \"y\", r: 4, fill: \"#457b9d\", fillOpacity: 0.8 }),\n  ]\n})\n\n\n\n\n\n\n\n\nhtml`&lt;div style=\"display:flex;justify-content:space-around;font-family:sans-serif;font-size:1.1em;margin-top:4px;\"&gt;\n  ${[\"A\",\"B\",\"C\",\"D\"].map(p =&gt; `&lt;div&gt;${p}: &lt;strong style=\"color:#e63946;\"&gt;${guess_r[p].toFixed(2)}&lt;/strong&gt;&lt;/div&gt;`).join('')}\n&lt;/div&gt;`\n\n\n\n\n\n\nMost people underestimate moderate correlations: 0.5 looks like a loose cloud. That’s why we calculate instead of eyeballing."
+  },
+  {
+    "objectID": "week3-slides.html#dependence-mean-dependence-correlation",
+    "href": "week3-slides.html#dependence-mean-dependence-correlation",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Dependence, mean-dependence, correlation",
+    "text": "Dependence, mean-dependence, correlation"
+  },
+  {
+    "objectID": "week3-slides.html#three-ways-x-and-y-can-be-related",
+    "href": "week3-slides.html#three-ways-x-and-y-can-be-related",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Three ways x and y can be related",
+    "text": "Three ways x and y can be related\nTwo variables are associated whenever they’re not independent. But association comes in different forms:\n\nIndependent — the whole distribution of y is the same whatever the value of x. Knowing x tells you nothing about y.\n\n\nMean-dependent — the average of y changes with x: \\(E[y \\mid x]\\) isn’t flat. This is what covariance and correlation pick up.\n\n\nDependent, but not in the mean — the average of y stays the same, but something else about y changes with x, such as its spread.\n\n\nCorrelation only measures the linear part of mean-dependence. So a correlation of zero does not mean x and y are unrelated.\n\n\nSource: Békés & Kézdi (2021), Ch. 4"
+  },
+  {
+    "objectID": "week3-slides.html#task-which-of-these-are-independent",
+    "href": "week3-slides.html#task-which-of-these-are-independent",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Task — which of these are independent?",
+    "text": "Task — which of these are independent?\n\nFor each panel: does knowing x tell you anything about y? And what would you guess the correlation is?\n\n\ndep_panels = Object.keys(dep_r)\n\n\n\n\n\n\n\nviewof show_dep_means = Inputs.toggle({ label: \"Show the conditional mean, E[y | x]\", value: false })\n\n\n\n\n\n\n\n{\n  const binW = 0.25\n  const means = dep_panels.flatMap(p =&gt; {\n    const pts = dep_data.filter(d =&gt; d.panel === p)\n    return d3.groups(pts, d =&gt; Math.floor(d.x / binW)).map(([b, g]) =&gt; ({ panel: p, x: (b + 0.5) * binW, y: d3.mean(g, d =&gt; d.y) }))\n      .sort((a, b) =&gt; a.x - b.x)\n  })\n  return Plot.plot({\n    height: 270,\n    width: 1100,\n    marginLeft: 20,\n    style: { fontSize: \"15px\" },\n    fx: { label: null, domain: dep_panels, tickFormat: d =&gt; `Panel ${d[0]}` },\n    x: { label: null, ticks: [] },\n    y: { label: null, ticks: [] },\n    marks: [\n      Plot.frame({ stroke: \"#ddd\" }),\n      Plot.dot(dep_data, { fx: \"panel\", x: \"x\", y: \"y\", r: 2.5, fill: \"#457b9d\", fillOpacity: 0.6 }),\n      show_dep_means ? Plot.line(means, { fx: \"panel\", x: \"x\", y: \"y\", stroke: \"#e63946\", strokeWidth: 3, curve: \"basis\" }) : null,\n    ]\n  })\n}\n\n\n\n\n\n\n\n\nhtml`&lt;div style=\"display:grid;grid-template-columns:repeat(4,1fr);gap:10px;font-family:sans-serif;font-size:0.75em;line-height:1.35;\"&gt;\n  ${dep_panels.map((p, i) =&gt; `&lt;div style=\"text-align:center;\"&gt;&lt;strong&gt;${[\"Independent\", \"Mean-dependent (linear)\", \"Mean-dependent (U-shape)\", \"Spread depends on x\"][i]}&lt;/strong&gt;&lt;br&gt;r = &lt;strong style=\"color:#e63946;\"&gt;${Math.abs(dep_r[p]) &lt; 0.005 ? \"0.00\" : dep_r[p].toFixed(2)}&lt;/strong&gt;&lt;/div&gt;`).join('')}\n&lt;/div&gt;`\n\n\n\n\n\n\nOnly panel 1 is independent. Panels 3 and 4 have r = 0, yet x clearly tells you something about y: in 3 the average changes, in 4 the spread does."
+  },
+  {
+    "objectID": "week3-slides.html#how-they-fit-together",
+    "href": "week3-slides.html#how-they-fit-together",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "How they fit together",
+    "text": "How they fit together\n\n  \n  Zero correlation\n  e.g. the U-shape (panel 3)\n  \n  Mean-independent: E[y | x] is flat\n  e.g. the fan (panel 4)\n  \n  Independent\n  nothing about y depends on x\n  (panel 1)\n\n\n\nIndependent → mean-independent → zero correlation. Each inner box is a special case of the one around it.\nNone of it works the other way. Zero correlation doesn’t mean independent, so always look at the scatter as well as the number.\n\n\n\nSource: Békés & Kézdi (2021), Ch. 4"
+  },
+  {
+    "objectID": "week3-slides.html#online-session-are-bigger-firms-better-managed",
+    "href": "week3-slides.html#online-session-are-bigger-firms-better-managed",
+    "title": "When y Met x: Correlation and Covariance",
+    "section": "Online session — Are bigger firms better managed?",
+    "text": "Online session — Are bigger firms better managed?\nA recorded walkthrough of Gabor’s own case study: everything from today, from conditional probabilities to correlation, applied to real data on 300 Mexican firms. Watch it before the Q&A and bring your questions."
+  },
+  {
+    "objectID": "week3-online-slides.html#the-question",
+    "href": "week3-online-slides.html#the-question",
+    "title": "Are Bigger Firms Better Managed?",
+    "section": "The question",
+    "text": "The question\nSome firms are much better managed than others. Is firm size part of the story?\n\ny = quality of management\nx = firm size (number of employees)\n\n\nWhy it matters: if size itself causes better management, policies that help firms grow could also improve how they’re run. If not, that link is a mirage.\nToday is the first step: describe the pattern of association. Whether it’s causal comes at the end.\n\n\nSource: Békés & Kézdi (2021), Data Analysis for Business, Economics, and Policy, Ch. 4"
+  },
+  {
+    "objectID": "week3-online-slides.html#the-data-world-management-survey",
+    "href": "week3-online-slides.html#the-data-world-management-survey",
+    "title": "Are Bigger Firms Better Managed?",
+    "section": "The data: World Management Survey",
+    "text": "The data: World Management Survey\n\nInterviewers talk to senior managers and score 18 management practices — e.g. how performance is tracked, how targets are set\nEach practice scored from 1 (worst practice) to 5 (best practice)\nThe management score = the simple average of the 18, so it also runs from 1 to 5\n\n\nOur sample, exactly as in the textbook: Mexican firms, 2013, with 100–5,000 employees —  firms.\n\n\n\nPause the video. Before you see any data: do you expect bigger firms to be better managed? Why?"
+  },
+  {
+    "objectID": "week3-online-slides.html#first-each-variable-on-its-own",
+    "href": "week3-online-slides.html#first-each-variable-on-its-own",
+    "title": "Are Bigger Firms Better Managed?",
+    "section": "First, each variable on its own",
+    "text": "First, each variable on its own\n\n{\n  const a = Plot.plot({ height: 300, width: 520, marginLeft: 45,\n    x: { label: \"Management score (1–5)\" }, y: { label: \"Firms\" },\n    marks: [Plot.rectY(firms, Plot.binX({ y: \"count\" }, { x: \"management\", thresholds: 20, fill: \"#457b9d\", inset: 1 })), Plot.ruleY([0])] })\n  const b = Plot.plot({ height: 300, width: 520, marginLeft: 45,\n    x: { label: \"Employees\" }, y: { label: \"Firms\" },\n    marks: [Plot.rectY(firms, Plot.binX({ y: \"count\" }, { x: \"emp_firm\", thresholds: 20, fill: \"#2d6a4f\", inset: 1 })), Plot.ruleY([0])] })\n  return html`&lt;div style=\"display:flex;gap:30px;justify-content:center;\"&gt;${a}${b}&lt;/div&gt;`\n}\n\n\n\n\n\n\n\n\nManagement score: mean , median , SD  — roughly symmetric\nEmployees: mean , median  — a long right tail, just like our reaction times in Week 1"
+  },
+  {
+    "objectID": "week3-online-slides.html#conditional-probabilities",
+    "href": "week3-online-slides.html#conditional-probabilities",
+    "title": "Are Bigger Firms Better Managed?",
+    "section": "Conditional probabilities",
+    "text": "Conditional probabilities\nStart simple. Take one of the 18 practices — lean management, scored 1 to 5 — and split firms into three size groups: small (100–199 employees), medium (200–999), large (1,000+).\n\nPlot.plot({\n  height: 330,\n  width: 900,\n  marginLeft: 70,\n  style: { fontSize: \"14px\" },\n  x: { label: \"% of firms in that size group\", percent: true },\n  marginBottom: 45,\n  y: { label: null, domain: [\"Small\", \"Medium\", \"Large\"] },\n  color: { legend: true, label: \"Lean management score\", domain: [1,2,3,4,5], scheme: \"RdYlBu\" },\n  marks: [\n    Plot.barX(lean_cond, { y: \"size\", x: \"share\", fill: \"lean\", order: \"lean\" }),\n    Plot.ruleX([0]),\n  ]\n})\n\n\n\n\n\n\n\n\nPause. Read off \\(P(\\text{score} = 1 \\mid \\text{Small})\\) and \\(P(\\text{score} = 5 \\mid \\text{Large})\\). Is this the same kind of chart as our device-and-caffeine one?"
+  },
+  {
+    "objectID": "week3-online-slides.html#reading-the-conditional-probabilities",
+    "href": "week3-online-slides.html#reading-the-conditional-probabilities",
+    "title": "Are Bigger Firms Better Managed?",
+    "section": "Reading the conditional probabilities",
+    "text": "Reading the conditional probabilities\n\n{\n  const p = (s, l) =&gt; lean_cond.find(d =&gt; d.size === s && d.lean === l)?.share ?? 0\n  return html`&lt;table style=\"width:80%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.9em;\"&gt;\n    &lt;caption class=\"visually-hidden\"&gt;Share of firms at each lean management score, by firm size.&lt;/caption&gt;\n    &lt;thead&gt;&lt;tr style=\"background:#1a1a2e;color:white;\"&gt;&lt;th scope=\"col\" style=\"padding:7px 12px;text-align:left;\"&gt;Size&lt;/th&gt;\n      ${[1,2,3,4,5].map(l =&gt; `&lt;th scope=\"col\" style=\"padding:7px 12px;text-align:right;\"&gt;Score ${l}&lt;/th&gt;`).join('')}&lt;/tr&gt;&lt;/thead&gt;\n    &lt;tbody&gt;${[\"Small\",\"Medium\",\"Large\"].map(s =&gt; `&lt;tr style=\"border-bottom:1px solid #eee;\"&gt;&lt;td style=\"padding:7px 12px;font-weight:700;\"&gt;${s}&lt;/td&gt;\n      ${[1,2,3,4,5].map(l =&gt; `&lt;td style=\"padding:7px 12px;text-align:right;\"&gt;${(100*p(s,l)).toFixed(0)}%&lt;/td&gt;`).join('')}&lt;/tr&gt;`).join('')}&lt;/tbody&gt;\n  &lt;/table&gt;`\n}\n\n\n\n\n\n\n\n\nSmall firms: about 1 in 5 score the worst possible 1, and none score 5\nLarge firms: fewer 1s, and the most 5s\nEvery row is a conditional distribution — the distribution of y given x. They aren’t the same across rows, so lean management and size are not independent.\n\n\n\n\nShow the Python code\n\n\ncodeBox(`import pandas as pd\n\nfirms = pd.read_csv(data_path)   # wms_mexico_2013.csv\nfirms['size'] = pd.cut(firms['emp_firm'], [0, 199, 999, float('inf')],\n                       labels=['Small', 'Medium', 'Large'])\n\n# normalize='index' turns counts into shares within each row: P(score | size)\npd.crosstab(firms['size'], firms['lean1'], normalize='index').round(2)`)"
+  },
+  {
+    "objectID": "week3-online-slides.html#conditional-means",
+    "href": "week3-online-slides.html#conditional-means",
+    "title": "Are Bigger Firms Better Managed?",
+    "section": "Conditional means",
+    "text": "Conditional means\nNow use the full management score — all 18 practices averaged — and take its mean within each size group: \\(E[\\text{management} \\mid \\text{size}]\\).\n\nPlot.plot({\n  height: 320,\n  width: 700,\n  marginLeft: 60,\n  style: { fontSize: \"14px\" },\n  x: { label: \"Firm size\", domain: [\"Small\",\"Medium\",\"Large\"] },\n  y: { label: \"Mean management score\", domain: [0, 3.6] },\n  marks: [\n    Plot.barY(size_means, { x: \"size\", y: \"mean\", fill: \"#457b9d\", fillOpacity: 0.85 }),\n    Plot.text(size_means, { x: \"size\", y: \"mean\", text: d =&gt; `${d.mean.toFixed(2)} (n=${d.count})`, dy: -12, fontSize: 14 }),\n  ]\n})\n\n\n\n\n\n\n\n2.68 → 2.94 → 3.19. On average, larger firms are better managed: a positive association between size and management quality, and the first simple piece of evidence."
+  },
+  {
+    "objectID": "week3-online-slides.html#scatter-and-bin-scatter",
+    "href": "week3-online-slides.html#scatter-and-bin-scatter",
+    "title": "Are Bigger Firms Better Managed?",
+    "section": "Scatter and bin-scatter",
+    "text": "Scatter and bin-scatter\n\n\n\nPlot.plot({\n  height: 380, width: 540, marginLeft: 45,\n  x: { label: \"Employees\" }, y: { label: \"Management score\", domain: [1, 5] },\n  marks: [Plot.dot(firms, { x: \"emp_firm\", y: \"management\", r: 3, fill: \"#457b9d\", fillOpacity: 0.5 })]\n})\n\n\n\n\n\n\nScatterplot: every firm. Lots of information, hard to read.\n\n\n\nPlot.plot({\n  height: 380, width: 540, marginLeft: 45,\n  x: { label: \"Employees (median of each bin)\" }, y: { label: \"Mean management score\", domain: [1, 5] },\n  marks: [\n    Plot.line(bins10, { x: \"emp\", y: \"management\", stroke: \"#e63946\", strokeOpacity: 0.4 }),\n    Plot.dot(bins10, { x: \"emp\", y: \"management\", r: 7, fill: \"#e63946\" })\n  ]\n})\n\n\n\n\n\n\nBin-scatter: 10 bins with equal numbers of firms, mean score in each.\n\n\n\nPositive overall — but most of the rise comes between small and medium firms, then it flattens. Gabor calls this concave: increasing, at a decreasing rate. Notice the dots bunch up on the left, where most firms are."
+  },
+  {
+    "objectID": "week3-online-slides.html#a-detour-log-the-skewed-variable",
+    "href": "week3-online-slides.html#a-detour-log-the-skewed-variable",
+    "title": "Are Bigger Firms Better Managed?",
+    "section": "A detour: log the skewed variable",
+    "text": "A detour: log the skewed variable\nEmployment is heavily right-skewed. Taking its log stretches out the small firms and squeezes the big ones — the same move we made with reaction time in the workshop.\n\n\n\nPlot.plot({\n  height: 340, width: 540, marginLeft: 45,\n  x: { label: \"Employees\" }, y: { label: \"Management score\", domain: [1, 5] },\n  marks: [Plot.dot(firms, { x: \"emp_firm\", y: \"management\", r: 3, fill: \"#457b9d\", fillOpacity: 0.5 })]\n})\n\n\n\n\n\n\n\n\n\nPlot.plot({\n  height: 340, width: 540, marginLeft: 45,\n  x: { label: \"ln(employees)\" }, y: { label: \"Management score\", domain: [1, 5] },\n  marks: [Plot.dot(firms, { x: \"ln_emp\", y: \"management\", r: 3, fill: \"#2d6a4f\", fillOpacity: 0.5 })]\n})\n\n\n\n\n\n\n\n\n\nSame firms, same data. On the log scale the points spread evenly and the upward drift is much easier to see. Week 5 covers how to interpret a model with logged variables."
+  },
+  {
+    "objectID": "week3-online-slides.html#conditional-distributions-box-plots-by-size",
+    "href": "week3-online-slides.html#conditional-distributions-box-plots-by-size",
+    "title": "Are Bigger Firms Better Managed?",
+    "section": "Conditional distributions: box plots by size",
+    "text": "Conditional distributions: box plots by size\nThe conditional mean is one number per group. A box plot shows the whole conditional distribution.\n\nPlot.plot({\n  height: 330,\n  width: 800,\n  marginLeft: 70,\n  marginBottom: 45,\n  style: { fontSize: \"14px\" },\n  x: { label: \"Management score\", domain: [1, 5] },\n  y: { label: null, domain: [\"Small\", \"Medium\", \"Large\"] },\n  marks: [Plot.boxX(firms, { x: \"management\", y: \"size\", fill: \"#457b9d\", fillOpacity: 0.3, stroke: \"#1a1a2e\" })]\n})\n\n\n\n\n\n\n\nThe median, both quartiles, the minimum and the maximum all shift right as firms get bigger. The spread looks similar in each group, so the difference is mostly in where the distribution sits."
+  },
+  {
+    "objectID": "week3-online-slides.html#covariance-and-correlation",
+    "href": "week3-online-slides.html#covariance-and-correlation",
+    "title": "Are Bigger Firms Better Managed?",
+    "section": "Covariance and correlation",
+    "text": "Covariance and correlation\n\nPause and calculate. From our data:\n\nCov[employees, management] = \nSD[employees] = \nSD[management] = \n\nWhat is the correlation coefficient? Weak, moderate or strong?\n\n\n\\[Corr = \\frac{Cov}{SD_x \\, SD_y}\\]\n\nhtml`&lt;p style=\"font-family:sans-serif;font-size:1.05em;\"&gt;${stats.cov} ÷ (${stats.e_sd} × ${stats.m_sd}) = &lt;strong style=\"color:#e63946;font-size:1.25em;\"&gt;${stats.corr.toFixed(2)}&lt;/strong&gt;&lt;/p&gt;`\n\n\n\n\n\n\nA positive, weak to moderate association (positive mean-dependence) — above our 0.2 “weak” line, well short of 0.7. Remember what correlation measures: the linear part. The bin-scatter showed a curve that flattens out, which a single correlation can’t describe.\n\n\n\nShow the Python code\n\n\ncodeBox(`firms[['emp_firm', 'management']].cov()     # covariance matrix\nfirms['emp_firm'].corr(firms['management'])  # correlation`)"
+  },
+  {
+    "objectID": "week3-online-slides.html#is-it-causal",
+    "href": "week3-online-slides.html#is-it-causal",
+    "title": "Are Bigger Firms Better Managed?",
+    "section": "Is it causal?",
+    "text": "Is it causal?\nA correlation of  describes an association, not an explanation. Three possible stories:\n\n\nSize → management: bigger firms can afford professional managers, HR systems and consultants\n\n\n\n\nManagement → size: well-run firms win customers and grow\n\n\n\n\nSomething else drives both: industry, foreign ownership, competition. A multinational subsidiary is likely to be both big and well run.\n\n\n\nFirm size wasn’t randomly assigned: this is observational data, so the variation in x comes from firms’ own histories and choices. Description can’t tell these stories apart. Weeks 6 and 9 give us tools that can start to."
+  },
+  {
+    "objectID": "week3-online-slides.html#from-pattern-to-model-choice",
+    "href": "week3-online-slides.html#from-pattern-to-model-choice",
+    "title": "Are Bigger Firms Better Managed?",
+    "section": "From pattern to model choice",
+    "text": "From pattern to model choice\nDescribing a pattern is only half the job. The other half is saying what it means for the model you build next.\n\n\n\n\n\n\n\n\nWhat we saw\nWhat it means for the model\n\n\n\n\nThe bin-scatter curves: a big rise from small to medium, then it flattens\nDon’t fit a straight line in raw employees. Use a curve, or log employees first (Weeks 4–5)\n\n\nEmployment is heavily right-skewed\nConsider logging it: the pattern was clearer on the log scale\n\n\nThe pattern could be driven by something else, e.g. industry\nHold that variable fixed, or check the pattern within each group (Week 6)\n\n\n\n\n\n\nIn your portfolio, this is the step that turns exploratory analysis into justification: each pattern you find should point to a specific modelling choice, and you should say so explicitly."
+  },
+  {
+    "objectID": "week3-online-slides.html#bring-to-the-qa",
+    "href": "week3-online-slides.html#bring-to-the-qa",
+    "title": "Are Bigger Firms Better Managed?",
+    "section": "Bring to the Q&A",
+    "text": "Bring to the Q&A\n\n\nEach row of the lean-management table is a conditional distribution. What would the table look like if lean management and size were independent?\nThe correlation is 0.30, but the bin-scatter is curved. What does the correlation miss?\nPick one of the three causal stories. What extra data would help you test it?\nHR’s finger-length question and this one have the same structure. What’s the y, the x, and the “something else” in each?\nSuppose y were 0/1 — for example, whether an employee left the company. What would the conditional mean of y within a group tell you?"
   }
 ]

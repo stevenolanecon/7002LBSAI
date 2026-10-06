@@ -183,6 +183,87 @@ sleep_scatter_data = [
 ojs_define(sleep_scatter_data = sleep_scatter_data)
 ```
 
+```{python}
+# ── A third, SYNTHETIC illustration: hours awake before the test vs.
+# reaction time, built to show a clearly visible strong positive
+# relationship right after our own (weak) finger-length scatter. Same n as
+# the class (24) so it reads as "a class like ours, if the relationship were
+# real". Seed 3 chosen after checking seeds 1-14: r = 0.89 -- strong, but not
+# implausibly perfect. Used twice: shown without its correlation after
+# "Finger length vs. reaction time — our data" (the number is revealed live
+# in class), then brought back after "Task — calculate the correlation" with
+# its covariance and SDs stated, for students to compute r themselves.
+_rng_awake = np.random.default_rng(3)
+awake_hours = np.round(_rng_awake.uniform(2, 18, 24), 1)
+awake_rt = np.round(260 + 14 * awake_hours + _rng_awake.normal(0, 30, 24), 0)
+awake_data = [{'hours_awake': float(x), 'reaction_time_ms': float(y)}
+              for x, y in zip(awake_hours, awake_rt)]
+# Stated to students rounded, so the answer is computed from the same
+# rounded figures they'll use -- no mismatch between their number and ours.
+awake_stats = {
+    'n': int(len(awake_hours)),
+    'cov': round(float(np.cov(awake_hours, awake_rt)[0, 1]), 1),
+    'sd_x': round(float(awake_hours.std(ddof=1)), 2),
+    'sd_y': round(float(awake_rt.std(ddof=1)), 1),
+}
+awake_stats['corr'] = round(awake_stats['cov'] / (awake_stats['sd_x'] * awake_stats['sd_y']), 2)
+
+ojs_define(awake_data = awake_data, awake_stats = awake_stats)
+```
+
+```{python}
+# ── Practice and independence illustrations (all SYNTHETIC, labelled as such
+# on-slide). Added 2026-10-06 when the latent-variables section was cut to
+# make room for more in-class practice on the assessed core (conditional
+# probability, covariance/correlation) and for Gabor Ch. 4's dependence /
+# mean-dependence / correlation distinction.
+
+# (1) "Guess the correlation": four 40-point clouds, seeds chosen so each
+# sample r lands within 0.003 of its target (0.9, 0.5, 0.0, -0.6). Shown in
+# a shuffled order (A-D) so the targets aren't in an obvious sequence.
+def _cloud(target, seed, n=40):
+    r = np.random.default_rng(seed)
+    x = r.normal(0, 1, n)
+    y = target * x + np.sqrt(1 - target**2) * r.normal(0, 1, n)
+    return x, y
+_guess_specs = [('A', 0.5, 150), ('B', -0.6, 22), ('C', 0.9, 191), ('D', 0.0, 117)]
+guess_data, guess_r = [], {}
+for lab, tgt, seed in _guess_specs:
+    x, y = _cloud(tgt, seed)
+    guess_r[lab] = round(float(np.corrcoef(x, y)[0, 1]), 2)
+    guess_data += [{'panel': lab, 'x': float(a), 'y': float(b)} for a, b in zip(x, y)]
+
+# (2) Four kinds of (in)dependence, Gabor Ch. 4. x is built from mirrored
+# pairs (u, -u) and, for the three "r = 0" panels, each pair shares the same
+# noise -- so y is an even function of x and the sample correlation is
+# exactly zero, not just "close to zero by luck". Keeps the slide's point
+# clean: these three really do have r = 0, yet only one is independent.
+_r = np.random.default_rng(11)
+_u = _r.uniform(0, 2, 100)
+_xs = np.concatenate([_u, -_u])
+_e = np.tile(_r.normal(0, 1, 100), 2)
+_e_ind = np.tile(_r.normal(0, 1, 100), 2)
+_dep_panels = {
+    '1. Independent':                   _e_ind,
+    '2. Linear: mean-dependent':        0.8 * _xs + 0.6 * _r.normal(0, 1, 200),
+    '3. U-shape: mean-dependent, r = 0': _xs**2 - 4/3 + 0.4 * _e,
+    '4. Fan: spread depends on x, r = 0': _e * (0.15 + 0.6 * np.abs(_xs)),
+}
+dep_data, dep_r = [], {}
+for name, ys in _dep_panels.items():
+    dep_r[name] = round(float(np.corrcoef(_xs, ys)[0, 1]), 2) + 0.0
+    dep_data += [{'panel': name, 'x': float(a), 'y': float(b)} for a, b in zip(_xs, ys)]
+
+# (3) Five students, small integer data chosen so covariance and correlation
+# come out clean by hand: Cov = 8, SD_x = SD_y = sqrt(10), Corr = 0.8.
+five_hours  = [2, 4, 6, 8, 10]
+five_scores = [3, 7, 5, 11, 9]
+
+ojs_define(guess_data = guess_data, guess_r = guess_r,
+           dep_data = dep_data, dep_r = dep_r,
+           five_hours = five_hours, five_scores = five_scores)
+```
+
 ```{ojs}
 //| output: false
 {
@@ -194,14 +275,22 @@ ojs_define(sleep_scatter_data = sleep_scatter_data)
   // handles show/hide, once, for every wrapper on the page, so adding a new
   // chart to this pattern never means touching this cell.
   const wrapperFor = (fragId) => document.querySelector(`.shrink-on-reveal[data-frag="${fragId}"]`)
+  const syncAll = () => {
+    document.querySelectorAll('.fragment[id]').forEach(frag =>
+      wrapperFor(frag.id)?.classList.toggle('is-small', frag.classList.contains('visible'))
+    )
+  }
 
   // Sets each wrapper's correct starting state immediately, including on a
-  // reload or direct navigation to a slide whose fragment is already shown
-  // — matters because this cell (no reactive deps) only runs once, at load.
-  document.querySelectorAll('.shrink-on-reveal[data-frag]').forEach(el => {
-    const frag = document.getElementById(el.dataset.frag)
-    el.classList.toggle('is-small', !!frag?.classList.contains('visible'))
-  })
+  // reload or direct navigation to a slide whose fragment is already shown.
+  syncAll()
+
+  // PDF export (decktape / reveal.js print-pdf mode) rebuilds the slide DOM
+  // rather than toggling each fragment's class in place, so watch the whole
+  // document and re-sync on any change -- same fix as Week 2 (see its own
+  // comment for how this was diagnosed).
+  const observer = new MutationObserver(syncAll)
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] })
 
   Reveal.on('fragmentshown', (event) => {
     wrapperFor(event.fragment.id)?.classList.add('is-small')
@@ -254,6 +343,26 @@ HR's proxy-test idea is a **prediction** goal, dressed up as if it were free of 
 Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Policy*, Ch. 4
 :::
 
+## Association
+
+Two variables are **associated** when the values of y tend to differ across values of x: knowing x tells you something about y.
+
+- **Positive association:** higher values of x go with higher values of y, on average
+- **Negative association:** higher values of x go with lower values of y, on average
+- **No association:** y looks the same whatever the value of x (the variables are **independent**)
+
+::: {.fragment}
+Everything today measures association: conditional probabilities, conditional means, covariance and correlation are all ways of describing *how* y differs across x.
+:::
+
+::: {.fragment}
+**Association is not causation.** An association tells you two things move together in the data. On its own, it doesn't tell you whether changing x would change y. We come back to that at the end of the session.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 4
+:::
+
 ---
 
 ## Conditional probability
@@ -267,23 +376,27 @@ Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Pol
 Worked example: 20 students, 12 use a Phone, and 9 of those 12 had caffeine.
 
 ::: {.fragment}
-**Joint probability** — the chance both things happen together:
-
-$$P(A \text{ and } B) = \frac{9}{20} = 0.45$$
+**Joint probability** — the chance both things happen together: $P(A \text{ and } B)$
 :::
 
 ::: {.fragment}
-**Conditional probability** — the chance of A, *restricted to* the cases where B happened:
-
-$$P(A \mid B) = \frac{P(A \text{ and } B)}{P(B)} = \frac{0.45}{12/20} = \frac{0.45}{0.6} = 0.75$$
+Here: $P(\text{Caffeine and Phone}) = \frac{9}{20} = 0.45$
 :::
 
 ::: {.fragment}
-**Independence** — A and B are independent if knowing one tells you nothing about the other: $P(A \mid B) = P(A)$. Here, overall $P(\text{Caffeine}) = 11/20 = 0.55$, but $P(\text{Caffeine} \mid \text{Phone}) = 0.75$ — **not equal, so not independent** in this example.
+**Conditional probability** — the chance of A, *restricted to* the cases where B happened: $P(A \mid B) = \frac{P(A \text{ and } B)}{P(B)}$
 :::
 
 ::: {.fragment}
-**When A and B are *not* independent**, $P(A \text{ and } B) \neq P(A) \times P(B)$ — that shortcut only holds under independence ($0.6 \times 0.55 = 0.33$, not the real $0.45$). The formula that always holds is the one above, rearranged: $P(A \text{ and } B) = P(A \mid B) \times P(B)$.
+Here: $P(\text{Caffeine} \mid \text{Phone}) = \frac{0.45}{12/20} = \frac{0.45}{0.6} = 0.75$
+:::
+
+::: {.fragment}
+**Independence** — A and B are independent if knowing one tells you nothing about the other: $P(A \mid B) = P(A)$. If so, $P(A \text{ and } B) = P(A) \times P(B)$; if not, use $P(A \text{ and } B) = P(A \mid B) \times P(B)$, which always holds.
+:::
+
+::: {.fragment}
+Here: overall $P(\text{Caffeine}) = 11/20 = 0.55$, but $P(\text{Caffeine} \mid \text{Phone}) = 0.75$ — **not equal, so not independent.** The shortcut would give $0.6 \times 0.55 = 0.33$, not the real $0.45$.
 :::
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
@@ -354,15 +467,15 @@ stacked_data = {
 }
 ```
 
-:::: {.shrink-on-reveal data-frag="wk3-stackedbar-frag" style="--large-height:460px;--small-height:280px;--shrink-scale:0.6087;"}
-::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   if (!stacked_data.length) return html`<p style="color:#aaa;">Not enough data yet.</p>`
   return Plot.plot({
-    height: 460,
+    height: 400,
     marginLeft: 60,
-    x: { label: "Device" },
+    marginBottom: 50,
+    style: { fontSize: "15px" },
+    x: { label: "Device", tickSize: 0 },
     y: { label: "% within device", percent: true },
     color: { legend: true, domain: ["Yes","No","Unknown"], range: ["#e63946","#457b9d","#ccc"] },
     marks: [
@@ -372,11 +485,118 @@ stacked_data = {
   })
 }
 ```
-:::
-::::
 
-::: {.fragment #wk3-stackedbar-frag}
-Stacked to 100% within each device — this shows $P(\text{Caffeine} \mid \text{Device})$ directly, not the raw counts.
+::: {.fragment}
+Stacked to 100% within each device — this shows $P(\text{Caffeine} \mid \text{Device})$ directly, not the raw counts. If the two bars differ, device and caffeine are **associated** in our data.
+:::
+
+## Task — flip the condition
+
+::: {.instructions-box}
+Same table, the other way round. Calculate:
+
+1. $P(\text{Phone} \mid \text{Caffeine} = \text{Yes})$ — of the caffeine drinkers, what share used a phone?
+2. $P(\text{Phone})$ — the share of the whole class who used a phone
+
+Is $P(\text{Phone} \mid \text{Caffeine})$ the same number as $P(\text{Caffeine} \mid \text{Phone})$ from the last task?
+:::
+
+```{ojs}
+flip = {
+  const n = (dev, caf) => d3.sum(joint_table.filter(r => (dev == null || r.device === dev) && (caf == null || r.caffeine === caf)), r => r.count)
+  const N = n(null, null)
+  return {
+    phoneGivenYes: n("Phone","Yes") / n(null,"Yes"),
+    pPhone: n("Phone", null) / N,
+    yesGivenPhone: n("Phone","Yes") / n("Phone", null),
+    nPhoneYes: n("Phone","Yes"), nYes: n(null,"Yes"), nPhone: n("Phone", null), N
+  }
+}
+```
+
+::: {.fragment}
+```{ojs}
+html`<div style="font-family:sans-serif;font-size:0.95em;line-height:1.7;">
+  <div>1. P(Phone | Caffeine) = ${flip.nPhoneYes} / ${flip.nYes} = <strong style="color:#e63946;">${flip.phoneGivenYes.toFixed(2)}</strong></div>
+  <div>2. P(Phone) = ${flip.nPhone} / ${flip.N} = <strong style="color:#e63946;">${flip.pPhone.toFixed(2)}</strong></div>
+  <div style="margin-top:8px;">Compare: P(Caffeine | Phone) = ${flip.nPhoneYes} / ${flip.nPhone} = <strong>${flip.yesGivenPhone.toFixed(2)}</strong></div>
+</div>`
+```
+
+Same numerator, different denominator — **the order matters.** $P(A \mid B)$ and $P(B \mid A)$ answer different questions.
+:::
+
+## What independence would look like
+
+If device and caffeine were **independent**, knowing someone's device would tell you nothing about their caffeine use — every device's bar would look the same as the class overall.
+
+```{ojs}
+{
+  const caffs = ["Yes","No","Unknown"].filter(c => joint_table.some(r => r.caffeine === c))
+  const N = d3.sum(joint_table, r => r.count)
+  const overall = Object.fromEntries(caffs.map(c => [c, d3.sum(joint_table.filter(r => r.caffeine === c), r => r.count) / N]))
+  const devices = [...new Set(joint_table.map(d => d.device))]
+  const rows = [
+    ...stacked_data.map(d => ({ ...d, view: "What we observed" })),
+    ...devices.flatMap(dev => caffs.map(c => ({ device: dev, caffeine: c, pct: overall[c], view: "If independent" })))
+  ]
+  return Plot.plot({
+    height: 380,
+    width: 900,
+    marginLeft: 60,
+    marginBottom: 50,
+    style: { fontSize: "15px" },
+    fx: { label: null, domain: ["What we observed", "If independent"] },
+    x: { label: "Device", tickSize: 0 },
+    y: { label: "% within device", percent: true },
+    color: { legend: true, domain: ["Yes","No","Unknown"], range: ["#e63946","#457b9d","#ccc"] },
+    marks: [
+      Plot.barY(rows, { fx: "view", x: "device", y: "pct", fill: "caffeine", order: "caffeine" }),
+      Plot.ruleY([0]),
+    ]
+  })
+}
+```
+
+::: {.fragment}
+Independence = **flat bars**: $P(\text{Caffeine} \mid \text{Laptop}) = P(\text{Caffeine} \mid \text{Phone}) = P(\text{Caffeine})$. The further the left-hand bars are from the right-hand ones, the more the two variables depend on each other.
+:::
+
+## Task — expected counts if independent {.smaller}
+
+::: {.instructions-box}
+If device and caffeine were independent, $P(\text{Phone and Caffeine}) = P(\text{Phone}) \times P(\text{Caffeine})$.
+
+For each of the four cells, calculate the **count** we'd expect under independence:
+
+$$\text{expected count} = N \times P(\text{Device}) \times P(\text{Caffeine}) = \frac{\text{row total} \times \text{column total}}{N}$$
+
+Then compare with the counts we actually observed. Which cells are furthest apart?
+:::
+
+::: {.fragment}
+```{ojs}
+{
+  const devices = [...new Set(joint_table.map(d => d.device))]
+  const caffs = [...new Set(joint_table.map(d => d.caffeine))]
+  const N = d3.sum(joint_table, r => r.count)
+  const cell = (dev, caf) => joint_table.find(r => r.device === dev && r.caffeine === caf)?.count ?? 0
+  const rowT = dev => d3.sum(caffs, c => cell(dev, c)), colT = caf => d3.sum(devices, d => cell(d, caf))
+  return html`<table style="width:85%;margin:8px auto;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;">
+    <caption class="visually-hidden">Observed counts next to the counts expected if device and caffeine were independent.</caption>
+    <thead><tr style="background:#1a1a2e;color:white;">
+      <th scope="col" style="padding:8px 14px;text-align:left;">Device</th>
+      ${caffs.map(c => `<th scope="col" style="padding:8px 14px;text-align:right;">Caffeine: ${c}<br><span style="font-weight:400;font-size:0.85em;">observed / expected</span></th>`).join('')}
+    </tr></thead>
+    <tbody>${devices.map(dev => `<tr style="border-bottom:1px solid #eee;">
+      <td style="padding:8px 14px;font-weight:700;">${dev}</td>
+      ${caffs.map(c => `<td style="padding:8px 14px;text-align:right;"><strong style="color:#457b9d;">${cell(dev,c)}</strong> / <span style="color:#e63946;">${(rowT(dev)*colT(c)/N).toFixed(1)}</span></td>`).join('')}
+    </tr>`).join('')}</tbody>
+  </table>`
+}
+```
+
+The gaps are small in counts — with ${d3.sum(joint_table, r => r.count)} students, a difference of one or two people per cell is exactly what chance alone produces. Same lesson as before: a table this small can't tell real dependence from noise.
 :::
 
 ---
@@ -451,11 +671,15 @@ This wouldn't be the right call for every data problem — imputation only makes
 ## Task — compute the conditional mean, by hand
 
 ::: {.instructions-box}
-Using the class's finger-length and reaction-time data (corrected, as we just agreed): split students into three roughly equal-sized groups by finger length (short / medium / long), then compute the mean reaction time within each group. Compare to the chart on the next slide.
+Download [**week3_students.csv**](https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week3_students.csv){style="color:#457b9d;"}: one row per student, with their mean reaction time, their corrected finger length, and a **finger_bin** column that already splits the class into three roughly equal groups (Short / Medium / Long).
+
+Compute the mean reaction time within each bin (`AVERAGEIF`, or a PivotTable with finger_bin as rows). Compare to the chart on the next slide.
 :::
 
 ## Binning finger length
 
+::::: {.two-col style="grid-template-columns: 1fr 1fr; align-items:start;"}
+:::: {}
 ```{ojs}
 {
   const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
@@ -470,11 +694,22 @@ Using the class's finger-length and reaction-time data (corrected, as we just ag
     const g = binned.filter(d => d.bin === b)
     return { bin: b, n: g.length, mean_rt: g.length ? d3.mean(g, d => d.mean_rt) : null }
   }).filter(g => g.n > 0)
+  // Show each bin's range: the two tercile cut points, plus the observed
+  // min/max at the ends -- same boundaries pd.qcut produces in the code beside it
+  const fmt = v => (+v.toFixed(1)).toString()
+  const range = {
+    Short:  `${fmt(vals[0])} to ${fmt(q1)} mm`,
+    Medium: `>${fmt(q1)} to ${fmt(q2)} mm`,
+    Long:   `>${fmt(q2)} to ${fmt(vals[vals.length-1])} mm`,
+  }
 
   return Plot.plot({
-    height: 450,
+    height: 470,
+    width: 560,
     marginLeft: 60,
-    x: { label: "Finger length bin", domain: ["Short","Medium","Long"] },
+    marginBottom: 60,
+    style: { fontSize: "14px" },
+    x: { label: "Finger length bin", domain: ["Short","Medium","Long"], tickFormat: b => `${b}\n${range[b]}` },
     y: { label: "E[reaction time | bin] (ms)" },
     marks: [
       Plot.barY(grouped, { x: "bin", y: "mean_rt", fill: "#457b9d", fillOpacity: 0.8 }),
@@ -484,6 +719,39 @@ Using the class's finger-length and reaction-time data (corrected, as we just ag
   })
 }
 ```
+::::
+
+:::: {}
+<details>
+<summary style="cursor:pointer;color:#2d6a4f;font-size:0.9em;">Show the Python code — how the bins were chosen</summary>
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.45em;line-height:1.35;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">import pandas as pd
+
+df = pd.read_csv(data_path)   # week3_reaction_times.csv (one row per trial)
+
+# Decision 1: one row per student, not per trial -- each student's
+# finger length is one value, so bin students, not trials
+students = (df.groupby('name')
+              .agg(mean_rt=('reaction_time_ms', 'mean'),
+                   finger=('finger_length_corrected', 'first'))
+              .reset_index())
+
+# Decision 2: three bins with roughly equal numbers of students
+# (terciles), not equal-width mm ranges -- so no bin ends up nearly empty
+students['bin'] = pd.qcut(students['finger'], q=3,
+                          labels=['Short', 'Medium', 'Long'])
+pd.qcut(students['finger'], q=3).cat.categories   # the cut points
+
+# Decision 3: the conditional mean E[reaction time | bin], plus n per bin
+students.groupby('bin', observed=True)['mean_rt'].agg(['mean', 'count'])</pre>`
+```
+
+</details>
+::::
+:::::
 
 ---
 
@@ -634,7 +902,7 @@ Same data, same kind of fitted line, side by side. The lapse trials are still th
 ## Task — plot finger length against reaction time
 
 ::: {.instructions-box}
-Using the class's (finger length, mean reaction time) pairs — one point per student — build a scatterplot in Excel. Does a relationship look plausible before you calculate anything?
+Using **week3_students.csv** (one row per student), build a scatterplot of finger_length_corrected against mean_reaction_time_ms in Excel. Does a relationship look plausible before you calculate anything?
 :::
 
 ## Finger length vs. reaction time — our data
@@ -659,10 +927,31 @@ Using the class's (finger length, mean reaction time) pairs — one point per st
 ```
 
 ::: {.fragment}
-A relationship might be visible here — or might not. Covariance and correlation, next, put a number on exactly how strong it is.
+Can we see a relationship here?
 :::
 
-## Covariance {.smaller}
+## What a clear relationship looks like
+
+A different (simulated) class of 24: hours awake before taking the test vs. mean reaction time.
+
+```{ojs}
+Plot.plot({
+  height: 470,
+  marginLeft: 60,
+  x: { label: "Hours awake before the test" },
+  y: { label: "Mean reaction time (ms)" },
+  marks: [
+    Plot.dot(awake_data, { x: "hours_awake", y: "reaction_time_ms", fill: "#2d6a4f", r: 6, fillOpacity: 0.85,
+                           tip: true, title: d => `${d.hours_awake}h awake, ${d.reaction_time_ms}ms` }),
+  ]
+})
+```
+
+::: {style="font-size:0.75em;color:#999;"}
+Simulated data, for illustration — not our class.
+:::
+
+## Covariance
 
 In plain language: **covariance** asks whether x and y tend to move together — when one is above its own average, is the other usually above its average too?
 
@@ -673,9 +962,16 @@ $$Cov[x,y] = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{n-1}$$
 - Positive when x and y tend to deviate from their means **in the same direction**
 - Can be any positive or negative number — units depend on the units of x and y
 - Like the SD back in Week 1, this divides by $n-1$, not $n$ — the same small-sample correction, applied here too
+:::
 
-:::: {.shrink-on-reveal data-frag="wk3-covviz-frag" style="--large-height:352px;--small-height:225px;--shrink-scale:0.6392;"}
-::: {.shrink-on-reveal-inner}
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 4
+:::
+
+## Covariance, on our own data
+
+:::: {.two-col style="grid-template-columns: 1.25fr 1fr; align-items:center;"}
+::: {}
 ```{ojs}
 {
   const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
@@ -684,14 +980,19 @@ $$Cov[x,y] = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{n-1}$$
   const colored = rows.map(d => ({ ...d, sign: (d.finger_mm - mx) * (d.mean_rt - my) >= 0 ? "Same sign (+)" : "Opposite sign (−)" }))
 
   return Plot.plot({
-    height: 310,
+    height: 470,
+    width: 620,
     marginLeft: 60,
+    marginTop: 30,
+    marginRight: 34,
     x: { label: "Finger length (mm)" },
     y: { label: "Mean reaction time (ms)" },
     color: { domain: ["Same sign (+)", "Opposite sign (−)"], range: ["#2d6a4f", "#e63946"], legend: true },
     marks: [
-      Plot.ruleX([mx], { stroke: "#999", strokeDasharray: "4,3" }),
-      Plot.ruleY([my], { stroke: "#999", strokeDasharray: "4,3" }),
+      Plot.ruleX([mx], { stroke: "#1a1a2e", strokeWidth: 1.5, strokeDasharray: "5,4" }),
+      Plot.ruleY([my], { stroke: "#1a1a2e", strokeWidth: 1.5, strokeDasharray: "5,4" }),
+      Plot.text([mx], { x: d => d, frameAnchor: "top", dy: -14, text: () => "x̄", fontSize: 20, fontWeight: 700, fill: "#1a1a2e" }),
+      Plot.text([my], { y: d => d, frameAnchor: "right", dx: 22, text: () => "ȳ", fontSize: 20, fontWeight: 700, fill: "#1a1a2e" }),
       Plot.dot(colored, { x: "finger_mm", y: "mean_rt", fill: "sign", r: 6, fillOpacity: 0.85,
                        tip: true, title: d => `${d.student_name}: ${d.finger_mm}mm, ${d.mean_rt.toFixed(0)}ms` }),
     ]
@@ -699,21 +1000,64 @@ $$Cov[x,y] = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{n-1}$$
 }
 ```
 :::
+
+::: {style="font-size:0.8em;"}
+$$Cov[x,y] = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{n-1}$$
+
+The dashed lines are the two means: **$\bar{x}$** (vertical, mean finger length) and **$\bar{y}$** (horizontal, mean reaction time).
+
+::: {.fragment}
+Each point's contribution is $(x_i - \bar{x})(y_i - \bar{y})$:
+
+- **Green** — both deviations the same sign, positive product
+- **Red** — opposite signs, negative product
+
+Covariance is the average of all these products.
+:::
+:::
 ::::
+
+## Task — covariance by hand: five students
+
+::: {.instructions-box}
+Five students: hours spent revising (x) and quiz score out of 12 (y). With a pen, no Excel:
+
+| Student | Hours, $x$ | Score, $y$ |
+|:-:|:-:|:-:|
+| 1 | 2 | 3 |
+| 2 | 4 | 7 |
+| 3 | 6 | 5 |
+| 4 | 8 | 11 |
+| 5 | 10 | 9 |
+
+1. Find $\bar{x}$ and $\bar{y}$
+2. For each student, work out $(x_i - \bar{x})$, $(y_i - \bar{y})$ and their product
+3. Add up the products and divide by $n - 1$
 :::
 
-::: {.fragment #wk3-covviz-frag}
-Dashed lines = each variable's own mean. A point's contribution is $(x_i - \bar{x})(y_i - \bar{y})$ — **green** = both deviations the same sign, positive product; **red** = opposite signs, negative product. Covariance is the average of all these products.
-:::
+## Covariance by hand — answer
 
-::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
-Source: Békés & Kézdi (2021), Ch. 4
+$\bar{x} = 6$, $\bar{y} = 7$
+
+| Student | $x_i - \bar{x}$ | $y_i - \bar{y}$ | Product |
+|:-:|:-:|:-:|:-:|
+| 1 | −4 | −4 | **16** |
+| 2 | −2 | 0 | **0** |
+| 3 | 0 | −2 | **0** |
+| 4 | 2 | 4 | **8** |
+| 5 | 4 | 2 | **8** |
+| | | Sum | **32** |
+
+::: {.fragment}
+$$Cov[x,y] = \frac{32}{5-1} = 8$$
+
+Every product is positive or zero: whenever a student is above average on hours, they're above average on score too. Now do the same for the whole class.
 :::
 
 ## Task — calculate the covariance
 
 ::: {.instructions-box}
-By hand or in Excel, using the class's (finger length, mean reaction time) pairs: calculate $Cov[\text{finger length}, \text{reaction time}]$.
+In Excel, using **week3_students.csv**: calculate $Cov[\text{finger length}, \text{reaction time}]$.
 :::
 
 ::: {.fragment}
@@ -733,16 +1077,34 @@ By hand or in Excel, using the class's (finger length, mean reaction time) pairs
 
 In plain language: **correlation** asks the same question as covariance — do x and y move together — but reports the answer on a fixed scale from −1 to 1, so it's comparable no matter what units x and y are measured in.
 
-The standardised version of the covariance — divide by the product of the standard deviations:
+Both covariance and correlation measure the direction and strength of a **linear association**. Correlation is the standardised version of the covariance — divide by the product of the standard deviations:
 
 $$Corr[x,y] = \frac{Cov[x,y]}{SD[x] \, SD[y]} \qquad -1 \leq Corr[x,y] \leq 1$$
 
 Rough guide: below 0.2 is weak, above 0.7 is generally strong.
 
+## Task — correlation by hand: five students
+
+::: {.instructions-box}
+Same five students. You already have $Cov[x,y] = 8$.
+
+1. Calculate $SD[x]$ and $SD[y]$ — square each deviation from the last task, add them up, divide by $n-1$, take the square root
+2. Calculate $Corr[x,y] = \dfrac{Cov[x,y]}{SD[x]\,SD[y]}$
+3. Strong, weak, or in between?
+:::
+
+::: {.fragment}
+Squared deviations: $x$: 16 + 4 + 0 + 4 + 16 = 40; $y$: 16 + 0 + 4 + 16 + 4 = 40
+
+$$SD[x] = SD[y] = \sqrt{40/4} = \sqrt{10} \approx 3.16 \qquad Corr[x,y] = \frac{8}{3.16 \times 3.16} = \frac{8}{10} = 0.8$$
+
+Above 0.7 — a strong positive association.
+:::
+
 ## Task — calculate the correlation
 
 ::: {.instructions-box}
-Using your covariance from two slides ago, and the SD of each variable: calculate the correlation coefficient.
+Now the whole class: using your class covariance from earlier, and the SD of each variable, calculate the correlation coefficient between finger length and reaction time.
 :::
 
 ::: {.fragment}
@@ -761,6 +1123,184 @@ Using your covariance from two slides ago, and the SD of each variable: calculat
 
 ::: {.fragment}
 Whatever number comes back — is it strong enough, on its own, to justify HR replacing the real test with a ruler?
+:::
+
+## Task — the clear relationship, as a number {.smaller}
+
+:::: {.two-col style="grid-template-columns: 1fr 1fr; align-items:center;"}
+::: {}
+```{ojs}
+Plot.plot({
+  height: 400,
+  width: 520,
+  marginLeft: 60,
+  x: { label: "Hours awake before the test" },
+  y: { label: "Mean reaction time (ms)" },
+  marks: [
+    Plot.dot(awake_data, { x: "hours_awake", y: "reaction_time_ms", fill: "#2d6a4f", r: 6, fillOpacity: 0.85 }),
+  ]
+})
+```
+:::
+
+::: {}
+::: {.instructions-box}
+Back to our simulated class of ${awake_stats.n}. You're given:
+
+- $Cov[\text{hours awake}, \text{reaction time}]$ = **${awake_stats.cov}**
+- $SD[\text{hours awake}]$ = **${awake_stats.sd_x}**
+- $SD[\text{reaction time}]$ = **${awake_stats.sd_y}**
+
+Calculate the correlation coefficient.
+:::
+
+::: {.fragment}
+$$Corr = \frac{Cov}{SD_x \, SD_y}$$
+
+```{ojs}
+html`<p style="font-family:sans-serif;">${awake_stats.cov} ÷ (${awake_stats.sd_x} × ${awake_stats.sd_y}) = <strong style="color:#e63946;font-size:1.3em;">${awake_stats.corr.toFixed(2)}</strong></p>`
+```
+
+Well above 0.7 — strong, and it matches what your eye saw on the scatter.
+:::
+:::
+::::
+
+## Task — guess the correlation
+
+::: {.instructions-box}
+Four scatterplots. Without calculating anything, guess the correlation for each: somewhere between −1 and 1.
+:::
+
+```{ojs}
+Plot.plot({
+  height: 300,
+  width: 1100,
+  marginLeft: 20,
+  style: { fontSize: "15px" },
+  fx: { label: null, domain: ["A","B","C","D"], tickFormat: d => `Panel ${d}` },
+  x: { label: null, ticks: [] },
+  y: { label: null, ticks: [] },
+  marks: [
+    Plot.frame({ stroke: "#ddd" }),
+    Plot.dot(guess_data, { fx: "panel", x: "x", y: "y", r: 4, fill: "#457b9d", fillOpacity: 0.8 }),
+  ]
+})
+```
+
+::: {.fragment}
+```{ojs}
+html`<div style="display:flex;justify-content:space-around;font-family:sans-serif;font-size:1.1em;margin-top:4px;">
+  ${["A","B","C","D"].map(p => `<div>${p}: <strong style="color:#e63946;">${guess_r[p].toFixed(2)}</strong></div>`).join('')}
+</div>`
+```
+
+Most people underestimate moderate correlations: 0.5 looks like a loose cloud. That's why we calculate instead of eyeballing.
+:::
+
+---
+
+## Dependence, mean-dependence, correlation
+
+---
+
+## Three ways x and y can be related
+
+Two variables are **associated** whenever they're not independent. But association comes in different forms:
+
+::: {.fragment}
+**Independent** — the whole distribution of y is the same whatever the value of x. Knowing x tells you *nothing* about y.
+:::
+
+::: {.fragment}
+**Mean-dependent** — the *average* of y changes with x: $E[y \mid x]$ isn't flat. This is what covariance and correlation pick up.
+:::
+
+::: {.fragment}
+**Dependent, but not in the mean** — the average of y stays the same, but something else about y changes with x, such as its spread.
+:::
+
+::: {.fragment}
+Correlation only measures the **linear** part of mean-dependence. So a correlation of zero does **not** mean x and y are unrelated.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 4
+:::
+
+## Task — which of these are independent?
+
+::: {.instructions-box}
+For each panel: does knowing x tell you anything about y? And what would you guess the correlation is?
+:::
+
+```{ojs}
+dep_panels = Object.keys(dep_r)
+```
+
+```{ojs}
+viewof show_dep_means = Inputs.toggle({ label: "Show the conditional mean, E[y | x]", value: false })
+```
+
+```{ojs}
+{
+  const binW = 0.25
+  const means = dep_panels.flatMap(p => {
+    const pts = dep_data.filter(d => d.panel === p)
+    return d3.groups(pts, d => Math.floor(d.x / binW)).map(([b, g]) => ({ panel: p, x: (b + 0.5) * binW, y: d3.mean(g, d => d.y) }))
+      .sort((a, b) => a.x - b.x)
+  })
+  return Plot.plot({
+    height: 270,
+    width: 1100,
+    marginLeft: 20,
+    style: { fontSize: "15px" },
+    fx: { label: null, domain: dep_panels, tickFormat: d => `Panel ${d[0]}` },
+    x: { label: null, ticks: [] },
+    y: { label: null, ticks: [] },
+    marks: [
+      Plot.frame({ stroke: "#ddd" }),
+      Plot.dot(dep_data, { fx: "panel", x: "x", y: "y", r: 2.5, fill: "#457b9d", fillOpacity: 0.6 }),
+      show_dep_means ? Plot.line(means, { fx: "panel", x: "x", y: "y", stroke: "#e63946", strokeWidth: 3, curve: "basis" }) : null,
+    ]
+  })
+}
+```
+
+::: {.fragment}
+```{ojs}
+html`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;font-family:sans-serif;font-size:0.75em;line-height:1.35;">
+  ${dep_panels.map((p, i) => `<div style="text-align:center;"><strong>${["Independent", "Mean-dependent (linear)", "Mean-dependent (U-shape)", "Spread depends on x"][i]}</strong><br>r = <strong style="color:#e63946;">${Math.abs(dep_r[p]) < 0.005 ? "0.00" : dep_r[p].toFixed(2)}</strong></div>`).join('')}
+</div>`
+```
+
+Only panel 1 is independent. Panels 3 and 4 have **r = 0**, yet x clearly tells you something about y: in 3 the average changes, in 4 the spread does.
+:::
+
+## How they fit together
+
+```{=html}
+<svg viewBox="0 0 900 380" style="width:66%;display:block;margin:0 auto;font-family:sans-serif;" role="img" aria-label="Three nested boxes. Independent sits inside mean-independent, which sits inside zero correlation. A U-shape is an example with zero correlation that is not mean-independent; a fan shape is mean-independent but not independent.">
+  <rect x="10" y="10" width="880" height="360" rx="18" fill="#f0f4f8" stroke="#1a1a2e" stroke-width="2"/>
+  <text x="30" y="45" font-size="22" font-weight="700" fill="#1a1a2e">Zero correlation</text>
+  <text x="30" y="72" font-size="16" fill="#555">e.g. the U-shape (panel 3)</text>
+  <rect x="250" y="95" width="620" height="255" rx="16" fill="#e3ecf4" stroke="#457b9d" stroke-width="2"/>
+  <text x="270" y="130" font-size="22" font-weight="700" fill="#457b9d">Mean-independent: E[y | x] is flat</text>
+  <text x="270" y="157" font-size="16" fill="#555">e.g. the fan (panel 4)</text>
+  <rect x="520" y="185" width="330" height="145" rx="14" fill="#d8efe2" stroke="#2d6a4f" stroke-width="2"/>
+  <text x="540" y="225" font-size="22" font-weight="700" fill="#2d6a4f">Independent</text>
+  <text x="540" y="252" font-size="16" fill="#555">nothing about y depends on x</text>
+  <text x="540" y="276" font-size="16" fill="#555">(panel 1)</text>
+</svg>
+```
+
+::: {.fragment}
+- Independent **→** mean-independent **→** zero correlation. Each inner box is a special case of the one around it.
+- **None of it works the other way.** Zero correlation doesn't mean independent, so always look at the scatter as well as the number.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 4
 :::
 
 ---
@@ -798,277 +1338,6 @@ Almost everything in business analytics is observational. Finger length is one o
 Source: Békés & Kézdi (2021), Ch. 4
 :::
 
-## Task — find a spurious correlation
-
-::: {.instructions-box}
-Go to **tylervigen.com/spurious-correlations**. Find one example. In one sentence, explain why the two variables move together despite having no plausible causal link.
-:::
-
-::: {.fragment}
-Correlation, on its own, never tells you which of these is true: **x causes y**, **y causes x**, **both are caused by something else**, or **coincidence**.
-:::
-
----
-
-## Measuring what you can't observe directly
-
----
-
-## Latent variables
-
-Some concepts — attitude, ability, management quality — can't be measured with a single variable. They're **latent**: real, but only indirectly observable through several proxies at once.
-
-- **Use one variable** — simple, but throws away information
-- **Average several (as z-scores)** — standardise first, then average; simple and transparent
-- **PCA** — weights each variable by how well it captures the shared pattern; typically close to the simple average in practice
-
-::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
-Source: Békés & Kézdi (2021), Ch. 4
-:::
-
-## Use one variable
-
-The simplest approach: pick a single observable variable and treat it as a stand-in for the thing you can't measure directly.
-
-- **Postcode** as a proxy for socioeconomic background
-- **Job tenure** as a proxy for "experience"
-- **Finger length** as a proxy for manual dexterity — this module's own opening example
-
-::: {.fragment}
-It's simple, and sometimes good enough. But a single proxy only ever captures **part** of the underlying concept — whatever it misses is thrown away, and if the proxy is a weak one, most of the concept goes with it.
-:::
-
-::: {.fragment}
-::: {.instructions-box}
-**Task** — our own reaction times aren't purely mechanical. What latent variables might actually be driving them — alertness, familiarity with the device, motivation on the day? What proxies do we already have sitting in our own data for any of these?
-:::
-:::
-
-## Standardisation — the z-score
-
-Sleep (hours), energy (1–10), grip strength (kg) — three completely different scales. You can't just add 8.5 hours of sleep to a grip strength of 33kg and call the result "alertness." **Standardisation** fixes this: it converts any variable onto one common, unit-free scale, based on how far each value sits from its own average.
-
-$$z = \frac{x - \bar{x}}{SD[x]}$$
-
-- Subtract the mean: $z = 0$ sits exactly at the average
-- Divide by the SD: $z$ is now measured in **"number of SDs from the mean"** — the same scale, whatever the variable's original units
-- $z = +1$ means one SD above average; $z = -1.5$ means one and a half SDs below
-- Every standardised variable now lives on the same scale, and can be safely compared or averaged
-
-## Standardisation — worked example
-
-Sleep hours for the six people we'll use next:
-
-```{ojs}
-{
-  const people = [
-    { name: "Amara", sleep: 8.5 },
-    { name: "Ben",    sleep: 5.0 },
-    { name: "Chidi",  sleep: 7.0 },
-    { name: "Dana",   sleep: 4.5 },
-    { name: "Elin",   sleep: 9.0 },
-    { name: "Femi",   sleep: 6.0 },
-  ]
-  const vals = people.map(p => p.sleep)
-  const m = d3.mean(vals)
-  const s = d3.deviation(vals) * Math.sqrt((vals.length - 1) / vals.length)
-  const rows = people.map(p => ({ ...p, z: (p.sleep - m) / s }))
-
-  return html`<p style="font-family:sans-serif;font-size:0.85em;margin-bottom:6px;">Mean = ${m.toFixed(2)}h, SD = ${s.toFixed(2)}h</p>
-  <table style="width:70%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.8em;">
-    <thead><tr style="background:#1a1a2e;color:white;">
-      <th style="padding:1px 14px;text-align:left;">Person</th>
-      <th style="padding:1px 14px;text-align:right;">Sleep (h)</th>
-      <th style="padding:1px 14px;text-align:right;">z(sleep)</th>
-    </tr></thead>
-    <tbody>
-      ${rows.map((r,i) => `<tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
-        <td style="padding:1px 14px;">${r.name}</td>
-        <td style="padding:1px 14px;text-align:right;">${r.sleep}</td>
-        <td style="padding:1px 14px;text-align:right;${r.z>=0?'color:#2d6a4f;':'color:#e63946;'}">${r.z >= 0 ? '+' : ''}${r.z.toFixed(2)}</td>
-      </tr>`).join('')}
-    </tbody>
-  </table>`
-}
-```
-
-Amara slept the most, and her $z\approx+1.1$ says so directly: about one SD above the group's own average. Dana's $z\approx-1.3$ says the opposite. That's the whole idea — the raw hours are gone, replaced by a common yardstick.
-
-::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
-Source: Békés & Kézdi (2021), Ch. 4
-:::
-
-## Average several (as z-scores) {.smaller}
-
-Suppose we want one "alertness" score for six people, from three imperfect proxies: hours of sleep, self-rated energy (1–10), and grip strength (kg).
-
-```{ojs}
-{
-  const people = [
-    { name: "Amara", sleep: 8.5, energy: 9, grip: 33 },
-    { name: "Ben",    sleep: 5.0, energy: 4, grip: 32 },
-    { name: "Chidi",  sleep: 7.0, energy: 6, grip: 35 },
-    { name: "Dana",   sleep: 4.5, energy: 3, grip: 30 },
-    { name: "Elin",   sleep: 9.0, energy: 8, grip: 31 },
-    { name: "Femi",   sleep: 6.0, energy: 5, grip: 34 },
-  ]
-  return html`<table style="width:80%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.78em;">
-    <thead><tr style="background:#1a1a2e;color:white;">
-      <th style="padding:1px 14px;text-align:left;">Person</th>
-      <th style="padding:1px 14px;text-align:right;">Sleep (h)</th>
-      <th style="padding:1px 14px;text-align:right;">Energy (1&ndash;10)</th>
-      <th style="padding:1px 14px;text-align:right;">Grip (kg)</th>
-    </tr></thead>
-    <tbody>
-      ${people.map((p,i) => `<tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
-        <td style="padding:1px 14px;">${p.name}</td>
-        <td style="padding:1px 14px;text-align:right;">${p.sleep}</td>
-        <td style="padding:1px 14px;text-align:right;">${p.energy}</td>
-        <td style="padding:1px 14px;text-align:right;">${p.grip}</td>
-      </tr>`).join('')}
-    </tbody>
-  </table>`
-}
-```
-
-::: {.fragment}
-Apply the same z-score formula to all three proxies, then average the three z-scores per person.
-
-```{ojs}
-{
-  const people = [
-    { name: "Amara", sleep: 8.5, energy: 9, grip: 33 },
-    { name: "Ben",    sleep: 5.0, energy: 4, grip: 32 },
-    { name: "Chidi",  sleep: 7.0, energy: 6, grip: 35 },
-    { name: "Dana",   sleep: 4.5, energy: 3, grip: 30 },
-    { name: "Elin",   sleep: 9.0, energy: 8, grip: 31 },
-    { name: "Femi",   sleep: 6.0, energy: 5, grip: 34 },
-  ]
-  const z = vals => { const m = d3.mean(vals), s = d3.deviation(vals) * Math.sqrt((vals.length-1)/vals.length); return vals.map(v => (v - m) / s) }
-  const zs = z(people.map(p => p.sleep)), ze = z(people.map(p => p.energy))
-  const rows = people.map((p,i) => ({ name: p.name, zs: zs[i], ze: ze[i] }))
-
-  return html`<table style="width:70%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.78em;">
-    <thead><tr style="background:#1a1a2e;color:white;">
-      <th style="padding:1px 14px;text-align:left;">Person</th>
-      <th style="padding:1px 14px;text-align:right;">z(sleep)</th>
-      <th style="padding:1px 14px;text-align:right;">z(energy)</th>
-      <th style="padding:1px 14px;text-align:right;color:#999;">z(grip)</th>
-      <th style="padding:1px 14px;text-align:right;color:#999;">Average z</th>
-    </tr></thead>
-    <tbody>
-      ${rows.map((r,i) => `<tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
-        <td style="padding:1px 14px;">${r.name}</td>
-        <td style="padding:1px 14px;text-align:right;">${r.zs.toFixed(2)}</td>
-        <td style="padding:1px 14px;text-align:right;">${r.ze.toFixed(2)}</td>
-        <td style="padding:1px 14px;text-align:right;color:#ccc;">?</td>
-        <td style="padding:1px 14px;text-align:right;color:#ccc;">?</td>
-      </tr>`).join('')}
-    </tbody>
-  </table>`
-}
-```
-:::
-
-::: {.fragment}
-::: {.instructions-box style="padding:0.4em 1.2em;margin:0.3em 0 0 0;"}
-**Task** — using the same formula and the grip-strength values from the table above, calculate $z(\text{grip})$ for each person. Then average all three z-scores to get one "alertness" score per person.
-:::
-:::
-
-## Average several (as z-scores) — answer {.smaller}
-
-```{ojs}
-{
-  const people = [
-    { name: "Amara", sleep: 8.5, energy: 9, grip: 33 },
-    { name: "Ben",    sleep: 5.0, energy: 4, grip: 32 },
-    { name: "Chidi",  sleep: 7.0, energy: 6, grip: 35 },
-    { name: "Dana",   sleep: 4.5, energy: 3, grip: 30 },
-    { name: "Elin",   sleep: 9.0, energy: 8, grip: 31 },
-    { name: "Femi",   sleep: 6.0, energy: 5, grip: 34 },
-  ]
-  const z = vals => { const m = d3.mean(vals), s = d3.deviation(vals) * Math.sqrt((vals.length-1)/vals.length); return vals.map(v => (v - m) / s) }
-  const zs = z(people.map(p => p.sleep)), ze = z(people.map(p => p.energy)), zg = z(people.map(p => p.grip))
-  const rows = people.map((p,i) => ({ name: p.name, zs: zs[i], ze: ze[i], zg: zg[i], avg: (zs[i]+ze[i]+zg[i])/3 }))
-
-  return html`<table style="width:85%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.82em;">
-    <thead><tr style="background:#1a1a2e;color:white;">
-      <th style="padding:4px 16px;text-align:left;">Person</th>
-      <th style="padding:4px 16px;text-align:right;">z(sleep)</th>
-      <th style="padding:4px 16px;text-align:right;">z(energy)</th>
-      <th style="padding:4px 16px;text-align:right;">z(grip)</th>
-      <th style="padding:4px 16px;text-align:right;background:#2d6a4f;">Average z</th>
-    </tr></thead>
-    <tbody>
-      ${rows.map((r,i) => `<tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
-        <td style="padding:3px 16px;">${r.name}</td>
-        <td style="padding:3px 16px;text-align:right;">${r.zs.toFixed(2)}</td>
-        <td style="padding:3px 16px;text-align:right;">${r.ze.toFixed(2)}</td>
-        <td style="padding:3px 16px;text-align:right;">${r.zg.toFixed(2)}</td>
-        <td style="padding:3px 16px;text-align:right;font-weight:700;background:#f0f4f8;color:#2d6a4f;">${r.avg.toFixed(2)}</td>
-      </tr>`).join('')}
-    </tbody>
-  </table>`
-}
-```
-
-## PCA {.smaller}
-
-Same six people, same three proxies. Instead of weighting every variable equally, **PCA looks at how the variables correlate with each other**, and finds the one weighted combination that captures as much of their *shared* variation as possible.
-
-```{ojs}
-{
-  const rows = [
-    { v: "Sleep",  sleep: 1.00, energy: 0.97, grip: 0.20 },
-    { v: "Energy", sleep: 0.97, energy: 1.00, grip: 0.25 },
-    { v: "Grip",   sleep: 0.20, energy: 0.25, grip: 1.00 },
-  ]
-  return html`<table style="width:60%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.9em;">
-    <thead><tr style="background:#1a1a2e;color:white;">
-      <th style="padding:8px 16px;text-align:left;">Correlation</th>
-      <th style="padding:8px 16px;text-align:right;">Sleep</th>
-      <th style="padding:8px 16px;text-align:right;">Energy</th>
-      <th style="padding:8px 16px;text-align:right;">Grip</th>
-    </tr></thead>
-    <tbody>
-      ${rows.map((r,i) => `<tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
-        <td style="padding:7px 16px;font-weight:700;">${r.v}</td>
-        <td style="padding:7px 16px;text-align:right;">${r.sleep.toFixed(2)}</td>
-        <td style="padding:7px 16px;text-align:right;">${r.energy.toFixed(2)}</td>
-        <td style="padding:7px 16px;text-align:right;">${r.grip.toFixed(2)}</td>
-      </tr>`).join('')}
-    </tbody>
-  </table>`
-}
-```
-
-::: {.fragment}
-Sleep and energy move together closely (0.97); grip strength barely tracks either (0.20–0.25) — a noisier signal for the same underlying "alertness."
-:::
-
-::: {.fragment}
-PCA notices this automatically:
-
-| Variable | Equal-weight average | PCA weight |
-|---|---:|---:|
-| Sleep | 0.33 | 0.41 |
-| Energy | 0.33 | 0.41 |
-| Grip | 0.33 | **0.18** |
-
-It down-weights the noisier proxy — something a simple average, by construction, can't do.
-:::
-
-::: {.fragment}
-The two composite scores still end up highly correlated (≈0.98 here) — usually true in practice. That's exactly why **Gabor & Kézdi recommend the z-score average for everyday use**, and treat PCA as a robustness check rather than a first choice.
-:::
-
-::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
-Source: Békés & Kézdi (2021), Ch. 4
-:::
-
----
-
 ## AI and finding patterns
 
 GenAI is genuinely useful for a first pass over a new dataset — spotting candidate patterns quickly, the way a quick script or profiler would.
@@ -1081,9 +1350,9 @@ Where it's weaker: **judging** whether a correlation is meaningfully weak or str
 Source: Békés & Kézdi (2021), Ch. 4
 :::
 
-## Online session — Functional form
+## Online session — Are bigger firms better managed?
 
-A closer look at log transformations: why they approximate percentage differences, and where that approximation breaks down.
+A recorded walkthrough of Gabor's own case study: everything from today, from conditional probabilities to correlation, applied to real data on 300 Mexican firms. Watch it before the Q&A and bring your questions.
 
 ## Coming up: Week 4
 

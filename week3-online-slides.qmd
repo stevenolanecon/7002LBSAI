@@ -1,5 +1,5 @@
 ---
-title: "Functional Form: Why We Log"
+title: "Are Bigger Firms Better Managed?"
 subtitle: "7002LBSAI Research Methods in Analytics — Week 3 Online Session"
 format:
   revealjs:
@@ -24,269 +24,376 @@ execute:
 
 ```{python}
 import pandas as pd
+import numpy as np
 
-# Week 1's data collection is done and cleaned -- reads the same stable
-# week1_reaction_times_final.csv the Week 2 deck uses, not a synthetic
-# placeholder or a live in-progress Google Sheet. This used to be two
-# separate files (week3-online.qmd on synthetic data, week3-online-live.qmd
-# on the live sheet) -- collapsed back into this one file once real class
-# data existed, same reasoning as Week 2 (see CLAUDE.md's "Single deck per
-# week" entry).
-df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week1_reaction_times_final.csv")
+# Rebuilt 2026-10-06 as a recorded walkthrough (students watch it, then come
+# to a live Q&A) of Gabor & Kézdi's own Ch. 4 case study, replacing the
+# earlier "Functional form: why we log" session. The log-approximation
+# content moved to Week 5's functional-form section, where it's actually
+# used; nothing in either exam paper or the portfolio assesses it on its own.
+#
+# Data: Gabor's exact sample -- World Management Survey, Mexico, 2013 wave,
+# firms with 100-5,000 employees, N = 300 -- built from the local da_data_repo
+# copy (wms_da_textbook-xsec.csv) and checked against the book's published
+# numbers before use: N = 300; management mean 2.94, SD 0.60; employment
+# mean 761, median 353, SD 977; bin means 2.68 / 2.94 / 3.19 (book: 3.18 --
+# rounding); Cov = 177; Corr = 0.30. All match.
+firms = pd.read_csv("data/wms_mexico_2013.csv")
+firms['size'] = pd.cut(firms['emp_firm'], [0, 199, 999, np.inf],
+                       labels=['Small', 'Medium', 'Large']).astype(str)
+firms['ln_emp'] = np.log(firms['emp_firm'])
 
-if 'name' in df.columns and 'student_name' not in df.columns:
-    df = df.rename(columns={'name': 'student_name'})
+# Conditional distribution of the lean-management score (1-5) by size bin
+lean_cond = (pd.crosstab(firms['size'], firms['lean1'], normalize='index')
+               .stack().reset_index(name='share'))
+lean_cond.columns = ['size', 'lean', 'share']
+lean_cond['lean'] = lean_cond['lean'].astype(int)
 
-# week1_reaction_times_final.csv's own name/student_name values are already
-# anonymised at the source (Student 1, Student 2, ...).
+# Ten equal-count employment bins, plotted at each bin's median employment
+firms['bin10'] = pd.qcut(firms['emp_firm'], 10, labels=False, duplicates='drop')
+bins10 = (firms.groupby('bin10')
+               .agg(emp=('emp_firm', 'median'), management=('management', 'mean'), n=('management', 'size'))
+               .reset_index())
 
-if 'finger_mm' not in df.columns:
-    df['finger_mm'] = None
-df['finger_mm'] = pd.to_numeric(df['finger_mm'], errors='coerce')
+size_means = firms.groupby('size')['management'].agg(['mean', 'count']).reindex(['Small', 'Medium', 'Large']).reset_index()
 
-student_summary = (
-    df.groupby('student_name')
-    .agg(mean_rt=('reaction_time_ms', 'mean'), finger_mm=('finger_mm', 'first'))
-    .reset_index()
-    .round(1)
-)
-
-# Same finger_mm correction as the main workshop deck (see week3.qmd's own
-# comment for the full story): 5 of 24 real students have implausible
-# values -- 3 too small (centimetres typed as millimetres), 2 too large (an
-# extra digit) -- imputed here via the same x10/÷10 rule so this file's own
-# finger-length scatter isn't distorted by them. The workshop deck is where
-# students actually work through deciding this; this file just needs the
-# corrected numbers, not a repeat of the task.
-FINGER_LOW_MM, FINGER_HIGH_MM = 40, 150
-student_summary['finger_mm'] = student_summary['finger_mm'].apply(
-    lambda x: x * 10 if pd.notna(x) and x < FINGER_LOW_MM
-    else (x / 10 if pd.notna(x) and x > FINGER_HIGH_MM else x)
-)
-
-# NaN is not valid JSON — clean before ojs_define
-student_summary_clean = student_summary.astype(object).where(student_summary.notna(), None)
+stats = {
+    'n': int(len(firms)),
+    'm_mean': round(float(firms['management'].mean()), 2),
+    'm_median': round(float(firms['management'].median()), 2),
+    'm_sd': round(float(firms['management'].std()), 2),
+    'e_mean': int(round(firms['emp_firm'].mean())),
+    'e_median': int(round(firms['emp_firm'].median())),
+    'e_sd': int(round(firms['emp_firm'].std())),
+    'cov': round(float(np.cov(firms['emp_firm'], firms['management'])[0, 1]), 0),
+    'corr': round(float(firms['emp_firm'].corr(firms['management'])), 2),
+    'corr_ln': round(float(firms['ln_emp'].corr(firms['management'])), 2),
+}
 
 ojs_define(
-    student_summary = student_summary_clean.to_dict(orient='records'),
+    firms      = firms[['emp_firm', 'ln_emp', 'management', 'lean1', 'size']].to_dict(orient='records'),
+    lean_cond  = lean_cond.to_dict(orient='records'),
+    bins10     = bins10.to_dict(orient='records'),
+    size_means = size_means.to_dict(orient='records'),
+    stats      = stats,
 )
 ```
 
 ```{ojs}
 //| output: false
-{
-  // Generic "shrink on reveal" wiring, used by every chart wrapped as
-  // `:::: {.shrink-on-reveal data-frag="some-fragment-id" style="--large-height:...;--small-height:...;--shrink-scale:..."}`
-  // Each chart renders large while its named fragment is hidden, then
-  // shrinks smoothly to make room the moment that fragment is revealed.
-  // Sizes live entirely in each wrapper's own inline style — this cell only
-  // handles show/hide, once, for every wrapper on the page, so adding a new
-  // chart to this pattern never means touching this cell.
-  const wrapperFor = (fragId) => document.querySelector(`.shrink-on-reveal[data-frag="${fragId}"]`)
-
-  // Sets each wrapper's correct starting state immediately, including on a
-  // reload or direct navigation to a slide whose fragment is already shown
-  // — matters because this cell (no reactive deps) only runs once, at load.
-  document.querySelectorAll('.shrink-on-reveal[data-frag]').forEach(el => {
-    const frag = document.getElementById(el.dataset.frag)
-    el.classList.toggle('is-small', !!frag?.classList.contains('visible'))
-  })
-
-  Reveal.on('fragmentshown', (event) => {
-    wrapperFor(event.fragment.id)?.classList.add('is-small')
-  })
-  Reveal.on('fragmenthidden', (event) => {
-    wrapperFor(event.fragment.id)?.classList.remove('is-small')
-  })
-}
+codeBox = (src) => html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.45em;line-height:1.35;
+  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;padding:8px 14px;overflow-x:auto;white-space:pre;">${src}</pre>`
 ```
 
 ## {background-color="#1a1a2e"}
 
 ::: {style="text-align: center; padding-top: 180px;"}
-[**Why we log**]{style="font-size: 2.2em; color: white;"}
+[**Are bigger firms better managed?**]{style="font-size: 2.2em; color: white;"}
 
-[The workshop used the log of reaction time to see a pattern more clearly. This session looks at why that works — and when it stops working.]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+[Everything from the workshop — conditional probability, conditional means, scatter, correlation — on one real business dataset.]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
 :::
 
-## Why transform at all?
+## The question
 
-A "% change" needs a **baseline** — a "before" to measure against. Time series has one built in: this year's GDP vs. last year's.
+Some firms are much better managed than others. Is **firm size** part of the story?
+
+- **y** = quality of management
+- **x** = firm size (number of employees)
 
 ::: {.fragment}
-Cross-sectional data doesn't. Student A's finger length isn't "before" Student B's — there's no natural reference point to build a percentage difference from.
-:::
+Why it matters: if size itself *causes* better management, policies that help firms grow could also improve how they're run. If not, that link is a mirage.
 
-::: {.fragment}
-The natural logarithm sidesteps the problem: on a log scale, the difference between **any** two values approximates their percentage difference — no designated baseline required. It has a second payoff too: frequent nonlinear patterns are often far better approximated once we look at **relative differences** instead of raw ones.
+Today is the first step: **describe the pattern of association**. Whether it's causal comes at the end.
 :::
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
 Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Policy*, Ch. 4
 :::
 
-## What ln(x) actually buys you
+## The data: World Management Survey
 
-- $\ln(x)$ = the natural logarithm of $x$ — $x$ must be a positive number: $\ln(0)$ and $\ln(\text{negative})$ don't exist, so a variable with zeros (e.g. income including the unemployed) can't be logged as-is
-- The **claim**: differences in natural logs approximate **relative (percentage) differences**
-
-$$\ln(x + \Delta x) - \ln(x) \approx \frac{\Delta x}{x}$$
-
-::: {.fragment}
-Numerically: $\ln(1.01) = 0.0099 \approx 0.01$ — a 1% increase. $\ln(1.1) = 0.095 \approx 0.1$ — close to a 10% increase, already a little off.
-:::
-
-::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
-Source: Békés & Kézdi (2021), Ch. 4
-:::
-
-## Where it comes from
-
-From calculus: the derivative of $\ln(x)$ is $\dfrac{1}{x}$.
-
-$$\frac{d\ln(x)}{dx} = \frac{1}{x} \quad\Rightarrow\quad \ln(x+\Delta x) - \ln(x) \approx \frac{1}{x}\Delta x = \frac{\Delta x}{x}$$
+- Interviewers talk to senior managers and score **18 management practices** — e.g. how performance is tracked, how targets are set
+- Each practice scored from **1 (worst practice) to 5 (best practice)**
+- The **management score** = the simple average of the 18, so it also runs from 1 to 5
 
 ::: {.fragment}
-That's the whole trick: a log difference is approximately a relative difference, **for small changes**. The approximation is a straight line touching the curve — it only stays close nearby.
+Our sample, exactly as in the textbook: **Mexican firms, 2013, with 100–5,000 employees — ${stats.n} firms.**
 :::
 
-## Read the gap yourself
-
-```{ojs}
-viewof relx = {
-  const f = html`<div style="display:flex;align-items:center;gap:14px;font-size:13px;
-                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;">
-    <span style="color:#666;white-space:nowrap;">Relative change (Δx / x)</span>
-    <input type="range" min="0.01" max="1.5" step="0.01" value="0.1"
-           style="width:220px;cursor:pointer;accent-color:#457b9d;">
-    <span id="relx-label" style="font-weight:700;min-width:50px;color:#457b9d;">10%</span>
-  </div>`
-  const slider = f.querySelector('input')
-  const label  = f.querySelector('#relx-label')
-  slider.addEventListener('input', () => {
-    label.textContent = (slider.value * 100).toFixed(0) + '%'
-    f.dispatchEvent(new CustomEvent('input'))
-  })
-  Object.defineProperty(f, 'value', { get: () => +slider.value })
-  return f
-}
-```
-
-:::: {.shrink-on-reveal data-frag="wk3online-gap-frag" style="--large-height:480px;--small-height:300px;--shrink-scale:0.625;"}
-::: {.shrink-on-reveal-inner}
-```{ojs}
-{
-  const actual = Math.log(1 + relx)
-  const approx = relx
-  const pctError = Math.abs(actual - approx) / actual * 100
-
-  const xs = d3.range(0, 1.51, 0.01)
-  const lineData = xs.map(x => ({ x, y: x, series: "Δx / x (the approximation)" }))
-  const curveData = xs.map(x => ({ x, y: Math.log(1 + x), series: "ln(1 + x) (the actual value)" }))
-
-  return html`<div>
-    ${Plot.plot({
-      height: 480,
-      marginLeft: 55,
-      x: { label: "x" },
-      y: { label: "value" },
-      color: { legend: true, range: ["#e63946", "#2d6a4f"] },
-      marks: [
-        Plot.line(lineData, { x: "x", y: "y", stroke: "series", strokeDasharray: "4,3" }),
-        Plot.line(curveData, { x: "x", y: "y", stroke: "series" }),
-        Plot.ruleX([relx], { stroke: "#999", strokeDasharray: "2,2" }),
-        Plot.dot([{ x: relx, y: relx }], { x: "x", y: "y", fill: "#e63946", r: 5 }),
-        Plot.dot([{ x: relx, y: Math.log(1+relx) }], { x: "x", y: "y", fill: "#2d6a4f", r: 5 }),
-      ]
-    })}
-    <p style="font-family:sans-serif;text-align:center;">
-      At Δx/x = ${(relx*100).toFixed(0)}%: approximation = ${approx.toFixed(3)}, actual ln(1+x) = ${actual.toFixed(3)}
-      — off by <strong style="color:${pctError > 10 ? '#e63946' : '#2d6a4f'}">${pctError.toFixed(1)}%</strong>
-    </p>
-  </div>`
-}
-```
+::: {.fragment}
+::: {.instructions-box}
+**Pause the video.** Before you see any data: do you expect bigger firms to be better managed? Why?
 :::
-::::
-
-::: {.fragment #wk3online-gap-frag}
-Below about 0.3 (30%) the approximation is close. Beyond that, the gap grows — for a 100% increase, the log difference (0.69) badly understates the true relative change.
 :::
 
-::: {style="font-size:0.75em;color:#999;margin-top:4px;"}
-Pattern after Békés & Kézdi (2021), Ch. 4
-:::
-
-## Beyond the approximation: the exact conversion {.smaller}
-
-For an exact percentage change instead of the approximation, invert the log:
-
-$$\%\Delta x = e^{\,\ln(x_2) - \ln(x_1)} - 1$$
+## First, each variable on its own
 
 ```{ojs}
 {
-  const diffs = [0.1, 0.3, 0.5, 1.0, -0.1, -0.3, -0.5, -1.0]
-  const rows = diffs.map(d => ({ diff: d, approx: d, exact: Math.exp(d) - 1 }))
+  const a = Plot.plot({ height: 300, width: 520, marginLeft: 45,
+    x: { label: "Management score (1–5)" }, y: { label: "Firms" },
+    marks: [Plot.rectY(firms, Plot.binX({ y: "count" }, { x: "management", thresholds: 20, fill: "#457b9d", inset: 1 })), Plot.ruleY([0])] })
+  const b = Plot.plot({ height: 300, width: 520, marginLeft: 45,
+    x: { label: "Employees" }, y: { label: "Firms" },
+    marks: [Plot.rectY(firms, Plot.binX({ y: "count" }, { x: "emp_firm", thresholds: 20, fill: "#2d6a4f", inset: 1 })), Plot.ruleY([0])] })
+  return html`<div style="display:flex;gap:30px;justify-content:center;">${a}${b}</div>`
+}
+```
 
-  return html`<table style="width:75%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.95em;">
-    <thead><tr style="background:#1a1a2e;color:white;">
-      <th style="padding:10px 20px;text-align:right;">Log difference</th>
-      <th style="padding:10px 20px;text-align:right;">Approximation (Δx / x)</th>
-      <th style="padding:10px 20px;text-align:right;">Exact % change</th>
-    </tr></thead>
-    <tbody>
-      ${rows.map((r,i) => `<tr style="${i%2===1?'background:#fafafa;':''}border-bottom:1px solid #eee;">
-        <td style="padding:8px 20px;text-align:right;">${r.diff > 0 ? '+' : ''}${r.diff.toFixed(1)}</td>
-        <td style="padding:8px 20px;text-align:right;color:#999;">${r.approx > 0 ? '+' : ''}${(r.approx*100).toFixed(0)}%</td>
-        <td style="padding:8px 20px;text-align:right;font-weight:700;color:${Math.abs(r.exact - r.approx) > 0.05 ? '#e63946' : '#2d6a4f'};">${r.exact > 0 ? '+' : ''}${(r.exact*100).toFixed(0)}%</td>
-      </tr>`).join('')}
-    </tbody>
+::: {.fragment}
+- **Management score:** mean ${stats.m_mean}, median ${stats.m_median}, SD ${stats.m_sd} — roughly symmetric
+- **Employees:** mean ${stats.e_mean}, median ${stats.e_median} — a long right tail, just like our reaction times in Week 1
+:::
+
+## Conditional probabilities
+
+Start simple. Take **one** of the 18 practices — **lean management**, scored 1 to 5 — and split firms into three size groups: small (100–199 employees), medium (200–999), large (1,000+).
+
+```{ojs}
+Plot.plot({
+  height: 330,
+  width: 900,
+  marginLeft: 70,
+  style: { fontSize: "14px" },
+  x: { label: "% of firms in that size group", percent: true },
+  marginBottom: 45,
+  y: { label: null, domain: ["Small", "Medium", "Large"] },
+  color: { legend: true, label: "Lean management score", domain: [1,2,3,4,5], scheme: "RdYlBu" },
+  marks: [
+    Plot.barX(lean_cond, { y: "size", x: "share", fill: "lean", order: "lean" }),
+    Plot.ruleX([0]),
+  ]
+})
+```
+
+::: {.fragment}
+::: {.instructions-box}
+**Pause.** Read off $P(\text{score} = 1 \mid \text{Small})$ and $P(\text{score} = 5 \mid \text{Large})$. Is this the same kind of chart as our device-and-caffeine one?
+:::
+:::
+
+## Reading the conditional probabilities
+
+```{ojs}
+{
+  const p = (s, l) => lean_cond.find(d => d.size === s && d.lean === l)?.share ?? 0
+  return html`<table style="width:80%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.9em;">
+    <caption class="visually-hidden">Share of firms at each lean management score, by firm size.</caption>
+    <thead><tr style="background:#1a1a2e;color:white;"><th scope="col" style="padding:7px 12px;text-align:left;">Size</th>
+      ${[1,2,3,4,5].map(l => `<th scope="col" style="padding:7px 12px;text-align:right;">Score ${l}</th>`).join('')}</tr></thead>
+    <tbody>${["Small","Medium","Large"].map(s => `<tr style="border-bottom:1px solid #eee;"><td style="padding:7px 12px;font-weight:700;">${s}</td>
+      ${[1,2,3,4,5].map(l => `<td style="padding:7px 12px;text-align:right;">${(100*p(s,l)).toFixed(0)}%</td>`).join('')}</tr>`).join('')}</tbody>
   </table>`
 }
 ```
 
 ::: {.fragment}
-The approximation isn't just imprecise for large differences — it's **also asymmetric**. A log difference of +1.0 is a **+172%** change, not +100%. A log difference of −1.0 is only **−63%**, not −100%: log differences are bounded below by −1 no matter how close x gets to zero, but unbounded above. The scale itself is lopsided.
+- Small firms: about 1 in 5 score the **worst** possible 1, and **none** score 5
+- Large firms: fewer 1s, and the most 5s
+- Every row is a **conditional distribution** — the distribution of y given x. They aren't the same across rows, so lean management and size are **not independent**.
 :::
 
-::: {style="font-size:0.75em;color:#999;margin-top:4px;"}
-Source: Békés & Kézdi (2021), Ch. 4
-:::
+<details>
+<summary style="cursor:pointer;color:#2d6a4f;font-size:0.8em;">Show the Python code</summary>
 
-## Bringing it back to our own data
-
-Back in the workshop, we scattered finger length against raw reaction time — no logging. Week 1 found reaction time is skewed, though: logging stretches out the crowded low end and compresses the long right tail, which can make a pattern easier to see. Let's check both, side by side, on our own data.
-
-:::: {.shrink-on-reveal data-frag="wk3online-ownlog-frag" style="--large-height:420px;--small-height:260px;--shrink-scale:0.619;"}
-::: {.shrink-on-reveal-inner}
 ```{ojs}
-{
-  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
-  if (rows.length < 3) {
-    return html`<div class="instructions-box">Not enough finger-length data yet to demonstrate this live — check back once more of the class has submitted.</div>`
-  }
-  const p1 = Plot.plot({
-    height: 420, width: 380,
-    x: { label: "Finger length (mm)" },
-    y: { label: "Mean reaction time (ms)" },
-    marks: [ Plot.dot(rows, { x: "finger_mm", y: "mean_rt", fill: "#457b9d", r: 6 }) ]
-  })
-  const p2 = Plot.plot({
-    height: 420, width: 380,
-    x: { label: "Finger length (mm)" },
-    y: { label: "ln(mean reaction time)" },
-    marks: [ Plot.dot(rows, { x: "finger_mm", y: d => Math.log(d.mean_rt), fill: "#2d6a4f", r: 6 }) ]
-  })
-  return html`<div style="display:flex;gap:24px;justify-content:center;">${p1}${p2}</div>`
-}
+codeBox(`import pandas as pd
+
+firms = pd.read_csv(data_path)   # wms_mexico_2013.csv
+firms['size'] = pd.cut(firms['emp_firm'], [0, 199, 999, float('inf')],
+                       labels=['Small', 'Medium', 'Large'])
+
+# normalize='index' turns counts into shares within each row: P(score | size)
+pd.crosstab(firms['size'], firms['lean1'], normalize='index').round(2)`)
+```
+
+</details>
+
+## Conditional means
+
+Now use the full management score — all 18 practices averaged — and take its **mean within each size group**: $E[\text{management} \mid \text{size}]$.
+
+```{ojs}
+Plot.plot({
+  height: 320,
+  width: 700,
+  marginLeft: 60,
+  style: { fontSize: "14px" },
+  x: { label: "Firm size", domain: ["Small","Medium","Large"] },
+  y: { label: "Mean management score", domain: [0, 3.6] },
+  marks: [
+    Plot.barY(size_means, { x: "size", y: "mean", fill: "#457b9d", fillOpacity: 0.85 }),
+    Plot.text(size_means, { x: "size", y: "mean", text: d => `${d.mean.toFixed(2)} (n=${d.count})`, dy: -12, fontSize: 14 }),
+  ]
+})
+```
+
+::: {.fragment}
+2.68 → 2.94 → 3.19. On average, **larger firms are better managed**: a **positive association** between size and management quality, and the first simple piece of evidence.
+:::
+
+## Scatter and bin-scatter
+
+:::: {.two-col style="grid-template-columns: 1fr 1fr;"}
+::: {}
+```{ojs}
+Plot.plot({
+  height: 380, width: 540, marginLeft: 45,
+  x: { label: "Employees" }, y: { label: "Management score", domain: [1, 5] },
+  marks: [Plot.dot(firms, { x: "emp_firm", y: "management", r: 3, fill: "#457b9d", fillOpacity: 0.5 })]
+})
+```
+**Scatterplot:** every firm. Lots of information, hard to read.
+:::
+
+::: {}
+```{ojs}
+Plot.plot({
+  height: 380, width: 540, marginLeft: 45,
+  x: { label: "Employees (median of each bin)" }, y: { label: "Mean management score", domain: [1, 5] },
+  marks: [
+    Plot.line(bins10, { x: "emp", y: "management", stroke: "#e63946", strokeOpacity: 0.4 }),
+    Plot.dot(bins10, { x: "emp", y: "management", r: 7, fill: "#e63946" })
+  ]
+})
+```
+**Bin-scatter:** 10 bins with equal numbers of firms, mean score in each.
+:::
+::::
+
+::: {.fragment}
+Positive overall — but most of the rise comes **between small and medium** firms, then it flattens. Gabor calls this **concave**: increasing, at a decreasing rate. Notice the dots bunch up on the left, where most firms are.
+:::
+
+## A detour: log the skewed variable
+
+Employment is heavily right-skewed. Taking its log stretches out the small firms and squeezes the big ones — the same move we made with reaction time in the workshop.
+
+:::: {.two-col style="grid-template-columns: 1fr 1fr;"}
+::: {}
+```{ojs}
+Plot.plot({
+  height: 340, width: 540, marginLeft: 45,
+  x: { label: "Employees" }, y: { label: "Management score", domain: [1, 5] },
+  marks: [Plot.dot(firms, { x: "emp_firm", y: "management", r: 3, fill: "#457b9d", fillOpacity: 0.5 })]
+})
+```
+:::
+::: {}
+```{ojs}
+Plot.plot({
+  height: 340, width: 540, marginLeft: 45,
+  x: { label: "ln(employees)" }, y: { label: "Management score", domain: [1, 5] },
+  marks: [Plot.dot(firms, { x: "ln_emp", y: "management", r: 3, fill: "#2d6a4f", fillOpacity: 0.5 })]
+})
 ```
 :::
 ::::
 
-::: {.fragment #wk3online-ownlog-frag}
-Whether logging *our* y variable actually helps depends on whether reaction time is skewed enough to matter here — recall Week 1's online session found it's closer to log-normal than normal. The same logic, a different variable.
+::: {.fragment}
+Same firms, same data. On the log scale the points spread evenly and the upward drift is much easier to see. Week 5 covers how to *interpret* a model with logged variables.
 :::
 
+## Conditional distributions: box plots by size
+
+The conditional mean is one number per group. A box plot shows the **whole conditional distribution**.
+
+```{ojs}
+Plot.plot({
+  height: 330,
+  width: 800,
+  marginLeft: 70,
+  marginBottom: 45,
+  style: { fontSize: "14px" },
+  x: { label: "Management score", domain: [1, 5] },
+  y: { label: null, domain: ["Small", "Medium", "Large"] },
+  marks: [Plot.boxX(firms, { x: "management", y: "size", fill: "#457b9d", fillOpacity: 0.3, stroke: "#1a1a2e" })]
+})
+```
+
+::: {.fragment}
+The median, both quartiles, the minimum and the maximum all shift right as firms get bigger. The **spread** looks similar in each group, so the difference is mostly in *where* the distribution sits.
+:::
+
+## Covariance and correlation {.smaller}
+
+::: {.instructions-box}
+**Pause and calculate.** From our data:
+
+- Cov[employees, management] = **${stats.cov}**
+- SD[employees] = **${stats.e_sd}**
+- SD[management] = **${stats.m_sd}**
+
+What is the correlation coefficient? Weak, moderate or strong?
+:::
+
+::: {.fragment}
+$$Corr = \frac{Cov}{SD_x \, SD_y}$$
+
+```{ojs}
+html`<p style="font-family:sans-serif;font-size:1.05em;">${stats.cov} ÷ (${stats.e_sd} × ${stats.m_sd}) = <strong style="color:#e63946;font-size:1.25em;">${stats.corr.toFixed(2)}</strong></p>`
+```
+
+**A positive, weak to moderate association** (positive mean-dependence) — above our 0.2 "weak" line, well short of 0.7. Remember what correlation measures: the *linear* part. The bin-scatter showed a curve that flattens out, which a single correlation can't describe.
+:::
+
+<details>
+<summary style="cursor:pointer;color:#2d6a4f;font-size:0.8em;">Show the Python code</summary>
+
+```{ojs}
+codeBox(`firms[['emp_firm', 'management']].cov()     # covariance matrix
+firms['emp_firm'].corr(firms['management'])  # correlation`)
+```
+
+</details>
+
+## Is it causal?
+
+A correlation of ${stats.corr.toFixed(2)} describes an **association**, not an explanation. Three possible stories:
+
+::: {.fragment}
+- **Size → management:** bigger firms can afford professional managers, HR systems and consultants
+:::
+
+::: {.fragment}
+- **Management → size:** well-run firms win customers and *grow*
+:::
+
+::: {.fragment}
+- **Something else drives both:** industry, foreign ownership, competition. A multinational subsidiary is likely to be both big and well run.
+:::
+
+::: {.fragment}
+Firm size wasn't randomly assigned: this is **observational** data, so the variation in x comes from firms' own histories and choices. Description can't tell these stories apart. Weeks 6 and 9 give us tools that can start to.
+:::
+
+## From pattern to model choice
+
+Describing a pattern is only half the job. The other half is saying **what it means for the model you build next.**
+
+::: {.fragment}
+| What we saw | What it means for the model |
+|---|---|
+| The bin-scatter **curves**: a big rise from small to medium, then it flattens | Don't fit a straight line in raw employees. Use a curve, or log employees first (Weeks 4–5) |
+| Employment is heavily **right-skewed** | Consider logging it: the pattern was clearer on the log scale |
+| The pattern **could be driven by something else**, e.g. industry | Hold that variable fixed, or check the pattern within each group (Week 6) |
+:::
+
+::: {.fragment}
+::: {.instructions-box}
+**In your portfolio**, this is the step that turns exploratory analysis into justification: each pattern you find should point to a specific modelling choice, and you should say so explicitly.
+:::
+:::
+
+## Bring to the Q&A
+
+::: {.instructions-box}
+1. Each row of the lean-management table is a **conditional distribution**. What would the table look like if lean management and size were independent?
+2. The correlation is 0.30, but the bin-scatter is curved. What does the correlation miss?
+3. Pick one of the three causal stories. What extra data would help you test it?
+4. HR's finger-length question and this one have the same structure. What's the y, the x, and the "something else" in each?
+5. Suppose y were 0/1 — for example, whether an employee left the company. What would the conditional mean of y within a group tell you?
+:::
 
 ## Coming up: Week 4
 
