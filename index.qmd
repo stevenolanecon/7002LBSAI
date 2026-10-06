@@ -51,6 +51,7 @@ weeks = [
      "links": [
          ("Workshop slides", "week3-slides.html", False),
          ("Online session", "week3-online-slides.html", False),
+         ("Download the data", "week3-data-download.html", True),
      ]},
     {"n": 4, "topic": "Regression I — Fitting the Line", "status": "pending",
      "links": [
