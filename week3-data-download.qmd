@@ -15,7 +15,7 @@ toc: false
 
 ::: {.page-intro}
 <h3 style="margin-top:0;">week3_students.csv</h3>
-<p><strong>Use this one for the in-class tasks.</strong> One row per student (24 rows): each student's mean reaction time, their corrected finger length, and a <code>finger_bin</code> column that splits the class into three roughly equal groups (Short / Medium / Long).</p>
+<p><strong>Use this one for the in-class tasks.</strong> One row per student (24 rows): each student's mean reaction time, their corrected finger length, a <code>finger_bin</code> column that splits the class into three roughly equal groups (Short / Medium / Long), their device (<code>device</code>: Laptop / Phone), and whether they had caffeine (<code>caffeine</code>: Yes / No).</p>
 <p>Used for computing the conditional mean by bin, building the finger length vs. reaction time scatterplot, and calculating the class covariance and correlation.</p>
 <p>
   <button class="data-download-btn" data-url="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week3_students.csv" data-filename="week3_students.csv" style="background:#1f7a79;color:#fff;border:none;border-radius:8px;padding:12px 24px;font-size:1em;cursor:pointer;font-family:inherit;">
