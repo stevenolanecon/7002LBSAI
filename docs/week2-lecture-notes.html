@@ -371,7 +371,7 @@
 
 <div class="mini-table-wrap" id="devicetable"></div>
 
-<p>Nobody in the room can answer that question by staring harder at the table above. Answering it properly is the whole business of statistical <strong>inference</strong>: using the one dataset we actually have to say something responsible about a world we didn't get to fully observe. That's what this chapter builds, piece by difficult piece.</p>
+<p>Nobody can answer that question by staring harder at the table above. Answering it properly is the whole business of statistical <strong>inference</strong>: using the one dataset we actually have to say something responsible about a world we didn't get to fully observe. That's what this chapter builds, piece by difficult piece.</p>
 </section>
 
 <section class="chapter" id="external-validity">
@@ -390,14 +390,14 @@
   <li><span class="term">Sub-groups</span><span>Our data is this cohort. Would it hold for a different group of people?</span></li>
 </ul>
 
-<p>In the class students worked in groups on exactly this question for our own data. The first group pointed out the time of day might have had an influence.</p>
+<p>Try this question on our own data before reading on. Start with the time of day the data were collected.</p>
 
 <blockquote class="field-note">
   <span class="tag">From the workshop</span>
   <p>&ldquo;You'd just done three hours of learning Python, then I came in and said, right, do this reaction-time experiment. If you'd done it at nine in the morning, fresh, I'd say more than likely those reaction times would be quicker. Most people in the universe haven't just sat through a three-hour Python class before they react to something.&rdquo;</p>
 </blockquote>
 
-<p>That's a real <strong>time</strong> threat, specific to our own data, not a generic textbook warning. The same groups raised a real <strong>space</strong> threat (the room itself, the specific laptops and phones on hand) and a real <strong>sub-groups</strong> threat (this is a notably young, tech-comfortable cohort &ndash; gaming experience in particular came up as something that could easily be pushing reaction times faster than a more representative population would show).</p>
+<p>That's a real <strong>time</strong> threat, specific to our own data, not a generic textbook warning. There's a real <strong>space</strong> threat too (the room itself, the specific laptops and phones on hand), and a real <strong>sub-groups</strong> threat (this is a notably young, tech-comfortable cohort &ndash; gaming experience in particular could easily be pushing reaction times faster than a more representative population would show).</p>
 
 <div class="callout">
   <strong>There's no tick-box version of this.</strong> You run an experiment, and you keep asking how what you measured here might fail to generalise, staying honest about the specific threats rather than pretending you've eliminated them. Every real dataset carries some of these threats somewhere. The job is knowing which ones apply to yours.
@@ -518,7 +518,7 @@ sample_means = simulate_means(n_students, 1000)  <span class="c"># 1,000 simulat
 
 
 <div class="callout gold">
-  <strong>Two different numbers, both called "n" &ndash; don't conflate them.</strong> A question from the room, almost word for word: <em>"why does the mean get closer to the truth the more we have?"</em> It's worth being precise about <em>what</em> is growing.
+  <strong>Two different numbers, both called "n" &ndash; don't conflate them.</strong> A natural question at this point is <em>"why does the mean get closer to the truth the more we have?"</em> It's worth being precise about <em>what</em> is growing.
   <ul style="margin:10px 0 0;">
     <li><strong>Sample size</strong> (24 here) &ndash; how many <em>students</em> are averaged together inside <em>one</em> simulated class.</li>
     <li><strong>Number of samples</strong> (10, 100, 1,000 here) &ndash; how many <em>separate simulated classes</em> you've run, each with its own mean.</li>
