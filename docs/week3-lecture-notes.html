@@ -1,0 +1,1346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>When y Met x: Correlation and Covariance</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.17/dist/plot.umd.min.js"></script>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['$$', '$$']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #fdfbf6;
+    --paper-raised: #ffffff;
+    --paper-sunk: #f6f1e7;
+    --ink: #1a1a2e;
+    --ink-soft: #4a4d63;
+    --ink-faint: #86869c;
+    --rule: #e6ddc9;
+    --accent: #1f7a79;
+    --accent-soft: #f3fbfb;
+    --warm: #c8373f;
+    --warm-soft: #fbeceb;
+    --gold: #c97f31;
+    --green: #2d6a4f;
+    --green-soft: #eaf5ef;
+    --quote-bg: #eef7f7;
+    --quote-border: #bfe0df;
+    --quote-ink: #1e4a49;
+    --chip-bg: #f1ece0;
+    --code-bg: #f4f0e6;
+    --shadow: 0 1px 2px rgba(26,26,46,0.06), 0 8px 24px -12px rgba(26,26,46,0.18);
+    --serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    --sans: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #14151f;
+      --paper-raised: #1c1e2b;
+      --paper-sunk: #10111a;
+      --ink: #eef0f6;
+      --ink-soft: #b7bbcf;
+      --ink-faint: #7c8098;
+      --rule: #303350;
+      --accent: #5ecbc8;
+      --accent-soft: #15302f;
+      --warm: #ff8a86;
+      --warm-soft: #2e1c1d;
+      --gold: #f2b872;
+      --green: #6fbb95;
+      --green-soft: #14261f;
+      --quote-bg: #142726;
+      --quote-border: #29504c;
+      --quote-ink: #bfe7e2;
+      --chip-bg: #23253a;
+      --code-bg: #191b2a;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #14151f;
+    --paper-raised: #1c1e2b;
+    --paper-sunk: #10111a;
+    --ink: #eef0f6;
+    --ink-soft: #b7bbcf;
+    --ink-faint: #7c8098;
+    --rule: #303350;
+    --accent: #5ecbc8;
+    --accent-soft: #15302f;
+    --warm: #ff8a86;
+    --warm-soft: #2e1c1d;
+    --gold: #f2b872;
+    --green: #6fbb95;
+    --green-soft: #14261f;
+    --quote-bg: #142726;
+    --quote-border: #29504c;
+    --quote-ink: #bfe7e2;
+    --chip-bg: #23253a;
+    --code-bg: #191b2a;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--accent-soft); color: var(--ink); }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  h1, h2, h3, h4 { font-family: var(--serif); color: var(--ink); text-wrap: balance; line-height: 1.18; font-weight: 600; }
+  p { line-height: 1.68; color: var(--ink-soft); }
+  strong { color: var(--ink); font-weight: 600; }
+
+  /* ---------- shell layout ---------- */
+  .shell {
+    display: grid;
+    grid-template-columns: 240px minmax(0,1fr);
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  @media (max-width: 880px) {
+    .shell { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    padding: 56px 16px 38px;
+    border-bottom: 1px solid var(--rule);
+    background:
+      radial-gradient(ellipse 900px 320px at 15% -10%, var(--accent-soft), transparent 60%),
+      var(--paper);
+  }
+  .hero-inner { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; display:flex; align-items:center; gap: 10px; flex-wrap: wrap;
+  }
+  .eyebrow .dot { width:5px; height:5px; border-radius:50%; background: var(--warm); display:inline-block; }
+  .hero h1 { font-size: clamp(2.1rem, 4.6vw, 3.1rem); margin: 14px 0 10px; max-width: 16ch; }
+  .hero .dek { font-size: 1.15rem; color: var(--ink-soft); max-width: 62ch; line-height: 1.55; margin: 0 0 26px; }
+  .hero .dek em { color: var(--ink); font-style: normal; border-bottom: 2px solid var(--gold); }
+
+  .headline-strip {
+    display: flex; gap: 0; flex-wrap: wrap;
+    border: 1px solid var(--rule); border-radius: 14px; overflow: hidden;
+    background: var(--paper-raised); box-shadow: var(--shadow);
+    max-width: 780px;
+  }
+  .headline-strip .stat {
+    flex: 1 1 150px; padding: 16px 20px; border-right: 1px solid var(--rule);
+  }
+  .headline-strip .stat:last-child { border-right: none; }
+  .headline-strip .stat .n {
+    font-family: var(--serif); font-size: 1.7rem; font-weight: 700; color: var(--accent);
+    font-variant-numeric: tabular-nums; display:block;
+  }
+  .headline-strip .stat .n.warm { color: var(--warm); }
+  .headline-strip .stat .l { font-size: 12.5px; color: var(--ink-faint); margin-top: 2px; }
+
+  /* ---------- TOC ---------- */
+  nav.toc {
+    padding: 34px 20px 40px 24px;
+    font-family: var(--sans);
+  }
+  nav.toc .toc-label { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 10px; display:block; }
+  .toc-block.chapter-nav { padding-bottom: 18px; margin-bottom: 18px; border-bottom: 1px solid var(--rule); }
+  nav.toc ol.chapter-list { list-style: none; margin: 0; padding: 0; columns: 1; }
+  nav.toc ol.chapter-list li { margin-bottom: 2px; }
+  nav.toc .chapter-link { display: block; padding: 8px 10px; border-radius: 8px; text-decoration: none; }
+  nav.toc .chapter-link strong { display: block; font-family: var(--serif); font-size: 13.5px; color: var(--ink); font-weight: 600; }
+  nav.toc .chapter-link .chapter-sub { display: block; font-size: 11px; color: var(--ink-faint); margin-top: 1px; line-height: 1.3; }
+  nav.toc a.chapter-link:hover { background: var(--paper-sunk); }
+  nav.toc .chapter-link.current { background: var(--accent-soft); cursor: default; }
+  nav.toc .chapter-link.current strong { color: var(--accent); }
+  nav.toc .chapter-link:before { content: none; }
+  nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: sec; }
+  nav.toc li { counter-increment: sec; margin-bottom: 2px; }
+  nav.toc a {
+    display: flex; gap: 9px; padding: 6px 8px; border-radius: 7px;
+    color: var(--ink-soft); text-decoration: none; font-size: 13.5px; line-height: 1.35;
+  }
+  nav.toc a:before {
+    content: counter(sec, decimal-leading-zero); font-family: var(--mono); font-size: 11px;
+    color: var(--ink-faint); padding-top: 1px; flex-shrink: 0;
+  }
+  nav.toc a:hover { background: var(--paper-sunk); color: var(--ink); }
+  nav.toc a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  nav.toc a.active:before { color: var(--accent); }
+  @media (max-width: 880px) {
+    nav.toc { position: static; border-bottom: 1px solid var(--rule); padding: 18px 20px; }
+    nav.toc ol { columns: 2; column-gap: 20px; }
+    nav.toc.desktop-sticky { display: none; }
+  }
+  @media (min-width: 881px) {
+    nav.toc.desktop-sticky { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; }
+    .mobile-toc { display: none; }
+  }
+
+  /* ---------- main column ---------- */
+  main { padding: 8px 24px 100px; min-width: 0; }
+  .col { max-width: 700px; margin: 0 auto; }
+
+  section.chapter { padding-top: 54px; scroll-margin-top: 14px; }
+  section.chapter:first-of-type { padding-top: 40px; }
+  .chapter-kicker {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 6px;
+  }
+  section.chapter h2 { font-size: clamp(1.5rem, 3vw, 1.95rem); margin: 0 0 18px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  section.chapter h3 { font-size: 1.18rem; margin: 34px 0 12px; }
+  section.chapter > p { margin: 0 0 16px; font-size: 1.02rem; }
+  section.chapter ul, section.chapter ol { color: var(--ink-soft); line-height: 1.68; padding-left: 22px; }
+  section.chapter li { margin-bottom: 6px; }
+  section.chapter li strong { color: var(--ink); }
+
+  /* first-paragraph drop treatment on the very first section only */
+  #real-or-noise > p:first-of-type::first-letter {
+    font-family: var(--serif); font-size: 3.6em; float: left; line-height: 0.85; padding: 6px 8px 0 0;
+    color: var(--warm); font-weight: 700;
+  }
+
+  /* ---------- inline components ---------- */
+  .lede-figure {
+    display: flex; gap: 20px; align-items: flex-start; margin: 0 0 20px; padding-bottom: 4px;
+  }
+  .lede-figure .art {
+    flex: 0 0 168px; width: 168px; height: 168px; border-radius: 12px; overflow: hidden;
+    background: linear-gradient(150deg, var(--accent-soft), var(--paper-sunk));
+    display:flex; align-items:center; justify-content:center; box-shadow: var(--shadow);
+  }
+  @media (max-width: 560px) { .lede-figure { flex-direction: column; } .lede-figure .art { width: 100%; height: 150px; } }
+
+  blockquote.field-note {
+    margin: 24px 0; padding: 16px 20px 16px 18px;
+    background: var(--quote-bg); border-left: 3px solid var(--quote-border); border-radius: 4px 10px 10px 4px;
+  }
+  blockquote.field-note .tag {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--quote-ink); opacity: 0.85; display: block; margin-bottom: 6px;
+  }
+  blockquote.field-note p { margin: 0; color: var(--quote-ink); font-size: 0.98rem; font-style: italic; line-height: 1.6; }
+  blockquote.field-note p + p { margin-top: 8px; }
+
+  .callout {
+    margin: 22px 0; padding: 16px 20px; border-radius: 10px; border: 1px solid var(--rule);
+    background: var(--paper-sunk); font-size: 0.96rem; color: var(--ink-soft); line-height: 1.6;
+  }
+  .callout strong { color: var(--ink); }
+  .callout.gold { border-color: color-mix(in srgb, var(--gold) 40%, var(--rule)); background: color-mix(in srgb, var(--gold) 10%, var(--paper-sunk)); }
+
+  .formula-block {
+    margin: 20px 0; padding: 18px 22px; background: var(--code-bg); border-radius: 10px;
+    border: 1px solid var(--rule); overflow-x: auto; text-align: center; font-size: 1.05rem;
+  }
+  .formula-caption { text-align: center; font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin-top: -12px; margin-bottom: 20px; }
+
+  code, .inline-code { font-family: var(--mono); font-size: 0.86em; background: var(--code-bg); padding: 2px 6px; border-radius: 4px; color: var(--ink); }
+  pre.code-block {
+    font-family: var(--mono); font-size: 0.82rem; background: var(--code-bg); border: 1px solid var(--rule);
+    border-radius: 10px; padding: 16px 18px; overflow-x: auto; line-height: 1.55; color: var(--ink);
+    margin: 16px 0;
+  }
+  pre.code-block .c { color: var(--ink-faint); }
+  pre.code-block .k { color: var(--accent); }
+
+  table.data-table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 0.92rem; overflow-x: auto; display: block; }
+  table.data-table thead, table.data-table tbody { display: table; width: 100%; table-layout: fixed; }
+  table.data-table th { text-align: left; font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 600; padding: 8px 12px; border-bottom: 2px solid var(--ink); }
+  table.data-table td { padding: 9px 12px; border-bottom: 1px solid var(--rule); color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data-table tr:last-child td { border-bottom: none; }
+  table.data-table td:first-child, table.data-table th:first-child { color: var(--ink); font-weight: 500; }
+
+  .term-list { list-style: none; padding: 0; margin: 18px 0; }
+  .term-list li { display: grid; grid-template-columns: 170px 1fr; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .term-list li:last-child { border-bottom: none; }
+  .term-list dt, .term-list .term { font-weight: 600; color: var(--ink); font-family: var(--serif); }
+  @media (max-width: 560px) { .term-list li { grid-template-columns: 1fr; gap: 3px; } }
+
+  /* ---------- interactive figure shell ---------- */
+  .figure {
+    margin: 26px 0; background: var(--paper-raised); border: 1px solid var(--rule); border-radius: 14px;
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .figure-head { padding: 16px 20px 12px; border-bottom: 1px solid var(--rule); }
+  .figure-head .flabel { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .figure-head h4 { margin: 4px 0 0; font-size: 1.05rem; }
+  .figure-body { padding: 16px 20px; }
+  .figure-caption { padding: 0 20px 18px; font-size: 0.86rem; color: var(--ink-faint); line-height: 1.5; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 16px 22px; align-items: center; padding: 12px 4px 18px; font-size: 13px; }
+  .ctl { display: flex; align-items: center; gap: 8px; }
+  .ctl .lbl { color: var(--ink-soft); white-space: nowrap; }
+  .ctl input[type=range] { accent-color: var(--accent); cursor: pointer; width: 110px; }
+  .ctl .val { font-family: var(--mono); font-weight: 600; min-width: 46px; color: var(--accent); font-size: 12.5px; }
+
+  .chart-wrap { overflow-x: auto; }
+  .chart-wrap svg { display: block; margin: 0 auto; }
+  .chart-row { display: flex; gap: 20px; flex-wrap: wrap; }
+  .chart-row > div { flex: 1 1 200px; min-width: 0; }
+
+  .mini-table-wrap { overflow-x: auto; }
+
+  /* ---------- collapsible code box ---------- */
+  details.code-reveal {
+    margin: 20px 0; border: 1px solid var(--rule); border-radius: 10px; overflow: hidden;
+    background: var(--paper-raised);
+  }
+  details.code-reveal summary {
+    cursor: pointer; padding: 12px 18px; font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
+    color: var(--accent); list-style: none; display: flex; align-items: center; gap: 9px;
+    background: var(--paper-sunk); user-select: none;
+  }
+  details.code-reveal summary::-webkit-details-marker { display: none; }
+  details.code-reveal summary::before { content: '\25B8'; font-size: 0.85em; transition: transform 0.15s ease; display: inline-block; }
+  details.code-reveal[open] summary::before { transform: rotate(90deg); }
+  details.code-reveal .code-reveal-body { padding: 2px 18px 16px; }
+  details.code-reveal .code-reveal-body p { font-size: 0.9rem; margin: 12px 0 0; }
+
+  /* ---------- divider ---------- */
+  .divider {
+    margin: 60px 0 0; padding: 46px 24px; background: var(--ink); border-radius: 16px; text-align: center;
+    color: #f2f2f6;
+  }
+  .divider .k { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: #8fb4cc; }
+  .divider h3 { color: #fff; font-size: 1.5rem; margin: 10px 0 0; }
+  .divider p { color: #c3c4d6; max-width: 46ch; margin: 10px auto 0; }
+
+  /* ---------- footnotes ---------- */
+  .footnote-ref { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .footnote-ref:hover { text-decoration: underline; }
+  .footnotes {
+    max-width: 700px; margin: 46px auto 0; padding: 18px 0 0; border-top: 1px solid var(--rule);
+    font-size: 0.86rem; color: var(--ink-soft); line-height: 1.6;
+  }
+  .footnotes ol { padding-left: 20px; margin: 0; }
+  .footnotes li { margin-bottom: 6px; }
+  .footnotes a.footnote-back { color: var(--ink-faint); text-decoration: none; margin-left: 4px; }
+  .footnotes a.footnote-back:hover { color: var(--accent); }
+
+  /* ---------- footer ---------- */
+  footer.colophon {
+    max-width: 700px; margin: 70px auto 0; padding: 26px 0 0; border-top: 1px solid var(--rule);
+    font-size: 0.86rem; color: var(--ink-faint); line-height: 1.6;
+  }
+  footer.colophon strong { color: var(--ink-soft); }
+
+  @media (max-width: 400px) {
+    .hero { padding: 40px 12px 30px; }
+    main { padding: 8px 14px 80px; }
+  }
+  /* ---------- week 3 additions: checkbox labels and a plain button in .controls ---------- */
+  .controls label.chk { display:flex; align-items:center; gap:6px; cursor:pointer; color: var(--ink-soft); }
+  .controls input[type=checkbox] { accent-color: var(--accent); cursor: pointer; }
+  select.picker {
+    font-family: var(--sans); font-size: 13.5px; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--rule);
+    background: var(--paper-sunk); color: var(--ink); cursor: pointer;
+  }
+  button.btn {
+    font-family: var(--sans); font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 8px;
+    border: 1px solid var(--accent); background: var(--accent-soft); color: var(--accent); cursor: pointer;
+  }
+  button.btn:hover { background: var(--accent); color: var(--paper); }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="toc desktop-sticky" id="toc"></nav>
+
+  <main>
+    <div class="hero" style="margin: -8px -24px 30px; border-radius: 0;">
+      <div class="hero-inner" style="padding:0;">
+        <div class="eyebrow"><span class="dot"></span>7002LBSAI &middot; Research Methods in Analytics &middot; Chapter Three</div>
+        <h1>When y Met x: Correlation and Covariance</h1>
+      </div>
+    </div>
+
+    <nav class="toc mobile-toc" id="toc-mobile"></nav>
+
+    <div class="col">
+
+<section class="chapter" id="shortcut-for-hr">
+<div class="chapter-kicker">Part One</div>
+<h2>A Shortcut for HR</h2>
+
+<p>For two chapters we've looked at one variable at a time &ndash; its shape, its centre, its spread, and how far we can trust a single number computed from it. That's useful, but it's rarely the question anyone is paying you to answer. Real questions almost always involve two things: does this go with that? When one moves, does the other? And if it looks like they do, how much should we believe it?</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Today we're almost looking at a love story &ndash; when y met x. It's basically about the relationship between two variables, and what we can say about them. To a certain extent this will form the basis of so much of your analysis.&rdquo;</p>
+</blockquote>
+
+<p>So here's this chapter's scenario. Our reaction-time test works, but it's slow to administer &ndash; ten trials per person. HR wants something quicker: <strong>&ldquo;find us a quick physical measurement that predicts reaction time, and we'll screen candidates on that instead.&rdquo;</strong> That is why, back in Week 1, everyone measured the length of their index finger.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;We have to imagine we're in a scenario where it would be ethical to take physical measurements of your staff when you're onboarding them. Clearly illegal &ndash; not a very realistic scenario &ndash; but one that we're working with today.&rdquo;</p>
+</blockquote>
+
+<p>Ethics aside, the question is a genuinely good one: is finger length a fast, reliable stand-in for the real test? This chapter gives us the tools to answer it properly &ndash; and, just as importantly, the discipline not to answer it too quickly.</p>
+</section>
+
+<section class="chapter" id="y-and-x">
+<div class="chapter-kicker">Part Two</div>
+<h2>The y and the x</h2>
+
+<p>A huge amount of data analysis comes down to the same move: comparing values of one variable, <strong>y</strong>, across values of another, <strong>x</strong>, looking for <strong>patterns of association</strong>. By convention, y is the variable we're interested in &ndash; the <strong>outcome variable</strong> &ndash; and x is the one we compare across. When we start writing models down as equations, from next chapter, y sits on the left-hand side and x on the right, which is why you'll also hear them called the left-hand-side and right-hand-side variables (or, in plenty of textbooks, the <strong>dependent</strong> and <strong>independent</strong> variables).</p>
+
+<p>There are two quite different reasons we might want to compare y across x:</p>
+
+<ul class="term-list">
+  <li><span class="term">Prediction</span><span>Use x to predict y. If the prediction is good, we don't strictly need to know <em>why</em> it works. Can finger length predict someone's average reaction time?</span></li>
+  <li><span class="term">Causal effect</span><span>Learn what would happen to y if we <em>changed</em> x. If someone's finger grew by a centimetre, what would happen to their reaction time?</span></li>
+</ul>
+
+<p>Put that way, the causal version sounds faintly absurd for finger length &ndash; nobody is proposing to stretch anyone's fingers. HR's proxy-test idea is a <strong>prediction</strong> goal: they just want a cheap measurement that lines up with the expensive one. Keep the two goals separate in your head, though, because in practice they blur constantly, and a lot of this module is about noticing when they have.</p>
+
+<div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), <em>Data Analysis for Business, Economics, and Policy</em>, Ch. 4</div>
+</section>
+
+<section class="chapter" id="association">
+<div class="chapter-kicker">Part Three</div>
+<h2>Association Is Not Causation</h2>
+
+<p>Two variables are <strong>associated</strong> when the values of y tend to differ across the values of x &ndash; when knowing x tells you something about y. That association comes in three broad flavours:</p>
+
+<ul class="term-list">
+  <li><span class="term">Positive</span><span>Higher values of x go with higher values of y, on average. The two move in the same direction.</span></li>
+  <li><span class="term">Negative</span><span>Higher values of x go with lower values of y, on average. They move in opposite directions.</span></li>
+  <li><span class="term">None</span><span>y looks the same whatever the value of x. The variables are <strong>independent</strong>.</span></li>
+</ul>
+
+<p>Note the &ldquo;on average&rdquo;. A positive association doesn't mean every single person with a longer finger is slower; it means that, across the sample, the pattern leans that way.</p>
+
+<p>Everything in this chapter &ndash; conditional probabilities, conditional means, covariance, correlation &ndash; is a way of describing <em>how</em> y differs across x. And none of it, on its own, tells you <em>why</em>. Asked in the room what we <em>can't</em> say about an association, the answer came back almost immediately: correlation is not causation. A positive association between x and y is equally consistent with x causing y, y causing x, or &ndash; very often &ndash; some third thing driving both.</p>
+
+<div class="callout">
+  <strong>Watch your language.</strong> This is the single most common mistake analysts make, at every level of seniority: finding an association and then describing it as if one thing caused the other. The honest phrasing is that you have <em>evidence consistent with</em> a hypothesis &ndash; not that you've proved it. Clients sometimes find that hedging frustrating. It's still the job.
+</div>
+
+<p>We'll come back to what it would actually take to say something causal at the end of the chapter. Until then, everything is association.</p>
+
+<div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 4</div>
+</section>
+
+<section class="chapter" id="conditional-probability">
+<div class="chapter-kicker">Part Four</div>
+<h2>Joint and Conditional Probability</h2>
+
+<p>Start with the simplest case: both y and x are <strong>binary</strong> &ndash; each can only take one of two values. Device (laptop or phone) and caffeine in the last two hours (yes or no) are both binary. You can't take the average of &ldquo;phone&rdquo;, so instead we talk about <strong>probabilities</strong>: if I picked one person at random, how likely is it that they're a phone user who's had caffeine?</p>
+
+<p>Here's a worked example, slightly different from our own data &ndash; twenty students, set out in a <strong>cross-tab</strong> (a table counting every combination of the two variables):</p>
+
+<div class="mini-table-wrap">
+<table class="data-table">
+  <caption class="visually-hidden">Worked example: 20 students by device and caffeine use.</caption>
+  <thead><tr><th scope="col">Device \ Caffeine</th><th scope="col">Caffeine</th><th scope="col">No caffeine</th><th scope="col">Total</th></tr></thead>
+  <tbody>
+    <tr><td>Phone</td><td style="color:var(--warm);font-weight:700;">9</td><td>3</td><td><strong>12</strong></td></tr>
+    <tr><td>Laptop</td><td>2</td><td>6</td><td><strong>8</strong></td></tr>
+    <tr><td>Total</td><td><strong>11</strong></td><td><strong>9</strong></td><td><strong>20</strong></td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>The <strong>joint probability</strong> is the chance that both things happen together. Nine of the twenty students used a phone <em>and</em> had caffeine, so:</p>
+
+<div class="formula-block">$$P(\text{Caffeine and Phone}) = \frac{9}{20} = 0.45$$</div>
+
+<p>Now a different question. Suppose I split the room in two, send the laptop users away, and pick someone from the phone users who are left. What's the chance <em>they've</em> had caffeine? That's a <strong>conditional probability</strong> &ndash; the chance of A, restricted to the cases where B happened:</p>
+
+<div class="formula-block">$$P(A \mid B) = \frac{P(A \text{ and } B)}{P(B)} $$ $$P(\text{Caffeine} \mid \text{Phone}) = \frac{9}{12} = 0.75$$</div>
+
+<p>Same nine people on top. What changed is the bottom of the fraction: we're now drawing from a smaller population of twelve phone users rather than all twenty students. That's what <strong>conditioning</strong> means in practice &ndash; partitioning the data and looking only inside one part of it. In the jargon, x (here, device) is the <strong>conditioning variable</strong>.</p>
+
+<div class="callout gold">
+  <strong>That vertical line is a pipe, not a slash.</strong> \(P(A \mid B)\) reads &ldquo;the probability of A, given B&rdquo; or &ldquo;conditional on B&rdquo;. It is not division. On most keyboards it's the shifted key next to the left Shift (Mac) or the backslash key (PC), and you'll be typing it a lot.
+</div>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Maths is only a shorthand, because we get bored of writing out sentences. &lsquo;The probability of caffeine use among phone users&rsquo; isn't a long sentence, but it's still longer than that. Journalists have their own shorthand that nobody else can read; analysts and mathematicians have theirs. That's all it is. It's not supposed to be alienating.&rdquo;</p>
+</blockquote>
+
+<div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 4</div>
+</section>
+
+<section class="chapter" id="independence">
+<div class="chapter-kicker">Part Five</div>
+<h2>Independence</h2>
+
+<p>Two events are <strong>independent</strong> if knowing one tells you nothing about the other. Formally, conditioning on B doesn't change the probability of A at all:</p>
+
+<div class="formula-block">$$P(A \mid B) = P(A)$$</div>
+
+<p>Independence buys you a very convenient shortcut: the joint probability is just the two individual probabilities multiplied together, \(P(A \text{ and } B) = P(A) \times P(B)\). But that shortcut <em>only</em> works under independence. The version that always holds, independent or not, is:</p>
+
+<div class="formula-block">$$P(A \text{ and } B) = P(A \mid B) \times P(B)$$</div>
+
+<p>Check it against the worked example. Overall, 11 of the 20 students had caffeine, so \(P(\text{Caffeine}) = 0.55\). Among phone users it was \(0.75\). Those aren't equal, so device and caffeine are <strong>not independent</strong> in this table. Use the shortcut anyway and you get \(0.6 \times 0.55 = 0.33\) &ndash; a long way from the real joint probability of \(0.45\). The shortcut doesn't fail gracefully; it gives you a confidently wrong number.</p>
+</section>
+
+<section class="chapter" id="our-joint-table">
+<div class="chapter-kicker">Part Six</div>
+<h2>Device and Caffeine: Our Own Data</h2>
+
+<p>Now the real thing &ndash; one row per student from our own Week 1 data:</p>
+
+<div class="mini-table-wrap" id="crosstab"></div>
+
+<p>The row and column totals give you the <strong>marginal probabilities</strong> &ndash; the probability of each variable on its own, ignoring the other, using the whole class as the population. Sixteen of 24 used a laptop, so \(P(\text{Laptop}) = 16/24 = 2/3\). Six of 24 had caffeine, so \(P(\text{Caffeine}) = 6/24 = 0.25\). No conditioning has happened yet.</p>
+
+<p>The in-class task was the conditional version: what is \(P(\text{Caffeine} \mid \text{Phone})\)? The trick, which several people found once it clicked, is to read the expression from the right-hand side &ndash; start with what you're conditioning on.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;I could say all laptop users get out of the room, and then I've got eight. Imagine I don't know who's a caffeine user, and I pick one of you. I've got three chances out of that eight to get a caffeine user.&rdquo;</p>
+</blockquote>
+
+<p>So \(P(\text{Caffeine} \mid \text{Phone}) = 3/8 = 37.5\%\). On its own, that number doesn't answer the follow-up question &ndash; <em>does knowing someone's device change your guess about their caffeine use?</em> For that you need the comparison: among laptop users it's \(3/16 \approx 18.8\%\). Phone users in our class were roughly twice as likely to have had a coffee in the two hours before the experiment. That is a real, communicable finding about our data, and exactly the kind of statistic people quote in the real world.</p>
+
+<p>How far would you trust it, though?</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Say I take this study to a newspaper: &lsquo;I have found a near twenty-percentage-point difference in caffeine use between phone and laptop users!&rsquo; &lsquo;Wow, amazing &ndash; what did you do?&rsquo; &lsquo;I did it on a Friday afternoon, amongst 24 students.&rsquo; They'd be like, please get out of my office.&rdquo;</p>
+</blockquote>
+
+<div class="callout">
+  <strong>Independence isn't a yes/no question you can answer from a table this small.</strong> Any real sample will show <em>some</em> gap between the conditional and marginal probabilities purely by chance &ndash; even when the true relationship in the population is independence. Telling a real pattern from sampling noise is exactly what Chapter 2's tools (standard errors, hypothesis tests) are for, and from next chapter regression will hand you those tests in a couple of lines of Python. With three caffeine drinkers in each group, &ldquo;we can't tell yet&rdquo; is the honest answer.
+</div>
+</section>
+
+<section class="chapter" id="order-matters">
+<div class="chapter-kicker">Part Seven</div>
+<h2>Seeing It, Flipping It</h2>
+
+<p>A cross-tab is precise but hard to take in at a glance. A <strong>stacked bar chart</strong> scaled to 100% within each group shows the conditional probabilities directly &ndash; it literally draws the split-the-room idea. The figure below lets you choose which variable to split by, and puts what we observed next to what we'd expect to see if the two were independent.</p>
+
+<div class="figure" id="fig-stacked">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Splitting the class, two ways</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Condition on</span><select class="picker" id="stack-cond"><option value="device">Device &ndash; P(Caffeine | Device)</option><option value="caffeine">Caffeine &ndash; P(Device | Caffeine)</option></select></div>
+    </div>
+    <div class="chart-wrap" id="stacked-chart"></div>
+  </div>
+  <p class="figure-caption" id="stacked-caption"></p>
+</div>
+
+<p>Switch the control to condition on caffeine instead and the question changes: of the six caffeine drinkers, what share used a phone? Three out of six, or 50% &ndash; against 8 of 24, a third, for the class overall. Several people in the room expected flipping the condition to give the same number back, and it's a very natural assumption. It's wrong:</p>
+
+<div class="formula-block">$$P(\text{Phone} \mid \text{Caffeine}) = \frac{3}{6} = 0.50$$ $$P(\text{Caffeine} \mid \text{Phone}) = \frac{3}{8} = 0.375$$</div>
+
+<p>Same numerator, different denominator. Conditioning on caffeine splits the room in a different way &ndash; into the &ldquo;fairly jittery&rdquo; caffeine drinkers and the &ldquo;very chilled&rdquo; non-drinkers, as it was put on the day &ndash; so you're working inside a different population, answering a different question. In words it's obvious: &ldquo;what share of phone users drank coffee?&rdquo; and &ldquo;what share of coffee drinkers used a phone?&rdquo; are not the same question, and there's no reason they should share an answer.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;It's not simple until it's simple, so don't beat yourself up. I think there's a use for being a little lost in the woods for a bit. It can be scary, but when you get out of the woods you feel better &ndash; and afterwards you know your way through.&rdquo;</p>
+</blockquote>
+
+<h3>What independence would look like</h3>
+
+<p>The right-hand panel of the figure shows the counterfactual: if device and caffeine were independent, every group's bar would look exactly like the class overall &ndash; <strong>flat bars</strong>. The further the observed bars sit from those, the more the two variables depend on each other. You can put a number on that by computing the count you'd <em>expect</em> in each cell under independence, \(N \times P(\text{Device}) \times P(\text{Caffeine})\), which simplifies to row total &times; column total &divide; N:</p>
+
+<div class="mini-table-wrap" id="expected-table"></div>
+
+<p>With 24 students, the observed and expected counts differ by one or two people per cell &ndash; exactly the size of gap chance alone produces. Same lesson again. As a first pass, though, this kind of eyeballing is genuinely useful.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;When you're working at speed in a job, you'll be scanning data with lots of variables and lots of relationships: something there, nothing there, something there. It's almost a triage of which relationships are worth looking at.&rdquo;</p>
+</blockquote>
+</section>
+
+<section class="chapter" id="conditional-mean">
+<div class="chapter-kicker">Part Eight</div>
+<h2>The Conditional Mean</h2>
+
+<p>Binary variables only get you so far. Reaction time isn't binary &ndash; it's continuous, with a whole distribution, as Chapter 1 spent a long time showing. When y is continuous, the natural thing to compare across x is its <em>average</em>. That's the <strong>conditional expectation</strong>, or <strong>conditional mean</strong>:</p>
+
+<div class="formula-block">$$E[y \mid x]$$</div>
+
+<p>In plain English: if we know x takes a certain value, what's the average of y? &ldquo;The average reaction time, given that we're only looking at phone users&rdquo; is a conditional mean. It's the mean of y, computed separately for each value (or group) of x &ndash; the same split-the-room move as before, followed by an average instead of a count.</p>
+
+<p>When x has only a few values, that's straightforward, and a box plot or histogram per group (Chapter 1) shows it well. When x has <em>many</em> values &ndash; finger length in millimetres, say &ndash; we have to make decisions about grouping, or <strong>binning</strong>, x first. Before we can do that with our finger-length data, though, there's a problem to deal with.</p>
+
+<div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 4</div>
+</section>
+
+<section class="chapter" id="finger-data">
+<div class="chapter-kicker">Part Nine</div>
+<h2>Something's Wrong With Our Finger Lengths</h2>
+
+<p>Here are all 24 of our finger-length measurements, exactly as they were entered, anonymised and shuffled. Five of them are wrong. Before reading on, find them &ndash; and decide what you'd do about them.</p>
+
+<div class="mini-table-wrap" id="finger-task-table"></div>
+
+<p>The room found them quickly: two implausibly <em>long</em> fingers (700 and 900mm &ndash; the better part of a metre) and three implausibly <em>short</em> ones (6.9, 7.0 and 8.2mm). With 24 rows you can eyeball this. With a thousand you'd do what one student suggested straight away: compute summary statistics and look for values far outside the plausible range.</p>
+
+<p>Spotting them is the easy half. The real question is what to do next, and there were good arguments in the room for both main options &ndash; drop the five students, or correct the values. Look at the two error patterns, though:</p>
+
+<ul class="term-list">
+  <li><span class="term">Too small</span><span>Almost certainly <strong>centimetres entered where millimetres were asked for</strong>. A 6.9 is very plausibly a real 69mm finger in the wrong unit.</span></li>
+  <li><span class="term">Too large</span><span>Almost certainly <strong>an extra typed digit</strong>. A 900 is very plausibly a real 90mm finger with a stray zero.</span></li>
+</ul>
+
+<p>Both have a specific, high-confidence correction &ndash; multiply by ten, or divide by ten &ndash; that lands the value squarely in the 68&ndash;100mm range every other student's measurement falls in. Dropping instead would throw away five of 24 students, over 20% of the class, along with their perfectly good reaction-time data, for a problem that's actually fixable. So we <strong>impute</strong>: we replace the bad values with our best, justified estimate of the true ones.</p>
+
+<p>Why does it matter? Use the figure below to compare the scatter, the covariance and the correlation (both defined later in this chapter) before and after the fix.</p>
+
+<div class="figure" id="fig-finger-fix">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Five typos, before and after</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Finger length</span><select class="picker" id="finger-version"><option value="raw">As entered (raw)</option><option value="fixed" selected>After correction</option></select></div>
+    </div>
+    <div class="chart-wrap" id="finger-fix-chart"></div>
+  </div>
+  <p class="figure-caption" id="finger-fix-caption"></p>
+</div>
+
+<p>Five data-entry slips are enough to double the correlation and inflate the covariance nearly fifty-fold. Left in, they would have quietly driven every number later in this chapter.</p>
+
+<div class="callout gold">
+  <strong>Imputation needs a reason, not just a suspicion.</strong> It only makes sense when you have a specific, well-justified reason to believe what the correct value should be. A value that's merely unusual, with no diagnosable cause, is a better candidate for dropping &ndash; or for Chapter 1's &ldquo;keep it, it's a genuine feature of the process&rdquo; &ndash; than for guessing a replacement. Whatever you decide, <strong>write it down</strong>. Your raw dataset should always survive untouched somewhere; every step from raw to clean should be documented and justified. That's a big part of why this module teaches you to do things in code: a script is a record.
+</div>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;There's a well-known study where lots of research teams were given the same raw dataset and the same research question, and the range of different answers they came up with was terrifying &ndash; but most of their justifications were legitimate. You can get things wrong: a coding error, the wrong statistical test. But decisions about cleaning data and modelling are art as much as science. The point is to make them from a well-informed position, and justify them.&rdquo;</p>
+</blockquote>
+</section>
+
+<section class="chapter" id="binning">
+<div class="chapter-kicker">Part Ten</div>
+<h2>Binning Finger Length</h2>
+
+<p>With the data fixed, back to the conditional mean. The class dataset for this chapter (<a href="https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week3_students.csv" target="_blank" rel="noopener">week3_students.csv</a>, one row per student) already carries the corrected finger lengths and a <code>finger_bin</code> column splitting the class into three roughly equal groups: short, medium and long. The in-class task was to compute the mean reaction time within each bin &ndash; by PivotTable (remember to switch the default <em>Sum</em> to <em>Average</em>), by <code>AVERAGEIF</code>, or, for one student racing ahead, by a pandas <code>groupby</code> in a single line.</p>
+
+<p>Three binning decisions are hiding in that column, all of them choices rather than facts: bin <em>students</em>, not individual trials (each student has one finger length); use bins with roughly equal <em>numbers</em> of students rather than equal millimetre widths, so no bin ends up nearly empty; and use <em>three</em> of them. The figure lets you change the last of those.</p>
+
+<div class="figure" id="fig-bins">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>E[reaction time | finger-length bin]</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Number of bins</span><input type="range" id="bins-k" min="2" max="6" step="1" value="3"><span class="val" id="bins-k-val">3</span></div>
+    </div>
+    <div class="chart-wrap" id="bins-chart"></div>
+  </div>
+  <p class="figure-caption" id="bins-caption"></p>
+</div>
+
+<p>With three bins: short fingers average around 1,078ms, medium around 836ms, long around 1,362ms, from groups of 8, 9 and 7 students. Is there a story there?</p>
+
+<p>Not really. If longer fingers really meant slower reactions, you'd hope for something that steps steadily upward from short to long. Instead it dips and rises, and with seven to nine students per bar &ndash; including a few very slow individual averages &ndash; a single student can move a bar by hundreds of milliseconds. Drag the slider and watch the pattern rearrange itself as the bins change. A conditional mean is a perfectly good description of the data; it isn't, on its own, evidence of anything. That needs the statistical testing that regression and confidence intervals will provide in a couple of weeks.</p>
+
+<details class="code-reveal">
+  <summary>Show the Python behind the bins</summary>
+  <div class="code-reveal-body">
+    <pre class="code-block">import pandas as pd
+
+students = pd.read_csv(data_path)   <span class="c"># week3_students.csv, one row per student</span>
+
+<span class="c"># three bins with roughly equal numbers of students (terciles)</span>
+students['bin'] = pd.qcut(students['finger_length_corrected'], q=3,
+                          labels=['Short', 'Medium', 'Long'])
+
+<span class="c"># the conditional mean E[reaction time | bin], plus n per bin</span>
+students.groupby('bin', observed=True)['mean_reaction_time_ms'].agg(['mean', 'count'])</pre>
+  </div>
+</details>
+</section>
+
+<section class="chapter" id="scatter">
+<div class="chapter-kicker">Part Eleven</div>
+<h2>Scatterplots, Bin-Scatters and Logs</h2>
+
+<p>Binning simplifies a relationship by throwing detail away. When both variables are continuous, the alternative is to keep everything and plot it: a <strong>scatterplot</strong> puts one variable on each axis and draws one dot per observation. It's one of the most powerful tools you have for seeing whether a relationship exists &ndash; no formula required, just look. (Unlike a histogram, which shows the distribution of <em>one</em> variable, every dot here is one observation's pair of values.)</p>
+
+<p>Before you build one from our finger-length data, here's a <strong>simulated, illustrative case &ndash; not our own class</strong>: hours of sleep the night before, against reaction time, for 152 made-up trials. Start with the raw scatter.</p>
+
+<div class="figure" id="fig-sleep">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Sleep and reaction time, three ways (simulated data)</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">View</span><select class="picker" id="sleep-view"><option value="raw">Raw scatter</option><option value="bin">Bin-scatter (1-hour bins)</option><option value="log">Logged reaction time</option></select></div>
+    </div>
+    <div class="chart-wrap" id="sleep-chart"></div>
+  </div>
+  <p class="figure-caption" id="sleep-caption"></p>
+</div>
+
+<p>On the raw scatter, most people in the room saw very little &ndash; the cloud looks fairly flat. There <em>is</em> a real pattern in there, but two extreme &ldquo;attention lapse&rdquo; trials (everyone has them, however well-rested) stretch the top of the axis so far that the main cluster gets squashed into a thin band at the bottom.</p>
+
+<h3>The bin-scatter</h3>
+
+<p>One fix is the <strong>bin-scatter</strong>: the conditional mean again, like the short/medium/long finger buckets, but with more and narrower bins &ndash; here, one-hour bands of sleep. Switch the view to see it. Each bin needs to be wide enough to hold several trials; group by every exact sleep value and most &ldquo;bins&rdquo; would contain a single trial, which averages away nothing. Here every bin averages at least a dozen trials, so a lapse can nudge a bin's mean but can no longer dominate the chart, and a clear downward trend appears: more sleep, quicker reactions. It's also a very easy chart to produce in Python once you get there.</p>
+
+<h3>Logging the outcome</h3>
+
+<p>The other fix goes back to Chapter 1, which found that reaction time looks more log-normal than normal: a floor, no ceiling, a long right tail. Taking the <strong>log</strong> of a variable like that stretches out the crowded low end and compresses the tail. Switch to the logged view: the same two lapse trials are still there &ndash; logging doesn't delete anything &ndash; but they barely stretch the axis, and the downward relationship is much easier to see.</p>
+
+<p>The number printed on each chart is <strong>R&sup2;</strong>, which you'll meet properly next chapter: roughly, how much of the variation in y the fitted line accounts for &ndash; a measure of how well the model fits the data. Logging raises it from about 0.08 to about 0.35, more than four times better. That's a signal that logging is a sensible modelling choice <em>here</em>. It's a tool, not a rule: it helps only because it genuinely improves the fit, and logging can't conjure a relationship that isn't there.</p>
+</section>
+
+<section class="chapter" id="our-scatter">
+<div class="chapter-kicker">Part Twelve</div>
+<h2>Our Scatter, and a Clear One</h2>
+
+<p>Now our own data. The in-class task was to build the scatter of finger length against mean reaction time from week3_students.csv in Excel: select the two columns, then <em>Insert &rarr; Scatter</em>. Two Excel annoyances worth knowing: it doesn't label the axes for you (<em>Add Chart Element &rarr; Axis Titles</em>), and depending on how you select the columns it may put them the wrong way round &ndash; check that reaction time, our y, is on the vertical axis. It's a reminder that y and x is a convention you have to enforce yourself, not something the software knows.</p>
+
+<p>Most people's verdict, looking at the result, was some version of &ldquo;not much going on&rdquo;. You can see the same scatter, with the two means drawn on, in the covariance figure in Part Thirteen &ndash; it looks, as was said on the day, a bit like a smudge.</p>
+
+<p>For contrast, here's what we'd love to see. This is <strong>simulated</strong> &ndash; a made-up class of 24 &ndash; with hours awake before taking the test against mean reaction time:</p>
+
+<div class="figure" id="fig-awake">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>What a clear relationship looks like (simulated data)</h4></div>
+  <div class="figure-body"><div class="chart-wrap" id="awake-chart"></div></div>
+  <p class="figure-caption">A made-up class of 24, built to show a strong positive association: the longer people have been awake, the slower their reaction time, on average.</p>
+</div>
+
+<p>Here the association is unmistakable: as one moves, so does the other. And yet &ndash; a question that came up straight away &ndash; can we infer causation from it? No. Common sense, and plenty of theory, say that being awake longer makes you slower, and the data happen to match that picture of the world. But the scatter itself only shows that the two move together. There could be other reasons, ones we're not aware of.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;You'll often see, in poor mainstream reporting, a scatterplot put up as if it's the end of the story &ndash; a slam dunk. You'll get to the point where you read that and think: please, this is where I begin. This is not where I end.&rdquo;</p>
+</blockquote>
+</section>
+
+<section class="chapter" id="covariance">
+<div class="chapter-kicker">Part Thirteen</div>
+<h2>Covariance</h2>
+
+<p>Scatterplots show a relationship; we'd also like to put a number on it. The first such number is <strong>covariance</strong>, a fancy name for what we've been looking at all chapter. It asks whether x and y tend to move together: when one is above its own average, is the other usually above <em>its</em> average too?</p>
+
+<div class="formula-block">$$Cov[x,y] = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{n-1}$$</div>
+
+<p>Read it from the inside out. For each observation \(i\), work out how far its x is from the mean of x, \(\bar{x}\) (the bar always means &ldquo;the average&rdquo;), and how far its y is from \(\bar{y}\). Multiply those two deviations together. Add up all the products, and divide by \(n-1\) &ndash; the same small-sample correction Chapter 1 used for the standard deviation, for the same reason.</p>
+
+<p>The sign of each product is where the meaning lives. If a student is above average on <em>both</em> x and y, both deviations are positive and so is their product. Below average on both: two negatives, still a positive product. Above on one and below on the other: a negative product. Covariance is the average of all of these, so it comes out positive when x and y tend to deviate from their means in the same direction, and negative when they tend to go opposite ways.</p>
+
+<div class="figure" id="fig-cov">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Covariance, quadrant by quadrant</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Data</span><select class="picker" id="cov-data"><option value="ours">Our class: finger length</option><option value="awake">Simulated: hours awake</option></select></div>
+    </div>
+    <div class="chart-wrap" id="cov-chart"></div>
+  </div>
+  <p class="figure-caption" id="cov-caption"></p>
+</div>
+
+<p>The dashed lines are the two means, and they cut the scatter into four quarters. Every dot is coloured by the sign of its contribution: <strong style="color:var(--green);">green</strong> where both deviations share a sign (top-right and bottom-left), <strong style="color:var(--warm);">red</strong> where they don't. In our class the two colours are fairly evenly mixed, so the products largely cancel. Switch to the simulated hours-awake data and nearly everything turns green.</p>
+
+<h3>By hand, once</h3>
+
+<p>The in-class task worked through this on a toy example: five students, hours spent revising (x) against a quiz score out of 12 (y).</p>
+
+<div class="mini-table-wrap">
+<table class="data-table">
+  <caption class="visually-hidden">Five students: hours revising, quiz score, their deviations from the means, and the products of those deviations.</caption>
+  <thead><tr><th scope="col">Student</th><th scope="col">Hours, x</th><th scope="col">Score, y</th><th scope="col">x &minus; x&#772;</th><th scope="col">y &minus; y&#772;</th><th scope="col">Product</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>2</td><td>3</td><td>&minus;4</td><td>&minus;4</td><td><strong>16</strong></td></tr>
+    <tr><td>2</td><td>4</td><td>7</td><td>&minus;2</td><td>0</td><td><strong>0</strong></td></tr>
+    <tr><td>3</td><td>6</td><td>5</td><td>0</td><td>&minus;2</td><td><strong>0</strong></td></tr>
+    <tr><td>4</td><td>8</td><td>11</td><td>2</td><td>4</td><td><strong>8</strong></td></tr>
+    <tr><td>5</td><td>10</td><td>9</td><td>4</td><td>2</td><td><strong>8</strong></td></tr>
+    <tr><td></td><td>\(\bar{x} = 6\)</td><td>\(\bar{y} = 7\)</td><td></td><td>Sum</td><td><strong>32</strong></td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="formula-block">$$Cov[x,y] = \frac{32}{5-1} = 8$$</div>
+
+<div class="callout">
+  <strong>The most common slip: summing too soon.</strong> Add up the \((x_i - \bar{x})\) column on its own and you'll always get zero &ndash; deviations from a mean cancel out by definition. Several people hit exactly this in the room. Multiply each row's two deviations <em>first</em>, then add up the products.
+</div>
+
+<p>Eight. Positive, so the two variables move together. Beyond that, the number itself doesn't tell you much &ndash; and that's covariance's big weakness. Its units are the units of x times the units of y (hours-times-points here; millimetre-milliseconds for our finger data), so its size depends entirely on how the variables happen to be measured. For our class, Excel's <code>COVARIANCE.S</code> gives \(Cov[\text{finger length}, \text{reaction time}] = 1{,}359.6\). Positive &ndash; but is 1,359.6 a lot? There's no way to tell from the number alone.</p>
+
+<p>This is also, it's fair to say, the last time you should need to compute a covariance by hand. From here it's one cell in Excel or one line of Python. The point of doing it slowly once is to know what that one line means.</p>
+
+<div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 4</div>
+</section>
+
+<section class="chapter" id="correlation">
+<div class="chapter-kicker">Part Fourteen</div>
+<h2>Correlation</h2>
+
+<p>The <strong>correlation coefficient</strong> asks exactly the same question as covariance &ndash; do x and y move together? &ndash; but reports the answer on a fixed scale from &minus;1 to 1, so it's comparable whatever units x and y are in. It gets there by <strong>standardising</strong> the covariance: dividing by the product of the two standard deviations, which strips the units back out.</p>
+
+<div class="formula-block">$$Corr[x,y] = \frac{Cov[x,y]}{SD[x]\,SD[y]}$$ $$-1 \leq Corr[x,y] \leq 1$$</div>
+
+<ul class="term-list">
+  <li><span class="term">+1</span><span>Perfect positive correlation: on a scatter, every point sits on one upward-sloping straight line.</span></li>
+  <li><span class="term">&minus;1</span><span>Perfect negative correlation: a straight line sloping the other way.</span></li>
+  <li><span class="term">0</span><span>No <em>linear</em> association at all (that qualifier matters &ndash; see Part Sixteen).</span></li>
+</ul>
+
+<p>A rough guide: below about 0.2 in size is weak, above about 0.7 generally strong, with the same thresholds for negative values. Both covariance and correlation measure the direction and strength of a <strong>linear</strong> association &ndash; how far the two variables move together along a straight line. Strictly, this version is <strong>Pearson's</strong> correlation coefficient.</p>
+
+<p>Back to the five students. Square each deviation from the last table and add them up: 40 for x, and 40 for y too. Divide by \(n - 1 = 4\) and take the square root, and both standard deviations come out at \(\sqrt{10} \approx 3.16\). So:</p>
+
+<div class="formula-block">$$Corr[x,y] = \frac{8}{\sqrt{10} \times \sqrt{10}} = \frac{8}{10} = 0.8$$</div>
+
+<p>Above 0.7: a strong positive association &ndash; with the obvious caveat that five observations wouldn't persuade anyone to bet the farm on it.</p>
+
+<p>Now our class. Divide the covariance of 1,359.6 by the two standard deviations and you get <strong>0.18</strong>: weak, and a numerical confirmation of what the scatter already suggested. The simulated hours-awake class, by contrast, has a covariance of 267.7 and standard deviations of 4.43 hours and 68.0ms:</p>
+
+<div class="formula-block">$$Corr = \frac{267.7}{4.43 \times 68.0} \approx 0.89$$</div>
+
+<p>Strong, and matching what your eye saw on the scatter. Which brings us back to HR. Whatever number comes back for our class, is it strong enough, on its own, to justify replacing a ten-trial reaction test with a ruler? At 0.18, from 24 people, clearly not.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Literally everything I've taught you over the last three weeks, you can do in one line of code. The problem with being a dangerous analyst is that you can do stuff in one line of code without understanding it. The job of this module is to make sure you're not dangerous analysts.&rdquo;</p>
+</blockquote>
+</section>
+
+<section class="chapter" id="guess">
+<div class="chapter-kicker">Part Fifteen</div>
+<h2>Guess the Correlation</h2>
+
+<p>How good is your eye? Four scatterplots, forty points each. Before revealing anything, guess each correlation &ndash; somewhere between &minus;1 and 1.</p>
+
+<div class="figure" id="fig-guess">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Four clouds, four correlations (simulated data)</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <button class="btn" id="guess-reveal" type="button">Reveal the answers</button>
+    </div>
+    <div class="chart-wrap" id="guess-chart"></div>
+  </div>
+  <p class="figure-caption" id="guess-caption">Make your guesses first, then reveal.</p>
+</div>
+
+<p>The room did well &ndash; one person called 0.54 for the 0.5 panel, which is better than most. The extremes and the zero are easy; the moderate ones are where people go wrong, usually by underestimating them. A correlation of 0.5 looks like a fairly loose cloud, and negative relationships seem harder to read by eye than positive ones. That's precisely why we calculate rather than eyeball &ndash; and, as the next part shows, why we eyeball as well as calculate.</p>
+</section>
+
+<section class="chapter" id="dependence">
+<div class="chapter-kicker">Part Sixteen</div>
+<h2>Dependence, Mean-Dependence, Correlation</h2>
+
+<p>Two variables are associated whenever they're not independent. But association comes in different forms, and correlation only sees one of them:</p>
+
+<ul class="term-list">
+  <li><span class="term">Independent</span><span>The <em>whole distribution</em> of y is the same whatever the value of x. Knowing x tells you nothing about y. (For caffeine and reaction time, with a big enough sample, the two histograms would be identical.)</span></li>
+  <li><span class="term">Mean-dependent</span><span>The <em>average</em> of y changes with x: \(E[y \mid x]\) isn't flat. This is what covariance and correlation pick up &ndash; but only its linear part.</span></li>
+  <li><span class="term">Dependent, not in the mean</span><span>The average of y stays the same, but something else about y changes with x &ndash; its spread, for instance.</span></li>
+</ul>
+
+<p>The in-class task: for each panel below, does knowing x tell you anything about y? And what would you guess the correlation is? Turn on the conditional mean, \(E[y \mid x]\), to help.</p>
+
+<div class="figure" id="fig-dep">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Which of these are independent? (simulated data)</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <label class="chk"><input type="checkbox" id="dep-means"> Show the conditional mean, E[y | x]</label>
+      <label class="chk"><input type="checkbox" id="dep-r"> Show each correlation</label>
+    </div>
+    <div class="chart-wrap" id="dep-chart"></div>
+  </div>
+  <p class="figure-caption" id="dep-caption"></p>
+</div>
+
+<p>Only panel 1 is independent. Panel 2 is the familiar linear case, correlation 0.82. Panels 3 and 4 are the interesting ones: <strong>both have a correlation of exactly zero</strong>, and yet x clearly tells you something about y. In panel 3 &ndash; a U-shape, or as it was put on the day, a &ldquo;Joker smile&rdquo; &ndash; the average changes with x, just not along a straight line. In panel 4 the average stays flat but the <em>spread</em> changes, narrow in the middle and wide at the edges. That second pattern has a name you'll meet in a few weeks, <strong>heteroskedasticity</strong>, and it matters a great deal for whether a regression's standard errors can be trusted.</p>
+
+<div class="figure" id="fig-nested">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>How they fit together</h4></div>
+  <div class="figure-body">
+    <svg viewBox="0 0 900 380" style="width:100%;max-width:640px;display:block;margin:0 auto;font-family:'Public Sans',sans-serif;" role="img" aria-label="Three nested boxes. Independent sits inside mean-independent, which sits inside zero correlation. A U-shape is an example with zero correlation that is not mean-independent; a fan shape is mean-independent but not independent.">
+      <rect x="10" y="10" width="880" height="360" rx="18" fill="#f0f4f8" stroke="#1a1a2e" stroke-width="2"/>
+      <text x="30" y="45" font-size="22" font-weight="700" fill="#1a1a2e">Zero correlation</text>
+      <text x="30" y="72" font-size="16" fill="#555">e.g. the U-shape (panel 3)</text>
+      <rect x="250" y="95" width="620" height="255" rx="16" fill="#e3ecf4" stroke="#457b9d" stroke-width="2"/>
+      <text x="270" y="130" font-size="22" font-weight="700" fill="#2f6690">Mean-independent: E[y | x] is flat</text>
+      <text x="270" y="157" font-size="16" fill="#555">e.g. the fan (panel 4)</text>
+      <rect x="520" y="185" width="330" height="145" rx="14" fill="#d8efe2" stroke="#2d6a4f" stroke-width="2"/>
+      <text x="540" y="225" font-size="22" font-weight="700" fill="#2d6a4f">Independent</text>
+      <text x="540" y="252" font-size="16" fill="#555">nothing about y depends on x</text>
+      <text x="540" y="276" font-size="16" fill="#555">(panel 1)</text>
+    </svg>
+  </div>
+  <p class="figure-caption">Independent implies mean-independent, which implies zero correlation. None of it works the other way round.</p>
+</div>
+
+<p>Each inner box is a special case of the one around it: independence implies mean-independence, which implies zero correlation. <strong>None of it works the other way.</strong> A correlation of zero does not mean x and y are unrelated. Go straight to the correlation coefficient in panel 3, see zero, and move on, and you'd miss a strong relationship that should change how you model the data.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;You never rely on any one diagnostic. Doctors don't just do one test; they do a range of tests. Analysts are the same. You'd never just go on a correlation coefficient &ndash; you want to see the data as well. The scatter and the number are like twins: one on its own doesn't tell you the full story.&rdquo;</p>
+</blockquote>
+
+<div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 4</div>
+</section>
+
+<section class="chapter" id="causal">
+<div class="chapter-kicker">Part Seventeen</div>
+<h2>Is It Causal?</h2>
+
+<p>All chapter we've stayed carefully away from the hot stove: when, if ever, can we say x <em>causes</em> y? The answer depends on where the variation in x comes from.</p>
+
+<p>Every comparison in this chapter needs variation in the conditioning variable. If everyone in the class had used a laptop, there'd be no room to split; if everyone had the same finger length, no scatter to draw. And the <em>source</em> of that variation determines what you're allowed to conclude.</p>
+
+<ul class="term-list">
+  <li><span class="term">Experimental data</span><span>The treatment is assigned, often randomly, in a way designed so that differences in y can only be attributed to the treatment. Randomly assign aspirin or a placebo, and a difference in outcomes is the aspirin's doing.</span></li>
+  <li><span class="term">Observational data</span><span>x varies because of people's own choices, circumstances and histories, and plenty of other things vary alongside it. People who already take aspirin routinely may do so <em>because</em> of an existing health risk.</span></li>
+</ul>
+
+<p>Almost everything in business analytics is observational: we watch what people and firms do, rather than assigning it. People are messy, they make choices for all sorts of reasons, and lots of other things change at the same time as x. Causality is the gold standard &ndash; often an expensive one, requiring a properly designed experiment &ndash; and later in the module we'll see how firms run exactly those experiments, as A/B tests. Until then, we work in a world of association, and the job is to describe it in the right language.</p>
+
+<div style="font-size:0.75em;color:var(--ink-faint);margin-top:12px;">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 4</div>
+</section>
+
+<section class="chapter" id="ai-and-next">
+<div class="chapter-kicker">Part Eighteen</div>
+<h2>AI, and What's Next</h2>
+
+<p>Generative AI is genuinely useful for a first pass over a new dataset &ndash; spotting candidate patterns quickly, the way a profiling script would. Where it's weaker is <strong>judgement</strong>: deciding whether a correlation is meaningfully weak or strong, and knowing which pattern is worth pursuing in the first place. That judgement is the skill this module is building, and it's yours.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;At no point should you be outsourcing your judgement, your understanding or your decision-making to the little robot friend. Do the hard yards. Bang your head against the brick wall. Later, you'll have the confidence to hand off coding and check an agent's work &ndash; but you won't be able to hand off your own judgement.&rdquo;</p>
+</blockquote>
+
+<p>This chapter's online session is a recorded walkthrough of the textbook's own case study &ndash; <em>are bigger firms better managed?</em> &ndash; using real data on Mexican firms, done step by step in Python. Everything here, from conditional probabilities to correlation, gets applied to real data, and the half-hour calculations from the workshop turn into single lines of code.</p>
+
+<p>We can now describe a relationship between two variables. Next chapter turns that description into a <strong>model</strong> we can use to predict and interpret: simple linear regression, fitted by <strong>ordinary least squares</strong>.</p>
+</section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= embedded data (real class data, anonymised; plus the deck's own seeded simulations) ================= */
+  const STUDENTS = [{"student_name":"Student 1","mean_rt":1601.1,"device":"Phone","caffeine":"No","finger_raw":80.0,"finger_mm":80.0},{"student_name":"Student 2","mean_rt":419.6,"device":"Laptop","caffeine":"No","finger_raw":80.0,"finger_mm":80.0},{"student_name":"Student 3","mean_rt":406.3,"device":"Laptop","caffeine":"Yes","finger_raw":72.0,"finger_mm":72.0},{"student_name":"Student 4","mean_rt":416.3,"device":"Phone","caffeine":"No","finger_raw":80.0,"finger_mm":80.0},{"student_name":"Student 5","mean_rt":1081.1,"device":"Laptop","caffeine":"No","finger_raw":6.9,"finger_mm":69.0},{"student_name":"Student 6","mean_rt":3135.4,"device":"Laptop","caffeine":"No","finger_raw":95.0,"finger_mm":95.0},{"student_name":"Student 7","mean_rt":370.1,"device":"Laptop","caffeine":"No","finger_raw":71.0,"finger_mm":71.0},{"student_name":"Student 8","mean_rt":395.2,"device":"Phone","caffeine":"No","finger_raw":79.0,"finger_mm":79.0},{"student_name":"Student 9","mean_rt":426.2,"device":"Phone","caffeine":"Yes","finger_raw":68.0,"finger_mm":68.0},{"student_name":"Student 10","mean_rt":1867.3,"device":"Laptop","caffeine":"No","finger_raw":8.2,"finger_mm":82.0},{"student_name":"Student 11","mean_rt":1353.8,"device":"Laptop","caffeine":"Yes","finger_raw":80.0,"finger_mm":80.0},{"student_name":"Student 12","mean_rt":497.3,"device":"Phone","caffeine":"No","finger_raw":94.0,"finger_mm":94.0},{"student_name":"Student 13","mean_rt":1314.5,"device":"Laptop","caffeine":"No","finger_raw":80.0,"finger_mm":80.0},{"student_name":"Student 14","mean_rt":1970.3,"device":"Laptop","caffeine":"No","finger_raw":900.0,"finger_mm":90.0},{"student_name":"Student 15","mean_rt":1101.1,"device":"Laptop","caffeine":"No","finger_raw":100.0,"finger_mm":100.0},{"student_name":"Student 16","mean_rt":1260.0,"device":"Laptop","caffeine":"No","finger_raw":80.0,"finger_mm":80.0},{"student_name":"Student 17","mean_rt":466.9,"device":"Phone","caffeine":"Yes","finger_raw":7.0,"finger_mm":70.0},{"student_name":"Student 18","mean_rt":435.4,"device":"Phone","caffeine":"No","finger_raw":82.0,"finger_mm":82.0},{"student_name":"Student 19","mean_rt":283.4,"device":"Laptop","caffeine":"No","finger_raw":74.0,"finger_mm":74.0},{"student_name":"Student 20","mean_rt":2339.3,"device":"Laptop","caffeine":"No","finger_raw":700.0,"finger_mm":70.0},{"student_name":"Student 21","mean_rt":386.1,"device":"Laptop","caffeine":"No","finger_raw":80.0,"finger_mm":80.0},{"student_name":"Student 22","mean_rt":373.5,"device":"Laptop","caffeine":"No","finger_raw":76.0,"finger_mm":76.0},{"student_name":"Student 23","mean_rt":3253.4,"device":"Phone","caffeine":"Yes","finger_raw":70.0,"finger_mm":70.0},{"student_name":"Student 24","mean_rt":528.4,"device":"Laptop","caffeine":"Yes","finger_raw":81.0,"finger_mm":81.0}];
+  const TASK_ORDER = ["Student 2","Student 6","Student 12","Student 14","Student 3","Student 22","Student 10","Student 17","Student 13","Student 1","Student 23","Student 7","Student 21","Student 18","Student 24","Student 11","Student 19","Student 9","Student 15","Student 8","Student 20","Student 4","Student 5","Student 16"];
+  const SLEEP = [[4.3,220.0],[5.6,189.2],[8.0,150.0],[4.1,234.3],[5.1,202.4],[4.3,241.5],[5.7,188.2],[7.7,150.0],[5.7,182.4],[7.2,169.7],[4.4,232.9],[8.8,150.0],[4.7,237.2],[5.0,213.4],[6.7,169.2],[8.8,150.0],[8.2,150.0],[9.3,150.0],[8.2,150.0],[6.1,190.0],[6.2,188.2],[7.9,150.0],[5.5,209.3],[8.7,150.0],[9.0,150.0],[8.2,150.0],[6.8,160.2],[4.9,220.6],[5.6,213.3],[5.6,228.8],[5.8,192.2],[6.5,180.2],[7.0,180.4],[5.2,195.1],[8.4,151.1],[8.0,150.0],[8.7,150.0],[5.5,196.1],[7.4,154.9],[7.6,161.8],[6.1,175.0],[6.3,179.1],[8.5,150.0],[7.3,161.1],[8.9,150.0],[6.7,179.9],[8.6,150.0],[8.7,150.0],[8.3,150.0],[8.9,150.0],[7.8,150.0],[6.5,179.1],[5.7,180.7],[8.5,150.0],[4.8,218.1],[6.2,179.2],[5.3,195.2],[7.2,154.6],[8.9,150.0],[5.8,205.9],[8.4,150.0],[8.4,150.0],[7.7,159.8],[5.3,205.9],[8.5,150.0],[6.6,174.1],[8.1,150.0],[6.5,185.1],[8.8,150.0],[7.9,150.0],[4.9,216.1],[5.0,215.2],[8.7,150.0],[6.0,190.7],[6.1,192.9],[4.2,237.2],[7.5,177.4],[8.4,150.0],[8.9,150.0],[5.1,193.5],[8.7,150.0],[5.0,213.2],[6.1,183.1],[6.1,174.3],[7.1,180.6],[6.8,173.3],[6.9,174.7],[6.9,156.8],[9.1,150.0],[5.4,205.8],[5.1,226.8],[8.5,150.0],[5.7,204.3],[7.7,150.0],[9.1,150.0],[4.4,227.3],[8.3,150.0],[4.2,228.5],[6.8,167.1],[6.4,190.0],[7.8,150.0],[8.3,150.0],[4.3,237.2],[4.4,222.4],[7.3,160.9],[7.9,150.0],[4.8,209.3],[7.4,166.8],[4.8,209.0],[6.5,158.7],[9.4,150.0],[8.6,150.0],[7.8,161.0],[6.5,175.6],[9.0,150.0],[8.0,150.0],[4.0,256.7],[7.7,153.7],[7.2,161.0],[6.6,175.2],[6.4,176.5],[6.0,180.8],[5.6,202.2],[8.2,154.4],[7.9,150.0],[4.9,230.7],[8.2,151.6],[8.3,150.0],[8.1,150.4],[5.3,217.2],[5.8,173.0],[5.5,192.8],[8.9,150.0],[9.1,150.0],[7.4,157.8],[4.8,211.9],[4.8,205.3],[6.0,184.9],[4.6,215.4],[6.8,168.4],[5.4,199.3],[4.6,212.3],[5.0,201.1],[5.8,184.4],[7.7,155.1],[5.7,182.9],[6.9,178.2],[5.8,181.8],[4.5,244.3],[4.5,219.6],[4.6,2275.5],[4.4,2035.9]];
+  const AWAKE = [[3.4,302.0],[5.8,357.0],[14.8,525.0],[11.3,410.0],[3.5,302.0],[8.9,415.0],[9.7,369.0],[4.6,316.0],[13.8,480.0],[3.8,331.0],[8.3,379.0],[10.3,424.0],[8.9,300.0],[11.4,450.0],[13.8,424.0],[17.3,452.0],[6.5,359.0],[12.4,455.0],[13.1,430.0],[6.7,322.0],[2.0,289.0],[17.6,505.0],[6.8,397.0],[7.0,380.0]];
+  const GUESS = [["A",0.068,-0.848],["A",0.892,-0.232],["A",0.423,0.85],["A",1.616,-1.918],["A",-0.796,-0.396],["A",-1.983,-0.831],["A",0.756,1.304],["A",1.147,1.273],["A",0.709,1.334],["A",0.914,0.334],["A",-1.89,-1.684],["A",-1.897,-2.76],["A",0.549,-0.677],["A",0.928,0.205],["A",-0.037,1.9],["A",0.227,-0.528],["A",-0.566,-0.668],["A",-1.341,-1.301],["A",-0.325,-0.361],["A",0.912,-0.566],["A",-0.955,-0.218],["A",0.294,-1.467],["A",-0.693,-0.364],["A",0.653,-0.317],["A",0.695,0.53],["A",-0.871,-0.951],["A",-0.885,-0.602],["A",-0.518,-0.73],["A",0.14,0.575],["A",0.327,2.016],["A",1.265,-0.319],["A",1.242,1.0],["A",0.919,0.891],["A",0.734,2.145],["A",0.546,-1.507],["A",0.191,-1.215],["A",-0.356,-0.685],["A",0.222,0.756],["A",1.787,1.533],["A",-1.23,-0.544],["B",-1.398,1.138],["B",-1.204,1.063],["B",-1.302,0.201],["B",-0.623,1.397],["B",1.447,0.333],["B",-1.601,2.428],["B",0.944,0.234],["B",1.262,0.758],["B",-0.355,1.888],["B",-0.701,0.984],["B",0.472,0.422],["B",1.215,-0.263],["B",2.156,-0.852],["B",0.892,0.156],["B",1.594,-2.323],["B",-0.45,0.011],["B",-0.874,0.915],["B",-1.72,-0.654],["B",-1.154,-0.461],["B",-0.363,1.486],["B",0.193,-0.963],["B",-1.313,0.416],["B",0.816,-0.19],["B",-0.103,-0.319],["B",-0.642,-0.303],["B",-0.765,0.046],["B",2.021,-1.555],["B",0.169,-0.565],["B",-0.898,0.685],["B",-0.954,1.86],["B",1.838,-0.818],["B",-0.578,1.647],["B",1.189,-0.121],["B",1.423,-0.185],["B",-2.324,1.864],["B",1.351,-1.05],["B",-0.208,0.462],["B",-1.084,0.893],["B",-0.544,-0.564],["B",0.561,0.262],["C",0.783,1.175],["C",-0.455,-0.316],["C",1.083,1.012],["C",-0.518,-0.899],["C",0.893,0.277],["C",-1.092,-1.681],["C",0.36,-0.432],["C",0.111,0.811],["C",0.051,-0.44],["C",0.571,0.454],["C",-1.264,-1.796],["C",-0.344,-0.152],["C",-2.132,-2.754],["C",-0.863,-0.176],["C",-0.394,-0.515],["C",-0.216,0.411],["C",-0.099,-0.49],["C",1.441,1.16],["C",0.976,0.576],["C",0.348,0.11],["C",-0.466,-0.152],["C",0.111,-0.089],["C",0.359,0.346],["C",-1.85,-1.426],["C",-0.043,-0.998],["C",0.378,0.309],["C",0.196,0.103],["C",-1.548,-1.792],["C",1.192,1.413],["C",0.03,-0.516],["C",0.083,-0.737],["C",0.566,0.561],["C",0.848,1.066],["C",0.036,0.129],["C",-1.335,-1.839],["C",-0.845,-1.068],["C",0.256,0.173],["C",0.691,0.722],["C",-0.742,-0.456],["C",0.296,-0.16],["D",-0.0,-0.678],["D",0.907,1.907],["D",-1.352,-0.257],["D",1.543,-0.606],["D",-0.233,0.602],["D",-0.517,-1.176],["D",0.626,0.463],["D",0.355,1.097],["D",-0.77,-0.404],["D",0.494,0.1],["D",-0.995,1.49],["D",0.94,-0.159],["D",0.043,1.068],["D",0.074,0.515],["D",-0.468,0.199],["D",0.726,-0.584],["D",-0.406,0.244],["D",-1.328,0.848],["D",-1.825,-0.539],["D",2.339,0.461],["D",-0.419,-0.131],["D",-0.063,0.191],["D",-0.387,-0.49],["D",0.006,0.534],["D",-1.387,0.597],["D",-0.72,0.548],["D",0.543,-1.53],["D",-1.339,0.524],["D",1.133,-0.088],["D",0.212,-1.017],["D",0.405,-0.536],["D",-0.226,1.108],["D",1.334,0.797],["D",0.447,1.213],["D",-0.726,-0.484],["D",-0.744,-0.838],["D",2.453,-0.592],["D",-0.583,-0.273],["D",-0.606,1.419],["D",2.286,0.792]];
+  const GUESS_R = {"A":0.5,"B":-0.6,"C":0.9,"D":0.0};
+  const DEP = [["1",0.257,0.479],["1",0.999,0.544],["1",1.203,-1.45],["1",0.057,0.3],["1",0.296,0.997],["1",1.856,0.468],["1",0.141,0.261],["1",0.26,0.949],["1",1.897,0.161],["1",1.244,0.336],["1",0.738,-0.127],["1",1.023,0.632],["1",1.326,-0.941],["1",0.551,0.792],["1",0.276,-0.505],["1",1.576,-1.091],["1",1.341,0.365],["1",1.025,1.693],["1",1.633,0.962],["1",1.098,-0.516],["1",1.962,0.698],["1",0.409,-0.454],["1",1.107,-0.124],["1",0.967,0.09],["1",0.707,-2.317],["1",1.183,0.192],["1",0.471,-1.03],["1",1.604,-0.697],["1",1.735,-1.474],["1",0.258,-1.517],["1",0.934,-0.943],["1",0.554,0.826],["1",0.166,1.666],["1",1.792,-0.025],["1",0.86,1.092],["1",0.295,-0.264],["1",1.347,-1.912],["1",0.404,0.15],["1",1.803,0.446],["1",0.434,-0.429],["1",0.066,0.302],["1",0.402,0.573],["1",0.691,-0.863],["1",0.938,-1.477],["1",1.812,-0.221],["1",1.395,-0.211],["1",0.679,-0.353],["1",0.034,0.987],["1",0.32,1.726],["1",1.993,-0.417],["1",0.919,0.699],["1",1.382,0.941],["1",0.109,0.713],["1",0.068,1.047],["1",1.692,-0.389],["1",1.176,0.74],["1",0.617,2.024],["1",0.635,0.804],["1",0.178,-0.62],["1",0.345,0.608],["1",0.049,1.262],["1",1.678,0.369],["1",0.933,-0.563],["1",0.254,1.543],["1",1.478,-1.25],["1",0.391,0.503],["1",0.124,-0.016],["1",1.197,-1.194],["1",1.792,1.219],["1",0.054,0.348],["1",1.61,-1.167],["1",0.38,0.602],["1",0.186,-0.432],["1",0.036,-1.903],["1",0.586,-0.689],["1",1.454,0.264],["1",0.986,0.636],["1",1.706,0.166],["1",0.434,0.045],["1",0.63,0.47],["1",0.516,-0.211],["1",1.957,1.177],["1",1.882,0.149],["1",0.681,0.294],["1",0.872,0.541],["1",0.629,-1.057],["1",1.493,-0.709],["1",0.08,1.529],["1",0.135,0.335],["1",0.808,-0.283],["1",0.49,0.341],["1",1.69,-0.482],["1",1.484,0.279],["1",1.092,-0.666],["1",1.323,0.276],["1",1.385,-1.578],["1",1.562,1.331],["1",1.855,-0.513],["1",0.299,-1.581],["1",1.252,-0.224],["1",-0.257,0.479],["1",-0.999,0.544],["1",-1.203,-1.45],["1",-0.057,0.3],["1",-0.296,0.997],["1",-1.856,0.468],["1",-0.141,0.261],["1",-0.26,0.949],["1",-1.897,0.161],["1",-1.244,0.336],["1",-0.738,-0.127],["1",-1.023,0.632],["1",-1.326,-0.941],["1",-0.551,0.792],["1",-0.276,-0.505],["1",-1.576,-1.091],["1",-1.341,0.365],["1",-1.025,1.693],["1",-1.633,0.962],["1",-1.098,-0.516],["1",-1.962,0.698],["1",-0.409,-0.454],["1",-1.107,-0.124],["1",-0.967,0.09],["1",-0.707,-2.317],["1",-1.183,0.192],["1",-0.471,-1.03],["1",-1.604,-0.697],["1",-1.735,-1.474],["1",-0.258,-1.517],["1",-0.934,-0.943],["1",-0.554,0.826],["1",-0.166,1.666],["1",-1.792,-0.025],["1",-0.86,1.092],["1",-0.295,-0.264],["1",-1.347,-1.912],["1",-0.404,0.15],["1",-1.803,0.446],["1",-0.434,-0.429],["1",-0.066,0.302],["1",-0.402,0.573],["1",-0.691,-0.863],["1",-0.938,-1.477],["1",-1.812,-0.221],["1",-1.395,-0.211],["1",-0.679,-0.353],["1",-0.034,0.987],["1",-0.32,1.726],["1",-1.993,-0.417],["1",-0.919,0.699],["1",-1.382,0.941],["1",-0.109,0.713],["1",-0.068,1.047],["1",-1.692,-0.389],["1",-1.176,0.74],["1",-0.617,2.024],["1",-0.635,0.804],["1",-0.178,-0.62],["1",-0.345,0.608],["1",-0.049,1.262],["1",-1.678,0.369],["1",-0.933,-0.563],["1",-0.254,1.543],["1",-1.478,-1.25],["1",-0.391,0.503],["1",-0.124,-0.016],["1",-1.197,-1.194],["1",-1.792,1.219],["1",-0.054,0.348],["1",-1.61,-1.167],["1",-0.38,0.602],["1",-0.186,-0.432],["1",-0.036,-1.903],["1",-0.586,-0.689],["1",-1.454,0.264],["1",-0.986,0.636],["1",-1.706,0.166],["1",-0.434,0.045],["1",-0.63,0.47],["1",-0.516,-0.211],["1",-1.957,1.177],["1",-1.882,0.149],["1",-0.681,0.294],["1",-0.872,0.541],["1",-0.629,-1.057],["1",-1.493,-0.709],["1",-0.08,1.529],["1",-0.135,0.335],["1",-0.808,-0.283],["1",-0.49,0.341],["1",-1.69,-0.482],["1",-1.484,0.279],["1",-1.092,-0.666],["1",-1.323,0.276],["1",-1.385,-1.578],["1",-1.562,1.331],["1",-1.855,-0.513],["1",-0.299,-1.581],["1",-1.252,-0.224],["2",0.257,-0.017],["2",0.999,0.89],["2",1.203,0.275],["2",0.057,0.284],["2",0.296,2.411],["2",1.856,0.718],["2",0.141,0.315],["2",0.26,0.021],["2",1.897,1.633],["2",1.244,-0.092],["2",0.738,-0.1],["2",1.023,1.094],["2",1.326,1.037],["2",0.551,1.422],["2",0.276,-0.202],["2",1.576,1.366],["2",1.341,2.82],["2",1.025,0.36],["2",1.633,0.764],["2",1.098,0.857],["2",1.962,1.543],["2",0.409,0.834],["2",1.107,0.964],["2",0.967,0.32],["2",0.707,0.692],["2",1.183,2.53],["2",0.471,1.14],["2",1.604,-0.386],["2",1.735,1.303],["2",0.258,-0.319],["2",0.934,1.121],["2",0.554,0.339],["2",0.166,1.293],["2",1.792,1.992],["2",0.86,1.222],["2",0.295,0.348],["2",1.347,1.053],["2",0.404,0.528],["2",1.803,2.219],["2",0.434,0.668],["2",0.066,-0.158],["2",0.402,1.086],["2",0.691,0.668],["2",0.938,0.704],["2",1.812,0.975],["2",1.395,0.776],["2",0.679,0.161],["2",0.034,-1.648],["2",0.32,0.866],["2",1.993,1.934],["2",0.919,0.607],["2",1.382,1.733],["2",0.109,0.35],["2",0.068,0.277],["2",1.692,-0.131],["2",1.176,0.801],["2",0.617,0.813],["2",0.635,1.474],["2",0.178,1.247],["2",0.345,1.132],["2",0.049,-0.658],["2",1.678,0.024],["2",0.933,1.088],["2",0.254,0.22],["2",1.478,1.76],["2",0.391,0.238],["2",0.124,0.231],["2",1.197,0.057],["2",1.792,1.702],["2",0.054,-0.224],["2",1.61,1.498],["2",0.38,0.58],["2",0.186,0.078],["2",0.036,0.219],["2",0.586,0.461],["2",1.454,1.619],["2",0.986,1.09],["2",1.706,1.036],["2",0.434,-0.005],["2",0.63,1.551],["2",0.516,0.352],["2",1.957,2.16],["2",1.882,1.742],["2",0.681,0.207],["2",0.872,0.248],["2",0.629,0.575],["2",1.493,1.348],["2",0.08,0.433],["2",0.135,-0.652],["2",0.808,0.29],["2",0.49,0.335],["2",1.69,2.313],["2",1.484,-0.229],["2",1.092,1.137],["2",1.323,0.734],["2",1.385,1.366],["2",1.562,0.955],["2",1.855,1.703],["2",0.299,1.178],["2",1.252,1.214],["2",-0.257,0.054],["2",-0.999,-0.575],["2",-1.203,-1.413],["2",-0.057,0.28],["2",-0.296,-0.362],["2",-1.856,-1.972],["2",-0.141,-0.136],["2",-0.26,-0.344],["2",-1.897,-1.065],["2",-1.244,-1.021],["2",-0.738,-0.908],["2",-1.023,0.055],["2",-1.326,-0.468],["2",-0.551,0.321],["2",-0.276,0.144],["2",-1.576,-1.327],["2",-1.341,-1.324],["2",-1.025,-0.987],["2",-1.633,-0.738],["2",-1.098,-0.811],["2",-1.962,-2.459],["2",-0.409,-0.351],["2",-1.107,-1.736],["2",-0.967,-0.674],["2",-0.707,-1.288],["2",-1.183,-1.705],["2",-0.471,-0.305],["2",-1.604,-1.33],["2",-1.735,-2.385],["2",-0.258,0.243],["2",-0.934,0.551],["2",-0.554,-1.332],["2",-0.166,0.959],["2",-1.792,-1.846],["2",-0.86,-0.984],["2",-0.295,-0.344],["2",-1.347,-1.945],["2",-0.404,0.456],["2",-1.803,-1.147],["2",-0.434,-0.798],["2",-0.066,-0.219],["2",-0.402,-1.231],["2",-0.691,-0.762],["2",-0.938,-0.189],["2",-1.812,-2.479],["2",-1.395,-1.378],["2",-0.679,-0.455],["2",-0.034,0.602],["2",-0.32,0.554],["2",-1.993,-1.869],["2",-0.919,-1.18],["2",-1.382,-0.835],["2",-0.109,-0.305],["2",-0.068,-0.24],["2",-1.692,-0.705],["2",-1.176,0.073],["2",-0.617,-0.334],["2",-0.635,-0.623],["2",-0.178,0.2],["2",-0.345,-1.409],["2",-0.049,-0.05],["2",-1.678,-1.979],["2",-0.933,0.688],["2",-0.254,0.229],["2",-1.478,-1.098],["2",-0.391,-0.43],["2",-0.124,-1.608],["2",-1.197,-0.53],["2",-1.792,-0.456],["2",-0.054,-0.48],["2",-1.61,-0.878],["2",-0.38,0.129],["2",-0.186,-1.078],["2",-0.036,0.533],["2",-0.586,0.344],["2",-1.454,-1.026],["2",-0.986,-0.827],["2",-1.706,-0.892],["2",-0.434,-1.272],["2",-0.63,-0.448],["2",-0.516,0.22],["2",-1.957,-2.311],["2",-1.882,-0.91],["2",-0.681,-0.796],["2",-0.872,-1.946],["2",-0.629,-0.566],["2",-1.493,-1.778],["2",-0.08,0.128],["2",-0.135,-0.811],["2",-0.808,-0.016],["2",-0.49,-0.835],["2",-1.69,-1.139],["2",-1.484,-1.543],["2",-1.092,-1.067],["2",-1.323,-0.343],["2",-1.385,-0.978],["2",-1.562,-1.487],["2",-1.855,-2.235],["2",-0.299,0.456],["2",-1.252,-0.562],["3",0.257,-1.349],["3",0.999,-0.63],["3",1.203,0.269],["3",0.057,-1.207],["3",0.296,-1.283],["3",1.856,2.024],["3",0.141,-1.827],["3",0.26,-1.46],["3",1.897,2.747],["3",1.244,0.137],["3",0.738,-1.365],["3",1.023,0.247],["3",1.326,0.636],["3",0.551,-0.187],["3",0.276,-1.232],["3",1.576,0.966],["3",1.341,-0.115],["3",1.025,0.246],["3",1.633,2.363],["3",1.098,-0.456],["3",1.962,2.257],["3",0.409,-0.928],["3",1.107,-0.439],["3",0.967,-0.506],["3",0.707,-0.974],["3",1.183,0.143],["3",0.471,-0.674],["3",1.604,1.25],["3",1.735,2.043],["3",0.258,-1.435],["3",0.934,-0.33],["3",0.554,-1.881],["3",0.166,-1.886],["3",1.792,2.196],["3",0.86,-0.83],["3",0.295,-1.014],["3",1.347,0.697],["3",0.404,-0.641],["3",1.803,2.242],["3",0.434,-0.738],["3",0.066,-1.374],["3",0.402,-1.451],["3",0.691,-1.148],["3",0.938,-0.649],["3",1.812,1.499],["3",1.395,0.393],["3",0.679,-0.91],["3",0.034,-1.232],["3",0.32,-1.367],["3",1.993,1.869],["3",0.919,-0.517],["3",1.382,0.667],["3",0.109,-0.888],["3",0.068,-1.098],["3",1.692,1.271],["3",1.176,-0.24],["3",0.617,-0.148],["3",0.635,-0.628],["3",0.178,-0.569],["3",0.345,-0.362],["3",0.049,-1.658],["3",1.678,1.637],["3",0.933,-0.28],["3",0.254,-1.045],["3",1.478,1.069],["3",0.391,-1.099],["3",0.124,-1.248],["3",1.197,-0.502],["3",1.792,1.81],["3",0.054,-1.629],["3",1.61,1.31],["3",0.38,-1.376],["3",0.186,-1.051],["3",0.036,-1.004],["3",0.586,-0.867],["3",1.454,0.908],["3",0.986,-0.323],["3",1.706,1.397],["3",0.434,-1.21],["3",0.63,-1.134],["3",0.516,-0.912],["3",1.957,2.501],["3",1.882,2.441],["3",0.681,-1.401],["3",0.872,-0.218],["3",0.629,-1.243],["3",1.493,0.602],["3",0.08,-1.406],["3",0.135,-1.54],["3",0.808,-0.564],["3",0.49,-1.323],["3",1.69,1.096],["3",1.484,0.529],["3",1.092,0.383],["3",1.323,0.435],["3",1.385,0.117],["3",1.562,1.11],["3",1.855,1.485],["3",0.299,-0.528],["3",1.252,-0.375],["3",-0.257,-1.349],["3",-0.999,-0.63],["3",-1.203,0.269],["3",-0.057,-1.207],["3",-0.296,-1.283],["3",-1.856,2.024],["3",-0.141,-1.827],["3",-0.26,-1.46],["3",-1.897,2.747],["3",-1.244,0.137],["3",-0.738,-1.365],["3",-1.023,0.247],["3",-1.326,0.636],["3",-0.551,-0.187],["3",-0.276,-1.232],["3",-1.576,0.966],["3",-1.341,-0.115],["3",-1.025,0.246],["3",-1.633,2.363],["3",-1.098,-0.456],["3",-1.962,2.257],["3",-0.409,-0.928],["3",-1.107,-0.439],["3",-0.967,-0.506],["3",-0.707,-0.974],["3",-1.183,0.143],["3",-0.471,-0.674],["3",-1.604,1.25],["3",-1.735,2.043],["3",-0.258,-1.435],["3",-0.934,-0.33],["3",-0.554,-1.881],["3",-0.166,-1.886],["3",-1.792,2.196],["3",-0.86,-0.83],["3",-0.295,-1.014],["3",-1.347,0.697],["3",-0.404,-0.641],["3",-1.803,2.242],["3",-0.434,-0.738],["3",-0.066,-1.374],["3",-0.402,-1.451],["3",-0.691,-1.148],["3",-0.938,-0.649],["3",-1.812,1.499],["3",-1.395,0.393],["3",-0.679,-0.91],["3",-0.034,-1.232],["3",-0.32,-1.367],["3",-1.993,1.869],["3",-0.919,-0.517],["3",-1.382,0.667],["3",-0.109,-0.888],["3",-0.068,-1.098],["3",-1.692,1.271],["3",-1.176,-0.24],["3",-0.617,-0.148],["3",-0.635,-0.628],["3",-0.178,-0.569],["3",-0.345,-0.362],["3",-0.049,-1.658],["3",-1.678,1.637],["3",-0.933,-0.28],["3",-0.254,-1.045],["3",-1.478,1.069],["3",-0.391,-1.099],["3",-0.124,-1.248],["3",-1.197,-0.502],["3",-1.792,1.81],["3",-0.054,-1.629],["3",-1.61,1.31],["3",-0.38,-1.376],["3",-0.186,-1.051],["3",-0.036,-1.004],["3",-0.586,-0.867],["3",-1.454,0.908],["3",-0.986,-0.323],["3",-1.706,1.397],["3",-0.434,-1.21],["3",-0.63,-1.134],["3",-0.516,-0.912],["3",-1.957,2.501],["3",-1.882,2.441],["3",-0.681,-1.401],["3",-0.872,-0.218],["3",-0.629,-1.243],["3",-1.493,0.602],["3",-0.08,-1.406],["3",-0.135,-1.54],["3",-0.808,-0.564],["3",-0.49,-1.323],["3",-1.69,1.096],["3",-1.484,0.529],["3",-1.092,0.383],["3",-1.323,0.435],["3",-1.385,0.117],["3",-1.562,1.11],["3",-1.855,1.485],["3",-0.299,-0.528],["3",-1.252,-0.375],["4",0.257,-0.062],["4",0.999,-0.55],["4",1.203,0.338],["4",0.057,0.057],["4",0.296,-0.03],["4",1.856,-0.28],["4",0.141,-0.301],["4",0.26,-0.149],["4",1.897,1.554],["4",1.244,-0.171],["4",0.738,-0.853],["4",1.023,1.019],["4",1.326,0.501],["4",0.551,1.013],["4",0.276,0.02],["4",1.576,-0.506],["4",1.341,-1.382],["4",1.025,1.013],["4",1.633,2.904],["4",1.098,-0.664],["4",1.962,-0.859],["4",0.409,0.236],["4",1.107,-0.676],["4",0.967,-0.198],["4",0.707,-0.201],["4",1.183,0.165],["4",0.471,0.473],["4",1.604,0.025],["4",1.735,1.094],["4",0.258,-0.128],["4",0.934,0.233],["4",0.554,-1.032],["4",0.166,-0.362],["4",1.792,0.975],["4",0.86,-0.393],["4",0.295,0.19],["4",1.347,0.52],["4",0.404,0.519],["4",1.803,1.0],["4",0.434,0.418],["4",0.066,-0.021],["4",0.402,-0.273],["4",0.691,-0.413],["4",0.938,-0.348],["4",1.812,-1.398],["4",1.395,-0.54],["4",0.679,-0.052],["4",0.034,0.043],["4",0.32,-0.116],["4",1.993,-2.589],["4",0.919,-0.051],["4",1.382,0.221],["4",0.109,0.234],["4",0.068,0.11],["4",1.692,-0.75],["4",1.176,-0.619],["4",0.617,1.046],["4",0.635,0.402],["4",0.178,0.471],["4",0.345,0.761],["4",0.049,-0.147],["4",1.678,0.446],["4",0.933,0.325],["4",0.254,0.169],["4",1.478,0.562],["4",0.391,0.078],["4",0.124,0.039],["4",1.197,-1.304],["4",1.792,-0.203],["4",0.054,-0.136],["4",1.61,0.141],["4",0.38,-0.177],["4",0.186,0.162],["4",0.036,0.141],["4",0.586,0.155],["4",1.454,0.323],["4",0.986,0.069],["4",1.706,-0.525],["4",0.434,-0.068],["4",0.63,-0.262],["4",0.516,0.178],["4",1.957,0.019],["4",1.882,0.744],["4",0.681,-0.742],["4",0.872,0.598],["4",0.629,-0.402],["4",1.493,-0.768],["4",0.08,-0.039],["4",0.135,-0.13],["4",0.808,0.185],["4",0.49,-0.255],["4",1.69,-1.245],["4",1.484,-0.88],["4",1.092,1.056],["4",1.323,0.042],["4",1.385,-1.145],["4",1.562,0.009],["4",1.855,-1.965],["4",0.299,0.59],["4",1.252,-1.374],["4",-0.257,-0.062],["4",-0.999,-0.55],["4",-1.203,0.338],["4",-0.057,0.057],["4",-0.296,-0.03],["4",-1.856,-0.28],["4",-0.141,-0.301],["4",-0.26,-0.149],["4",-1.897,1.554],["4",-1.244,-0.171],["4",-0.738,-0.853],["4",-1.023,1.019],["4",-1.326,0.501],["4",-0.551,1.013],["4",-0.276,0.02],["4",-1.576,-0.506],["4",-1.341,-1.382],["4",-1.025,1.013],["4",-1.633,2.904],["4",-1.098,-0.664],["4",-1.962,-0.859],["4",-0.409,0.236],["4",-1.107,-0.676],["4",-0.967,-0.198],["4",-0.707,-0.201],["4",-1.183,0.165],["4",-0.471,0.473],["4",-1.604,0.025],["4",-1.735,1.094],["4",-0.258,-0.128],["4",-0.934,0.233],["4",-0.554,-1.032],["4",-0.166,-0.362],["4",-1.792,0.975],["4",-0.86,-0.393],["4",-0.295,0.19],["4",-1.347,0.52],["4",-0.404,0.519],["4",-1.803,1.0],["4",-0.434,0.418],["4",-0.066,-0.021],["4",-0.402,-0.273],["4",-0.691,-0.413],["4",-0.938,-0.348],["4",-1.812,-1.398],["4",-1.395,-0.54],["4",-0.679,-0.052],["4",-0.034,0.043],["4",-0.32,-0.116],["4",-1.993,-2.589],["4",-0.919,-0.051],["4",-1.382,0.221],["4",-0.109,0.234],["4",-0.068,0.11],["4",-1.692,-0.75],["4",-1.176,-0.619],["4",-0.617,1.046],["4",-0.635,0.402],["4",-0.178,0.471],["4",-0.345,0.761],["4",-0.049,-0.147],["4",-1.678,0.446],["4",-0.933,0.325],["4",-0.254,0.169],["4",-1.478,0.562],["4",-0.391,0.078],["4",-0.124,0.039],["4",-1.197,-1.304],["4",-1.792,-0.203],["4",-0.054,-0.136],["4",-1.61,0.141],["4",-0.38,-0.177],["4",-0.186,0.162],["4",-0.036,0.141],["4",-0.586,0.155],["4",-1.454,0.323],["4",-0.986,0.069],["4",-1.706,-0.525],["4",-0.434,-0.068],["4",-0.63,-0.262],["4",-0.516,0.178],["4",-1.957,0.019],["4",-1.882,0.744],["4",-0.681,-0.742],["4",-0.872,0.598],["4",-0.629,-0.402],["4",-1.493,-0.768],["4",-0.08,-0.039],["4",-0.135,-0.13],["4",-0.808,0.185],["4",-0.49,-0.255],["4",-1.69,-1.245],["4",-1.484,-0.88],["4",-1.092,1.056],["4",-1.323,0.042],["4",-1.385,-1.145],["4",-1.562,0.009],["4",-1.855,-1.965],["4",-0.299,0.59],["4",-1.252,-1.374]];
+  const DEP_R = {"1":0.0,"2":0.82,"3":0.0,"4":0.0};
+
+  const plotStyle = () => ({ color: 'var(--ink-soft)', fontFamily: "'Public Sans', sans-serif", fontSize: '12px' });
+  const BLUE = '#457b9d', RED = '#e63946', GREEN = '#2d6a4f', NAVY = '#1a1a2e';
+
+  function accessibleChart(node, label) {
+    node.setAttribute('aria-hidden', 'true');
+    const wrap = document.createElement('div');
+    wrap.setAttribute('role', 'img');
+    wrap.setAttribute('aria-label', label);
+    wrap.appendChild(node);
+    return wrap;
+  }
+  function mount(id, node) {
+    const el = document.getElementById(id);
+    el.innerHTML = '';
+    el.appendChild(node);
+  }
+  const fmt0 = v => d3.format(',.0f')(v);
+  const fmt1 = v => d3.format(',.1f')(v);
+
+  /* ================= Chapter nav =================
+     Hardcoded -- add a new entry here (and to every other chapter's own copy
+     of this array) when the next chapter exists. */
+  const CHAPTERS = [
+    { href: 'week1-lecture-notes.html', num: 'One', title: 'Distributions &amp; Summarising Data' },
+    { href: 'week2-lecture-notes.html', num: 'Two', title: 'Inference: When Is a Difference Real?' },
+    { href: 'week3-lecture-notes.html', num: 'Three', title: 'When y Met x: Correlation and Covariance' },
+  ];
+  const CURRENT_CHAPTER_HREF = 'week3-lecture-notes.html';
+  function buildChapterNav(container) {
+    const wrap = document.createElement('div');
+    wrap.className = 'toc-block chapter-nav';
+    const label = document.createElement('span');
+    label.className = 'toc-label';
+    label.textContent = 'Chapters';
+    wrap.appendChild(label);
+    const ol = document.createElement('ol');
+    ol.className = 'chapter-list';
+    CHAPTERS.forEach(c => {
+      const li = document.createElement('li');
+      const isCurrent = c.href === CURRENT_CHAPTER_HREF;
+      const el = document.createElement(isCurrent ? 'span' : 'a');
+      if (!isCurrent) el.href = c.href;
+      el.className = 'chapter-link' + (isCurrent ? ' current' : '');
+      el.innerHTML = `<strong>Chapter ${c.num}</strong><span class="chapter-sub">${c.title}</span>`;
+      li.appendChild(el);
+      ol.appendChild(li);
+    });
+    wrap.appendChild(ol);
+    container.appendChild(wrap);
+  }
+
+  /* ================= TOC ================= */
+  const sections = [...document.querySelectorAll('section.chapter')].map(s => ({
+    id: s.id, title: s.querySelector('h2').textContent
+  }));
+  function buildTOC(container) {
+    buildChapterNav(container);
+    const label = document.createElement('span');
+    label.className = 'toc-label';
+    label.textContent = 'Contents';
+    container.appendChild(label);
+    const ol = document.createElement('ol');
+    sections.forEach(s => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = '#' + s.id; a.textContent = s.title; a.dataset.id = s.id;
+      li.appendChild(a); ol.appendChild(li);
+    });
+    container.appendChild(ol);
+  }
+  buildTOC(document.getElementById('toc'));
+  buildTOC(document.getElementById('toc-mobile'));
+
+  const allTocLinks = () => [...document.querySelectorAll('nav.toc a')];
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        allTocLinks().forEach(a => a.classList.toggle('active', a.dataset.id === id));
+      }
+    });
+  }, { rootMargin: '-10% 0px -70% 0px' });
+  sections.forEach(s => io.observe(document.getElementById(s.id)));
+
+  /* ================= shared helpers ================= */
+  const DEVICES = ['Laptop', 'Phone'], CAFFS = ['Yes', 'No'];
+  const count = (dev, caf) => STUDENTS.filter(s => (dev == null || s.device === dev) && (caf == null || s.caffeine === caf)).length;
+  const N = STUDENTS.length;
+
+  function covCorr(xs, ys) {
+    const mx = d3.mean(xs), my = d3.mean(ys);
+    const cov = d3.sum(xs.map((x, i) => (x - mx) * (ys[i] - my))) / (xs.length - 1);
+    return { mx, my, cov, corr: cov / (d3.deviation(xs) * d3.deviation(ys)) };
+  }
+
+  /* ================= Part Six: our cross-tab ================= */
+  function renderCrosstab() {
+    const tbl = document.createElement('table');
+    tbl.className = 'data-table';
+    tbl.innerHTML = `<caption class="visually-hidden">Number of students in our class by device and caffeine use, with row and column totals.</caption>
+      <thead><tr><th scope="col">Device \\ Caffeine</th><th scope="col">Caffeine</th><th scope="col">No caffeine</th><th scope="col">Total</th></tr></thead>
+      <tbody>${DEVICES.map(dev => `<tr><td>${dev}</td>${CAFFS.map(c => `<td style="color:var(--accent);font-weight:600;">${count(dev, c)}</td>`).join('')}<td><strong>${count(dev, null)}</strong></td></tr>`).join('')}
+      <tr><td>Total</td>${CAFFS.map(c => `<td><strong>${count(null, c)}</strong></td>`).join('')}<td><strong>${N}</strong></td></tr></tbody>`;
+    mount('crosstab', tbl);
+  }
+
+  /* ================= Part Seven: stacked bars + expected counts ================= */
+  const stackCond = document.getElementById('stack-cond');
+  function renderStacked() {
+    const byDevice = stackCond.value === 'device';
+    const groups = byDevice ? DEVICES : CAFFS;
+    const outcomes = byDevice ? CAFFS : DEVICES;
+    const gLabel = g => byDevice ? g : (g === 'Yes' ? 'Caffeine' : 'No caffeine');
+    const oLabel = o => byDevice ? (o === 'Yes' ? 'Caffeine' : 'No caffeine') : o;
+    const cell = (g, o) => byDevice ? count(g, o) : count(o, g);
+    const rows = [];
+    groups.forEach(g => {
+      const tot = d3.sum(outcomes, o => cell(g, o));
+      outcomes.forEach(o => rows.push({ view: 'What we observed', group: gLabel(g), outcome: oLabel(o), pct: cell(g, o) / tot }));
+    });
+    groups.forEach(g => outcomes.forEach(o => {
+      const marg = d3.sum(groups, gg => cell(gg, o)) / N;
+      rows.push({ view: 'If independent', group: gLabel(g), outcome: oLabel(o), pct: marg });
+    }));
+    const oDomain = outcomes.map(oLabel);
+    const svg = Plot.plot({
+      width: 680, height: 330, marginLeft: 50, marginBottom: 40,
+      style: plotStyle(),
+      fx: { label: null, domain: ['What we observed', 'If independent'] },
+      x: { label: null, domain: groups.map(gLabel), tickSize: 0 },
+      y: { label: byDevice ? '% within device' : '% within caffeine group', percent: true },
+      color: { legend: true, domain: oDomain, range: byDevice ? [RED, BLUE] : ['#9aa5b1', GREEN] },
+      marks: [
+        Plot.barY(rows, { fx: 'view', x: 'group', y: 'pct', fill: 'outcome', order: oDomain }),
+        Plot.text(rows, Plot.stackY({ fx: 'view', x: 'group', y: 'pct', z: 'outcome', order: oDomain, text: d => Math.round(100 * d.pct) + '%', fill: 'white', fontWeight: 600 })),
+        Plot.ruleY([0]),
+      ]
+    });
+    const obs = groups.map(g => `${gLabel(g)}: ${Math.round(100 * cell(g, outcomes[0]) / d3.sum(outcomes, o => cell(g, o)))}% ${oLabel(outcomes[0]).toLowerCase()}`).join(', ');
+    const label = byDevice
+      ? `Conditioning on device: ${obs}. If device and caffeine were independent, both bars would show the class-wide ${Math.round(100 * count(null, 'Yes') / N)}% caffeine share.`
+      : `Conditioning on caffeine: ${obs}. If they were independent, both bars would show the class-wide ${Math.round(100 * count('Laptop', null) / N)}% laptop share.`;
+    const stacked = accessibleChart(svg, 'Stacked bar chart showing conditional probabilities within each group, observed on the left and under independence on the right. ' + label);
+    const fig = document.createElement('div');
+    fig.appendChild(stacked);
+    mount('stacked-chart', fig);
+    document.getElementById('stacked-caption').textContent = label;
+  }
+  stackCond.addEventListener('change', renderStacked);
+
+  function renderExpected() {
+    const tbl = document.createElement('table');
+    tbl.className = 'data-table';
+    tbl.innerHTML = `<caption class="visually-hidden">Observed counts next to the counts expected if device and caffeine were independent.</caption>
+      <thead><tr><th scope="col">Device</th><th scope="col">Caffeine: observed / expected</th><th scope="col">No caffeine: observed / expected</th></tr></thead>
+      <tbody>${DEVICES.map(dev => `<tr><td>${dev}</td>${CAFFS.map(c => `<td><strong style="color:var(--accent);">${count(dev, c)}</strong> / <span style="color:var(--warm);">${(count(dev, null) * count(null, c) / N).toFixed(1)}</span></td>`).join('')}</tr>`).join('')}</tbody>`;
+    mount('expected-table', tbl);
+  }
+
+  /* ================= Part Nine: finger-length task + fix ================= */
+  function renderFingerTask() {
+    const byName = Object.fromEntries(STUDENTS.map(s => [s.student_name, s]));
+    const rows = TASK_ORDER.map(n => byName[n]);
+    const cols = 4, per = Math.ceil(rows.length / cols);
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:0 18px;';
+    for (let c = 0; c < cols; c++) {
+      const tbl = document.createElement('table');
+      tbl.className = 'data-table';
+      tbl.style.margin = '6px 0';
+      tbl.innerHTML = `<caption class="visually-hidden">Raw finger-length measurements, part ${c + 1} of ${cols}.</caption>
+        <thead><tr><th scope="col">Student</th><th scope="col">mm</th></tr></thead>
+        <tbody>${rows.slice(c * per, (c + 1) * per).map(r => `<tr><td style="font-weight:400;">${r.student_name}</td><td style="font-weight:700;color:var(--ink);">${r.finger_raw}</td></tr>`).join('')}</tbody>`;
+      wrap.appendChild(tbl);
+    }
+    mount('finger-task-table', wrap);
+  }
+
+  const fingerVersion = document.getElementById('finger-version');
+  function renderFingerFix() {
+    const raw = fingerVersion.value === 'raw';
+    const key = raw ? 'finger_raw' : 'finger_mm';
+    const pts = STUDENTS.map(s => ({ ...s, x: s[key], fixed: s.finger_raw !== s.finger_mm }));
+    const { cov, corr } = covCorr(pts.map(d => d.x), pts.map(d => d.mean_rt));
+    const svg = Plot.plot({
+      width: 640, height: 340, marginLeft: 60, marginBottom: 42,
+      style: plotStyle(),
+      x: { label: raw ? 'Finger length as entered (mm)' : 'Finger length, corrected (mm)', grid: true },
+      y: { label: 'Mean reaction time (ms)', grid: true },
+      color: { legend: true, domain: ['Correctly entered', 'One of the five'], range: [BLUE, RED] },
+      marks: [
+        Plot.dot(pts, { x: 'x', y: 'mean_rt', r: 6, fillOpacity: 0.85, fill: d => d.fixed ? 'One of the five' : 'Correctly entered',
+          tip: true, title: d => `${d.student_name}: ${d.x}mm, ${fmt0(d.mean_rt)}ms` }),
+      ]
+    });
+    const label = raw
+      ? `As entered, the x-axis has to stretch from about 7mm to 900mm, and the five bad values set the pattern. Covariance = ${fmt1(cov)}, correlation = ${corr.toFixed(2)}.`
+      : `After multiplying the three tiny values by ten and dividing the two huge ones by ten, every finger sits between 68 and 100mm. Covariance = ${fmt1(cov)}, correlation = ${corr.toFixed(2)}.`;
+    mount('finger-fix-chart', accessibleChart(svg, 'Scatterplot of mean reaction time against finger length for our 24 students, with the five mis-entered values highlighted. ' + label));
+    document.getElementById('finger-fix-caption').textContent = label;
+  }
+  fingerVersion.addEventListener('change', renderFingerFix);
+
+  /* ================= Part Ten: binning ================= */
+  const binsK = document.getElementById('bins-k');
+  function renderBins() {
+    const k = +binsK.value;
+    document.getElementById('bins-k-val').textContent = k;
+    const vals = STUDENTS.map(s => s.finger_mm).sort((a, b) => a - b);
+    const cuts = d3.range(1, k).map(i => d3.quantile(vals, i / k));
+    const names = k === 3 ? ['Short', 'Medium', 'Long'] : d3.range(k).map(i => `Bin ${i + 1}`);
+    const binOf = f => { const i = cuts.findIndex(c => f <= c); return i === -1 ? k - 1 : i; };
+    const groups = names.map((name, i) => {
+      const g = STUDENTS.filter(s => binOf(s.finger_mm) === i);
+      return { name, n: g.length, mean_rt: g.length ? d3.mean(g, d => d.mean_rt) : null,
+               lo: g.length ? d3.min(g, d => d.finger_mm) : null, hi: g.length ? d3.max(g, d => d.finger_mm) : null };
+    }).filter(g => g.n > 0);
+    const rng = g => g.lo === g.hi ? `${g.lo}mm` : `${g.lo}\u2013${g.hi}mm`;
+    const tick = name => `${name}\n${rng(groups.find(d => d.name === name))}`;
+    const svg = Plot.plot({
+      width: 640, height: 330, marginLeft: 60, marginBottom: 50,
+      style: plotStyle(),
+      x: { label: 'Finger-length bin', domain: groups.map(g => g.name), tickFormat: tick },
+      y: { label: 'E[reaction time | bin] (ms)', grid: true },
+      marks: [
+        Plot.barY(groups, { x: 'name', y: 'mean_rt', fill: BLUE, fillOpacity: 0.85 }),
+        Plot.text(groups, { x: 'name', y: 'mean_rt', text: d => `${fmt0(d.mean_rt)}ms (n=${d.n})`, dy: -10, fill: 'var(--ink-soft)' }),
+        Plot.ruleY([0]),
+      ]
+    });
+    const label = `With ${k} bins: ` + groups.map(g => `${g.name} (${rng(g)}) ${fmt0(g.mean_rt)}ms from ${g.n} students`).join('; ') + '.';
+    mount('bins-chart', accessibleChart(svg, 'Bar chart of mean reaction time within each finger-length bin, the conditional mean of reaction time given the bin. ' + label));
+    document.getElementById('bins-caption').textContent = label + ' Uneven counts come from ties: several students share exactly the same finger length.';
+  }
+  binsK.addEventListener('input', renderBins);
+
+  /* ================= Part Eleven: sleep scatter ================= */
+  const SLEEP_ROWS = SLEEP.map(([h, rt]) => ({ sleep_hours: h, rt }));
+  function fitLine(rows, yOf) {
+    const xs = rows.map(d => d.sleep_hours), ys = rows.map(yOf);
+    const mx = d3.mean(xs), my = d3.mean(ys);
+    const b = d3.sum(xs.map((x, i) => (x - mx) * (ys[i] - my))) / d3.sum(xs.map(x => (x - mx) ** 2));
+    const a = my - b * mx;
+    const ssRes = d3.sum(ys.map((y, i) => (y - (a + b * xs[i])) ** 2));
+    const ssTot = d3.sum(ys.map(y => (y - my) ** 2));
+    const [x0, x1] = d3.extent(xs);
+    return { line: [{ x: x0, y: a + b * x0 }, { x: x1, y: a + b * x1 }], r2: 1 - ssRes / ssTot };
+  }
+  const sleepView = document.getElementById('sleep-view');
+  function renderSleep() {
+    const view = sleepView.value;
+    let svg, label;
+    if (view === 'bin') {
+      const grouped = d3.rollups(SLEEP_ROWS, v => ({ mean_rt: d3.mean(v, d => d.rt), n: v.length }), d => Math.round(d.sleep_hours))
+        .map(([h, o]) => ({ sleep_hours: h, ...o })).sort((a, b) => a.sleep_hours - b.sleep_hours);
+      svg = Plot.plot({
+        width: 640, height: 340, marginLeft: 60, marginBottom: 42, style: plotStyle(),
+        x: { label: 'Sleep the night before (hours, 1-hour bins)', grid: true },
+        y: { label: 'E[reaction time | bin] (ms)', grid: true },
+        marks: [
+          Plot.line(grouped, { x: 'sleep_hours', y: 'mean_rt', stroke: GREEN, strokeOpacity: 0.4 }),
+          Plot.dot(grouped, { x: 'sleep_hours', y: 'mean_rt', fill: GREEN, r: 7 }),
+          Plot.text(grouped, { x: 'sleep_hours', y: 'mean_rt', text: d => `n=${d.n}`, dy: -14, fill: 'var(--ink-soft)' }),
+        ]
+      });
+      label = 'Bin-scatter: mean reaction time in each one-hour sleep bin falls steadily, from ' + fmt0(grouped[0].mean_rt) + 'ms at ' + grouped[0].sleep_hours + ' hours to ' + fmt0(grouped[grouped.length - 1].mean_rt) + 'ms at ' + grouped[grouped.length - 1].sleep_hours + ' hours.';
+    } else {
+      const logged = view === 'log';
+      const yOf = d => logged ? Math.log(d.rt) : d.rt;
+      const { line, r2 } = fitLine(SLEEP_ROWS, yOf);
+      const col = logged ? GREEN : BLUE;
+      svg = Plot.plot({
+        width: 640, height: 340, marginLeft: 60, marginBottom: 42, style: plotStyle(),
+        x: { label: 'Sleep the night before (hours)', grid: true },
+        y: { label: logged ? 'ln(reaction time)' : 'Reaction time (ms)', grid: true },
+        marks: [
+          Plot.dot(SLEEP_ROWS, { x: 'sleep_hours', y: yOf, fill: col, r: 4, fillOpacity: 0.7, tip: true, title: d => `${d.sleep_hours}h sleep, ${d.rt}ms` }),
+          Plot.line(line, { x: 'x', y: 'y', stroke: NAVY, strokeWidth: 2, strokeDasharray: '5,3' }),
+          Plot.text([`R\u00B2 = ${r2.toFixed(2)}`], { frameAnchor: 'top-right', dx: -6, dy: 6, fill: col, fontWeight: 700, fontSize: 14 }),
+        ]
+      });
+      label = logged
+        ? `Logged reaction time: the two lapse trials barely stretch the axis and the downward trend is clear. The fitted line has R squared = ${r2.toFixed(2)}.`
+        : `Raw reaction time: two lapse trials above 2,000ms squash the main cluster into a thin band, and the fitted line has R squared of only ${r2.toFixed(2)}.`;
+    }
+    mount('sleep-chart', accessibleChart(svg, 'Simulated data on sleep and reaction time. ' + label));
+    document.getElementById('sleep-caption').textContent = label;
+  }
+  sleepView.addEventListener('change', renderSleep);
+
+  /* ================= Part Twelve: hours awake ================= */
+  const AWAKE_ROWS = AWAKE.map(([h, rt]) => ({ hours: h, rt }));
+  function renderAwake() {
+    const svg = Plot.plot({
+      width: 640, height: 320, marginLeft: 60, marginBottom: 42, style: plotStyle(),
+      x: { label: 'Hours awake before the test', grid: true },
+      y: { label: 'Mean reaction time (ms)', grid: true },
+      marks: [Plot.dot(AWAKE_ROWS, { x: 'hours', y: 'rt', fill: GREEN, r: 6, fillOpacity: 0.85, tip: true, title: d => `${d.hours}h awake, ${d.rt}ms` })]
+    });
+    mount('awake-chart', accessibleChart(svg, 'Scatterplot for a simulated class of 24: hours awake before the test against mean reaction time. The dots rise clearly from left to right, a strong positive relationship.'));
+  }
+
+  /* ================= Part Thirteen: covariance quadrants ================= */
+  const covData = document.getElementById('cov-data');
+  function renderCov() {
+    const ours = covData.value === 'ours';
+    const pts = ours
+      ? STUDENTS.map(s => ({ x: s.finger_mm, y: s.mean_rt, name: s.student_name }))
+      : AWAKE_ROWS.map((d, i) => ({ x: d.hours, y: d.rt, name: `Simulated student ${i + 1}` }));
+    const { mx, my, cov, corr } = covCorr(pts.map(d => d.x), pts.map(d => d.y));
+    const SAME = 'Same sign (+)', OPP = 'Opposite sign (\u2212)';
+    const coloured = pts.map(d => ({ ...d, sign: (d.x - mx) * (d.y - my) >= 0 ? SAME : OPP }));
+    const nSame = coloured.filter(d => d.sign === SAME).length;
+    const svg = Plot.plot({
+      width: 640, height: 360, marginLeft: 60, marginBottom: 42, marginTop: 28, marginRight: 30, style: plotStyle(),
+      x: { label: ours ? 'Finger length (mm)' : 'Hours awake before the test' },
+      y: { label: 'Mean reaction time (ms)' },
+      color: { legend: true, domain: [SAME, OPP], range: [GREEN, RED] },
+      marks: [
+        Plot.ruleX([mx], { stroke: 'var(--ink-faint)', strokeWidth: 1.5, strokeDasharray: '5,4' }),
+        Plot.ruleY([my], { stroke: 'var(--ink-faint)', strokeWidth: 1.5, strokeDasharray: '5,4' }),
+        Plot.text(['mean x'], { x: mx, frameAnchor: 'top', dy: -16, fill: 'var(--ink-soft)', fontWeight: 600 }),
+        Plot.text(['mean y'], { y: my, frameAnchor: 'right', dx: 28, fill: 'var(--ink-soft)', fontWeight: 600 }),
+        Plot.dot(coloured, { x: 'x', y: 'y', fill: 'sign', r: 6, fillOpacity: 0.85, tip: true,
+          title: d => `${d.name}: (${d.x}, ${fmt0(d.y)}), product ${fmt0((d.x - mx) * (d.y - my))}` }),
+      ]
+    });
+    const label = `${nSame} of ${pts.length} points contribute a positive product. Covariance = ${fmt1(cov)}, correlation = ${corr.toFixed(2)}.`;
+    mount('cov-chart', accessibleChart(svg, 'Scatterplot divided into four quarters by dashed lines at the two means, with each point coloured by the sign of its contribution to the covariance. ' + label));
+    document.getElementById('cov-caption').textContent = label + (ours ? ' Hover over a dot to see its own product.' : ' Nearly every point sits top-right or bottom-left.');
+  }
+  covData.addEventListener('change', renderCov);
+
+  /* ================= Part Fifteen: guess the correlation ================= */
+  let guessRevealed = false;
+  function renderGuess() {
+    const rows = GUESS.map(([panel, x, y]) => ({ panel, x, y }));
+    const svg = Plot.plot({
+      width: 680, height: 220, marginLeft: 10, marginRight: 10, marginBottom: 10, marginTop: 30, style: plotStyle(),
+      fx: { axis: 'top', label: null, domain: ['A', 'B', 'C', 'D'], tickFormat: p => guessRevealed ? `${p}: r = ${GUESS_R[p].toFixed(2)}` : `Panel ${p}` },
+      x: { axis: null }, y: { axis: null },
+      marks: [Plot.frame({ stroke: 'var(--rule)' }), Plot.dot(rows, { fx: 'panel', x: 'x', y: 'y', r: 3, fill: BLUE, fillOpacity: 0.8 })]
+    });
+    const label = guessRevealed
+      ? 'The answers: ' + ['A', 'B', 'C', 'D'].map(p => `${p} = ${GUESS_R[p].toFixed(2)}`).join(', ') + '.'
+      : 'Four unlabelled scatterplots, panels A to D, each with 40 points. Make your guesses first, then reveal.';
+    mount('guess-chart', accessibleChart(svg, label));
+    document.getElementById('guess-caption').textContent = label;
+  }
+  document.getElementById('guess-reveal').addEventListener('click', e => {
+    guessRevealed = !guessRevealed;
+    e.target.textContent = guessRevealed ? 'Hide the answers' : 'Reveal the answers';
+    renderGuess();
+  });
+
+  /* ================= Part Sixteen: dependence panels ================= */
+  const DEP_NAMES = { '1': '1. Independent', '2': '2. Linear', '3': '3. U-shape', '4': '4. Fan' };
+  const depMeans = document.getElementById('dep-means'), depR = document.getElementById('dep-r');
+  function renderDep() {
+    const rows = DEP.map(([p, x, y]) => ({ panel: p, x, y }));
+    const binW = 0.25;
+    const means = Object.keys(DEP_NAMES).flatMap(p =>
+      d3.groups(rows.filter(d => d.panel === p), d => Math.floor(d.x / binW))
+        .map(([b, g]) => ({ panel: p, x: (b + 0.5) * binW, y: d3.mean(g, d => d.y) })).sort((a, b) => a.x - b.x));
+    const svg = Plot.plot({
+      width: 680, height: 230, marginLeft: 10, marginRight: 10, marginBottom: 10, marginTop: 30, style: plotStyle(),
+      fx: { axis: 'top', label: null, domain: Object.keys(DEP_NAMES), tickFormat: p => depR.checked ? `${DEP_NAMES[p]} (r = ${Math.abs(DEP_R[p]) < 0.005 ? '0.00' : DEP_R[p].toFixed(2)})` : DEP_NAMES[p] },
+      x: { axis: null }, y: { axis: null },
+      marks: [
+        Plot.frame({ stroke: 'var(--rule)' }),
+        Plot.dot(rows, { fx: 'panel', x: 'x', y: 'y', r: 2, fill: BLUE, fillOpacity: 0.55 }),
+        depMeans.checked ? Plot.line(means, { fx: 'panel', x: 'x', y: 'y', stroke: RED, strokeWidth: 3, curve: 'basis' }) : null,
+      ]
+    });
+    let label = 'Panel 1: a shapeless cloud. Panel 2: a rising straight band. Panel 3: a U-shape. Panel 4: a fan, narrow in the middle and wide at both edges.';
+    if (depMeans.checked) label += ' The red conditional-mean line is flat in panels 1 and 4, rising in panel 2 and U-shaped in panel 3.';
+    if (depR.checked) label += ' Correlations: 0.00, ' + DEP_R['2'].toFixed(2) + ', 0.00 and 0.00.';
+    mount('dep-chart', accessibleChart(svg, 'Four simulated scatterplots illustrating independence, linear mean-dependence, non-linear mean-dependence and dependence in spread only. ' + label));
+    document.getElementById('dep-caption').textContent = label;
+  }
+  depMeans.addEventListener('change', renderDep);
+  depR.addEventListener('change', renderDep);
+
+  /* ================= initial render ================= */
+  renderCrosstab();
+  renderStacked();
+  renderExpected();
+  renderFingerTask();
+  renderFingerFix();
+  renderBins();
+  renderSleep();
+  renderAwake();
+  renderCov();
+  renderGuess();
+  renderDep();
+})();
+</script>
+
+</body>
+</html>
