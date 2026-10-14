@@ -46,8 +46,10 @@ student_summary = (
     .round(1)
 )
 
+# One row per student, like every other regression this week (a student's
+# trials aren't independent -- see the Assumptions slide). n = students.
 device_stats = (
-    df.groupby('device')['reaction_time_ms']
+    student_summary.groupby('device')['mean_rt']
     .agg(mean='mean', sd='std', n='count')
     .reset_index()
     .round(2)
@@ -1092,7 +1094,7 @@ $\hat\alpha$ = average y when x = 0 (average reaction time on Laptop). $\hat\bet
 
 :::: {.fragment}
 ::: {.instructions-box}
-**Task (Python)** — confirm it directly in the Colab notebook: compute the average reaction time separately for the Phone and Laptop groups with `df.groupby('device')['reaction_time_ms'].mean()`, then check they match $\hat\alpha$ and $\hat\alpha + \hat\beta$ below.
+**Task (Python)** — confirm it directly in the Colab notebook: using one row per student (`student_summary`, as for finger length), compute the average reaction time separately for the Phone and Laptop groups with `student_summary.groupby('device')['mean_rt'].mean()`, then check they match $\hat\alpha$ and $\hat\alpha + \hat\beta$ below.
 :::
 ::::
 
@@ -1122,9 +1124,9 @@ A model answer for the manual calculation — same $\hat\beta = Cov[x,y]/Var[x]$
 ```python
 import numpy as np
 
-# device as 0/1, one row per trial -- same data as the task above
-x = (df['device'] == 'Phone').astype(int)
-y = df['reaction_time_ms']
+# device as 0/1, one row per student -- same data as the task above
+x = (student_summary['device'] == 'Phone').astype(int)
+y = student_summary['mean_rt']
 
 cov = np.cov(x, y)[0, 1]
 var_x = x.var(ddof=1)
@@ -1142,8 +1144,8 @@ print("alpha:", alpha)
 #| output: asis
 import numpy as np
 
-_dev_x = (df['device'] == 'Phone').astype(int)
-_dev_y = df['reaction_time_ms']
+_dev_x = (student_summary['device'] == 'Phone').astype(int)
+_dev_y = student_summary['mean_rt']
 _dev_cov = np.cov(_dev_x, _dev_y)[0, 1]
 _dev_var_x = _dev_x.var(ddof=1)
 _dev_beta = round(_dev_cov / _dev_var_x, 2)
@@ -1168,7 +1170,7 @@ print(
 ```python
 import statsmodels.formula.api as smf
 
-model = smf.ols('reaction_time_ms ~ device', data=df).fit()
+model = smf.ols('mean_rt ~ device', data=student_summary).fit()
 print(model.params)
 ```
 
@@ -1176,7 +1178,7 @@ print(model.params)
 #| output: asis
 import statsmodels.formula.api as smf
 
-_device_model = smf.ols('reaction_time_ms ~ device', data=df).fit()
+_device_model = smf.ols('mean_rt ~ device', data=student_summary).fit()
 _p = _device_model.params
 _lines = (
     f"Intercept&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{_p['Intercept']:.4f}<br>"
@@ -1216,7 +1218,7 @@ print(model.summary())
 
 ```{python}
 #| output: asis
-_sum = smf.ols('reaction_time_ms ~ device', data=df).fit().summary()
+_sum = smf.ols('mean_rt ~ device', data=student_summary).fit().summary()
 # Top two blocks only: the residual diagnostics block (Omnibus, Jarque-Bera...)
 # is introduced in Week 5's "So what do we actually check?" slide.
 _txt = (_sum.tables[0].as_text() + "\n" + _sum.tables[1].as_text())
