@@ -1,0 +1,459 @@
+---
+title: "Finding a Good Deal Among Hotels"
+subtitle: "7002LBSAI Research Methods in Analytics — Week 4 Online Session"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="stylesheet" href="styles-slides.css?v=20260914-2">
+    menu:
+      useTextContentForMissingTitles: false
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{python}
+import pandas as pd
+import numpy as np
+import statsmodels.formula.api as smf
+from statsmodels.nonparametric.smoothers_lowess import lowess
+
+# Recorded walkthrough of Békés & Kézdi's own Ch. 7 case study ("Finding a
+# good deal among hotels"), built 2026-10-13 as Week 4's online session --
+# same format as Week 3's (recording + student Colab + live Q&A). Week 5's
+# online session picks up the SAME sample and asks whether a straight line
+# is the right shape, mirroring the book's own Ch.7 -> Ch.8 progression.
+#
+# Sample: Gabor's exact filters on the hosted hotels_vienna.csv (428 prices,
+# Vienna, Nov 2017 weekday) -> N = 207. Checked against the Ch.7 slides
+# before use: alpha 132.02 / beta -14.41 (slides round to 133 / -14),
+# R^2 0.157 (slides: 0.16), and the five lowest residuals reproduce the
+# slides' "best deals" table exactly (hotel ids 22080, 21912, 22152, 22408,
+# 22090; residuals -62.17 ... -51.05). Price is in EUR (codebook:
+# da_data_repo/hotels-vienna/clean/VARIABLES.xlsx), distance in miles.
+hotels = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/hotels_vienna.csv")
+hotels = hotels[(hotels['accommodation_type'] == 'Hotel') &
+                (hotels['city_actual'] == 'Vienna') &
+                (hotels['stars'] >= 3) & (hotels['stars'] <= 4) &
+                (hotels['price'] <= 600)].copy()
+
+model = smf.ols('price ~ distance', data=hotels).fit()
+hotels['predicted'] = model.fittedvalues
+hotels['residual'] = model.resid
+
+lo = lowess(hotels['price'], hotels['distance'], frac=0.3)
+lowess_line = [{"distance": float(a), "price": float(b)} for a, b in lo]
+
+hotels['bin2'] = np.where(hotels['distance'] < 2, '0–2 miles', '2+ miles')
+bin2 = hotels.groupby('bin2')['price'].agg(['mean', 'count']).reset_index()
+hotels['bin4'] = pd.cut(hotels['distance'], [0, 1, 2, 3, 7], right=False,
+                        labels=['0–1', '1–2', '2–3', '3+'])
+bin4 = hotels.groupby('bin4', observed=True)['price'].agg(['mean', 'count']).reset_index()
+bin4['bin4'] = bin4['bin4'].astype(str)
+
+deals = (hotels.nsmallest(5, 'residual')
+               [['hotel_id', 'distance', 'stars', 'rating', 'price', 'predicted', 'residual']]
+               .round(2))
+
+a, b = model.params['Intercept'], model.params['distance']
+stats = {
+    'n_raw': 428,
+    'n': int(len(hotels)),
+    'p_mean': round(float(hotels['price'].mean()), 1),
+    'p_median': round(float(hotels['price'].median()), 1),
+    'd_mean': round(float(hotels['distance'].mean()), 2),
+    'd_median': round(float(hotels['distance'].median()), 2),
+    'd_max': round(float(hotels['distance'].max()), 1),
+    'alpha': round(float(a), 2),
+    'beta': round(float(b), 2),
+    'r2': round(float(model.rsquared), 3),
+    'pred10': round(float(a + 10 * b), 1),
+    'zero_at': round(float(-a / b), 1),
+    'rating_all': round(float(hotels['rating'].mean()), 2),
+    'rating_deals': round(float(deals['rating'].mean()), 2),
+}
+
+ojs_define(
+    hotels      = hotels[['hotel_id', 'distance', 'price', 'predicted', 'residual', 'stars']].to_dict(orient='records'),
+    lowess_line = lowess_line,
+    bin2        = bin2.to_dict(orient='records'),
+    bin4        = bin4.to_dict(orient='records'),
+    deals       = deals.to_dict(orient='records'),
+    stats       = stats,
+)
+```
+
+```{ojs}
+//| output: false
+codeBox = (src) => html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.45em;line-height:1.35;
+  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;padding:8px 14px;overflow-x:auto;white-space:pre;">${src}</pre>`
+```
+
+```{ojs}
+// Same accessible-chart wrapper as every other deck: one meaningful
+// description on a role="img" container, the SVG's own per-mark labels hidden.
+function accessibleChart(node, label) {
+  node.setAttribute("aria-hidden", "true")
+  const wrapper = document.createElement("div")
+  wrapper.setAttribute("role", "img")
+  wrapper.setAttribute("aria-label", label)
+  wrapper.appendChild(node)
+  return wrapper
+}
+```
+
+```{ojs}
+fitLine = [{ distance: 0, price: stats.alpha }, { distance: stats.d_max, price: stats.alpha + stats.beta * stats.d_max }]
+```
+
+## {background-color="#1a1a2e"}
+
+::: {style="text-align: center; padding-top: 180px;"}
+[**Finding a good deal among hotels**]{style="font-size: 2.2em; color: white;"}
+
+[This week's regression tools – bin-scatter, LOWESS, OLS, residuals, R² – on one real pricing question.]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+:::
+
+## The question
+
+You're booking a hotel in Vienna for a weekday night. You want somewhere central, but you don't want to overpay.
+
+- **y** = price per night (€)
+- **x** = distance from the city centre (miles)
+
+::: {.fragment}
+A **good deal** isn't simply a cheap hotel – cheap hotels are often far out. It's a hotel that's cheap **for its location**: priced below what we'd expect, given how far it is from the centre.
+
+That "what we'd expect" is exactly what a regression gives us.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), *Data Analysis for Business, Economics, and Policy*, Ch. 7
+:::
+
+## The data: one night in Vienna
+
+- Prices scraped from a booking site for a weekday night in **November 2017** – ${stats.n_raw} accommodation prices in Vienna
+- We keep the textbook's sample: **hotels** (not apartments), actually in Vienna, **3 to 4 stars**, and no price above €600 (treated as an error)
+
+::: {.fragment}
+That leaves **${stats.n} hotels**.
+
+```{ojs}
+codeBox(`hotels = pd.read_csv(data_path)            # hotels_vienna.csv
+
+hotels = hotels[(hotels['accommodation_type'] == 'Hotel') &
+                (hotels['city_actual'] == 'Vienna') &
+                (hotels['stars'] >= 3) & (hotels['stars'] <= 4) &
+                (hotels['price'] <= 600)]
+len(hotels)                                  # 207`)
+```
+:::
+
+::: {.fragment}
+::: {.instructions-box}
+**Pause the video.** Before you see any data: how much cheaper do you think a hotel gets for each mile further from the centre?
+:::
+:::
+
+## First, each variable on its own
+
+```{ojs}
+{
+  const a = accessibleChart(Plot.plot({ height: 300, width: 520, marginLeft: 45,
+    x: { label: "Price per night (€)" }, y: { label: "Hotels" },
+    marks: [Plot.rectY(hotels, Plot.binX({ y: "count" }, { x: "price", thresholds: 25, fill: "#457b9d", inset: 1 })), Plot.ruleY([0])] }),
+    "Histogram of hotel price per night: most hotels between about 60 and 160 euros, with a long right tail up to almost 400.")
+  const b = accessibleChart(Plot.plot({ height: 300, width: 520, marginLeft: 45,
+    x: { label: "Distance from centre (miles)" }, y: { label: "Hotels" },
+    marks: [Plot.rectY(hotels, Plot.binX({ y: "count" }, { x: "distance", thresholds: 20, fill: "#2d6a4f", inset: 1 })), Plot.ruleY([0])] }),
+    "Histogram of distance from the city centre: most hotels within 2 miles, a thin tail out to about 6.6 miles.")
+  return html`<div style="display:flex;gap:30px;justify-content:center;">${a}${b}</div>`
+}
+```
+
+::: {.fragment}
+```{ojs}
+html`<ul>
+<li><strong>Price:</strong> mean €${stats.p_mean}, median €${stats.p_median} – right-skewed, a few expensive hotels pull the mean up</li>
+<li><strong>Distance:</strong> mean ${stats.d_mean} miles, median ${stats.d_median} – most hotels are central, a few are out to ${stats.d_max} miles</li>
+</ul>`
+```
+:::
+
+## Bin-scatter: the conditional mean, coarse to finer
+
+:::: {.two-col style="grid-template-columns: 1fr 1fr;"}
+::: {}
+```{ojs}
+accessibleChart(Plot.plot({
+  height: 340, width: 520, marginLeft: 50,
+  x: { label: "Distance band (miles)", domain: bin2.map(d => d.bin2) },
+  y: { label: "Mean price (€)", domain: [0, 150] },
+  marks: [
+    Plot.dot(bin2, { x: "bin2", y: "mean", r: 9, fill: "#e63946" }),
+    Plot.text(bin2, { x: "bin2", y: "mean", text: d => `€${d.mean.toFixed(0)} (n=${d.count})`, dy: -18, fontSize: 14 })
+  ]
+}), `Bin-scatter with two bins: mean price ${bin2.map(d => `${d.bin2} €${d.mean.toFixed(0)}`).join(", ")}.`)
+```
+**2 bins:** central hotels cost more, on average.
+:::
+
+::: {}
+```{ojs}
+accessibleChart(Plot.plot({
+  height: 340, width: 520, marginLeft: 50,
+  x: { label: "Distance band (miles)", domain: bin4.map(d => d.bin4) },
+  y: { label: "Mean price (€)", domain: [0, 150] },
+  marks: [
+    Plot.line(bin4, { x: "bin4", y: "mean", stroke: "#e63946", strokeOpacity: 0.4 }),
+    Plot.dot(bin4, { x: "bin4", y: "mean", r: 9, fill: "#e63946" }),
+    Plot.text(bin4, { x: "bin4", y: "mean", text: d => `€${d.mean.toFixed(0)}`, dy: -18, fontSize: 14 })
+  ]
+}), `Bin-scatter with four bins: mean price ${bin4.map(d => `${d.bin4} miles €${d.mean.toFixed(0)}`).join(", ")}. The biggest drop is between the first and second mile.`)
+```
+**4 bins:** the biggest drop is in the **first mile**, then it levels off.
+:::
+::::
+
+::: {.fragment}
+Each dot is $E[\text{price} \mid \text{distance band}]$ – the Week 3 conditional mean. More bins show more shape, but each one averages fewer hotels.
+:::
+
+## LOWESS: a smooth version
+
+```{ojs}
+accessibleChart(Plot.plot({
+  height: 360, width: 900, marginLeft: 50,
+  x: { label: "Distance from centre (miles)" }, y: { label: "Price per night (€)" },
+  marks: [
+    Plot.dot(hotels, { x: "distance", y: "price", r: 3, fill: "#457b9d", fillOpacity: 0.45 }),
+    Plot.line(lowess_line, { x: "distance", y: "price", stroke: "#e63946", strokeWidth: 3 })
+  ]
+}), "Scatterplot of price against distance with a LOWESS curve: price falls steeply over the first mile or so, then the curve flattens out.")
+```
+
+::: {.fragment}
+Same idea as the bin-scatter, but with overlapping local windows instead of fixed bins. It confirms the shape: a **steep fall close to the centre**, then much flatter.
+:::
+
+<details>
+<summary style="cursor:pointer;color:#2d6a4f;font-size:0.8em;">Show the Python code</summary>
+
+```{ojs}
+codeBox(`from statsmodels.nonparametric.smoothers_lowess import lowess
+
+# frac = share of all hotels used in each local average (the bandwidth)
+smooth = lowess(hotels['price'], hotels['distance'], frac=0.3)`)
+```
+
+</details>
+
+## The linear regression
+
+```{ojs}
+accessibleChart(Plot.plot({
+  height: 330, width: 900, marginLeft: 50,
+  x: { label: "Distance from centre (miles)" }, y: { label: "Price per night (€)" },
+  marks: [
+    Plot.dot(hotels, { x: "distance", y: "price", r: 3, fill: "#457b9d", fillOpacity: 0.45 }),
+    Plot.line(fitLine, { x: "distance", y: "price", stroke: "#1a1a2e", strokeWidth: 3 })
+  ]
+}), `Scatterplot of price against distance with the fitted OLS line, price = ${stats.alpha} ${stats.beta} times distance, sloping downward.`)
+```
+
+```{ojs}
+codeBox(`import statsmodels.formula.api as smf
+
+model = smf.ols('price ~ distance', data=hotels).fit()
+model.params          # Intercept ${stats.alpha.toFixed(2)}, distance ${stats.beta.toFixed(2)}`)
+```
+
+::: {.fragment}
+::: {.instructions-box}
+**Pause.** Put $\hat\alpha$ and $\hat\beta$ into words. What does each one say about Vienna hotels?
+:::
+:::
+
+## Reading the line
+
+```{ojs}
+html`<p style="font-family:sans-serif;font-size:1.3em;text-align:center;">predicted price = <strong>${stats.alpha.toFixed(0)}</strong> − <strong>${(-stats.beta).toFixed(1)}</strong> × distance</p>`
+```
+
+::: {.fragment}
+```{ojs}
+html`<ul>
+<li><strong>Intercept ≈ €${stats.alpha.toFixed(0)}:</strong> the predicted price of a hotel right in the city centre (distance = 0)</li>
+<li><strong>Slope ≈ ${stats.beta.toFixed(1)}:</strong> hotels <strong>1 mile further out</strong> are, on average, <strong>€${(-stats.beta).toFixed(0)} cheaper</strong> in our data</li>
+</ul>`
+```
+:::
+
+::: {.fragment}
+Note the careful wording: "on average, in our data". The slope is a **comparison** between hotels at different distances, not what would happen to one hotel's price if it moved.
+:::
+
+## Line vs. LOWESS
+
+```{ojs}
+accessibleChart(Plot.plot({
+  height: 360, width: 900, marginLeft: 50,
+  x: { label: "Distance from centre (miles)" }, y: { label: "Price per night (€)" },
+  color: { legend: true, domain: ["LOWESS", "Linear regression"], range: ["#e63946", "#1a1a2e"] },
+  marks: [
+    Plot.dot(hotels, { x: "distance", y: "price", r: 3, fill: "#457b9d", fillOpacity: 0.3 }),
+    Plot.line(lowess_line, { x: "distance", y: "price", stroke: () => "LOWESS", strokeWidth: 3 }),
+    Plot.line(fitLine, { x: "distance", y: "price", stroke: () => "Linear regression", strokeWidth: 3 })
+  ]
+}), "The LOWESS curve and the straight regression line on the same scatterplot. Near the centre LOWESS falls more steeply than the line; further out it is flatter.")
+```
+
+::: {.fragment}
+The line is an **average slope**: it misses the steep drop in the first mile and is too steep further out. Not a bad approximation overall – but next week's online session asks whether a different shape would do better.
+:::
+
+## Residuals
+
+Each hotel's **residual** is its actual price minus the price the line predicts: $e_i = y_i - \hat y_i$.
+
+```{ojs}
+accessibleChart(Plot.plot({
+  height: 280, width: 900, marginLeft: 50,
+  x: { label: "Residual (€): actual minus predicted price" }, y: { label: "Hotels" },
+  marks: [
+    Plot.rectY(hotels, Plot.binX({ y: "count" }, { x: "residual", thresholds: 30, fill: "#457b9d", inset: 1 })),
+    Plot.ruleX([0], { stroke: "#e63946", strokeWidth: 2, strokeDasharray: "4,3" }),
+    Plot.ruleY([0])
+  ]
+}), "Histogram of the regression residuals: centred on zero, mostly between minus 50 and plus 50 euros, with a few large positive residuals.")
+```
+
+::: {.fragment}
+- **Negative residual:** cheaper than its location predicts – a candidate good deal
+- **Positive residual:** more expensive than its location predicts
+- They average **exactly zero** – OLS guarantees it, as we saw in the workshop
+:::
+
+<details>
+<summary style="cursor:pointer;color:#2d6a4f;font-size:0.8em;">Show the Python code</summary>
+
+```{ojs}
+codeBox(`hotels['predicted'] = model.fittedvalues
+hotels['residual']  = model.resid           # = price - predicted`)
+```
+
+</details>
+
+## The five best deals
+
+```{ojs}
+html`<table style="width:85%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.8em;">
+  <caption class="visually-hidden">The five hotels with the most negative residuals: distance, stars, rating, actual price, predicted price and residual.</caption>
+  <thead><tr style="background:#1a1a2e;color:white;">
+    ${["Hotel id","Distance","Stars","Rating","Price","Predicted","Residual"].map(h => `<th scope="col" style="padding:7px 12px;text-align:right;">${h}</th>`).join('')}
+  </tr></thead>
+  <tbody>${deals.map(d => `<tr style="border-bottom:1px solid #eee;">
+    <td style="padding:6px 12px;text-align:right;">${d.hotel_id}</td>
+    <td style="padding:6px 12px;text-align:right;">${d.distance}</td>
+    <td style="padding:6px 12px;text-align:right;">${d.stars}</td>
+    <td style="padding:6px 12px;text-align:right;">${d.rating}</td>
+    <td style="padding:6px 12px;text-align:right;">€${d.price}</td>
+    <td style="padding:6px 12px;text-align:right;">€${d.predicted.toFixed(2)}</td>
+    <td style="padding:6px 12px;text-align:right;color:#e63946;font-weight:700;">${d.residual.toFixed(2)}</td></tr>`).join('')}</tbody>
+</table>`
+```
+
+```{ojs}
+codeBox(`hotels.nsmallest(5, 'residual')[['hotel_id', 'distance', 'stars', 'rating',
+                                    'price', 'predicted', 'residual']]`)
+```
+
+::: {.fragment}
+All five sit about a mile from the centre and cost €50–60 less than the line predicts. The textbook's own list, reproduced exactly. But remember: this line only knows about **distance**.
+:::
+
+## How good is the fit?
+
+```{ojs}
+html`<p style="font-family:sans-serif;font-size:1.1em;text-align:center;margin-top:30px;">R² = <strong style="color:#e63946;font-size:1.4em;">${stats.r2.toFixed(2)}</strong></p>`
+```
+
+::: {.fragment}
+```{ojs}
+html`<ul>
+<li>Distance explains about <strong>${(stats.r2*100).toFixed(0)}%</strong> of the variation in hotel prices; the other <strong>${(100 - stats.r2*100).toFixed(0)}%</strong> is left unexplained</li>
+<li>For a single x variable in cross-section data, that's not unusual</li>
+<li>And it's still the <strong>best-fitting line</strong> – no other straight line does better</li>
+</ul>`
+```
+:::
+
+::: {.fragment}
+For finding deals, R² isn't the point: we only need the line to give a sensible *benchmark* for each location. But 84% unexplained is a warning that plenty besides distance drives price.
+:::
+
+## Interpolation vs. extrapolation
+
+The furthest hotel in our sample is ${stats.d_max} miles from the centre.
+
+::: {.fragment}
+::: {.instructions-box}
+**Pause.** Use the line to predict the price of a hotel **10 miles** out. Would you trust the answer?
+:::
+:::
+
+::: {.fragment}
+```{ojs}
+html`<p style="font-family:sans-serif;font-size:1.05em;">${stats.alpha.toFixed(2)} + (${stats.beta.toFixed(2)} × 10) = <strong style="color:#e63946;font-size:1.25em;">€${stats.pred10.toFixed(0)}</strong></p>`
+```
+
+A **negative** price. The line hits zero at about ${stats.zero_at} miles, well beyond our data. Predicting inside the range of x we observed is **interpolation**; outside it is **extrapolation**, and nothing in the data tells us the pattern carries on.
+:::
+
+## Is it causal?
+
+The slope is ${stats.beta.toFixed(1)}. Does being further out **cause** a hotel to be cheaper?
+
+::: {.fragment}
+- **Partly, plausibly:** guests pay for location, so central rooms command a premium
+- **But other things differ with distance too:** central hotels may be newer, bigger, better rated or more often 4-star
+:::
+
+::: {.fragment}
+So the slope mixes the effect of location with everything else that comes with it. For **finding a deal** that's fine – we only want a benchmark. For **answering "what if this hotel moved?"** it isn't, and Week 6 shows how to start holding other things fixed.
+:::
+
+## Bring to the Q&A
+
+::: {.instructions-box}
+1. Before booking one of the five "best deals", what else would you want to know about it? Check its rating against the sample average.
+2. Which hotel has the **largest positive** residual? Is it really overpriced, or could something else explain it?
+3. The line predicts a negative price at 10 miles. Where exactly did it go wrong, and what would you do instead?
+4. R² is only 0.16. Does that make this regression useless for finding deals?
+5. Fit the same regression separately for 3-star and 4-star hotels. Does your list of best deals change?
+:::
+
+## Coming up: Week 5
+
+::: {style="text-align: center; padding-top: 60px;"}
+[We can fit a line and read it.]{style="font-size: 1.3em;"}
+
+[Next: is a straight line the right **shape**, and how sure can we be about $\hat\beta$?]{style="font-size: 1.3em; padding-top: 20px; display:block;"}
+
+[**Model problems & inference**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
+
+::: {.fragment style="padding-top:40px;"}
+*Next week's online session comes back to these same Vienna hotels – this time with logs.*
+:::
+:::

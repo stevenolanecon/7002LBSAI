@@ -1,7 +1,6 @@
 ---
 title: "Simple Regression: The OLS Estimator"
 subtitle: "7002LBSAI Research Methods in Analytics — Week 4"
-search: false
 format:
   revealjs:
     theme: simple
@@ -27,16 +26,18 @@ execute:
 import pandas as pd
 import numpy as np
 
-# This is the TEST-DATA deck — always reads the synthetic placeholder, never
-# the live Google Sheet. See week4-live.qmd for the in-class version.
-df = pd.read_csv("data/synthetic_reaction_times.csv")
-# df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIOZ03GpUJgqvGVmI9cih169mMq0ajLMj6a0VTd2tytB3K5BmX5AUiKQ8FKIL6KUKEcgb-1LR-1eM/pub?gid=0&single=true&output=csv")
+# Real class data: the cleaned Week 1 trials with Week 3's corrected finger
+# lengths (the five cm/extra-digit typos students found and imputed in the
+# Week 3 workshop). Single deck -- this used to be week4.qmd (synthetic) +
+# week4-live.qmd (raw live Google Sheet); merged once real data existed, same
+# as Weeks 2 and 3 (see CLAUDE.md's "Single deck per week" entry). The raw
+# sheet must not be used here: its uncorrected finger_mm values would drive
+# every finger-length regression in this deck.
+df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week3_reaction_times.csv")
 
 if 'name' in df.columns and 'student_name' not in df.columns:
     df = df.rename(columns={'name': 'student_name'})
-if 'finger_mm' not in df.columns:
-    df['finger_mm'] = None
-df['finger_mm'] = pd.to_numeric(df['finger_mm'], errors='coerce')
+df['finger_mm'] = pd.to_numeric(df['finger_length_corrected'], errors='coerce')
 
 student_summary = (
     df.groupby('student_name')
@@ -54,8 +55,8 @@ device_stats = (
 
 trial_data = df[['reaction_time_ms', 'finger_mm', 'device']].copy()
 
-# Homo/heteroskedasticity, made concrete in the natural y-vs-x space before
-# "residual" is even formally introduced two slides later. Generic
+# Homo/heteroskedasticity, shown both in y-vs-x space and as residuals
+# (residuals are now defined earlier, before "Why this particular line?"). Generic
 # illustration, not our own class data (too few points at n=15-20 to show a
 # convincing fan pattern) — same generating process Week 5's residual-space
 # version of this same illustration reuses, so it's recognisably "the same
@@ -81,6 +82,22 @@ hetero_scatter_data = [{"x": float(_x_hsk[i]), "y": float(_y_hetero[i])} for i i
 homo_fit_line = [{"x": 0.0, "y": float(_a_homo)}, {"x": 10.0, "y": float(_a_homo + _b_homo * 10)}]
 hetero_fit_line = [{"x": 0.0, "y": float(_a_hetero)}, {"x": 10.0, "y": float(_a_hetero + _b_hetero * 10)}]
 
+# The SAME simulated "hours awake" class Week 3 used for "What a clear
+# relationship looks like" (seed 3, identical generating code), brought back
+# so students see a fitted line through a tight relationship right after our
+# own weak finger-length one. Fit: 264.41 + 13.65 x hours awake, R^2 0.79.
+_rng_awake = np.random.default_rng(3)
+_awake_h = np.round(_rng_awake.uniform(2, 18, 24), 1)
+_awake_y = np.round(260 + 14 * _awake_h + _rng_awake.normal(0, 30, 24), 0)
+awake_data = [{'hours_awake': float(x), 'reaction_time_ms': float(y)} for x, y in zip(_awake_h, _awake_y)]
+_awake_b = float(np.cov(_awake_h, _awake_y)[0, 1] / _awake_h.var(ddof=1))
+_awake_a = float(_awake_y.mean() - _awake_b * _awake_h.mean())
+awake_fit = {
+    'alpha': _awake_a, 'beta': _awake_b,
+    'r2': float(np.corrcoef(_awake_h, _awake_y)[0, 1] ** 2),
+    'x_min': float(_awake_h.min()), 'x_max': float(_awake_h.max()),
+}
+
 # NaN is not valid JSON — clean before ojs_define
 student_summary_clean = student_summary.astype(object).where(student_summary.notna(), None)
 device_stats_clean = device_stats.astype(object).where(device_stats.notna(), None)
@@ -94,6 +111,8 @@ ojs_define(
     hetero_scatter_data = hetero_scatter_data,
     homo_fit_line       = homo_fit_line,
     hetero_fit_line     = hetero_fit_line,
+    awake_data          = awake_data,
+    awake_fit           = awake_fit,
 )
 ```
 
@@ -374,6 +393,53 @@ In your own words: what does the intercept mean here? What does the slope mean? 
 ```
 :::
 
+## A tighter example: hours awake {.smaller}
+
+Week 3's simulated class of 24 again: hours awake before the test vs. mean reaction time – same method, a much tighter relationship.
+
+:::: {.shrink-on-reveal data-frag="wk4-awake-frag" style="--large-height:460px;--small-height:330px;--shrink-scale:0.7174;"}
+::: {.shrink-on-reveal-inner}
+```{ojs}
+{
+  const f = awake_fit
+  // x-axis starts at 0 so the intercept is visible where the line meets the
+  // y-axis; dashed beyond the data (0 to x_min), solid across the observed range.
+  const xMax = Math.ceil(f.x_max) + 1
+  const line = [f.x_min, f.x_max].map(x => ({ x, y: f.alpha + f.beta * x }))
+  const ext = [0, f.x_min].map(x => ({ x, y: f.alpha + f.beta * x }))
+  return Plot.plot({
+    height: 460, width: 900, marginLeft: 60,
+    x: { label: "Hours awake before the test", domain: [0, xMax] },
+    y: { label: "Mean reaction time (ms)", domain: [Math.floor((f.alpha - 30) / 20) * 20, Math.ceil((d3.max(awake_data, d => d.reaction_time_ms) + 10) / 20) * 20] },
+    marks: [
+      Plot.ruleX([0], { stroke: "#1a1a2e" }),
+      Plot.dot(awake_data, { x: "hours_awake", y: "reaction_time_ms", fill: "#2d6a4f", r: 6, fillOpacity: 0.85 }),
+      Plot.line(ext, { x: "x", y: "y", stroke: "#e63946", strokeWidth: 2.5, strokeDasharray: "6,4" }),
+      Plot.line(line, { x: "x", y: "y", stroke: "#e63946", strokeWidth: 2.5 }),
+      Plot.dot([{ x: 0, y: f.alpha }], { x: "x", y: "y", fill: "#e63946", r: 7 }),
+      Plot.text([{ x: 0, y: f.alpha }], { x: "x", y: "y", text: () => `α̂ = ${f.alpha.toFixed(1)}`, dx: 14, dy: 12, textAnchor: "start", fontSize: 15, fill: "#e63946", fontWeight: 700 }),
+      Plot.text([`ŷ = ${f.alpha.toFixed(1)} + ${f.beta.toFixed(2)} × hours awake`], { frameAnchor: "top-left", dx: 10, dy: 10, fontSize: 18, fill: "#e63946", fontWeight: 700 }),
+    ]
+  })
+}
+```
+:::
+::::
+
+::: {.fragment #wk4-awake-frag}
+```{ojs}
+html`<ul>
+<li><strong>β̂ = ${awake_fit.beta.toFixed(2)}:</strong> students who had been awake one hour longer were, on average, about <strong>${awake_fit.beta.toFixed(0)} ms slower</strong>.</li>
+<li><strong>α̂ = ${awake_fit.alpha.toFixed(1)}:</strong> the predicted reaction time at 0 hours awake. Nobody in the data was tested straight out of bed (the minimum is ${awake_fit.x_min} hours), so this anchors the line rather than describing anyone we observed.</li>
+<li>The points sit close to the line – compare how scattered our finger-length data were around theirs. We'll put a number on that difference shortly.</li>
+</ul>`
+```
+:::
+
+::: {style="font-size:0.75em;color:#999;"}
+Simulated data, for illustration – not our class.
+:::
+
 ## Regression on a binary x
 
 Simplest case: x is 0/1 — like device (Laptop = 0, Phone = 1).
@@ -458,7 +524,36 @@ Every point's rectangle, from the (x̄, ȳ) crosshair to the point, has area $(x
 
 ## Var[x] is the same idea, applied to x alone
 
-$Var[x] = Cov[x,x]$ — the identical rectangle idea, but pairing x with itself. Since a number times itself is never negative, every "rectangle" is the same colour: **Var[x] is always positive**, a pure measure of x's own spread.
+$Var[x] = Cov[x,x]$ — the identical rectangle idea, but pairing x with itself. Plot finger length against *itself* and every point sits on the diagonal, so every rectangle is a **square** with area $(x_i-\bar x)^2$:
+
+:::: {.shrink-on-reveal data-frag="wk4-varx-frag" style="--large-height:440px;--small-height:270px;--shrink-scale:0.6136;"}
+::: {.shrink-on-reveal-inner}
+```{ojs}
+{
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) return html`<p style="color:#aaa;">Not enough data yet.</p>`
+  const xbar = d3.mean(rows, d => d.finger_mm)
+  const sq = rows.map(d => ({ x1: Math.min(xbar, d.finger_mm), x2: Math.max(xbar, d.finger_mm),
+                              y1: Math.min(xbar, d.finger_mm), y2: Math.max(xbar, d.finger_mm) }))
+  const dom = d3.extent(rows, d => d.finger_mm)
+  return Plot.plot({
+    height: 440, width: 440, marginLeft: 60,
+    x: { label: "Finger length (mm)", domain: dom }, y: { label: "Finger length (mm)", domain: dom },
+    marks: [
+      Plot.rect(sq, { x1: "x1", x2: "x2", y1: "y1", y2: "y2", fill: "#457b9d", fillOpacity: 0.18, stroke: "#457b9d", strokeOpacity: 0.5 }),
+      Plot.ruleX([xbar], { stroke: "#1a1a2e", strokeDasharray: "4,3" }),
+      Plot.ruleY([xbar], { stroke: "#1a1a2e", strokeDasharray: "4,3" }),
+      Plot.dot(rows, { x: "finger_mm", y: "finger_mm", fill: "#1a1a2e", r: 4 }),
+    ]
+  })
+}
+```
+:::
+::::
+
+::: {.fragment #wk4-varx-frag}
+No red squares: a number times itself is never negative, so **Var[x] is always positive** — a pure measure of x's own spread. Students far from the average finger length contribute big squares; students near it barely register.
+:::
 
 ::: {.fragment}
 $\hat\beta$ = (net signed area between x and y) ÷ (x's own spread) — literally, how much x and y move together, **relative to how much x moves on its own**.
@@ -466,7 +561,7 @@ $\hat\beta$ = (net signed area between x and y) ÷ (x's own spread) — literall
 
 ## Why divide by Var[x] at all?
 
-Imagine measuring finger length in different units (mm → cm is ×0.1). Cov[x,y] and Var[x] would both change, a lot — but should the slope itself?
+Imagine measuring finger length in centimetres instead of millimetres (×0.1). What *should* happen to the slope? A slope is "ms **per unit of x**", so ms per cm should be exactly 10 times ms per mm — no more, no less.
 
 ```{ojs}
 viewof xscale = {
@@ -502,18 +597,63 @@ viewof xscale = {
     <p>Cov[x,y] = <strong style="color:#457b9d;">${cov.toFixed(1)}</strong>
        &nbsp;·&nbsp; Var[x] = <strong style="color:#457b9d;">${varx.toFixed(1)}</strong>
        &nbsp;·&nbsp; β̂ = <strong style="color:#e63946;">${beta.toFixed(3)}</strong></p>
-    <p style="color:#666;font-size:0.9em;">β̂ × scale factor ≈ <strong>${(beta * xscale).toFixed(2)}</strong> — the same number every time, in the original mm units.</p>
+    <p style="color:#666;font-size:0.9em;">β̂ changes because the <em>unit</em> of x changed. Convert it back to ms per original mm (β̂ × ${xscale.toFixed(1)}) and you get <strong>${(beta * xscale).toFixed(2)}</strong> every time.</p>
   </div>`
 }
 ```
 
 ::: {.fragment}
-The *slope expressed per original mm* doesn't change. **That's the whole point of dividing by Var[x]** — without it, "the slope" would depend on which ruler you happened to use.
+Move the slider and watch the three numbers. Cov[x,y] scales by the same factor as x, Var[x] by its square, so β̂ = Cov/Var scales by **1 ÷ factor** — exactly what a per-unit slope should do. Cov[x,y] on its own moves the *wrong way* (cm would give a smaller number, not a 10× bigger one) and is in ms × mm, not ms per mm. **Dividing by Var[x] turns a measure of co-movement into a rate: ms per unit of x.**
+:::
+
+## Fitted values and residuals {.smaller}
+
+$$\hat y_i = \hat\alpha + \hat\beta x_i \qquad e_i = y_i - \hat y_i$$
+
+- The **residual** is the vertical distance between a point and the regression line
+- Positive above the line, negative below
+- Residuals from an OLS fit always sum to zero — the line "balances" through the data
+- A direct consequence: average $\hat y$ equals average $y$
+
+```{ojs}
+{
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) return html`<p style="color:#aaa;">Not enough data yet.</p>`
+  const xbar = d3.mean(rows, d => d.finger_mm), ybar = d3.mean(rows, d => d.mean_rt)
+  const cov = d3.mean(rows, d => (d.finger_mm - xbar) * (d.mean_rt - ybar))
+  const varx = d3.mean(rows, d => (d.finger_mm - xbar) ** 2)
+  const beta = cov / varx
+  const alpha = ybar - beta * xbar
+  const segments = rows.map(d => {
+    const yhat = alpha + beta * d.finger_mm
+    return { x: d.finger_mm, y1: d.mean_rt, y2: yhat, sign: d.mean_rt >= yhat ? "positive residual (above line)" : "negative residual (below line)" }
+  })
+  const xExtent = d3.extent(rows, d => d.finger_mm)
+  const fitLine = xExtent.map(x => ({ finger_mm: x, fit: alpha + beta * x }))
+  return Plot.plot({
+    height: 220, marginLeft: 60,
+    x: { label: "Finger length (mm)" }, y: { label: "Reaction time (ms)" },
+    color: { legend: true, domain: ["positive residual (above line)", "negative residual (below line)"], range: ["#457b9d", "#e63946"] },
+    marks: [
+      Plot.line(fitLine, { x: "finger_mm", y: "fit", stroke: "#1a1a2e", strokeWidth: 2 }),
+      Plot.link(segments, { x1: "x", y1: "y1", x2: "x", y2: "y2", stroke: "sign", strokeWidth: 1.5, strokeDasharray: "3,2" }),
+      Plot.dot(rows, { x: "finger_mm", y: "mean_rt", fill: "#1a1a2e", r: 4 }),
+    ]
+  })
+}
+```
+
+::: {style="font-size:0.65em;color:#999;"}
+Each dashed segment is one student's residual — the gap between their actual mean reaction time and the line's prediction for their finger length.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 7
 :::
 
 ## Why this particular line?
 
-The **residual** for an observation is the gap between its actual y and what a candidate line predicts: $y_i - (\alpha + \beta x_i)$. OLS chooses $\hat\alpha, \hat\beta$ to **minimise the sum of squared residuals**:
+Any *candidate* line, with any $\alpha$ and $\beta$, leaves a residual for every observation: $y_i - (\alpha + \beta x_i)$. OLS chooses $\hat\alpha, \hat\beta$ to **minimise the sum of squared residuals**:
 
 $$\min_{\alpha,\beta} \sum_{i=1}^n (y_i - \alpha - \beta x_i)^2$$
 
@@ -524,12 +664,27 @@ Solving this with calculus gives exactly the Cov/Var formula — we won't derive
 ## Finding the bottom of the bowl
 
 ```{ojs}
+// Slider range is set from the data: the OLS slope sits well inside it,
+// whatever units/scale the class data turn out to have (a fixed -6..6 range
+// couldn't reach the real slope of ~18.6 ms/mm).
+bowlRange = {
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) return { lo: -6, hi: 6, step: 0.1 }
+  const xbar = d3.mean(rows, d => d.finger_mm), ybar = d3.mean(rows, d => d.mean_rt)
+  const b = d3.mean(rows, d => (d.finger_mm - xbar) * (d.mean_rt - ybar)) / d3.mean(rows, d => (d.finger_mm - xbar) ** 2)
+  const k = Math.max(5, 1.5 * Math.abs(b))
+  const step = k > 20 ? 0.5 : 0.1
+  return { lo: Math.floor(Math.min(0, b - k)), hi: Math.ceil(Math.max(0, b + k)), step }
+}
+```
+
+```{ojs}
 viewof beta_try = {
   const f = html`<div style="display:flex;align-items:center;gap:14px;font-size:13px;
                               font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;">
     <span style="color:#666;white-space:nowrap;">Try a slope</span>
-    <input type="range" min="-6" max="6" step="0.1" value="0"
-           style="width:200px;cursor:pointer;accent-color:#e63946;">
+    <input type="range" min="${bowlRange.lo}" max="${bowlRange.hi}" step="${bowlRange.step}" value="0"
+           style="width:320px;cursor:pointer;accent-color:#e63946;">
     <span id="bt-label" style="font-weight:700;min-width:40px;color:#e63946;">0.0</span>
   </div>`
   const slider = f.querySelector('input')
@@ -558,8 +713,7 @@ viewof beta_try = {
     const a = ybar - b * xbar
     return d3.sum(rows, d => (d.mean_rt - (a + b * d.finger_mm)) ** 2)
   }
-  const lo = Math.min(-6, trueBeta - 4), hi = Math.max(6, trueBeta + 4)
-  const curve = d3.range(lo, hi, 0.1).map(b => ({ b, ssr: ssrFor(b) }))
+  const curve = d3.range(bowlRange.lo, bowlRange.hi + bowlRange.step, bowlRange.step).map(b => ({ b, ssr: ssrFor(b) }))
   const alphaTry = ybar - beta_try * xbar
 
   const bowl = Plot.plot({
@@ -627,7 +781,7 @@ These five are what **BLUE** requires — Gauss-Markov doesn't care what shape t
 {
   const trials = trial_data.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
   const rows   = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
-  return html`<p><strong>Independence, concretely:</strong> this is exactly why our own regression uses one row per <strong>student</strong> (${rows.length} observations, the dark dots two slides ago), not one row per <strong>trial</strong> (${trials.length} rows). A student's own trials aren't independent of each other — they share whatever made that student fast or slow that session. Treating every trial as a separate observation would overstate how much genuinely independent information we have.</p>`
+  return html`<p><strong>Independence, concretely:</strong> this is exactly why our own regression uses one row per <strong>student</strong> (${rows.length} observations, one dot per student in our fitted-line charts), not one row per <strong>trial</strong> (${trials.length} rows). A student's own trials aren't independent of each other — they share whatever made that student fast or slow that session. Treating every trial as a separate observation would overstate how much genuinely independent information we have.</p>`
 }
 ```
 
@@ -636,39 +790,49 @@ These five are what **BLUE** requires — Gauss-Markov doesn't care what shape t
 :::
 
 ::: {.fragment}
-None of these make OLS *wrong* if violated — but they change how much you should trust the standard errors and the line's precision. Homoskedasticity in particular gets a full treatment next week, when we build confidence intervals for $\hat\beta$ itself. **No extreme influence** — the fourth assumption — gets its own live demonstration later this session, in "Influential observations." One assumption doesn't even make this list: whether the residuals are normally distributed. It isn't a BLUE requirement, so its absence can't bias $\hat\beta$ — but it matters for the confidence intervals and t-tests we build starting next week.
+None of these make OLS *wrong* if violated — but they change how much you should trust the standard errors and the line's precision. Homoskedasticity in particular gets a full treatment next week, when we build confidence intervals for $\hat\beta$ itself. **No extreme influence** — the fourth assumption — gets its own live demonstration next week, when we look at extreme values and influence. One assumption doesn't even make this list: whether the residuals are normally distributed. It isn't a BLUE requirement, so its absence can't bias $\hat\beta$ — but it matters for the confidence intervals and t-tests we build starting next week.
 :::
 
-## Homoskedastic vs. heteroskedastic, in the raw data
+## Homoskedastic vs. heteroskedastic, in the raw data {.smaller}
 
-Same generic illustration, two different noise patterns:
+Same generic illustration, two different noise patterns. Top: the data and the fitted line. Bottom: each point's **residual**.
 
-:::: {.shrink-on-reveal data-frag="wk4-hsk-frag" style="--large-height:470px;--small-height:280px;--shrink-scale:0.596;"}
-::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   const allY = [...homo_scatter_data, ...hetero_scatter_data].map(d => d.y)
   const yDomain = [d3.min(allY) - 2, d3.max(allY) + 2]
+  const resid = (data, fitLine) => {
+    const b = (fitLine[1].y - fitLine[0].y) / (fitLine[1].x - fitLine[0].x), a = fitLine[0].y - b * fitLine[0].x
+    return data.map(d => ({ x: d.x, e: d.y - (a + b * d.x) }))
+  }
+  const rH = resid(homo_scatter_data, homo_fit_line), rX = resid(hetero_scatter_data, hetero_fit_line)
+  const eMax = d3.max([...rH, ...rX], d => Math.abs(d.e)) + 1
   const mkPanel = (data, fitLine) => Plot.plot({
-    width: 340, height: 470,
+    width: 360, height: 230, marginLeft: 45,
     x: {label: "x"}, y: {label: "y", domain: yDomain},
     marks: [
       Plot.dot(data, {x: "x", y: "y", fill: "#457b9d", fillOpacity: 0.55, r: 3}),
       Plot.line(fitLine, {x: "x", y: "y", stroke: "#e63946", strokeWidth: 2.5}),
     ]
   })
-  const label = (text) => html`<div style="text-align:center;font-family:'Helvetica Neue',sans-serif;font-weight:600;color:#1a1a2e;margin-bottom:4px;">${text}</div>`
-  return html`<div style="display:flex;gap:20px;justify-content:center;">
-    <div>${label("Homoskedastic")}${mkPanel(homo_scatter_data, homo_fit_line)}</div>
-    <div>${label("Heteroskedastic")}${mkPanel(hetero_scatter_data, hetero_fit_line)}</div>
+  const mkResid = (r) => Plot.plot({
+    width: 360, height: 160, marginLeft: 45,
+    x: {label: "x"}, y: {label: "residual", domain: [-eMax, eMax]},
+    marks: [
+      Plot.ruleY([0], {stroke: "#e63946", strokeWidth: 1.5}),
+      Plot.dot(r, {x: "x", y: "e", fill: "#2d6a4f", fillOpacity: 0.55, r: 3}),
+    ]
+  })
+  const label = (text) => html`<div style="text-align:center;font-family:'Helvetica Neue',sans-serif;font-weight:600;color:#1a1a2e;margin-bottom:2px;">${text}</div>`
+  return html`<div style="display:flex;gap:30px;justify-content:center;">
+    <div>${label("Homoskedastic")}${mkPanel(homo_scatter_data, homo_fit_line)}<div style="height:28px;"></div>${mkResid(rH)}</div>
+    <div>${label("Heteroskedastic")}${mkPanel(hetero_scatter_data, hetero_fit_line)}<div style="height:28px;"></div>${mkResid(rX)}</div>
   </div>`
 }
 ```
-:::
-::::
 
-::: {.fragment #wk4-hsk-frag}
-Left: the vertical scatter around the fitted line stays roughly the same width from low x to high x. Right: same fitted line, same overall trend — but the scatter visibly fans out as x grows. That fan is exactly what "the spread of residuals isn't constant" means.
+::: {.fragment}
+Left: the residuals form an even band around zero, the same width at every x. Right: same fitted line, same trend — but the band of residuals **fans out** as x grows. That fan is exactly what "the spread of residuals isn't constant" means.
 :::
 
 ---
@@ -676,51 +840,6 @@ Left: the vertical scatter around the fitted line stays roughly the same width f
 ## Prediction and residuals
 
 ---
-
-## Fitted values and residuals {.smaller}
-
-$$\hat y_i = \hat\alpha + \hat\beta x_i \qquad e_i = y_i - \hat y_i$$
-
-- The **residual** is the vertical distance between a point and the regression line
-- Positive above the line, negative below
-- Residuals from an OLS fit always sum to zero — the line "balances" through the data
-- A direct consequence: average $\hat y$ equals average $y$
-
-```{ojs}
-{
-  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
-  if (rows.length < 3) return html`<p style="color:#aaa;">Not enough data yet.</p>`
-  const xbar = d3.mean(rows, d => d.finger_mm), ybar = d3.mean(rows, d => d.mean_rt)
-  const cov = d3.mean(rows, d => (d.finger_mm - xbar) * (d.mean_rt - ybar))
-  const varx = d3.mean(rows, d => (d.finger_mm - xbar) ** 2)
-  const beta = cov / varx
-  const alpha = ybar - beta * xbar
-  const segments = rows.map(d => {
-    const yhat = alpha + beta * d.finger_mm
-    return { x: d.finger_mm, y1: d.mean_rt, y2: yhat, sign: d.mean_rt >= yhat ? "positive residual (above line)" : "negative residual (below line)" }
-  })
-  const xExtent = d3.extent(rows, d => d.finger_mm)
-  const fitLine = xExtent.map(x => ({ finger_mm: x, fit: alpha + beta * x }))
-  return Plot.plot({
-    height: 220, marginLeft: 60,
-    x: { label: "Finger length (mm)" }, y: { label: "Reaction time (ms)" },
-    color: { legend: true, domain: ["positive residual (above line)", "negative residual (below line)"], range: ["#457b9d", "#e63946"] },
-    marks: [
-      Plot.line(fitLine, { x: "finger_mm", y: "fit", stroke: "#1a1a2e", strokeWidth: 2 }),
-      Plot.link(segments, { x1: "x", y1: "y1", x2: "x", y2: "y2", stroke: "sign", strokeWidth: 1.5, strokeDasharray: "3,2" }),
-      Plot.dot(rows, { x: "finger_mm", y: "mean_rt", fill: "#1a1a2e", r: 4 }),
-    ]
-  })
-}
-```
-
-::: {style="font-size:0.65em;color:#999;"}
-Each dashed segment is one student's residual — the gap between their actual mean reaction time and the line's prediction for their finger length.
-:::
-
-::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
-Source: Békés & Kézdi (2021), Ch. 7
-:::
 
 ## Checking it on our own data
 
@@ -778,10 +897,34 @@ print(
 Not a coincidence — it's a mathematical property of how OLS fits the line. It's true by construction, for *any* data.
 :::
 
-## Interpolation vs. extrapolation
+## Task — interpolation vs. extrapolation {.smaller}
 
 ::: {.instructions-box}
-Using the fitted line: predict the mean reaction time for a finger length *within* the range we observed, then for one *far outside* it (e.g. 40mm or 110mm).
+In the Colab notebook, use your fitted `model` to predict mean reaction time for three finger lengths: **80mm**, **40mm** and **20mm**. The shape of the syntax, with generic names – swap in the real column name and values:
+
+```python
+new = pd.DataFrame({'x': [value1, value2, value3]})
+model.predict(new)
+```
+
+Then check the shortest and longest finger in our data (`student_summary['finger_mm'].min()` and `.max()`). Which of your three predictions would you trust, and why?
+:::
+
+::: {.fragment}
+```{ojs}
+{
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) return html`<p style="color:#aaa;">Not enough data yet.</p>`
+  const xbar = d3.mean(rows, d => d.finger_mm), ybar = d3.mean(rows, d => d.mean_rt)
+  const beta = d3.mean(rows, d => (d.finger_mm - xbar) * (d.mean_rt - ybar)) / d3.mean(rows, d => (d.finger_mm - xbar) ** 2)
+  const alpha = ybar - beta * xbar
+  const [lo, hi] = d3.extent(rows, d => d.finger_mm)
+  const pred = x => alpha + beta * x
+  return html`<p style="font-family:sans-serif;">Our data run from <strong>${lo}mm</strong> to <strong>${hi}mm</strong>.
+    80mm → <strong>${pred(80).toFixed(0)} ms</strong> &nbsp;·&nbsp; 40mm → <strong>${pred(40).toFixed(0)} ms</strong> &nbsp;·&nbsp; 20mm → <strong style="color:#e63946;">${pred(20).toFixed(0)} ms</strong>.
+    ${pred(20) < 0 ? html`The line hits zero at about <strong>${(-alpha / beta).toFixed(0)}mm</strong>: a negative reaction time, which is impossible.` : ''}</p>`
+}
+```
 :::
 
 ::: {.fragment}
@@ -809,11 +952,15 @@ $$Var[y] = Var[\hat y] + Var[e]$$
 ## R-squared
 
 
-You'll also see this written as **sums of squares** rather than variances — same identity, just without dividing by $n$. Software output (statsmodels, R, Excel) almost always uses this version:
+You'll also see this written as **sums of squares** rather than variances — same identity, just without dividing by $n$. Software output (e.g. Excel's regression table) usually uses this version:
 
 $$\underbrace{\textstyle\sum(y_i-\bar y)^2}_{TSS} \;=\; \underbrace{\textstyle\sum(\hat y_i-\bar y)^2}_{ESS} \;+\; \underbrace{\textstyle\sum e_i^2}_{RSS} \qquad R^2 = \frac{ESS}{TSS} = 1 - \frac{RSS}{TSS}$$
 
 **TSS** (total), **ESS** (explained), **RSS** (residual) — watch out, some textbooks swap the last two labels (calling the residual part "SSE"). Check what a given source means before trusting the letters alone.
+
+::: {.fragment}
+**In statsmodels:** the summary table only reports R², not the sums of squares, but a fitted model stores all three: `model.centered_tss` (TSS), `model.ess` (ESS) and `model.ssr` (RSS). Note the trap: statsmodels' **`ssr` is the *residual* sum of squares**, where some textbooks use SSR for the *regression* (explained) part. Check: `model.ess / model.centered_tss` equals `model.rsquared`.
+:::
 
 
 ## Task — compute our own R²
@@ -844,11 +991,9 @@ Open the Colab notebook and fit `mean_rt ~ finger_mm` on the class's own data wi
 That number **is the answer to the HR question.** R² and correlation are directly linked for simple regression ($R^2 = Corr[x,y]^2$) — whatever finger length's correlation with reaction time turned out to be for our class, this is exactly what it's worth as a predictor. The formula exists; whether it's *useful* is a separate question.
 :::
 
-## Same task, in Python
+## R² task — model answer
 
-::: {.fragment}
-Not everything on this slide will make sense yet — `smf.ols`, `.fittedvalues`, and the rest of this get unpacked properly over the next few weeks. For now, just see that real Python code, run on the class's own data, gets you to the same place as the by-hand version:
-:::
+One way to write it – compare with your own notebook:
 
 ```python
 import statsmodels.formula.api as smf
@@ -882,8 +1027,47 @@ print(
 )
 ```
 
-::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
-Same `smf.ols(...)` syntax as "Doing this in Python" later this session — you'll see this pattern again and again from here on.
+::: {.fragment}
+Check: `model.rsquared` gives the same number directly.
+:::
+
+## Same method, very different R²
+
+```{ojs}
+{
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) return html`<p style="color:#aaa;">Not enough data yet.</p>`
+  const fit = (data, xk, yk) => {
+    const xb = d3.mean(data, d => d[xk]), yb = d3.mean(data, d => d[yk])
+    const b = d3.mean(data, d => (d[xk] - xb) * (d[yk] - yb)) / d3.mean(data, d => (d[xk] - xb) ** 2)
+    const a = yb - b * xb
+    const r2 = d3.mean(data, d => (a + b * d[xk] - yb) ** 2) / d3.mean(data, d => (d[yk] - yb) ** 2)
+    return { a, b, r2 }
+  }
+  const panel = (data, xk, yk, xlab, colour, title) => {
+    const f = fit(data, xk, yk)
+    const ext = d3.extent(data, d => d[xk])
+    const line = ext.map(x => ({ x, y: f.a + f.b * x }))
+    return html`<div><div style="text-align:center;font-family:'Helvetica Neue',sans-serif;font-weight:600;color:#1a1a2e;">${title}</div>
+      ${Plot.plot({
+        width: 520, height: 380, marginLeft: 60,
+        x: { label: xlab }, y: { label: "Mean reaction time (ms)" },
+        marks: [
+          Plot.dot(data, { x: xk, y: yk, fill: colour, r: 5, fillOpacity: 0.85 }),
+          Plot.line(line, { x: "x", y: "y", stroke: "#e63946", strokeWidth: 2.5 }),
+          Plot.text([`R² = ${f.r2.toFixed(2)}`], { frameAnchor: "top-left", dx: 10, dy: 6, fontSize: 22, fontWeight: 700, fill: "#e63946" })
+        ]
+      })}</div>`
+  }
+  return html`<div style="display:flex;gap:30px;justify-content:center;">
+    ${panel(rows, "finger_mm", "mean_rt", "Finger length (mm)", "#1a1a2e", "Our class: finger length")}
+    ${panel(awake_data, "hours_awake", "reaction_time_ms", "Hours awake before the test", "#2d6a4f", "Simulated class: hours awake")}
+  </div>`
+}
+```
+
+::: {.fragment}
+Both lines are the best-fitting line OLS can find. R² tells us how much of the variation in reaction time each line accounts for: almost none for finger length, most of it for hours awake. A low R² isn't a mistake in the fit – it says x carries little information about y.
 :::
 
 ---
@@ -904,7 +1088,7 @@ $\hat\alpha$ = average y when x = 0 (average reaction time on Laptop). $\hat\bet
 
 :::: {.fragment}
 ::: {.instructions-box}
-**Task (Python or Excel)** — confirm it directly: compute the average reaction time separately for the Phone and Laptop groups from the class data — in Excel, or with `df.groupby('device')['reaction_time_ms'].mean()` in Python — then check they match $\hat\alpha$ and $\hat\alpha + \hat\beta$ below.
+**Task (Python)** — confirm it directly in the Colab notebook: compute the average reaction time separately for the Phone and Laptop groups with `df.groupby('device')['reaction_time_ms'].mean()`, then check they match $\hat\alpha$ and $\hat\alpha + \hat\beta$ below.
 :::
 ::::
 
@@ -934,9 +1118,9 @@ A model answer for the manual calculation — same $\hat\beta = Cov[x,y]/Var[x]$
 ```python
 import numpy as np
 
-# device as 0/1 directly, no intermediate df needed
-x = (student_summary['device'] == 'Phone').astype(int)
-y = student_summary['mean_rt']
+# device as 0/1, one row per trial -- same data as the task above
+x = (df['device'] == 'Phone').astype(int)
+y = df['reaction_time_ms']
 
 cov = np.cov(x, y)[0, 1]
 var_x = x.var(ddof=1)
@@ -954,8 +1138,8 @@ print("alpha:", alpha)
 #| output: asis
 import numpy as np
 
-_dev_x = (student_summary['device'] == 'Phone').astype(int)
-_dev_y = student_summary['mean_rt']
+_dev_x = (df['device'] == 'Phone').astype(int)
+_dev_y = df['reaction_time_ms']
 _dev_cov = np.cov(_dev_x, _dev_y)[0, 1]
 _dev_var_x = _dev_x.var(ddof=1)
 _dev_beta = round(_dev_cov / _dev_var_x, 2)
@@ -1007,15 +1191,38 @@ print(
   const rows = device_stats.filter(d => d.n >= 2)
   const laptop = rows.find(d => d.device === "Laptop")
   const phone = rows.find(d => d.device === "Phone")
-  if (!laptop || !phone) return html`<p>Same numbers we just computed by hand, in Excel, and in Python on the last slide — statsmodels just automates it. <code>device</code> is converted to 0/1 automatically because it's text ("Laptop"/"Phone"); the coefficient is labelled <code>device[T.Phone]</code> to make clear which category is x = 1.</p>`
+  if (!laptop || !phone) return html`<p>Same numbers we got from the group averages and from the manual calculation on the last slide — statsmodels just automates it. <code>device</code> is converted to 0/1 automatically because it's text ("Laptop"/"Phone"); the coefficient is labelled <code>device[T.Phone]</code> to make clear which category is x = 1.</p>`
   const alpha = laptop.mean, beta = phone.mean - laptop.mean
-  return html`<p>Same ${alpha.toFixed(1)} and ${beta.toFixed(1)} we just computed by hand, in Excel, and in Python on the last slide — statsmodels just automates it. <code>device</code> is converted to 0/1 automatically because it's text ("Laptop"/"Phone"); the coefficient is labelled <code>device[T.Phone]</code> to make clear which category is x = 1.</p>`
+  return html`<p>Same ${alpha.toFixed(1)} and ${beta.toFixed(1)} we got from the group averages and from the manual calculation on the last slide — statsmodels just automates it. <code>device</code> is converted to 0/1 automatically because it's text ("Laptop"/"Phone"); the coefficient is labelled <code>device[T.Phone]</code> to make clear which category is x = 1.</p>`
 }
 ```
 :::
 
 ::: {.fragment}
-This `smf.ols(...)` syntax is what we'll use for the rest of the module. Next week: the rest of what it hands back — standard errors, confidence intervals, p-values.
+This `smf.ols(...)` syntax is what we'll use for the rest of the module.
+:::
+
+## Your first regression summary {.smaller}
+
+`model.params` gives just the coefficients. `model.summary()` gives the full report:
+
+```python
+print(model.summary())
+```
+
+```{python}
+#| output: asis
+_sum = smf.ols('reaction_time_ms ~ device', data=df).fit().summary()
+# Top two blocks only: the residual diagnostics block (Omnibus, Jarque-Bera...)
+# is introduced in Week 5's "So what do we actually check?" slide.
+_txt = (_sum.tables[0].as_text() + "\n" + _sum.tables[1].as_text())
+_txt = _txt.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+print('<pre style="font-family: monospace; font-size: 0.64em; line-height: 1.25; background: #f8f8f8; '
+      'border-left: 4px solid #457b9d; padding: 10px 16px; border-radius: 4px;">' + _txt + '</pre>')
+```
+
+::: {.fragment}
+What you can read already: **No. Observations**, **R-squared**, and the **coef** column – the same $\hat\alpha$ and $\hat\beta$ as `model.params`. The `std err`, `t`, `P>|t|` and `[0.025 0.975]` columns tell us how precisely those coefficients are estimated: that's **next week**.
 :::
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
@@ -1023,99 +1230,6 @@ Source: Békés & Kézdi (2021), Ch. 7 — syntax introduced light-touch here; t
 :::
 
 ---
-
-## Functional form, briefly
-
----
-
-## Logs, revisited
-
-Week 3's online session logged reaction time because it's skewed. In a regression, which variable you log changes what the slope *means*:
-
-| Model | Interpretation of β |
-|---|---|
-| Level–level | 1-unit x → unit change in y |
-| Log–level | 1-unit x → **%** change in y |
-| Level–log | 1% change in x → unit change in y |
-| Log–log | 1% change in x → % change in y (elasticity) |
-
-::: {.fragment}
-Polynomials and splines can capture curvature a straight line misses — useful when prediction is the goal, but each added flexibility costs interpretability. Simpler is usually better; see the textbook for splines, we won't build them live.
-:::
-
-::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
-Source: Békés & Kézdi (2021), Ch. 7 & 8
-:::
-
----
-
-## Extreme values — and is it causal?
-
----
-
-## Influential observations
-
-An observation is **influential** if including or excluding it noticeably moves the regression line — not the same as simply being an extreme value.
-
-::: {.fragment}
-Same three-way decision as Week 1's outliers: error → fix or drop; real but irrelevant to the question → drop, with a note; genuine feature of the process → keep. Try a transformation before ever dropping a point.
-:::
-
-## Watch one point move the line
-
-```{ojs}
-viewof add_extreme = Inputs.toggle({ label: "Add one extreme student", value: false })
-```
-
-:::: {.shrink-on-reveal data-frag="wk4-leverage-frag" style="--large-height:480px;--small-height:360px;--shrink-scale:0.75;"}
-::: {.shrink-on-reveal-inner}
-```{ojs}
-{
-  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
-  if (rows.length < 3) return html`<p style="color:#aaa;">Not enough data yet.</p>`
-
-  const fit = data => {
-    const xbar = d3.mean(data, d => d.finger_mm), ybar = d3.mean(data, d => d.mean_rt)
-    const cov = d3.mean(data, d => (d.finger_mm - xbar) * (d.mean_rt - ybar))
-    const varx = d3.mean(data, d => (d.finger_mm - xbar) ** 2)
-    const beta = cov / varx
-    return { alpha: ybar - beta * xbar, beta }
-  }
-
-  const xExtentBase = d3.extent(rows, d => d.finger_mm)
-  const extreme = { student_name: "Extreme (hypothetical)", finger_mm: xExtentBase[1] + 8,
-                     mean_rt: d3.min(rows, d => d.mean_rt) - 40 }
-  const withExtreme = add_extreme ? [...rows, extreme] : rows
-
-  const base = fit(rows)
-  const withFit = fit(withExtreme)
-  const xr = d3.extent(withExtreme, d => d.finger_mm)
-  const baseLine = xr.map(x => ({ x, y: base.alpha + base.beta * x }))
-  const withLine = xr.map(x => ({ x, y: withFit.alpha + withFit.beta * x }))
-
-  return html`<div>
-    ${Plot.plot({
-      height: 480, marginLeft: 60,
-      x: { label: "Finger length (mm)" }, y: { label: "Mean reaction time (ms)" },
-      marks: [
-        Plot.dot(rows, { x: "finger_mm", y: "mean_rt", fill: "#1a1a2e", r: 4 }),
-        add_extreme ? Plot.dot([extreme], { x: "finger_mm", y: "mean_rt", fill: "#e63946", r: 7, symbol: "diamond" }) : null,
-        Plot.line(baseLine, { x: "x", y: "y", stroke: "#999", strokeDasharray: "4,3", strokeWidth: 2 }),
-        add_extreme ? Plot.line(withLine, { x: "x", y: "y", stroke: "#e63946", strokeWidth: 2.5 }) : null,
-      ]
-    })}
-    <p style="font-family:sans-serif;text-align:center;">
-      β̂ without: <strong>${base.beta.toFixed(2)}</strong>${add_extreme ? html`&nbsp;→&nbsp;with the extra point: <strong style="color:#e63946;">${withFit.beta.toFixed(2)}</strong>` : ''}
-    </p>
-  </div>`
-}
-```
-:::
-::::
-
-::: {.fragment #wk4-leverage-frag}
-One synthetic point — an implausible combination of very long fingers and a very fast reaction time — is enough to swing $\hat\beta$, sometimes even flip its sign. That's leverage: a point far from $\bar x$ has an outsized say in where the line goes, regardless of whether it fits the pattern the rest of the data shows.
-:::
 
 ## Is it causal?
 
@@ -1135,9 +1249,9 @@ Source: Békés & Kézdi (2021), Ch. 7
 
 ---
 
-## Online session
+## Online session — Finding a good deal among hotels
 
-See **week4-online.html** — a short standalone deck for this week's online session.
+A recorded walkthrough of Gabor's own case study: today's regression tools applied to real data on 207 Vienna hotels. We fit price against distance from the city centre, then use the residuals to find the hotels that look underpriced for their location. Watch it before the Q&A and bring your questions.
 
 ## Coming up: Week 5
 

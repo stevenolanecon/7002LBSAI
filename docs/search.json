@@ -676,7 +676,7 @@
     "href": "index.html#weeks",
     "title": "Research Methods in Analytics",
     "section": "Weeks",
-    "text": "Weeks\nWorkshop and online-session slides, published as each week runs.\n\n\n\n\nWeek 01Distributions and Summarising Data\n\nLive\n\n\nWorkshop slidesOnline sessionOutliers addendumReaction-time toolPooled histogram toolDownload the data\n\n\n\n\n\nWeek 02Inference\n\nLive\n\n\nWorkshop slidesOnline sessionBootstrap toolDownload the data\n\n\n\n\n\nWeek 03Relationships Between Variables\n\nLive\n\n\nWorkshop slidesOnline sessionDownload the data\n\n\n\n\n\nWeek 04Regression I — Fitting the Line\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 05Regression I — Model Problems & Inference\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 06Regression II — Multiple Regression\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\nWeek 07\n\nCurriculum Enrichment Week — no session\n\n\n\n\n\nWeek 08Other Models (GLMs)\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 09Causal Analysis and Experiments\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 10Prediction\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 11Time Series\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\nWeek 12\n\nPortfolio presentations — see Canvas"
+    "text": "Weeks\nWorkshop and online-session slides, published as each week runs.\n\n\n\n\nWeek 01Distributions and Summarising Data\n\nLive\n\n\nWorkshop slidesOnline sessionOutliers addendumReaction-time toolPooled histogram toolDownload the data\n\n\n\n\n\nWeek 02Inference\n\nLive\n\n\nWorkshop slidesOnline sessionBootstrap toolDownload the data\n\n\n\n\n\nWeek 03Relationships Between Variables\n\nLive\n\n\nWorkshop slidesOnline sessionDownload the data\n\n\n\n\n\nWeek 04Regression I — Fitting the Line\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 05Regression I — Model Problems & Inference\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 06Regression II — Multiple Regression\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\nWeek 07\n\nCurriculum Enrichment Week — no session\n\n\n\n\n\nWeek 08Other Models (GLMs)\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 09Causal Analysis and Experiments\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 10Prediction\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 11Time Series\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\nWeek 12\n\nPortfolio presentations — see Canvas"
   },
   {
     "objectID": "data.html",
@@ -2154,5 +2154,432 @@
     "title": "When y Met x: Correlation and Covariance",
     "section": "Independence and sampling noise",
     "text": "Independence and sampling noise\nIndependence is not a yes/no question you can answer from a table this small. Any real sample will show some numerical gap between the conditional and marginal probabilities, purely by chance — even when the true population relationship is independence. Telling a real pattern from sampling noise is exactly what Week 2’s tools (standard errors, hypothesis tests) are for. With this few observations, “we can’t tell yet” is the honest answer, not a verdict either way."
+  },
+  {
+    "objectID": "week4-slides.html#section",
+    "href": "week4-slides.html#section",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "",
+    "text": "Simple regression\nWeek 3 found a correlation between finger length and reaction time — whatever its strength turned out to be. Today: turn that into a model, and be honest about what it’s worth."
+  },
+  {
+    "objectID": "week4-slides.html#from-correlation-to-formula",
+    "href": "week4-slides.html#from-correlation-to-formula",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "From correlation to formula",
+    "text": "From correlation to formula\n\nWeek 3 found a correlation between finger length and reaction time. HR wants to know: can we turn that into an actual formula — a screening tool?\n\n\nIn other words the firm wants to measure a candidate’s finger length, plug it into our fitted line, and use the predicted reaction time to decide whether to shortlist them — no need to run the real 10-trial test at all. Ethics clearly not a huge concern at this firm.\n\n\nNaive answer: draw a line through the points, read off the equation, done.\nWhy it’s not that simple: which line, by what criterion? What does the slope actually mean? And a correlation doesn’t become a good predictor just because you fit a line through it — how good it is depends on how strong that correlation actually was."
+  },
+  {
+    "objectID": "week4-slides.html#what-is-regression",
+    "href": "week4-slides.html#what-is-regression",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "What is regression?",
+    "text": "What is regression?"
+  },
+  {
+    "objectID": "week4-slides.html#two-goals-kept-separate",
+    "href": "week4-slides.html#two-goals-kept-separate",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Two goals, kept separate",
+    "text": "Two goals, kept separate\n\nPredictive analysis — what to expect of y for a given x. Concerned with the predicted value.\nCausal analysis — the effect of x on y. Concerned with a parameter — what would y be if we changed x?\n\n\nRegression itself doesn’t know which goal you have. It’s a method of comparison either way — the interpretation you’re allowed to make is what changes."
+  },
+  {
+    "objectID": "week4-slides.html#regression-comparing-conditional-means",
+    "href": "week4-slides.html#regression-comparing-conditional-means",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Regression: comparing conditional means",
+    "text": "Regression: comparing conditional means\nRegression uncovers the pattern of association between y (the outcome we care about) and x — by comparing the average value of y across different values of x.\n\\[E[y \\mid x] = f(x) \\qquad \\text{shorthand: } y^E = f(x)\\]\n\nNon-parametric regression — no functional form imposed; flexible, but needs many observations per x value (this is exactly the bin-scatter from Week 3)\nParametric regression — imposes a functional form (e.g. linear); more restrictive, but interpretable with far less data\n\n\nSource: Békés & Kézdi (2021), Data Analysis for Business, Economics, and Policy, Ch. 7"
+  },
+  {
+    "objectID": "week4-slides.html#non-parametric-regression-lowess",
+    "href": "week4-slides.html#non-parametric-regression-lowess",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Non-parametric regression: LOWESS",
+    "text": "Non-parametric regression: LOWESS\nBin-scatter gives one average per bracket. LOWESS (locally weighted scatterplot smoothing, “loess”) gives a smooth curve instead — a predicted value at every x, not just at bin midpoints.\n\nIt’s a moving, weighted local average: points near x count a lot, points far from x count little\nThe bandwidth controls how “local” — wide = smoother, but can miss real bends; narrow = tracks the pattern closely, but looks rugged\nLike bin-scatter: great for spotting shape, gives no interpretable number\n\n\nLOWESS can be estimated in most stats packages, including Python — this is where we start showing the actual code behind what we’re building, alongside the ideas. In Python, that’s statsmodels: statsmodels.nonparametric.smoothers_lowess.lowess.\n\n\nSource: Békés & Kézdi (2021), Ch. 7"
+  },
+  {
+    "objectID": "week4-slides.html#try-a-bandwidth-on-our-own-data",
+    "href": "week4-slides.html#try-a-bandwidth-on-our-own-data",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Try a bandwidth on our own data",
+    "text": "Try a bandwidth on our own data\n\nviewof bandwidth = {\n  const f = html`&lt;div style=\"display:flex;align-items:center;gap:14px;font-size:13px;\n                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;\"&gt;\n    &lt;span style=\"color:#666;white-space:nowrap;\"&gt;Bandwidth (mm)&lt;/span&gt;\n    &lt;input type=\"range\" min=\"1\" max=\"15\" step=\"0.5\" value=\"4\"\n           style=\"width:200px;cursor:pointer;accent-color:#457b9d;\"&gt;\n    &lt;span id=\"bw-label\" style=\"font-weight:700;min-width:36px;color:#457b9d;\"&gt;4.0&lt;/span&gt;\n  &lt;/div&gt;`\n  const slider = f.querySelector('input')\n  const label  = f.querySelector('#bw-label')\n  slider.addEventListener('input', () =&gt; {\n    label.textContent = (+slider.value).toFixed(1)\n    f.dispatchEvent(new CustomEvent('input'))\n  })\n  Object.defineProperty(f, 'value', { get: () =&gt; +slider.value })\n  return f\n}\n\n\n\n\n\n\n\n{\n  const rows = trial_data.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 10) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n  const [xmin, xmax] = d3.extent(rows, d =&gt; d.finger_mm)\n  const grid = d3.range(xmin, xmax, (xmax - xmin) / 60)\n  const smooth = grid.map(x0 =&gt; {\n    const weights = rows.map(d =&gt; Math.exp(-0.5 * ((d.finger_mm - x0) / bandwidth) ** 2))\n    const wsum = d3.sum(weights)\n    const yhat = d3.sum(rows.map((d, i) =&gt; weights[i] * d.reaction_time_ms)) / wsum\n    return { finger_mm: x0, yhat }\n  })\n  return Plot.plot({\n    height: 300, marginLeft: 60,\n    x: { label: \"Finger length (mm)\" }, y: { label: \"Reaction time (ms)\" },\n    marks: [\n      Plot.dot(rows, { x: \"finger_mm\", y: \"reaction_time_ms\", fill: \"#1a1a2e\", r: 2.5, fillOpacity: 0.35 }),\n      Plot.line(smooth, { x: \"finger_mm\", y: \"yhat\", stroke: \"#e63946\", strokeWidth: 2.5 }),\n    ]\n  })\n}\n\n\n\n\n\n\n\nDrag the bandwidth from narrow to wide. At what point does the curve stop looking like noise and start looking like a nearly straight line? What does that tell you about how much curvature is really in this relationship?\n\n\nThe same idea in statsmodels — here frac (the fraction of all points used in each local average) plays the role the slider’s bandwidth plays above, one specific choice rather than the whole range:\nfrom statsmodels.nonparametric.smoothers_lowess import lowess\n\nsmoothed = lowess(endog=df['reaction_time_ms'], exog=df['finger_mm'], frac=0.3)\n# smoothed is an array of (x, y-hat) pairs, sorted by x"
+  },
+  {
+    "objectID": "week4-slides.html#linear-regression",
+    "href": "week4-slides.html#linear-regression",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Linear regression",
+    "text": "Linear regression"
+  },
+  {
+    "objectID": "week4-slides.html#from-y-to-ye",
+    "href": "week4-slides.html#from-y-to-ye",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "From y to \\(y^E\\)",
+    "text": "From y to \\(y^E\\)\nEvery individual observation’s y is really:\n\\[y = \\alpha + \\beta x + \\varepsilon\\]\n\n\\(\\varepsilon\\) is everything else affecting y — other factors, individual noise, luck. We never observe it directly.\nKey assumption: \\(E[\\varepsilon \\mid x] = 0\\) — on average, the error is unrelated to x; x tells us nothing about which way \\(\\varepsilon\\) leans.\n\n\nTake the expectation of both sides:\n\\[E[y \\mid x] = \\alpha + \\beta x + \\underbrace{E[\\varepsilon \\mid x]}_{=\\,0} = \\alpha + \\beta x\\]\nThe error term doesn’t vanish from reality — it averages to zero by assumption. What’s left is exactly \\(y^E\\): our shorthand for “the part of y that x explains, once the noise is averaged away.”\n\n\nIndividual students will still scatter around this fitted line by their own \\(\\varepsilon\\) — finger length isn’t the only thing driving reaction time. \\(y^E\\) is the average; any one student’s actual reaction time differs from it by their own \\(\\varepsilon\\).\n\n\nSource: Békés & Kézdi (2021), Ch. 7"
+  },
+  {
+    "objectID": "week4-slides.html#imposing-a-line",
+    "href": "week4-slides.html#imposing-a-line",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Imposing a line",
+    "text": "Imposing a line\n\\[y^E = \\alpha + \\beta x\\]\n\nLinear regression imposes linearity in the coefficients — the simplest parametric form\nTwo coefficients: the intercept (\\(\\alpha\\)) and the slope (\\(\\beta\\))\nLinearity is an assumption, or an approximation — even if the true pattern curves, a line approximates its average slope\n\n\n\\(\\alpha\\): the average value of y when x is zero —\n\\[E[y \\mid x=0] = \\alpha + \\beta \\times 0 = \\alpha\\]\n\\(\\beta\\): the expected difference in y for observations one unit apart in x —\n\\[E[y \\mid x=x_0+1] - E[y \\mid x=x_0] = \\big(\\alpha + \\beta(x_0+1)\\big) - \\big(\\alpha + \\beta x_0\\big) = \\beta\\]"
+  },
+  {
+    "objectID": "week4-slides.html#precise-language-matters",
+    "href": "week4-slides.html#precise-language-matters",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Precise language matters",
+    "text": "Precise language matters\nGood ways to say what \\(\\beta\\) means: “y is higher, on average, by \\(\\beta\\) for observations with a one-unit higher x.”\n\nAvoid “increases/decreases” — implies something changing over time. Avoid “effect” — implies causation. Neither is justified by a regression alone, on observational data.\n\n\nSource: Békés & Kézdi (2021), Ch. 7"
+  },
+  {
+    "objectID": "week4-slides.html#task-interpret-our-own-regression",
+    "href": "week4-slides.html#task-interpret-our-own-regression",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Task — interpret our own regression",
+    "text": "Task — interpret our own regression\n\nOpen the Colab notebook and fit mean_rt ~ finger_mm on the class’s own data with smf.ols(...). Write down \\(\\hat\\alpha\\) and \\(\\hat\\beta\\) from model.params before revealing the line below.\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n  const xbar = d3.mean(rows, d =&gt; d.finger_mm), ybar = d3.mean(rows, d =&gt; d.mean_rt)\n  const cov = d3.mean(rows, d =&gt; (d.finger_mm - xbar) * (d.mean_rt - ybar))\n  const varx = d3.mean(rows, d =&gt; (d.finger_mm - xbar) ** 2)\n  const beta = cov / varx\n  const alpha = ybar - beta * xbar\n  return html`&lt;p style=\"font-family:sans-serif;font-size:1.1em;\"&gt;Fitted line: mean reaction time = &lt;strong&gt;${alpha.toFixed(1)}&lt;/strong&gt; + (&lt;strong&gt;${beta.toFixed(2)}&lt;/strong&gt;) × finger length — check it against your own Colab output.&lt;/p&gt;`\n}\n\n\n\n\n\n\n\n\nIn your own words: what does the intercept mean here? What does the slope mean? Is either number, on its own, useful to HR?"
+  },
+  {
+    "objectID": "week4-slides.html#our-regression-visualised",
+    "href": "week4-slides.html#our-regression-visualised",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Our regression, visualised",
+    "text": "Our regression, visualised\n\n{\n  const rows  = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  const trials = trial_data.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n  const xbar = d3.mean(rows, d =&gt; d.finger_mm), ybar = d3.mean(rows, d =&gt; d.mean_rt)\n  const cov = d3.mean(rows, d =&gt; (d.finger_mm - xbar) * (d.mean_rt - ybar))\n  const varx = d3.mean(rows, d =&gt; (d.finger_mm - xbar) ** 2)\n  const beta = cov / varx\n  const alpha = ybar - beta * xbar\n  const xExtent = d3.extent(rows, d =&gt; d.finger_mm)\n  const fitLine = xExtent.map(x =&gt; ({finger_mm: x, fit: alpha + beta * x}))\n  return Plot.plot({\n    height: 400, marginLeft: 60,\n    x: {label: \"Finger length (mm)\"}, y: {label: \"Reaction time (ms)\"},\n    marks: [\n      Plot.dot(trials, {x: \"finger_mm\", y: \"reaction_time_ms\", fill: \"#457b9d\", r: 2.5, fillOpacity: 0.25}),\n      Plot.dot(rows, {x: \"finger_mm\", y: \"mean_rt\", fill: \"#1a1a2e\", r: 5}),\n      Plot.line(fitLine, {x: \"finger_mm\", y: \"fit\", stroke: \"#e63946\", strokeWidth: 2.5})\n    ]\n  })\n}\n\n\n\n\n\n\n\n\n{\n  const trials = trial_data.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  const rows   = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  return html`&lt;p&gt;Pale blue: every individual trial (${trials.length} raw observations). Dark dots: each student's own average — the actual unit of observation the regression is fit on, and why (see \"What has to be true?\" shortly). The red line is the fitted regression — the same intercept and slope from the task above, drawn straight through the student-level means it summarises.&lt;/p&gt;`\n}"
+  },
+  {
+    "objectID": "week4-slides.html#a-tighter-example-hours-awake",
+    "href": "week4-slides.html#a-tighter-example-hours-awake",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "A tighter example: hours awake",
+    "text": "A tighter example: hours awake\nWeek 3’s simulated class of 24 again: hours awake before the test vs. mean reaction time – same method, a much tighter relationship.\n\n\n\n{\n  const f = awake_fit\n  // x-axis starts at 0 so the intercept is visible where the line meets the\n  // y-axis; dashed beyond the data (0 to x_min), solid across the observed range.\n  const xMax = Math.ceil(f.x_max) + 1\n  const line = [f.x_min, f.x_max].map(x =&gt; ({ x, y: f.alpha + f.beta * x }))\n  const ext = [0, f.x_min].map(x =&gt; ({ x, y: f.alpha + f.beta * x }))\n  return Plot.plot({\n    height: 460, width: 900, marginLeft: 60,\n    x: { label: \"Hours awake before the test\", domain: [0, xMax] },\n    y: { label: \"Mean reaction time (ms)\", domain: [Math.floor((f.alpha - 30) / 20) * 20, Math.ceil((d3.max(awake_data, d =&gt; d.reaction_time_ms) + 10) / 20) * 20] },\n    marks: [\n      Plot.ruleX([0], { stroke: \"#1a1a2e\" }),\n      Plot.dot(awake_data, { x: \"hours_awake\", y: \"reaction_time_ms\", fill: \"#2d6a4f\", r: 6, fillOpacity: 0.85 }),\n      Plot.line(ext, { x: \"x\", y: \"y\", stroke: \"#e63946\", strokeWidth: 2.5, strokeDasharray: \"6,4\" }),\n      Plot.line(line, { x: \"x\", y: \"y\", stroke: \"#e63946\", strokeWidth: 2.5 }),\n      Plot.dot([{ x: 0, y: f.alpha }], { x: \"x\", y: \"y\", fill: \"#e63946\", r: 7 }),\n      Plot.text([{ x: 0, y: f.alpha }], { x: \"x\", y: \"y\", text: () =&gt; `α̂ = ${f.alpha.toFixed(1)}`, dx: 14, dy: 12, textAnchor: \"start\", fontSize: 15, fill: \"#e63946\", fontWeight: 700 }),\n      Plot.text([`ŷ = ${f.alpha.toFixed(1)} + ${f.beta.toFixed(2)} × hours awake`], { frameAnchor: \"top-left\", dx: 10, dy: 10, fontSize: 18, fill: \"#e63946\", fontWeight: 700 }),\n    ]\n  })\n}\n\n\n\n\n\n\n\n\n\n\nhtml`&lt;ul&gt;\n&lt;li&gt;&lt;strong&gt;β̂ = ${awake_fit.beta.toFixed(2)}:&lt;/strong&gt; students who had been awake one hour longer were, on average, about &lt;strong&gt;${awake_fit.beta.toFixed(0)} ms slower&lt;/strong&gt;.&lt;/li&gt;\n&lt;li&gt;&lt;strong&gt;α̂ = ${awake_fit.alpha.toFixed(1)}:&lt;/strong&gt; the predicted reaction time at 0 hours awake. Nobody in the data was tested straight out of bed (the minimum is ${awake_fit.x_min} hours), so this anchors the line rather than describing anyone we observed.&lt;/li&gt;\n&lt;li&gt;The points sit close to the line – compare how scattered our finger-length data were around theirs. We'll put a number on that difference shortly.&lt;/li&gt;\n&lt;/ul&gt;`\n\n\n\n\n\n\n\n\nSimulated data, for illustration – not our class."
+  },
+  {
+    "objectID": "week4-slides.html#regression-on-a-binary-x",
+    "href": "week4-slides.html#regression-on-a-binary-x",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Regression on a binary x",
+    "text": "Regression on a binary x\nSimplest case: x is 0/1 — like device (Laptop = 0, Phone = 1).\n\n\\(\\alpha\\) = average y when x = 0 (average reaction time on Laptop)\n\\(\\beta\\) = difference in average y between x = 1 and x = 0 (Phone minus Laptop)\n\\(\\alpha + \\beta\\) = average y when x = 1 (average reaction time on Phone)\nThe regression line is just two points, connected\n\n\nSource: Békés & Kézdi (2021), Ch. 7"
+  },
+  {
+    "objectID": "week4-slides.html#the-ols-estimator",
+    "href": "week4-slides.html#the-ols-estimator",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "The OLS estimator",
+    "text": "The OLS estimator"
+  },
+  {
+    "objectID": "week4-slides.html#the-slope-formula",
+    "href": "week4-slides.html#the-slope-formula",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "The slope formula",
+    "text": "The slope formula\n\\[\\hat\\beta = \\frac{Cov[x,y]}{Var[x]}\\]\n\nThe covariance between x and y, normalised by the variation in x\nMeasures the covariance relative to how spread out x is\nThat’s why it can be read as “difference in average y per unit difference in x”\n\n\nSource: Békés & Kézdi (2021), Ch. 7"
+  },
+  {
+    "objectID": "week4-slides.html#the-intercept-formula",
+    "href": "week4-slides.html#the-intercept-formula",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "The intercept formula",
+    "text": "The intercept formula\n\\[\\hat\\alpha = \\bar y - \\hat\\beta \\bar x\\]\n\nAverage y, minus average x scaled by the slope we just found\nA direct consequence: rearrange it and you get \\(\\bar y = \\hat\\alpha + \\hat\\beta \\bar x\\) — the fitted line always passes through the point \\((\\bar x, \\bar y)\\), the average of averages\nOnce \\(\\hat\\beta\\) is fixed, \\(\\hat\\alpha\\) isn’t a second independent choice — it’s whatever pins the line through that point\n\n\nSource: Békés & Kézdi (2021), Ch. 7"
+  },
+  {
+    "objectID": "week4-slides.html#seeing-the-covariance",
+    "href": "week4-slides.html#seeing-the-covariance",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Seeing the covariance",
+    "text": "Seeing the covariance\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n  const xbar = d3.mean(rows, d =&gt; d.finger_mm), ybar = d3.mean(rows, d =&gt; d.mean_rt)\n  const rects = rows.map(d =&gt; {\n    const dx = d.finger_mm - xbar, dy = d.mean_rt - ybar\n    return {\n      x1: Math.min(xbar, d.finger_mm), x2: Math.max(xbar, d.finger_mm),\n      y1: Math.min(ybar, d.mean_rt), y2: Math.max(ybar, d.mean_rt),\n      sign: dx * dy &gt;= 0 ? \"same direction (+)\" : \"opposite direction (−)\",\n    }\n  })\n  return Plot.plot({\n    height: 480,\n    marginLeft: 60,\n    x: { label: \"Finger length (mm)\" },\n    y: { label: \"Mean reaction time (ms)\" },\n    color: { legend: true, domain: [\"same direction (+)\", \"opposite direction (−)\"], range: [\"#457b9d\", \"#e63946\"] },\n    marks: [\n      Plot.rect(rects, { x1: \"x1\", x2: \"x2\", y1: \"y1\", y2: \"y2\", fill: \"sign\", fillOpacity: 0.22, stroke: \"sign\", strokeOpacity: 0.5 }),\n      Plot.ruleX([xbar], { stroke: \"#1a1a2e\", strokeDasharray: \"4,3\" }),\n      Plot.ruleY([ybar], { stroke: \"#1a1a2e\", strokeDasharray: \"4,3\" }),\n      Plot.dot(rows, { x: \"finger_mm\", y: \"mean_rt\", fill: \"#1a1a2e\", r: 4 }),\n    ]\n  })\n}\n\n\n\n\n\n\n\n\n\nEvery point’s rectangle, from the (x̄, ȳ) crosshair to the point, has area \\((x_i-\\bar x)(y_i-\\bar y)\\) — exactly the term averaged inside \\(Cov[x,y]\\). Blue rectangles push the covariance positive; red ones pull it negative. Cov[x,y] is the net signed area."
+  },
+  {
+    "objectID": "week4-slides.html#varx-is-the-same-idea-applied-to-x-alone",
+    "href": "week4-slides.html#varx-is-the-same-idea-applied-to-x-alone",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Var[x] is the same idea, applied to x alone",
+    "text": "Var[x] is the same idea, applied to x alone\n\\(Var[x] = Cov[x,x]\\) — the identical rectangle idea, but pairing x with itself. Plot finger length against itself and every point sits on the diagonal, so every rectangle is a square with area \\((x_i-\\bar x)^2\\):\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n  const xbar = d3.mean(rows, d =&gt; d.finger_mm)\n  const sq = rows.map(d =&gt; ({ x1: Math.min(xbar, d.finger_mm), x2: Math.max(xbar, d.finger_mm),\n                              y1: Math.min(xbar, d.finger_mm), y2: Math.max(xbar, d.finger_mm) }))\n  const dom = d3.extent(rows, d =&gt; d.finger_mm)\n  return Plot.plot({\n    height: 440, width: 440, marginLeft: 60,\n    x: { label: \"Finger length (mm)\", domain: dom }, y: { label: \"Finger length (mm)\", domain: dom },\n    marks: [\n      Plot.rect(sq, { x1: \"x1\", x2: \"x2\", y1: \"y1\", y2: \"y2\", fill: \"#457b9d\", fillOpacity: 0.18, stroke: \"#457b9d\", strokeOpacity: 0.5 }),\n      Plot.ruleX([xbar], { stroke: \"#1a1a2e\", strokeDasharray: \"4,3\" }),\n      Plot.ruleY([xbar], { stroke: \"#1a1a2e\", strokeDasharray: \"4,3\" }),\n      Plot.dot(rows, { x: \"finger_mm\", y: \"finger_mm\", fill: \"#1a1a2e\", r: 4 }),\n    ]\n  })\n}\n\n\n\n\n\n\n\n\n\nNo red squares: a number times itself is never negative, so Var[x] is always positive — a pure measure of x’s own spread. Students far from the average finger length contribute big squares; students near it barely register.\n\n\n\\(\\hat\\beta\\) = (net signed area between x and y) ÷ (x’s own spread) — literally, how much x and y move together, relative to how much x moves on its own."
+  },
+  {
+    "objectID": "week4-slides.html#why-divide-by-varx-at-all",
+    "href": "week4-slides.html#why-divide-by-varx-at-all",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Why divide by Var[x] at all?",
+    "text": "Why divide by Var[x] at all?\nImagine measuring finger length in centimetres instead of millimetres (×0.1). What should happen to the slope? A slope is “ms per unit of x”, so ms per cm should be exactly 10 times ms per mm — no more, no less.\n\nviewof xscale = {\n  const f = html`&lt;div style=\"display:flex;align-items:center;gap:14px;font-size:13px;\n                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;\"&gt;\n    &lt;span style=\"color:#666;white-space:nowrap;\"&gt;Rescale finger length by ×&lt;/span&gt;\n    &lt;input type=\"range\" min=\"0.1\" max=\"3\" step=\"0.1\" value=\"1\"\n           style=\"width:200px;cursor:pointer;accent-color:#457b9d;\"&gt;\n    &lt;span id=\"xs-label\" style=\"font-weight:700;min-width:36px;color:#457b9d;\"&gt;1.0&lt;/span&gt;\n  &lt;/div&gt;`\n  const slider = f.querySelector('input')\n  const label  = f.querySelector('#xs-label')\n  slider.addEventListener('input', () =&gt; {\n    label.textContent = (+slider.value).toFixed(1)\n    f.dispatchEvent(new CustomEvent('input'))\n  })\n  Object.defineProperty(f, 'value', { get: () =&gt; +slider.value })\n  return f\n}\n\n\n\n\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n  const xs = rows.map(d =&gt; d.finger_mm * xscale)\n  const ys = rows.map(d =&gt; d.mean_rt)\n  const mx = d3.mean(xs), my = d3.mean(ys)\n  const cov = d3.mean(xs.map((x, i) =&gt; (x - mx) * (ys[i] - my)))\n  const varx = d3.mean(xs.map(x =&gt; (x - mx) ** 2))\n  const beta = cov / varx\n  return html`&lt;div style=\"font-family:sans-serif;font-size:1.05em;text-align:center;\"&gt;\n    &lt;p&gt;Cov[x,y] = &lt;strong style=\"color:#457b9d;\"&gt;${cov.toFixed(1)}&lt;/strong&gt;\n       &nbsp;·&nbsp; Var[x] = &lt;strong style=\"color:#457b9d;\"&gt;${varx.toFixed(1)}&lt;/strong&gt;\n       &nbsp;·&nbsp; β̂ = &lt;strong style=\"color:#e63946;\"&gt;${beta.toFixed(3)}&lt;/strong&gt;&lt;/p&gt;\n    &lt;p style=\"color:#666;font-size:0.9em;\"&gt;β̂ changes because the &lt;em&gt;unit&lt;/em&gt; of x changed. Convert it back to ms per original mm (β̂ × ${xscale.toFixed(1)}) and you get &lt;strong&gt;${(beta * xscale).toFixed(2)}&lt;/strong&gt; every time.&lt;/p&gt;\n  &lt;/div&gt;`\n}\n\n\n\n\n\n\n\nMove the slider and watch the three numbers. Cov[x,y] scales by the same factor as x, Var[x] by its square, so β̂ = Cov/Var scales by 1 ÷ factor — exactly what a per-unit slope should do. Cov[x,y] on its own moves the wrong way (cm would give a smaller number, not a 10× bigger one) and is in ms × mm, not ms per mm. Dividing by Var[x] turns a measure of co-movement into a rate: ms per unit of x."
+  },
+  {
+    "objectID": "week4-slides.html#fitted-values-and-residuals",
+    "href": "week4-slides.html#fitted-values-and-residuals",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Fitted values and residuals",
+    "text": "Fitted values and residuals\n\\[\\hat y_i = \\hat\\alpha + \\hat\\beta x_i \\qquad e_i = y_i - \\hat y_i\\]\n\nThe residual is the vertical distance between a point and the regression line\nPositive above the line, negative below\nResiduals from an OLS fit always sum to zero — the line “balances” through the data\nA direct consequence: average \\(\\hat y\\) equals average \\(y\\)\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n  const xbar = d3.mean(rows, d =&gt; d.finger_mm), ybar = d3.mean(rows, d =&gt; d.mean_rt)\n  const cov = d3.mean(rows, d =&gt; (d.finger_mm - xbar) * (d.mean_rt - ybar))\n  const varx = d3.mean(rows, d =&gt; (d.finger_mm - xbar) ** 2)\n  const beta = cov / varx\n  const alpha = ybar - beta * xbar\n  const segments = rows.map(d =&gt; {\n    const yhat = alpha + beta * d.finger_mm\n    return { x: d.finger_mm, y1: d.mean_rt, y2: yhat, sign: d.mean_rt &gt;= yhat ? \"positive residual (above line)\" : \"negative residual (below line)\" }\n  })\n  const xExtent = d3.extent(rows, d =&gt; d.finger_mm)\n  const fitLine = xExtent.map(x =&gt; ({ finger_mm: x, fit: alpha + beta * x }))\n  return Plot.plot({\n    height: 220, marginLeft: 60,\n    x: { label: \"Finger length (mm)\" }, y: { label: \"Reaction time (ms)\" },\n    color: { legend: true, domain: [\"positive residual (above line)\", \"negative residual (below line)\"], range: [\"#457b9d\", \"#e63946\"] },\n    marks: [\n      Plot.line(fitLine, { x: \"finger_mm\", y: \"fit\", stroke: \"#1a1a2e\", strokeWidth: 2 }),\n      Plot.link(segments, { x1: \"x\", y1: \"y1\", x2: \"x\", y2: \"y2\", stroke: \"sign\", strokeWidth: 1.5, strokeDasharray: \"3,2\" }),\n      Plot.dot(rows, { x: \"finger_mm\", y: \"mean_rt\", fill: \"#1a1a2e\", r: 4 }),\n    ]\n  })\n}\n\n\n\n\n\n\n\nEach dashed segment is one student’s residual — the gap between their actual mean reaction time and the line’s prediction for their finger length.\n\n\nSource: Békés & Kézdi (2021), Ch. 7"
+  },
+  {
+    "objectID": "week4-slides.html#why-this-particular-line",
+    "href": "week4-slides.html#why-this-particular-line",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Why this particular line?",
+    "text": "Why this particular line?\nAny candidate line, with any \\(\\alpha\\) and \\(\\beta\\), leaves a residual for every observation: \\(y_i - (\\alpha + \\beta x_i)\\). OLS chooses \\(\\hat\\alpha, \\hat\\beta\\) to minimise the sum of squared residuals:\n\\[\\min_{\\alpha,\\beta} \\sum_{i=1}^n (y_i - \\alpha - \\beta x_i)^2\\]\n\nSolving this with calculus gives exactly the Cov/Var formula — we won’t derive it here (see the textbook, U7.1, if you’re curious). Instead, let’s watch it being the minimum."
+  },
+  {
+    "objectID": "week4-slides.html#finding-the-bottom-of-the-bowl",
+    "href": "week4-slides.html#finding-the-bottom-of-the-bowl",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Finding the bottom of the bowl",
+    "text": "Finding the bottom of the bowl\n\n// Slider range is set from the data: the OLS slope sits well inside it,\n// whatever units/scale the class data turn out to have (a fixed -6..6 range\n// couldn't reach the real slope of ~18.6 ms/mm).\nbowlRange = {\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return { lo: -6, hi: 6, step: 0.1 }\n  const xbar = d3.mean(rows, d =&gt; d.finger_mm), ybar = d3.mean(rows, d =&gt; d.mean_rt)\n  const b = d3.mean(rows, d =&gt; (d.finger_mm - xbar) * (d.mean_rt - ybar)) / d3.mean(rows, d =&gt; (d.finger_mm - xbar) ** 2)\n  const k = Math.max(5, 1.5 * Math.abs(b))\n  const step = k &gt; 20 ? 0.5 : 0.1\n  return { lo: Math.floor(Math.min(0, b - k)), hi: Math.ceil(Math.max(0, b + k)), step }\n}\n\n\n\n\n\n\n\nviewof beta_try = {\n  const f = html`&lt;div style=\"display:flex;align-items:center;gap:14px;font-size:13px;\n                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;\"&gt;\n    &lt;span style=\"color:#666;white-space:nowrap;\"&gt;Try a slope&lt;/span&gt;\n    &lt;input type=\"range\" min=\"${bowlRange.lo}\" max=\"${bowlRange.hi}\" step=\"${bowlRange.step}\" value=\"0\"\n           style=\"width:320px;cursor:pointer;accent-color:#e63946;\"&gt;\n    &lt;span id=\"bt-label\" style=\"font-weight:700;min-width:40px;color:#e63946;\"&gt;0.0&lt;/span&gt;\n  &lt;/div&gt;`\n  const slider = f.querySelector('input')\n  const label  = f.querySelector('#bt-label')\n  slider.addEventListener('input', () =&gt; {\n    label.textContent = (+slider.value).toFixed(1)\n    f.dispatchEvent(new CustomEvent('input'))\n  })\n  Object.defineProperty(f, 'value', { get: () =&gt; +slider.value })\n  return f\n}\n\n\n\n\n\n\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n  const xbar = d3.mean(rows, d =&gt; d.finger_mm), ybar = d3.mean(rows, d =&gt; d.mean_rt)\n  const cov = d3.mean(rows, d =&gt; (d.finger_mm - xbar) * (d.mean_rt - ybar))\n  const varx = d3.mean(rows, d =&gt; (d.finger_mm - xbar) ** 2)\n  const trueBeta = cov / varx\n\n  const ssrFor = b =&gt; {\n    const a = ybar - b * xbar\n    return d3.sum(rows, d =&gt; (d.mean_rt - (a + b * d.finger_mm)) ** 2)\n  }\n  const curve = d3.range(bowlRange.lo, bowlRange.hi + bowlRange.step, bowlRange.step).map(b =&gt; ({ b, ssr: ssrFor(b) }))\n  const alphaTry = ybar - beta_try * xbar\n\n  const bowl = Plot.plot({\n    height: 420, width: 380,\n    x: { label: \"candidate slope\" },\n    y: { label: \"sum of squared residuals\" },\n    marks: [\n      Plot.line(curve, { x: \"b\", y: \"ssr\", stroke: \"#457b9d\", strokeWidth: 2 }),\n      Plot.ruleX([trueBeta], { stroke: \"#2d6a4f\", strokeDasharray: \"4,3\" }),\n      Plot.dot([{ b: beta_try, ssr: ssrFor(beta_try) }], { x: \"b\", y: \"ssr\", fill: \"#e63946\", r: 6 }),\n    ]\n  })\n\n  const pad = Math.max(10, (d3.max(rows, d =&gt; d.mean_rt) - d3.min(rows, d =&gt; d.mean_rt)) * 0.15)\n  const fitted = Plot.plot({\n    height: 420, width: 380,\n    x: { label: \"Finger length (mm)\" },\n    y: { label: \"Mean reaction time (ms)\", domain: [d3.min(rows, d =&gt; d.mean_rt) - pad, d3.max(rows, d =&gt; d.mean_rt) + pad] },\n    marks: [\n      Plot.dot(rows, { x: \"finger_mm\", y: \"mean_rt\", fill: \"#1a1a2e\", r: 4 }),\n      Plot.linearRegressionY(rows, { x: \"finger_mm\", y: \"mean_rt\", stroke: \"#ccc\", strokeOpacity: 0 }),\n      Plot.line([{ x: d3.min(rows, d =&gt; d.finger_mm), y: alphaTry + beta_try * d3.min(rows, d =&gt; d.finger_mm) },\n                 { x: d3.max(rows, d =&gt; d.finger_mm), y: alphaTry + beta_try * d3.max(rows, d =&gt; d.finger_mm) }],\n                { x: \"x\", y: \"y\", stroke: \"#e63946\", strokeWidth: 2.5 }),\n    ]\n  })\n\n  return html`&lt;div style=\"display:flex;gap:20px;justify-content:center;\"&gt;${fitted}${bowl}&lt;/div&gt;`\n}\n\n\n\n\n\n\n\n\n\nThe sum of squared residuals is smallest exactly where the red line best fits the scatter, and exactly at \\(\\hat\\beta = Cov[x,y]/Var[x]\\) (the dashed green line)."
+  },
+  {
+    "objectID": "week4-slides.html#ols-is-blue",
+    "href": "week4-slides.html#ols-is-blue",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "OLS is BLUE",
+    "text": "OLS is BLUE\n\nBest Linear Unbiased Estimator — among every linear, unbiased way of estimating \\(\\beta\\), OLS has the smallest variance. “Best” here means most precise, not most correct.\n\n\nThe Gauss-Markov theorem states that OLS is BLUE only if a handful of assumptions about the data are true."
+  },
+  {
+    "objectID": "week4-slides.html#what-has-to-be-true",
+    "href": "week4-slides.html#what-has-to-be-true",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "What has to be true?",
+    "text": "What has to be true?\n\nLinearity — a straight line is a reasonable approximation\nIndependent observations — one observation’s error doesn’t leak into another’s\nHomoskedasticity — the spread of residuals is roughly constant across the range of x, not fanning out or narrowing\nNo extreme influence — no single point is silently dragging the whole line\nNo perfect multicollinearity — no explanatory variable is an exact linear combination of the others, or OLS can’t even be computed. Only really bites once there’s more than one x — full treatment in Week 6.\n\n\nThese five are what BLUE requires — Gauss-Markov doesn’t care what shape the residuals take. There’s a sixth assumption, normally distributed residuals, that never appears on a BLUE checklist: it can’t make \\(\\hat\\beta\\) biased or imprecise. It only matters once we build a confidence interval or t-test around \\(\\hat\\beta\\) — which is where Week 5 starts."
+  },
+  {
+    "objectID": "week4-slides.html#assumptions",
+    "href": "week4-slides.html#assumptions",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Assumptions",
+    "text": "Assumptions\n\n{\n  const trials = trial_data.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  const rows   = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  return html`&lt;p&gt;&lt;strong&gt;Independence, concretely:&lt;/strong&gt; this is exactly why our own regression uses one row per &lt;strong&gt;student&lt;/strong&gt; (${rows.length} observations, one dot per student in our fitted-line charts), not one row per &lt;strong&gt;trial&lt;/strong&gt; (${trials.length} rows). A student's own trials aren't independent of each other — they share whatever made that student fast or slow that session. Treating every trial as a separate observation would overstate how much genuinely independent information we have.&lt;/p&gt;`\n}\n\n\n\n\n\n\n\nHomoskedasticity, concretely: if slower reactors are also more erratic trial-to-trial — plausible, given reaction time’s right skew from Week 1 — the spread of residuals would fan out for higher predicted values instead of staying constant.\n\n\nNone of these make OLS wrong if violated — but they change how much you should trust the standard errors and the line’s precision. Homoskedasticity in particular gets a full treatment next week, when we build confidence intervals for \\(\\hat\\beta\\) itself. No extreme influence — the fourth assumption — gets its own live demonstration next week, when we look at extreme values and influence. One assumption doesn’t even make this list: whether the residuals are normally distributed. It isn’t a BLUE requirement, so its absence can’t bias \\(\\hat\\beta\\) — but it matters for the confidence intervals and t-tests we build starting next week."
+  },
+  {
+    "objectID": "week4-slides.html#homoskedastic-vs.-heteroskedastic-in-the-raw-data",
+    "href": "week4-slides.html#homoskedastic-vs.-heteroskedastic-in-the-raw-data",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Homoskedastic vs. heteroskedastic, in the raw data",
+    "text": "Homoskedastic vs. heteroskedastic, in the raw data\nSame generic illustration, two different noise patterns. Top: the data and the fitted line. Bottom: each point’s residual.\n\n{\n  const allY = [...homo_scatter_data, ...hetero_scatter_data].map(d =&gt; d.y)\n  const yDomain = [d3.min(allY) - 2, d3.max(allY) + 2]\n  const resid = (data, fitLine) =&gt; {\n    const b = (fitLine[1].y - fitLine[0].y) / (fitLine[1].x - fitLine[0].x), a = fitLine[0].y - b * fitLine[0].x\n    return data.map(d =&gt; ({ x: d.x, e: d.y - (a + b * d.x) }))\n  }\n  const rH = resid(homo_scatter_data, homo_fit_line), rX = resid(hetero_scatter_data, hetero_fit_line)\n  const eMax = d3.max([...rH, ...rX], d =&gt; Math.abs(d.e)) + 1\n  const mkPanel = (data, fitLine) =&gt; Plot.plot({\n    width: 360, height: 230, marginLeft: 45,\n    x: {label: \"x\"}, y: {label: \"y\", domain: yDomain},\n    marks: [\n      Plot.dot(data, {x: \"x\", y: \"y\", fill: \"#457b9d\", fillOpacity: 0.55, r: 3}),\n      Plot.line(fitLine, {x: \"x\", y: \"y\", stroke: \"#e63946\", strokeWidth: 2.5}),\n    ]\n  })\n  const mkResid = (r) =&gt; Plot.plot({\n    width: 360, height: 160, marginLeft: 45,\n    x: {label: \"x\"}, y: {label: \"residual\", domain: [-eMax, eMax]},\n    marks: [\n      Plot.ruleY([0], {stroke: \"#e63946\", strokeWidth: 1.5}),\n      Plot.dot(r, {x: \"x\", y: \"e\", fill: \"#2d6a4f\", fillOpacity: 0.55, r: 3}),\n    ]\n  })\n  const label = (text) =&gt; html`&lt;div style=\"text-align:center;font-family:'Helvetica Neue',sans-serif;font-weight:600;color:#1a1a2e;margin-bottom:2px;\"&gt;${text}&lt;/div&gt;`\n  return html`&lt;div style=\"display:flex;gap:30px;justify-content:center;\"&gt;\n    &lt;div&gt;${label(\"Homoskedastic\")}${mkPanel(homo_scatter_data, homo_fit_line)}&lt;div style=\"height:28px;\"&gt;&lt;/div&gt;${mkResid(rH)}&lt;/div&gt;\n    &lt;div&gt;${label(\"Heteroskedastic\")}${mkPanel(hetero_scatter_data, hetero_fit_line)}&lt;div style=\"height:28px;\"&gt;&lt;/div&gt;${mkResid(rX)}&lt;/div&gt;\n  &lt;/div&gt;`\n}\n\n\n\n\n\n\n\nLeft: the residuals form an even band around zero, the same width at every x. Right: same fitted line, same trend — but the band of residuals fans out as x grows. That fan is exactly what “the spread of residuals isn’t constant” means."
+  },
+  {
+    "objectID": "week4-slides.html#prediction-and-residuals",
+    "href": "week4-slides.html#prediction-and-residuals",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Prediction and residuals",
+    "text": "Prediction and residuals"
+  },
+  {
+    "objectID": "week4-slides.html#checking-it-on-our-own-data",
+    "href": "week4-slides.html#checking-it-on-our-own-data",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Checking it on our own data",
+    "text": "Checking it on our own data\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n  const xbar = d3.mean(rows, d =&gt; d.finger_mm), ybar = d3.mean(rows, d =&gt; d.mean_rt)\n  const cov = d3.mean(rows, d =&gt; (d.finger_mm - xbar) * (d.mean_rt - ybar))\n  const varx = d3.mean(rows, d =&gt; (d.finger_mm - xbar) ** 2)\n  const beta = cov / varx\n  const alpha = ybar - beta * xbar\n  const residuals = rows.map(d =&gt; d.mean_rt - (alpha + beta * d.finger_mm))\n  const sumResiduals = d3.sum(residuals)\n  const yhatBar = d3.mean(rows, d =&gt; alpha + beta * d.finger_mm)\n  return html`&lt;p style=\"font-family:sans-serif;font-size:1.1em;\"&gt;\n    Sum of residuals: &lt;strong&gt;${sumResiduals.toExponential(2)}&lt;/strong&gt; (zero, up to rounding)\n    &nbsp;·&nbsp; average ŷ = &lt;strong&gt;${yhatBar.toFixed(1)}&lt;/strong&gt;\n    &nbsp;·&nbsp; average y = &lt;strong&gt;${ybar.toFixed(1)}&lt;/strong&gt;&lt;/p&gt;`\n}\n\n\n\n\n\n\n\nThe same check in Python, on model from the earlier task:\nresid = model.resid\nresid.sum()                                            # ≈ 0\n\nmodel.fittedvalues.mean(), student_summary['mean_rt'].mean()\n\nresid.sum()       6.37e-12fittedvalues.mean()  1070.1mean_rt.mean()      1070.1\n\n\n\nNot a coincidence — it’s a mathematical property of how OLS fits the line. It’s true by construction, for any data."
+  },
+  {
+    "objectID": "week4-slides.html#task-interpolation-vs.-extrapolation",
+    "href": "week4-slides.html#task-interpolation-vs.-extrapolation",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Task — interpolation vs. extrapolation",
+    "text": "Task — interpolation vs. extrapolation\n\nIn the Colab notebook, use your fitted model to predict mean reaction time for three finger lengths: 80mm, 40mm and 20mm. The shape of the syntax, with generic names – swap in the real column name and values:\nnew = pd.DataFrame({'x': [value1, value2, value3]})\nmodel.predict(new)\nThen check the shortest and longest finger in our data (student_summary['finger_mm'].min() and .max()). Which of your three predictions would you trust, and why?\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n  const xbar = d3.mean(rows, d =&gt; d.finger_mm), ybar = d3.mean(rows, d =&gt; d.mean_rt)\n  const beta = d3.mean(rows, d =&gt; (d.finger_mm - xbar) * (d.mean_rt - ybar)) / d3.mean(rows, d =&gt; (d.finger_mm - xbar) ** 2)\n  const alpha = ybar - beta * xbar\n  const [lo, hi] = d3.extent(rows, d =&gt; d.finger_mm)\n  const pred = x =&gt; alpha + beta * x\n  return html`&lt;p style=\"font-family:sans-serif;\"&gt;Our data run from &lt;strong&gt;${lo}mm&lt;/strong&gt; to &lt;strong&gt;${hi}mm&lt;/strong&gt;.\n    80mm → &lt;strong&gt;${pred(80).toFixed(0)} ms&lt;/strong&gt; &nbsp;·&nbsp; 40mm → &lt;strong&gt;${pred(40).toFixed(0)} ms&lt;/strong&gt; &nbsp;·&nbsp; 20mm → &lt;strong style=\"color:#e63946;\"&gt;${pred(20).toFixed(0)} ms&lt;/strong&gt;.\n    ${pred(20) &lt; 0 ? html`The line hits zero at about &lt;strong&gt;${(-alpha / beta).toFixed(0)}mm&lt;/strong&gt;: a negative reaction time, which is impossible.` : ''}&lt;/p&gt;`\n}\n\n\n\n\n\n\n\n\nInterpolation — predicting within the range of x we’ve actually seen — is reasonably safe. Extrapolation — predicting beyond it — assumes the same straight-line pattern keeps holding somewhere we’ve never checked. For a screening tool HR might apply to any candidate, that assumption is doing a lot of unexamined work."
+  },
+  {
+    "objectID": "week4-slides.html#how-good-is-the-fit",
+    "href": "week4-slides.html#how-good-is-the-fit",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "How good is the fit?",
+    "text": "How good is the fit?"
+  },
+  {
+    "objectID": "week4-slides.html#r-squared",
+    "href": "week4-slides.html#r-squared",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "R-squared",
+    "text": "R-squared\n\\[R^2 = \\frac{Var[\\hat y]}{Var[y]} = 1 - \\frac{Var[e]}{Var[y]}\\]\nDecomposing the total variation in y into what the regression explains and what’s left over:\n\\[Var[y] = Var[\\hat y] + Var[e]\\]\n\n\\(R^2 = 0\\): predicted values are just \\(\\bar y\\) for everyone — the regression explains nothing\n\\(R^2 = 1\\): every point sits exactly on the line\nFor simple regression: \\(R^2 = (Corr[x,y])^2\\) — a direct callback to Week 3"
+  },
+  {
+    "objectID": "week4-slides.html#r-squared-1",
+    "href": "week4-slides.html#r-squared-1",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "R-squared",
+    "text": "R-squared\nYou’ll also see this written as sums of squares rather than variances — same identity, just without dividing by \\(n\\). Software output (e.g. Excel’s regression table) usually uses this version:\n\\[\\underbrace{\\textstyle\\sum(y_i-\\bar y)^2}_{TSS} \\;=\\; \\underbrace{\\textstyle\\sum(\\hat y_i-\\bar y)^2}_{ESS} \\;+\\; \\underbrace{\\textstyle\\sum e_i^2}_{RSS} \\qquad R^2 = \\frac{ESS}{TSS} = 1 - \\frac{RSS}{TSS}\\]\nTSS (total), ESS (explained), RSS (residual) — watch out, some textbooks swap the last two labels (calling the residual part “SSE”). Check what a given source means before trusting the letters alone.\n\nIn statsmodels: the summary table only reports R², not the sums of squares, but a fitted model stores all three: model.centered_tss (TSS), model.ess (ESS) and model.ssr (RSS). Note the trap: statsmodels’ ssr is the residual sum of squares, where some textbooks use SSR for the regression (explained) part. Check: model.ess / model.centered_tss equals model.rsquared."
+  },
+  {
+    "objectID": "week4-slides.html#task-compute-our-own-r²",
+    "href": "week4-slides.html#task-compute-our-own-r²",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Task — compute our own R²",
+    "text": "Task — compute our own R²\n\nOpen the Colab notebook and fit mean_rt ~ finger_mm on the class’s own data with smf.ols(...). Pull out the fitted values, then use them to work out Var[ŷ] and Var[y] yourself — and use those two numbers to compute R².\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n  const xbar = d3.mean(rows, d =&gt; d.finger_mm), ybar = d3.mean(rows, d =&gt; d.mean_rt)\n  const cov = d3.mean(rows, d =&gt; (d.finger_mm - xbar) * (d.mean_rt - ybar))\n  const varx = d3.mean(rows, d =&gt; (d.finger_mm - xbar) ** 2)\n  const beta = cov / varx, alpha = ybar - beta * xbar\n  const fitted = rows.map(d =&gt; alpha + beta * d.finger_mm)\n  const varY = d3.mean(rows, d =&gt; (d.mean_rt - ybar) ** 2)\n  const varYhat = d3.mean(fitted, f =&gt; (f - ybar) ** 2)\n  const r2 = varYhat / varY\n  return html`&lt;p style=\"font-family:sans-serif;font-size:1.1em;\"&gt;&lt;strong&gt;R² = ${r2.toFixed(3)}&lt;/strong&gt; — the regression explains about ${(r2*100).toFixed(1)}% of the variation in reaction time. Check it against what your own Colab notebook gave you.&lt;/p&gt;`\n}\n\n\n\n\n\n\n\n\nThat number is the answer to the HR question. R² and correlation are directly linked for simple regression (\\(R^2 = Corr[x,y]^2\\)) — whatever finger length’s correlation with reaction time turned out to be for our class, this is exactly what it’s worth as a predictor. The formula exists; whether it’s useful is a separate question."
+  },
+  {
+    "objectID": "week4-slides.html#r²-task-model-answer",
+    "href": "week4-slides.html#r²-task-model-answer",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "R² task — model answer",
+    "text": "R² task — model answer\nOne way to write it – compare with your own notebook:\nimport statsmodels.formula.api as smf\n\nmodel = smf.ols('mean_rt ~ finger_mm', data=student_summary).fit()\nfitted = model.fittedvalues\n\nvar_y = student_summary['mean_rt'].var()\nvar_yhat = fitted.var()\nr2 = var_yhat / var_y\n\nVar[y]      789561.37Var[ŷ]   25291.32R²       0.0320\n\n\nCheck: model.rsquared gives the same number directly."
+  },
+  {
+    "objectID": "week4-slides.html#same-method-very-different-r²",
+    "href": "week4-slides.html#same-method-very-different-r²",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Same method, very different R²",
+    "text": "Same method, very different R²\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n  const fit = (data, xk, yk) =&gt; {\n    const xb = d3.mean(data, d =&gt; d[xk]), yb = d3.mean(data, d =&gt; d[yk])\n    const b = d3.mean(data, d =&gt; (d[xk] - xb) * (d[yk] - yb)) / d3.mean(data, d =&gt; (d[xk] - xb) ** 2)\n    const a = yb - b * xb\n    const r2 = d3.mean(data, d =&gt; (a + b * d[xk] - yb) ** 2) / d3.mean(data, d =&gt; (d[yk] - yb) ** 2)\n    return { a, b, r2 }\n  }\n  const panel = (data, xk, yk, xlab, colour, title) =&gt; {\n    const f = fit(data, xk, yk)\n    const ext = d3.extent(data, d =&gt; d[xk])\n    const line = ext.map(x =&gt; ({ x, y: f.a + f.b * x }))\n    return html`&lt;div&gt;&lt;div style=\"text-align:center;font-family:'Helvetica Neue',sans-serif;font-weight:600;color:#1a1a2e;\"&gt;${title}&lt;/div&gt;\n      ${Plot.plot({\n        width: 520, height: 380, marginLeft: 60,\n        x: { label: xlab }, y: { label: \"Mean reaction time (ms)\" },\n        marks: [\n          Plot.dot(data, { x: xk, y: yk, fill: colour, r: 5, fillOpacity: 0.85 }),\n          Plot.line(line, { x: \"x\", y: \"y\", stroke: \"#e63946\", strokeWidth: 2.5 }),\n          Plot.text([`R² = ${f.r2.toFixed(2)}`], { frameAnchor: \"top-left\", dx: 10, dy: 6, fontSize: 22, fontWeight: 700, fill: \"#e63946\" })\n        ]\n      })}&lt;/div&gt;`\n  }\n  return html`&lt;div style=\"display:flex;gap:30px;justify-content:center;\"&gt;\n    ${panel(rows, \"finger_mm\", \"mean_rt\", \"Finger length (mm)\", \"#1a1a2e\", \"Our class: finger length\")}\n    ${panel(awake_data, \"hours_awake\", \"reaction_time_ms\", \"Hours awake before the test\", \"#2d6a4f\", \"Simulated class: hours awake\")}\n  &lt;/div&gt;`\n}\n\n\n\n\n\n\n\nBoth lines are the best-fitting line OLS can find. R² tells us how much of the variation in reaction time each line accounts for: almost none for finger length, most of it for hours awake. A low R² isn’t a mistake in the fit – it says x carries little information about y."
+  },
+  {
+    "objectID": "week4-slides.html#a-second-regression-device",
+    "href": "week4-slides.html#a-second-regression-device",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "A second regression: device",
+    "text": "A second regression: device"
+  },
+  {
+    "objectID": "week4-slides.html#reaction-time-on-device",
+    "href": "week4-slides.html#reaction-time-on-device",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Reaction time on device",
+    "text": "Reaction time on device\n\nTask — x is binary here: device (Laptop = 0, Phone = 1). Using \\(\\hat\\beta = Cov[x,y]/Var[x]\\) and \\(\\hat\\alpha = \\bar y - \\hat\\beta\\bar x\\), work out what each one must reduce to when x only ever takes the values 0 and 1.\n\n\n\\(\\hat\\alpha\\) = average y when x = 0 (average reaction time on Laptop). \\(\\hat\\beta\\) = average y when x = 1, minus average y when x = 0 (Phone minus Laptop). The “line” is only ever evaluated at x=0 and x=1 — it’s really just two averages and their difference, dressed up in regression notation.\n\n\n\nTask (Python) — confirm it directly in the Colab notebook: compute the average reaction time separately for the Phone and Laptop groups with df.groupby('device')['reaction_time_ms'].mean(), then check they match \\(\\hat\\alpha\\) and \\(\\hat\\alpha + \\hat\\beta\\) below.\n\n\n\n\n{\n  const rows = device_stats.filter(d =&gt; d.n &gt;= 2)\n  if (rows.length &lt; 2) return html`&lt;div class=\"instructions-box\"&gt;Need data from both device groups — check back once more of the class has submitted.&lt;/div&gt;`\n  const laptop = rows.find(d =&gt; d.device === \"Laptop\")\n  const phone = rows.find(d =&gt; d.device === \"Phone\")\n  if (!laptop || !phone) return html`&lt;p style=\"color:#aaa;\"&gt;Need both Phone and Laptop groups.&lt;/p&gt;`\n  const alpha = laptop.mean\n  const beta = phone.mean - laptop.mean\n  return html`&lt;div style=\"font-family:sans-serif;\"&gt;\n    &lt;p&gt;α̂ (average on Laptop) = &lt;strong style=\"color:#457b9d;\"&gt;${alpha.toFixed(1)} ms&lt;/strong&gt;&lt;/p&gt;\n    &lt;p&gt;β̂ (Phone − Laptop) = &lt;strong style=\"color:#e63946;\"&gt;${beta.toFixed(1)} ms&lt;/strong&gt;&lt;/p&gt;\n    &lt;p&gt;Fitted average on Phone (α̂ + β̂) = &lt;strong&gt;${(alpha+beta).toFixed(1)} ms&lt;/strong&gt;&lt;/p&gt;\n  &lt;/div&gt;`\n}"
+  },
+  {
+    "objectID": "week4-slides.html#doing-this-in-python",
+    "href": "week4-slides.html#doing-this-in-python",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Doing this in Python",
+    "text": "Doing this in Python\nA model answer for the manual calculation — same \\(\\hat\\beta = Cov[x,y]/Var[x]\\), \\(\\hat\\alpha = \\bar y - \\hat\\beta\\bar x\\) formula, done in code instead of Excel:\nimport numpy as np\n\n# device as 0/1, one row per trial -- same data as the task above\nx = (df['device'] == 'Phone').astype(int)\ny = df['reaction_time_ms']\n\ncov = np.cov(x, y)[0, 1]\nvar_x = x.var(ddof=1)\n\nbeta = round(cov / var_x, 2)\nalpha = y.mean() - beta * x.mean()\n\nprint(\"cov:\", cov)\nprint(\"var_x:\", var_x)\nprint(\"beta:\", beta)\nprint(\"alpha:\", alpha)\n\ncov:      -68.74var_x:   0.22beta:    -306.25alpha:   1078.94"
+  },
+  {
+    "objectID": "week4-slides.html#the-quick-way-statsmodels",
+    "href": "week4-slides.html#the-quick-way-statsmodels",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "The quick way: statsmodels",
+    "text": "The quick way: statsmodels\nstatsmodels does the same calculation in one line:\nimport statsmodels.formula.api as smf\n\nmodel = smf.ols('reaction_time_ms ~ device', data=df).fit()\nprint(model.params)\n\nIntercept       1078.9394device[T.Phone]  -306.2528\n\n\n\n{\n  const rows = device_stats.filter(d =&gt; d.n &gt;= 2)\n  const laptop = rows.find(d =&gt; d.device === \"Laptop\")\n  const phone = rows.find(d =&gt; d.device === \"Phone\")\n  if (!laptop || !phone) return html`&lt;p&gt;Same numbers we got from the group averages and from the manual calculation on the last slide — statsmodels just automates it. &lt;code&gt;device&lt;/code&gt; is converted to 0/1 automatically because it's text (\"Laptop\"/\"Phone\"); the coefficient is labelled &lt;code&gt;device[T.Phone]&lt;/code&gt; to make clear which category is x = 1.&lt;/p&gt;`\n  const alpha = laptop.mean, beta = phone.mean - laptop.mean\n  return html`&lt;p&gt;Same ${alpha.toFixed(1)} and ${beta.toFixed(1)} we got from the group averages and from the manual calculation on the last slide — statsmodels just automates it. &lt;code&gt;device&lt;/code&gt; is converted to 0/1 automatically because it's text (\"Laptop\"/\"Phone\"); the coefficient is labelled &lt;code&gt;device[T.Phone]&lt;/code&gt; to make clear which category is x = 1.&lt;/p&gt;`\n}\n\n\n\n\n\n\n\n\nThis smf.ols(...) syntax is what we’ll use for the rest of the module."
+  },
+  {
+    "objectID": "week4-slides.html#your-first-regression-summary",
+    "href": "week4-slides.html#your-first-regression-summary",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Your first regression summary",
+    "text": "Your first regression summary\nmodel.params gives just the coefficients. model.summary() gives the full report:\nprint(model.summary())\n                            OLS Regression Results                            \n==============================================================================\nDep. Variable:       reaction_time_ms   R-squared:                       0.007\nModel:                            OLS   Adj. R-squared:                  0.002\nMethod:                 Least Squares   F-statistic:                     1.471\nDate:                Wed, 14 Oct 2026   Prob (F-statistic):              0.227\nTime:                        09:56:34   Log-Likelihood:                -1759.6\nNo. Observations:                 199   AIC:                             3523.\nDf Residuals:                     197   BIC:                             3530.\nDf Model:                           1                                         \nCovariance Type:            nonrobust                                         \n==============================================================================\n===================================================================================\n                      coef    std err          t      P&gt;|t|      [0.025      0.975]\n-----------------------------------------------------------------------------------\nIntercept        1078.9394    146.512      7.364      0.000     790.006    1367.873\ndevice[T.Phone]  -306.2528    252.500     -1.213      0.227    -804.204     191.698\n===================================================================================\n\nWhat you can read already: No. Observations, R-squared, and the coef column – the same \\(\\hat\\alpha\\) and \\(\\hat\\beta\\) as model.params. The std err, t, P&gt;|t| and [0.025 0.975] columns tell us how precisely those coefficients are estimated: that’s next week.\n\n\nSource: Békés & Kézdi (2021), Ch. 7 — syntax introduced light-touch here; the full statsmodels workflow builds from Week 6"
+  },
+  {
+    "objectID": "week4-slides.html#is-it-causal",
+    "href": "week4-slides.html#is-it-causal",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Is it causal?",
+    "text": "Is it causal?\nThe slope isn’t zero in our data. Gabor & Kézdi’s list of why, not mutually exclusive:\n\nx causes y — longer fingers → faster reactions?\ny causes x — implausible here, but always worth ruling out explicitly\nA third variable causes both — hand size, age, or general dexterity could plausibly move both finger length and reaction time together\n\n\n“Correlation doesn’t imply causation” undersells it. Better: we should not infer cause and effect from a comparison in observational data — not because the method is broken, but because nothing about it was designed to rule out the third alternative.\n\n\nSource: Békés & Kézdi (2021), Ch. 7"
+  },
+  {
+    "objectID": "week4-slides.html#online-session-finding-a-good-deal-among-hotels",
+    "href": "week4-slides.html#online-session-finding-a-good-deal-among-hotels",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Online session — Finding a good deal among hotels",
+    "text": "Online session — Finding a good deal among hotels\nA recorded walkthrough of Gabor’s own case study: today’s regression tools applied to real data on 207 Vienna hotels. We fit price against distance from the city centre, then use the residuals to find the hotels that look underpriced for their location. Watch it before the Q&A and bring your questions."
+  },
+  {
+    "objectID": "week4-slides.html#coming-up-week-5",
+    "href": "week4-slides.html#coming-up-week-5",
+    "title": "Simple Regression: The OLS Estimator",
+    "section": "Coming up: Week 5",
+    "text": "Coming up: Week 5\n\nWe have a formula. Is it the right shape? What if something’s mismeasured? How sure are we, really?\nModel problems & inference\n\nFunctional form · extreme values · measurement error · confidence intervals for β"
+  },
+  {
+    "objectID": "week4-online-slides.html#section",
+    "href": "week4-online-slides.html#section",
+    "title": "Finding a Good Deal Among Hotels",
+    "section": "",
+    "text": "Finding a good deal among hotels\nThis week’s regression tools – bin-scatter, LOWESS, OLS, residuals, R² – on one real pricing question."
+  },
+  {
+    "objectID": "week4-online-slides.html#the-question",
+    "href": "week4-online-slides.html#the-question",
+    "title": "Finding a Good Deal Among Hotels",
+    "section": "The question",
+    "text": "The question\nYou’re booking a hotel in Vienna for a weekday night. You want somewhere central, but you don’t want to overpay.\n\ny = price per night (€)\nx = distance from the city centre (miles)\n\n\nA good deal isn’t simply a cheap hotel – cheap hotels are often far out. It’s a hotel that’s cheap for its location: priced below what we’d expect, given how far it is from the centre.\nThat “what we’d expect” is exactly what a regression gives us.\n\n\nSource: Békés & Kézdi (2021), Data Analysis for Business, Economics, and Policy, Ch. 7"
+  },
+  {
+    "objectID": "week4-online-slides.html#the-data-one-night-in-vienna",
+    "href": "week4-online-slides.html#the-data-one-night-in-vienna",
+    "title": "Finding a Good Deal Among Hotels",
+    "section": "The data: one night in Vienna",
+    "text": "The data: one night in Vienna\n\nPrices scraped from a booking site for a weekday night in November 2017 –  accommodation prices in Vienna\nWe keep the textbook’s sample: hotels (not apartments), actually in Vienna, 3 to 4 stars, and no price above €600 (treated as an error)\n\n\nThat leaves  hotels.\n\ncodeBox(`hotels = pd.read_csv(data_path)            # hotels_vienna.csv\n\nhotels = hotels[(hotels['accommodation_type'] == 'Hotel') &\n                (hotels['city_actual'] == 'Vienna') &\n                (hotels['stars'] &gt;= 3) & (hotels['stars'] &lt;= 4) &\n                (hotels['price'] &lt;= 600)]\nlen(hotels)                                  # 207`)\n\n\n\n\n\n\n\n\n\nPause the video. Before you see any data: how much cheaper do you think a hotel gets for each mile further from the centre?"
+  },
+  {
+    "objectID": "week4-online-slides.html#first-each-variable-on-its-own",
+    "href": "week4-online-slides.html#first-each-variable-on-its-own",
+    "title": "Finding a Good Deal Among Hotels",
+    "section": "First, each variable on its own",
+    "text": "First, each variable on its own\n\n{\n  const a = accessibleChart(Plot.plot({ height: 300, width: 520, marginLeft: 45,\n    x: { label: \"Price per night (€)\" }, y: { label: \"Hotels\" },\n    marks: [Plot.rectY(hotels, Plot.binX({ y: \"count\" }, { x: \"price\", thresholds: 25, fill: \"#457b9d\", inset: 1 })), Plot.ruleY([0])] }),\n    \"Histogram of hotel price per night: most hotels between about 60 and 160 euros, with a long right tail up to almost 400.\")\n  const b = accessibleChart(Plot.plot({ height: 300, width: 520, marginLeft: 45,\n    x: { label: \"Distance from centre (miles)\" }, y: { label: \"Hotels\" },\n    marks: [Plot.rectY(hotels, Plot.binX({ y: \"count\" }, { x: \"distance\", thresholds: 20, fill: \"#2d6a4f\", inset: 1 })), Plot.ruleY([0])] }),\n    \"Histogram of distance from the city centre: most hotels within 2 miles, a thin tail out to about 6.6 miles.\")\n  return html`&lt;div style=\"display:flex;gap:30px;justify-content:center;\"&gt;${a}${b}&lt;/div&gt;`\n}\n\n\n\n\n\n\n\n\nhtml`&lt;ul&gt;\n&lt;li&gt;&lt;strong&gt;Price:&lt;/strong&gt; mean €${stats.p_mean}, median €${stats.p_median} – right-skewed, a few expensive hotels pull the mean up&lt;/li&gt;\n&lt;li&gt;&lt;strong&gt;Distance:&lt;/strong&gt; mean ${stats.d_mean} miles, median ${stats.d_median} – most hotels are central, a few are out to ${stats.d_max} miles&lt;/li&gt;\n&lt;/ul&gt;`"
+  },
+  {
+    "objectID": "week4-online-slides.html#bin-scatter-the-conditional-mean-coarse-to-finer",
+    "href": "week4-online-slides.html#bin-scatter-the-conditional-mean-coarse-to-finer",
+    "title": "Finding a Good Deal Among Hotels",
+    "section": "Bin-scatter: the conditional mean, coarse to finer",
+    "text": "Bin-scatter: the conditional mean, coarse to finer\n\n\n\naccessibleChart(Plot.plot({\n  height: 340, width: 520, marginLeft: 50,\n  x: { label: \"Distance band (miles)\", domain: bin2.map(d =&gt; d.bin2) },\n  y: { label: \"Mean price (€)\", domain: [0, 150] },\n  marks: [\n    Plot.dot(bin2, { x: \"bin2\", y: \"mean\", r: 9, fill: \"#e63946\" }),\n    Plot.text(bin2, { x: \"bin2\", y: \"mean\", text: d =&gt; `€${d.mean.toFixed(0)} (n=${d.count})`, dy: -18, fontSize: 14 })\n  ]\n}), `Bin-scatter with two bins: mean price ${bin2.map(d =&gt; `${d.bin2} €${d.mean.toFixed(0)}`).join(\", \")}.`)\n\n\n\n\n\n\n2 bins: central hotels cost more, on average.\n\n\n\naccessibleChart(Plot.plot({\n  height: 340, width: 520, marginLeft: 50,\n  x: { label: \"Distance band (miles)\", domain: bin4.map(d =&gt; d.bin4) },\n  y: { label: \"Mean price (€)\", domain: [0, 150] },\n  marks: [\n    Plot.line(bin4, { x: \"bin4\", y: \"mean\", stroke: \"#e63946\", strokeOpacity: 0.4 }),\n    Plot.dot(bin4, { x: \"bin4\", y: \"mean\", r: 9, fill: \"#e63946\" }),\n    Plot.text(bin4, { x: \"bin4\", y: \"mean\", text: d =&gt; `€${d.mean.toFixed(0)}`, dy: -18, fontSize: 14 })\n  ]\n}), `Bin-scatter with four bins: mean price ${bin4.map(d =&gt; `${d.bin4} miles €${d.mean.toFixed(0)}`).join(\", \")}. The biggest drop is between the first and second mile.`)\n\n\n\n\n\n\n4 bins: the biggest drop is in the first mile, then it levels off.\n\n\n\nEach dot is \\(E[\\text{price} \\mid \\text{distance band}]\\) – the Week 3 conditional mean. More bins show more shape, but each one averages fewer hotels."
+  },
+  {
+    "objectID": "week4-online-slides.html#lowess-a-smooth-version",
+    "href": "week4-online-slides.html#lowess-a-smooth-version",
+    "title": "Finding a Good Deal Among Hotels",
+    "section": "LOWESS: a smooth version",
+    "text": "LOWESS: a smooth version\n\naccessibleChart(Plot.plot({\n  height: 360, width: 900, marginLeft: 50,\n  x: { label: \"Distance from centre (miles)\" }, y: { label: \"Price per night (€)\" },\n  marks: [\n    Plot.dot(hotels, { x: \"distance\", y: \"price\", r: 3, fill: \"#457b9d\", fillOpacity: 0.45 }),\n    Plot.line(lowess_line, { x: \"distance\", y: \"price\", stroke: \"#e63946\", strokeWidth: 3 })\n  ]\n}), \"Scatterplot of price against distance with a LOWESS curve: price falls steeply over the first mile or so, then the curve flattens out.\")\n\n\n\n\n\n\n\nSame idea as the bin-scatter, but with overlapping local windows instead of fixed bins. It confirms the shape: a steep fall close to the centre, then much flatter.\n\n\n\nShow the Python code\n\n\ncodeBox(`from statsmodels.nonparametric.smoothers_lowess import lowess\n\n# frac = share of all hotels used in each local average (the bandwidth)\nsmooth = lowess(hotels['price'], hotels['distance'], frac=0.3)`)"
+  },
+  {
+    "objectID": "week4-online-slides.html#the-linear-regression",
+    "href": "week4-online-slides.html#the-linear-regression",
+    "title": "Finding a Good Deal Among Hotels",
+    "section": "The linear regression",
+    "text": "The linear regression\n\naccessibleChart(Plot.plot({\n  height: 330, width: 900, marginLeft: 50,\n  x: { label: \"Distance from centre (miles)\" }, y: { label: \"Price per night (€)\" },\n  marks: [\n    Plot.dot(hotels, { x: \"distance\", y: \"price\", r: 3, fill: \"#457b9d\", fillOpacity: 0.45 }),\n    Plot.line(fitLine, { x: \"distance\", y: \"price\", stroke: \"#1a1a2e\", strokeWidth: 3 })\n  ]\n}), `Scatterplot of price against distance with the fitted OLS line, price = ${stats.alpha} ${stats.beta} times distance, sloping downward.`)\n\n\n\n\n\n\n\ncodeBox(`import statsmodels.formula.api as smf\n\nmodel = smf.ols('price ~ distance', data=hotels).fit()\nmodel.params          # Intercept ${stats.alpha.toFixed(2)}, distance ${stats.beta.toFixed(2)}`)\n\n\n\n\n\n\n\n\nPause. Put \\(\\hat\\alpha\\) and \\(\\hat\\beta\\) into words. What does each one say about Vienna hotels?"
+  },
+  {
+    "objectID": "week4-online-slides.html#reading-the-line",
+    "href": "week4-online-slides.html#reading-the-line",
+    "title": "Finding a Good Deal Among Hotels",
+    "section": "Reading the line",
+    "text": "Reading the line\n\nhtml`&lt;p style=\"font-family:sans-serif;font-size:1.3em;text-align:center;\"&gt;predicted price = &lt;strong&gt;${stats.alpha.toFixed(0)}&lt;/strong&gt; − &lt;strong&gt;${(-stats.beta).toFixed(1)}&lt;/strong&gt; × distance&lt;/p&gt;`\n\n\n\n\n\n\n\n\nhtml`&lt;ul&gt;\n&lt;li&gt;&lt;strong&gt;Intercept ≈ €${stats.alpha.toFixed(0)}:&lt;/strong&gt; the predicted price of a hotel right in the city centre (distance = 0)&lt;/li&gt;\n&lt;li&gt;&lt;strong&gt;Slope ≈ ${stats.beta.toFixed(1)}:&lt;/strong&gt; hotels &lt;strong&gt;1 mile further out&lt;/strong&gt; are, on average, &lt;strong&gt;€${(-stats.beta).toFixed(0)} cheaper&lt;/strong&gt; in our data&lt;/li&gt;\n&lt;/ul&gt;`\n\n\n\n\n\n\n\n\nNote the careful wording: “on average, in our data”. The slope is a comparison between hotels at different distances, not what would happen to one hotel’s price if it moved."
+  },
+  {
+    "objectID": "week4-online-slides.html#line-vs.-lowess",
+    "href": "week4-online-slides.html#line-vs.-lowess",
+    "title": "Finding a Good Deal Among Hotels",
+    "section": "Line vs. LOWESS",
+    "text": "Line vs. LOWESS\n\naccessibleChart(Plot.plot({\n  height: 360, width: 900, marginLeft: 50,\n  x: { label: \"Distance from centre (miles)\" }, y: { label: \"Price per night (€)\" },\n  color: { legend: true, domain: [\"LOWESS\", \"Linear regression\"], range: [\"#e63946\", \"#1a1a2e\"] },\n  marks: [\n    Plot.dot(hotels, { x: \"distance\", y: \"price\", r: 3, fill: \"#457b9d\", fillOpacity: 0.3 }),\n    Plot.line(lowess_line, { x: \"distance\", y: \"price\", stroke: () =&gt; \"LOWESS\", strokeWidth: 3 }),\n    Plot.line(fitLine, { x: \"distance\", y: \"price\", stroke: () =&gt; \"Linear regression\", strokeWidth: 3 })\n  ]\n}), \"The LOWESS curve and the straight regression line on the same scatterplot. Near the centre LOWESS falls more steeply than the line; further out it is flatter.\")\n\n\n\n\n\n\n\nThe line is an average slope: it misses the steep drop in the first mile and is too steep further out. Not a bad approximation overall – but next week’s online session asks whether a different shape would do better."
+  },
+  {
+    "objectID": "week4-online-slides.html#residuals",
+    "href": "week4-online-slides.html#residuals",
+    "title": "Finding a Good Deal Among Hotels",
+    "section": "Residuals",
+    "text": "Residuals\nEach hotel’s residual is its actual price minus the price the line predicts: \\(e_i = y_i - \\hat y_i\\).\n\naccessibleChart(Plot.plot({\n  height: 280, width: 900, marginLeft: 50,\n  x: { label: \"Residual (€): actual minus predicted price\" }, y: { label: \"Hotels\" },\n  marks: [\n    Plot.rectY(hotels, Plot.binX({ y: \"count\" }, { x: \"residual\", thresholds: 30, fill: \"#457b9d\", inset: 1 })),\n    Plot.ruleX([0], { stroke: \"#e63946\", strokeWidth: 2, strokeDasharray: \"4,3\" }),\n    Plot.ruleY([0])\n  ]\n}), \"Histogram of the regression residuals: centred on zero, mostly between minus 50 and plus 50 euros, with a few large positive residuals.\")\n\n\n\n\n\n\n\n\nNegative residual: cheaper than its location predicts – a candidate good deal\nPositive residual: more expensive than its location predicts\nThey average exactly zero – OLS guarantees it, as we saw in the workshop\n\n\n\n\nShow the Python code\n\n\ncodeBox(`hotels['predicted'] = model.fittedvalues\nhotels['residual']  = model.resid           # = price - predicted`)"
+  },
+  {
+    "objectID": "week4-online-slides.html#the-five-best-deals",
+    "href": "week4-online-slides.html#the-five-best-deals",
+    "title": "Finding a Good Deal Among Hotels",
+    "section": "The five best deals",
+    "text": "The five best deals\n\nhtml`&lt;table style=\"width:85%;margin:0 auto;border-collapse:collapse;font-family:sans-serif;font-size:0.8em;\"&gt;\n  &lt;caption class=\"visually-hidden\"&gt;The five hotels with the most negative residuals: distance, stars, rating, actual price, predicted price and residual.&lt;/caption&gt;\n  &lt;thead&gt;&lt;tr style=\"background:#1a1a2e;color:white;\"&gt;\n    ${[\"Hotel id\",\"Distance\",\"Stars\",\"Rating\",\"Price\",\"Predicted\",\"Residual\"].map(h =&gt; `&lt;th scope=\"col\" style=\"padding:7px 12px;text-align:right;\"&gt;${h}&lt;/th&gt;`).join('')}\n  &lt;/tr&gt;&lt;/thead&gt;\n  &lt;tbody&gt;${deals.map(d =&gt; `&lt;tr style=\"border-bottom:1px solid #eee;\"&gt;\n    &lt;td style=\"padding:6px 12px;text-align:right;\"&gt;${d.hotel_id}&lt;/td&gt;\n    &lt;td style=\"padding:6px 12px;text-align:right;\"&gt;${d.distance}&lt;/td&gt;\n    &lt;td style=\"padding:6px 12px;text-align:right;\"&gt;${d.stars}&lt;/td&gt;\n    &lt;td style=\"padding:6px 12px;text-align:right;\"&gt;${d.rating}&lt;/td&gt;\n    &lt;td style=\"padding:6px 12px;text-align:right;\"&gt;€${d.price}&lt;/td&gt;\n    &lt;td style=\"padding:6px 12px;text-align:right;\"&gt;€${d.predicted.toFixed(2)}&lt;/td&gt;\n    &lt;td style=\"padding:6px 12px;text-align:right;color:#e63946;font-weight:700;\"&gt;${d.residual.toFixed(2)}&lt;/td&gt;&lt;/tr&gt;`).join('')}&lt;/tbody&gt;\n&lt;/table&gt;`\n\n\n\n\n\n\n\ncodeBox(`hotels.nsmallest(5, 'residual')[['hotel_id', 'distance', 'stars', 'rating',\n                                    'price', 'predicted', 'residual']]`)\n\n\n\n\n\n\n\nAll five sit about a mile from the centre and cost €50–60 less than the line predicts. The textbook’s own list, reproduced exactly. But remember: this line only knows about distance."
+  },
+  {
+    "objectID": "week4-online-slides.html#how-good-is-the-fit",
+    "href": "week4-online-slides.html#how-good-is-the-fit",
+    "title": "Finding a Good Deal Among Hotels",
+    "section": "How good is the fit?",
+    "text": "How good is the fit?\n\nhtml`&lt;p style=\"font-family:sans-serif;font-size:1.1em;text-align:center;margin-top:30px;\"&gt;R² = &lt;strong style=\"color:#e63946;font-size:1.4em;\"&gt;${stats.r2.toFixed(2)}&lt;/strong&gt;&lt;/p&gt;`\n\n\n\n\n\n\n\n\nhtml`&lt;ul&gt;\n&lt;li&gt;Distance explains about &lt;strong&gt;${(stats.r2*100).toFixed(0)}%&lt;/strong&gt; of the variation in hotel prices; the other &lt;strong&gt;${(100 - stats.r2*100).toFixed(0)}%&lt;/strong&gt; is left unexplained&lt;/li&gt;\n&lt;li&gt;For a single x variable in cross-section data, that's not unusual&lt;/li&gt;\n&lt;li&gt;And it's still the &lt;strong&gt;best-fitting line&lt;/strong&gt; – no other straight line does better&lt;/li&gt;\n&lt;/ul&gt;`\n\n\n\n\n\n\n\n\nFor finding deals, R² isn’t the point: we only need the line to give a sensible benchmark for each location. But 84% unexplained is a warning that plenty besides distance drives price."
+  },
+  {
+    "objectID": "week4-online-slides.html#interpolation-vs.-extrapolation",
+    "href": "week4-online-slides.html#interpolation-vs.-extrapolation",
+    "title": "Finding a Good Deal Among Hotels",
+    "section": "Interpolation vs. extrapolation",
+    "text": "Interpolation vs. extrapolation\nThe furthest hotel in our sample is  miles from the centre.\n\n\nPause. Use the line to predict the price of a hotel 10 miles out. Would you trust the answer?\n\n\n\n\nhtml`&lt;p style=\"font-family:sans-serif;font-size:1.05em;\"&gt;${stats.alpha.toFixed(2)} + (${stats.beta.toFixed(2)} × 10) = &lt;strong style=\"color:#e63946;font-size:1.25em;\"&gt;€${stats.pred10.toFixed(0)}&lt;/strong&gt;&lt;/p&gt;`\n\n\n\n\n\n\nA negative price. The line hits zero at about  miles, well beyond our data. Predicting inside the range of x we observed is interpolation; outside it is extrapolation, and nothing in the data tells us the pattern carries on."
+  },
+  {
+    "objectID": "week4-online-slides.html#is-it-causal",
+    "href": "week4-online-slides.html#is-it-causal",
+    "title": "Finding a Good Deal Among Hotels",
+    "section": "Is it causal?",
+    "text": "Is it causal?\nThe slope is . Does being further out cause a hotel to be cheaper?\n\n\nPartly, plausibly: guests pay for location, so central rooms command a premium\nBut other things differ with distance too: central hotels may be newer, bigger, better rated or more often 4-star\n\n\n\nSo the slope mixes the effect of location with everything else that comes with it. For finding a deal that’s fine – we only want a benchmark. For answering “what if this hotel moved?” it isn’t, and Week 6 shows how to start holding other things fixed."
+  },
+  {
+    "objectID": "week4-online-slides.html#bring-to-the-qa",
+    "href": "week4-online-slides.html#bring-to-the-qa",
+    "title": "Finding a Good Deal Among Hotels",
+    "section": "Bring to the Q&A",
+    "text": "Bring to the Q&A\n\n\nBefore booking one of the five “best deals”, what else would you want to know about it? Check its rating against the sample average.\nWhich hotel has the largest positive residual? Is it really overpriced, or could something else explain it?\nThe line predicts a negative price at 10 miles. Where exactly did it go wrong, and what would you do instead?\nR² is only 0.16. Does that make this regression useless for finding deals?\nFit the same regression separately for 3-star and 4-star hotels. Does your list of best deals change?"
+  },
+  {
+    "objectID": "week4-online-slides.html#coming-up-week-5",
+    "href": "week4-online-slides.html#coming-up-week-5",
+    "title": "Finding a Good Deal Among Hotels",
+    "section": "Coming up: Week 5",
+    "text": "Coming up: Week 5\n\nWe can fit a line and read it.\nNext: is a straight line the right shape, and how sure can we be about \\(\\hat\\beta\\)?\nModel problems & inference\n\nNext week’s online session comes back to these same Vienna hotels – this time with logs."
   }
 ]
