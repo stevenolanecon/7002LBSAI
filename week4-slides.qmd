@@ -127,14 +127,18 @@ ojs_define(
   // handles show/hide, once, for every wrapper on the page, so adding a new
   // chart to this pattern never means touching this cell.
   const wrapperFor = (fragId) => document.querySelector(`.shrink-on-reveal[data-frag="${fragId}"]`)
+  const syncAll = () => {
+    document.querySelectorAll('.fragment[id]').forEach(frag =>
+      wrapperFor(frag.id)?.classList.toggle('is-small', frag.classList.contains('visible'))
+    )
+  }
+  syncAll()
 
-  // Sets each wrapper's correct starting state immediately, including on a
-  // reload or direct navigation to a slide whose fragment is already shown
-  // — matters because this cell (no reactive deps) only runs once, at load.
-  document.querySelectorAll('.shrink-on-reveal[data-frag]').forEach(el => {
-    const frag = document.getElementById(el.dataset.frag)
-    el.classList.toggle('is-small', !!frag?.classList.contains('visible'))
-  })
+  // PDF export (reveal.js print-pdf, via decktape) rebuilds the slide DOM to
+  // show every fragment, so re-sync on any DOM/class change -- otherwise
+  // charts stay large while their fragment text also shows (same fix as Week 2).
+  const observer = new MutationObserver(syncAll)
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] })
 
   Reveal.on('fragmentshown', (event) => {
     wrapperFor(event.fragment.id)?.classList.add('is-small')
