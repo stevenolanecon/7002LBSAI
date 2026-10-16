@@ -1,0 +1,1312 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Regression I: Fitting the Line</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.17/dist/plot.umd.min.js"></script>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['$$', '$$']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #fdfbf6;
+    --paper-raised: #ffffff;
+    --paper-sunk: #f6f1e7;
+    --ink: #1a1a2e;
+    --ink-soft: #4a4d63;
+    --ink-faint: #86869c;
+    --rule: #e6ddc9;
+    --accent: #1f7a79;
+    --accent-soft: #f3fbfb;
+    --warm: #c8373f;
+    --warm-soft: #fbeceb;
+    --gold: #c97f31;
+    --green: #2d6a4f;
+    --green-soft: #eaf5ef;
+    --quote-bg: #eef7f7;
+    --quote-border: #bfe0df;
+    --quote-ink: #1e4a49;
+    --chip-bg: #f1ece0;
+    --code-bg: #f4f0e6;
+    --shadow: 0 1px 2px rgba(26,26,46,0.06), 0 8px 24px -12px rgba(26,26,46,0.18);
+    --serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    --sans: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #14151f;
+      --paper-raised: #1c1e2b;
+      --paper-sunk: #10111a;
+      --ink: #eef0f6;
+      --ink-soft: #b7bbcf;
+      --ink-faint: #7c8098;
+      --rule: #303350;
+      --accent: #5ecbc8;
+      --accent-soft: #15302f;
+      --warm: #ff8a86;
+      --warm-soft: #2e1c1d;
+      --gold: #f2b872;
+      --green: #6fbb95;
+      --green-soft: #14261f;
+      --quote-bg: #142726;
+      --quote-border: #29504c;
+      --quote-ink: #bfe7e2;
+      --chip-bg: #23253a;
+      --code-bg: #191b2a;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #14151f;
+    --paper-raised: #1c1e2b;
+    --paper-sunk: #10111a;
+    --ink: #eef0f6;
+    --ink-soft: #b7bbcf;
+    --ink-faint: #7c8098;
+    --rule: #303350;
+    --accent: #5ecbc8;
+    --accent-soft: #15302f;
+    --warm: #ff8a86;
+    --warm-soft: #2e1c1d;
+    --gold: #f2b872;
+    --green: #6fbb95;
+    --green-soft: #14261f;
+    --quote-bg: #142726;
+    --quote-border: #29504c;
+    --quote-ink: #bfe7e2;
+    --chip-bg: #23253a;
+    --code-bg: #191b2a;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--accent-soft); color: var(--ink); }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  h1, h2, h3, h4 { font-family: var(--serif); color: var(--ink); text-wrap: balance; line-height: 1.18; font-weight: 600; }
+  p { line-height: 1.68; color: var(--ink-soft); }
+  strong { color: var(--ink); font-weight: 600; }
+
+  /* ---------- shell layout ---------- */
+  .shell {
+    display: grid;
+    grid-template-columns: 240px minmax(0,1fr);
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  @media (max-width: 880px) {
+    .shell { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    padding: 56px 16px 38px;
+    border-bottom: 1px solid var(--rule);
+    background:
+      radial-gradient(ellipse 900px 320px at 15% -10%, var(--accent-soft), transparent 60%),
+      var(--paper);
+  }
+  .hero-inner { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; display:flex; align-items:center; gap: 10px; flex-wrap: wrap;
+  }
+  .eyebrow .dot { width:5px; height:5px; border-radius:50%; background: var(--warm); display:inline-block; }
+  .hero h1 { font-size: clamp(2.1rem, 4.6vw, 3.1rem); margin: 14px 0 10px; max-width: 16ch; }
+  .hero .dek { font-size: 1.15rem; color: var(--ink-soft); max-width: 62ch; line-height: 1.55; margin: 0 0 26px; }
+  .hero .dek em { color: var(--ink); font-style: normal; border-bottom: 2px solid var(--gold); }
+
+  .headline-strip {
+    display: flex; gap: 0; flex-wrap: wrap;
+    border: 1px solid var(--rule); border-radius: 14px; overflow: hidden;
+    background: var(--paper-raised); box-shadow: var(--shadow);
+    max-width: 780px;
+  }
+  .headline-strip .stat {
+    flex: 1 1 150px; padding: 16px 20px; border-right: 1px solid var(--rule);
+  }
+  .headline-strip .stat:last-child { border-right: none; }
+  .headline-strip .stat .n {
+    font-family: var(--serif); font-size: 1.7rem; font-weight: 700; color: var(--accent);
+    font-variant-numeric: tabular-nums; display:block;
+  }
+  .headline-strip .stat .n.warm { color: var(--warm); }
+  .headline-strip .stat .l { font-size: 12.5px; color: var(--ink-faint); margin-top: 2px; }
+
+  /* ---------- TOC ---------- */
+  nav.toc {
+    padding: 34px 20px 40px 24px;
+    font-family: var(--sans);
+  }
+  nav.toc .toc-label { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 10px; display:block; }
+  .toc-block.chapter-nav { padding-bottom: 18px; margin-bottom: 18px; border-bottom: 1px solid var(--rule); }
+  nav.toc ol.chapter-list { list-style: none; margin: 0; padding: 0; columns: 1; }
+  nav.toc ol.chapter-list li { margin-bottom: 2px; }
+  nav.toc .chapter-link { display: block; padding: 8px 10px; border-radius: 8px; text-decoration: none; }
+  nav.toc .chapter-link strong { display: block; font-family: var(--serif); font-size: 13.5px; color: var(--ink); font-weight: 600; }
+  nav.toc .chapter-link .chapter-sub { display: block; font-size: 11px; color: var(--ink-faint); margin-top: 1px; line-height: 1.3; }
+  nav.toc a.chapter-link:hover { background: var(--paper-sunk); }
+  nav.toc .chapter-link.current { background: var(--accent-soft); cursor: default; }
+  nav.toc .chapter-link.current strong { color: var(--accent); }
+  nav.toc .chapter-link:before { content: none; }
+  nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: sec; }
+  nav.toc li { counter-increment: sec; margin-bottom: 2px; }
+  nav.toc a {
+    display: flex; gap: 9px; padding: 6px 8px; border-radius: 7px;
+    color: var(--ink-soft); text-decoration: none; font-size: 13.5px; line-height: 1.35;
+  }
+  nav.toc a:before {
+    content: counter(sec, decimal-leading-zero); font-family: var(--mono); font-size: 11px;
+    color: var(--ink-faint); padding-top: 1px; flex-shrink: 0;
+  }
+  nav.toc a:hover { background: var(--paper-sunk); color: var(--ink); }
+  nav.toc a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  nav.toc a.active:before { color: var(--accent); }
+  @media (max-width: 880px) {
+    nav.toc { position: static; border-bottom: 1px solid var(--rule); padding: 18px 20px; }
+    nav.toc ol { columns: 2; column-gap: 20px; }
+    nav.toc.desktop-sticky { display: none; }
+  }
+  @media (min-width: 881px) {
+    nav.toc.desktop-sticky { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; }
+    .mobile-toc { display: none; }
+  }
+
+  /* ---------- main column ---------- */
+  main { padding: 8px 24px 100px; min-width: 0; }
+  .col { max-width: 700px; margin: 0 auto; }
+
+  section.chapter { padding-top: 54px; scroll-margin-top: 14px; }
+  section.chapter:first-of-type { padding-top: 40px; }
+  .chapter-kicker {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 6px;
+  }
+  section.chapter h2 { font-size: clamp(1.5rem, 3vw, 1.95rem); margin: 0 0 18px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  section.chapter h3 { font-size: 1.18rem; margin: 34px 0 12px; }
+  section.chapter > p { margin: 0 0 16px; font-size: 1.02rem; }
+  section.chapter ul, section.chapter ol { color: var(--ink-soft); line-height: 1.68; padding-left: 22px; }
+  section.chapter li { margin-bottom: 6px; }
+  section.chapter li strong { color: var(--ink); }
+
+  /* first-paragraph drop treatment on the very first section only */
+  #real-or-noise > p:first-of-type::first-letter {
+    font-family: var(--serif); font-size: 3.6em; float: left; line-height: 0.85; padding: 6px 8px 0 0;
+    color: var(--warm); font-weight: 700;
+  }
+
+  /* ---------- inline components ---------- */
+  .lede-figure {
+    display: flex; gap: 20px; align-items: flex-start; margin: 0 0 20px; padding-bottom: 4px;
+  }
+  .lede-figure .art {
+    flex: 0 0 168px; width: 168px; height: 168px; border-radius: 12px; overflow: hidden;
+    background: linear-gradient(150deg, var(--accent-soft), var(--paper-sunk));
+    display:flex; align-items:center; justify-content:center; box-shadow: var(--shadow);
+  }
+  @media (max-width: 560px) { .lede-figure { flex-direction: column; } .lede-figure .art { width: 100%; height: 150px; } }
+
+  blockquote.field-note {
+    margin: 24px 0; padding: 16px 20px 16px 18px;
+    background: var(--quote-bg); border-left: 3px solid var(--quote-border); border-radius: 4px 10px 10px 4px;
+  }
+  blockquote.field-note .tag {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--quote-ink); opacity: 0.85; display: block; margin-bottom: 6px;
+  }
+  blockquote.field-note p { margin: 0; color: var(--quote-ink); font-size: 0.98rem; font-style: italic; line-height: 1.6; }
+  blockquote.field-note p + p { margin-top: 8px; }
+
+  .callout {
+    margin: 22px 0; padding: 16px 20px; border-radius: 10px; border: 1px solid var(--rule);
+    background: var(--paper-sunk); font-size: 0.96rem; color: var(--ink-soft); line-height: 1.6;
+  }
+  .callout strong { color: var(--ink); }
+  .callout.gold { border-color: color-mix(in srgb, var(--gold) 40%, var(--rule)); background: color-mix(in srgb, var(--gold) 10%, var(--paper-sunk)); }
+
+  .formula-block {
+    margin: 20px 0; padding: 18px 22px; background: var(--code-bg); border-radius: 10px;
+    border: 1px solid var(--rule); overflow-x: auto; text-align: center; font-size: 1.05rem;
+  }
+  .formula-caption { text-align: center; font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin-top: -12px; margin-bottom: 20px; }
+
+  code, .inline-code { font-family: var(--mono); font-size: 0.86em; background: var(--code-bg); padding: 2px 6px; border-radius: 4px; color: var(--ink); }
+  pre.code-block {
+    font-family: var(--mono); font-size: 0.82rem; background: var(--code-bg); border: 1px solid var(--rule);
+    border-radius: 10px; padding: 16px 18px; overflow-x: auto; line-height: 1.55; color: var(--ink);
+    margin: 16px 0;
+  }
+  pre.code-block .c { color: var(--ink-faint); }
+  pre.code-block .k { color: var(--accent); }
+
+  table.data-table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 0.92rem; overflow-x: auto; display: block; }
+  table.data-table thead, table.data-table tbody { display: table; width: 100%; table-layout: fixed; }
+  table.data-table th { text-align: left; font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 600; padding: 8px 12px; border-bottom: 2px solid var(--ink); }
+  table.data-table td { padding: 9px 12px; border-bottom: 1px solid var(--rule); color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data-table tr:last-child td { border-bottom: none; }
+  table.data-table td:first-child, table.data-table th:first-child { color: var(--ink); font-weight: 500; }
+
+  .term-list { list-style: none; padding: 0; margin: 18px 0; }
+  .term-list li { display: grid; grid-template-columns: 170px 1fr; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .term-list li:last-child { border-bottom: none; }
+  .term-list dt, .term-list .term { font-weight: 600; color: var(--ink); font-family: var(--serif); }
+  @media (max-width: 560px) { .term-list li { grid-template-columns: 1fr; gap: 3px; } }
+
+  /* ---------- interactive figure shell ---------- */
+  .figure {
+    margin: 26px 0; background: var(--paper-raised); border: 1px solid var(--rule); border-radius: 14px;
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .figure-head { padding: 16px 20px 12px; border-bottom: 1px solid var(--rule); }
+  .figure-head .flabel { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .figure-head h4 { margin: 4px 0 0; font-size: 1.05rem; }
+  .figure-body { padding: 16px 20px; }
+  .figure-caption { padding: 0 20px 18px; font-size: 0.86rem; color: var(--ink-faint); line-height: 1.5; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 16px 22px; align-items: center; padding: 12px 4px 18px; font-size: 13px; }
+  .ctl { display: flex; align-items: center; gap: 8px; }
+  .ctl .lbl { color: var(--ink-soft); white-space: nowrap; }
+  .ctl input[type=range] { accent-color: var(--accent); cursor: pointer; width: 110px; }
+  .ctl .val { font-family: var(--mono); font-weight: 600; min-width: 46px; color: var(--accent); font-size: 12.5px; }
+
+  .chart-wrap { overflow-x: auto; }
+  .chart-wrap svg { display: block; margin: 0 auto; }
+  .chart-row { display: flex; gap: 20px; flex-wrap: wrap; }
+  .chart-row > div { flex: 1 1 200px; min-width: 0; }
+
+  .mini-table-wrap { overflow-x: auto; }
+
+  /* ---------- collapsible code box ---------- */
+  details.code-reveal {
+    margin: 20px 0; border: 1px solid var(--rule); border-radius: 10px; overflow: hidden;
+    background: var(--paper-raised);
+  }
+  details.code-reveal summary {
+    cursor: pointer; padding: 12px 18px; font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
+    color: var(--accent); list-style: none; display: flex; align-items: center; gap: 9px;
+    background: var(--paper-sunk); user-select: none;
+  }
+  details.code-reveal summary::-webkit-details-marker { display: none; }
+  details.code-reveal summary::before { content: '\25B8'; font-size: 0.85em; transition: transform 0.15s ease; display: inline-block; }
+  details.code-reveal[open] summary::before { transform: rotate(90deg); }
+  details.code-reveal .code-reveal-body { padding: 2px 18px 16px; }
+  details.code-reveal .code-reveal-body p { font-size: 0.9rem; margin: 12px 0 0; }
+
+  /* ---------- divider ---------- */
+  .divider {
+    margin: 60px 0 0; padding: 46px 24px; background: var(--ink); border-radius: 16px; text-align: center;
+    color: #f2f2f6;
+  }
+  .divider .k { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: #8fb4cc; }
+  .divider h3 { color: #fff; font-size: 1.5rem; margin: 10px 0 0; }
+  .divider p { color: #c3c4d6; max-width: 46ch; margin: 10px auto 0; }
+
+  /* ---------- footnotes ---------- */
+  .footnote-ref { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .footnote-ref:hover { text-decoration: underline; }
+  .footnotes {
+    max-width: 700px; margin: 46px auto 0; padding: 18px 0 0; border-top: 1px solid var(--rule);
+    font-size: 0.86rem; color: var(--ink-soft); line-height: 1.6;
+  }
+  .footnotes ol { padding-left: 20px; margin: 0; }
+  .footnotes li { margin-bottom: 6px; }
+  .footnotes a.footnote-back { color: var(--ink-faint); text-decoration: none; margin-left: 4px; }
+  .footnotes a.footnote-back:hover { color: var(--accent); }
+
+  /* ---------- footer ---------- */
+  footer.colophon {
+    max-width: 700px; margin: 70px auto 0; padding: 26px 0 0; border-top: 1px solid var(--rule);
+    font-size: 0.86rem; color: var(--ink-faint); line-height: 1.6;
+  }
+  footer.colophon strong { color: var(--ink-soft); }
+
+  @media (max-width: 400px) {
+    .hero { padding: 40px 12px 30px; }
+    main { padding: 8px 14px 80px; }
+  }
+  /* ---------- week 3 additions: checkbox labels and a plain button in .controls ---------- */
+  .controls label.chk { display:flex; align-items:center; gap:6px; cursor:pointer; color: var(--ink-soft); }
+  .controls input[type=checkbox] { accent-color: var(--accent); cursor: pointer; }
+  select.picker {
+    font-family: var(--sans); font-size: 13.5px; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--rule);
+    background: var(--paper-sunk); color: var(--ink); cursor: pointer;
+  }
+  button.btn {
+    font-family: var(--sans); font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 8px;
+    border: 1px solid var(--accent); background: var(--accent-soft); color: var(--accent); cursor: pointer;
+  }
+  .visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  button.btn:hover { background: var(--accent); color: var(--paper); }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="toc desktop-sticky" id="toc"></nav>
+
+  <main>
+    <div class="hero" style="margin: -8px -24px 30px; border-radius: 0;">
+      <div class="hero-inner" style="padding:0;">
+        <div class="eyebrow"><span class="dot"></span>7002LBSAI &middot; Research Methods in Analytics &middot; Chapter Four</div>
+        <h1>Regression I: Fitting the Line</h1>
+      </div>
+    </div>
+
+    <nav class="toc mobile-toc" id="toc-mobile"></nav>
+
+    <div class="col">
+
+<section class="chapter" id="hr-formula">
+<div class="chapter-kicker">Part One</div>
+<h2>From Correlation to a Formula</h2>
+
+<p>Last chapter ended with a number: the correlation between finger length and reaction time in our class is about 0.18. Weak, positive, and on its own not much use to anyone. HR, though, hasn't given up. They now want to know whether that relationship can be turned into an actual <strong>formula</strong> &ndash; a screening tool. Measure a candidate's finger, plug the length into the formula, read off a predicted reaction time, and decide whether to shortlist them. No ten-trial test needed.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Now the real fun begins &ndash; where you start applying all these statistics to a model. We're going to look at the simplest kind of model, but the workhorse for so much analytics: regression.&rdquo;</p>
+</blockquote>
+
+<p>The <strong>naive answer</strong> is to draw a line through the scatter by eye and read off the equation. It isn't that simple. Which line? Chosen by what rule? What does its slope actually mean? And a weak correlation doesn't become a good predictor just because you've drawn a line through it &ndash; how good the line is depends on how strong the relationship was in the first place. This chapter answers all of those questions. The tool is <strong>regression</strong>, and the particular way of fitting it is <strong>ordinary least squares</strong> (OLS).</p>
+</section>
+
+<section class="chapter" id="two-goals">
+<div class="chapter-kicker">Part Two</div>
+<h2>What Regression Is For: Two Goals</h2>
+
+<p>Regression can serve two quite different purposes, and it pays to keep them apart from the start.</p>
+
+<ul class="term-list">
+  <li><span class="term">Predictive analysis</span><span>What should we expect y to be, for a given value of x? The focus is the <em>predicted value</em>. HR's screening tool is a prediction problem.</span></li>
+  <li><span class="term">Causal analysis</span><span>What is the effect of x on y &ndash; what would happen to y if we changed x? The focus is a <em>parameter</em>, a number describing that effect.</span></li>
+</ul>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;You could think of predictive analysis as us trying to look at what might be, and causal analysis as what is &ndash; what happens. The model is written out exactly the same way. Regression as a tool doesn't know which goal you have. That's down to you.&rdquo;</p>
+</blockquote>
+
+<p>Either way, regression is a method of <strong>comparison</strong>: it compares the average of y across observations with different values of x. What changes between the two goals is the interpretation you're allowed to make, and that depends on how the data were produced. The goal comes first, before any analysis. Businesses often want prediction &ndash; a forecast of next quarter's sales &ndash; but decision-makers also want to know what will happen if they pull a particular lever, and that is a causal question. We come back to causality properly in Week 9.</p>
+</section>
+
+<section class="chapter" id="conditional-means">
+<div class="chapter-kicker">Part Three</div>
+<h2>Regression Compares Conditional Means</h2>
+
+<p>None of this is a gear change from last chapter. Regression uncovers patterns of association between y, the outcome we care about, and x, by comparing the average value of y across different values of x &ndash; the <strong>conditional mean</strong> from Chapter 3:</p>
+
+<div class="formula-block">$$E[y \mid x] = f(x) \qquad \text{shorthand: } y^E = f(x)$$</div>
+
+<p>Here \(f\) is a <strong>function</strong>: a rule that turns each value of x into a value of y. It could be anything. The rule \(y = 10x\) says that y is always ten times x: when x is 0, y is 0; when x is 1, y is 10; when x is a billion, y is ten billion. Plotted, that's a straight line, because we've defined it to be one. But in the real world relationships rarely move in perfectly straight lines, and \(f\) could just as easily be a curve, or a squiggle.</p>
+
+<p>That raises a choice. Do we let the data decide the shape, or do we impose one?</p>
+
+<ul class="term-list">
+  <li><span class="term">Non-parametric regression</span><span>No shape is imposed; the data tell the story. Flexible, but data-hungry &ndash; you need many observations at each value of x. The bin-scatter from Chapter 3 is a simple example.</span></li>
+  <li><span class="term">Parametric regression</span><span>We impose a shape &ndash; for example, a straight line &ndash; described by a few numbers called <strong>parameters</strong>. More restrictive, but interpretable, and it works with far less data.</span></li>
+</ul>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Imagine your projector's broken, you haven't got your slides, and you have to present to your director. What's the relationship like? &lsquo;It kind of goes up and then down and around a bit.&rsquo; Whereas if you can say, &lsquo;on average, when x increases, y increases by a factor of ten&rsquo; &ndash; that's much easier to explain to people.&rdquo;</p>
+</blockquote>
+
+<p>A parametric model is always a <em>reduction</em> of a messy world. Deciding how much complexity to throw away, and justifying it, is a large part of the analyst's job.</p>
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 7</p>
+</section>
+
+<section class="chapter" id="lowess">
+<div class="chapter-kicker">Part Four</div>
+<h2>Non-Parametric Regression: LOWESS</h2>
+
+<p>The standard non-parametric tool is <strong>LOWESS</strong>: locally weighted scatterplot smoothing. Like a bin-scatter it estimates the average of y at each x, but instead of chopping x into fixed bins it uses a <em>moving, weighted local average</em>. To estimate y at a finger length of 70mm, it averages the reaction times of students near 70mm &ndash; those at 69mm or 72mm count a lot, those at 90mm hardly at all. Doing that at every x gives a smooth curve rather than a handful of dots.</p>
+
+<p>How &ldquo;local&rdquo; the average is gets set by the <strong>bandwidth</strong>. A wide bandwidth gives a smooth curve but can iron out real bends; a narrow one tracks the data closely but goes jagged. Try it on our own class:</p>
+
+<div class="figure" id="fig-lowess">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>A smoothed average of reaction time, by finger length</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Bandwidth</span><input type="range" id="bw" min="1" max="15" step="0.5" value="4"><span class="val" id="bw-val">4.0mm</span></div>
+    </div>
+    <div class="chart-wrap" id="lowess-chart"></div>
+  </div>
+  <p class="figure-caption">One dot per student (mean reaction time). The red curve is a kernel-weighted local average; the bandwidth is the distance, in millimetres, over which neighbours carry real weight.</p>
+</div>
+
+<p>Narrow the bandwidth and the curve chases individual students; widen it and it flattens towards a gentle slope. LOWESS is excellent for <em>spotting shape</em> before you commit to a model. What it can't give you is a single interpretable number &ndash; you're back to describing a squiggle to the director.</p>
+
+<details class="code-reveal">
+  <summary>LOWESS in Python</summary>
+  <div class="code-reveal-body">
+<pre class="code-block">from statsmodels.nonparametric.smoothers_lowess import lowess
+
+smoothed = lowess(endog=df['reaction_time_ms'], exog=df['finger_mm'], frac=0.3)
+<span class="c"># endog is y, exog is x. smoothed is an array of (x, y-hat) pairs, sorted by x</span></pre>
+    <p>In statsmodels the bandwidth is set by <code>frac</code>: the <em>share of all observations</em> used in each local average, rather than a distance in millimetres. A larger <code>frac</code> gives a smoother curve.</p>
+  </div>
+</details>
+</section>
+
+<section class="chapter" id="linear-model">
+<div class="chapter-kicker">Part Five</div>
+<h2>Linear Regression: y = &alpha; + &beta;x + &epsilon;</h2>
+
+<p>Now we impose some structure. Linear regression says that every individual observation's y is made of three parts:</p>
+
+<div class="formula-block">$$y = \alpha + \beta x + \varepsilon$$</div>
+
+<ul class="term-list">
+  <li><span class="term">\(\alpha\) (alpha)</span><span>A constant: the <strong>intercept</strong>.</span></li>
+  <li><span class="term">\(\beta\) (beta)</span><span>The <strong>slope</strong>: how much y differs, on average, per unit of x.</span></li>
+  <li><span class="term">\(\varepsilon\) (epsilon)</span><span>The <strong>error term</strong>: everything else affecting y that the model doesn't capture &ndash; other factors we know about but have no data on, factors we don't know about, ability, luck, plain noise. We never observe it directly.</span></li>
+</ul>
+
+<p>The key assumption is that the error is unrelated to x &ndash; on average it is zero whatever the value of x, so knowing x tells us nothing about which way \(\varepsilon\) leans:</p>
+
+<div class="formula-block">$$E[\varepsilon \mid x] = 0$$</div>
+
+<h3>Why the error averages away</h3>
+
+<p>Take the expectation of both sides, conditional on x. The average of a sum is the sum of the averages, so we can work term by term:</p>
+
+<div class="formula-block">$$E[y \mid x] = E[\alpha \mid x] + E[\beta x \mid x] + E[\varepsilon \mid x] = \alpha + \beta x + 0$$</div>
+
+<ul class="term-list">
+  <li><span class="term">\(E[\alpha \mid x] = \alpha\)</span><span>\(\alpha\) is a fixed number, the same for every observation, and the average of something that never changes is just itself.</span></li>
+  <li><span class="term">\(E[\beta x \mid x] = \beta x\)</span><span>Conditioning on x means looking only at observations that share one value of x. Within that group \(\beta x\) is the same number for everyone, so its average is \(\beta x\).</span></li>
+  <li><span class="term">\(E[\varepsilon \mid x] = 0\)</span><span>The key assumption above.</span></li>
+</ul>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;If I gave everybody in this room &pound;10, and there are 20 people in the room, on average I've given you &pound;10. Take the average of something that's the same for every observation and it's just its own value.&rdquo;</p>
+</blockquote>
+
+<p>So the model collapses to \(y^E = \alpha + \beta x\). The error hasn't vanished from reality &ndash; individual students will still sit above or below the line &ndash; but on average it cancels out. What's left is the part of y that x explains.</p>
+</section>
+
+<section class="chapter" id="interpreting">
+<div class="chapter-kicker">Part Six</div>
+<h2>Reading &alpha; and &beta;</h2>
+
+<p>Linear regression imposes <strong>linearity in the coefficients</strong>, the simplest parametric form there is. That's an assumption, or an approximation: even when the true pattern curves, a straight line approximates its <em>average</em> slope.</p>
+
+<p><strong>The intercept, \(\alpha\),</strong> is the average value of y when x is zero. Put \(x = 0\) into the model and \(\beta\) drops out:</p>
+<div class="formula-block">$$E[y \mid x = 0] = \alpha + \beta \times 0 = \alpha$$</div>
+
+<p><strong>The slope, \(\beta\),</strong> is the expected difference in y between observations one unit apart in x. Compare \(x_0 + 1\) with \(x_0\): the two \(\alpha\)s cancel, the two \(\beta x_0\)s cancel, and only \(\beta\) is left.</p>
+<div class="formula-block">$$E[y \mid x_0 + 1] - E[y \mid x_0] = \big(\alpha + \beta(x_0 + 1)\big) - \big(\alpha + \beta x_0\big) = \beta$$</div>
+
+<p>In the \(y = 10x\) example, \(\beta = 10\) and \(\alpha = 0\). In words: on average, y is ten times x.</p>
+
+<h3>Precise language matters</h3>
+
+<p>The safe way to describe a slope is: <em>&ldquo;y is higher, on average, by \(\beta\), for observations with a one-unit higher x.&rdquo;</em> Two words to avoid:</p>
+<ul class="term-list">
+  <li><span class="term">&ldquo;Increases&rdquo;</span><span>Implies something changing over time. A regression compares different observations; it doesn't watch one observation change.</span></li>
+  <li><span class="term">&ldquo;Effect&rdquo;</span><span>Implies causation, which a regression on observational data can't justify on its own.</span></li>
+</ul>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Avoid &lsquo;effect&rsquo;. It's something I still have to go through and take out of my own work, after ten years of doing this. I think the human brain wants to imply causality.&rdquo;</p>
+</blockquote>
+
+<h3>Estimates wear hats</h3>
+
+<p>The true \(\alpha\) and \(\beta\) describe the whole population, and we never get to see them. What we compute from a sample is an <strong>estimate</strong>, marked with a hat: \(\hat\alpha\) and \(\hat\beta\). The rule we use to get from data to an estimate is an <strong>estimator</strong> &ndash; this chapter's estimator is OLS.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;The true values &ndash; you're never going to find out what they are. We already have the most complex model in the world. It's called the world. You're simplifying the world to understand it. Someone decided at some point that estimates wear a hat.&rdquo;</p>
+</blockquote>
+</section>
+
+<section class="chapter" id="first-regression">
+<div class="chapter-kicker">Part Seven</div>
+<h2>Your First Regression</h2>
+
+<p>Time to fit the model to our own class. The data are the Week 1 reaction times, with the finger-length typos corrected in Chapter 3, collapsed to <strong>one row per student</strong>: each student's mean reaction time and their finger length (Part Fourteen explains why one row per student, not one per trial).</p>
+
+<pre class="code-block">import pandas as pd
+import statsmodels.formula.api as smf
+
+data_path = "https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week3_reaction_times.csv"
+df = pd.read_csv(data_path)
+df['finger_mm'] = df['finger_length_corrected']
+
+<span class="c"># one row per student: average the trials, keep the (fixed) finger length and device</span>
+student_summary = (
+    df.groupby('name')
+      .agg(mean_rt=('reaction_time_ms', 'mean'),
+           finger_mm=('finger_mm', 'first'),
+           device=('device', 'first'))
+      .reset_index()
+)
+
+model = smf.ols('mean_rt ~ finger_mm', data=student_summary).fit()
+model.params</pre>
+
+<div class="callout gold">
+  <strong>Where the syntax usually trips people up.</strong>
+  <ul style="margin:8px 0 0 18px;padding:0;">
+    <li><strong>Point at the right data frame.</strong> The raw data are in <code>df</code>, one row per trial. The regression needs <code>student_summary</code>, the collapsed version. <code>data=df</code> will either fail (no <code>mean_rt</code> column) or fit the wrong data.</li>
+    <li><strong>The formula is a string:</strong> <code>'y ~ x'</code>, with the outcome on the left of the tilde and the explanatory variable on the right, both inside one pair of quotes.</li>
+    <li><strong>Always end with <code>.fit()</code>.</strong> <code>smf.ols(...)</code> only sets the model up; <code>.fit()</code> does the estimating.</li>
+    <li><strong><code>.params</code></strong> pulls out just the two estimates. <code>model.params.round(1)</code> tidies them to one decimal place.</li>
+    <li><strong><code>'first'</code> in the aggregation</strong> means &ldquo;take the value on the student's first row&rdquo;. Finger length and device are the same on all of a student's rows, so the first one will do.</li>
+  </ul>
+</div>
+
+<p>The result:</p>
+<div class="formula-block">$$\widehat{\text{mean reaction time}} = -404.9 + 18.6 \times \text{finger length (mm)}$$</div>
+
+<p><strong>\(\hat\beta = 18.6\):</strong> students whose index finger is one millimetre longer have, on average, a mean reaction time about 18.6ms slower. Positive, matching the positive correlation from Chapter 3.</p>
+
+<p><strong>\(\hat\alpha = -404.9\):</strong> by definition, the predicted average reaction time for someone whose finger is zero millimetres long. A negative reaction time is impossible.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;People with no index finger are so fast they're going back in time to do the test. Obviously that's nonsense &ndash; but we didn't have anyone in our data with no index finger.&rdquo;</p>
+</blockquote>
+
+<p>The intercept is where the fitted line crosses the y-axis, and our data start at 68mm, a long way from zero. So \(\hat\alpha\) here is an anchor that positions the line, not a description of anyone we observed. Part Sixteen comes back to why predicting that far from the data is a bad idea.</p>
+</section>
+
+<section class="chapter" id="visualised">
+<div class="chapter-kicker">Part Eight</div>
+<h2>Our Line, and a Tighter One</h2>
+
+<p>Drawn through our 24 students, the fitted line slopes gently upward through a very scattered cloud. For contrast, here's Chapter 3's <strong>simulated</strong> class of 24 &ndash; hours awake before the test against mean reaction time &ndash; with its own OLS line. The x-axis starts at zero so you can see the intercept where the line meets the y-axis:</p>
+
+<div class="figure" id="fig-awake">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>A tighter example: hours awake (simulated data)</h4></div>
+  <div class="figure-body"><div class="chart-wrap" id="awake-chart"></div></div>
+  <p class="figure-caption" id="awake-caption"></p>
+</div>
+
+<p>Reading it: \(\hat\beta \approx 13.65\), so students who had been awake an hour longer were, on average, about 14ms slower. \(\hat\alpha \approx 264.4\) is the predicted reaction time at zero hours awake &ndash; but nobody was tested straight out of bed (the minimum is 2 hours), so the dashed part of the line is an extrapolation. The points here sit close to the line; ours don't. Part Seventeen puts a number on that difference.</p>
+</section>
+
+<section class="chapter" id="binary-x">
+<div class="chapter-kicker">Part Nine</div>
+<h2>Regression on a Binary x</h2>
+
+<p>x doesn't have to be continuous. Device is a <strong>dummy variable</strong>: Laptop = 0, Phone = 1. With only two possible values of x, plug each into \(y^E = \alpha + \beta x\):</p>
+
+<ul class="term-list">
+  <li><span class="term">\(\alpha\)</span><span>The average y when x = 0: the average reaction time on a <strong>laptop</strong>.</span></li>
+  <li><span class="term">\(\alpha + \beta\)</span><span>The average y when x = 1: the average reaction time on a <strong>phone</strong>.</span></li>
+  <li><span class="term">\(\beta\)</span><span>The difference between the two: <strong>phone minus laptop</strong>.</span></li>
+</ul>
+
+<p>The &ldquo;line&rdquo; is only ever evaluated at 0 and 1, so it's really just two group averages and their difference, written in regression notation. It's exactly the conditional means from Chapter 3, now produced by one model. Part Eighteen fits it to our data.</p>
+</section>
+
+<section class="chapter" id="ols-formula">
+<div class="chapter-kicker">Part Ten</div>
+<h2>The OLS Estimator</h2>
+
+<p>So far Python has produced \(\hat\alpha\) and \(\hat\beta\) for us. Here's what it computes. The slope is built from two things you already know:</p>
+
+<div class="formula-block">$$\hat\beta = \frac{Cov[x,y]}{Var[x]} \qquad\qquad \hat\alpha = \bar y - \hat\beta \bar x$$</div>
+
+<p><strong>The slope</strong> is the covariance between x and y &ndash; how they move together &ndash; divided by the variance of x, how much x moves on its own. That's why it reads as &ldquo;the difference in average y per unit difference in x&rdquo;.</p>
+
+<p><strong>The intercept</strong> follows from the slope. Averaging the fitted line over the whole sample gives \(\bar y = \hat\alpha + \hat\beta \bar x\); subtract \(\hat\beta \bar x\) from both sides and you have the formula. A direct consequence is that <strong>the fitted line always passes through the point of means</strong>, \((\bar x, \bar y)\). Once \(\hat\beta\) is fixed, \(\hat\alpha\) isn't a second, separate choice &ndash; it's whatever pins the line through that point. The software estimates \(\hat\beta\) first, then \(\hat\alpha\) from it.</p>
+
+<h3>Worked example: a whole regression by hand</h3>
+
+<p>Back to Chapter 3's five students, hours spent revising (x) against a quiz score out of 12 (y). We already know \(\bar x = 6\), \(\bar y = 7\), \(Cov[x,y] = 8\) and \(Var[x] = 40/4 = 10\).</p>
+
+<div class="mini-table-wrap">
+<table class="data-table">
+  <caption class="visually-hidden">Five students' hours revising and quiz scores.</caption>
+  <thead><tr><th scope="col">Student</th><th scope="col">Hours, x</th><th scope="col">Score, y</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>2</td><td>3</td></tr>
+    <tr><td>2</td><td>4</td><td>7</td></tr>
+    <tr><td>3</td><td>6</td><td>5</td></tr>
+    <tr><td>4</td><td>8</td><td>11</td></tr>
+    <tr><td>5</td><td>10</td><td>9</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="formula-block">$$\hat\beta = \frac{8}{10} = 0.8 \qquad\qquad \hat\alpha = 7 - 0.8 \times 6 = 7 - 4.8 = 2.2$$</div>
+
+<p>So \(\widehat{\text{score}} = 2.2 + 0.8 \times \text{hours}\): each extra hour of revising goes with a score 0.8 points higher, on average. Check that the line passes through the means: \(2.2 + 0.8 \times 6 = 7 = \bar y\). Part Twelve keeps going with this example.</p>
+
+<p>For our class the same arithmetic gives \(\hat\beta = 1{,}359.6 / 73.09 = 18.60\) and \(\hat\alpha = 1{,}070.1 - 18.60 \times 79.29 = -404.9\) &ndash; exactly what statsmodels reported.</p>
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 7</p>
+</section>
+
+<section class="chapter" id="why-var">
+<div class="chapter-kicker">Part Eleven</div>
+<h2>Why Divide by Var[x]?</h2>
+
+<p>Chapter 3 drew covariance as a set of rectangles from the point of means to each observation, positive when x and y are on the same side of their averages and negative otherwise; the covariance is their net area. <strong>Variance is the same idea applied to x on its own</strong> &ndash; pair x with itself and every rectangle becomes a square, \((x_i - \bar x)^2\). A number times itself can't be negative, so <strong>Var[x] is always positive</strong>. That means the <em>sign</em> of \(\hat\beta\) comes entirely from the covariance: whether y tends to be higher or lower when x is higher.</p>
+
+<p>So what is the division for? <strong>Units.</strong> Covariance is measured in x-units times y-units &ndash; millimetre-milliseconds for our data &ndash; which isn't a slope. Dividing by Var[x], in millimetres squared, leaves milliseconds <em>per millimetre</em>: a rate.</p>
+
+<p>Check it by measuring finger length in centimetres instead (multiply every x by 0.1). A slope in ms per cm should be exactly ten times the slope in ms per mm.</p>
+
+<div class="mini-table-wrap">
+<table class="data-table">
+  <caption class="visually-hidden">Covariance, variance and slope for finger length in millimetres and centimetres.</caption>
+  <thead><tr><th scope="col"></th><th scope="col">Cov[x,y]</th><th scope="col">Var[x]</th><th scope="col">&beta;&#770;</th></tr></thead>
+  <tbody>
+    <tr><td>Millimetres</td><td>1,359.6</td><td>73.09</td><td>18.60 ms per mm</td></tr>
+    <tr><td>Centimetres</td><td>135.96 (&times;0.1)</td><td>0.7309 (&times;0.01)</td><td>186.0 ms per cm (&times;10)</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Covariance alone moves the <em>wrong way</em> (smaller, when the slope per centimetre should be bigger). Covariance divided by variance moves by exactly the right amount. That's the whole point of the division: it turns a measure of co-movement into a rate per unit of x.</p>
+</section>
+
+<section class="chapter" id="residuals">
+<div class="chapter-kicker">Part Twelve</div>
+<h2>Fitted Values and Residuals</h2>
+
+<p>Once the line is estimated, we can put each observation's own x back into it. That gives the <strong>fitted value</strong>, \(\hat y_i\) &ndash; what the model predicts for observation \(i\) using only its x. The gap between what we actually observed and what the model predicted is the <strong>residual</strong>, \(e_i\):</p>
+
+<div class="formula-block">$$\hat y_i = \hat\alpha + \hat\beta x_i \qquad\qquad e_i = y_i - \hat y_i$$</div>
+
+<p>The little \(i\) just labels the observation: row 1, row 2, row 3 of the data. A positive residual means the point sits above the line (y was higher than predicted); a negative one, below it. On a chart, the residual is the vertical distance between a point and the line.</p>
+
+<div class="callout">
+  <strong>Residual or error?</strong> They're easy to mix up. The <strong>error</strong> \(\varepsilon_i\) is the gap between y and the <em>true</em> line \(\alpha + \beta x\), which we never see. The <strong>residual</strong> \(e_i\) is the gap between y and our <em>estimated</em> line \(\hat\alpha + \hat\beta x\), which we can compute for every observation. The residual is our best stand-in for the error.
+</div>
+
+<h3>Worked example: the five students</h3>
+
+<p>Use \(\widehat{\text{score}} = 2.2 + 0.8 \times \text{hours}\) on each student in turn. Student 1 revised for 2 hours, so \(\hat y_1 = 2.2 + 0.8 \times 2 = 3.8\). They actually scored 3, so \(e_1 = 3 - 3.8 = -0.8\): slightly below the line.</p>
+
+<div class="mini-table-wrap">
+<table class="data-table">
+  <caption class="visually-hidden">Fitted values and residuals for the five students.</caption>
+  <thead><tr><th scope="col">Student</th><th scope="col">x</th><th scope="col">y</th><th scope="col">&#375; = 2.2 + 0.8x</th><th scope="col">e = y &minus; &#375;</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>2</td><td>3</td><td>2.2 + 1.6 = 3.8</td><td>&minus;0.8</td></tr>
+    <tr><td>2</td><td>4</td><td>7</td><td>2.2 + 3.2 = 5.4</td><td>+1.6</td></tr>
+    <tr><td>3</td><td>6</td><td>5</td><td>2.2 + 4.8 = 7.0</td><td>&minus;2.0</td></tr>
+    <tr><td>4</td><td>8</td><td>11</td><td>2.2 + 6.4 = 8.6</td><td>+2.4</td></tr>
+    <tr><td>5</td><td>10</td><td>9</td><td>2.2 + 8.0 = 10.2</td><td>&minus;1.2</td></tr>
+    <tr><td>Total</td><td></td><td>35</td><td>35.0</td><td>0.0</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Two things to notice in the bottom row: the residuals add up to exactly zero, and the fitted values add up to the same total as the real scores. Part Fifteen explains why that always happens.</p>
+
+<h3>Worked examples: our own class</h3>
+
+<p>Now with \(\widehat{\text{mean RT}} = -404.9 + 18.6 \times \text{finger}\) (using the unrounded estimates, \(\hat\alpha = -404.94\) and \(\hat\beta = 18.6025\)):</p>
+
+<ul class="term-list">
+  <li><span class="term">Student 6<br><span style="font-weight:400;font-size:0.9em;">95mm, 3,135.4ms</span></span><span>\(\hat y = -404.94 + 18.6025 \times 95 = -404.94 + 1{,}767.24 = 1{,}362.3\)ms. Residual \(e = 3{,}135.4 - 1{,}362.3 = +1{,}773.1\)ms: much slower than the line predicts for that finger length.</span></li>
+  <li><span class="term">Student 19<br><span style="font-weight:400;font-size:0.9em;">74mm, 283.4ms</span></span><span>\(\hat y = -404.94 + 18.6025 \times 74 = -404.94 + 1{,}376.59 = 971.6\)ms. Residual \(e = 283.4 - 971.6 = -688.2\)ms: much quicker than predicted.</span></li>
+  <li><span class="term">Students 1 and 2<br><span style="font-weight:400;font-size:0.9em;">both 80mm</span></span><span>Same finger length, so the <em>same</em> fitted value: \(\hat y = -404.94 + 18.6025 \times 80 = 1{,}083.3\)ms. But Student 1 averaged 1,601.1ms (\(e = +517.8\)) and Student 2 averaged 419.6ms (\(e = -663.7\)). The model can only say what's typical at 80mm; everything that makes these two students different ends up in their residuals.</span></li>
+  <li><span class="term">A made-up student<br><span style="font-weight:400;font-size:0.9em;">70mm, 100ms</span></span><span>\(\hat y = -404.94 + 18.6025 \times 70 = 897.2\)ms. Residual \(e = 100 - 897.2 = -797.2\)ms: this student is far quicker than the average person with a 70mm finger.</span></li>
+</ul>
+
+<p>Pick any student below to see the same calculation, and where their residual sits on the chart:</p>
+
+<div class="figure" id="fig-resid">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Fitted value and residual, one student at a time</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Student</span><select class="picker" id="resid-pick"></select></div>
+    </div>
+    <div class="formula-block" id="resid-calc" style="text-align:left;font-family:var(--mono);font-size:0.9rem;"></div>
+    <div class="chart-wrap" id="resid-chart"></div>
+  </div>
+  <p class="figure-caption">Grey lines are every student's residual; the highlighted one is the student you picked. Blue residuals sit above the line (slower than predicted), red below (quicker than predicted).</p>
+</div>
+
+<p>Not a single student sits exactly on the line. That's normal: the line describes the average, and people vary around it.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;If we just stopped at our estimates of alpha and beta and said, cool, we're done &ndash; we have no idea yet if that's a good model. Understanding residuals is what makes you a decent analyst, rather than someone who just draws a line of best fit.&rdquo;</p>
+</blockquote>
+
+<p>Residuals matter for two reasons. First, they tell you how well the model fits: small residuals mean the line describes the data well (Part Seventeen turns this into R&sup2;). Second, they are how OLS chooses its line in the first place &ndash; the next part.</p>
+
+<p>If fitted values and residuals haven't clicked yet, that's completely normal. They're among the hardest ideas in the module to grasp first time, and they don't sink in from being told once. They sink in from working through them yourself: write the equation out, put real numbers into it, sketch the line and the gaps by hand, and read the textbook's own explanation alongside these notes. The worked examples above are there to be redone with pen and paper, not just read. And come and talk to me about them &ndash; that's what office hours are for.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;I sympathise, I empathise &ndash; I have been you at this very moment, and I did not get it within the space of three hours. I got 42 in my first econometrics exam, and I'm an applied econometrician now. There is a journey you go on. The good thing about being lost is that when you come out of it, you're found. It's horrible sometimes, and hard, but you don't forget it in the same way.&rdquo;</p>
+</blockquote>
+</section>
+
+<section class="chapter" id="least-squares">
+<div class="chapter-kicker">Part Thirteen</div>
+<h2>Why This Particular Line?</h2>
+
+<p>Any candidate line, with any \(\alpha\) and \(\beta\), leaves a residual for every observation. OLS picks the line that makes the residuals as small as possible overall. Specifically, it minimises the <strong>sum of squared residuals</strong>:</p>
+
+<div class="formula-block">$$\min_{\alpha,\beta} \sum_{i=1}^{n} (y_i - \alpha - \beta x_i)^2$$</div>
+
+<p>Why square them? Some residuals are positive and some negative, so adding them up raw would let them cancel. Squaring makes every one count as a positive distance, and it penalises big misses more heavily than small ones. Solving this minimisation with calculus gives exactly the Cov/Var formula from Part Ten. You don't need the calculus; you do need the idea, which you can watch happen:</p>
+
+<div class="figure" id="fig-bowl">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Finding the bottom of the bowl</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Try a slope</span><input type="range" id="bowl-b" min="-10" max="47" step="0.5" value="0" style="width:220px;"><span class="val" id="bowl-val">0.0</span></div>
+    </div>
+    <div class="chart-row"><div class="chart-wrap" id="bowl-line"></div><div class="chart-wrap" id="bowl-curve"></div></div>
+  </div>
+  <p class="figure-caption" id="bowl-caption"></p>
+</div>
+
+<p>Each red line uses the slope you pick, with the intercept set to \(\bar y - \beta \bar x\), so the line always passes through the point of means. (For any given slope, that's the best possible intercept.) The right-hand chart plots the sum of squared residuals for every slope. It is smallest exactly at \(\hat\beta = 18.60\), the dashed line &ndash; the Cov/Var answer. Notice the scale, though: even a flat line (slope 0) does only a few per cent worse. That's a weak relationship showing itself.</p>
+</section>
+
+<section class="chapter" id="blue">
+<div class="chapter-kicker">Part Fourteen</div>
+<h2>OLS Is BLUE &ndash; If&hellip;</h2>
+
+<p>OLS is the <strong>Best Linear Unbiased Estimator</strong>: among every linear, unbiased way of estimating \(\beta\), it has the smallest variance. &ldquo;Best&rdquo; means most <em>precise</em>, not most correct. That guarantee is the <strong>Gauss-Markov theorem</strong>, and it holds only if a handful of assumptions are true:</p>
+
+<ul class="term-list">
+  <li><span class="term">Linearity</span><span>A straight line is a reasonable approximation of the relationship.</span></li>
+  <li><span class="term">Independent observations</span><span>One observation's error doesn't leak into another's.</span></li>
+  <li><span class="term">Homoskedasticity</span><span>The spread of the residuals is roughly constant across the range of x &ndash; not fanning out or narrowing.</span></li>
+  <li><span class="term">No extreme influence</span><span>No single point is silently dragging the whole line.</span></li>
+  <li><span class="term">No perfect multicollinearity</span><span>No explanatory variable is an exact linear combination of the others. This only bites once a model has more than one x; Week 6 covers it.</span></li>
+</ul>
+
+<p><strong>Independence, concretely.</strong> This is why our regression uses one row per <em>student</em> (24 rows), not one row per <em>trial</em> (199 rows). A student's ten trials aren't independent of each other: they all share whatever made that student fast or slow that day. Treating every trial as a separate observation would pretend each attempt came from a different person, overstating how much genuinely independent information we have.</p>
+
+<p><strong>Homoskedasticity, concretely.</strong> If slower reactors are also more erratic, the residuals would fan out at higher predicted values. Here's what the two cases look like, using a generic simulated example (our 24 points are too few to show the pattern convincingly):</p>
+
+<div class="figure" id="fig-hsk">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>Homoskedastic vs. heteroskedastic (simulated data)</h4></div>
+  <div class="figure-body"><div class="chart-row"><div class="chart-wrap" id="hsk-homo"></div><div class="chart-wrap" id="hsk-hetero"></div></div></div>
+  <p class="figure-caption">Top: the data and the fitted line. Bottom: each point's residual. On the left the residuals form an even band around zero; on the right the band fans out as x grows.</p>
+</div>
+
+<p>None of these violations makes OLS impossible to compute, except perfect multicollinearity. What they change is how far you should trust the line and the precision claimed for it &ndash; which matters a great deal once we start building confidence intervals next week. A sixth assumption doesn't make this list at all: that the residuals are <strong>normally distributed</strong>. Gauss-Markov never needs it, so it can't bias \(\hat\beta\), but it does matter for the t-tests and confidence intervals coming in Week 5.</p>
+
+<p>Most of the time, with a reasonable sample size and sensible data handling, these assumptions can be met, and where they can't there are standard fixes. But you have to know what they are to know whether your model is the right one.</p>
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 7</p>
+</section>
+
+<section class="chapter" id="checks">
+<div class="chapter-kicker">Part Fifteen</div>
+<h2>Two Things That Are Always True</h2>
+
+<p>The five-student table showed two facts. They hold for <em>every</em> OLS regression with an intercept, by construction:</p>
+
+<ul class="term-list">
+  <li><span class="term">The residuals sum to zero</span><span>The line balances through the data: the misses above it exactly offset the misses below it.</span></li>
+  <li><span class="term">Average \(\hat y\) = average \(y\)</span><span>A direct consequence: if the residuals average zero, the fitted values must average the same as the observed values.</span></li>
+</ul>
+
+<p>Both follow from the line passing through \((\bar x, \bar y)\). Check it on our class in Python, using the <code>model</code> you fitted in Part Seven:</p>
+
+<pre class="code-block">model.resid.sum()                                        <span class="c"># about 0 (e.g. -1e-11, rounding)</span>
+model.fittedvalues.mean(), student_summary['mean_rt'].mean()   <span class="c"># 1070.1 and 1070.1</span></pre>
+
+<p>The sum comes out as something like \(-1 \times 10^{-11}\): zero, apart from the computer's rounding. If your residuals don't sum to (almost) zero, the model has been fitted without an intercept or on different data.</p>
+</section>
+
+<section class="chapter" id="extrapolation">
+<div class="chapter-kicker">Part Sixteen</div>
+<h2>Interpolation vs. Extrapolation</h2>
+
+<p>Fitted values aren't only for the students we have. Put any finger length into the line and you get a prediction &ndash; which is exactly what HR wants. In Python, give <code>model.predict</code> a small data frame of new x values, using the same column name as in the model:</p>
+
+<pre class="code-block">new = pd.DataFrame({'finger_mm': [80, 40, 20]})
+model.predict(new)
+<span class="c"># 80mm: 1,083ms   40mm: 339ms   20mm: -33ms</span></pre>
+
+<p>Our data run from <strong>68mm to 100mm</strong>. At 80mm we're inside that range: <strong>interpolation</strong>, reasonably safe, because the line was fitted on data like that. At 40mm and 20mm we're well outside it: <strong>extrapolation</strong>, which assumes the straight-line pattern carries on somewhere we never checked. At 20mm the line predicts a negative reaction time; it crosses zero at about 21.8mm. Drag the slider to see where the line stops being trustworthy:</p>
+
+<div class="figure" id="fig-interp">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Predicting inside and outside the data</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Finger length</span><input type="range" id="interp-x" min="0" max="130" step="1" value="40" style="width:220px;"><span class="val" id="interp-val">40mm</span></div>
+    </div>
+    <div class="formula-block" id="interp-calc" style="text-align:left;font-family:var(--mono);font-size:0.9rem;"></div>
+    <div class="chart-wrap" id="interp-chart"></div>
+  </div>
+  <p class="figure-caption">The shaded band is the range of finger lengths we actually observed. The line is solid inside it and dashed outside.</p>
+</div>
+
+<p>The same applies to the five students: predict a score for 3 hours of revising and you get \(2.2 + 0.8 \times 3 = 4.6\), inside the data. Predict for 20 hours and you get \(2.2 + 0.8 \times 20 = 18.2\) &ndash; out of 12. The true relationship may curve, flatten or even reverse outside the range you observed. For a screening tool that HR might apply to <em>any</em> candidate, that unexamined assumption is doing a great deal of work.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Again we've got a time traveller &ndash; the finger is so short they can go back and complete the task before it's even begun. That is not a sentence I expected to say ever in my life. It's also not a sentence you want to say in front of a client.&rdquo;</p>
+</blockquote>
+</section>
+
+<section class="chapter" id="r-squared">
+<div class="chapter-kicker">Part Seventeen</div>
+<h2>How Good Is the Fit? R&sup2;</h2>
+
+<p>If you're going to put your name to a prediction, you want to know how well the model fits. The standard measure is <strong>R&sup2;</strong>: the share of the variation in y that the fitted values account for.</p>
+
+<div class="formula-block">$$R^2 = \frac{Var[\hat y]}{Var[y]} = 1 - \frac{Var[e]}{Var[y]} \qquad\qquad Var[y] = Var[\hat y] + Var[e]$$</div>
+
+<ul class="term-list">
+  <li><span class="term">R&sup2; = 0</span><span>The fitted values are just \(\bar y\) for everyone; the regression explains nothing.</span></li>
+  <li><span class="term">R&sup2; = 1</span><span>Every point sits exactly on the line.</span></li>
+  <li><span class="term">Simple regression</span><span>With one x, \(R^2 = (Corr[x,y])^2\) &ndash; a direct link back to Chapter 3.</span></li>
+</ul>
+
+<h3>Worked example: the five students</h3>
+
+<p>The fitted values 3.8, 5.4, 7.0, 8.6, 10.2 deviate from their mean of 7 by \(-3.2, -1.6, 0, 1.6, 3.2\). Square and add: \(10.24 + 2.56 + 0 + 2.56 + 10.24 = 25.6\). The real scores deviate from 7 by \(-4, 0, -2, 4, 2\), and their squares add to 40. Dividing each by \(n - 1 = 4\):</p>
+
+<div class="formula-block">$$R^2 = \frac{Var[\hat y]}{Var[y]} = \frac{25.6/4}{40/4} = \frac{6.4}{10} = 0.64 = 0.8^2$$</div>
+
+<p>Revising hours account for 64% of the variation in quiz scores, and 0.64 is the square of the correlation of 0.8 from Chapter 3.</p>
+
+<h3>The same thing in sums of squares</h3>
+
+<p>You'll often see R&sup2; written with sums of squares instead of variances &ndash; the same identity without the division by \(n - 1\). Excel's regression table, for example, reports them:</p>
+
+<div class="formula-block">$$\underbrace{\textstyle\sum(y_i-\bar y)^2}_{TSS} = \underbrace{\textstyle\sum(\hat y_i-\bar y)^2}_{ESS} + \underbrace{\textstyle\sum e_i^2}_{RSS} \qquad R^2 = \frac{ESS}{TSS} = 1 - \frac{RSS}{TSS}$$</div>
+
+<p>TSS is the total sum of squares, ESS the explained part, RSS the residual part. For the five students: TSS = 40, ESS = 25.6, and the squared residuals \(0.64 + 2.56 + 4 + 5.76 + 1.44 = 14.4\) give RSS. Check: \(25.6 + 14.4 = 40\), and \(R^2 = 25.6/40 = 0.64\).</p>
+
+<div class="callout gold">
+  <strong>A labelling trap.</strong> Some textbooks swap the names and call the residual part SSE. statsmodels doesn't print the sums of squares in its summary, but a fitted model stores them as <code>model.centered_tss</code> (TSS), <code>model.ess</code> (ESS) and <code>model.ssr</code> (RSS). Note that statsmodels' <code>ssr</code> is the <em>residual</em> sum of squares, while some textbooks use SSR for the <em>explained</em> part. Check what a source means before trusting the letters.
+</div>
+
+<h3>Our class: R&sup2; from the fitted values</h3>
+
+<p>Compute it yourself rather than reading it off: pull out the fitted values, take the two variances, and divide.</p>
+
+<pre class="code-block">fitted = model.fittedvalues
+r2 = fitted.var() / student_summary['mean_rt'].var()
+r2                     <span class="c"># 25,291 / 789,561 = 0.032</span>
+model.rsquared         <span class="c"># the same number, directly</span></pre>
+
+<p>Finger length accounts for about <strong>3.2%</strong> of the variation in mean reaction time. That's the answer to HR. The formula exists; it just isn't useful. (Check: the correlation was 0.179, and \(0.179^2 = 0.032\).)</p>
+
+<div class="figure" id="fig-r2">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>Same method, very different R&sup2;</h4></div>
+  <div class="figure-body"><div class="chart-row"><div class="chart-wrap" id="r2-ours"></div><div class="chart-wrap" id="r2-awake"></div></div></div>
+  <p class="figure-caption">Left: our class, finger length. Right: the simulated hours-awake class. Both lines are the best OLS can do.</p>
+</div>
+
+<p>Both lines are the best-fitting lines OLS can find. A low R&sup2; isn't a mistake in the fit: it says x carries little information about y. No other straight line would do better with finger length; it simply doesn't tell us much about reaction time.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;My job for these few months is to make sure that when you're out in the world as analysts, and you press a button that produces your R-squared, you know what it means. You're not just pressing the button.&rdquo;</p>
+</blockquote>
+</section>
+
+<section class="chapter" id="device">
+<div class="chapter-kicker">Part Eighteen</div>
+<h2>A Second Regression: Device</h2>
+
+<p>Part Nine showed that with a 0/1 x, \(\hat\alpha\) is the laptop average and \(\hat\beta\) is phone minus laptop. Try it on our class, still with one row per student:</p>
+
+<pre class="code-block">student_summary.groupby('device')['mean_rt'].mean()
+<span class="c"># Laptop 1136.9   (16 students)</span>
+<span class="c"># Phone   936.5   (8 students)</span></pre>
+
+<p>So \(\hat\alpha = 1{,}136.9\)ms and \(\hat\beta = 936.5 - 1{,}136.9 = -200.4\)ms: phone users averaged about 200ms quicker than laptop users in our class. You can get the same numbers from the Cov/Var formula, coding device as 0/1 yourself:</p>
+
+<pre class="code-block">import numpy as np
+
+x = (student_summary['device'] == 'Phone').astype(int)
+y = student_summary['mean_rt']
+beta = np.cov(x, y)[0, 1] / x.var(ddof=1)     <span class="c"># -200.4</span>
+alpha = y.mean() - beta * x.mean()             <span class="c"># 1136.9</span></pre>
+
+<p>And from statsmodels in one line. It converts the text column to 0/1 itself, labelling the coefficient <code>device[T.Phone]</code> to show which category is x = 1:</p>
+
+<pre class="code-block">model2 = smf.ols('mean_rt ~ device', data=student_summary).fit()
+model2.params      <span class="c"># Intercept 1136.89, device[T.Phone] -200.41</span></pre>
+
+<h3>Your first regression summary</h3>
+
+<p><code>model2.params</code> gives just the coefficients. <code>print(model2.summary())</code> gives the full report &ndash; the format you'll meet in the exam:</p>
+
+<pre class="code-block" id="summary-out" style="font-size:0.72rem;"></pre>
+
+<p>What you can read already: <strong>No. Observations</strong> (24 students), <strong>R-squared</strong> (0.012: device explains even less than finger length), and the <strong>coef</strong> column, which holds the same \(\hat\alpha\) and \(\hat\beta\) as <code>params</code>. The <code>std err</code>, <code>t</code>, <code>P&gt;|t|</code> and <code>[0.025 0.975]</code> columns say how precisely those coefficients are estimated. That's next chapter.</p>
+</section>
+
+<section class="chapter" id="causal">
+<div class="chapter-kicker">Part Nineteen</div>
+<h2>Is It Causal?</h2>
+
+<p>Suppose the finger-length slope had been large and the fit tight. What could we conclude? A positive slope is consistent with at least three explanations, and they aren't mutually exclusive:</p>
+
+<ul class="term-list">
+  <li><span class="term">x causes y</span><span>Longer fingers lead to slower reactions.</span></li>
+  <li><span class="term">y causes x</span><span>Reaction speed changes finger length. Implausible here, but always worth ruling out explicitly.</span></li>
+  <li><span class="term">A third variable causes both</span><span>Hand size, age or general dexterity could move finger length and reaction time together.</span></li>
+</ul>
+
+<p>&ldquo;Correlation doesn't imply causation&rdquo; undersells the point. Better: <strong>we should not infer cause and effect from a comparison in observational data</strong>. The method isn't broken; nothing about how this data was collected was designed to rule out the third explanation. Week 9 looks at data that is designed that way.</p>
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 7</p>
+</section>
+
+<section class="chapter" id="next">
+<div class="chapter-kicker">Part Twenty</div>
+<h2>What's Next</h2>
+
+<p>This chapter's online session is a recorded walkthrough of the textbook's own Chapter 7 case study: <em>finding a good deal among hotels</em>. It uses real prices for 207 Vienna hotels: bin-scatters, LOWESS, an OLS line of price against distance from the centre, and then the residuals put to work &ndash; the hotels with the most negative residuals are the ones that look cheap for their location. It's the same toolkit as this chapter, on a real business question.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Coding is like going to the gym. You've got to do it all the time. If you take three weeks off, you very quickly go from &lsquo;oh, cool&rsquo; to &lsquo;how do I do this again?&rsquo;&rdquo;</p>
+</blockquote>
+
+<p>We now have a formula, and an honest verdict on it: for finger length, not much use. Next chapter asks why. Is the straight line the wrong shape? Is something mismeasured? And how sure can we be about \(\hat\beta\) in the first place? That's <strong>model problems and inference</strong>.</p>
+</section>
+
+    </div>
+
+    <footer class="colophon">
+      <p><strong>About these notes.</strong> Written from the Week 4 workshop recording and slide deck for 7002LBSAI Research Methods in Analytics, Liverpool John Moores University. Quotations from the workshop are lightly edited from an automatic transcript. Class data are the Week 1 reaction-time trials, cleaned and anonymised, with Week 3's corrected finger lengths; the hours-awake, revision and homoskedasticity examples are simulated or made up for illustration. Textbook: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), <em>Data Analysis for Business, Economics, and Policy</em>, Ch. 7.</p>
+    </footer>
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+const STUDENTS = [{"s": "Student 1", "x": 80.0, "y": 1601.1, "dev": "Phone"}, {"s": "Student 2", "x": 80.0, "y": 419.6, "dev": "Laptop"}, {"s": "Student 3", "x": 72.0, "y": 406.3, "dev": "Laptop"}, {"s": "Student 4", "x": 80.0, "y": 416.3, "dev": "Phone"}, {"s": "Student 5", "x": 69.0, "y": 1081.1, "dev": "Laptop"}, {"s": "Student 6", "x": 95.0, "y": 3135.4, "dev": "Laptop"}, {"s": "Student 7", "x": 71.0, "y": 370.1, "dev": "Laptop"}, {"s": "Student 8", "x": 79.0, "y": 395.2, "dev": "Phone"}, {"s": "Student 9", "x": 68.0, "y": 426.2, "dev": "Phone"}, {"s": "Student 10", "x": 82.0, "y": 1867.3, "dev": "Laptop"}, {"s": "Student 11", "x": 80.0, "y": 1353.8, "dev": "Laptop"}, {"s": "Student 12", "x": 94.0, "y": 497.3, "dev": "Phone"}, {"s": "Student 13", "x": 80.0, "y": 1314.5, "dev": "Laptop"}, {"s": "Student 14", "x": 90.0, "y": 1970.3, "dev": "Laptop"}, {"s": "Student 15", "x": 100.0, "y": 1101.1, "dev": "Laptop"}, {"s": "Student 16", "x": 80.0, "y": 1260.0, "dev": "Laptop"}, {"s": "Student 17", "x": 70.0, "y": 466.9, "dev": "Phone"}, {"s": "Student 18", "x": 82.0, "y": 435.4, "dev": "Phone"}, {"s": "Student 19", "x": 74.0, "y": 283.4, "dev": "Laptop"}, {"s": "Student 20", "x": 70.0, "y": 2339.3, "dev": "Laptop"}, {"s": "Student 21", "x": 80.0, "y": 386.1, "dev": "Laptop"}, {"s": "Student 22", "x": 76.0, "y": 373.5, "dev": "Laptop"}, {"s": "Student 23", "x": 70.0, "y": 3253.4, "dev": "Phone"}, {"s": "Student 24", "x": 81.0, "y": 528.4, "dev": "Laptop"}];
+const AWAKE = [[3.4,302.0],[5.8,357.0],[14.8,525.0],[11.3,410.0],[3.5,302.0],[8.9,415.0],[9.7,369.0],[4.6,316.0],[13.8,480.0],[3.8,331.0],[8.3,379.0],[10.3,424.0],[8.9,300.0],[11.4,450.0],[13.8,424.0],[17.3,452.0],[6.5,359.0],[12.4,455.0],[13.1,430.0],[6.7,322.0],[2.0,289.0],[17.6,505.0],[6.8,397.0],[7.0,380.0]];
+const HSK = [[2.49, 6.43, 7.48], [4.5, 8.18, 10.2], [4.11, 9.57, 9.31], [2.6, 6.32, 7.07], [8.7, 18.06, 10.16], [1.85, 5.73, 6.31], [0.2, 2.51, 0.93], [9.53, 19.56, 19.36], [6.8, 16.52, 16.2], [4.87, 9.46, 10.4], [9.65, 22.83, 24.98], [3.93, 7.56, 12.35], [0.8, 4.37, 2.62], [3.51, 6.72, 9.16], [1.64, 5.0, 4.8], [9.83, 21.79, 25.22], [8.81, 17.87, 18.62], [4.94, 11.86, 10.58], [4.01, 7.94, 8.57], [4.51, 9.45, 10.23], [7.21, 15.69, 18.29], [2.48, 6.19, 4.62], [6.23, 14.1, 15.39], [1.42, 4.67, 3.71], [2.01, 8.41, 4.68], [0.81, 3.72, 1.53], [9.53, 20.25, 16.45], [0.56, 2.14, 2.62], [6.0, 13.0, 11.46], [7.23, 15.85, 19.73], [9.7, 19.7, 16.64], [8.22, 19.53, 12.84], [5.28, 11.92, 12.01], [3.31, 6.56, 5.98], [3.54, 7.16, 8.76], [0.79, 3.62, 3.16], [5.56, 12.56, 13.1], [1.66, 3.56, 4.29], [2.95, 5.8, 5.52], [8.41, 16.73, 19.39], [3.63, 8.74, 8.99], [3.41, 7.41, 7.37], [7.1, 13.22, 14.68], [0.32, 2.17, 1.37], [4.72, 7.34, 10.83], [7.32, 14.74, 15.75], [7.73, 18.29, 15.79], [2.41, 6.72, 6.32], [3.06, 4.4, 7.96], [1.37, 2.82, 4.01], [5.96, 11.77, 13.05], [1.63, 5.36, 4.05], [8.02, 17.42, 19.77], [5.0, 12.61, 11.12], [0.59, 3.0, 2.76], [3.92, 9.55, 9.82], [6.2, 12.05, 17.73], [1.88, 4.11, 4.77], [4.28, 8.91, 9.51], [0.89, 1.02, 3.09], [7.33, 17.24, 16.86], [3.93, 9.28, 8.93], [3.44, 5.56, 8.13], [3.97, 10.02, 10.2], [0.17, 0.22, 1.39], [4.68, 11.22, 7.85], [8.93, 18.06, 16.06], [1.62, 2.83, 5.62], [8.44, 16.4, 15.93], [2.75, 4.46, 6.38], [7.69, 15.39, 15.61], [8.34, 15.46, 16.83], [9.01, 19.5, 19.1], [9.72, 19.3, 24.58], [4.29, 9.16, 9.74], [6.86, 15.05, 13.66], [3.26, 5.86, 7.7], [7.97, 14.82, 18.84], [4.35, 11.71, 6.79], [5.1, 8.88, 14.74], [7.63, 15.09, 12.58], [1.74, 4.94, 4.77], [4.52, 10.46, 12.83], [8.98, 18.42, 22.23], [6.89, 13.16, 18.15], [2.86, 8.15, 7.66], [4.21, 10.11, 8.91], [5.68, 12.23, 17.41], [9.68, 20.16, 34.13], [5.61, 13.29, 14.14]];
+  const SUMMARY = "                            OLS Regression Results                            \n==============================================================================\nDep. Variable:                mean_rt   R-squared:                       0.012\nModel:                            OLS   Adj. R-squared:                 -0.033\nMethod:                 Least Squares   F-statistic:                    0.2626\nDate:                Fri, 16 Oct 2026   Prob (F-statistic):              0.613\nTime:                        18:09:08   Log-Likelihood:                -196.35\nNo. Observations:                  24   AIC:                             396.7\nDf Residuals:                      22   BIC:                             399.1\nDf Model:                           1                                         \nCovariance Type:            nonrobust                                         \n==============================================================================\n===================================================================================\n                      coef    std err          t      P>|t|      [0.025      0.975]\n-----------------------------------------------------------------------------------\nIntercept        1136.8875    225.792      5.035      0.000     668.623    1605.152\ndevice[T.Phone]  -200.4125    391.083     -0.512      0.613   -1011.470     610.645\n===================================================================================";
+
+  const plotStyle = () => ({ color: 'var(--ink-soft)', fontFamily: "'Public Sans', sans-serif", fontSize: '12px' });
+  const BLUE = '#457b9d', RED = '#e63946', GREEN = '#2d6a4f', NAVY = 'var(--ink)', GREY = '#9aa0ad';
+  const MINUS = '\u2212';
+  const sgn = v => (v < 0 ? MINUS + fmt1(-v) : '+' + fmt1(v));
+  const neg = v => (v < 0 ? MINUS + fmt1(-v) : fmt1(v));
+
+  function accessibleChart(node, label) {
+    node.setAttribute('aria-hidden', 'true');
+    const wrap = document.createElement('div');
+    wrap.setAttribute('role', 'img');
+    wrap.setAttribute('aria-label', label);
+    wrap.appendChild(node);
+    return wrap;
+  }
+  function mount(id, node) {
+    const el = document.getElementById(id);
+    el.innerHTML = '';
+    el.appendChild(node);
+  }
+  function width(id, max) {
+    const el = document.getElementById(id);
+    return Math.max(260, Math.min(max, (el && el.clientWidth) || max));
+  }
+  function chartLabel(t) {
+    const el = document.createElement('div');
+    el.textContent = t;
+    el.style.cssText = 'font-family:var(--sans);font-weight:600;font-size:13px;color:var(--ink);text-align:center;margin:0 0 4px;';
+    return el;
+  }
+  function fmt1(v) { return d3.format(',.1f')(v); }
+  function fmt0(v) { return d3.format(',.0f')(v); }
+
+  /* ---------- OLS on the class ---------- */
+  function ols(xs, ys) {
+    const mx = d3.mean(xs), my = d3.mean(ys);
+    const b = d3.sum(xs.map((x, i) => (x - mx) * (ys[i] - my))) / d3.sum(xs.map(x => (x - mx) ** 2));
+    const a = my - b * mx;
+    const fit = xs.map(x => a + b * x);
+    const r2 = d3.variance(fit) / d3.variance(ys);
+    return { a, b, mx, my, r2 };
+  }
+  const SX = STUDENTS.map(d => d.x), SY = STUDENTS.map(d => d.y);
+  const FIT = ols(SX, SY);
+  const AW = AWAKE.map(([h, rt]) => ({ x: h, y: rt }));
+  const AFIT = ols(AW.map(d => d.x), AW.map(d => d.y));
+  const XLAB = 'Finger length (mm)', YLAB = 'Mean reaction time (ms)';
+
+  /* ---------- LOWESS (kernel-weighted local average, as in the deck) ---------- */
+  const bw = document.getElementById('bw');
+  function renderLowess() {
+    const h = +bw.value;
+    document.getElementById('bw-val').textContent = h.toFixed(1) + 'mm';
+    const [x0, x1] = d3.extent(SX);
+    const grid = d3.range(x0, x1 + 0.01, (x1 - x0) / 60);
+    const smooth = grid.map(g => {
+      const w = SX.map(x => Math.exp(-0.5 * ((x - g) / h) ** 2));
+      return { x: g, y: d3.sum(w.map((wi, i) => wi * SY[i])) / d3.sum(w) };
+    });
+    const svg = Plot.plot({
+      width: width('lowess-chart', 640), height: 330, marginLeft: 60, style: plotStyle(),
+      x: { label: XLAB, grid: true }, y: { label: YLAB, grid: true },
+      marks: [
+        Plot.dot(STUDENTS, { x: 'x', y: 'y', fill: NAVY, r: 4, fillOpacity: 0.7 }),
+        Plot.line(smooth, { x: 'x', y: 'y', stroke: RED, strokeWidth: 2.5 })
+      ]
+    });
+    mount('lowess-chart', accessibleChart(svg, `LOWESS curve of mean reaction time on finger length for our 24 students, with a bandwidth of ${h.toFixed(1)} millimetres. Narrow bandwidths give a jagged curve; wide ones flatten towards a gentle upward slope.`));
+  }
+  bw.addEventListener('input', renderLowess);
+
+  /* ---------- hours awake, line from x = 0 ---------- */
+  function renderAwake() {
+    const f = AFIT, xmin = d3.min(AW, d => d.x), xmax = d3.max(AW, d => d.x);
+    const solid = [xmin, xmax].map(x => ({ x, y: f.a + f.b * x }));
+    const dashed = [0, xmin].map(x => ({ x, y: f.a + f.b * x }));
+    const svg = Plot.plot({
+      width: width('awake-chart', 640), height: 340, marginLeft: 60, style: plotStyle(),
+      x: { label: 'Hours awake before the test', domain: [0, Math.ceil(xmax) + 1], grid: true },
+      y: { label: YLAB, domain: [Math.floor((f.a - 30) / 20) * 20, Math.ceil((d3.max(AW, d => d.y) + 10) / 20) * 20], grid: true },
+      marks: [
+        Plot.ruleX([0], { stroke: 'var(--ink-soft)' }),
+        Plot.dot(AW, { x: 'x', y: 'y', fill: GREEN, r: 5, fillOpacity: 0.85 }),
+        Plot.line(dashed, { x: 'x', y: 'y', stroke: RED, strokeWidth: 2.5, strokeDasharray: '6,4' }),
+        Plot.line(solid, { x: 'x', y: 'y', stroke: RED, strokeWidth: 2.5 }),
+        Plot.dot([{ x: 0, y: f.a }], { x: 'x', y: 'y', fill: RED, r: 6 }),
+        Plot.text([{ x: 0, y: f.a }], { x: 'x', y: 'y', text: () => '\u03B1\u0302 = ' + fmt1(f.a), dx: 12, dy: 12, textAnchor: 'start', fill: RED, fontWeight: 700 })
+      ]
+    });
+    const cap = `Fitted line: predicted reaction time = ${fmt1(f.a)} + ${f.b.toFixed(2)} \u00D7 hours awake. The dashed stretch from 0 to ${xmin} hours lies outside the data.`;
+    mount('awake-chart', accessibleChart(svg, 'Simulated class of 24: hours awake against mean reaction time, with the fitted line extended back to zero hours, where it meets the y-axis at the intercept. ' + cap));
+    document.getElementById('awake-caption').textContent = cap;
+  }
+
+  /* ---------- fitted value and residual explorer ---------- */
+  const pick = document.getElementById('resid-pick');
+  STUDENTS.forEach(d => { const o = document.createElement('option'); o.value = d.s; o.textContent = `${d.s} (${d.x}mm, ${fmt1(d.y)}ms)`; pick.appendChild(o); });
+  pick.value = 'Student 6';
+  function renderResid() {
+    const d = STUDENTS.find(s => s.s === pick.value);
+    const yhat = FIT.a + FIT.b * d.x, e = d.y - yhat;
+    document.getElementById('resid-calc').innerHTML =
+      `\u0177 = ${neg(FIT.a)} + ${FIT.b.toFixed(4)} \u00D7 ${d.x} = ${neg(FIT.a)} + ${fmt1(FIT.b * d.x)} = <strong>${fmt1(yhat)}ms</strong><br>` +
+      `e = y \u2212 \u0177 = ${fmt1(d.y)} \u2212 ${fmt1(yhat)} = <strong>${sgn(e)}ms</strong> &nbsp;(${e >= 0 ? 'slower than the line predicts' : 'quicker than the line predicts'})`;
+    const segs = STUDENTS.map(s => ({ x: s.x, y1: s.y, y2: FIT.a + FIT.b * s.x }));
+    const [x0, x1] = d3.extent(SX);
+    const line = [x0, x1].map(x => ({ x, y: FIT.a + FIT.b * x }));
+    const svg = Plot.plot({
+      width: width('resid-chart', 640), height: 340, marginLeft: 60, style: plotStyle(),
+      x: { label: XLAB, grid: true }, y: { label: YLAB, grid: true },
+      marks: [
+        Plot.link(segs, { x1: 'x', x2: 'x', y1: 'y1', y2: 'y2', stroke: GREY, strokeOpacity: 0.45 }),
+        Plot.line(line, { x: 'x', y: 'y', stroke: NAVY, strokeWidth: 2 }),
+        Plot.dot(STUDENTS, { x: 'x', y: 'y', fill: NAVY, r: 3.5, fillOpacity: 0.5 }),
+        Plot.link([{ x: d.x, y1: d.y, y2: yhat }], { x1: 'x', x2: 'x', y1: 'y1', y2: 'y2', stroke: e >= 0 ? BLUE : RED, strokeWidth: 3 }),
+        Plot.dot([{ x: d.x, y: d.y }], { x: 'x', y: 'y', fill: e >= 0 ? BLUE : RED, r: 7 }),
+        Plot.dot([{ x: d.x, y: yhat }], { x: 'x', y: 'y', stroke: NAVY, fill: 'var(--paper-raised)', r: 6, strokeWidth: 2 }),
+        Plot.text([{ x: d.x, y: yhat }], { x: 'x', y: 'y', text: () => '\u0177', dx: 12, fill: NAVY, fontWeight: 700, textAnchor: 'start' })
+      ]
+    });
+    mount('resid-chart', accessibleChart(svg, `${d.s}: finger length ${d.x}mm, mean reaction time ${fmt1(d.y)}ms, fitted value ${fmt1(yhat)}ms, residual ${sgn(e)}ms.`));
+  }
+  pick.addEventListener('change', renderResid);
+
+  /* ---------- bowl ---------- */
+  const bowlB = document.getElementById('bowl-b');
+  const ssrFor = b => { const a = FIT.my - b * FIT.mx; return d3.sum(STUDENTS, s => (s.y - (a + b * s.x)) ** 2); };
+  const CURVE = d3.range(-10, 47.01, 0.5).map(b => ({ b, ssr: ssrFor(b) }));
+  function renderBowl() {
+    const b = +bowlB.value, a = FIT.my - b * FIT.mx;
+    document.getElementById('bowl-val').textContent = b.toFixed(1);
+    const [x0, x1] = d3.extent(SX);
+    const ys = d3.extent(SY), pad = (ys[1] - ys[0]) * 0.15;
+    const w = Math.min(330, width('bowl-line', 330));
+    const left = Plot.plot({
+      width: w, height: 300, marginLeft: 55, style: plotStyle(),
+      x: { label: XLAB }, y: { label: YLAB, domain: [ys[0] - pad, ys[1] + pad] }, clip: true,
+      marks: [
+        Plot.dot(STUDENTS, { x: 'x', y: 'y', fill: NAVY, r: 3.5 }),
+        Plot.line([x0, x1].map(x => ({ x, y: a + b * x })), { x: 'x', y: 'y', stroke: RED, strokeWidth: 2.5 })
+      ]
+    });
+    const right = Plot.plot({
+      width: w, height: 300, marginLeft: 80, style: plotStyle(),
+      x: { label: 'Candidate slope' }, y: { label: 'Sum of squared residuals', tickFormat: v => (v / 1e6).toFixed(1) + 'M' },
+      marks: [
+        Plot.line(CURVE, { x: 'b', y: 'ssr', stroke: BLUE, strokeWidth: 2 }),
+        Plot.ruleX([FIT.b], { stroke: GREEN, strokeDasharray: '4,3' }),
+        Plot.dot([{ b, ssr: ssrFor(b) }], { x: 'b', y: 'ssr', fill: RED, r: 6 })
+      ]
+    });
+    mount('bowl-line', accessibleChart(left, `Candidate line with slope ${b.toFixed(1)} through the point of means, drawn over our 24 students.`));
+    mount('bowl-curve', accessibleChart(right, `Sum of squared residuals for every candidate slope: a U-shaped curve with its minimum at ${FIT.b.toFixed(2)}.`));
+    const pct = (ssrFor(b) / ssrFor(FIT.b) - 1) * 100;
+    document.getElementById('bowl-caption').textContent = Math.abs(b - FIT.b) < 0.26
+      ? `Slope ${b.toFixed(1)}: at the bottom of the bowl. The best possible slope is ${FIT.b.toFixed(2)}.`
+      : `Slope ${b.toFixed(1)}: the sum of squared residuals is ${pct.toFixed(1)}% above its minimum at ${FIT.b.toFixed(2)}.`;
+  }
+  bowlB.addEventListener('input', renderBowl);
+
+  /* ---------- homoskedastic vs heteroskedastic ---------- */
+  function renderHsk() {
+    const rows = HSK.map(([x, h, het]) => ({ x, h, het }));
+    const allY = rows.flatMap(r => [r.h, r.het]);
+    const yDom = [d3.min(allY) - 2, d3.max(allY) + 2];
+    const res = key => { const f = ols(rows.map(r => r.x), rows.map(r => r[key])); return { f, e: rows.map(r => ({ x: r.x, e: r[key] - (f.a + f.b * r.x) })) }; };
+    const H = res('h'), X = res('het');
+    const eMax = d3.max([...H.e, ...X.e], d => Math.abs(d.e)) + 1;
+    const w = Math.min(330, width('hsk-homo', 330));
+    const panel = (key, R, title) => {
+      const top = Plot.plot({ width: w, height: 200, marginLeft: 40, style: plotStyle(),
+        x: { label: 'x' }, y: { label: 'y', domain: yDom },
+        marks: [Plot.dot(rows, { x: 'x', y: key, fill: BLUE, r: 2.5, fillOpacity: 0.6 }),
+                Plot.line([0, 10].map(x => ({ x, y: R.f.a + R.f.b * x })), { x: 'x', y: 'y', stroke: RED, strokeWidth: 2 })] });
+      const bot = Plot.plot({ width: w, height: 150, marginLeft: 40, marginTop: 24, style: plotStyle(),
+        x: { label: 'x' }, y: { label: 'residual', domain: [-eMax, eMax] },
+        marks: [Plot.ruleY([0], { stroke: RED }), Plot.dot(R.e, { x: 'x', y: 'e', fill: GREEN, r: 2.5, fillOpacity: 0.6 })] });
+      const div = document.createElement('div'); div.appendChild(chartLabel(title)); div.appendChild(top); div.appendChild(bot); return div;
+    };
+    mount('hsk-homo', accessibleChart(panel('h', H, 'Homoskedastic'), 'Homoskedastic example: points scatter evenly around the fitted line, and the residuals form a band of constant width.'));
+    mount('hsk-hetero', accessibleChart(panel('het', X, 'Heteroskedastic'), 'Heteroskedastic example: the same trend, but the residuals fan out as x grows.'));
+  }
+
+  /* ---------- interpolation vs extrapolation ---------- */
+  const ix = document.getElementById('interp-x');
+  function renderInterp() {
+    const x = +ix.value, p = FIT.a + FIT.b * x;
+    const [lo, hi] = d3.extent(SX);
+    const inside = x >= lo && x <= hi;
+    document.getElementById('interp-val').textContent = x + 'mm';
+    document.getElementById('interp-calc').innerHTML =
+      `\u0177 = ${neg(FIT.a)} + ${FIT.b.toFixed(2)} \u00D7 ${x} = <strong>${neg(p)}ms</strong> &nbsp;\u2013&nbsp; ` +
+      (inside ? 'inside our data (68\u2013100mm): interpolation' : `outside our data (68\u2013100mm): extrapolation${p < 0 ? ', and a negative reaction time' : ''}`);
+    const lineIn = [lo, hi].map(v => ({ x: v, y: FIT.a + FIT.b * v }));
+    const lineL = [0, lo].map(v => ({ x: v, y: FIT.a + FIT.b * v }));
+    const lineR = [hi, 130].map(v => ({ x: v, y: FIT.a + FIT.b * v }));
+    const svg = Plot.plot({
+      width: width('interp-chart', 640), height: 330, marginLeft: 60, style: plotStyle(),
+      x: { label: XLAB, domain: [0, 130], grid: true }, y: { label: YLAB, domain: [-600, 3500], grid: true },
+      marks: [
+        Plot.rectX([{ x1: lo, x2: hi }], { x1: 'x1', x2: 'x2', fill: GREEN, fillOpacity: 0.1 }),
+        Plot.ruleY([0], { stroke: 'var(--ink-soft)' }),
+        Plot.dot(STUDENTS, { x: 'x', y: 'y', fill: NAVY, r: 3, fillOpacity: 0.5 }),
+        Plot.line(lineIn, { x: 'x', y: 'y', stroke: NAVY, strokeWidth: 2 }),
+        Plot.line(lineL, { x: 'x', y: 'y', stroke: NAVY, strokeWidth: 2, strokeDasharray: '5,4' }),
+        Plot.line(lineR, { x: 'x', y: 'y', stroke: NAVY, strokeWidth: 2, strokeDasharray: '5,4' }),
+        Plot.dot([{ x, y: p }], { x: 'x', y: 'y', fill: inside ? GREEN : RED, r: 7 })
+      ]
+    });
+    mount('interp-chart', accessibleChart(svg, `Prediction at ${x}mm: ${neg(p)}ms, ${inside ? 'inside' : 'outside'} the observed range of 68 to 100mm.`));
+  }
+  ix.addEventListener('input', renderInterp);
+
+  /* ---------- same method, different R-squared ---------- */
+  function renderR2() {
+    const w = Math.min(330, width('r2-ours', 330));
+    const panel = (rows, f, xlab, col, title) => {
+      const [x0, x1] = d3.extent(rows, d => d.x);
+      const div = document.createElement('div'); div.appendChild(chartLabel(title));
+      div.appendChild(Plot.plot({ width: w, height: 280, marginLeft: 55, style: plotStyle(),
+        x: { label: xlab }, y: { label: YLAB },
+        marks: [Plot.dot(rows, { x: 'x', y: 'y', fill: col, r: 4, fillOpacity: 0.8 }),
+                Plot.line([x0, x1].map(x => ({ x, y: f.a + f.b * x })), { x: 'x', y: 'y', stroke: RED, strokeWidth: 2.5 }),
+                Plot.text(['R\u00B2 = ' + f.r2.toFixed(2)], { frameAnchor: 'top-left', dx: 6, dy: 4, fill: RED, fontWeight: 700, fontSize: 15 })] }));
+      return div;
+    };
+    mount('r2-ours', accessibleChart(panel(STUDENTS, FIT, XLAB, NAVY, 'Our class: finger length'), `Our class: finger length against mean reaction time, R squared ${FIT.r2.toFixed(2)}.`));
+    mount('r2-awake', accessibleChart(panel(AW, AFIT, 'Hours awake', GREEN, 'Simulated: hours awake'), `Simulated class: hours awake against reaction time, R squared ${AFIT.r2.toFixed(2)}.`));
+  }
+
+  document.getElementById('summary-out').textContent = SUMMARY;
+
+  renderLowess(); renderAwake(); renderResid(); renderBowl(); renderHsk(); renderInterp(); renderR2();
+
+  /* ================= Chapter nav =================
+     Hardcoded -- add a new entry here (and to every other chapter's own copy
+     of this array) when the next chapter exists. */
+  const CHAPTERS = [
+    { href: 'week1-lecture-notes.html', num: 'One', title: 'Distributions &amp; Summarising Data' },
+    { href: 'week2-lecture-notes.html', num: 'Two', title: 'Inference: When Is a Difference Real?' },
+    { href: 'week3-lecture-notes.html', num: 'Three', title: 'When y Met x: Correlation and Covariance' },
+    { href: 'week4-lecture-notes.html', num: 'Four', title: 'Regression I: Fitting the Line' },
+  ];
+  const CURRENT_CHAPTER_HREF = 'week4-lecture-notes.html';
+  function buildChapterNav(container) {
+    const wrap = document.createElement('div');
+    wrap.className = 'toc-block chapter-nav';
+    const label = document.createElement('span');
+    label.className = 'toc-label';
+    label.textContent = 'Chapters';
+    wrap.appendChild(label);
+    const ol = document.createElement('ol');
+    ol.className = 'chapter-list';
+    CHAPTERS.forEach(c => {
+      const li = document.createElement('li');
+      const isCurrent = c.href === CURRENT_CHAPTER_HREF;
+      const el = document.createElement(isCurrent ? 'span' : 'a');
+      if (!isCurrent) el.href = c.href;
+      el.className = 'chapter-link' + (isCurrent ? ' current' : '');
+      el.innerHTML = `<strong>Chapter ${c.num}</strong><span class="chapter-sub">${c.title}</span>`;
+      li.appendChild(el);
+      ol.appendChild(li);
+    });
+    wrap.appendChild(ol);
+    container.appendChild(wrap);
+  }
+
+  /* ================= TOC ================= */
+  const sections = [...document.querySelectorAll('section.chapter')].map(s => ({
+    id: s.id, title: s.querySelector('h2').textContent
+  }));
+  function buildTOC(container) {
+    buildChapterNav(container);
+    const label = document.createElement('span');
+    label.className = 'toc-label';
+    label.textContent = 'Contents';
+    container.appendChild(label);
+    const ol = document.createElement('ol');
+    sections.forEach(s => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = '#' + s.id; a.textContent = s.title; a.dataset.id = s.id;
+      li.appendChild(a); ol.appendChild(li);
+    });
+    container.appendChild(ol);
+  }
+  buildTOC(document.getElementById('toc'));
+  buildTOC(document.getElementById('toc-mobile'));
+
+  const allTocLinks = () => [...document.querySelectorAll('nav.toc a')];
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        allTocLinks().forEach(a => a.classList.toggle('active', a.dataset.id === id));
+      }
+    });
+  }, { rootMargin: '-10% 0px -70% 0px' });
+  sections.forEach(s => io.observe(document.getElementById(s.id)));
+
+})();
+</script>
+
+</body>
+</html>
