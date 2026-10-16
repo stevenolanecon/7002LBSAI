@@ -723,7 +723,7 @@ viewof beta_try = {
   const alphaTry = ybar - beta_try * xbar
 
   const bowl = Plot.plot({
-    height: 420, width: 380,
+    height: 420, width: 380, marginLeft: 85,
     x: { label: "candidate slope" },
     y: { label: "sum of squared residuals" },
     marks: [
@@ -740,7 +740,6 @@ viewof beta_try = {
     y: { label: "Mean reaction time (ms)", domain: [d3.min(rows, d => d.mean_rt) - pad, d3.max(rows, d => d.mean_rt) + pad] },
     marks: [
       Plot.dot(rows, { x: "finger_mm", y: "mean_rt", fill: "#1a1a2e", r: 4 }),
-      Plot.linearRegressionY(rows, { x: "finger_mm", y: "mean_rt", stroke: "#ccc", strokeOpacity: 0 }),
       Plot.line([{ x: d3.min(rows, d => d.finger_mm), y: alphaTry + beta_try * d3.min(rows, d => d.finger_mm) },
                  { x: d3.max(rows, d => d.finger_mm), y: alphaTry + beta_try * d3.max(rows, d => d.finger_mm) }],
                 { x: "x", y: "y", stroke: "#e63946", strokeWidth: 2.5 }),
@@ -754,7 +753,7 @@ viewof beta_try = {
 ::::
 
 ::: {.fragment #wk4-bowl-frag}
-The sum of squared residuals is smallest exactly where the red line best fits the scatter, and exactly at $\hat\beta = Cov[x,y]/Var[x]$ (the dashed green line).
+Each red line uses the slope you pick, with the intercept set to $\bar y - \beta\bar x$ so the line always passes through the point of means $(\bar x, \bar y)$. The sum of squared residuals is smallest exactly where the red line best fits the scatter, and exactly at $\hat\beta = Cov[x,y]/Var[x]$ (the dashed green line).
 :::
 
 ## OLS is BLUE
