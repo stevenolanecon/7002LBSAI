@@ -293,9 +293,13 @@ $$y = \alpha + \beta x + \varepsilon$$
 - **Key assumption:** $E[\varepsilon \mid x] = 0$ — on average, the error is unrelated to x; x tells us nothing about which way $\varepsilon$ leans.
 
 ::: {.fragment}
-Take the expectation of both sides:
+Take the expectation of both sides. The average of a sum is the sum of the averages, so:
 
-$$E[y \mid x] = \alpha + \beta x + \underbrace{E[\varepsilon \mid x]}_{=\,0} = \alpha + \beta x$$
+$$E[y \mid x] = E[\alpha \mid x] + E[\beta x \mid x] + E[\varepsilon \mid x] = \alpha + \beta x + 0$$
+
+- $E[\alpha \mid x] = \alpha$: $\alpha$ is a fixed number, the same for every observation, so its average is just itself.
+- $E[\beta x \mid x] = \beta x$: conditioning on x means looking only at observations with that value of x. Within that group, $\beta x$ is the same number for everyone, so its average is $\beta x$.
+- $E[\varepsilon \mid x] = 0$: the key assumption above.
 
 The error term doesn't vanish from reality — it **averages to zero** by assumption. What's left is exactly $y^E$: our shorthand for "the part of y that x explains, once the noise is averaged away."
 :::
