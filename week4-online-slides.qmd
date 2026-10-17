@@ -81,6 +81,9 @@ stats = {
     'zero_at': round(float(-a / b), 1),
     'rating_all': round(float(hotels['rating'].mean()), 2),
     'rating_deals': round(float(deals['rating'].mean()), 2),
+    'resid_sum': float(hotels['residual'].sum()),
+    'pred_mean': round(float(hotels['predicted'].mean()), 2),
+    'price_mean2': round(float(hotels['price'].mean()), 2),
 }
 
 ojs_define(
@@ -320,7 +323,7 @@ accessibleChart(Plot.plot({
 ```
 
 ::: {.fragment}
-The line is an **average slope**: it misses the steep drop in the first mile and is too steep further out. Not a bad approximation overall – but next week's online session asks whether a different shape would do better.
+The line is an **average slope**: it misses the steep drop in the first mile and is too steep further out. Not a bad approximation overall – but next week we'll consider whether a different shape would do better.
 :::
 
 ## Residuals
@@ -342,7 +345,7 @@ accessibleChart(Plot.plot({
 ::: {.fragment}
 - **Negative residual:** cheaper than its location predicts – a candidate good deal
 - **Positive residual:** more expensive than its location predicts
-- They average **exactly zero** – OLS guarantees it, as we saw in the workshop
+- They average **exactly zero** – not luck, but guaranteed by how OLS fits the line (next slide)
 :::
 
 <details>
@@ -354,6 +357,25 @@ hotels['residual']  = model.resid           # = price - predicted`)
 ```
 
 </details>
+
+## Why the residuals average zero
+
+Two things are true of **every** OLS line with an intercept, whatever the data:
+
+- **The residuals sum to zero.** The hotels above the line and the hotels below it exactly balance out.
+- **The average predicted price equals the average actual price.** If the residuals average zero, the predictions can't be systematically too high or too low.
+
+::: {.fragment}
+Both follow from the intercept formula, $\hat\alpha = \bar y - \hat\beta \bar x$, which forces the line through the point of means $(\bar x, \bar y)$. Tilt the line however you like about that point: whatever it gains above, it loses below.
+
+```{ojs}
+codeBox(`hotels['residual'].sum()          # ${stats.resid_sum.toExponential(1)}  (zero, up to rounding)
+hotels['predicted'].mean()        # ${stats.pred_mean.toFixed(2)}
+hotels['price'].mean()            # ${stats.price_mean2.toFixed(2)}`)
+```
+
+So a residual of −€50 means *cheaper than a typical hotel at that distance* – it's measured against a line that, on average, gets prices exactly right.
+:::
 
 ## The five best deals
 
