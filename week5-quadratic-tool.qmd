@@ -1,0 +1,68 @@
+---
+title: "Week 5 — Play with a Quadratic"
+toc: false
+search: false
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{=html}
+<div class="site-hero">
+  <div class="hero-inner">
+    <p class="kicker">7002LBSAI — Week 5</p>
+    <h1>Play with a quadratic</h1>
+    <p>See what α, β₁ and β₂ each do to the curve</p>
+  </div>
+</div>
+```
+
+The model is $y = \alpha + \beta_1 x + \beta_2 x^2$. Move the sliders and watch what happens.
+
+- **α** moves the whole curve up or down. It's the value of y when x = 0.
+- **β₁** is the slope at x = 0, and it shifts where the curve turns.
+- **β₂** decides the shape: above zero gives a U, below zero an upside-down U, and zero gives a straight line.
+
+The slope changes as x changes: at any x it is β₁ + 2β₂x.
+
+```{ojs}
+viewof quad = Inputs.form({
+  a:  Inputs.range([-30, 30], { step: 1, value: 0, label: "α" }),
+  b1: Inputs.range([-5, 5], { step: 0.1, value: 2, label: "β₁" }),
+  b2: Inputs.range([-1, 1], { step: 0.05, value: -0.25, label: "β₂" })
+})
+```
+
+```{ojs}
+{
+  const { a, b1, b2 } = quad
+  const f = x => a + b1 * x + b2 * x * x
+  const pts = d3.range(-10, 10.01, 0.1).map(x => ({ x, y: f(x) }))
+  const turn = b2 !== 0 ? -b1 / (2 * b2) : null
+  const shape = b2 > 0 ? "U-shaped" : b2 < 0 ? "upside-down U" : "a straight line"
+  const chart = Plot.plot({
+    height: 420, width: 800, marginLeft: 50, grid: true,
+    x: { label: "x", domain: [-10, 10] }, y: { label: "y", domain: [-60, 60] }, clip: true,
+    marks: [
+      Plot.ruleX([0], { stroke: "#bbb" }), Plot.ruleY([0], { stroke: "#bbb" }),
+      Plot.line(pts, { x: "x", y: "y", stroke: "#e63946", strokeWidth: 3 }),
+      Plot.dot([{ x: 0, y: a }], { x: "x", y: "y", fill: "#457b9d", r: 6 }),
+      Plot.text([{ x: 0, y: a }], { x: "x", y: "y", text: () => "α", dx: 12, dy: -10, fill: "#457b9d", fontSize: 16, fontWeight: 700 }),
+      turn !== null && Math.abs(turn) <= 10 ? Plot.dot([{ x: turn, y: f(turn) }], { x: "x", y: "y", fill: "#1a1a2e", r: 6 }) : null
+    ]
+  })
+  const wrap = html`<div role="img" aria-label="${`A quadratic curve with alpha ${a}, beta 1 ${b1}, beta 2 ${b2}. It is ${shape}${turn !== null ? `, turning at x = ${turn.toFixed(1)}` : ""}.`}">${chart}</div>`
+  chart.setAttribute("aria-hidden", "true")
+  return html`<div>${wrap}
+    <p style="text-align:center;margin:6px 0 0;">Shape: <strong>${shape}</strong>${turn !== null ? html` &nbsp;·&nbsp; turns at x = <strong>${turn.toFixed(1)}</strong>, y = <strong>${f(turn).toFixed(1)}</strong>` : ""}</p>
+    <p style="text-align:center;margin:4px 0 0;">Slope at x = 0: <strong>${b1.toFixed(1)}</strong> &nbsp;·&nbsp; at x = 5: <strong>${(b1 + 10 * b2).toFixed(1)}</strong> &nbsp;·&nbsp; at x = −5: <strong>${(b1 - 10 * b2).toFixed(1)}</strong></p>
+  </div>`
+}
+```
+
+Things to try:
+
+1. Change only α. Does the shape or the turning point move?
+2. Set β₂ to 0. What's left?
+3. Keep β₂ negative and change β₁. Where does the turning point go?
