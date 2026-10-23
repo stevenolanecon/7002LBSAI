@@ -1,0 +1,1746 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Model Problems &amp; Inference</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.17/dist/plot.umd.min.js"></script>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['$$', '$$']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #fdfbf6;
+    --paper-raised: #ffffff;
+    --paper-sunk: #f6f1e7;
+    --ink: #1a1a2e;
+    --ink-soft: #4a4d63;
+    --ink-faint: #86869c;
+    --rule: #e6ddc9;
+    --accent: #1f7a79;
+    --accent-soft: #f3fbfb;
+    --warm: #c8373f;
+    --warm-soft: #fbeceb;
+    --gold: #c97f31;
+    --green: #2d6a4f;
+    --green-soft: #eaf5ef;
+    --quote-bg: #eef7f7;
+    --quote-border: #bfe0df;
+    --quote-ink: #1e4a49;
+    --chip-bg: #f1ece0;
+    --code-bg: #f4f0e6;
+    --shadow: 0 1px 2px rgba(26,26,46,0.06), 0 8px 24px -12px rgba(26,26,46,0.18);
+    --serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    --sans: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #14151f;
+      --paper-raised: #1c1e2b;
+      --paper-sunk: #10111a;
+      --ink: #eef0f6;
+      --ink-soft: #b7bbcf;
+      --ink-faint: #7c8098;
+      --rule: #303350;
+      --accent: #5ecbc8;
+      --accent-soft: #15302f;
+      --warm: #ff8a86;
+      --warm-soft: #2e1c1d;
+      --gold: #f2b872;
+      --green: #6fbb95;
+      --green-soft: #14261f;
+      --quote-bg: #142726;
+      --quote-border: #29504c;
+      --quote-ink: #bfe7e2;
+      --chip-bg: #23253a;
+      --code-bg: #191b2a;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #14151f;
+    --paper-raised: #1c1e2b;
+    --paper-sunk: #10111a;
+    --ink: #eef0f6;
+    --ink-soft: #b7bbcf;
+    --ink-faint: #7c8098;
+    --rule: #303350;
+    --accent: #5ecbc8;
+    --accent-soft: #15302f;
+    --warm: #ff8a86;
+    --warm-soft: #2e1c1d;
+    --gold: #f2b872;
+    --green: #6fbb95;
+    --green-soft: #14261f;
+    --quote-bg: #142726;
+    --quote-border: #29504c;
+    --quote-ink: #bfe7e2;
+    --chip-bg: #23253a;
+    --code-bg: #191b2a;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--accent-soft); color: var(--ink); }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  h1, h2, h3, h4 { font-family: var(--serif); color: var(--ink); text-wrap: balance; line-height: 1.18; font-weight: 600; }
+  p { line-height: 1.68; color: var(--ink-soft); }
+  strong { color: var(--ink); font-weight: 600; }
+
+  /* ---------- shell layout ---------- */
+  .shell {
+    display: grid;
+    grid-template-columns: 240px minmax(0,1fr);
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  @media (max-width: 880px) {
+    .shell { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    padding: 56px 16px 38px;
+    border-bottom: 1px solid var(--rule);
+    background:
+      radial-gradient(ellipse 900px 320px at 15% -10%, var(--accent-soft), transparent 60%),
+      var(--paper);
+  }
+  .hero-inner { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; display:flex; align-items:center; gap: 10px; flex-wrap: wrap;
+  }
+  .eyebrow .dot { width:5px; height:5px; border-radius:50%; background: var(--warm); display:inline-block; }
+  .hero h1 { font-size: clamp(2.1rem, 4.6vw, 3.1rem); margin: 14px 0 10px; max-width: 16ch; }
+  .hero .dek { font-size: 1.15rem; color: var(--ink-soft); max-width: 62ch; line-height: 1.55; margin: 0 0 26px; }
+  .hero .dek em { color: var(--ink); font-style: normal; border-bottom: 2px solid var(--gold); }
+
+  .headline-strip {
+    display: flex; gap: 0; flex-wrap: wrap;
+    border: 1px solid var(--rule); border-radius: 14px; overflow: hidden;
+    background: var(--paper-raised); box-shadow: var(--shadow);
+    max-width: 780px;
+  }
+  .headline-strip .stat {
+    flex: 1 1 150px; padding: 16px 20px; border-right: 1px solid var(--rule);
+  }
+  .headline-strip .stat:last-child { border-right: none; }
+  .headline-strip .stat .n {
+    font-family: var(--serif); font-size: 1.7rem; font-weight: 700; color: var(--accent);
+    font-variant-numeric: tabular-nums; display:block;
+  }
+  .headline-strip .stat .n.warm { color: var(--warm); }
+  .headline-strip .stat .l { font-size: 12.5px; color: var(--ink-faint); margin-top: 2px; }
+
+  /* ---------- TOC ---------- */
+  nav.toc {
+    padding: 34px 20px 40px 24px;
+    font-family: var(--sans);
+  }
+  nav.toc .toc-label { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 10px; display:block; }
+  .toc-block.chapter-nav { padding-bottom: 18px; margin-bottom: 18px; border-bottom: 1px solid var(--rule); }
+  nav.toc ol.chapter-list { list-style: none; margin: 0; padding: 0; columns: 1; }
+  nav.toc ol.chapter-list li { margin-bottom: 2px; }
+  nav.toc .chapter-link { display: block; padding: 8px 10px; border-radius: 8px; text-decoration: none; }
+  nav.toc .chapter-link strong { display: block; font-family: var(--serif); font-size: 13.5px; color: var(--ink); font-weight: 600; }
+  nav.toc .chapter-link .chapter-sub { display: block; font-size: 11px; color: var(--ink-faint); margin-top: 1px; line-height: 1.3; }
+  nav.toc a.chapter-link:hover { background: var(--paper-sunk); }
+  nav.toc .chapter-link.current { background: var(--accent-soft); cursor: default; }
+  nav.toc .chapter-link.current strong { color: var(--accent); }
+  nav.toc .chapter-link:before { content: none; }
+  nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: sec; }
+  nav.toc li { counter-increment: sec; margin-bottom: 2px; }
+  nav.toc a {
+    display: flex; gap: 9px; padding: 6px 8px; border-radius: 7px;
+    color: var(--ink-soft); text-decoration: none; font-size: 13.5px; line-height: 1.35;
+  }
+  nav.toc a:before {
+    content: counter(sec, decimal-leading-zero); font-family: var(--mono); font-size: 11px;
+    color: var(--ink-faint); padding-top: 1px; flex-shrink: 0;
+  }
+  nav.toc a:hover { background: var(--paper-sunk); color: var(--ink); }
+  nav.toc a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  nav.toc a.active:before { color: var(--accent); }
+  @media (max-width: 880px) {
+    nav.toc { position: static; border-bottom: 1px solid var(--rule); padding: 18px 20px; }
+    nav.toc ol { columns: 2; column-gap: 20px; }
+    nav.toc.desktop-sticky { display: none; }
+  }
+  @media (min-width: 881px) {
+    nav.toc.desktop-sticky { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; }
+    .mobile-toc { display: none; }
+  }
+
+  /* ---------- main column ---------- */
+  main { padding: 8px 24px 100px; min-width: 0; }
+  .col { max-width: 700px; margin: 0 auto; }
+
+  section.chapter { padding-top: 54px; scroll-margin-top: 14px; }
+  section.chapter:first-of-type { padding-top: 40px; }
+  .chapter-kicker {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 6px;
+  }
+  section.chapter h2 { font-size: clamp(1.5rem, 3vw, 1.95rem); margin: 0 0 18px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  section.chapter h3 { font-size: 1.18rem; margin: 34px 0 12px; }
+  section.chapter > p { margin: 0 0 16px; font-size: 1.02rem; }
+  section.chapter ul, section.chapter ol { color: var(--ink-soft); line-height: 1.68; padding-left: 22px; }
+  section.chapter li { margin-bottom: 6px; }
+  section.chapter li strong { color: var(--ink); }
+
+  /* first-paragraph drop treatment on the very first section only */
+  #real-or-noise > p:first-of-type::first-letter {
+    font-family: var(--serif); font-size: 3.6em; float: left; line-height: 0.85; padding: 6px 8px 0 0;
+    color: var(--warm); font-weight: 700;
+  }
+
+  /* ---------- inline components ---------- */
+  .lede-figure {
+    display: flex; gap: 20px; align-items: flex-start; margin: 0 0 20px; padding-bottom: 4px;
+  }
+  .lede-figure .art {
+    flex: 0 0 168px; width: 168px; height: 168px; border-radius: 12px; overflow: hidden;
+    background: linear-gradient(150deg, var(--accent-soft), var(--paper-sunk));
+    display:flex; align-items:center; justify-content:center; box-shadow: var(--shadow);
+  }
+  @media (max-width: 560px) { .lede-figure { flex-direction: column; } .lede-figure .art { width: 100%; height: 150px; } }
+
+  blockquote.field-note {
+    margin: 24px 0; padding: 16px 20px 16px 18px;
+    background: var(--quote-bg); border-left: 3px solid var(--quote-border); border-radius: 4px 10px 10px 4px;
+  }
+  blockquote.field-note .tag {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--quote-ink); opacity: 0.85; display: block; margin-bottom: 6px;
+  }
+  blockquote.field-note p { margin: 0; color: var(--quote-ink); font-size: 0.98rem; font-style: italic; line-height: 1.6; }
+  blockquote.field-note p + p { margin-top: 8px; }
+
+  .callout {
+    margin: 22px 0; padding: 16px 20px; border-radius: 10px; border: 1px solid var(--rule);
+    background: var(--paper-sunk); font-size: 0.96rem; color: var(--ink-soft); line-height: 1.6;
+  }
+  .callout strong { color: var(--ink); }
+  .callout.gold { border-color: color-mix(in srgb, var(--gold) 40%, var(--rule)); background: color-mix(in srgb, var(--gold) 10%, var(--paper-sunk)); }
+
+  .formula-block {
+    margin: 20px 0; padding: 18px 22px; background: var(--code-bg); border-radius: 10px;
+    border: 1px solid var(--rule); overflow-x: auto; text-align: center; font-size: 1.05rem;
+  }
+  .formula-caption { text-align: center; font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin-top: -12px; margin-bottom: 20px; }
+
+  code, .inline-code { font-family: var(--mono); font-size: 0.86em; background: var(--code-bg); padding: 2px 6px; border-radius: 4px; color: var(--ink); }
+  pre.code-block {
+    font-family: var(--mono); font-size: 0.82rem; background: var(--code-bg); border: 1px solid var(--rule);
+    border-radius: 10px; padding: 16px 18px; overflow-x: auto; line-height: 1.55; color: var(--ink);
+    margin: 16px 0;
+  }
+  pre.code-block .c { color: var(--ink-faint); }
+  pre.code-block .k { color: var(--accent); }
+
+  table.data-table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 0.92rem; overflow-x: auto; display: block; }
+  table.data-table thead, table.data-table tbody { display: table; width: 100%; table-layout: fixed; }
+  table.data-table th { text-align: left; font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 600; padding: 8px 12px; border-bottom: 2px solid var(--ink); }
+  table.data-table td { padding: 9px 12px; border-bottom: 1px solid var(--rule); color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data-table tr:last-child td { border-bottom: none; }
+  table.data-table td:first-child, table.data-table th:first-child { color: var(--ink); font-weight: 500; }
+
+  .term-list { list-style: none; padding: 0; margin: 18px 0; }
+  .term-list li { display: grid; grid-template-columns: 170px 1fr; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .term-list li:last-child { border-bottom: none; }
+  .term-list dt, .term-list .term { font-weight: 600; color: var(--ink); font-family: var(--serif); }
+  @media (max-width: 560px) { .term-list li { grid-template-columns: 1fr; gap: 3px; } }
+
+  /* ---------- interactive figure shell ---------- */
+  .figure {
+    margin: 26px 0; background: var(--paper-raised); border: 1px solid var(--rule); border-radius: 14px;
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .figure-head { padding: 16px 20px 12px; border-bottom: 1px solid var(--rule); }
+  .figure-head .flabel { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .figure-head h4 { margin: 4px 0 0; font-size: 1.05rem; }
+  .figure-body { padding: 16px 20px; }
+  .figure-caption { padding: 0 20px 18px; font-size: 0.86rem; color: var(--ink-faint); line-height: 1.5; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 16px 22px; align-items: center; padding: 12px 4px 18px; font-size: 13px; }
+  .ctl { display: flex; align-items: center; gap: 8px; }
+  .ctl .lbl { color: var(--ink-soft); white-space: nowrap; }
+  .ctl input[type=range] { accent-color: var(--accent); cursor: pointer; width: 110px; }
+  .ctl .val { font-family: var(--mono); font-weight: 600; min-width: 46px; color: var(--accent); font-size: 12.5px; }
+
+  .chart-wrap { overflow-x: auto; }
+  .chart-wrap svg { display: block; margin: 0 auto; }
+  .chart-row { display: flex; gap: 20px; flex-wrap: wrap; }
+  .chart-row > div { flex: 1 1 200px; min-width: 0; }
+
+  .mini-table-wrap { overflow-x: auto; }
+
+  /* ---------- collapsible code box ---------- */
+  details.code-reveal {
+    margin: 20px 0; border: 1px solid var(--rule); border-radius: 10px; overflow: hidden;
+    background: var(--paper-raised);
+  }
+  details.code-reveal summary {
+    cursor: pointer; padding: 12px 18px; font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
+    color: var(--accent); list-style: none; display: flex; align-items: center; gap: 9px;
+    background: var(--paper-sunk); user-select: none;
+  }
+  details.code-reveal summary::-webkit-details-marker { display: none; }
+  details.code-reveal summary::before { content: '\25B8'; font-size: 0.85em; transition: transform 0.15s ease; display: inline-block; }
+  details.code-reveal[open] summary::before { transform: rotate(90deg); }
+  details.code-reveal .code-reveal-body { padding: 2px 18px 16px; }
+  details.code-reveal .code-reveal-body p { font-size: 0.9rem; margin: 12px 0 0; }
+
+  /* ---------- divider ---------- */
+  .divider {
+    margin: 60px 0 0; padding: 46px 24px; background: var(--ink); border-radius: 16px; text-align: center;
+    color: #f2f2f6;
+  }
+  .divider .k { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: #8fb4cc; }
+  .divider h3 { color: #fff; font-size: 1.5rem; margin: 10px 0 0; }
+  .divider p { color: #c3c4d6; max-width: 46ch; margin: 10px auto 0; }
+
+  /* ---------- footnotes ---------- */
+  .footnote-ref { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .footnote-ref:hover { text-decoration: underline; }
+  .footnotes {
+    max-width: 700px; margin: 46px auto 0; padding: 18px 0 0; border-top: 1px solid var(--rule);
+    font-size: 0.86rem; color: var(--ink-soft); line-height: 1.6;
+  }
+  .footnotes ol { padding-left: 20px; margin: 0; }
+  .footnotes li { margin-bottom: 6px; }
+  .footnotes a.footnote-back { color: var(--ink-faint); text-decoration: none; margin-left: 4px; }
+  .footnotes a.footnote-back:hover { color: var(--accent); }
+
+  /* ---------- footer ---------- */
+  footer.colophon {
+    max-width: 700px; margin: 70px auto 0; padding: 26px 0 0; border-top: 1px solid var(--rule);
+    font-size: 0.86rem; color: var(--ink-faint); line-height: 1.6;
+  }
+  footer.colophon strong { color: var(--ink-soft); }
+
+  @media (max-width: 400px) {
+    .hero { padding: 40px 12px 30px; }
+    main { padding: 8px 14px 80px; }
+  }
+  /* ---------- week 3 additions: checkbox labels and a plain button in .controls ---------- */
+  .controls label.chk { display:flex; align-items:center; gap:6px; cursor:pointer; color: var(--ink-soft); }
+  .controls input[type=checkbox] { accent-color: var(--accent); cursor: pointer; }
+  select.picker {
+    font-family: var(--sans); font-size: 13.5px; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--rule);
+    background: var(--paper-sunk); color: var(--ink); cursor: pointer;
+  }
+  button.btn {
+    font-family: var(--sans); font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 8px;
+    border: 1px solid var(--accent); background: var(--accent-soft); color: var(--accent); cursor: pointer;
+  }
+  .visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  button.btn:hover { background: var(--accent); color: var(--paper); }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="toc desktop-sticky" id="toc"></nav>
+
+  <main>
+    <div class="hero" style="margin: -8px -24px 30px; border-radius: 0;">
+      <div class="hero-inner" style="padding:0;">
+        <div class="eyebrow"><span class="dot"></span>7002LBSAI &middot; Research Methods in Analytics &middot; Chapter Five</div>
+        <h1>Model Problems &amp; Inference</h1>
+      </div>
+    </div>
+
+    <nav class="toc mobile-toc" id="toc-mobile"></nav>
+
+    <div class="col">
+
+<section class="chapter" id="ship-it">
+<div class="chapter-kicker">Part One</div>
+<h2>Can We Ship It Yet?</h2>
+
+<p>Last chapter ended with HR holding a formula. Measure a candidate's finger, plug it in, and out comes a predicted reaction time: \(\widehat{\text{reaction time}} = -404.9 + 18.6 \times \text{finger length}\). Someone in the team now asks the obvious question. Can we ship this?</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Someone in the team is asking, can we ship this out yet? And our response should be: absolutely not. We tested one model. There is much more we need to explore.&rdquo;</p>
+</blockquote>
+
+<p>The <strong>naive answer</strong> is that the model is built, R&sup2; has been computed, and we're done. It isn't that simple, for two reasons.</p>
+
+<p>First, we assumed a straight line. At the time it was the only tool we had, but we never checked whether a straight line is the right <strong>shape</strong> for this relationship. Plenty of relationships aren't straight. The classic one in labour economics is wages and age: pay rises quickly early in a career as people pick up skills, levels off, and then falls as people cut their hours and move towards retirement. Force a straight line through that and you miss the most interesting part of the story.</p>
+
+<p>Second, we gave HR one number for \(\hat\beta\) with no sense of how wrong it could be. We estimated it from 24 students in one room. Run the experiment again with a different 24 and you'd get a different slope. How different? Is the slope we found a real feature of LJMU students, or something we stumbled on by chance? That is <strong>inference</strong>, and it brings back everything from Chapter 2: sampling distributions, standard errors and confidence intervals.</p>
+
+<p>So this chapter has two halves. The first is about shape &ndash; the <strong>functional form</strong> of the model &ndash; plus the messy-data problems that distort a regression: extreme values and measurement error. The second is about generalising: how sure can we be, what our tests assume, and how to check those assumptions with the residuals.</p>
+</section>
+
+<section class="chapter" id="why-log">
+<div class="chapter-kicker">Part Two</div>
+<h2>Why Log a Variable?</h2>
+
+<p>A <strong>function</strong> is just a rule that turns each value of x into a value of y. Last week's rule was a straight line. Choosing a rule is an assumption, and every model we fit makes one. The good news is that a straight-line regression can handle a lot of curved shapes with very little extra work. The first tool is the logarithm. There are three reasons to reach for it.</p>
+
+<ul class="term-list">
+  <li><span class="term">The data are skewed</span><span>Income, prices, firm size, house values &ndash; and our own reaction times &ndash; have a long right tail. Most values crowd up on the left, and a few huge ones drag the picture around. Logging pulls the tail in and makes the distribution closer to normal. This is why we logged reaction time back in Week 3.</span></li>
+  <li><span class="term">It can straighten a curve</span><span>Something that grows faster and faster, or rises and then flattens off, can look like a straight line once it's logged. Then a straight-line model fits.</span></li>
+  <li><span class="term">Proportions matter, not amounts</span><span>A &pound;1,000 pay rise means a lot on &pound;20,000 and very little on &pound;200,000. A 10% price rise means the same on a &pound;2 coffee and a &pound;2,000 laptop. A &pound;5 rise doesn't.</span></li>
+</ul>
+
+<p>Gab&oacute;r B&eacute;k&eacute;s and G&aacute;bor K&eacute;zdi put the decision this way. The <em>substantive</em> reason comes first: take logs if the variable is likely to be affected in <strong>multiplicative</strong> ways (percentages), and leave it alone if it's affected in <strong>additive</strong> ways (fixed amounts). The <em>statistical</em> reason comes second: take logs if the distribution is skewed with a long right tail. Most of the time the two point the same way.</p>
+
+<h3>A difference in logs is roughly a percentage difference</h3>
+
+<p>This is the one fact that makes logs useful. Take two values, 100 and 110. The gap is 10%. The gap in their natural logs is \(\ln(110) - \ln(100) = 0.095\) &ndash; very nearly 0.10.</p>
+
+<table class="data-table">
+  <caption class="visually-hidden">Log differences compared with actual percentage differences</caption>
+  <thead><tr><th scope="col">Values</th><th scope="col">Difference in logs</th><th scope="col">Actual difference</th></tr></thead>
+  <tbody>
+    <tr><td>100 &rarr; 101</td><td>0.010</td><td>1%</td></tr>
+    <tr><td>100 &rarr; 110</td><td>0.095</td><td>10%</td></tr>
+    <tr><td>100 &rarr; 150</td><td>0.405</td><td>50%</td></tr>
+    <tr><td>100 &rarr; 272</td><td>1.000</td><td>172%</td></tr>
+    <tr><td>100 &rarr; 37</td><td>&minus;1.000</td><td>&minus;63%</td></tr>
+  </tbody>
+</table>
+
+<p>For small gaps the approximation is very good. It drifts for big ones: a log difference of 0.405 is a 50% gap, not 40%, and a log difference of 1 is a 172% gap. As a rule of thumb, trust it up to about &plusmn;30%. Beyond that, convert properly: a log difference of \(d\) is a \(100 \times (e^{d} - 1)\) percent difference.</p>
+
+<details class="code-reveal">
+  <summary>Where the approximation comes from</summary>
+  <div class="code-reveal-body">
+    <p>The slope of \(\ln(x)\) at any point is \(1/x\). Over a small step \(\Delta x\), a curve looks like a straight line with that slope, so</p>
+    <div class="formula-block">$$\ln(x + \Delta x) - \ln(x) \approx \frac{1}{x}\,\Delta x = \frac{\Delta x}{x}$$</div>
+    <p>and \(\Delta x / x\) is exactly the relative change. The approximation is a tangent line, so it only holds close to where you started. That's why it breaks down for big changes.</p>
+  </div>
+</details>
+
+<p>Why does this matter so much? Most of the data you'll work with is <strong>cross-sectional</strong>: one snapshot, with no &ldquo;before&rdquo; to build a percentage change from. On a log scale, the gap between <em>any</em> two values is roughly their percentage difference, no baseline needed. That's what lets a log model talk in percentages.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;When we talk about GDP, for most people, &lsquo;GDP increased by 0.25 billion&rsquo; &ndash; you'd be like, wow, that sounds like a lot. Is that a lot? As soon as you're having to ask those questions, you're not communicating as clearly as possible.&rdquo;</p>
+</blockquote>
+
+<p>That is the real payoff. Logs look like a complicated step, but they often make the end result <em>easier</em> to read. Everyone is comfortable with percentages. You can do the best analysis in the world, but if the person who asked for it can't follow the answer, it hasn't done its job.</p>
+
+<p>One catch: the log only exists for positive numbers. \(\ln(0)\) and the log of a negative number aren't defined. We come back to that in Part Six.</p>
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 8</p>
+</section>
+
+<section class="chapter" id="log-models">
+<div class="chapter-kicker">Part Three</div>
+<h2>Reading a Log Model</h2>
+
+<p>Where you put the log changes what the slope means. There are four combinations:</p>
+
+<table class="data-table">
+  <caption class="visually-hidden">The four log model combinations and how to read the slope</caption>
+  <thead><tr><th scope="col">Model</th><th scope="col">Equation</th><th scope="col">Read \(\hat\beta\) as</th></tr></thead>
+  <tbody>
+    <tr><td>Level&ndash;level</td><td>\(y^E = \alpha + \beta x\)</td><td>1 unit higher x &rarr; \(\hat\beta\) units higher y</td></tr>
+    <tr><td>Log&ndash;level</td><td>\(\ln(y)^E = \alpha + \beta x\)</td><td>1 unit higher x &rarr; \(100\hat\beta\) % higher y</td></tr>
+    <tr><td>Level&ndash;log</td><td>\(y^E = \alpha + \beta \ln(x)\)</td><td>1% higher x &rarr; \(\hat\beta/100\) units higher y</td></tr>
+    <tr><td>Log&ndash;log</td><td>\(\ln(y)^E = \alpha + \beta \ln(x)\)</td><td>1% higher x &rarr; \(\hat\beta\) % higher y</td></tr>
+  </tbody>
+</table>
+
+<p>A way to remember it: whichever side is logged is the side that talks in percentages. Log only y, and y moves in percentages for each unit of x. Log only x, and a percentage change in x goes with a change in y's own units. Log both, and it's percentages on both sides &ndash; an <strong>elasticity</strong>, the number economists use for how sensitive one thing is to another. An elasticity bigger than 1 in absolute value is called <strong>elastic</strong>: y moves by a bigger percentage than x.</p>
+
+<p>Every one of these readings ends with &ldquo;on average&rdquo;, and none of them says &ldquo;causes&rdquo; or &ldquo;leads to&rdquo;. These are comparisons between observations, not effects of changing something. The same discipline from Chapter 4 applies.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;What's one of the problems with saying &lsquo;will lead to&rsquo;? It's causal. I should have a klaxon for when people make causal claims.&rdquo;</p>
+</blockquote>
+
+<h3>Three examples</h3>
+
+<p>Here is real <code>statsmodels</code> output for each of the three log models, on made-up data. Each one is the coefficient table from <code>print(model.summary())</code>.</p>
+
+<p><strong>Log&ndash;level: salary and experience.</strong> 150 employees. Does pay rise with years of experience?</p>
+<pre class="code-block">model = smf.ols('np.log(salary) ~ experience', data=df).fit()
+print(model.summary())</pre>
+<pre class="code-block" id="ex-ll" style="font-size:0.72rem;"></pre>
+<p>Only y is logged, so multiply the slope by 100: each extra year of experience goes with about <strong>3.4% higher salary</strong>, on average. A number like 0.0338 is already a percentage in disguise &ndash; 0.5 would be 50%, 1 would be 100%. The intercept, 10.18, is the average <em>log</em> salary for someone with no experience. That's hard to read directly (it's about &pound;26,400 once you undo the log with \(e^{10.18}\)) and usually not the point.</p>
+
+<p><strong>Level&ndash;log: sales and advertising.</strong> 60 shops, monthly sales and advertising spend, both in &pound;000s.</p>
+<pre class="code-block">model = smf.ols('sales ~ np.log(ad_spend)', data=df).fit()</pre>
+<pre class="code-block" id="ex-lg" style="font-size:0.72rem;"></pre>
+<p>Only x is logged, so divide the slope by 100: a shop spending 1% more on advertising has 14.48 &divide; 100 = 0.145 thousand, about <strong>&pound;145</strong>, more in monthly sales, on average. Units matter here &ndash; sales are in thousands, so 0.145 means &pound;145, not &pound;0.15.</p>
+
+<div class="callout">
+  <p><strong>What about 10%?</strong> The table says 1%. For a 10% change, the quick version is to multiply by 10: about &pound;1,450. That's close enough for most conversations. The exact answer uses the actual log difference for a 10% rise, \(\ln(1.1) = 0.0953\), so the gap is \(14.48 \times 0.0953 = 1.380\) thousand, or about &pound;1,380. The shortcut slightly overstates it, for the same reason the log approximation drifts for bigger changes.</p>
+</div>
+
+<p><strong>Log&ndash;log: price and units sold.</strong> 104 weeks of sales for one product.</p>
+<pre class="code-block">model = smf.ols('np.log(units) ~ np.log(price)', data=df).fit()</pre>
+<pre class="code-block" id="ex-gg" style="font-size:0.72rem;"></pre>
+<p>Both sides logged, so the slope is an elasticity: weeks with a 1% higher price sell about <strong>1.26% fewer units</strong>, on average. Its size is above 1, so demand is elastic &ndash; a price rise loses more in volume than it gains per unit, and revenue falls. You've thrown away all the units, and you're left with one clean number a business can use.</p>
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 8. Data simulated for illustration.</p>
+</section>
+
+<section class="chapter" id="log-task">
+<div class="chapter-kicker">Part Four</div>
+<h2>Logging Our Own Outcome</h2>
+
+<p>Reaction time is right-skewed (Week 1), so it's a natural candidate. Let's look at a log&ndash;level model on the class data, with one row per student:</p>
+
+<pre class="code-block">import numpy as np
+import statsmodels.formula.api as smf
+
+model_log = smf.ols('np.log(mean_rt) ~ finger_mm', data=student_summary).fit()
+print(model_log.params)      <span class="c"># Intercept 4.96, finger_mm 0.0216</span></pre>
+
+<p>Three features of the syntax are worth noting. First, the model is fitted on <code>student_summary</code>, which holds one row per student; that is the unit of observation for every regression on the class data. Second, a variable can be transformed inside the formula itself: <code>np.log(mean_rt)</code> logs each of the 24 averages before fitting, so no new column is needed. Third, fitting a model produces no output. The results are stored in the model object and retrieved on request, with <code>.params</code> for the coefficients or <code>print(model_log.summary())</code> for the full report.</p>
+
+<p>The slope is 0.0216. This is a log&ndash;level model, so: students whose finger is 1mm longer have, on average, a mean reaction time about <strong>2.2% slower</strong>. That sentence is a lot more useful than &ldquo;18.6 milliseconds&rdquo;. Is 18.6ms a lot? It depends on the average. 2.2% tells you straight away it's a small difference.</p>
+
+<p>The R&sup2; is 0.056, against 0.032 for last week's level&ndash;level model. It's tempting to say logging made the model better. Be careful. R&sup2; measures how much of the variation in y the model explains, and the two models have <em>different</em> y variables: one explains variation in milliseconds, the other variation in log milliseconds. Comparing their R&sup2; is comparing fit in different units. The fair comparisons are between models with the same y. We'll use that rule properly in the hotels case in Part Ten. What we can say is that finger length explains very little either way.</p>
+
+<div class="callout gold">
+  <p><strong>Rule:</strong> only compare R&sup2; between models that explain the same y. Logging x is fine; logging y changes what R&sup2; is measuring.</p>
+</div>
+</section>
+
+<section class="chapter" id="straighten">
+<div class="chapter-kicker">Part Five</div>
+<h2>Logging Can Straighten a Curve</h2>
+
+<p>The second reason to log is easier to see than to describe. Here are a new app's monthly users over its first three years (made-up numbers):</p>
+
+<div class="figure" id="fig-growth">
+  <div class="figure-head"><div class="flabel">Figure 5.1</div><h4>Same data, raw and logged</h4></div>
+  <div class="figure-body"><div class="chart-row"><div class="chart-wrap" id="growth-raw"></div><div class="chart-wrap" id="growth-log"></div></div></div>
+  <div class="figure-caption">Left: users against month, with a straight line. Right: log users against month, with a straight line.</div>
+</div>
+
+<p>On the left, the straight line is a poor fit even though R&sup2; is 0.89: it's too high in the middle and too low at both ends. Users grow by roughly the same <em>percentage</em> each month, not the same number, so the monthly gains keep getting bigger. Log users and it's a straight line, R&sup2; 0.99 (and here the two R&sup2;s are not comparable either, for the same reason as before). The slope of the logged line is 0.075, so users grow by about <strong>7.5% a month</strong>. That's the kind of number a business can plan with.</p>
+
+<p>Anything that compounds &ndash; savings with interest, prices with inflation, a population, a viral product &ndash; will look like this. If a scatter curves upwards and the curve gets steeper as you go, try logging y.</p>
+</section>
+
+<section class="chapter" id="no-log">
+<div class="chapter-kicker">Part Six</div>
+<h2>When You Can't Log, and Per-Capita Measures</h2>
+
+<p>Logging needs a strictly positive variable: never zero, never negative. Real data often isn't. Wealth can be negative (debt). Sales can be zero. Counts of anything often are. Two common fixes:</p>
+
+<ul class="term-list">
+  <li><span class="term">Indicators plus a log</span><span>Create 0/1 flags for the awkward cases &ndash; &ldquo;is wealth negative?&rdquo;, &ldquo;is wealth zero?&rdquo; &ndash; and log the positive values, putting zero in the log column where the log can't be taken. The flags soak up the awkward observations, and the log works on the rest.</span></li>
+  <li><span class="term">Add a constant</span><span>Use \(\ln(x + 1)\) when x is zero or positive. Quick, but not principled: the &ldquo;+1&rdquo; is arbitrary. It does least damage when x is usually large, since then \(\ln(x)\) and \(\ln(x + 1)\) are almost identical. If x mostly runs from 0 to 10, it distorts a lot.</span></li>
+</ul>
+
+<p>A third option is sometimes the honest one: if a zero is an error rather than a real value, it shouldn't be in the data at all. Suppose a reaction-time trial recorded exactly 0ms. Nobody reacts in no time; that's a glitch in the timer. Dropping it is right, not because it's inconvenient, but because it isn't a measurement of anything. The hotel case study later in this chapter uses a fourth approach. One hotel is listed at 0 miles from the centre, so before logging distance the textbook sets it to 0.05 miles. With one observation affected that barely matters; with lots of zeros it would.</p>
+
+<h3>Ratios and per-capita measures</h3>
+
+<p>Another common transformation divides a total by a size: GDP per person, revenue per employee, sales per shop. Totals mostly measure how big something is; ratios let you compare things of different sizes. Ratios also play nicely with logs, because the log of a ratio is just the difference of two logs:</p>
+
+<div class="formula-block">$$\ln\left(\frac{\text{GDP}}{\text{Population}}\right) = \ln(\text{GDP}) - \ln(\text{Population})$$</div>
+
+<h3>A case study: life expectancy and income</h3>
+
+<p>The textbook's own example puts all of this together. It takes 182 countries in 2017 and asks how long people live against how rich the country is. Total GDP is no good &ndash; it mostly measures population, so China and India look rich. GDP <em>per capita</em> is the right x. But GDP per capita is wildly skewed: most countries are bunched under $20,000 and a handful stretch out past $100,000. Flip between the two versions:</p>
+
+<div class="figure" id="fig-life">
+  <div class="figure-head"><div class="flabel">Figure 5.2 &middot; Interactive</div><h4>Life expectancy against GDP per capita, 182 countries</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <label class="chk"><input type="radio" name="lifex" value="raw" checked> GDP per capita</label>
+      <label class="chk"><input type="radio" name="lifex" value="log"> ln(GDP per capita)</label>
+    </div>
+    <div class="chart-wrap" id="life-chart"></div>
+    <p id="life-r2" style="text-align:center;font-family:var(--sans);font-size:0.9rem;margin:6px 0 0;"></p>
+  </div>
+  <div class="figure-caption">Data: World Bank, World Development Indicators, 2017. Hover a point to see the country.</div>
+</div>
+
+<p>Logging x pulls the long tail in and the pattern straightens out. The fits tell the same story. R&sup2; rises from 0.442 for a straight line in GDP per capita to 0.680 for a straight line in its log, and here the comparison is fair, because both models explain the same y: life expectancy.</p>
+
+<p>The level&ndash;log slope is 5.33: countries with 10% higher GDP per capita have about half a year (0.53 years) longer life expectancy, on average.</p>
+
+<p>The reason the textbook cares about getting the shape right here is the <strong>residuals</strong>. The countries furthest below the line live much shorter lives than their income would predict: Equatorial Guinea (about 18 years shorter), Nigeria (15), Eswatini and C&ocirc;te d'Ivoire (12&ndash;13). Above the line, Vietnam, Nicaragua and some small Pacific islands live about 7 years longer than expected. Lives in the United States are about two and a half years shorter than its income would predict; in Japan, about five years longer. The residual is the interesting part here, and a badly shaped line gives misleading residuals.</p>
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 8, case study &ldquo;Life expectancy and income&rdquo;. Numbers reproduced on the hosted <code>worldbank_lifeexp_2017.csv</code>.</p>
+</section>
+
+<section class="chapter" id="quadratic">
+<div class="chapter-kicker">Part Seven</div>
+<h2>Polynomials: When the Line Should Bend</h2>
+
+<p>Imagine a scatter that goes up and then comes down again, like wages and age. Fit a straight line and you might get a slope near zero, since the rising half and the falling half cancel out. You'd conclude there's no relationship, when there's a strong one with the wrong shape. A <strong>polynomial</strong> fixes this. It's a fancy word for curves made from powers of x. A straight line is a polynomial of order one. Add a squared term and you get a <strong>quadratic</strong>:</p>
+
+<div class="formula-block">$$y^E = \alpha + \beta_1 x + \beta_2 x^2$$</div>
+
+<p>This is still a linear regression. That sounds odd, since the result is a curve, but &ldquo;linear&rdquo; refers to the parameters: each \(\beta\) just multiplies something and gets added up. OLS doesn't care that one of the things it multiplies is \(x^2\). You make a new variable, \(x^2\), and put it in alongside x.</p>
+
+<p>The price is interpretability:</p>
+<ul class="term-list">
+  <li><span class="term">\(\alpha\)</span><span>Average y when x = 0, as before.</span></li>
+  <li><span class="term">\(\beta_1\)</span><span>No clean interpretation on its own.</span></li>
+  <li><span class="term">\(\beta_2\)</span><span>The shape. Positive: U-shaped (convex). Negative: an upside-down U (concave). Its size says how sharply it bends, not much else.</span></li>
+  <li><span class="term">The slope</span><span>It changes as x changes. At any point it's \(\beta_1 + 2\beta_2 x\), and it's zero &ndash; the curve turns &ndash; at \(x = -\beta_1 / (2\beta_2)\).</span></li>
+</ul>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;As beta two becomes positive, the curve becomes happy. As beta two becomes negative, the curve is sad. I'm having a pedagogical breakthrough. I've been teaching for about ten years and it's not occurred to me yet.&rdquo;</p>
+</blockquote>
+
+<div class="figure" id="fig-quad">
+  <div class="figure-head"><div class="flabel">Figure 5.3 &middot; Interactive</div><h4>Play with a quadratic</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">&alpha;</span><input type="range" id="q-a" min="-30" max="30" step="1" value="0"><span class="val" id="q-a-v"></span></div>
+      <div class="ctl"><span class="lbl">&beta;&#8321;</span><input type="range" id="q-b1" min="-5" max="5" step="0.1" value="2"><span class="val" id="q-b1-v"></span></div>
+      <div class="ctl"><span class="lbl">&beta;&#8322;</span><input type="range" id="q-b2" min="-1" max="1" step="0.05" value="-0.25"><span class="val" id="q-b2-v"></span></div>
+    </div>
+    <div class="chart-wrap" id="quad-chart"></div>
+    <p id="quad-read" style="text-align:center;font-family:var(--sans);font-size:0.9rem;margin:6px 0 0;"></p>
+  </div>
+  <div class="figure-caption">\(y = \alpha + \beta_1 x + \beta_2 x^2\). Set \(\beta_2\) to zero and you're back to last week's straight line. Change only \(\alpha\) and the whole curve moves up or down without changing shape.</div>
+</div>
+
+<p>The slope formula is worth trying once by hand. With \(\beta_1 = 2\) and \(\beta_2 = 0.3\), the slope at x = 6 is \(2 + 2 \times 0.3 \times 6 = 5.6\). At x = 0 it's 2. At x = 10 it's 8. The curve gets steeper as x grows, which is what &ldquo;U-shaped&rdquo; means on the right-hand side of the U.</p>
+
+<h3>A quadratic on our own data</h3>
+
+<p>In Python, the squared term goes in the formula wrapped in <code>I(...)</code>, which tells <code>statsmodels</code> to do the arithmetic rather than read <code>**</code> as formula syntax. Two stars means &ldquo;to the power of&rdquo;:</p>
+
+<pre class="code-block">model_quad = smf.ols('mean_rt ~ finger_mm + I(finger_mm**2)', data=student_summary).fit()
+print(model_quad.summary())</pre>
+
+<p>The formula places the outcome to the left of the tilde and the explanatory variables to the right. Writing <code>finger_mm ~ mean_rt + I(mean_rt**2)</code> would instead model finger length as a function of reaction time. Reading the formula back as a sentence before running it is a simple check.</p>
+
+<p>The output now has three rows: the intercept 13,200 (printed as <code>1.32e+04</code>, which means \(1.32 \times 10^4\)), \(\hat\beta_1 = -314.8\) and \(\hat\beta_2 = 2.02\). Those first two look wild, and on their own they mean nothing. \(\hat\beta_2\) is positive, so the curve is a gentle U, turning at about \(-(-314.8)/(2 \times 2.02) = 78\)mm &ndash; right in the middle of the data. The slope at 80mm is \(-314.8 + 2 \times 2.02 \times 80 = 8.1\)ms per mm.</p>
+
+<p>Does it fit better? R&sup2; goes from 0.032 to 0.071. Both models explain the same y, so the comparison is fair, and the honest answer is: barely.</p>
+
+<div class="figure" id="fig-classquad">
+  <div class="figure-head"><div class="flabel">Figure 5.4</div><h4>Our class: straight line and quadratic</h4></div>
+  <div class="figure-body"><div class="chart-wrap" id="classquad-chart"></div></div>
+  <div class="figure-caption">Mean reaction time against finger length for the 24 students. Dashed grey: the straight line (R&sup2; 0.032). Red: the quadratic (R&sup2; 0.071).</div>
+</div>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Don't be deceived by the human need to see patterns where there's not necessarily patterns. As soon as you draw a curvy line between some dots, my brain wants to say, yeah, maybe there is something there. If you take that curvy line away, I'm not seeing that relationship.&rdquo;</p>
+</blockquote>
+
+<p>A tiny improvement is a finding too. It says the straight line was close enough, and the straight line has a big advantage: you can say what its slope means in one sentence. What you buy from a curve has to be worth what you give up in interpretability. Often it isn't.</p>
+
+<h3>Back to life expectancy</h3>
+
+<p>The life-expectancy case from Part Six makes the same point with far more data. A quadratic can be added to either version of GDP per capita, and all four models explain the same y, so their R&sup2; can be compared:</p>
+
+<table class="data-table">
+  <caption class="visually-hidden">R-squared of four life expectancy models</caption>
+  <thead><tr><th scope="col">Model</th><th scope="col">R&sup2;</th></tr></thead>
+  <tbody>
+    <tr><td>Straight line in GDP per capita</td><td>0.442</td></tr>
+    <tr><td>Quadratic in GDP per capita</td><td>0.605</td></tr>
+    <tr><td>Straight line in ln(GDP per capita)</td><td>0.680</td></tr>
+    <tr><td>Quadratic in ln(GDP per capita)</td><td>0.682</td></tr>
+  </tbody>
+</table>
+
+<p>Bending the raw line helps, taking R&sup2; from 0.442 to 0.605, but the log does more of the work, and adding a quadratic on top of the log adds almost nothing (0.680 to 0.682). Once the right transformation is in place, the extra curvature buys very little. Simpler is usually better.</p>
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 8</p>
+</section>
+
+<section class="chapter" id="higher-order">
+<div class="chapter-kicker">Part Eight</div>
+<h2>Higher-Order Polynomials, and a Warning</h2>
+
+<p>Nothing stops you adding \(x^3\), \(x^4\) and more. On our 24 students:</p>
+
+<table class="data-table">
+  <caption class="visually-hidden">R-squared for polynomial fits of reaction time on finger length</caption>
+  <thead><tr><th scope="col">Highest power of finger length</th><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th></tr></thead>
+  <tbody><tr><td>R&sup2;</td><td>0.032</td><td>0.071</td><td>0.154</td><td>0.159</td><td>0.177</td></tr></tbody>
+</table>
+
+<p>R&sup2; goes up every time. It always will. Adding a term can never make the fit to <em>this</em> sample worse, because OLS can always set the new coefficient to zero if it doesn't help. So a rising R&sup2; is not evidence that the extra term is real. With 24 points, a wiggly fifth-order curve is mostly chasing individual students rather than any pattern you'd see again in a new class. That is called <strong>overfitting</strong>, and it's the central problem of prediction in Week 10.</p>
+
+<p>In practice, a quadratic is usually enough and a cubic now and then. If the shape needs more bends than that, a spline is easier to read. That's the next part.</p>
+</section>
+
+<section class="chapter" id="splines">
+<div class="chapter-kicker">Part Nine</div>
+<h2>Splines: When the Slope Changes at One Point</h2>
+
+<p>A case study from the textbook shows why this matters. It uses 207 hotels in Vienna: 3&ndash;4 star hotels, with the price of one night on a November 2017 weekday and each hotel's distance from the city centre. The question is how price changes with distance, and the residuals then show which hotels are cheap for their location. A straight-line regression gives \(\widehat{\text{price}} = 132.0 - 14.4 \times \text{distance}\): every extra mile from the centre knocks about &euro;14 off the price. That's the same &euro;14 whether it's the first mile out or the sixth. Is that believable?</p>
+
+<p>Look at the data first. Price is right-skewed (skew 2.06; log price, 0.54). About two in five hotels are within a mile of the centre, out of a range running to 6.6 miles. A LOWESS curve on price falls steeply within about a mile and then goes almost flat. One straight line can't be steep and flat at the same time.</p>
+
+<div class="figure" id="fig-hlowess">
+  <div class="figure-head"><div class="flabel">Figure 5.5</div><h4>Hotel prices and distance: LOWESS against a straight line</h4></div>
+  <div class="figure-body"><div class="chart-wrap" id="hlowess-chart"></div></div>
+  <div class="figure-caption">207 Vienna hotels. Red: LOWESS with <code>frac=0.3</code>. Dashed grey: the straight-line regression, price = 132.0 &minus; 14.4 &times; distance.</div>
+</div>
+
+<p>A log of distance bends the line smoothly everywhere, and so does a quadratic. But the LOWESS suggests something more specific: two straight lines, steep near the centre and flat further out. For that we want the slope to change at a point we choose. That's a <strong>piecewise linear spline</strong>. It cuts x into intervals at points called <strong>knots</strong> and fits a straight line in each. The lines join at the knots, but each has its own slope.</p>
+
+<div class="figure" id="fig-spline">
+  <div class="figure-head"><div class="flabel">Figure 5.6 &middot; Interactive</div><h4>Move the knot</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Knot at</span><input type="range" id="knot" min="0.5" max="4" step="0.1" value="1"><span class="val" id="knot-v"></span></div>
+      <label class="chk"><input type="checkbox" id="spline-line" checked> Show the straight line</label>
+    </div>
+    <div class="chart-wrap" id="spline-chart"></div>
+    <p id="spline-read" style="text-align:center;font-family:var(--sans);font-size:0.9rem;margin:6px 0 0;"></p>
+  </div>
+  <div class="figure-caption">207 Vienna hotels, 3&ndash;4 stars, November 2017 weekday. Price against distance from the centre, with a spline fitted by OLS. The dashed line is the straight-line regression.</div>
+</div>
+
+<p>Each piece of a spline has a slope you can read directly, which is its big advantage over a polynomial. With the knot at 1 mile: within a mile of the centre, each extra mile goes with prices about <strong>&euro;76 lower</strong>, on average. Beyond a mile, only about <strong>&euro;3.50 a mile</strong>. R&sup2; goes from 0.157 for the straight line to 0.301, and that comparison is fair, because both models explain price.</p>
+
+<h3>Fitting one in Python</h3>
+
+<p>The trick is a new variable: miles beyond the knot, which is zero for any hotel inside it.</p>
+
+<pre class="code-block">hotels['beyond_1'] = np.maximum(hotels['distance'] - 1, 0)
+spline = smf.ols('price ~ distance + beyond_1', data=hotels).fit()
+spline.params      <span class="c"># Intercept 175.40, distance -76.24, beyond_1 72.73</span></pre>
+
+<p>The one thing to get right: the <code>beyond_1</code> coefficient is the <em>change</em> in slope after the knot, not the slope itself. Inside a mile, only <code>distance</code> moves, so the slope is &minus;76.24. Beyond a mile, both move together, so the slope is \(-76.24 + 72.73 = -3.51\). The textbook warns about exactly this: some software reports each segment's slope, some reports the first slope and then the differences. Always check which you're looking at.</p>
+
+<h3>Did it change the answer?</h3>
+
+<p>The residuals from a hotels regression have a direct business use. A hotel well below the line is cheap for its location, so the most negative residuals point to the best deals. With the straight line, the five best deals were all about a mile out, at &euro;54&ndash;68 a night. With the spline, only one of them, hotel 22080, is still on the list. The new top three are just 0.1&ndash;0.2 miles from the centre, at &euro;112&ndash;115. The straight line predicted prices that were too low near the centre, so it couldn't see that these central hotels were cheap <em>for where they are</em>. It also matters what kind of deal you're getting: the straight line's five deals average a guest rating of 3.5, the spline's 4.0. The shape of the line changed the business answer.</p>
+
+<h3>Choosing the knots</h3>
+
+<p>Splines can follow any shape, which is their strength and their danger: you choose the knots. Try it in the figure. A knot at 2 miles gives R&sup2; 0.242, worse than 1 mile. Adding a second knot at 4 miles only takes R&sup2; from 0.301 to 0.308 &ndash; not worth the extra complexity. Put knots where the scatter or what you know about the place says the pattern changes, not wherever R&sup2; happens to be highest. Hunting for the best knot on the data you're fitting is the same overfitting trap as the fifth-order polynomial.</p>
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 8, case study &ldquo;Finding a good deal among hotels&rdquo;.</p>
+</section>
+
+<section class="chapter" id="choosing">
+<div class="chapter-kicker">Part Ten</div>
+<h2>Choosing a Functional Form</h2>
+
+<p>Logs offer another way to bend the hotels line. Logging price, distance, or both gives four models:</p>
+
+<table class="data-table">
+  <caption class="visually-hidden">Four hotel price and distance models</caption>
+  <thead><tr><th scope="col">Model</th><th scope="col">Slope</th><th scope="col">R&sup2;</th><th scope="col">Reads as</th></tr></thead>
+  <tbody>
+    <tr><td>price ~ distance</td><td>&minus;14.41</td><td>0.157</td><td>1 mile further out, &euro;14 cheaper</td></tr>
+    <tr><td>ln(price) ~ distance</td><td>&minus;0.13</td><td>0.205</td><td>1 mile further out, 13% cheaper</td></tr>
+    <tr><td>price ~ ln(distance)</td><td>&minus;24.77</td><td>0.280</td><td>10% further out, &euro;2.48 cheaper</td></tr>
+    <tr><td>ln(price) ~ ln(distance)</td><td>&minus;0.22</td><td>0.334</td><td>10% further out, 2.2% cheaper</td></tr>
+  </tbody>
+</table>
+
+<p>Four different numbers from the same data, and none of them is wrong. Each answers a slightly different question. R&sup2; rises down the table, and it's tempting to crown log&ndash;log the winner. But only the pairs with the same y can be compared: level&ndash;level against level&ndash;log (0.157 against 0.280), and log&ndash;level against log&ndash;log (0.205 against 0.334). In both, logging distance helps.</p>
+
+<p>Which would you use? What you want to know comes first. For a good deal on one night you care about euros, so keep price in levels. Comparing across seasons, when prices rise and fall together, percentages travel better. And for choosing a hotel, miles are easier to think about than &ldquo;10% further out&rdquo;. The textbook's own verdict is &ldquo;your call&rdquo;. There's no single right answer, only one you can defend.</p>
+
+<p>The textbook's guidance on <em>whether</em> to bother:</p>
+<ul>
+  <li>If all you care about is the <strong>average association</strong>, and a straight line is a decent approximation to it, don't worry about the shape. A log can still be worth it for interpretation.</li>
+  <li>Bend the line when you care about <strong>prediction</strong>, about the <strong>residuals</strong> (like finding deals), or about how the association <strong>varies</strong> beyond its average.</li>
+  <li>Keep it simple. The simpler model you can defend usually beats the complicated one you can't explain.</li>
+</ul>
+
+<p>And the four-step roadmap:</p>
+<ol>
+  <li><strong>Check the distributions</strong> of y and x. Skewed, with a long right tail? Think about logs.</li>
+  <li><strong>Look at the shape</strong>, with a scatterplot or a non-parametric fit like a bin-scatter or LOWESS, which shows the pattern without imposing one.</li>
+  <li><strong>Choose a transformation</strong> to match what you see &ndash; a log, a quadratic, a spline, a ratio. Not every variable can sensibly be logged or turned into a ratio.</li>
+  <li><strong>Compare models.</strong> If the answers agree, that's a robustness check and you can be more confident. If they disagree sharply, find out why.</li>
+</ol>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;You should never be satisfied with the first regression. Can I do better? Almost have that as a sign up against your desk.&rdquo;</p>
+</blockquote>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;This is a lifelong project in becoming a decent analyst. You learn how to do this bit by bit. I'm not assessing you on being the best analyst in the world in your portfolio. It's demonstrating that you've thought about the things we've talked about, and tested some of these relationships before you decide on the model you're going to present.&rdquo;</p>
+</blockquote>
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 8</p>
+</section>
+
+<section class="chapter" id="influence">
+<div class="chapter-kicker">Part Eleven</div>
+<h2>Extreme Values and Influential Observations</h2>
+
+<p>Week 1 dealt with outliers one variable at a time. A regression adds a new question: does one point have an outsized say in where the line goes? Two ideas get mixed up here, and they shouldn't be.</p>
+
+<ul class="term-list">
+  <li><span class="term">Extreme value</span><span>An observation that's unusual on some variable. A hotel priced at &euro;1,000 a night. Luxembourg's share of employment in banking.</span></li>
+  <li><span class="term">Influential observation</span><span>One whose presence or absence noticeably moves the regression line.</span></li>
+</ul>
+
+<p>Every influential observation is extreme on something. But plenty of extreme values sit close to the line and barely matter: a point far out on x that's right where the line would have gone anyway just confirms it. What makes a point influential is being far from the others on x (<strong>leverage</strong>) <em>and</em> far from where the rest of the data would put the line.</p>
+
+<p>Our own data has a real example. Back in Week 3 we fixed five finger lengths that had been typed wrongly. Student 10 typed 8.2 when they meant 82 &ndash; centimetres instead of millimetres. Put that one typo back:</p>
+
+<div class="figure" id="fig-typo">
+  <div class="figure-head"><div class="flabel">Figure 5.7 &middot; Interactive</div><h4>One point moves the line</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <label class="chk"><input type="checkbox" id="typo-on"> Use Student 10's finger length as typed (8.2mm)</label>
+      <div class="ctl"><span class="lbl">Or drop one student</span><select id="drop-one"></select></div>
+    </div>
+    <div class="chart-wrap" id="typo-chart"></div>
+    <p id="typo-read" style="text-align:center;font-family:var(--sans);font-size:0.9rem;margin:6px 0 0;"></p>
+  </div>
+  <div class="figure-caption">Grey dashed line: the class regression with every finger length corrected. Red line: the regression after your change.</div>
+</div>
+
+<p>With the typo in, the slope goes from +18.6 to &minus;4.2. It flips sign. One student is now miles away from everyone else on the x-axis, so the line has to swing to get near them. That's leverage.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;This is why we check data for things like this. If we hadn't done that, we could have ended up estimating a negative relationship where on average the relationship should be positive.&rdquo;</p>
+</blockquote>
+
+<p>Now try the drop-one menu. Taking out any single student and refitting is the simplest influence check there is. Most students move the slope a little. One doesn't: drop <strong>Student 6</strong> (95mm, a mean of 3,135ms) and the slope goes from 18.6 to <strong>&minus;1.8</strong>. One slow student with a long finger is carrying the whole positive slope. That's not a typo &ndash; it's a real person's real reaction times &ndash; so it isn't a reason to drop them. It's a reason not to put much weight on the slope.</p>
+
+<h3>What to do about them</h3>
+
+<p>It depends why they're extreme.</p>
+<ul>
+  <li><strong>If it's a mistake</strong> you can show &ndash; a typo, a timer glitch, a &euro;1 hotel price &ndash; fix it if you can (we could, with the finger lengths) or drop it.</li>
+  <li><strong>If it's real</strong>, don't drop it just because it's inconvenient. Avoid dropping observations based on their <strong>y</strong> value in particular: an unusual outcome is still information about the outcome, and dropping it biases what's left.</li>
+  <li><strong>Dropping on x can be more defensible</strong>, if that x is outside the range you're asking about. A study of small firms can reasonably leave out the giants. But often extreme x values are the most informative ones, because that's where the variation is.</li>
+  <li><strong>Try a transformation first.</strong> A log pulls in a long tail and can turn an influential point into an ordinary one.</li>
+  <li><strong>Report it either way.</strong> Show the result with and without the point. If the conclusion depends on one observation, the reader needs to know.</li>
+</ul>
+
+<details class="code-reveal">
+  <summary>Extension: measuring influence in Python</summary>
+  <div class="code-reveal-body">
+    <p>The drop-one check in code, looping over every student:</p>
+    <pre class="code-block">base = smf.ols('mean_rt ~ finger_mm', data=student_summary).fit()
+for name in student_summary['student_name']:
+    rest = student_summary[student_summary['student_name'] != name]
+    b = smf.ols('mean_rt ~ finger_mm', data=rest).fit().params['finger_mm']
+    print(name, round(b, 2))</pre>
+    <p><code>statsmodels</code> also has a ready-made summary of influence. <strong>Leverage</strong> measures how far a point is from the others on x. <strong>Cook's distance</strong> combines leverage with the size of the residual into one number for how much the fitted line would move without that point.</p>
+    <pre class="code-block">infl = base.get_influence()
+student_summary['leverage'] = infl.hat_matrix_diag
+student_summary['cooks_d'] = infl.cooks_distance[0]
+student_summary.sort_values('cooks_d', ascending=False).head()</pre>
+    <p>On our data, Student 6 comes top with a Cook's distance of 0.56, ahead of Student 23 (0.39). A common rough flag is anything above 4/n, here 0.17. Treat the flag as a reason to look, not a reason to delete.</p>
+  </div>
+</details>
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 8</p>
+</section>
+
+<section class="chapter" id="measurement">
+<div class="chapter-kicker">Part Twelve</div>
+<h2>Measurement Error</h2>
+
+<p>Almost nothing in business or economics is measured exactly. Our reaction times were self-timed on different devices, with browser lag. Finger lengths were measured by hand with a ruler. In the hotels data, the price is one night on one date, the distance is to a centre someone chose, and the rating is the average of whatever reviews guests happened to leave. The question isn't whether there's error. It's what the error does to \(\hat\beta\). The answer depends on which variable has it, and what kind it is.</p>
+
+<h3>Classical measurement error</h3>
+
+<p>Write the measured variable as its true value plus noise: \(x = x^* + e\). The error is <strong>classical</strong> if it has two properties:</p>
+<ol>
+  <li>it's zero on average, so it doesn't shift the variable's mean, and</li>
+  <li>it's unrelated to everything else in the model, including the true value itself.</li>
+</ol>
+<p>Recording slips, rounding, and the random scatter of one guest's opinion around a hotel's real quality are plausibly classical. A ruler that's a centimetre short, or a hotel that asks only its happiest guests to post reviews, is not.</p>
+
+<h3>Noise in y: no bias</h3>
+
+<p>Suppose only y is measured with classical error, \(y = y^* + e\). Use the slope formula from Chapter 4:</p>
+
+<div class="formula-block">$$\begin{aligned}\hat\beta &= \frac{Cov[y,x]}{Var[x]} = \frac{Cov[y^* + e,\ x]}{Var[x]} \\ &= \frac{Cov[y^*,x] + Cov[e,x]}{Var[x]} = \frac{Cov[y^*,x]}{Var[x]} = \hat\beta^*\end{aligned}$$</div>
+
+<p>\(Cov[e,x]\) is zero because classical error is pure noise, unrelated to x. It's the same idea as Chapter 4's key assumption, \(E[\varepsilon \mid x] = 0\): knowing x tells you nothing about which way the error leans. So the term drops out and the slope is unaffected, on average. Noise in y does make the fit worse &ndash; more scatter around the line &ndash; so the standard error is bigger. It just doesn't tilt the line.</p>
+
+<h3>Noise in x: attenuation bias</h3>
+
+<p>Noise in x is different. The noise doesn't touch the covariance, but it adds to the variance of x, which sits on the bottom of the formula:</p>
+
+<div class="formula-block">$$\hat\beta = \frac{Cov[y,\ x^* + e]}{Var[x^* + e]} = \frac{Cov[y,x^*]}{Var[x^*] + Var[e]} = \hat\beta^* \times \frac{Var[x^*]}{Var[x^*] + Var[e]}$$</div>
+
+<p>That fraction is always between 0 and 1. So \(\hat\beta\) is pulled <strong>towards zero</strong>, never away from it, and it never changes sign. This is <strong>attenuation bias</strong>. The intuition: if two hotels' ratings differ by 0.2, their true quality probably differs by less, because some of that 0.2 is noise. So the price difference per rating point looks smaller than it really is.</p>
+
+<p>What decides how bad it is is the <strong>noise-to-signal ratio</strong>, \(Var[e] / Var[x^*]\): how big the noise is compared with the real spread in x. If the noise is small next to the spread &ndash; careful recording, or an average over a large sample &ndash; you can usually ignore it. If it's large, it's worth saying which way your estimate is likely to be biased. Because the line goes through \((\bar x, \bar y)\) either way, a flatter slope also means a shifted intercept.</p>
+
+<h3>Seeing it in the hotel ratings</h3>
+
+<p>Do better-rated hotels charge more? Regress log price on the average guest rating. A hotel's rating is an average of its reviews, and an average over 20 reviews is far noisier than one over 500. If classical error matters, it should matter more for hotels with few reviews. The textbook splits the hotels into those with fewer than 100 reviews and those with more than 200:</p>
+
+<table class="data-table">
+  <caption class="visually-hidden">Price and rating regressions for hotels with few and many reviews</caption>
+  <thead><tr><th scope="col"></th><th scope="col">Hotels</th><th scope="col">Avg reviews</th><th scope="col">SD of rating</th><th scope="col">Slope</th><th scope="col">Robust SE</th></tr></thead>
+  <tbody>
+    <tr><td>Few reviews (&lt; 100)</td><td>77</td><td>57</td><td>0.42</td><td>0.354</td><td>0.099</td></tr>
+    <tr><td>Many reviews (&gt; 200)</td><td>72</td><td>417</td><td>0.26</td><td>0.556</td><td>0.109</td></tr>
+  </tbody>
+</table>
+
+<p>The slope is flatter where the rating is noisier, as attenuation predicts: among hotels with many reviews, a one-point higher rating goes with prices about 56% higher (in log points), against about 35% among hotels with few. Now take the well-reviewed hotels, with their reliable ratings, and add noise yourself:</p>
+
+<div class="figure" id="fig-atten">
+  <div class="figure-head"><div class="flabel">Figure 5.8 &middot; Interactive</div><h4>Watch attenuation happen</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Noise SD added to ratings</span><input type="range" id="noise" min="0" max="0.6" step="0.02" value="0"><span class="val" id="noise-v"></span></div>
+      <button id="noise-redraw" type="button" style="font-family:var(--sans);font-size:12.5px;padding:4px 10px;border:1px solid var(--rule);border-radius:6px;background:var(--paper-sunk);color:var(--ink);cursor:pointer;">New random draw</button>
+    </div>
+    <div class="chart-wrap" id="atten-chart"></div>
+    <p id="atten-read" style="text-align:center;font-family:var(--sans);font-size:0.9rem;margin:6px 0 0;"></p>
+  </div>
+  <div class="figure-caption">The 72 hotels with more than 200 reviews. Left: log price against rating, with the noise added. Right: the slope from one draw (dot) against what the attenuation formula predicts on average (line).</div>
+</div>
+
+<p>Any single draw bounces around, but on average the slope falls exactly as the formula says. Averaging 500 runs, about <strong>0.2 rating points</strong> of noise brings the slope down to around 0.36, close to the few-reviews slope of 0.354. Check with the formula: the variance of the rating among these hotels is 0.07, so \(\lambda = 0.07 / (0.07 + 0.2^2) \approx 0.64\), and \(0.556 \times 0.64 \approx 0.35\). Is 0.2 plausible? If one guest's score has a standard deviation of about 1 point, an average of n reviews has noise of about \(1/\sqrt{n}\): 0.13 for 57 reviews. So 0.2 is on the high side, but in the right range.</p>
+
+<p>Before calling it proved, use the second half of this chapter. The two slopes' 95% confidence intervals, [0.16, 0.55] and [0.34, 0.77], overlap a lot. And other things differ between the groups: hotels with many reviews may be bigger, more central or more established. The gap is consistent with attenuation, not proof of it.</p>
+
+<h3>When the error isn't classical</h3>
+
+<p>Attenuation bias, where the slope is pulled towards zero, only follows if the error is random. Ratings may not be random. A hotel could nudge its happiest guests to post; a new hotel's first reviews might come from friends and family; hotels that deal with complaints quickly may get fewer bad reviews. Then the error is linked to the hotel, and the bias could go either way. There's no formula fix for that. The answer is better measurement, or at least being upfront about it. Think about where else this could bite: distance measured to a &ldquo;centre&rdquo; that suits some hotels better than others, or listings that round distances.</p>
+
+<p>What should you actually do? The textbook leaves it open. You could drop the few-review hotels, keep them and say which way the bias goes, or use only hotels above a minimum number of reviews. Each has a cost: dropping hotels loses data and may drop a particular kind of hotel, like newer ones. The important thing is to think about it and say what you did.</p>
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 8, case study &ldquo;Hotel ratings and measurement error&rdquo;.</p>
+</section>
+
+<section class="chapter" id="se">
+<div class="chapter-kicker">Part Thirteen</div>
+<h2>From Our Sample to Everyone: The Standard Error of \(\hat\beta\)</h2>
+
+<p>Everything so far has described the 24 students in one room. That isn't really what we care about. HR doesn't want a formula for us; they want one for candidates they haven't met. The 24 of us are a <strong>sample</strong> from a bigger population &ndash; say, all LJMU students &ndash; and we want to know whether what we found in the sample holds there. That's <strong>statistical inference</strong>, and it works for a slope exactly as it did for a mean in Chapter 2.</p>
+
+<p>Recall the logic. If we ran the whole experiment again with a different 24 students, we'd get a different \(\hat\beta\). Run it a thousand times and the thousand slopes would form a distribution: the <strong>sampling distribution</strong> of \(\hat\beta\). Thanks to the central limit theorem, it's close to normal, centred on the true slope (if the BLUE assumptions hold). The <strong>standard error</strong>, \(SE(\hat\beta)\), is the standard deviation of that distribution: how much the slope would typically bounce around from sample to sample. We only ever see one sample, but the formula tells us how big that bounce would be:</p>
+
+<div class="formula-block">$$SE(\hat\beta) = \frac{Std[e]}{\sqrt{n}\ Std[x]}$$</div>
+
+<p>Each piece makes sense on its own. The estimate is more precise &ndash; SE smaller &ndash; when:</p>
+<ul class="term-list">
+  <li><span class="term">\(Std[e]\) is small</span><span>The residuals are small: the points sit close to the line, so there's little noise to confuse the slope.</span></li>
+  <li><span class="term">\(Std[x]\) is large</span><span>x varies a lot. If everyone had nearly the same finger length, you couldn't tell what longer fingers go with. If everyone had <em>exactly</em> the same length, you couldn't estimate a slope at all. Good variation in x is what you most want in a dataset.</span></li>
+  <li><span class="term">\(n\) is large</span><span>More observations. But it's \(\sqrt{n}\), so the returns shrink: going from 10 to 100 observations cuts the SE by about two-thirds; going from 100 to 200 only by about 30%.</span></li>
+</ul>
+
+<h3>Worked by hand on our data</h3>
+
+<p>For our regression, the residual standard deviation is \(Std[e] = 893.9\)ms (calculated dividing by \(n - 2\), since two parameters were estimated), the standard deviation of finger length is \(Std[x] = 8.37\)mm, and \(n = 24\):</p>
+
+<div class="formula-block">$$SE(\hat\beta) = \frac{893.9}{\sqrt{24} \times 8.37} = \frac{893.9}{4.899 \times 8.37} = 21.8$$</div>
+
+<p>Compare that with the slope itself, 18.6. The typical sample-to-sample bounce is bigger than the estimate. That already tells you most of what the rest of this chapter will confirm. The big culprit is \(Std[e]\): reaction times vary enormously from student to student for reasons that have nothing to do with fingers.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;You never have to calculate your own standard errors. On a particularly wet Friday afternoon, you shouldn't have to. But I want you to understand what's behind it.&rdquo;</p>
+</blockquote>
+
+<p>In practice you read it straight off the output. It's the <code>std err</code> column of <code>model.summary()</code>, or <code>model.bse</code> on its own:</p>
+
+<pre class="code-block">model = smf.ols('mean_rt ~ finger_mm', data=student_summary).fit()
+model.bse        <span class="c"># Intercept 1738.32, finger_mm 21.80</span></pre>
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 9</p>
+</section>
+
+<section class="chapter" id="ci">
+<div class="chapter-kicker">Part Fourteen</div>
+<h2>A Confidence Interval for the Slope</h2>
+
+<p>With a standard error, the 95% confidence interval is built exactly as in Chapter 2:</p>
+
+<div class="formula-block">$$CI(\hat\beta)_{95\%} = \left[\hat\beta - 2\,SE(\hat\beta),\ \ \hat\beta + 2\,SE(\hat\beta)\right]$$</div>
+
+<p>The 2 is the rule of thumb for 1.96, the value that cuts off the middle 95% of a normal distribution. Software uses a slightly bigger number from the <em>t</em>-distribution, which allows for the fact that Std[e] is itself estimated; with 24 observations it's 2.07. In your head, use 2.</p>
+
+<p>For our data: \(18.6 \pm 2 \times 21.8\), which is about <strong>[&minus;25, 62]</strong>. <code>statsmodels</code>, using 2.07, prints <strong>[&minus;26.6, 63.8]</strong> in the <code>[0.025 0.975]</code> columns.</p>
+
+<h3>What the interval means</h3>
+
+<p>The interpretation of a confidence interval needs some care. The true slope is a fixed number; it doesn't move. What moves is the interval, because it's built from our sample. If we repeated the experiment 100 times and built an interval each time, about 95 of those intervals would contain the true slope and about 5 wouldn't. We only ever get one interval, and we don't know if it's one of the 95 or one of the 5. &ldquo;95% confident&rdquo; describes the method, not this particular interval. So the careful reading is:</p>
+
+<div class="callout">
+  <p>Our data are consistent with a true slope anywhere from about &minus;27 to +64ms per mm. We used a method that captures the true value 95% of the time.</p>
+</div>
+
+<p>Avoid &ldquo;there's a 95% chance the true slope is in this interval&rdquo;. It sounds the same, but strictly the true slope either is or isn't in it.</p>
+
+<h3>What it tells HR</h3>
+
+<p>The interval runs from negative to positive. It includes zero. So the data are consistent with longer fingers going with slower reactions, with faster reactions, or with no relationship at all. We cannot say that finger length and reaction time are related. A slope is <strong>statistically significant</strong> at the 5% level when its 95% interval doesn't contain zero &ndash; when it's all positive or all negative. Ours isn't.</p>
+
+<h3>How much of the output can we read now?</h3>
+
+<p>Here are the top two blocks of the summary for our regression, the same output Chapter 4 first introduced:</p>
+
+<pre class="code-block" id="top-summary" style="font-size:0.72rem;"></pre>
+
+<p>In Chapter 4, only a few things on this page meant anything: the number of observations (24), R&sup2; (0.032) and the <code>coef</code> column, which holds \(\hat\alpha\) and \(\hat\beta\). Now the rest of the coefficient table can be read too. <code>std err</code> is \(SE(\hat\beta)\), 21.8 for finger length. <code>[0.025 0.975]</code> is the 95% confidence interval, [&minus;26.6, 63.8]. And the next part explains <code>t</code> and <code>P&gt;|t|</code>, which test whether each coefficient is zero. <code>Covariance Type: nonrobust</code> says which standard errors these are; Part Seventeen covers the alternative.</p>
+
+<p>That leaves a handful of lines in the top block: Adj. R-squared and the F-statistic (Chapter 6), Log-Likelihood (Chapter 8) and AIC/BIC (Chapter 10). Df Residuals is \(n - 2\), the 22 used in the residual standard deviation. The bottom block of the output, the residual diagnostics, is Part Sixteen.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;What was, this time last week, just a mass of numbers is becoming more and more legible to you. Some of you opened up the mock paper in the first week, saw something like this and freaked out. It's two weeks in, and you're able to interpret about half of the stuff on there.&rdquo;</p>
+</blockquote>
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 9</p>
+</section>
+
+<section class="chapter" id="testing">
+<div class="chapter-kicker">Part Fifteen</div>
+<h2>Testing Whether the Slope Is Zero</h2>
+
+<p>The same question, asked a different way: is there any relationship at all? This is the t-test from Chapter 2, with a slope in place of a difference in means.</p>
+
+<ol>
+  <li><strong>Hypotheses.</strong> The null is no relationship, \(H_0: \beta_{true} = 0\). The alternative is that there is one, in either direction: \(H_A: \beta_{true} \neq 0\).</li>
+  <li><strong>The t-statistic.</strong> \(t = \hat\beta / SE(\hat\beta)\): how many standard errors the estimate is from zero.</li>
+  <li><strong>Decision.</strong> Reject \(H_0\) at the 5% level if \(|t| > 2\) (strictly 1.96 in large samples), or equivalently if the p-value is below 0.05.</li>
+</ol>
+
+<p>For us, \(t = 18.6 / 21.8 = 0.85\), and the p-value, <code>P&gt;|t|</code>, is <strong>0.403</strong>. Well short of 2, well above 0.05. We can't reject the null. This always agrees with the confidence interval: you reject at 5% exactly when the 95% interval leaves out zero. It's the same information seen from two angles.</p>
+
+<h3>What a p-value is, and isn't</h3>
+
+<p>The p-value is the probability of getting an estimate at least this far from zero <em>if the true slope were zero</em>. Here: if finger length and reaction time were really unrelated, about 40% of samples like ours would still produce a slope of 18.6 or more in one direction or the other. That's no surprise at all, so we have no evidence against &ldquo;no relationship&rdquo;. A small p-value means our result would be surprising if there were no relationship.</p>
+
+<p>Two common slips. The p-value is <em>not</em> the probability that the null is true. And &ldquo;we can't reject \(H_0\)&rdquo; is not the same as &ldquo;there is no relationship&rdquo;. With 24 students and this much noise, we couldn't have detected a modest real relationship even if there were one. Absence of evidence isn't evidence of absence; it may just be a small, noisy sample.</p>
+
+<h3>Talking about significance</h3>
+
+<p>A coefficient is &ldquo;significant at 5%&rdquo; if zero is outside its 95% interval (p &lt; 0.05), and &ldquo;significant at 1%&rdquo; if zero is outside its 99% interval (p &lt; 0.01, roughly |t| &gt; 2.6). The 5% line is a convention, nothing more.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Significance is deemed important, even though the thresholds are completely arbitrary. Literally, someone just decided one day 95 is going to be our threshold. When you're an early career researcher, you really need your results to be significant. When you're old and boring like me, you can say: they're not significant, but they are interesting.&rdquo;</p>
+</blockquote>
+
+<p>The textbook's advice on the awkward cases is sensible. If a result is significant at 10% but not 5%, don't dress it up with phrases like &ldquo;approaching significance&rdquo;. Say the estimate, give the interval and the p-value, and let the reader judge. How strict to be depends on the stakes: for an early proof of concept, a looser standard is fine; for something that has to stand up beyond reasonable doubt, aim for 1%.</p>
+
+<p>Two more warnings. <strong>Statistical significance isn't practical significance.</strong> With a million observations, a slope of 0.001ms per mm could be &ldquo;significant&rdquo; and still matter to nobody. Always ask whether the size is meaningful. And beware <strong>p-hacking</strong>: running many versions of an analysis and only reporting the one that crosses 5%. Every arbitrary choice (which outliers, which controls, which functional form) is a chance to find something by luck. Present your most conservative result first, and show what happens under the other reasonable choices.</p>
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 9</p>
+</section>
+
+<section class="chapter" id="normality">
+<div class="chapter-kicker">Part Sixteen</div>
+<h2>Residual Diagnostics I: Are the Residuals Normal?</h2>
+
+<p>Every test and interval above leans on assumptions, and the residuals are where you check them. This part and the next go through the checks.</p>
+
+<h3>The assumption</h3>
+
+<p>The &plusmn;2 SE interval is only an <em>exact</em> 95% interval in small samples if the errors are normally distributed: \(\varepsilon \mid x \sim N(0, \sigma^2)\). This is a different kind of assumption from the five BLUE conditions in Chapter 4. The Gauss&ndash;Markov theorem never mentions normality: \(\hat\beta\) is unbiased and has the smallest variance whatever shape the errors have. Normality only comes in once we build a test statistic around \(\hat\beta\) and ask what distribution it follows when n is small.</p>
+
+<p>When n is large it hardly matters. \(\hat\beta\) is a weighted average of the data, and the central limit theorem (Chapter 2) makes its sampling distribution close to normal anyway, whatever the errors look like. That's why the textbook, whose case studies run into the thousands, barely mentions it. The question is how small &ldquo;small&rdquo; is, and how much it matters there.</p>
+
+<h3>How much does it matter? A simulation</h3>
+
+<p>To find out, simulate it. Generate thousands of samples from a known straight line, with heavily right-skewed errors (skewness about 2.8 &ndash; worse than our reaction times), fit OLS to each, build the usual 95% interval, and count how often it contains the true slope. If the method works, the answer should be 95%.</p>
+
+<div class="figure" id="fig-coverage">
+  <div class="figure-head"><div class="flabel">Figure 5.9</div><h4>How often does the 95% interval contain the true slope?</h4></div>
+  <div class="figure-body"><div class="chart-wrap" id="coverage-chart"></div></div>
+  <div class="figure-caption">4,000 simulated samples at each sample size. Green: skewed errors only. Red: the same skewed errors plus one point far out on x. The dashed line is 95%.</div>
+</div>
+
+<p>The green line is the surprise. Even at n = 8, the interval covers the true slope about 95% of the time. Skewed residuals on their own barely matter. What does matter is the red line: the same skewed errors, plus one high-leverage point far out on x. Now coverage drops to about 91% at n = 8&ndash;10 and doesn't recover until around n = 50. Non-normal residuals are dangerous when they come with an influential observation, which is exactly the combination our own data has.</p>
+
+<h3>Checking it: the QQ-plot</h3>
+
+<p>The standard visual check is a <strong>QQ-plot</strong> (quantile&ndash;quantile). Sort the residuals from smallest to largest. For each one, work out where it <em>would</em> be if the residuals came from a normal distribution with the same spread: the smallest of 24 normal draws tends to sit about 2 standard deviations below the mean, the middle ones near zero, and so on. Plot actual against expected. If the residuals are normal, the points lie close to the 45-degree line.</p>
+
+<div class="figure" id="fig-qq">
+  <div class="figure-head"><div class="flabel">Figure 5.10 &middot; Interactive</div><h4>Reading a QQ-plot</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Residuals from</span><select id="qq-pick">
+        <option value="norm">24 made-up normal residuals</option>
+        <option value="skew">24 made-up right-skewed residuals</option>
+        <option value="lin">Our regression: mean_rt ~ finger_mm</option>
+        <option value="log">Our regression: np.log(mean_rt) ~ finger_mm</option>
+      </select></div>
+    </div>
+    <div class="chart-row"><div class="chart-wrap" id="qq-hist"></div><div class="chart-wrap" id="qq-chart"></div></div>
+    <p id="qq-read" style="text-align:center;font-family:var(--sans);font-size:0.9rem;margin:6px 0 0;"></p>
+  </div>
+  <div class="figure-caption">Left: histogram of the residuals. Right: the QQ-plot. Residuals are standardised (divided by their standard deviation) so the panels are comparable.</div>
+</div>
+
+<p>How to read the shapes:</p>
+<ul class="term-list">
+  <li><span class="term">On the line</span><span>Close to normal. Even genuinely normal residuals wobble a bit with only 24 points, especially at the ends.</span></li>
+  <li><span class="term">Banana, curving up</span><span>Right skew. The biggest residuals are much bigger than normal would give, so the top end climbs away from the line; the smallest aren't as small as normal would give, so the bottom end sits above it.</span></li>
+  <li><span class="term">S-shape</span><span>The tails are wrong. If both ends bend away from the line (low end down, high end up), the tails are fatter than normal: more extreme residuals than a normal distribution would produce. Bending in towards the line means thinner tails.</span></li>
+  <li><span class="term">A step or gap</span><span>The residuals come in clusters. Often a sign of two groups the model doesn't know about.</span></li>
+</ul>
+
+<p>Our level&ndash;level regression is a banana: right-skewed, with a few very slow students far above the line. The log model is much straighter at the top end, but look at the middle: there's a jump. Our class splits into a fast group (mostly around 300&ndash;500ms) and a slow group (over 1,000ms). No transformation removes that, because it isn't about the shape of one distribution; it's two different groups. That's a hint that something else, like the device or how seriously people took the test, is going on.</p>
+
+<pre class="code-block">import statsmodels.api as sm
+import matplotlib.pyplot as plt
+
+sm.qqplot(model.resid, line='s')      <span class="c"># line='s': a line matched to the residuals' own spread</span>
+plt.show()</pre>
+
+<h3>Checking it: the numbers in the output</h3>
+
+<p>Every <code>model.summary()</code> ends with a block most people skip. For our level&ndash;level model:</p>
+
+<pre class="code-block" style="font-size:0.72rem;">Omnibus:                        8.849   Durbin-Watson:                   2.274
+Prob(Omnibus):                  0.012   Jarque-Bera (JB):                7.014
+Skew:                           1.273   Prob(JB):                       0.0300
+Kurtosis:                       3.726   Cond. No.                         760.</pre>
+
+<p>Line by line:</p>
+<ul class="term-list">
+  <li><span class="term">Skew</span><span>The skewness of the residuals, as in Week 1. Normal is 0. Positive means a long right tail. Ours is 1.27: clearly right-skewed.</span></li>
+  <li><span class="term">Kurtosis</span><span>How heavy the tails are. A normal distribution has kurtosis 3 (not 0 &ndash; some software reports &ldquo;excess&rdquo; kurtosis, which subtracts the 3). Above 3 means fatter tails than normal. Ours is 3.73.</span></li>
+  <li><span class="term">Jarque&ndash;Bera (JB)</span><span>A test statistic that combines the two: \(JB = \frac{n}{6}\left(S^2 + \frac{(K - 3)^2}{4}\right)\). It's zero for perfectly normal residuals and grows the further skew and kurtosis are from 0 and 3. Ours: \(\frac{24}{6}\left(1.273^2 + \frac{0.726^2}{4}\right) = 4 \times (1.62 + 0.13) = 7.01\).</span></li>
+  <li><span class="term">Prob(JB)</span><span>The p-value for the test whose <strong>null is that the residuals are normal</strong>. Small means reject normality. Ours is 0.030, so at 5% we reject normality.</span></li>
+  <li><span class="term">Omnibus, Prob(Omnibus)</span><span>Another test of the same null, built a slightly different way (D'Agostino's test). Read it the same way: 0.012, so again we reject normality.</span></li>
+  <li><span class="term">Durbin&ndash;Watson</span><span>Not about normality. It checks whether each residual is related to the one before it, which matters for data in time order. Around 2 means no problem. Our rows are students in no particular order, so ignore it until Week 11.</span></li>
+  <li><span class="term">Cond. No.</span><span>Not about normality either. A large condition number warns that the x variables are close to being linear combinations of each other, or are on very different scales. It matters with several x variables (Week 6, multicollinearity). With one x it mostly reflects that finger length is around 80, far from zero.</span></li>
+</ul>
+
+<div class="callout gold">
+  <p><strong>Read the direction carefully.</strong> In this block, a <em>small</em> p-value is bad news: it means the residuals don't look normal. This is the reverse of the usual reading, where a small p-value is the result an analyst hopes for.</p>
+</div>
+
+<p>For the log model, skew falls from 1.27 to 0.56 and Prob(JB) rises from 0.030 to 0.318, so we can no longer reject normality. One more caution: with 24 observations these tests have very little <strong>power</strong>. They can easily fail to spot a real problem, and with thousands of observations they'll flag trivial departures that make no practical difference. So use the QQ-plot and the influence checks as your main evidence, and the p-values as a supporting line.</p>
+
+<h3>So what do you do?</h3>
+
+<p>Mostly, not much &ndash; and that's the honest answer. With a reasonable sample and no influential points, non-normal residuals won't distort your intervals. With a small sample, check the QQ-plot, consider a log if y is skewed, run the influence checks from Part Eleven, and be cautious about intervals if you find skew <em>and</em> an influential point together. Our data has both, so the interval [&minus;26.6, 63.8] deserves less trust than its neat numbers suggest. It doesn't change the conclusion, though: it was nowhere near significant anyway.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;This is a test. It's named after the statisticians that came up with it. That's how you get immortality: come up with a statistical test and you're remembered forever by students that hate you.&rdquo;</p>
+</blockquote>
+</section>
+
+<section class="chapter" id="hetero">
+<div class="chapter-kicker">Part Seventeen</div>
+<h2>Residual Diagnostics II: Heteroskedasticity and Robust Standard Errors</h2>
+
+<p>The simple SE formula in Part Thirteen has one more assumption hidden in it: <strong>homoskedasticity</strong>, the fourth BLUE assumption from Chapter 4. It says the spread of the residuals is the same across the whole range of x &ndash; the line fits just as tightly at small x as at large x. In real data that's rarely true. Spending varies more among high earners than low earners; prices vary more among big houses than small ones. When the spread changes with x, the residuals are <strong>heteroskedastic</strong>.</p>
+
+<div class="figure" id="fig-hsk">
+  <div class="figure-head"><div class="flabel">Figure 5.11</div><h4>Residuals against x: constant spread versus a fan</h4></div>
+  <div class="figure-body"><div class="chart-row"><div class="chart-wrap" id="hsk-homo"></div><div class="chart-wrap" id="hsk-hetero"></div></div></div>
+  <div class="figure-caption">A made-up illustration, 90 points each. Left: the spread of the residuals is constant. Right: it fans out as x grows. Our own 24 students are too few to show a pattern like this convincingly.</div>
+</div>
+
+<p>The visual check is the <strong>residual plot</strong>: residuals on the vertical axis against x (or against the fitted values). You want a shapeless horizontal band around zero. A fan or funnel is heteroskedasticity. A curve means the functional form is wrong &ndash; the straight line is missing a bend, and Parts Two to Ten apply.</p>
+
+<pre class="code-block">plt.scatter(model.fittedvalues, model.resid)
+plt.axhline(0, linestyle='--')
+plt.xlabel('Fitted values'); plt.ylabel('Residuals')
+plt.show()</pre>
+
+<p>Heteroskedasticity doesn't bias \(\hat\beta\). The line is still in the right place on average. What goes wrong is the standard error: the simple formula gets it wrong, usually too small, so intervals are too narrow and tests reject too often.</p>
+
+<h3>The fix costs nothing</h3>
+
+<p>In the 1980s Halbert White (building on Peter Huber) worked out <strong>heteroskedasticity-robust standard errors</strong>: a formula that's right whether or not the spread is constant. Same properties as before &ndash; smaller with small residuals, more spread in x, and more data &ndash; but no homoskedasticity needed. In <code>statsmodels</code> you ask for it inside <code>.fit()</code>:</p>
+
+<pre class="code-block">model_r = smf.ols('mean_rt ~ finger_mm', data=student_summary).fit(cov_type='HC1')</pre>
+
+<p>Every SE, t, p-value and interval in the output is then robust. The coefficients don't change at all &ndash; robust SEs only change how sure we are, never the estimate. On our data:</p>
+
+<table class="data-table">
+  <caption class="visually-hidden">Classical and robust results for the finger length slope</caption>
+  <thead><tr><th scope="col"></th><th scope="col">\(\hat\beta\)</th><th scope="col">SE</th><th scope="col">95% CI</th><th scope="col">p-value</th></tr></thead>
+  <tbody>
+    <tr><td>Classical</td><td>18.60</td><td>21.80</td><td>[&minus;26.6, 63.8]</td><td>0.403</td></tr>
+    <tr><td>Robust (HC1)</td><td>18.60</td><td>26.41</td><td>[&minus;33.2, 70.4]</td><td>0.481</td></tr>
+  </tbody>
+</table>
+
+<p>The robust SE is about 21% bigger, so the interval is wider. Here the story for HR is unchanged, since the interval included zero either way. On other data the bigger SE can push an interval across zero and turn a &ldquo;significant&rdquo; result into one that isn't. That's not the robust SE spoiling a finding; it's the robust SE stopping you from claiming one you didn't have.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Even though the cost of applying these standard errors is zero, most statistical software doesn't have this as default. So memorise this, because every regression you run from now will have it in.&rdquo;</p>
+</blockquote>
+
+<h3>Why bother?</h3>
+
+<p>A simulation makes the case. When the spread of the residuals fans out, classical 95% intervals contain the true slope only about 93% of the time, and adding more data doesn't fix it. Robust intervals get close to 95% as the sample grows. They are less reliable in very small samples, but with a reasonable amount of data, use them.</p>
+
+<details class="code-reveal">
+  <summary>Extension: a formal test for heteroskedasticity</summary>
+  <div class="code-reveal-body">
+    <p>The <strong>Breusch&ndash;Pagan test</strong> asks whether the size of the squared residuals is related to x. Its null is homoskedasticity, so a small p-value means the spread does change with x.</p>
+    <pre class="code-block">from statsmodels.stats.diagnostic import het_breuschpagan
+lm, lm_p, f, f_p = het_breuschpagan(model.resid, model.model.exog)
+lm_p      <span class="c"># 0.82 on our data</span></pre>
+    <p>On our data, p = 0.82: no evidence of heteroskedasticity. But don't use the test to decide whether to use robust SEs. With small samples it has little power, and robust SEs cost almost nothing when the spread is constant. Use them anyway.</p>
+  </div>
+</details>
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 9</p>
+</section>
+
+<section class="chapter" id="prediction">
+<div class="chapter-kicker">Part Eighteen</div>
+<h2>Confidence Intervals and Prediction Intervals</h2>
+
+<p>Often the point of a model is prediction: take a new x and say what y to expect. HR's screening tool is exactly that. There are two quite different questions you can ask about a prediction, and they need two different intervals.</p>
+
+<ul class="term-list">
+  <li><span class="term">Confidence interval for the predicted value</span><span>Where do we expect the <em>average</em> y to be, for everyone with this x? The only uncertainty is about \(\hat\alpha\) and \(\hat\beta\): where the line really is.</span></li>
+  <li><span class="term">Prediction interval</span><span>Where do we expect <em>one particular</em> y to land, for one new person with this x? Now add the fact that individuals scatter around their average.</span></li>
+</ul>
+
+<p>The formulas show the difference. For a new observation with \(x = x_j\):</p>
+
+<div class="formula-block">$$SE(\hat y_j) = Std[e]\sqrt{\frac{1}{n} + \frac{(x_j - \bar x)^2}{n\,Var[x]}}$$</div>
+<div class="formula-block">$$SPE(\hat y_j) = Std[e]\sqrt{1 + \frac{1}{n} + \frac{(x_j - \bar x)^2}{n\,Var[x]}}$$</div>
+
+<p>The <strong>standard prediction error</strong> (SPE) has an extra 1 inside the square root. That's the individual scatter, and it never goes away. As n grows, both \(\frac{1}{n}\) terms shrink towards zero, so the confidence interval narrows towards nothing &ndash; with enough data you'd know the average almost exactly. The prediction interval narrows too, but only down to about \(\pm 2 \times Std[e]\). No amount of data removes the fact that people differ. Both intervals are also narrowest at the average x and widen as you move away from it, which is the formula's way of saying that predicting far from the middle of your data is riskier.</p>
+
+<div class="figure" id="fig-bands">
+  <div class="figure-head"><div class="flabel">Figure 5.12 &middot; Interactive</div><h4>Both bands, on our own data</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Finger length</span><input type="range" id="band-x" min="60" max="110" step="1" value="80"><span class="val" id="band-x-v"></span></div>
+    </div>
+    <div class="chart-wrap" id="band-chart"></div>
+    <p id="band-read" style="text-align:center;font-family:var(--sans);font-size:0.9rem;margin:6px 0 0;"></p>
+  </div>
+  <div class="figure-caption">Red: 95% confidence interval for the regression line. Blue: 95% prediction interval for one new student. Intervals use the t critical value, as <code>statsmodels</code> does.</div>
+</div>
+
+<p>At 80mm, the predicted average is about 1,083ms, with a confidence interval of [704, 1,463]. For one new student with an 80mm finger, the prediction interval is <strong>[&minus;809, 2,976]</strong>. Its bottom end is a negative reaction time, which is impossible. That's a sign the straight line with normal errors is a poor description of these data, and also a fair summary of how little the model can say about any one candidate. HR could tell a new applicant almost nothing.</p>
+
+<pre class="code-block">new = pd.DataFrame({'finger_mm': [80]})
+model.get_prediction(new).summary_frame(alpha=0.05)
+<span class="c"># mean: the prediction; mean_ci_lower/upper: CI; obs_ci_lower/upper: prediction interval</span></pre>
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 9</p>
+</section>
+
+<section class="chapter" id="external">
+<div class="chapter-kicker">Part Nineteen</div>
+<h2>Beyond the Population: External Validity</h2>
+
+<p>Statistical inference takes us from our sample to the population it represents. Our 24 students might stand in for LJMU MSc students this year. But HR wants to screen candidates from anywhere, in future years, who might not look like us at all. Whether a result carries over to other times, places or groups is <strong>external validity</strong>, and no confidence interval can tell you about it. The interval is built entirely from our data, and external validity is about situations our data doesn't cover.</p>
+
+<p>The only way to learn about it is more data from those other situations. The textbook does this with the hotels: it re-fits the Vienna price&ndash;distance model on other dates. The slope within 2 miles of the centre is &minus;0.31 log points on a November weekday, &minus;0.36 in the December holidays, &minus;0.31 on a June weekend, and &minus;0.44 on a November weekend. Fairly stable, with the weekend the odd one out &ndash; and even there the intervals overlap. That's some evidence the pattern generalises across dates in Vienna. It says nothing about other cities.</p>
+
+<p>Two practical points. More data only helps with idiosyncrasies if it comes from the right place: if you're worried Vienna is unusual, more Vienna hotels won't help. And when you apply a model outside the data it came from, the real uncertainty is larger than any interval you've computed. Say so.</p>
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 9</p>
+</section>
+
+<section class="chapter" id="whole-output">
+<div class="chapter-kicker">Part Twenty</div>
+<h2>Reading the Whole Output</h2>
+
+<p>You can now read almost all of a regression summary. Here's ours in full:</p>
+
+<pre class="code-block" id="full-summary" style="font-size:0.7rem;"></pre>
+
+<ul class="term-list">
+  <li><span class="term">Top block</span><span>The dependent variable, the number of observations (24), and R&sup2; (0.032). Adj. R-squared, the F-statistic and AIC/BIC come in Weeks 6 and 10; Log-Likelihood in Week 8.</span></li>
+  <li><span class="term">Covariance Type</span><span><code>nonrobust</code> here. With <code>cov_type='HC1'</code> it says <code>HC1</code>. Check this line first: it tells you which standard errors you're reading.</span></li>
+  <li><span class="term">coef</span><span>\(\hat\alpha\) and \(\hat\beta\) (Chapter 4).</span></li>
+  <li><span class="term">std err</span><span>Their standard errors (Part Thirteen).</span></li>
+  <li><span class="term">t and P&gt;|t|</span><span>The test of each coefficient against zero (Part Fifteen).</span></li>
+  <li><span class="term">[0.025 0.975]</span><span>The 95% confidence interval (Part Fourteen).</span></li>
+  <li><span class="term">Bottom block</span><span>Residual diagnostics: skew, kurtosis and the normality tests (Part Sixteen), Durbin&ndash;Watson (Week 11) and the condition number (Week 6).</span></li>
+</ul>
+
+<p>For HR, the verdict is clear. The slope is small relative to its uncertainty, not significant at any conventional level under classical or robust SEs, driven largely by one student, and paired with residuals that are skewed and clustered. A prediction for any one new candidate could be anything from impossibly fast to very slow. We are not shipping this model.</p>
+</section>
+
+<section class="chapter" id="next">
+<div class="chapter-kicker">Part Twenty-One</div>
+<h2>What's Next</h2>
+
+<p>We've now taken one x variable as far as it goes: its shape, the extreme values and noise that can distort it, and how sure we can be about its slope. It still barely moves the needle, and there's a bigger problem we haven't touched. Even if the slope had been large and significant, we couldn't rule out a third variable driving both finger length and reaction time.</p>
+
+<p>Next week we add more variables to the model: <strong>multiple regression</strong>, and what &ldquo;controlling for&rdquo; something really means. That brings omitted variable bias, multicollinearity and interactions &ndash; and everything in this chapter carries straight over. Every coefficient will come with a standard error, a confidence interval and a p-value, and robust standard errors stay on by default.</p>
+</section>
+
+    </div>
+
+    <footer class="colophon">
+      <p><strong>About these notes.</strong> Written from the Week 5 workshop recording and slide decks for 7002LBSAI Research Methods in Analytics, Liverpool John Moores University. Quotations from the workshop are lightly edited from an automatic transcript. Class data are the Week 1 reaction-time trials, cleaned and anonymised, with Week 3's corrected finger lengths. Hotel data: <code>hotels-vienna</code>, filtered as in the textbook (207 hotels). Life expectancy: World Bank WDI, 2017. The salary, advertising, price, app-growth, QQ and homoskedasticity examples are simulated for illustration, as are the coverage simulations in Parts Sixteen and Seventeen. Textbook: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), <em>Data Analysis for Business, Economics, and Policy</em>, Chs. 8 and 9.</p>
+    </footer>
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+const STUDENTS = [{"s": "Student 1", "x": 80.0, "y": 1601.1, "typed": 80.0}, {"s": "Student 2", "x": 80.0, "y": 419.6, "typed": 80.0}, {"s": "Student 3", "x": 72.0, "y": 406.3, "typed": 72.0}, {"s": "Student 4", "x": 80.0, "y": 416.3, "typed": 80.0}, {"s": "Student 5", "x": 69.0, "y": 1081.1, "typed": 6.9}, {"s": "Student 6", "x": 95.0, "y": 3135.4, "typed": 95.0}, {"s": "Student 7", "x": 71.0, "y": 370.1, "typed": 71.0}, {"s": "Student 8", "x": 79.0, "y": 395.2, "typed": 79.0}, {"s": "Student 9", "x": 68.0, "y": 426.2, "typed": 68.0}, {"s": "Student 10", "x": 82.0, "y": 1867.3, "typed": 8.2}, {"s": "Student 11", "x": 80.0, "y": 1353.8, "typed": 80.0}, {"s": "Student 12", "x": 94.0, "y": 497.3, "typed": 94.0}, {"s": "Student 13", "x": 80.0, "y": 1314.5, "typed": 80.0}, {"s": "Student 14", "x": 90.0, "y": 1970.3, "typed": 900.0}, {"s": "Student 15", "x": 100.0, "y": 1101.1, "typed": 100.0}, {"s": "Student 16", "x": 80.0, "y": 1260.0, "typed": 80.0}, {"s": "Student 17", "x": 70.0, "y": 466.9, "typed": 7.0}, {"s": "Student 18", "x": 82.0, "y": 435.4, "typed": 82.0}, {"s": "Student 19", "x": 74.0, "y": 283.4, "typed": 74.0}, {"s": "Student 20", "x": 70.0, "y": 2339.3, "typed": 700.0}, {"s": "Student 21", "x": 80.0, "y": 386.1, "typed": 80.0}, {"s": "Student 22", "x": 76.0, "y": 373.5, "typed": 76.0}, {"s": "Student 23", "x": 70.0, "y": 3253.4, "typed": 70.0}, {"s": "Student 24", "x": 81.0, "y": 528.4, "typed": 81.0}];
+const SUMMARY_FULL = "                            OLS Regression Results                            \n==============================================================================\nDep. Variable:                mean_rt   R-squared:                       0.032\nModel:                            OLS   Adj. R-squared:                 -0.012\nMethod:                 Least Squares   F-statistic:                    0.7280\nDate:                Fri, 23 Oct 2026   Prob (F-statistic):              0.403\nTime:                        17:53:32   Log-Likelihood:                -196.10\nNo. Observations:                  24   AIC:                             396.2\nDf Residuals:                      22   BIC:                             398.6\nDf Model:                           1                                         \nCovariance Type:            nonrobust                                         \n==============================================================================\n                 coef    std err          t      P>|t|      [0.025      0.975]\n------------------------------------------------------------------------------\nIntercept   -404.9394   1738.324     -0.233      0.818   -4010.003    3200.124\nfinger_mm     18.6025     21.802      0.853      0.403     -26.612      63.817\n==============================================================================\nOmnibus:                        8.849   Durbin-Watson:                   2.437\nProb(Omnibus):                  0.012   Jarque-Bera (JB):                7.014\nSkew:                           1.273   Prob(JB):                       0.0300\nKurtosis:                       3.726   Cond. No.                         760.\n==============================================================================\n";
+const LOG_RESID = [0.6896, -0.6496, -0.5089, -0.6575, 0.5345, 1.0375, -0.5807, -0.6879, -0.3747, 0.8002, 0.5218, -0.7822, 0.4923, 0.681, -0.1169, 0.45, -0.3267, -0.6558, -0.9124, 1.2848, -0.7328, -0.6795, 1.6146, -0.4406];
+const LIN_RESID = [517.8, -663.7, -528.1, -667.0, 202.5, 1773.1, -545.7, -669.5, -433.8, 746.8, 270.5, -846.4, 231.2, 701.0, -354.2, 176.7, -430.3, -685.1, -688.2, 1442.1, -697.2, -635.4, 2356.2, -573.5];
+const LIN_FIT = [1083.3, 1083.3, 934.4, 1083.3, 878.6, 1362.3, 915.8, 1064.7, 860.0, 1120.5, 1083.3, 1343.7, 1083.3, 1269.3, 1455.3, 1083.3, 897.2, 1120.5, 971.6, 897.2, 1083.3, 1008.9, 897.2, 1101.9];
+const EX_LL = "==============================================================================\n                 coef    std err          t      P>|t|      [0.025      0.975]\n------------------------------------------------------------------------------\nIntercept     10.1826      0.031    330.461      0.000      10.122      10.243\nexperience     0.0338      0.002     15.976      0.000       0.030       0.038\n==============================================================================";
+const EX_LG = "====================================================================================\n                       coef    std err          t      P>|t|      [0.025      0.975]\n------------------------------------------------------------------------------------\nIntercept           42.7589      1.998     21.398      0.000      38.759      46.759\nnp.log(ad_spend)    14.4792      0.807     17.935      0.000      12.863      16.095\n====================================================================================";
+const EX_GG = "=================================================================================\n                    coef    std err          t      P>|t|      [0.025      0.975]\n---------------------------------------------------------------------------------\nIntercept         7.9570      0.072    110.441      0.000       7.814       8.100\nnp.log(price)    -1.2601      0.053    -23.910      0.000      -1.365      -1.156\n=================================================================================";
+const GROWTH = [[1, 540], [2, 634], [3, 668], [4, 721], [5, 836], [6, 721], [7, 815], [8, 833], [9, 991], [10, 1170], [11, 1164], [12, 1311], [13, 1168], [14, 1487], [15, 1476], [16, 1976], [17, 1987], [18, 2157], [19, 2149], [20, 2449], [21, 2655], [22, 2647], [23, 2824], [24, 3145], [25, 3266], [26, 3530], [27, 3909], [28, 4074], [29, 4959], [30, 4433], [31, 5811], [32, 5589], [33, 6075], [34, 6152], [35, 7318], [36, 7838]];
+const QQ_NORM = [0.001, 0.299, -0.274, -0.891, -0.455, -0.992, 0.06, 1.34, -0.492, -0.62, 0.49, 0.357, 0.105, -0.93, -0.029, 0.695, -1.344, -0.458, -1.901, -1.29, -1.842, -0.235, -1.267, 0.271];
+const QQ_SKEW = [1.152, 0.845, 0.104, 0.616, 0.957, 1.107, 0.252, 0.651, 0.415, 0.483, 2.598, 0.483, 0.971, 2.217, 0.591, 0.904, 1.105, 1.059, 0.332, 1.071, 3.397, 0.248, 2.167, 1.113];
+const HSK = [[2.49, 0.46, 1.51], [4.5, -1.81, 0.2], [4.11, 0.35, 0.09], [2.6, 0.11, 0.86], [8.7, -0.35, -8.25], [1.85, 1.03, 1.6], [0.2, 1.12, -0.46], [9.53, -0.51, -0.7], [6.8, 1.91, 1.59], [4.87, -1.28, -0.33], [9.65, 2.53, 4.68], [3.93, -1.31, 3.48], [0.8, 1.78, 0.03], [3.51, -1.31, 1.13], [1.64, 0.73, 0.53], [9.83, 1.13, 4.56], [8.81, -0.74, 0.0], [4.94, 0.98, -0.3], [4.01, -1.08, -0.45], [4.51, -0.58, 0.2], [7.21, 0.28, 2.87], [2.48, 0.23, -1.34], [6.23, 0.64, 1.94], [1.42, 0.82, -0.14], [2.01, 3.39, -0.34], [0.81, 1.1, -1.1], [9.53, 0.18, -3.62], [0.56, 0.02, 0.51], [6.0, 0.01, -1.53], [7.23, 0.39, 4.27], [9.7, -0.7, -3.76], [8.22, 2.1, -4.59], [5.28, 0.37, 0.46], [3.31, -1.07, -1.65], [3.54, -0.92, 0.68], [0.79, 1.04, 0.58], [5.56, 0.45, 0.98], [1.66, -0.75, -0.02], [2.95, -1.11, -1.38], [8.41, -1.08, 1.58], [3.63, 0.49, 0.74], [3.41, -0.41, -0.45], [7.1, -1.99, -0.53], [0.32, 0.54, -0.26], [4.72, -3.11, 0.38], [7.32, -0.89, 0.12], [7.73, 1.82, -0.68], [2.41, 0.9, 0.49], [3.06, -2.72, 0.83], [1.37, -0.91, 0.28], [5.96, -1.15, 0.14], [1.63, 1.11, -0.21], [8.02, 0.38, 2.73], [5.0, 1.61, 0.12], [0.59, 0.81, 0.57], [3.92, 0.71, 0.99], [6.2, -1.34, 4.33], [1.88, -0.66, 0.01], [4.28, -0.65, -0.05], [0.89, -1.76, 0.31], [7.33, 1.59, 1.21], [3.93, 0.41, 0.07], [3.44, -2.32, 0.25], [3.97, 1.09, 1.26], [0.17, -1.13, 0.04], [4.68, 0.85, -2.52], [8.93, -0.8, -2.81], [1.62, -1.4, 1.38], [8.44, -1.49, -1.96], [2.75, -2.04, -0.12], [7.69, -0.98, -0.77], [8.34, -2.22, -0.85], [9.01, 0.48, 0.08], [9.72, -1.14, 4.14], [4.29, -0.42, 0.16], [6.86, 0.33, -1.07], [3.26, -1.66, 0.18], [7.97, -2.13, 1.89], [4.35, 2.02, -2.9], [5.1, -2.32, 3.53], [7.63, -1.17, -3.69], [1.74, 0.46, 0.29], [4.52, 0.42, 2.78], [8.98, -0.54, 3.27], [6.89, -1.63, 3.36], [2.86, 1.43, 0.94], [4.21, 0.69, -0.5], [5.68, -0.12, 5.06], [9.68, -0.19, 13.77], [5.61, 1.07, 1.93]];
+const HOTELS = [[21897, 1.7, 81, 3.9, 189, 4.0], [21901, 1.4, 85, 3.7, 53, 4.0], [21902, 1.7, 83, 4.0, 55, 3.0], [21903, 1.2, 82, 3.9, 33, 4.0], [21906, 0.9, 103, 3.9, 57, 4.0], [21907, 1.0, 150, 4.6, 161, 4.0], [21912, 1.1, 60, 4.1, 203, 4.0], [21913, 0.8, 128, 4.0, 251, 4.0], [21917, 1.7, 85, 4.1, 18, 4.0], [21918, 0.9, 77, 3.7, 20, 3.0], [21919, 0.8, 78, 3.9, 77, 3.0], [21920, 0.9, 78, 4.0, 76, 3.0], [21924, 4.2, 77, 3.9, 77, 3.0], [21925, 3.9, 77, 2.7, 193, 3.0], [21926, 3.6, 95, 4.3, 94, 4.0], [21930, 2.9, 208, 4.1, 178, 4.0], [21933, 3.4, 87, 3.7, 330, 3.0], [21935, 2.0, 54, 3.5, 194, 3.0], [21940, 1.7, 99, 4.4, 441, 3.5], [21941, 1.7, 75, 4.4, 1122, 3.5], [21943, 2.1, 76, 4.4, 362, 3.0], [21946, 1.9, 91, 4.5, 525, 4.0], [21959, 1.7, 71, 4.0, 821, 4.0], [21965, 0.2, 113, 4.4, 77, 3.0], [21968, 0.3, 156, 4.5, 184, 3.0], [21970, 0.3, 133, 4.3, 319, 4.0], [21971, 0.5, 123, 4.1, 73, 4.0], [21972, 0.3, 219, 4.5, 81, 4.0], [21973, 0.3, 152, 4.3, 271, 4.0], [21975, 0.1, 115, 4.3, 211, 4.0], [21977, 0.2, 138, 4.5, 316, 4.0], [21980, 0.1, 146, 4.4, 336, 4.0], [21984, 0.5, 98, 3.7, 88, 3.0], [21985, 0.3, 121, 4.5, 140, 3.5], [21986, 0.2, 149, 4.0, 391, 4.0], [21987, 0.3, 120, 3.9, 320, 3.0], [21988, 0.4, 157, 4.4, 21, 3.0], [21995, 0.2, 112, 4.0, 505, 4.0], [21996, 0.3, 138, 4.3, 386, 4.0], [22009, 0.3, 158, 4.3, 47, 3.0], [22011, 0.2, 218, 4.6, 124, 4.0], [22012, 0.1, 218, 4.5, 115, 4.0], [22013, 0.3, 135, 3.9, 110, 3.0], [22016, 0.5, 179, 4.4, 467, 4.0], [22018, 0.7, 157, 4.5, 650, 4.0], [22019, 0.3, 146, 4.5, 95, 4.0], [22021, 0.1, 157, 4.1, 168, 4.0], [22023, 0.3, 108, 3.5, 175, 3.0], [22026, 0.8, 127, 4.0, 426, 4.0], [22028, 0.4, 163, 4.1, 148, 4.0], [22031, 0.1, 231, 4.4, 56, 4.0], [22032, 0.4, 116, 4.4, 247, 4.0], [22037, 0.6, 166, 4.3, 703, 4.0], [22042, 0.3, 169, 4.5, 81, 4.0], [22050, 0.0, 242, 4.8, 404, 4.0], [22051, 0.5, 223, 3.5, 123, 4.0], [22052, 0.3, 149, 4.4, 653, 4.0], [22054, 0.5, 114, 4.0, 388, 4.0], [22061, 0.2, 139, 3.5, 34, 4.0], [22064, 1.4, 79, 3.5, 102, 3.0], [22071, 0.9, 110, 4.1, 354, 3.0], [22072, 0.9, 88, 4.4, 92, 3.0], [22075, 1.6, 59, 3.9, 128, 3.0], [22076, 0.9, 119, 4.0, 530, 4.0], [22077, 0.9, 152, 4.3, 342, 4.0], [22078, 1.0, 102, 4.0, 194, 4.0], [22080, 1.1, 54, 3.2, 63, 3.0], [22084, 1.0, 94, 4.1, 169, 3.0], [22088, 0.9, 115, 4.5, 765, 4.0], [22090, 0.9, 68, 3.7, 43, 3.0], [22093, 0.2, 153, 4.1, 184, 4.0], [22095, 0.3, 169, 4.1, 313, 4.0], [22097, 0.5, 182, 4.5, 323, 4.0], [22101, 0.1, 142, 4.4, 512, 4.0], [22104, 0.6, 110, 4.3, 340, 4.0], [22117, 1.4, 82, 4.0, 181, 4.0], [22118, 1.7, 82, 4.1, 359, 4.0], [22119, 1.8, 66, 3.9, 160, 3.0], [22120, 0.8, 169, 4.1, 303, 4.0], [22123, 1.5, 109, 4.1, 173, 4.0], [22125, 0.7, 104, 3.4, 114, 3.0], [22126, 0.9, 145, 4.3, 249, 3.5], [22130, 0.8, 85, 3.5, 13, 3.0], [22136, 1.3, 110, 3.7, 109, 3.0], [22138, 0.6, 134, 4.3, 171, 4.0], [22140, 1.3, 79, 3.7, 79, 4.0], [22142, 1.0, 132, 4.1, 281, 4.0], [22144, 0.6, 128, 4.1, 267, 4.0], [22145, 1.5, 99, 4.5, 183, 3.0], [22149, 1.8, 86, 4.0, 136, 4.0], [22152, 1.0, 63, 3.4, 242, 3.0], [22155, 0.6, 134, 4.0, 16, 3.5], [22157, 0.9, 79, 3.7, 122, 3.0], [22158, 0.5, 138, 4.0, 250, 4.0], [22159, 1.0, 113, 4.5, 603, 4.0], [22162, 1.5, 84, 3.9, 152, 3.0], [22165, 0.9, 68, 4.0, 84, 3.0], [22166, 1.5, 102, 3.9, 208, 3.5], [22169, 1.6, 82, 4.1, 267, 3.0], [22170, 1.1, 66, 4.0, 275, 3.0], [22176, 0.8, 113, 4.5, 374, 3.0], [22177, 1.0, 106, 4.5, 468, 3.0], [22179, 1.6, 89, 4.1, 422, 3.0], [22182, 0.8, 106, 4.1, 527, 4.0], [22183, 0.8, 100, 4.0, 637, 4.0], [22184, 0.7, 75, 4.1, 461, 3.0], [22185, 0.8, 84, 2.2, 3, 3.0], [22187, 0.5, 151, 4.6, 104, 4.0], [22188, 0.9, 87, 3.5, 90, 3.0], [22189, 0.5, 117, 4.4, 75, 4.0], [22190, 1.9, 120, 4.5, 139, 4.0], [22193, 1.9, 383, 4.0, 122, 3.0], [22198, 1.5, 174, 4.3, 144, 4.0], [22199, 2.0, 63, 3.5, 80, 3.0], [22201, 1.5, 100, 4.5, 58, 3.5], [22203, 1.4, 86, 3.9, 303, 4.0], [22205, 1.8, 67, 4.0, 82, 3.0], [22206, 1.3, 129, 4.1, 248, 4.0], [22212, 1.3, 86, 4.0, 85, 3.0], [22214, 0.7, 131, 4.1, 258, 4.0], [22218, 1.4, 80, 3.9, 44, 3.0], [22219, 1.1, 93, 4.0, 125, 4.0], [22222, 1.9, 77, 4.0, 161, 3.0], [22223, 0.8, 140, 4.8, 210, 4.0], [22224, 1.0, 99, 4.0, 264, 4.0], [22226, 1.4, 105, 4.4, 162, 4.0], [22227, 1.7, 100, 4.5, 581, 3.5], [22229, 1.1, 82, 3.9, 39, 3.0], [22230, 1.8, 82, 3.9, 484, 4.0], [22235, 1.9, 87, 3.5, 45, 4.0], [22236, 1.6, 100, 3.7, 98, 4.0], [22237, 1.6, 84, 4.3, 239, 4.0], [22239, 0.8, 98, 3.7, 100, 4.0], [22241, 1.8, 99, 4.1, 305, 3.0], [22246, 1.6, 76, 3.5, 141, 3.0], [22248, 0.8, 113, 3.7, 6, 3.0], [22249, 0.9, 110, 4.4, 328, 4.0], [22250, 1.0, 184, 4.6, 123, 4.0], [22253, 1.7, 99, 4.1, 308, 4.0], [22254, 0.8, 122, 3.9, 54, 3.0], [22255, 1.7, 122, 4.3, 544, 4.0], [22256, 1.7, 105, 4.0, 359, 4.0], [22259, 1.4, 109, 4.0, 98, 4.0], [22260, 1.2, 105, 4.1, 54, 3.0], [22268, 3.1, 52, 3.5, 69, 3.0], [22271, 4.1, 80, 4.0, 83, 4.0], [22275, 1.8, 70, 3.9, 136, 4.0], [22277, 1.9, 136, 4.5, 156, 3.0], [22279, 2.1, 80, 4.1, 81, 3.0], [22281, 2.4, 81, 4.1, 54, 3.0], [22285, 3.6, 66, 3.7, 225, 4.0], [22286, 2.8, 77, 4.0, 144, 3.0], [22288, 2.1, 69, 3.7, 525, 4.0], [22289, 2.1, 83, 4.1, 113, 3.0], [22293, 1.8, 77, 3.9, 78, 4.0], [22296, 1.7, 121, 3.9, 134, 4.0], [22299, 3.6, 68, 3.5, 38, 3.0], [22300, 2.0, 63, 3.7, 65, 3.0], [22301, 2.1, 101, 4.5, 92, 3.0], [22302, 2.6, 75, 3.7, 100, 4.0], [22303, 3.6, 156, 4.3, 910, 4.0], [22304, 3.7, 56, 3.5, 79, 3.0], [22306, 2.4, 82, 4.5, 1541, 3.5], [22307, 2.6, 82, 4.4, 183, 4.0], [22309, 4.1, 106, 3.7, 30, 3.0], [22310, 3.1, 85, 2.7, 24, 3.0], [22311, 2.6, 83, 4.5, 18, 3.5], [22312, 2.9, 92, 4.1, 140, 4.0], [22328, 2.0, 117, 4.0, 124, 4.0], [22331, 3.9, 66, 3.7, 33, 3.0], [22334, 3.7, 81, 4.1, 21, 3.5], [22335, 3.5, 109, 4.0, 160, 4.0], [22340, 3.1, 97, 4.0, 72, 4.0], [22341, 4.8, 74, 3.9, 65, 4.0], [22342, 3.7, 69, 3.7, 147, 4.0], [22343, 3.9, 83, 4.0, 45, 4.0], [22344, 3.9, 50, 3.9, 50, 3.0], [22348, 3.7, 77, 4.0, 26, 3.0], [22349, 5.3, 102, 4.0, 28, 3.0], [22353, 6.6, 130, 4.4, 12, 3.0], [22354, 3.2, 78, 4.3, 171, 3.0], [22355, 3.3, 76, 3.7, 34, 3.0], [22356, 4.5, 68, 4.0, 69, 4.0], [22358, 2.7, 116, 4.0, 84, 4.0], [22359, 2.2, 172, 4.1, 212, 4.0], [22362, 2.4, 87, 4.0, 12, 3.0], [22363, 4.6, 90, 3.0, 89, 3.0], [22364, 2.7, 100, 4.4, 74, 3.5], [22380, 1.9, 84, 4.4, 186, 3.0], [22382, 2.1, 185, 4.4, 45, 4.0], [22384, 3.0, 85, 4.0, 168, 4.0], [22386, 1.6, 110, 4.5, 77, 3.5], [22387, 1.6, 86, 4.3, 72, 3.0], [22388, 1.0, 118, 4.1, 158, 4.0], [22389, 0.9, 126, 4.5, 15, 3.5], [22390, 1.3, 92, 4.3, 291, 3.0], [22391, 0.8, 197, 4.8, 317, 4.0], [22394, 1.2, 135, 4.5, 280, 4.0], [22395, 1.2, 125, 4.4, 47, 4.0], [22397, 0.8, 134, 4.5, 125, 4.0], [22398, 0.9, 91, 3.5, 34, 3.0], [22399, 0.8, 110, 3.9, 112, 3.0], [22401, 1.2, 100, 4.0, 77, 3.0], [22402, 1.5, 95, 4.1, 572, 4.0], [22403, 1.5, 73, 3.4, 53, 3.0], [22407, 1.0, 100, 4.4, 112, 4.0], [22408, 1.4, 58, 3.2, 169, 3.0]];
+const LIFE = [["Afghanistan", 1.76, 64.05], ["Albania", 11.8, 78.5], ["Algeria", 13.88, 76.29], ["Angola", 6.04, 61.81], ["Antigua and Barbuda", 22.86, 76.52], ["Argentina", 18.95, 76.74], ["Armenia", 8.74, 74.78], ["Aruba", 35.86, 76.01], ["Australia", 44.89, 82.5], ["Austria", 45.49, 81.64], ["Azerbaijan", 15.93, 72.12], ["Bahamas, The", 28.71, 75.82], ["Bahrain", 43.32, 77.04], ["Bangladesh", 3.63, 72.81], ["Barbados", 16.84, 76.06], ["Belarus", 17.19, 74.13], ["Belgium", 42.78, 81.44], ["Belize", 7.73, 70.59], ["Benin", 2.07, 61.17], ["Bhutan", 9.25, 70.56], ["Bolivia", 6.8, 69.47], ["Bosnia and Herzegovina", 12.27, 77.09], ["Botswana", 16.17, 67.62], ["Brazil", 14.24, 75.72], ["Brunei Darussalam", 72.52, 77.37], ["Bulgaria", 18.61, 74.81], ["Burkina Faso", 1.7, 60.77], ["Burundi", 0.67, 57.86], ["Cabo Verde", 6.39, 73.0], ["Cambodia", 3.65, 69.33], ["Cameroon", 3.31, 58.58], ["Canada", 43.85, 82.47], ["Central African Republic", 0.75, 52.89], ["Chad", 1.75, 53.21], ["Chile", 22.3, 79.73], ["China", 15.25, 76.41], ["Colombia", 13.19, 74.56], ["Comoros", 2.5, 63.91], ["Congo, Dem. Rep.", 0.81, 60.03], ["Congo, Rep.", 5.1, 65.09], ["Costa Rica", 15.43, 80.03], ["Cote d'Ivoire", 3.56, 54.1], ["Croatia", 22.83, 77.83], ["Curacao", 25.11, 78.02], ["Cyprus", 33.05, 80.67], ["Czech Republic", 32.57, 79.48], ["Denmark", 47.27, 81.0], ["Dominican Republic", 14.95, 74.05], ["Ecuador", 10.45, 76.55], ["Egypt, Arab Rep.", 10.67, 71.66], ["El Salvador", 7.25, 73.75], ["Equatorial Guinea", 22.3, 57.94], ["Estonia", 29.92, 77.64], ["Eswatini", 9.57, 58.27], ["Ethiopia", 1.72, 65.87], ["Fiji", 9.38, 70.42], ["Finland", 41.02, 81.43], ["France", 38.96, 82.52], ["Gabon", 16.14, 66.48], ["Gambia, The", 1.47, 61.42], ["Georgia", 9.7, 73.44], ["Germany", 45.46, 80.99], ["Ghana", 4.05, 63.03], ["Greece", 24.6, 81.39], ["Grenada", 13.4, 73.78], ["Guatemala", 7.42, 73.65], ["Guinea", 2.21, 60.62], ["Guinea-Bissau", 1.58, 57.8], ["Guyana", 7.4, 66.77], ["Haiti", 1.65, 63.59], ["Honduras", 4.47, 73.77], ["Hong Kong SAR, China", 56.09, 84.68], ["Hungary", 26.86, 76.06], ["Iceland", 47.84, 82.2], ["India", 6.52, 68.8], ["Indonesia", 11.16, 69.36], ["Iran, Islamic Rep.", 19.1, 76.15], ["Iraq", 15.83, 70.04], ["Ireland", 66.6, 81.96], ["Israel", 33.22, 82.6], ["Italy", 35.37, 83.24], ["Jamaica", 8.15, 76.1], ["Japan", 38.91, 84.1], ["Jordan", 8.3, 74.48], ["Kazakhstan", 24.08, 72.95], ["Kenya", 2.96, 67.29], ["Kiribati", 2.03, 66.51], ["Korea, Rep.", 35.94, 82.63], ["Kosovo", 9.78, 71.95], ["Kuwait", 66.01, 74.81], ["Kyrgyz Republic", 3.39, 71.2], ["Lao PDR", 6.31, 67.02], ["Latvia", 25.03, 74.68], ["Lebanon", 11.65, 79.76], ["Lesotho", 2.85, 54.57], ["Liberia", 1.18, 63.01], ["Libya", 17.32, 72.11], ["Lithuania", 29.6, 74.67], ["Luxembourg", 93.1, 82.69], ["Macao SAR, China", 105.45, 83.99], ["Madagascar", 1.42, 66.31], ["Malawi", 1.15, 63.67], ["Malaysia", 27.27, 75.45], ["Maldives", 13.33, 77.65], ["Mali", 2.02, 58.46], ["Malta", 36.99, 82.45], ["Mauritania", 3.7, 63.38], ["Mauritius", 20.32, 74.51], ["Mexico", 17.95, 77.31], ["Micronesia, Fed. Sts.", 3.19, 69.32], ["Moldova", 6.23, 71.72], ["Mongolia", 11.62, 69.47], ["Montenegro", 16.48, 77.27], ["Morocco", 7.51, 76.06], ["Mozambique", 1.18, 58.87], ["Myanmar", 5.61, 66.74], ["Namibia", 10.09, 64.85], ["Nepal", 2.61, 70.6], ["Netherlands", 48.79, 81.56], ["New Zealand", 36.05, 81.66], ["Nicaragua", 5.17, 75.65], ["Niger", 0.92, 60.42], ["Nigeria", 5.35, 53.88], ["North Macedonia", 13.14, 75.85], ["Norway", 64.97, 82.51], ["Oman", 37.33, 77.26], ["Pakistan", 4.77, 66.63], ["Panama", 22.24, 78.19], ["Papua New Guinea", 3.88, 65.7], ["Paraguay", 11.79, 73.21], ["Peru", 12.52, 75.22], ["Philippines", 7.58, 69.24], ["Poland", 27.35, 77.85], ["Portugal", 28.03, 81.12], ["Puerto Rico", 35.45, 79.97], ["Qatar", 113.26, 78.33], ["Romania", 23.44, 75.31], ["Russian Federation", 24.79, 72.12], ["Rwanda", 1.89, 67.5], ["Samoa", 6.07, 75.24], ["Sao Tome and Principe", 3.01, 66.76], ["Saudi Arabia", 48.8, 74.72], ["Senegal", 3.23, 67.48], ["Serbia", 15.29, 76.09], ["Seychelles", 26.42, 74.3], ["Sierra Leone", 1.4, 52.21], ["Singapore", 87.76, 82.9], ["Slovak Republic", 30.13, 77.17], ["Slovenia", 31.35, 81.18], ["Solomon Islands", 2.13, 71.01], ["South Africa", 12.23, 63.4], ["Spain", 34.27, 83.33], ["Sri Lanka", 11.71, 75.48], ["St. Lucia", 12.33, 75.7], ["St. Vincent and the Grenadines", 10.7, 73.29], ["Sudan", 4.44, 64.7], ["Suriname", 13.64, 71.52], ["Sweden", 46.68, 82.31], ["Switzerland", 58.0, 83.6], ["Tajikistan", 2.92, 71.21], ["Tanzania", 2.81, 66.31], ["Thailand", 16.29, 75.5], ["Timor-Leste", 6.74, 69.2], ["Togo", 1.53, 60.48], ["Tonga", 5.75, 73.18], ["Trinidad and Tobago", 28.57, 70.78], ["Tunisia", 10.95, 75.94], ["Turkey", 25.02, 76.01], ["Turkmenistan", 16.39, 67.96], ["Uganda", 1.77, 60.18], ["Ukraine", 7.91, 71.78], ["United Arab Emirates", 66.68, 77.41], ["United Kingdom", 39.86, 81.16], ["United States", 54.47, 78.54], ["Uruguay", 20.66, 77.64], ["Uzbekistan", 6.04, 71.42], ["Vanuatu", 2.83, 72.33], ["Vietnam", 6.23, 76.45], ["West Bank and Gaza", 4.65, 73.65], ["Yemen, Rep.", 2.4, 65.16], ["Zambia", 3.72, 62.26], ["Zimbabwe", 2.57, 61.71]];
+  const plotStyle = () => ({ color: 'var(--ink-soft)', fontFamily: "'Public Sans', sans-serif", fontSize: '12px' });
+  const BLUE = '#457b9d', RED = '#e63946', GREEN = '#2d6a4f', NAVY = 'var(--ink)', GREY = '#9aa0ad';
+  const MINUS = '\u2212';
+  function fmtS(v, d) { const s = Math.abs(v).toLocaleString('en-GB', { minimumFractionDigits: d, maximumFractionDigits: d }); return v < 0 ? MINUS + s : s; }
+
+  function accessibleChart(node, label) {
+    node.setAttribute('aria-hidden', 'true');
+    const wrap = document.createElement('div');
+    wrap.setAttribute('role', 'img');
+    wrap.setAttribute('aria-label', label);
+    wrap.appendChild(node);
+    return wrap;
+  }
+  function mount(id, node) { const el = document.getElementById(id); el.innerHTML = ''; el.appendChild(node); }
+  function width(id, max) { const el = document.getElementById(id); return Math.max(260, Math.min(max, (el && el.clientWidth) || max)); }
+  function chartLabel(t) {
+    const el = document.createElement('div');
+    el.textContent = t;
+    el.style.cssText = 'font-family:var(--sans);font-weight:600;font-size:13px;color:var(--ink);text-align:center;margin:0 0 4px;';
+    return el;
+  }
+  function withLabel(t, node) { const d = document.createElement('div'); d.appendChild(chartLabel(t)); d.appendChild(node); return d; }
+
+  /* ---------- least squares: solve (X'X) b = X'y ---------- */
+  function lstsq(X, y) {
+    const k = X[0].length;
+    const A = Array.from({ length: k }, () => new Array(k + 1).fill(0));
+    X.forEach((row, i) => {
+      for (let a = 0; a < k; a++) {
+        for (let b = 0; b < k; b++) A[a][b] += row[a] * row[b];
+        A[a][k] += row[a] * y[i];
+      }
+    });
+    for (let c = 0; c < k; c++) {
+      let p = c;
+      for (let r = c + 1; r < k; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r;
+      [A[c], A[p]] = [A[p], A[c]];
+      for (let r = 0; r < k; r++) {
+        if (r === c) continue;
+        const f = A[r][c] / A[c][c];
+        for (let j = c; j <= k; j++) A[r][j] -= f * A[c][j];
+      }
+    }
+    const beta = A.map((row, i) => row[k] / row[i]);
+    const fit = X.map(row => d3.sum(row.map((v, j) => v * beta[j])));
+    const my = d3.mean(y);
+    const r2 = 1 - d3.sum(y.map((v, i) => (v - fit[i]) ** 2)) / d3.sum(y.map(v => (v - my) ** 2));
+    return { beta, fit, r2 };
+  }
+  const ols1 = (xs, ys) => lstsq(xs.map(x => [1, x]), ys);
+
+  /* ---------- seeded normal draws ---------- */
+  function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function normalGen(seed) { const r = mulberry32(seed); return () => { const u = 1 - r(), v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }; }
+
+  /* ---------- inverse normal (Acklam) ---------- */
+  function qnorm(p) {
+    const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239];
+    const b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572];
+    const c = [-0.007784894002430293, -0.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783];
+    const d = [0.007784695709041462, 0.3224671290700398, 2.445134137142996, 3.754408661907416];
+    const pl = 0.02425;
+    if (p < pl) { const q = Math.sqrt(-2 * Math.log(p)); return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); }
+    if (p > 1 - pl) { const q = Math.sqrt(-2 * Math.log(1 - p)); return -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); }
+    const q = p - 0.5, r = q * q;
+    return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+  }
+
+  const XLAB = 'Finger length (mm)', YLAB = 'Mean reaction time (ms)';
+  const SX = STUDENTS.map(d => d.x), SY = STUDENTS.map(d => d.y);
+  const BASE = ols1(SX, SY);
+
+  /* ---------- static output blocks ---------- */
+  document.getElementById('ex-ll').textContent = EX_LL;
+  document.getElementById('ex-lg').textContent = EX_LG;
+  document.getElementById('ex-gg').textContent = EX_GG;
+  document.getElementById('full-summary').textContent = SUMMARY_FULL;
+  document.getElementById('top-summary').textContent = SUMMARY_FULL.split('\nOmnibus')[0].replace(/\n=+\s*$/, '');
+
+  /* ---------- Figure 5.1: growth ---------- */
+  function renderGrowth() {
+    const rows = GROWTH.map(([m, u]) => ({ m, u, lu: Math.log(u) }));
+    const w = Math.min(width('growth-raw', 340), 340);
+    const mk = (key, lab, col) => {
+      const f = ols1(rows.map(d => d.m), rows.map(d => d[key]));
+      const line = [1, 36].map(m => ({ m, v: f.beta[0] + f.beta[1] * m }));
+      return Plot.plot({ width: w, height: 260, marginLeft: 56, style: plotStyle(),
+        x: { label: 'Month', grid: true }, y: { label: lab, grid: true },
+        marks: [Plot.dot(rows, { x: 'm', y: key, fill: col, r: 3, fillOpacity: 0.75 }),
+                Plot.line(line, { x: 'm', y: 'v', stroke: RED, strokeWidth: 2.2 })] });
+    };
+    mount('growth-raw', accessibleChart(withLabel('Raw users: R\u00b2 = 0.89', mk('u', 'Users', NAVY)), 'Monthly users rising faster and faster over 36 months; a straight line misses the curve.'));
+    mount('growth-log', accessibleChart(withLabel('ln(users): R\u00b2 = 0.99', mk('lu', 'ln(users)', BLUE)), 'Log of monthly users against month: the points lie almost exactly on a straight line.'));
+  }
+
+  /* ---------- Figure 5.2: life expectancy ---------- */
+  const LROWS = LIFE.map(([c, g, l]) => ({ c, g, lg: Math.log(g), l }));
+  function renderLife() {
+    const mode = document.querySelector('input[name="lifex"]:checked').value;
+    const quad = false;
+    const key = mode === 'log' ? 'lg' : 'g';
+    const xs = LROWS.map(d => d[key]), ys = LROWS.map(d => d.l);
+    const f = lstsq(xs.map(x => quad ? [1, x, x * x] : [1, x]), ys);
+    const [x0, x1] = d3.extent(xs);
+    const curve = d3.range(x0, x1 + 1e-9, (x1 - x0) / 120).map(x => ({ x, v: f.beta[0] + f.beta[1] * x + (quad ? f.beta[2] * x * x : 0) }));
+    const svg = Plot.plot({ width: width('life-chart', 640), height: 340, marginLeft: 56, style: plotStyle(),
+      x: { label: mode === 'log' ? 'ln(GDP per capita, $000s)' : 'GDP per capita ($000s)', grid: true },
+      y: { label: 'Life expectancy (years)', grid: true },
+      marks: [Plot.dot(LROWS, { x: key, y: 'l', fill: mode === 'log' ? BLUE : NAVY, r: 3, fillOpacity: 0.6, title: d => d.c, tip: true }),
+              Plot.line(curve, { x: 'x', y: 'v', stroke: RED, strokeWidth: 2.4 })] });
+    mount('life-chart', accessibleChart(svg, `Life expectancy against ${mode === 'log' ? 'log' : 'raw'} GDP per capita for 182 countries, with a ${quad ? 'quadratic' : 'straight-line'} fit. R squared ${f.r2.toFixed(3)}.`));
+    document.getElementById('life-r2').innerHTML = `${quad ? 'Quadratic' : 'Straight line'} in ${mode === 'log' ? 'ln(GDP per capita)' : 'GDP per capita'}: R\u00b2 = <strong>${f.r2.toFixed(3)}</strong>`;
+  }
+  document.querySelectorAll('input[name="lifex"]').forEach(el => el.addEventListener('change', renderLife));
+  
+
+  /* ---------- Figure 5.3: quadratic tool ---------- */
+  const qa = document.getElementById('q-a'), qb1 = document.getElementById('q-b1'), qb2 = document.getElementById('q-b2');
+  function renderQuad() {
+    const a = +qa.value, b1 = +qb1.value, b2 = +qb2.value;
+    document.getElementById('q-a-v').textContent = fmtS(a, 0);
+    document.getElementById('q-b1-v').textContent = fmtS(b1, 1);
+    document.getElementById('q-b2-v').textContent = fmtS(b2, 2);
+    const f = x => a + b1 * x + b2 * x * x;
+    const pts = d3.range(-10, 10.001, 0.1).map(x => ({ x, y: f(x) }));
+    const turn = b2 !== 0 ? -b1 / (2 * b2) : null;
+    const shape = b2 > 0 ? 'U-shaped (convex)' : b2 < 0 ? 'upside-down U (concave)' : 'a straight line';
+    const svg = Plot.plot({ width: width('quad-chart', 640), height: 320, marginLeft: 46, style: plotStyle(), clip: true,
+      x: { label: 'x', domain: [-10, 10], grid: true }, y: { label: 'y', domain: [-60, 60], grid: true },
+      marks: [Plot.ruleX([0], { stroke: GREY }), Plot.ruleY([0], { stroke: GREY }),
+              Plot.line(pts, { x: 'x', y: 'y', stroke: RED, strokeWidth: 3 }),
+              Plot.dot([{ x: 0, y: a }], { x: 'x', y: 'y', fill: BLUE, r: 5 }),
+              turn !== null && Math.abs(turn) <= 10 ? Plot.dot([{ x: turn, y: f(turn) }], { x: 'x', y: 'y', fill: NAVY, r: 6 }) : null] });
+    mount('quad-chart', accessibleChart(svg, `A quadratic curve with alpha ${a}, beta one ${b1}, beta two ${b2}. It is ${shape}.`));
+    document.getElementById('quad-read').innerHTML = `Shape: <strong>${shape}</strong>` +
+      (turn !== null ? ` &middot; turns at x = <strong>${fmtS(turn, 1)}</strong>` : '') +
+      ` &middot; slope at x = 0: <strong>${fmtS(b1, 1)}</strong>, at x = 5: <strong>${fmtS(b1 + 10 * b2, 1)}</strong>`;
+  }
+  [qa, qb1, qb2].forEach(el => el.addEventListener('input', renderQuad));
+
+  /* ---------- Figure 5.4: spline ---------- */
+  const HROWS = HOTELS.map(([id, d, p, r, n, s]) => ({ id, d, p, r, n, s }));
+  const HLIN = ols1(HROWS.map(h => h.d), HROWS.map(h => h.p));
+  const knotEl = document.getElementById('knot');
+  function renderSpline() {
+    const k = +knotEl.value;
+    document.getElementById('knot-v').textContent = k.toFixed(1) + ' mi';
+    const f = lstsq(HROWS.map(h => [1, h.d, Math.max(h.d - k, 0)]), HROWS.map(h => h.p));
+    const [b0, b1, b2] = f.beta;
+    const curve = [0, k, 7].map(x => ({ x, v: b0 + b1 * x + b2 * Math.max(x - k, 0) }));
+    const lin = [0, 7].map(x => ({ x, v: HLIN.beta[0] + HLIN.beta[1] * x }));
+    const showLin = document.getElementById('spline-line').checked;
+    const svg = Plot.plot({ width: width('spline-chart', 640), height: 340, marginLeft: 50, style: plotStyle(),
+      x: { label: 'Distance from the centre (miles)', grid: true, domain: [0, 7] }, y: { label: 'Price (\u20ac)', grid: true },
+      marks: [Plot.dot(HROWS, { x: 'd', y: 'p', fill: NAVY, r: 2.8, fillOpacity: 0.55 }),
+              showLin ? Plot.line(lin, { x: 'x', y: 'v', stroke: GREY, strokeWidth: 2, strokeDasharray: '5,4' }) : null,
+              Plot.line(curve, { x: 'x', y: 'v', stroke: RED, strokeWidth: 2.6 }),
+              Plot.ruleX([k], { stroke: GOLD_C, strokeDasharray: '3,3' })] });
+    mount('spline-chart', accessibleChart(svg, `Hotel price against distance with a spline knotted at ${k.toFixed(1)} miles. Slope inside the knot ${b1.toFixed(1)} euros per mile, beyond it ${(b1 + b2).toFixed(1)}.`));
+    document.getElementById('spline-read').innerHTML = `Inside ${k.toFixed(1)} mi: <strong>${fmtS(b1, 1)}</strong> \u20ac/mile &middot; beyond: <strong>${fmtS(b1 + b2, 1)}</strong> \u20ac/mile &middot; R\u00b2 <strong>${f.r2.toFixed(3)}</strong> (straight line ${HLIN.r2.toFixed(3)})`;
+  }
+  const GOLD_C = '#c97f31';
+  knotEl.addEventListener('input', renderSpline);
+  document.getElementById('spline-line').addEventListener('change', renderSpline);
+
+  /* ---------- Figure 5.5: typo and drop-one ---------- */
+  const typoEl = document.getElementById('typo-on'), dropEl = document.getElementById('drop-one');
+  dropEl.innerHTML = '<option value="">Nobody</option>' + STUDENTS.map(d => `<option value="${d.s}">${d.s}</option>`).join('');
+  function renderTypo() {
+    const typo = typoEl.checked, drop = dropEl.value;
+    let rows = STUDENTS.map(d => ({ ...d, xx: (typo && d.s === 'Student 10') ? d.typed : d.x, hl: (typo && d.s === 'Student 10') }));
+    if (drop) rows = rows.filter(d => d.s !== drop);
+    const f = ols1(rows.map(d => d.xx), rows.map(d => d.y));
+    const [x0, x1] = d3.extent(rows, d => d.xx);
+    const line = [x0, x1].map(x => ({ x, v: f.beta[0] + f.beta[1] * x }));
+    const base = [Math.min(x0, 68), Math.max(x1, 100)].map(x => ({ x, v: BASE.beta[0] + BASE.beta[1] * x }));
+    const changed = typo || drop;
+    const svg = Plot.plot({ width: width('typo-chart', 640), height: 340, marginLeft: 60, style: plotStyle(),
+      x: { label: XLAB, grid: true }, y: { label: YLAB, grid: true },
+      marks: [Plot.dot(rows.filter(d => !d.hl), { x: 'xx', y: 'y', fill: NAVY, r: 4, fillOpacity: 0.75, title: d => d.s, tip: true }),
+              Plot.dot(rows.filter(d => d.hl), { x: 'xx', y: 'y', fill: RED, r: 7, symbol: 'diamond' }),
+              Plot.line(base, { x: 'x', y: 'v', stroke: GREY, strokeWidth: 2, strokeDasharray: '5,4' }),
+              changed ? Plot.line(line, { x: 'x', y: 'v', stroke: RED, strokeWidth: 2.5 }) : null] });
+    mount('typo-chart', accessibleChart(svg, `Class regression of reaction time on finger length. Slope with every value corrected 18.6; after your change ${f.beta[1].toFixed(2)}.`));
+    document.getElementById('typo-read').innerHTML = `Slope with every value corrected: <strong>${BASE.beta[1].toFixed(2)}</strong>` +
+      (changed ? ` &rarr; after your change: <strong style="color:${RED}">${fmtS(f.beta[1], 2)}</strong>` : '');
+  }
+  typoEl.addEventListener('change', renderTypo);
+  dropEl.addEventListener('change', renderTypo);
+
+  /* ---------- Figure 5.6: attenuation ---------- */
+  const MANY = HROWS.filter(h => h.n > 200 && h.r != null).map(h => ({ r: h.r, lp: Math.log(h.p) }));
+  const MBASE = ols1(MANY.map(h => h.r), MANY.map(h => h.lp));
+  const MVAR = d3.variance(MANY, h => h.r);
+  const MYDOM = (() => { const [lo, hi] = d3.extent(MANY, h => h.lp); return [Math.floor((lo - 0.1) * 10) / 10, Math.ceil((hi + 0.1) * 10) / 10]; })();
+  const MXDOM = (() => { const [lo, hi] = d3.extent(MANY, h => h.r); return [Math.floor((lo - 1.2) * 2) / 2, Math.ceil((hi + 1.2) * 2) / 2]; })();
+  const noiseEl = document.getElementById('noise');
+  let noiseSeed = 11;
+  function renderAtten() {
+    const sd = +noiseEl.value;
+    document.getElementById('noise-v').textContent = sd.toFixed(2);
+    const z = normalGen(noiseSeed);
+    const rows = MANY.map(h => ({ rn: h.r + sd * z(), lp: h.lp }));
+    const f = ols1(rows.map(d => d.rn), rows.map(d => d.lp));
+    const [x0, x1] = MXDOM;
+    const left = Plot.plot({ width: Math.min(width('atten-chart', 640) / 2 - 10, 320), height: 280, marginLeft: 46, style: plotStyle(),
+      x: { label: 'Rating (with noise)', grid: true, domain: MXDOM }, y: { label: 'ln(price)', grid: true, domain: MYDOM }, clip: true,
+      marks: [Plot.dot(rows, { x: 'rn', y: 'lp', fill: BLUE, r: 3, fillOpacity: 0.65 }),
+              Plot.line([x0, x1].map(x => ({ x, v: f.beta[0] + f.beta[1] * x })), { x: 'x', y: 'v', stroke: RED, strokeWidth: 2.4 })] });
+    const curve = d3.range(0, 0.6001, 0.02).map(s => ({ s, b: MBASE.beta[1] * MVAR / (MVAR + s * s) }));
+    const right = Plot.plot({ width: Math.min(width('atten-chart', 640) / 2 - 10, 320), height: 280, marginLeft: 46, style: plotStyle(),
+      x: { label: 'Noise SD', grid: true }, y: { label: 'Slope', grid: true, domain: [-0.1, 0.8] },
+      marks: [Plot.ruleY([0], { stroke: GREY }),
+              Plot.ruleY([0.354], { stroke: GOLD_C, strokeDasharray: '4,3' }),
+              Plot.text([{ s: 0.6, b: 0.354 }], { x: 's', y: 'b', text: () => 'few-reviews slope', dy: -8, textAnchor: 'end', fill: GOLD_C, fontSize: 11 }),
+              Plot.line(curve, { x: 's', y: 'b', stroke: BLUE, strokeWidth: 2 }),
+              Plot.dot([{ s: sd, b: f.beta[1] }], { x: 's', y: 'b', fill: RED, r: 6 })] });
+    const row = document.createElement('div'); row.className = 'chart-row';
+    const a = document.createElement('div'); a.appendChild(left);
+    const b = document.createElement('div'); b.appendChild(right);
+    row.appendChild(a); row.appendChild(b);
+    mount('atten-chart', accessibleChart(row, `Adding noise with standard deviation ${sd.toFixed(2)} to the ratings of 72 well-reviewed hotels. This draw's slope is ${f.beta[1].toFixed(3)}; the formula predicts ${(MBASE.beta[1] * MVAR / (MVAR + sd * sd)).toFixed(3)} on average.`));
+    document.getElementById('atten-read').innerHTML = `No noise: slope <strong>${MBASE.beta[1].toFixed(3)}</strong> &middot; this draw: <strong>${f.beta[1].toFixed(3)}</strong> &middot; formula, on average: <strong>${(MBASE.beta[1] * MVAR / (MVAR + sd * sd)).toFixed(3)}</strong>`;
+  }
+  noiseEl.addEventListener('input', renderAtten);
+  document.getElementById('noise-redraw').addEventListener('click', () => { noiseSeed += 1; renderAtten(); });
+
+  /* ---------- Figure 5.7: coverage (simulated offline) ---------- */
+  function renderCoverage() {
+    const sims = [[8, 95.4, 91.1], [10, 96.1, 91.7], [15, 95.7, 93.2], [20, 95.4, 94.4], [30, 95.3, 94.5], [50, 95.7, 95.4], [75, 95.2, 95.0], [100, 95.3, 95.2]];
+    const rows = sims.flatMap(([n, a, b]) => [{ n, c: a, s: 'Skewed errors alone' }, { n, c: b, s: 'Skewed errors + one leverage point' }]);
+    const svg = Plot.plot({ width: width('coverage-chart', 640), height: 320, marginLeft: 50, style: plotStyle(),
+      x: { label: 'Sample size (n)', grid: true }, y: { label: 'Coverage (%)', domain: [88, 98], grid: true },
+      color: { legend: true, domain: ['Skewed errors alone', 'Skewed errors + one leverage point'], range: [GREEN, RED] },
+      marks: [Plot.ruleY([95], { stroke: GREY, strokeDasharray: '4,4' }),
+              Plot.line(rows, { x: 'n', y: 'c', stroke: 's', strokeWidth: 2.4 }),
+              Plot.dot(rows, { x: 'n', y: 'c', fill: 's', r: 4 })] });
+    mount('coverage-chart', accessibleChart(svg, 'Coverage of the 95 percent interval stays near 95 percent at every sample size with skewed errors alone, but falls to about 91 percent at small samples when one high-leverage point is added, recovering by about n equals 50.'));
+  }
+
+  /* ---------- Figure 5.8: QQ explorer ---------- */
+  const QQSETS = {
+    norm: { v: QQ_NORM, col: BLUE, read: 'Close to the line, with a bit of wobble at the ends. This is what normal looks like with 24 points.' },
+    skew: { v: QQ_SKEW, col: RED, read: 'A banana: the top end climbs well above the line (right skew), and the bottom end sits above it too.' },
+    lin: { v: LIN_RESID, col: RED, read: 'Our level\u2013level model: a banana, from a few very slow students. Skew 1.27, Prob(JB) 0.030.' },
+    log: { v: LOG_RESID, col: BLUE, read: 'Our log model: the top end comes in (skew 0.56, Prob(JB) 0.318), but there is a jump in the middle, from the fast and slow groups.' }
+  };
+  const qqPick = document.getElementById('qq-pick');
+  function renderQQ() {
+    const set = QQSETS[qqPick.value];
+    const m = d3.mean(set.v), s = d3.deviation(set.v);
+    const z = set.v.map(v => (v - m) / s).sort((a, b) => a - b);
+    const n = z.length;
+    const pts = z.map((v, i) => ({ t: qnorm((i + 0.5) / n), v }));
+    const lim = Math.max(3, d3.max(pts, d => Math.max(Math.abs(d.t), Math.abs(d.v)))) * 1.05;
+    const w = Math.min(width('qq-chart', 320), 320);
+    const hist = Plot.plot({ width: w, height: 260, marginLeft: 40, style: plotStyle(),
+      x: { label: 'Standardised residual', domain: [-lim, lim] }, y: { label: 'Count', grid: true },
+      marks: [Plot.rectY(z.map(v => ({ v })), Plot.binX({ y: 'count' }, { x: 'v', fill: set.col, thresholds: d3.range(-lim, lim + 0.01, 0.5) })), Plot.ruleY([0])] });
+    const qq = Plot.plot({ width: w, height: 260, marginLeft: 40, style: plotStyle(),
+      x: { label: 'Where it would be if normal', domain: [-lim, lim], grid: true }, y: { label: 'Actual residual', domain: [-lim, lim], grid: true },
+      marks: [Plot.line([{ x: -lim, y: -lim }, { x: lim, y: lim }], { x: 'x', y: 'y', stroke: GREY, strokeDasharray: '4,3' }),
+              Plot.dot(pts, { x: 't', y: 'v', fill: set.col, r: 4 })] });
+    mount('qq-hist', accessibleChart(hist, 'Histogram of the selected residuals.'));
+    mount('qq-chart', accessibleChart(qq, 'QQ-plot of the selected residuals against a normal distribution. ' + set.read));
+    document.getElementById('qq-read').textContent = set.read;
+  }
+  qqPick.addEventListener('change', renderQQ);
+
+  /* ---------- Figure 5.9: homo / hetero ---------- */
+  function renderHSK() {
+    const rows = HSK.map(([x, h, t]) => ({ x, h, t }));
+    const w = Math.min(width('hsk-homo', 320), 320);
+    const mk = (key, col) => Plot.plot({ width: w, height: 240, marginLeft: 40, style: plotStyle(),
+      x: { label: 'x', grid: true }, y: { label: 'Residual', domain: [-9, 9], grid: true },
+      marks: [Plot.ruleY([0], { stroke: GREY, strokeDasharray: '3,2' }), Plot.dot(rows, { x: 'x', y: key, fill: col, r: 3, fillOpacity: 0.7 })] });
+    mount('hsk-homo', accessibleChart(withLabel('Homoskedastic', mk('h', BLUE)), 'Residuals with constant spread across x.'));
+    mount('hsk-hetero', accessibleChart(withLabel('Heteroskedastic', mk('t', RED)), 'Residuals whose spread fans out as x grows.'));
+  }
+
+  /* ---------- Figure 5.10: CI and PI bands ---------- */
+  const bandEl = document.getElementById('band-x');
+  const N = SX.length, XBAR = d3.mean(SX), VARX = d3.mean(SX.map(x => (x - XBAR) ** 2));
+  const SDE = Math.sqrt(d3.sum(SX.map((x, i) => (SY[i] - (BASE.beta[0] + BASE.beta[1] * x)) ** 2)) / (N - 2));
+  const TCRIT = 2.0739;
+  function bandsAt(x) {
+    const fit = BASE.beta[0] + BASE.beta[1] * x;
+    const k = 1 / N + (x - XBAR) ** 2 / (N * VARX);
+    const se = SDE * Math.sqrt(k), spe = SDE * Math.sqrt(1 + k);
+    return { x, fit, ciLo: fit - TCRIT * se, ciHi: fit + TCRIT * se, piLo: fit - TCRIT * spe, piHi: fit + TCRIT * spe };
+  }
+  function renderBands() {
+    const x0 = +bandEl.value;
+    document.getElementById('band-x-v').textContent = x0 + 'mm';
+    const grid = d3.range(60, 110.01, 0.5).map(bandsAt);
+    const cur = bandsAt(x0);
+    const svg = Plot.plot({ width: width('band-chart', 640), height: 360, marginLeft: 60, style: plotStyle(),
+      x: { label: XLAB, grid: true }, y: { label: YLAB, grid: true },
+      marks: [Plot.areaY(grid, { x: 'x', y1: 'piLo', y2: 'piHi', fill: BLUE, fillOpacity: 0.14 }),
+              Plot.areaY(grid, { x: 'x', y1: 'ciLo', y2: 'ciHi', fill: RED, fillOpacity: 0.25 }),
+              Plot.line(grid, { x: 'x', y: 'fit', stroke: NAVY, strokeWidth: 2 }),
+              Plot.ruleY([0], { stroke: GREY }),
+              Plot.dot(STUDENTS, { x: 'x', y: 'y', fill: NAVY, r: 3.5, fillOpacity: 0.7 }),
+              Plot.ruleX([x0], { stroke: GOLD_C, strokeDasharray: '3,3' }),
+              Plot.link([cur], { x1: 'x', x2: 'x', y1: 'piLo', y2: 'piHi', stroke: BLUE, strokeWidth: 3 }),
+              Plot.link([cur], { x1: 'x', x2: 'x', y1: 'ciLo', y2: 'ciHi', stroke: RED, strokeWidth: 5 })] });
+    mount('band-chart', accessibleChart(svg, `Regression line with its confidence band and the much wider prediction band. At ${x0} millimetres the prediction is ${Math.round(cur.fit)} milliseconds.`));
+    const r = v => fmtS(Math.round(v), 0);
+    document.getElementById('band-read').innerHTML = `At ${x0}mm: prediction <strong>${r(cur.fit)}ms</strong> &middot; CI for the average <strong style="color:${RED}">[${r(cur.ciLo)}, ${r(cur.ciHi)}]</strong> &middot; PI for one student <strong style="color:${BLUE}">[${r(cur.piLo)}, ${r(cur.piHi)}]</strong>`;
+  }
+  bandEl.addEventListener('input', renderBands);
+
+
+  /* ---------- class scatter: line vs quadratic ---------- */
+  function renderClassQuad() {
+    const lin = BASE, q = lstsq(SX.map(x => [1, x, x * x]), SY);
+    const grid = d3.range(66, 101.01, 0.5).map(x => ({ x, l: lin.beta[0] + lin.beta[1] * x, q: q.beta[0] + q.beta[1] * x + q.beta[2] * x * x }));
+    const svg = Plot.plot({ width: width('classquad-chart', 640), height: 330, marginLeft: 60, style: plotStyle(),
+      x: { label: XLAB, grid: true }, y: { label: YLAB, grid: true },
+      marks: [Plot.dot(STUDENTS, { x: 'x', y: 'y', fill: NAVY, r: 4, fillOpacity: 0.75, title: d => d.s, tip: true }),
+              Plot.line(grid, { x: 'x', y: 'l', stroke: GREY, strokeWidth: 2, strokeDasharray: '5,4' }),
+              Plot.line(grid, { x: 'x', y: 'q', stroke: RED, strokeWidth: 2.6 })] });
+    mount('classquad-chart', accessibleChart(svg, `Our 24 students with a straight line, R squared ${lin.r2.toFixed(3)}, and a gentle U-shaped quadratic, R squared ${q.r2.toFixed(3)}. The two fits are very close across most of the data.`));
+  }
+
+  /* ---------- hotels LOWESS (local linear, tricube weights, as statsmodels) ---------- */
+  function lowess(xs, ys, frac, iters = 3) {
+    const n = xs.length, r = Math.ceil(frac * n);
+    let rob = new Array(n).fill(1), fit = new Array(n).fill(0);
+    for (let it = 0; it <= iters; it++) {
+      for (let i = 0; i < n; i++) {
+        const x0 = xs[i];
+        const dist = xs.map(x => Math.abs(x - x0));
+        const h = dist.slice().sort((a, b) => a - b)[r - 1] || 1e-9;
+        const w = dist.map((d, j) => { const u = Math.min(d / h, 1); return (1 - u ** 3) ** 3 * rob[j]; });
+        const sw = d3.sum(w), mx = d3.sum(xs.map((x, j) => w[j] * x)) / sw, my = d3.sum(ys.map((y, j) => w[j] * y)) / sw;
+        const sxx = d3.sum(xs.map((x, j) => w[j] * (x - mx) ** 2));
+        const b = sxx > 0 ? d3.sum(xs.map((x, j) => w[j] * (x - mx) * (ys[j] - my))) / sxx : 0;
+        fit[i] = my + b * (x0 - mx);
+      }
+      const res = ys.map((y, i) => y - fit[i]);
+      const s = d3.median(res.map(Math.abs)) * 6;
+      rob = res.map(e => { const u = Math.min(Math.abs(e) / s, 1); return (1 - u * u) ** 2; });
+    }
+    return d3.range(n).sort((a, b) => xs[a] - xs[b]).map(i => ({ x: xs[i], v: fit[i] }));
+  }
+  function renderHotelLowess() {
+    const xs = HROWS.map(h => h.d), ys = HROWS.map(h => h.p);
+    const lw = lowess(xs, ys, 0.3);
+    const lin = [0, 7].map(x => ({ x, v: HLIN.beta[0] + HLIN.beta[1] * x }));
+    const svg = Plot.plot({ width: width('hlowess-chart', 640), height: 340, marginLeft: 50, style: plotStyle(),
+      x: { label: 'Distance from the centre (miles)', grid: true, domain: [0, 7] }, y: { label: 'Price (\u20ac)', grid: true },
+      marks: [Plot.dot(HROWS, { x: 'd', y: 'p', fill: NAVY, r: 2.8, fillOpacity: 0.55 }),
+              Plot.line(lin, { x: 'x', y: 'v', stroke: GREY, strokeWidth: 2, strokeDasharray: '5,4' }),
+              Plot.line(lw, { x: 'x', y: 'v', stroke: RED, strokeWidth: 2.6 })] });
+    mount('hlowess-chart', accessibleChart(svg, 'Hotel price against distance from the centre. The LOWESS curve falls steeply over the first mile and is almost flat beyond it, while the straight line falls at the same rate throughout.'));
+  }
+  /* ---------- render all, and on resize ---------- */
+  function renderAll() {
+    renderGrowth(); renderLife(); renderQuad(); renderClassQuad(); renderHotelLowess(); renderSpline(); renderTypo();
+    renderAtten(); renderCoverage(); renderQQ(); renderHSK(); renderBands();
+  }
+  renderAll();
+  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(renderAll, 200); });
+
+
+  /* ================= Chapter nav =================
+     Hardcoded -- add a new entry here (and to every other chapter's own copy
+     of this array) when the next chapter exists. */
+  const CHAPTERS = [
+    { href: 'week1-lecture-notes.html', num: 'One', title: 'Distributions &amp; Summarising Data' },
+    { href: 'week2-lecture-notes.html', num: 'Two', title: 'Inference: When Is a Difference Real?' },
+    { href: 'week3-lecture-notes.html', num: 'Three', title: 'When y Met x: Correlation and Covariance' },
+    { href: 'week4-lecture-notes.html', num: 'Four', title: 'Regression I: Fitting the Line' },
+    { href: 'week5-lecture-notes.html', num: 'Five', title: 'Model Problems &amp; Inference' },
+  ];
+  const CURRENT_CHAPTER_HREF = 'week5-lecture-notes.html';
+  function buildChapterNav(container) {
+    const wrap = document.createElement('div');
+    wrap.className = 'toc-block chapter-nav';
+    const label = document.createElement('span');
+    label.className = 'toc-label';
+    label.textContent = 'Chapters';
+    wrap.appendChild(label);
+    const ol = document.createElement('ol');
+    ol.className = 'chapter-list';
+    CHAPTERS.forEach(c => {
+      const li = document.createElement('li');
+      const isCurrent = c.href === CURRENT_CHAPTER_HREF;
+      const el = document.createElement(isCurrent ? 'span' : 'a');
+      if (!isCurrent) el.href = c.href;
+      el.className = 'chapter-link' + (isCurrent ? ' current' : '');
+      el.innerHTML = `<strong>Chapter ${c.num}</strong><span class="chapter-sub">${c.title}</span>`;
+      li.appendChild(el);
+      ol.appendChild(li);
+    });
+    wrap.appendChild(ol);
+    container.appendChild(wrap);
+  }
+
+  /* ================= TOC ================= */
+  const sections = [...document.querySelectorAll('section.chapter')].map(s => ({
+    id: s.id, title: s.querySelector('h2').textContent
+  }));
+  function buildTOC(container) {
+    buildChapterNav(container);
+    const label = document.createElement('span');
+    label.className = 'toc-label';
+    label.textContent = 'Contents';
+    container.appendChild(label);
+    const ol = document.createElement('ol');
+    sections.forEach(s => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = '#' + s.id; a.textContent = s.title; a.dataset.id = s.id;
+      li.appendChild(a); ol.appendChild(li);
+    });
+    container.appendChild(ol);
+  }
+  buildTOC(document.getElementById('toc'));
+  buildTOC(document.getElementById('toc-mobile'));
+
+  const allTocLinks = () => [...document.querySelectorAll('nav.toc a')];
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        allTocLinks().forEach(a => a.classList.toggle('active', a.dataset.id === id));
+      }
+    });
+  }, { rootMargin: '-10% 0px -70% 0px' });
+  sections.forEach(s => io.observe(document.getElementById(s.id)));
+
+})();
+</script>
+
+</body>
+</html>
