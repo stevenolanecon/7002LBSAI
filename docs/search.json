@@ -2825,7 +2825,7 @@
     "href": "week5-slides.html#two-different-questions-about-prediction",
     "title": "Model Problems & Inference",
     "section": "Two different questions about prediction",
-    "text": "Two different questions about prediction\n\nConfidence interval for the predicted value — where do we expect the average y to be, for a given x? Uncertainty about \\(\\hat\\alpha\\) and \\(\\hat\\beta\\) only\nPrediction interval — where do we expect one particular y to actually land, for a given x? Adds the extra spread of individual observations around their own average\n\n\nThe CI narrows toward zero as n grows. The PI never does — no amount of data removes the fact that individuals vary around the average.\n\n\nSource: Békés & Kézdi (2021), Ch. 9"
+    "text": "Two different questions about prediction\n\nConfidence interval for the predicted value — where do we expect the average y to be, for a given x? Uncertainty about \\(\\hat\\alpha\\) and \\(\\hat\\beta\\) only\nPrediction interval — where do we expect one particular y to actually land, for a given x? Adds the extra spread of individual observations around their own average\n\n\nThe CI shrinks towards zero as n grows. The PI shrinks too, but only down to about \\(\\pm 2\\times Std[e]\\) — no amount of data removes the fact that individuals vary around the average.\n\n\nSource: Békés & Kézdi (2021), Ch. 9"
   },
   {
     "objectID": "week5-slides.html#both-bands-on-our-own-data",

@@ -1004,7 +1004,7 @@ html`<p style="font-family:sans-serif;">t = ${task_ans.b} / ${task_ans.se} = <st
 - **Prediction interval** — where do we expect *one particular* y to actually land, for a given x? Adds the extra spread of individual observations around their own average
 
 ::: {.fragment}
-The CI narrows toward zero as n grows. The PI never does — no amount of data removes the fact that individuals vary around the average.
+The CI shrinks towards zero as n grows. The PI shrinks too, but only down to about $\pm 2\times Std[e]$ — no amount of data removes the fact that individuals vary around the average.
 :::
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
