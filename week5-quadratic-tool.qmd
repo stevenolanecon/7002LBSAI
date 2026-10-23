@@ -1,7 +1,6 @@
 ---
 title: "Week 5 — Play with a Quadratic"
 toc: false
-search: false
 execute:
   echo: false
   warning: false

@@ -1,7 +1,6 @@
 ---
-title: "Model Problems, in Real Data"
+title: "Hotels Revisited: Shape and Noise"
 subtitle: "7002LBSAI Research Methods in Analytics — Week 5 Online Session"
-search: false
 format:
   revealjs:
     theme: simple
@@ -23,246 +22,626 @@ execute:
   message: false
 ---
 
+```{python}
+import pandas as pd
+import numpy as np
+import statsmodels.formula.api as smf
+from statsmodels.nonparametric.smoothers_lowess import lowess
+
+# Week 5 online session, rebuilt 2026-10-20 as a recorded walkthrough of
+# Bekes & Kezdi's Ch.8 hotel case (same format as Week 4 online). Same 207
+# hotels as Week 4 online: Gabor's filters on hotels_vienna.csv.
+# Checked against the Ch.8 slides' own regression table: with the one 0-mile
+# hotel set to 0.05 miles before logging (Gabor's choice), all four models
+# reproduce exactly (132.02/-14.41, 4.84/-0.13, 112.42/-24.77, 4.66/-0.22;
+# R^2 0.157 / 0.205 / 0.280 / 0.334). Price in EUR, distance in miles.
+hotels = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/hotels_vienna.csv")
+hotels = hotels[(hotels['accommodation_type'] == 'Hotel') &
+                (hotels['city_actual'] == 'Vienna') &
+                (hotels['stars'] >= 3) & (hotels['stars'] <= 4) &
+                (hotels['price'] <= 600)].copy()
+hotels['ln_price'] = np.log(hotels['price'])
+hotels['dist_for_log'] = hotels['distance'].replace(0, 0.05)
+hotels['ln_dist'] = np.log(hotels['dist_for_log'])
+
+m_ll = smf.ols('price ~ distance', data=hotels).fit()
+m_gl = smf.ols('ln_price ~ distance', data=hotels).fit()
+m_lg = smf.ols('price ~ ln_dist', data=hotels).fit()
+m_gg = smf.ols('ln_price ~ ln_dist', data=hotels).fit()
+four = [
+    {"model": "level–level", "y": "price", "x": "distance", "a": m_ll.params.iloc[0], "b": m_ll.params.iloc[1], "r2": m_ll.rsquared},
+    {"model": "log–level", "y": "ln(price)", "x": "distance", "a": m_gl.params.iloc[0], "b": m_gl.params.iloc[1], "r2": m_gl.rsquared},
+    {"model": "level–log", "y": "price", "x": "ln(distance)", "a": m_lg.params.iloc[0], "b": m_lg.params.iloc[1], "r2": m_lg.rsquared},
+    {"model": "log–log", "y": "ln(price)", "x": "ln(distance)", "a": m_gg.params.iloc[0], "b": m_gg.params.iloc[1], "r2": m_gg.rsquared},
+]
+four = [{k: (round(float(v), 3) if isinstance(v, float) else v) for k, v in d.items()} for d in four]
+
+lo_raw = lowess(hotels['price'], hotels['distance'], frac=0.3)
+lo_log = lowess(hotels['ln_price'], hotels['distance'], frac=0.3)
+lowess_raw = [{"distance": float(a), "y": float(b)} for a, b in lo_raw]
+lowess_log = [{"distance": float(a), "y": float(b)} for a, b in lo_log]
+
+# Splines: knot at 1 mile (the main example), plus the task's alternatives
+def spline_fit(knots):
+    t = hotels.copy()
+    terms = []
+    for i, k in enumerate(knots):
+        t[f'sp{i}'] = np.maximum(t['distance'] - k, 0)
+        terms.append(f'sp{i}')
+    return smf.ols('price ~ distance + ' + ' + '.join(terms), data=t).fit(), t
+
+m_sp, _sp_df = spline_fit([1])
+hotels['res_line'] = m_ll.resid
+hotels['res_spline'] = m_sp.resid
+spline_line = [{"distance": float(x), "price": float(m_sp.params['Intercept'] + m_sp.params['distance'] * x + m_sp.params['sp0'] * max(x - 1, 0))}
+               for x in np.linspace(0, hotels['distance'].max(), 67)]
+m_sp2, _ = spline_fit([2])
+m_sp14, _ = spline_fit([1, 4])
+
+deal_cols = ['hotel_id', 'distance', 'stars', 'rating', 'price']
+deals_line = hotels.nsmallest(5, 'res_line')[deal_cols + ['res_line']].round(2)
+deals_spline = hotels.nsmallest(5, 'res_spline')[deal_cols + ['res_spline']].round(2)
+both = set(deals_line['hotel_id']) & set(deals_spline['hotel_id'])
+
+# Ratings: few vs many reviews (Gabor Ch.8 measurement-error case)
+_r = hotels.dropna(subset=['rating'])
+few = _r[_r['rating_count'] < 100].copy()
+many = _r[_r['rating_count'] > 200].copy()
+m_few = smf.ols('ln_price ~ rating', data=few).fit(cov_type='HC1')
+m_many = smf.ols('ln_price ~ rating', data=many).fit(cov_type='HC1')
+
+# Attenuation demo on the many-reviews hotels: one fixed set of standard-normal
+# draws, scaled by the slider's noise SD, so the chart is reproducible.
+_z = np.random.default_rng(5).standard_normal(len(many))
+many['z'] = _z
+_var_many = float(many['rating'].var())
+_rng = np.random.default_rng(5)
+noise_grid = []
+for sd in [0.1, 0.2, 0.3, 0.5]:
+    bs = [smf.ols('ln_price ~ rn', data=many.assign(rn=many['rating'] + _rng.normal(0, sd, len(many)))).fit().params['rn'] for _ in range(500)]
+    noise_grid.append({"sd": sd, "mean_b": round(float(np.mean(bs)), 3), "lam": round(_var_many / (_var_many + sd ** 2), 2)})
+
+def r(x, k=2): return round(float(x), k)
+stats = {
+    "n": int(len(hotels)),
+    "p_skew": r(hotels['price'].skew()), "lp_skew": r(hotels['ln_price'].skew()),
+    "d_max": r(hotels['distance'].max(), 1),
+    "share_1mile": int(round(100 * (hotels['distance'] < 1).mean())),
+    "n_zero": int((hotels['distance'] == 0).sum()),
+    "sp_a": r(m_sp.params['Intercept'], 1), "sp_b1": r(m_sp.params['distance']), "sp_d": r(m_sp.params['sp0']),
+    "sp_b2": r(m_sp.params['distance'] + m_sp.params['sp0']), "sp_r2": r(m_sp.rsquared, 3),
+    "sp2_r2": r(m_sp2.rsquared, 3), "sp14_r2": r(m_sp14.rsquared, 3),
+    "n_both": len(both),
+    "few_n": int(len(few)), "few_reviews": int(round(few['rating_count'].mean())), "few_sd": r(few['rating'].std()),
+    "few_b": r(m_few.params['rating'], 3), "few_se": r(m_few.bse['rating'], 3),
+    "few_lo": r(m_few.conf_int().loc['rating', 0]), "few_hi": r(m_few.conf_int().loc['rating', 1]),
+    "many_n": int(len(many)), "many_reviews": int(round(many['rating_count'].mean())), "many_sd": r(many['rating'].std()),
+    "many_b": r(m_many.params['rating'], 3), "many_se": r(m_many.bse['rating'], 3),
+    "many_lo": r(m_many.conf_int().loc['rating', 0]), "many_hi": r(m_many.conf_int().loc['rating', 1]),
+    "many_var": r(_var_many, 3),
+}
+
+ojs_define(
+    hotels = hotels[['hotel_id', 'distance', 'ln_dist', 'price', 'ln_price', 'rating', 'rating_count']].to_dict(orient='records'),
+    four = four,
+    lowess_raw = lowess_raw, lowess_log = lowess_log,
+    spline_line = spline_line,
+    deals_line = deals_line.to_dict(orient='records'),
+    deals_spline = deals_spline.to_dict(orient='records'),
+    both_ids = sorted(int(x) for x in both),
+    few = few[['rating', 'ln_price']].to_dict(orient='records'),
+    many = many[['rating', 'ln_price', 'z']].to_dict(orient='records'),
+    noise_grid = noise_grid,
+    stats = stats,
+)
+```
+
 ```{ojs}
 //| output: false
-{
-  // Generic "shrink on reveal" wiring, used by every chart wrapped as
-  // `:::: {.shrink-on-reveal data-frag="some-fragment-id" style="--large-height:...;--small-height:...;--shrink-scale:..."}`
-  // Each chart renders large while its named fragment is hidden, then
-  // shrinks smoothly to make room the moment that fragment is revealed.
-  // Sizes live entirely in each wrapper's own inline style — this cell only
-  // handles show/hide, once, for every wrapper on the page, so adding a new
-  // chart to this pattern never means touching this cell.
-  const wrapperFor = (fragId) => document.querySelector(`.shrink-on-reveal[data-frag="${fragId}"]`)
+codeBox = (src) => html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.45em;line-height:1.35;
+  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;padding:8px 14px;overflow-x:auto;white-space:pre;">${src}</pre>`
+```
 
-  // Sets each wrapper's correct starting state immediately, including on a
-  // reload or direct navigation to a slide whose fragment is already shown
-  // — matters because this cell (no reactive deps) only runs once, at load.
-  document.querySelectorAll('.shrink-on-reveal[data-frag]').forEach(el => {
-    const frag = document.getElementById(el.dataset.frag)
-    el.classList.toggle('is-small', !!frag?.classList.contains('visible'))
-  })
-
-  Reveal.on('fragmentshown', (event) => {
-    wrapperFor(event.fragment.id)?.classList.add('is-small')
-  })
-  Reveal.on('fragmenthidden', (event) => {
-    wrapperFor(event.fragment.id)?.classList.remove('is-small')
-  })
+```{ojs}
+//| output: false
+function accessibleChart(node, label) {
+  node.setAttribute("aria-hidden", "true")
+  const wrapper = document.createElement("div")
+  wrapper.setAttribute("role", "img")
+  wrapper.setAttribute("aria-label", label)
+  wrapper.appendChild(node)
+  return wrapper
 }
 ```
 
----
+```{ojs}
+//| output: false
+olsFit = (rows, xk, yk) => {
+  const xb = d3.mean(rows, d => d[xk]), yb = d3.mean(rows, d => d[yk])
+  const b = d3.sum(rows, d => (d[xk] - xb) * (d[yk] - yb)) / d3.sum(rows, d => (d[xk] - xb) ** 2)
+  return { a: yb - b * xb, b }
+}
+```
 
 ## {background-color="#1a1a2e"}
 
 ::: {style="text-align: center; padding-top: 180px;"}
-[**Model problems, in real data**]{style="font-size: 2.2em; color: white;"}
+[**Hotels revisited: shape and noise**]{style="font-size: 2.2em; color: white;"}
 
-[The workshop built the toolbox on our own data. This session shows two of these problems playing out in a real, published dataset — plus two things we didn't have time for.]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+[The same 207 Vienna hotels as last week. Is a straight line the right shape, and what happens when x is measured with noise?]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
 :::
 
----
+## How this session works
 
-# Worked example {background-color="#2d6a4f"}
-## Choosing a functional form, with real numbers
+- Watch the recording and follow along in the **Week 5 online walkthrough** notebook (Colab)
+- The tasks in the notebook match the tasks on the slides
+- Bring your questions to Thursday's **live Q&A**
 
----
+Three parts:
 
-## Hotels in Vienna: price vs. distance
+1. **What shape is the line?** Logs on the hotel data
+2. **Splines** – letting the slope change at a point you choose
+3. **Measurement error** – using the hotel ratings
 
-Gabor & Kézdi's own worked example — 207 hotels, price in USD, distance to city centre in miles. The same variable pair, fit four ways:
+# Part 1: what shape is the line? {background-color="#2d6a4f"}
 
-| Model | Fitted line | R² |
-|---|---|---|
-| Level–level | price = 132.02 − 14.41·distance | 0.157 |
-| Log–level | ln(price) = 4.84 − 0.13·distance | 0.205 |
-| Level–log | price = 116.29 − 28.30·ln(distance) | 0.280 |
-| Log–log | ln(price) = 4.70 − 0.25·ln(distance) | 0.334 |
+## The question
 
-::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
-Source: Békés & Kézdi (2021), Ch. 8, hotels-vienna dataset
-:::
-
-## What each slope actually says
-
-- **Level–level**: hotels 1 mile farther out are $14 cheaper, on average
-- **Log–level**: hotels 1 mile farther out are 13% cheaper, on average
-- **Level–log**: hotels 10% farther out are $2.48 cheaper, on average
-- **Log–log**: hotels 10% farther out are 2.2% cheaper, on average — an elasticity
+Last week a straight line picked out the hotels that are cheap for their distance from the centre.
 
 ::: {.fragment}
-Four different numbers, from the same underlying data. None of them is "wrong" — they answer four subtly different questions.
+But that line assumed every extra mile knocks the **same** number of euros off the price, whether it's the first mile or the sixth. Is that believable?
+
+Today we follow the workshop's roadmap: check the distributions, look at the shape, then choose a functional form.
 :::
 
-## Which one should you actually use?
+## Step 1: check the distributions
 
-**Substantive reasoning comes first.** It depends on the goal:
+```{ojs}
+{
+  const h1 = Plot.plot({ height: 300, width: 400, marginLeft: 45,
+    x: { label: "Price per night (€)" }, y: { label: "Hotels", grid: true },
+    marks: [Plot.rectY(hotels, Plot.binX({ y: "count" }, { x: "price", fill: "#457b9d", thresholds: 20 })), Plot.ruleY([0])] })
+  const h2 = Plot.plot({ height: 300, width: 400, marginLeft: 45,
+    x: { label: "ln(price)" }, y: { label: "Hotels", grid: true },
+    marks: [Plot.rectY(hotels, Plot.binX({ y: "count" }, { x: "ln_price", fill: "#2d6a4f", thresholds: 20 })), Plot.ruleY([0])] })
+  return accessibleChart(html`<div style="display:flex;gap:30px;justify-content:center;">${h1}${h2}</div>`,
+    `Two histograms. Price per night has a long right tail, skewness ${stats.p_skew}. Log price is much more symmetric, skewness ${stats.lp_skew}.`)
+}
+```
 
-- Chasing an absolute good deal for one night? Dollar differences are what matter — level price
-- Comparing across seasons where inflation and demand move prices proportionately? Percentage differences travel better — log price
-- Distance itself is usually more natural in miles than in relative terms, for this particular question
+```{ojs}
+html`<ul>
+<li>Price has a long right tail (skew ${stats.p_skew}). Log price is much more even (skew ${stats.lp_skew}).</li>
+<li>Distance runs from 0 to ${stats.d_max} miles, and ${stats.share_1mile}% of hotels are within 1 mile of the centre.</li>
+</ul>`
+```
+
+## Step 2: look at the shape
+
+```{ojs}
+{
+  const mk = (yk, line, ylab, col) => Plot.plot({ height: 330, width: 420, marginLeft: 50,
+    x: { label: "Distance (miles)" }, y: { label: ylab },
+    marks: [Plot.dot(hotels, { x: "distance", y: yk, r: 3, fill: col, fillOpacity: 0.4 }),
+            Plot.line(line, { x: "distance", y: "y", stroke: "#e63946", strokeWidth: 3 })] })
+  return accessibleChart(html`<div style="display:flex;gap:30px;justify-content:center;">
+    ${mk("price", lowess_raw, "Price (€)", "#457b9d")}${mk("ln_price", lowess_log, "ln(price)", "#2d6a4f")}</div>`,
+    "Two scatterplots of price and log price against distance, each with a LOWESS curve. Both fall steeply within about a mile of the centre, then flatten.")
+}
+```
+
+::: {.fragment}
+LOWESS on both versions of price. The drop is **steep in the first mile**, then flattens out. A single straight line can't do both.
+:::
+
+## Logging distance: one hotel is 0 miles out
+
+You can't take the log of zero, and one hotel is right in the centre.
+
+::: {.fragment}
+Gabor & Kézdi set its distance to **0.05 miles** before logging – a small value close to zero, just as advised in the workshop.
+
+```{ojs}
+codeBox(`hotels['dist_for_log'] = hotels['distance'].replace(0, 0.05)
+hotels['ln_dist'] = np.log(hotels['dist_for_log'])
+hotels['ln_price'] = np.log(hotels['price'])`)
+```
+
+With only one hotel affected, the choice barely matters here. With many zeros, it would.
+:::
+
+## Four models, one table
+
+```{ojs}
+codeBox(`m1 = smf.ols('price ~ distance', data=hotels).fit()
+m2 = smf.ols('ln_price ~ distance', data=hotels).fit()
+m3 = smf.ols('price ~ ln_dist', data=hotels).fit()
+m4 = smf.ols('ln_price ~ ln_dist', data=hotels).fit()`)
+```
+
+```{ojs}
+html`<table style="margin:14px auto;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;">
+  <caption class="visually-hidden">Four regressions of price on distance: constant, slope and R-squared.</caption>
+  <tr style="border-bottom:2px solid #1a1a2e;">${["Model","y","x","Constant","Slope","R²"].map(h => `<th scope="col" style="padding:5px 16px;">${h}</th>`).join('')}</tr>
+  ${four.map(d => `<tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 16px;">${d.model}</td><td style="padding:5px 16px;">${d.y}</td><td style="padding:5px 16px;">${d.x}</td><td style="padding:5px 16px;text-align:right;">${d.a.toFixed(2)}</td><td style="padding:5px 16px;text-align:right;">${d.b.toFixed(2)}</td><td style="padding:5px 16px;text-align:right;">${d.r2.toFixed(3)}</td></tr>`).join('')}
+</table>`
+```
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 8 – these match the book's own table exactly.
+:::
+
+## What each slope says
+
+```{ojs}
+html`<ul>
+<li><strong>level–level:</strong> hotels 1 mile further out are <strong>€${(-four[0].b).toFixed(0)} cheaper</strong>, on average</li>
+<li><strong>log–level:</strong> hotels 1 mile further out are <strong>${(-four[1].b * 100).toFixed(0)}% cheaper</strong>, on average</li>
+<li><strong>level–log:</strong> hotels 10% further out are <strong>€${(-four[2].b / 10).toFixed(2)} cheaper</strong>, on average</li>
+<li><strong>log–log:</strong> hotels 10% further out are <strong>${(-four[3].b * 10).toFixed(1)}% cheaper</strong>, on average – an elasticity</li>
+</ul>`
+```
+
+::: {.fragment}
+Four different numbers from the same data. None is wrong; each answers a slightly different question.
+:::
+
+## Task: fit the log–log model yourself
 
 ::: {.instructions-box}
-Notice the R² *rises* every step down that table, from 0.157 to 0.334. Is log-log simply the "best" model? What's wrong with reading it that way?
+In the **Week 5 online walkthrough** notebook, create `ln_price` and `ln_dist` (with the 0-mile hotel set to 0.05), fit `ln_price ~ ln_dist`, and put the slope into one sentence about Vienna hotels.
+
+Then: why does the 10% wording suit this model better than "1 mile further out"?
+:::
+
+::: {.fragment}
+```{ojs}
+html`<p>Slope = <strong>${four[3].b.toFixed(2)}</strong>: hotels 10% further from the centre are about ${(-four[3].b * 10).toFixed(1)}% cheaper, on average. Both sides are in logs, so both are percentage changes: a mile means something very different at 0.2 miles than at 5 miles out, while 10% further out means the same thing everywhere.</p>`
+```
 :::
 
 ## The R² trap
 
-**You cannot compare R² across regressions with different dependent variables.** Level-price and log-price R² are fit measures in different units — one describes variation in dollars, the other in log-dollars. A higher number doesn't mean a better model.
+R² goes up with every row of the table: 0.157, 0.205, 0.280, 0.334. Is log–log simply the best model?
 
 ::: {.fragment}
-Valid comparisons: level-level vs. level-log (both explain **price**); log-level vs. log-log (both explain **ln(price)**). Within each pair, the higher R² is meaningful. Across pairs, it isn't.
+**No – you can only compare R² between models with the same y.** R² for price measures how much of the variation in euros we explain; R² for ln(price) measures variation in log euros. They're different things.
+
+Valid comparisons: level–level vs. level–log (both explain **price**), and log–level vs. log–log (both explain **ln(price)**). In both pairs, logging distance fits better.
 :::
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
 Source: Békés & Kézdi (2021), Ch. 8
 :::
 
----
+## Which one would you use?
 
-## Splines: full flexibility, at a cost
+**What you want to know comes first.**
 
----
+- Looking for a good deal on one night? You care about **euros**, so keep price in levels
+- Comparing across seasons, when prices rise and fall together? **Percentages** travel better, so log price
+- For finding a hotel, distance in **miles** is easier to think about than "10% further out"
+
+::: {.fragment}
+**Then the statistics:** the scatterplots and R² both say logging distance helps. Gabor's own verdict: "your call". There's no single right answer, only a choice you can defend.
+:::
+
+## Task: was last week's straight line defensible?
+
+::: {.instructions-box}
+Last week we found the five best deals with `price ~ distance`. Go through the roadmap:
+
+1. What do the distributions of price and distance look like?
+2. What shape did LOWESS show?
+3. What transformation would you choose, and why?
+4. If you changed the model, would the best deals change?
+
+Keep your answer to step 4 in mind – it's exactly where Part 2 goes.
+:::
+
+# Part 2: splines {background-color="#2d6a4f"}
+
+## When the slope changes at one point
+
+LOWESS showed a steep drop within about a mile of the centre, then hardly any change.
+
+- A **log** bends the line smoothly, everywhere
+- A **quadratic** bends it smoothly too, as a parabola
+
+::: {.fragment}
+But what if the pattern really is *two straight lines*: one steep slope near the centre, a flatter one further out? Then we want the slope to change at a point we choose.
+:::
 
 ## Piecewise linear splines
 
-A spline breaks x into intervals at chosen **knots**, and fits a separate line segment in each — connected at the knots, but each segment free to have its own slope.
+A spline cuts x into intervals at **knots** and fits a straight line in each one. The lines join at the knots, but each can have its own slope.
 
-$$y^E = (\alpha_1+\beta_1 x)\ [x<k_1] + (\alpha_2+\beta_2 x)\ [k_1\le x\le k_2] + \dots$$
+$$y^E = \alpha_1 + \beta_1 x\,[x<k_1] + (\alpha_2+\beta_2 x)\,[k_1\le x< k_2] + \dots$$
 
-- Each $\beta$ is interpretable on its own — the slope *within that segment only*
-- Handles any shape, including non-monotonic patterns a quadratic can't
-- The cost: **you** choose the number of knots and where they go — no longer automatic
+- Each $\beta$ is the slope **within its own interval**: easy to interpret
+- It can follow any shape, including ones that go up and then down
+- The cost: **you** choose how many knots, and where
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
 Source: Békés & Kézdi (2021), Ch. 8
 :::
 
-## A simple spline, worked through
+## Fitting one in Python
 
-Knots at x = 20 and x = 40. $\alpha=10$, $\beta_1=0.2$, $\beta_2=0.7$, $\beta_3=0.0$ — three segments, three different slopes:
-
-:::: {.shrink-on-reveal data-frag="wk5online-spline-frag" style="--large-height:460px;--small-height:320px;--shrink-scale:0.696;"}
-::: {.shrink-on-reveal-inner}
 ```{ojs}
-{
-  const seg1 = d3.range(0, 20.5, 1).map(x => ({ x, y: 10 + 0.2 * x }))
-  const k1y = 10 + 0.2 * 20
-  const seg2 = d3.range(20, 40.5, 1).map(x => ({ x, y: k1y + 0.7 * (x - 20) }))
-  const k2y = k1y + 0.7 * 20
-  const seg3 = d3.range(40, 60.5, 1).map(x => ({ x, y: k2y + 0.0 * (x - 40) }))
-  return Plot.plot({
-    height: 460, marginLeft: 60,
-    x: { label: "x" }, y: { label: "y" },
-    marks: [
-      Plot.line(seg1, { x: "x", y: "y", stroke: "#457b9d", strokeWidth: 2.5 }),
-      Plot.line(seg2, { x: "x", y: "y", stroke: "#e63946", strokeWidth: 2.5 }),
-      Plot.line(seg3, { x: "x", y: "y", stroke: "#2d6a4f", strokeWidth: 2.5 }),
-      Plot.ruleX([20, 40], { stroke: "#ccc", strokeDasharray: "4,3" }),
-    ]
-  })
-}
+codeBox(`# a new variable: miles beyond the knot (zero for hotels inside it)
+hotels['beyond_1'] = np.maximum(hotels['distance'] - 1, 0)
+
+spline = smf.ols('price ~ distance + beyond_1', data=hotels).fit()
+spline.params`)
+```
+
+```{ojs}
+html`<p style="font-family:sans-serif;">Intercept ${stats.sp_a}, <code>distance</code> ${stats.sp_b1}, <code>beyond_1</code> ${stats.sp_d}</p>`
+```
+
+::: {.fragment}
+**Careful reading the output.** `distance` is the slope inside the first mile. `beyond_1` is the **change** in slope after the knot, not the slope itself.
+
+```{ojs}
+html`<p>Slope beyond 1 mile = ${stats.sp_b1} + ${stats.sp_d} = <strong>${stats.sp_b2}</strong></p>`
 ```
 :::
-::::
 
-::: {.fragment #wk5online-spline-frag}
-Below x=20, y climbs slowly (β₁=0.2). Between 20 and 40, it climbs much faster (β₂=0.7). Above 40, it's flat (β₃=0). Three honest, separate stories — a straight line or a parabola could tell none of them.
+## The spline on the hotels
+
+```{ojs}
+{
+  const lin = [0, stats.d_max].map(x => ({ distance: x, price: four[0].a + four[0].b * x }))
+  return accessibleChart(Plot.plot({ height: 330, width: 900, marginLeft: 50,
+    x: { label: "Distance (miles)" }, y: { label: "Price per night (€)" },
+    color: { legend: true, domain: ["Straight line", "Spline, knot at 1 mile"], range: ["#999", "#e63946"] },
+    marks: [
+      Plot.dot(hotels, { x: "distance", y: "price", r: 3, fill: "#457b9d", fillOpacity: 0.4 }),
+      Plot.ruleX([1], { stroke: "#ccc", strokeDasharray: "4,3" }),
+      Plot.line(lin, { x: "distance", y: "price", stroke: () => "Straight line", strokeWidth: 2, strokeDasharray: "5,4" }),
+      Plot.line(spline_line, { x: "distance", y: "price", stroke: () => "Spline, knot at 1 mile", strokeWidth: 3 }),
+    ] }), `Scatterplot of price against distance with a straight line and a spline. The spline falls steeply to 1 mile, then is almost flat.`)
+}
+```
+
+```{ojs}
+html`<ul>
+<li>Within 1 mile: <strong>€${(-stats.sp_b1).toFixed(0)} cheaper per extra mile</strong>. Beyond 1 mile: only <strong>€${(-stats.sp_b2).toFixed(1)} per mile</strong>.</li>
+<li>R² rises from ${four[0].r2} to ${stats.sp_r2}. That comparison is fine: both models explain price.</li>
+</ul>`
+```
+
+## Did it change last week's best deals?
+
+```{ojs}
+{
+  const tbl = (rows, key, title) => `<div><p style="text-align:center;font-weight:700;margin:0 0 4px;">${title}</p><table style="font-family:sans-serif;font-size:0.75em;border-collapse:collapse;">
+    <tr style="border-bottom:2px solid #1a1a2e;">${["Hotel","Miles","Price","Residual"].map(h => `<th scope="col" style="padding:4px 10px;">${h}</th>`).join('')}</tr>
+    ${rows.map(d => `<tr style="border-bottom:1px solid #eee;${both_ids.includes(d.hotel_id) ? 'background:#fdf6e8;' : ''}"><td style="padding:4px 10px;">${d.hotel_id}</td><td style="padding:4px 10px;text-align:right;">${d.distance}</td><td style="padding:4px 10px;text-align:right;">€${d.price}</td><td style="padding:4px 10px;text-align:right;color:#e63946;">${d[key].toFixed(1)}</td></tr>`).join('')}</table></div>`
+  return html`<div style="display:flex;gap:40px;justify-content:center;">${tbl(deals_line, "res_line", "Straight line (Week 4)")}${tbl(deals_spline, "res_spline", "Spline")}</div>`
+}
+```
+
+::: {.fragment}
+```{ojs}
+html`<p>Only ${stats.n_both} hotel (highlighted) is on both lists. The straight line predicts prices that are too low near the centre, so it couldn't see that some central hotels are good value. The spline picks up hotels just 0.1–0.2 miles out. <strong>The shape of the line changed the business answer.</strong></p>`
+```
 :::
 
-::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
-Source: Békés & Kézdi (2021), Ch. 8
-:::
-
----
-
-## When measurement error isn't classical
-
----
-
-## Real noise is rarely this polite
-
-The workshop's attenuation-bias result relied on **classical** measurement error: zero mean, independent of everything else. In practice:
-
-- Error may not average to zero — a scale that's consistently a little heavy, a ruler with a worn end
-- Error may be *correlated* with the true value or other variables — people who feel unwell might round symptoms in a particular direction, not randomly
+## Task: move the knot
 
 ::: {.instructions-box}
-Our finger-length measurements were self-reported with a ruler. Can you think of a way that error could be non-classical, rather than just noisy?
+In the notebook, refit the spline with the knot at **2 miles** instead of 1. Then try **two knots**, at 1 and 4 miles. Compare R² each time.
+
+Where would you put the knot, and why? What else, apart from R², would you use to decide?
 :::
 
 ::: {.fragment}
-Without classical error, the "always toward zero" result no longer holds — bias could go either way. The fix isn't a formula; it's redesigning how the variable is measured.
+```{ojs}
+html`<p>R²: knot at 1 mile ${stats.sp_r2}; knot at 2 miles ${stats.sp2_r2}; knots at 1 and 4 miles ${stats.sp14_r2}. The second knot adds almost nothing. Choose knots from the scatterplot and from what you know about the city, not by hunting for the highest R².</p>`
+```
+:::
+
+::: {.fragment}
+**Gabor's guideline:** if you only want the *average* association, a straight line (or a log) is fine. Bend it when you care about **prediction or residuals** – like finding deals. And simpler is usually better.
+:::
+
+# Part 3: measurement error, using the ratings {background-color="#2d6a4f"}
+
+## Nothing is measured exactly, even in a hotel listing
+
+- **Price** is one night, on one date – not the hotel's "true" price
+- **Distance** is measured to a city centre someone chose
+- **Rating** is the average of whatever reviews guests happened to leave
+
+::: {.fragment}
+So every variable we've used has some error in it. Does that matter for the regression? It depends on **which** variable has the error, and what kind of error it is.
 :::
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
 Source: Békés & Kézdi (2021), Ch. 8
 :::
 
----
+## A new question: ratings and price
 
-# Worked example {background-color="#2d6a4f"}
-## Attenuation bias, confirmed in real data
-
----
-
-## Hotel ratings: a noisier x for some hotels than others
-
-Price comparison sites publish an *average* customer rating per hotel — but that average is noisier when it's based on fewer reviews.
-
-- **Few ratings** (< 100 reviews): 77 hotels, ~57 ratings each, rating SD = 0.42
-- **Many ratings** (> 200 reviews): 72 hotels, ~417 ratings each, rating SD = 0.26
+Do better-rated hotels charge more? We regress **ln(price) on the average customer rating**.
 
 ::: {.fragment}
-If classical measurement error is at work, the *few-ratings* group has the noisier x — and the workshop's result predicts exactly one thing: a flatter slope for that group.
+But think about where that rating comes from. A hotel with 20 reviews has an average that a few unusual guests can move a lot. A hotel with 500 reviews has an average that's hard to move.
+
+**The rating is measured with more noise for some hotels than others.** That's what we use to see measurement error in real data.
+:::
+
+## Classical measurement error
+
+The measured value = true value + error, and the error:
+
+1. is **zero on average**, so it doesn't shift the mean, and
+2. is **unrelated** to everything else, including the true value
+
+::: {.fragment}
+For a rating: each review is one guest's opinion, sometimes above the hotel's "true" quality, sometimes below. Averaging over more reviews cancels more of it out. That's close to classical error.
 :::
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
 Source: Békés & Kézdi (2021), Ch. 8
 :::
 
-## The prediction, confirmed
+## Noise in y doesn't bias the slope
 
-Regressing log(price) on average rating, separately for each group:
+Price on one night = "true" price + error. Because the error is unrelated to x:
+
+$$\beta = \frac{Cov[y^* + e,\ x]}{Var[x]} = \frac{Cov[y^*, x] + \overbrace{Cov[e, x]}^{=\,0}}{Var[x]} = \beta^*$$
+
+::: {.fragment}
+The same idea as Week 4's $E[\varepsilon \mid x] = 0$: random noise in y adds scatter around the line, which makes SEs bigger, but it doesn't tilt the line.
+:::
+
+## Noise in x does: attenuation bias
+
+Now the **rating** (x) has the noise:
+
+$$\hat\beta = \beta^* \times \frac{Var[x^*]}{Var[x^*] + Var[e]}$$
+
+- The fraction is always below 1, so the slope is pulled **towards zero**
+- More noise, bigger shrinkage
+
+::: {.fragment}
+**Why:** if two hotels' ratings differ by 0.2, their true quality probably differs by less – some of that 0.2 is noise. So the price difference that goes with each rating point looks smaller than it really is.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 8
+:::
+
+## Watch attenuation happen
+
+```{ojs}
+viewof noise_sd = Inputs.range([0, 0.6], { step: 0.05, value: 0, label: "Noise added to the ratings (SD, rating points)" })
+```
 
 ```{ojs}
 {
-  const grid = d3.range(1, 5.05, 0.1)
-  const few = grid.map(x => ({ x, y: 4.0 + 0.35 * (x - 3), group: "Few ratings (< 100 reviews) — noisier x" }))
-  const many = grid.map(x => ({ x, y: 4.0 + 0.55 * (x - 3), group: "Many ratings (> 200 reviews) — less noisy x" }))
-  return Plot.plot({
-    height: 460, marginLeft: 60,
-    x: { label: "Average customer rating" }, y: { label: "ln(price), illustrative" },
-    color: { legend: true, domain: ["Few ratings (< 100 reviews) — noisier x", "Many ratings (> 200 reviews) — less noisy x"], range: ["#e63946", "#457b9d"] },
+  const rows = many.map(d => ({ ...d, noisy: d.rating + noise_sd * d.z }))
+  const f0 = olsFit(rows.map(d => ({ x: d.rating, y: d.ln_price })), "x", "y")
+  const f = olsFit(rows.map(d => ({ x: d.noisy, y: d.ln_price })), "x", "y")
+  const xr = d3.extent(rows, d => d.noisy)
+  const lam = stats.many_var / (stats.many_var + noise_sd ** 2)
+  return html`<div>${accessibleChart(Plot.plot({ height: 330, width: 820, marginLeft: 50,
+    x: { label: "Rating (with added noise)", domain: [2.6, 5.4] }, y: { label: "ln(price)" },
     marks: [
-      Plot.line(few, { x: "x", y: "y", stroke: "group", strokeWidth: 2.5 }),
-      Plot.line(many, { x: "x", y: "y", stroke: "group", strokeWidth: 2.5 }),
-    ]
-  })
+      Plot.dot(rows, { x: "noisy", y: "ln_price", r: 3.5, fill: "#457b9d", fillOpacity: 0.6 }),
+      Plot.line(xr.map(x => ({ x, y: f0.a + f0.b * x })), { x: "x", y: "y", stroke: "#999", strokeDasharray: "5,4", strokeWidth: 2 }),
+      Plot.line(xr.map(x => ({ x, y: f.a + f.b * x })), { x: "x", y: "y", stroke: "#e63946", strokeWidth: 3 }),
+    ] }), `Scatterplot of log price against rating for the ${stats.many_n} hotels with many reviews, with noise of SD ${noise_sd} added to the ratings. The fitted slope is ${f.b.toFixed(2)}, against ${f0.b.toFixed(2)} with no added noise.`)}
+    <p style="font-family:sans-serif;text-align:center;">Slope: <strong style="color:#e63946;">${f.b.toFixed(2)}</strong> (no added noise: ${f0.b.toFixed(2)}) &nbsp;·&nbsp; formula predicts ${f0.b.toFixed(2)} × ${lam.toFixed(2)} = ${(f0.b * lam).toFixed(2)}</p></div>`
 }
 ```
 
-Slope for hotels with few ratings: **0.35**. Slope for hotels with many ratings: **0.55**. Flatter where the measurement is noisier — the exact pattern from the workshop's slider, now in real hotel data, not simulated noise.
+```{ojs}
+html`<p style="font-size:0.8em;color:#555;">The ${stats.many_n} hotels with more than 200 reviews, whose ratings are the most reliable. One set of random noise, scaled up by the slider. One draw won't match the formula exactly: the formula gives the average over many draws, which is what the next task checks.</p>`
+```
 
-::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
-Source: Békés & Kézdi (2021), Ch. 8. Lines illustrate the reported slopes; not raw plotted data.
+## Task: how much noise would it take?
+
+::: {.instructions-box}
+In the notebook, take the hotels with **more than 200 reviews** and add random noise to their ratings, as on the last slide. Repeat it many times and average the slopes.
+
+How big does the noise SD need to be before their slope looks like the slope for hotels with **fewer than 100 reviews**? Check your answer against the attenuation formula.
+:::
+
+::: {.fragment}
+```{ojs}
+html`<p>Average slope over 500 runs: ${noise_grid.map(d => `SD ${d.sd} → ${d.mean_b}`).join(' · ')}. About <strong>0.2 rating points</strong> of noise brings it down to ${noise_grid[1].mean_b}, close to the few-reviews slope of ${stats.few_b}. The formula agrees: Var[x] = ${stats.many_var}, so λ = ${stats.many_var} / (${stats.many_var} + 0.04) ≈ ${noise_grid[1].lam}, and ${stats.many_b} × ${noise_grid[1].lam} ≈ ${(stats.many_b * noise_grid[1].lam).toFixed(2)}.</p>`
+```
+:::
+
+## The real comparison
+
+```{ojs}
+{
+  const mk = (rows, col, title, fit) => {
+    const xr = d3.extent(rows, d => d.rating)
+    return html`<div><p style="text-align:center;font-weight:700;margin:0;">${title}</p>${Plot.plot({ height: 280, width: 400, marginLeft: 45,
+      x: { label: "Rating", domain: [2, 5] }, y: { label: "ln(price)", domain: [3.9, 5.9] },
+      marks: [Plot.dot(rows, { x: "rating", y: "ln_price", r: 3.5, fill: col, fillOpacity: 0.6 }),
+              Plot.line(xr.map(x => ({ x, y: fit.a + fit.b * x })), { x: "x", y: "y", stroke: "#1a1a2e", strokeWidth: 2.5 })] })}</div>`
+  }
+  return accessibleChart(html`<div style="display:flex;gap:30px;justify-content:center;">
+    ${mk(few, "#e63946", "Fewer than 100 reviews", olsFit(few, "rating", "ln_price"))}${mk(many, "#457b9d", "More than 200 reviews", olsFit(many, "rating", "ln_price"))}</div>`,
+    `Two scatterplots of log price against rating with fitted lines. The slope is ${stats.few_b} for hotels with few reviews and ${stats.many_b} for hotels with many.`)
+}
+```
+
+```{ojs}
+html`<table style="margin:6px auto;font-family:sans-serif;font-size:0.8em;border-collapse:collapse;">
+  <caption class="visually-hidden">Slope of log price on rating by number of reviews.</caption>
+  <tr style="border-bottom:2px solid #1a1a2e;"><th scope="col" style="padding:3px 14px;"></th><th scope="col" style="padding:3px 14px;">Hotels</th><th scope="col" style="padding:3px 14px;">Avg reviews</th><th scope="col" style="padding:3px 14px;">Slope</th><th scope="col" style="padding:3px 14px;">Robust SE</th><th scope="col" style="padding:3px 14px;">95% CI</th></tr>
+  <tr style="border-bottom:1px solid #ddd;"><td style="padding:3px 14px;">Few reviews</td><td style="padding:3px 14px;text-align:center;">${stats.few_n}</td><td style="padding:3px 14px;text-align:center;">${stats.few_reviews}</td><td style="padding:3px 14px;text-align:center;">${stats.few_b}</td><td style="padding:3px 14px;text-align:center;">${stats.few_se}</td><td style="padding:3px 14px;text-align:center;">[${stats.few_lo}, ${stats.few_hi}]</td></tr>
+  <tr><td style="padding:3px 14px;">Many reviews</td><td style="padding:3px 14px;text-align:center;">${stats.many_n}</td><td style="padding:3px 14px;text-align:center;">${stats.many_reviews}</td><td style="padding:3px 14px;text-align:center;">${stats.many_b}</td><td style="padding:3px 14px;text-align:center;">${stats.many_se}</td><td style="padding:3px 14px;text-align:center;">[${stats.many_lo}, ${stats.many_hi}]</td></tr>
+</table>`
+```
+
+::: {.fragment}
+Flatter where the rating is noisier, as attenuation predicts. But the two CIs overlap, so this is **consistent with** attenuation rather than proof of it.
+:::
+
+## Noise-to-signal ratio
+
+$$\text{noise-to-signal} = \frac{Var[e]}{Var[x^*]}$$
+
+- **Low:** careful recording, or a variable averaged over lots of observations. Usually safe to ignore
+- **High:** the noise is large compared with the real spread in x. Worth taking seriously
+
+::: {.fragment}
+```{ojs}
+html`<p>The hotel ratings are a warning: among well-reviewed hotels the ratings barely vary (SD ${stats.many_sd} on a 5-point scale). With so little real spread, even 0.2 points of noise is a big share of it.</p>`
+```
+:::
+
+## When the error isn't classical
+
+The "always towards zero" result needs the error to be random. Hotel ratings might not be:
+
+- A hotel could ask its happiest guests to leave reviews
+- A new hotel's first reviews might come from friends and family
+
+::: {.fragment}
+Then the error is linked to the hotel itself, and the bias could go **either way**. There's no formula to fix it; the answer is better measurement.
+:::
+
+::: {.instructions-box}
+What else could make hotel ratings, or the distance measure, non-classical?
 :::
 
 ## Should we do anything about it?
 
 ::: {.instructions-box}
-Gabor & Kézdi leave this open deliberately. Given what you now know about attenuation bias — would you drop the few-ratings hotels, keep them and just report the likely direction of bias, or something else? What would you tell a client who only saw the few-ratings estimate?
+Gabor & Kézdi leave this open. Given what you now know about attenuation bias, would you:
+
+- drop the hotels with few reviews,
+- keep them and say which way the bias probably goes, or
+- something else?
+
+What would you tell someone using the rating slope to decide whether a better rating is worth paying for?
+:::
+
+## Bring to the Q&A
+
+::: {.instructions-box}
+1. Which of the four functional forms would you use to find a good deal, and why?
+2. Where would you put the spline's knot? Would a second knot help?
+3. Only one hotel is on both best-deal lists. Which list would you trust, and why?
+4. How much noise did you need to add to the ratings? Does 0.2 rating points sound plausible for an average of about 50 reviews?
+5. Is the gap between the two rating slopes evidence of attenuation, or could something else explain it?
 :::
 
 ## Coming up: Week 6
 
 ::: {style="text-align: center; padding-top: 60px;"}
-[We've stress-tested one predictor, on its own, every way we know how.]{style="font-size: 1.3em;"}
+[We've taken one x as far as it goes: its shape, its noise, and how sure we can be.]{style="font-size: 1.3em;"}
 
 [**Multiple regression: what "controlling for" really means**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
-
-::: {.fragment style="padding-top:40px;"}
-*Omitted variable bias · multicollinearity · interactions*
-:::
 :::

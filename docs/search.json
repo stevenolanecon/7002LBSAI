@@ -676,7 +676,7 @@
     "href": "index.html#weeks",
     "title": "Research Methods in Analytics",
     "section": "Weeks",
-    "text": "Weeks\nWorkshop and online-session slides, published as each week runs.\n\n\n\n\nWeek 01Distributions and Summarising Data\n\nLive\n\n\nWorkshop slidesOnline sessionOutliers addendumReaction-time toolPooled histogram toolDownload the data\n\n\n\n\n\nWeek 02Inference\n\nLive\n\n\nWorkshop slidesOnline sessionBootstrap toolDownload the data\n\n\n\n\n\nWeek 03Relationships Between Variables\n\nLive\n\n\nWorkshop slidesOnline sessionDownload the data\n\n\n\n\n\nWeek 04Regression I — Fitting the Line\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 05Regression I — Model Problems & Inference\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 06Regression II — Multiple Regression\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\nWeek 07\n\nCurriculum Enrichment Week — no session\n\n\n\n\n\nWeek 08Other Models (GLMs)\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 09Causal Analysis and Experiments\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 10Prediction\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 11Time Series\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\nWeek 12\n\nPortfolio presentations — see Canvas"
+    "text": "Weeks\nWorkshop and online-session slides, published as each week runs.\n\n\n\n\nWeek 01Distributions and Summarising Data\n\nLive\n\n\nWorkshop slidesOnline sessionOutliers addendumReaction-time toolPooled histogram toolDownload the data\n\n\n\n\n\nWeek 02Inference\n\nLive\n\n\nWorkshop slidesOnline sessionBootstrap toolDownload the data\n\n\n\n\n\nWeek 03Relationships Between Variables\n\nLive\n\n\nWorkshop slidesOnline sessionDownload the data\n\n\n\n\n\nWeek 04Regression I — Fitting the Line\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 05Regression I — Model Problems & Inference\n\nLive\n\n\nWorkshop slidesOnline sessionQuadratic tool\n\n\n\n\n\nWeek 06Regression II — Multiple Regression\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\nWeek 07\n\nCurriculum Enrichment Week — no session\n\n\n\n\n\nWeek 08Other Models (GLMs)\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 09Causal Analysis and Experiments\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 10Prediction\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 11Time Series\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\nWeek 12\n\nPortfolio presentations — see Canvas"
   },
   {
     "objectID": "data.html",
@@ -2588,5 +2588,495 @@
     "title": "Finding a Good Deal Among Hotels",
     "section": "Why the residuals average zero",
     "text": "Why the residuals average zero\nTwo things are true of every OLS line with an intercept, whatever the data:\n\nThe residuals sum to zero. The hotels above the line and the hotels below it exactly balance out.\nThe average predicted price equals the average actual price. If the residuals average zero, the predictions can’t be systematically too high or too low.\n\n\nBoth follow from the intercept formula, \\(\\hat\\alpha = \\bar y - \\hat\\beta \\bar x\\), which forces the line through the point of means \\((\\bar x, \\bar y)\\). Tilt the line however you like about that point: whatever it gains above, it loses below.\n\ncodeBox(`hotels['residual'].sum()          # ${stats.resid_sum.toExponential(1)}  (zero, up to rounding)\nhotels['predicted'].mean()        # ${stats.pred_mean.toFixed(2)}\nhotels['price'].mean()            # ${stats.price_mean2.toFixed(2)}`)\n\n\n\n\n\n\nSo a residual of −€50 means cheaper than a typical hotel at that distance – it’s measured against a line that, on average, gets prices exactly right."
+  },
+  {
+    "objectID": "week5-slides.html#section",
+    "href": "week5-slides.html#section",
+    "title": "Model Problems & Inference",
+    "section": "",
+    "text": "Model problems & inference\nWeek 4 gave HR a formula. Before anyone trusts it: is it the right shape? What if something’s mismeasured? And how sure are we, really?"
+  },
+  {
+    "objectID": "week5-slides.html#from-formula-to-trustworthy-formula",
+    "href": "week5-slides.html#from-formula-to-trustworthy-formula",
+    "title": "Model Problems & Inference",
+    "section": "From formula to trustworthy formula",
+    "text": "From formula to trustworthy formula\n\nHR has last week’s line: reaction time as a function of finger length. Someone on the team asks — can we ship this?\n\n\nNaive answer: the model’s built, R² is computed, we’re done.\nWhy it’s not that simple: we assumed a straight line without checking if that’s the right shape. And we’ve given HR one number for \\(\\hat\\beta\\) with no sense of how much it could be wrong by. Today, we think about how to fix these issues."
+  },
+  {
+    "objectID": "week5-slides.html#choosing-the-right-functional-form",
+    "href": "week5-slides.html#choosing-the-right-functional-form",
+    "title": "Model Problems & Inference",
+    "section": "Choosing the right functional form",
+    "text": "Choosing the right functional form"
+  },
+  {
+    "objectID": "week5-slides.html#to-log-or-not-to-log",
+    "href": "week5-slides.html#to-log-or-not-to-log",
+    "title": "Model Problems & Inference",
+    "section": "To log, or not to log?",
+    "text": "To log, or not to log?\nSo why would you take the log of a variable in the first place?\n\n\nThe data are skewed. Income, prices, firm size, house values – and our own reaction times – have a long right tail. A few huge values dominate the picture and drag the line around. Logging pulls the tail in.\n\n\n\n\nIt can straighten out a curve. Something that grows faster and faster, or rises and then flattens off, can look like a straight line once it’s logged. Then a straight-line model fits. We’ll see an example in a bit.\n\n\n\n\nWhat matters is the proportion, not the amount. A £1,000 pay rise means a lot on £20,000 and very little on £200,000. A 10% price rise means the same thing on a £2 coffee and a £2,000 laptop; a £5 rise doesn’t.\n\n\n\nThat first reason is why we logged reaction time back in Week 3. And once a variable is in logs, its slope can be read as a percentage difference."
+  },
+  {
+    "objectID": "week5-slides.html#logs-turn-differences-into-percentages",
+    "href": "week5-slides.html#logs-turn-differences-into-percentages",
+    "title": "Model Problems & Inference",
+    "section": "Logs turn differences into percentages",
+    "text": "Logs turn differences into percentages\nA difference in logs is roughly a percentage difference.\n\n\n\nValues\nDifference in logs\nActual % difference\n\n\n\n\n100 → 101\nln(101) − ln(100) = 0.010\n1%\n\n\n100 → 110\nln(110) − ln(100) = 0.095\n10%\n\n\n100 → 150\nln(150) − ln(100) = 0.405\n50%\n\n\n\n\n\nClose for small differences, and drifts for big ones: 0.405 is a 50% gap, not 40%. As a rule of thumb, trust it up to about ±30%.\nWhy it matters: in cross-section data there’s no “before” to build a percentage from. On a log scale, the gap between any two values is roughly their percentage difference, with no baseline needed. That’s what lets a log model’s slope read as a % difference.\nx must be positive: ln(0) and ln(negative) don’t exist.\n\n\n\nSource: Békés & Kézdi (2021), Ch. 4 and Ch. 8"
+  },
+  {
+    "objectID": "week5-slides.html#interpreting-log-models-the-full-picture",
+    "href": "week5-slides.html#interpreting-log-models-the-full-picture",
+    "title": "Model Problems & Inference",
+    "section": "Interpreting log models — the full picture",
+    "text": "Interpreting log models — the full picture\nThe table you previewed in Week 4, with the equation behind each row and the reasoning behind each interpretation:\n\n\n\n\n\n\n\n\nModel\nEquation\nInterpretation of \\(\\hat\\beta\\)\n\n\n\n\nLevel–level\n\\(y^E = \\alpha + \\beta x\\)\n1-unit higher x → \\(\\hat\\beta\\)-unit higher y, on average\n\n\nLog–level\n\\(\\ln(y)^E = \\alpha + \\beta x\\)\n1-unit higher x → \\(100\\times\\hat\\beta\\) % higher y, on average\n\n\nLevel–log\n\\(y^E = \\alpha + \\beta \\ln(x)\\)\n1% higher x → \\(\\hat\\beta/100\\)-unit higher y, on average\n\n\nLog–log\n\\(\\ln(y)^E = \\alpha + \\beta \\ln(x)\\)\n1% higher x → \\(\\hat\\beta\\)% higher y, on average — an elasticity\n\n\n\n\nWhich one to use is a substantive question you should consider first: is x likely to move y in multiplicative steps (percentages) or additive ones (fixed amounts)? Only then check whether the distributions agree.\n\n\nSource: Békés & Kézdi (2021), Ch. 8"
+  },
+  {
+    "objectID": "week5-slides.html#task-log-our-own-outcome",
+    "href": "week5-slides.html#task-log-our-own-outcome",
+    "title": "Model Problems & Inference",
+    "section": "Task — log our own outcome",
+    "text": "Task — log our own outcome\n\nReaction time is right-skewed (Week 1). Open the Week 5 in-class notebook (Colab). Fit a log–level model, np.log(mean_rt) ~ finger_mm, on student_summary. You can log inside the formula: smf.ols('np.log(y) ~ x', data=df).fit().\nHow do we interpet \\(\\hat\\beta\\) now? How does R² compare with Week 4’s level–level model?\n\n\n\nhtml`&lt;p style=\"font-family:sans-serif;font-size:1.05em;\"&gt;β̂ = &lt;strong&gt;${task_ans.log_b}&lt;/strong&gt;: students whose finger is 1mm longer have, on average, a mean reaction time about &lt;strong&gt;${(task_ans.log_b*100).toFixed(1)}% slower&lt;/strong&gt;.&lt;br&gt;R² = &lt;strong&gt;${task_ans.log_r2}&lt;/strong&gt;, against &lt;strong&gt;${task_ans.r2}&lt;/strong&gt; for level–level. Logging tames the slowest students, but finger length still explains very little.&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week5-slides.html#logging-can-straighten-a-curve",
+    "href": "week5-slides.html#logging-can-straighten-a-curve",
+    "title": "Model Problems & Inference",
+    "section": "Logging can straighten a curve",
+    "text": "Logging can straighten a curve\nA new app’s monthly users over its first three years (made-up numbers):\n\n{\n  const rows = growth_data\n  const chartRaw = Plot.plot({\n    height: 330, width: 380, marginLeft: 60,\n    x: { label: \"Month\" }, y: { label: \"Users\", grid: true },\n    marks: [\n      Plot.dot(rows, { x: \"month\", y: \"users\", fill: \"#1a1a2e\", r: 3.5, fillOpacity: 0.7 }),\n      Plot.linearRegressionY(rows, { x: \"month\", y: \"users\", stroke: \"#e63946\", strokeWidth: 2.5 }),\n    ]\n  })\n  const chartLog = Plot.plot({\n    height: 330, width: 380, marginLeft: 60,\n    x: { label: \"Month\" }, y: { label: \"ln(users)\", grid: true },\n    marks: [\n      Plot.dot(rows, { x: \"month\", y: \"ln_users\", fill: \"#457b9d\", r: 3.5, fillOpacity: 0.7 }),\n      Plot.linearRegressionY(rows, { x: \"month\", y: \"ln_users\", stroke: \"#e63946\", strokeWidth: 2.5 }),\n    ]\n  })\n  return html`&lt;div style=\"display:flex;gap:20px;justify-content:center;\"&gt;\n    &lt;div&gt;&lt;div style=\"text-align:center;font-family:sans-serif;font-size:0.8em;\"&gt;Raw: R² = ${growth_stats.raw_r2}&lt;/div&gt;${chartRaw}&lt;/div&gt;\n    &lt;div&gt;&lt;div style=\"text-align:center;font-family:sans-serif;font-size:0.8em;\"&gt;Logged: R² = ${growth_stats.log_r2}&lt;/div&gt;${chartLog}&lt;/div&gt;\n  &lt;/div&gt;`\n}\n\n\n\n\n\n\n\n\nhtml`&lt;p style=\"font-family:sans-serif;font-size:0.9em;\"&gt;On the left, a straight line is a poor fit: it's too high in the middle and too low at both ends. Users grow by roughly the same &lt;em&gt;percentage&lt;/em&gt; each month, not the same number, so the gains keep getting bigger. Log users and it's a straight line. The slope is &lt;strong&gt;${growth_stats.log_b}&lt;/strong&gt;: users grow by about &lt;strong&gt;${growth_stats.pct}% a month&lt;/strong&gt;.&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week5-slides.html#sometimes-a-log-isnt-possible",
+    "href": "week5-slides.html#sometimes-a-log-isnt-possible",
+    "title": "Model Problems & Inference",
+    "section": "Sometimes a log isn’t possible",
+    "text": "Sometimes a log isn’t possible\nLogging needs a strictly positive variable — never zero, never negative. Real data often isn’t:\n\nCreate a binary indicator, then log what’s left — e.g. “is wealth negative?” (0/1), “is wealth zero?” (0/1), and log the positive values, replacing the log with zero where it can’t be taken\nAdd a constant, \\(\\ln(x+1)\\), if x is zero or positive — a common shortcut, but not principled; it’s least distorting when x tends to be large (there, \\(\\ln(x)\\approx\\ln(x+1)\\) anyway)\n\n\nSuppose a trial recorded exactly 0ms — a device timing glitch, not a real reaction. Would you drop it, indicator-and-log it, or use \\(\\ln(x+1)\\)? What does your answer depend on?\n\n\nSource: Békés & Kézdi (2021), Ch. 8"
+  },
+  {
+    "objectID": "week5-slides.html#polynomials---what-if-the-relationship-curves",
+    "href": "week5-slides.html#polynomials---what-if-the-relationship-curves",
+    "title": "Model Problems & Inference",
+    "section": "Polynomials - what if the relationship curves?",
+    "text": "Polynomials - what if the relationship curves?\nA quadratic lets the slope change smoothly, without deciding where it bends:\n\\[y^E = \\alpha + \\beta_1 x + \\beta_2 x^2\\]\n\n\\(\\alpha\\): average y when x = 0\n\\(\\beta_1\\) alone has no clean interpretation\n\\(\\beta_2\\): shape only — U-shaped (convex) if positive, inverted-U (concave) if negative\nThe slope at any point x is \\(\\beta_1 + 2\\beta_2 x\\) — it changes as x changes\n\n\nSource: Békés & Kézdi (2021), Ch. 8"
+  },
+  {
+    "objectID": "week5-slides.html#play-with-a-quadratic",
+    "href": "week5-slides.html#play-with-a-quadratic",
+    "title": "Model Problems & Inference",
+    "section": "Play with a quadratic",
+    "text": "Play with a quadratic\n\\(y = \\alpha + \\beta_1 x + \\beta_2 x^2\\), with \\(\\alpha = 0\\). Move the sliders and watch the shape change.\n\nviewof quadB = Inputs.form({\n  b1: Inputs.range([-5, 5], { step: 0.1, value: 2, label: \"β₁\" }),\n  b2: Inputs.range([-1, 1], { step: 0.05, value: -0.25, label: \"β₂\" })\n})\n\n\n\n\n\n\n\n{\n  const { b1, b2 } = quadB\n  const pts = d3.range(-10, 10.01, 0.1).map(x =&gt; ({ x, y: b1 * x + b2 * x * x }))\n  const turn = b2 !== 0 ? -b1 / (2 * b2) : null\n  const shape = b2 &gt; 0 ? \"U-shaped (convex)\" : b2 &lt; 0 ? \"inverted U (concave)\" : \"a straight line\"\n  const chart = Plot.plot({\n    height: 340, width: 760, marginLeft: 50, grid: true,\n    x: { label: \"x\", domain: [-10, 10] }, y: { label: \"y\", domain: [-60, 60] }, clip: true,\n    marks: [\n      Plot.ruleX([0], { stroke: \"#ccc\" }), Plot.ruleY([0], { stroke: \"#ccc\" }),\n      Plot.line(pts, { x: \"x\", y: \"y\", stroke: \"#e63946\", strokeWidth: 3 }),\n      turn !== null && Math.abs(turn) &lt;= 10 ? Plot.dot([{ x: turn, y: b1 * turn + b2 * turn * turn }], { x: \"x\", y: \"y\", fill: \"#1a1a2e\", r: 6 }) : null\n    ]\n  })\n  return html`&lt;div&gt;${chart}&lt;p style=\"font-family:sans-serif;text-align:center;margin:4px 0 0;\"&gt;Shape: &lt;strong&gt;${shape}&lt;/strong&gt;${turn !== null ? html` &nbsp;·&nbsp; turning point at x = &lt;strong&gt;${turn.toFixed(1)}&lt;/strong&gt;` : \"\"} &nbsp;·&nbsp; slope at x = 0: &lt;strong&gt;${b1.toFixed(1)}&lt;/strong&gt;, at x = 5: &lt;strong&gt;${(b1 + 10 * b2).toFixed(1)}&lt;/strong&gt;&lt;/p&gt;&lt;/div&gt;`\n}\n\n\n\n\n\n\n\nTry it yourself, with α as well: quadratic tool"
+  },
+  {
+    "objectID": "week5-slides.html#task-fit-a-quadratic-to-our-own-data",
+    "href": "week5-slides.html#task-fit-a-quadratic-to-our-own-data",
+    "title": "Model Problems & Inference",
+    "section": "Task — fit a quadratic to our own data",
+    "text": "Task — fit a quadratic to our own data\n\nIn the notebook, add a squared term to Week 4’s model: smf.ols('y ~ x + I(x**2)', data=df).fit(). Compare its R² with the straight line’s. Then work out the slope at 80mm, \\(\\hat\\beta_1 + 2\\hat\\beta_2 \\times 80\\)."
+  },
+  {
+    "objectID": "week5-slides.html#what-you-should-have-found-the-quadratic",
+    "href": "week5-slides.html#what-you-should-have-found-the-quadratic",
+    "title": "Model Problems & Inference",
+    "section": "What you should have found: the quadratic",
+    "text": "What you should have found: the quadratic\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 5) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n  const x = rows.map(d =&gt; d.finger_mm), y = rows.map(d =&gt; d.mean_rt)\n  const n = x.length\n  const s = k =&gt; d3.sum(x.map(xi =&gt; xi ** k))\n  const sxy = k =&gt; d3.sum(x.map((xi, i) =&gt; xi ** k * y[i]))\n  // Normal equations for y = a + b1*x + b2*x^2, solved via Cramer's rule\n  const M = [[n, s(1), s(2)], [s(1), s(2), s(3)], [s(2), s(3), s(4)]]\n  const v = [d3.sum(y), sxy(1), sxy(2)]\n  const det3 = m =&gt; m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1]) - m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0]) + m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0])\n  const D = det3(M)\n  const withCol = (m, col, vec) =&gt; m.map((row, i) =&gt; row.map((val, j) =&gt; j === col ? vec[i] : val))\n  const a = det3(withCol(M, 0, v)) / D\n  const b1 = det3(withCol(M, 1, v)) / D\n  const b2 = det3(withCol(M, 2, v)) / D\n  const fitted = x.map(xi =&gt; a + b1 * xi + b2 * xi ** 2)\n  const ybar = d3.mean(y)\n  const varY = d3.mean(y.map(yi =&gt; (yi - ybar) ** 2))\n  const varYhat = d3.mean(fitted.map(f =&gt; (f - ybar) ** 2))\n  const r2quad = varYhat / varY\n  const xbar = d3.mean(x)\n  const cov = d3.mean(x.map((xi, i) =&gt; (xi - xbar) * (y[i] - ybar)))\n  const varx = d3.mean(x.map(xi =&gt; (xi - xbar) ** 2))\n  const betaLin = cov / varx, alphaLin = ybar - betaLin * xbar\n  const fittedLin = x.map(xi =&gt; alphaLin + betaLin * xi)\n  const varYhatLin = d3.mean(fittedLin.map(f =&gt; (f - ybar) ** 2))\n  const r2lin = varYhatLin / varY\n  const grid = d3.range(d3.min(x), d3.max(x), (d3.max(x) - d3.min(x)) / 60)\n  const curve = grid.map(xi =&gt; ({ finger_mm: xi, fit: a + b1 * xi + b2 * xi ** 2 }))\n  const chart = Plot.plot({\n    height: 330, marginLeft: 60,\n    x: { label: \"Finger length (mm)\" }, y: { label: \"Mean reaction time (ms)\" },\n    marks: [\n      Plot.dot(rows, { x: \"finger_mm\", y: \"mean_rt\", fill: \"#1a1a2e\", r: 4 }),\n      Plot.line(curve, { x: \"finger_mm\", y: \"fit\", stroke: \"#e63946\", strokeWidth: 2.5 }),\n    ]\n  })\n  return html`&lt;div&gt;${chart}&lt;p style=\"font-family:sans-serif;font-size:1em;text-align:center;\"&gt;Linear R² = &lt;strong&gt;${r2lin.toFixed(3)}&lt;/strong&gt; &nbsp;·&nbsp; Quadratic R² = &lt;strong&gt;${r2quad.toFixed(3)}&lt;/strong&gt;&lt;/p&gt;&lt;/div&gt;`\n}\n\n\n\n\n\n\n\nDoes the quadratic noticeably beat the straight line? If the improvement is tiny, that’s a finding too — it says the relationship really is close to linear, for this data.\n\n\nhtml`&lt;p style=\"font-family:sans-serif;font-size:0.95em;\"&gt;The coefficients: β̂₁ = ${task_ans.quad_b1}, β̂₂ = ${task_ans.quad_b2}. Wildly large on their own, which is why β̂₁ has no clean interpretation. The slope at 80mm is ${task_ans.quad_b1} + 2 × ${task_ans.quad_b2} × 80 = &lt;strong&gt;${task_ans.quad_slope80} ms per mm&lt;/strong&gt;.&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week5-slides.html#higher-order-polynomials",
+    "href": "week5-slides.html#higher-order-polynomials",
+    "title": "Model Problems & Inference",
+    "section": "Higher-order polynomials",
+    "text": "Higher-order polynomials\nNothing stops us adding \\(x^3\\), \\(x^4\\) and more: \\(y^E = \\alpha + \\beta_1 x + \\beta_2 x^2 + \\beta_3 x^3 + \\dots\\)\n\nhtml`&lt;table style=\"margin:10px auto;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;\"&gt;\n  &lt;caption class=\"visually-hidden\"&gt;R-squared of polynomial fits of reaction time on finger length, powers 1 to 5&lt;/caption&gt;\n  &lt;tr style=\"border-bottom:2px solid #1a1a2e;\"&gt;&lt;th scope=\"col\" style=\"padding:4px 16px;text-align:left;\"&gt;Highest power of finger length&lt;/th&gt;${poly_r2.map(d =&gt; `&lt;th scope=\"col\" style=\"padding:4px 16px;\"&gt;${d.power}&lt;/th&gt;`).join('')}&lt;/tr&gt;\n  &lt;tr&gt;&lt;td style=\"padding:4px 16px;\"&gt;R²&lt;/td&gt;${poly_r2.map(d =&gt; `&lt;td style=\"padding:4px 16px;text-align:center;\"&gt;${d.r2.toFixed(3)}&lt;/td&gt;`).join('')}&lt;/tr&gt;\n&lt;/table&gt;`\n\n\n\n\n\n\n\nOn our 24 students, R² goes up every time we add a power. It always will: an extra term can only help the fit to this sample. But with only 24 points, a wiggly curve is mostly chasing the odd student, not a real pattern, and none of the coefficients can be interpreted on their own.\nIn practice: a quadratic is usually enough, a cubic now and then. If you need more bends than that, a spline is easier to read. We come back to fitting the sample too closely in Week 10."
+  },
+  {
+    "objectID": "week5-slides.html#the-roadmap-for-choosing-a-functional-form",
+    "href": "week5-slides.html#the-roadmap-for-choosing-a-functional-form",
+    "title": "Model Problems & Inference",
+    "section": "The roadmap for choosing a functional form",
+    "text": "The roadmap for choosing a functional form\n\nCheck the distributions of y and x — skewed, long right tail?\nLook at the shape — scatterplot or a non-parametric fit (bin-scatter, lowess)\nChoose a transform to match what you see — and remember: not every variable can sensibly be logged or ratio’d\nCompare models — if the results agree, that’s a robustness check; if they disagree sharply, find out why"
+  },
+  {
+    "objectID": "week5-slides.html#extreme-values-and-influence",
+    "href": "week5-slides.html#extreme-values-and-influence",
+    "title": "Model Problems & Inference",
+    "section": "Extreme values and influence",
+    "text": "Extreme values and influence"
+  },
+  {
+    "objectID": "week5-slides.html#extreme-value-influential-observation",
+    "href": "week5-slides.html#extreme-value-influential-observation",
+    "title": "Model Problems & Inference",
+    "section": "Extreme value ≠ influential observation",
+    "text": "Extreme value ≠ influential observation\nAn extreme value is just unusual on some variable. An influential observation is one whose presence or absence noticeably moves the regression line.\n\nEvery influential observation is extreme on something — but plenty of extreme values sit right near the line and barely matter. The two ideas get conflated; they shouldn’t be.\n\n\nSource: Békés & Kézdi (2021), Ch. 8"
+  },
+  {
+    "objectID": "week5-slides.html#watch-one-point-move-the-line",
+    "href": "week5-slides.html#watch-one-point-move-the-line",
+    "title": "Model Problems & Inference",
+    "section": "Watch one point move the line",
+    "text": "Watch one point move the line\n\nviewof add_extreme = Inputs.toggle({ label: \"Use Student 10's finger length as typed\", value: false })\n\n\n\n\n\n\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n\n  const fit = data =&gt; {\n    const xbar = d3.mean(data, d =&gt; d.finger_mm), ybar = d3.mean(data, d =&gt; d.mean_rt)\n    const cov = d3.mean(data, d =&gt; (d.finger_mm - xbar) * (d.mean_rt - ybar))\n    const varx = d3.mean(data, d =&gt; (d.finger_mm - xbar) ** 2)\n    const beta = cov / varx\n    return { alpha: ybar - beta * xbar, beta }\n  }\n\n  const own = rows.find(d =&gt; d.student_name === typo_point.student_name)\n  const extreme = { ...own, finger_mm: typo_point.finger_mm }\n  const others = rows.filter(d =&gt; d.student_name !== typo_point.student_name)\n  const withExtreme = add_extreme ? [...others, extreme] : rows\n\n  const base = fit(rows)\n  const withFit = fit(withExtreme)\n  const xr = d3.extent(withExtreme, d =&gt; d.finger_mm)\n  const baseLine = xr.map(x =&gt; ({ x, y: base.alpha + base.beta * x }))\n  const withLine = xr.map(x =&gt; ({ x, y: withFit.alpha + withFit.beta * x }))\n\n  return html`&lt;div&gt;\n    ${Plot.plot({\n      height: 480, marginLeft: 60,\n      x: { label: \"Finger length (mm)\" }, y: { label: \"Mean reaction time (ms)\" },\n      marks: [\n        Plot.dot(add_extreme ? others : rows, { x: \"finger_mm\", y: \"mean_rt\", fill: \"#1a1a2e\", r: 4 }),\n        add_extreme ? Plot.dot([extreme], { x: \"finger_mm\", y: \"mean_rt\", fill: \"#e63946\", r: 7, symbol: \"diamond\" }) : null,\n        Plot.line(baseLine, { x: \"x\", y: \"y\", stroke: \"#999\", strokeDasharray: \"4,3\", strokeWidth: 2 }),\n        add_extreme ? Plot.line(withLine, { x: \"x\", y: \"y\", stroke: \"#e63946\", strokeWidth: 2.5 }) : null,\n      ]\n    })}\n    &lt;p style=\"font-family:sans-serif;text-align:center;\"&gt;\n      β̂ with the corrected value: &lt;strong&gt;${base.beta.toFixed(2)}&lt;/strong&gt;${add_extreme ? html`&nbsp;→&nbsp;as typed: &lt;strong style=\"color:#e63946;\"&gt;${withFit.beta.toFixed(2)}&lt;/strong&gt;` : ''}\n    &lt;/p&gt;\n  &lt;/div&gt;`\n}\n\n\n\n\n\n\n\n\n\nRemember the finger lengths we fixed in Week 3? Student 10 typed 8.2 when they meant 82 – centimetres instead of millimetres. Put that one typo back and the slope flips sign. One student is now miles away from everyone else on the x-axis, so they get a huge say in where the line goes. That’s leverage. It’s also why we checked the data before running anything."
+  },
+  {
+    "objectID": "week5-slides.html#what-to-do-and-it-depends-which-variable",
+    "href": "week5-slides.html#what-to-do-and-it-depends-which-variable",
+    "title": "Model Problems & Inference",
+    "section": "What to do — and it depends which variable",
+    "text": "What to do — and it depends which variable\n\nGeneral rule: avoid dropping observations based on their y value. A strange outcome is still information — dropping it because it’s inconvenient biases what’s left\nDropping on x can be more defensible — if that x value is atypical for the question you’re asking\nBut often the opposite is true: extreme x values are the most informative ones, since they’re where you see the most variation in the pattern\nAlways try a transformation before ever dropping a point\n\n\nSource: Békés & Kézdi (2021), Ch. 8"
+  },
+  {
+    "objectID": "week5-slides.html#task-check-our-own-data",
+    "href": "week5-slides.html#task-check-our-own-data",
+    "title": "Model Problems & Inference",
+    "section": "Task — check our own data",
+    "text": "Task — check our own data\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 3) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n  return Plot.plot({\n    height: 300, marginLeft: 60,\n    x: { label: \"Finger length (mm)\" }, y: { label: \"Mean reaction time (ms)\" },\n    marks: [\n      Plot.dot(rows, { x: \"finger_mm\", y: \"mean_rt\", fill: \"#1a1a2e\", r: 4 }),\n      Plot.text(rows, { x: \"finger_mm\", y: \"mean_rt\", text: \"student_name\", dy: -10, fontSize: 9, fill: \"#666\" }),\n    ]\n  })\n}\n\n\n\n\n\n\n\nIs there a point here that’s extreme on x, extreme on y, or both? In the Week 5 in-class notebook, refit Week 4’s model without the student you think matters most, and compare the slope. Keep every row except one with df[df['name'] != 'Student 1']. What would you actually do with that student, and why?\n\n\n\nhtml`&lt;p style=\"font-family:sans-serif;\"&gt;The most influential student is &lt;strong&gt;${task_ans.drop_name}&lt;/strong&gt; (${task_ans.drop_x}mm, ${task_ans.drop_y}ms). With them, β̂ = ${task_ans.b}; without them, β̂ = &lt;strong&gt;${task_ans.drop_b}&lt;/strong&gt;. One slow student with a long finger is carrying the whole positive slope.&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week5-slides.html#generalising-this-regression",
+    "href": "week5-slides.html#generalising-this-regression",
+    "title": "Model Problems & Inference",
+    "section": "Generalising this regression",
+    "text": "Generalising this regression"
+  },
+  {
+    "objectID": "week5-slides.html#how-sure-are-we-about-β",
+    "href": "week5-slides.html#how-sure-are-we-about-β",
+    "title": "Model Problems & Inference",
+    "section": "How sure are we about β̂?",
+    "text": "How sure are we about β̂?\nWeek 2 built a confidence interval for a mean. Exactly the same logic now applies to a slope:\n\\[CI(\\hat\\beta)_{95\\%} = \\left[\\hat\\beta - 2\\,SE(\\hat\\beta),\\ \\ \\hat\\beta + 2\\,SE(\\hat\\beta)\\right]\\]\n\nSame idea as \\(CI(\\bar x) = \\bar x \\pm 2\\,SE(\\bar x)\\) from Week 2 — a plausible range for the true slope, built from how much \\(\\hat\\beta\\) would bounce around across repeated samples.\n\n\nSource: Békés & Kézdi (2021), Ch. 9"
+  },
+  {
+    "objectID": "week5-slides.html#where-seβ-comes-from",
+    "href": "week5-slides.html#where-seβ-comes-from",
+    "title": "Model Problems & Inference",
+    "section": "Where SE(β̂) comes from",
+    "text": "Where SE(β̂) comes from\n\\[SE(\\hat\\beta) = \\frac{Std[e]}{\\sqrt{n}\\cdot Std[x]}\\]\nSE(β̂) is smaller — the estimate more precise — when:\n\nStd[e] is small — the line fits well, little left-over scatter\nStd[x] is large — x varies a lot in the data\nn is large — more observations\n\n\n\\(Std[x]\\) is just the square root of \\(Var[x]\\), the bottom of Week 4’s slope formula. The more x varies, the more precisely we can pin down the slope. If everyone in the class had the same finger length, we couldn’t estimate a slope at all.\n\n\nSource: Békés & Kézdi (2021), Ch. 9"
+  },
+  {
+    "objectID": "week5-slides.html#task-se-and-ci-for-our-own-regression",
+    "href": "week5-slides.html#task-se-and-ci-for-our-own-regression",
+    "title": "Model Problems & Inference",
+    "section": "Task — SE and CI for our own regression",
+    "text": "Task — SE and CI for our own regression\n\nUsing the SE(β̂) formula from the last slide and β̂ from Week 4, calculate the 95% CI for our own finger-length regression.\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 4) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n  const x = rows.map(d =&gt; d.finger_mm), y = rows.map(d =&gt; d.mean_rt)\n  const n = x.length\n  const xbar = d3.mean(x), ybar = d3.mean(y)\n  const cov = d3.mean(x.map((xi, i) =&gt; (xi - xbar) * (y[i] - ybar)))\n  const varx = d3.mean(x.map(xi =&gt; (xi - xbar) ** 2))\n  const beta = cov / varx, alpha = ybar - beta * xbar\n  const resid = x.map((xi, i) =&gt; y[i] - (alpha + beta * xi))\n  const sdE = Math.sqrt(d3.sum(resid.map(e =&gt; e ** 2)) / (n - 2))\n  const sdX = Math.sqrt(varx)\n  const seBeta = sdE / (Math.sqrt(n) * sdX)\n  const lo = beta - 2 * seBeta, hi = beta + 2 * seBeta\n  return html`&lt;p style=\"font-family:sans-serif;font-size:1.1em;\"&gt;\n    β̂ = &lt;strong&gt;${beta.toFixed(3)}&lt;/strong&gt; &nbsp;·&nbsp; SE(β̂) = &lt;strong&gt;${seBeta.toFixed(3)}&lt;/strong&gt;&lt;br&gt;\n    95% CI: &lt;strong&gt;[${lo.toFixed(3)}, ${hi.toFixed(3)}]&lt;/strong&gt;&lt;/p&gt;`\n}\n\n\n\n\n\n\n\n\nDoes the interval include zero? What would that mean for whether HR should trust this formula at all?"
+  },
+  {
+    "objectID": "week5-slides.html#finding-seβ-in-the-output",
+    "href": "week5-slides.html#finding-seβ-in-the-output",
+    "title": "Model Problems & Inference",
+    "section": "Finding SE(β̂) in the output",
+    "text": "Finding SE(β̂) in the output\nYou don’t have to calculate it by hand. It’s the std err column of model.summary():\nmodel = smf.ols('mean_rt ~ finger_mm', data=student_summary).fit()\nprint(model.summary())\n\nhtml`&lt;pre style=\"font-family:'SF Mono','Menlo',monospace;font-size:0.5em;line-height:1.3;background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;padding:8px 14px;overflow-x:auto;white-space:pre;\"&gt;${lin_summary_text}&lt;/pre&gt;`"
+  },
+  {
+    "objectID": "week5-slides.html#what-did-that-ci-actually-assume",
+    "href": "week5-slides.html#what-did-that-ci-actually-assume",
+    "title": "Model Problems & Inference",
+    "section": "What did that CI actually assume?",
+    "text": "What did that CI actually assume?\nThat \\(\\hat\\beta \\pm 2\\,SE(\\hat\\beta)\\) formula is only an exact 95% interval if one more thing holds: \\(\\varepsilon \\mid x \\sim N(0,\\sigma^2)\\) — the residuals are normally distributed.\n\nThis is a different kind of assumption from the five BLUE needs (Week 4). Gauss-Markov never mentions it — \\(\\hat\\beta\\) is unbiased and precise regardless of the residuals’ shape. Normality only enters once we build a test statistic around \\(\\hat\\beta\\) and ask what distribution it follows at a finite sample size.\n\n\n** Is this in an issue? **\n\n\nOur own class regression runs on just 24 students. Does that matter? Simulations say: not much on its own. Even with badly skewed residuals and only 8 observations, 95% intervals still contain the true β about 95% of the time. It’s when skew comes together with an influential point that the interval starts to miss. It is still worth getting into the habit of checking."
+  },
+  {
+    "objectID": "week5-slides.html#qq-plot",
+    "href": "week5-slides.html#qq-plot",
+    "title": "Model Problems & Inference",
+    "section": "QQ-plot",
+    "text": "QQ-plot\nA QQ-plot sorts the residuals from smallest to largest and plots each one against where it would be if the residuals were normal. Two sets of 24 made-up residuals:\n\n{\n  const panel = (rows, colour, title) =&gt; {\n    const hist = Plot.plot({\n      width: 400, height: 120, marginLeft: 40,\n      x: {label: null, domain: [-260, 360]}, y: {label: null, ticks: 3},\n      marks: [Plot.rectY(rows, Plot.binX({y: \"count\"}, {x: \"sample\", fill: colour, thresholds: 12})), Plot.ruleY([0])]\n    })\n    const qq = Plot.plot({\n      width: 400, height: 280, marginLeft: 40,\n      x: {label: \"Where it would be if normal\", domain: [-260, 260]},\n      y: {label: \"Actual residual\", domain: [-260, 360]},\n      marks: [\n        Plot.line([{x: -260, y: -260}, {x: 260, y: 260}], {x: \"x\", y: \"y\", stroke: \"#999\", strokeDasharray: \"4,3\"}),\n        Plot.dot(rows, {x: \"theoretical\", y: \"sample\", fill: colour, r: 4}),\n      ]\n    })\n    return html`&lt;div&gt;&lt;div style=\"text-align:center;font-family:sans-serif;font-size:0.9em;font-weight:600;\"&gt;${title}&lt;/div&gt;${hist}${qq}&lt;/div&gt;`\n  }\n  return html`&lt;div style=\"display:flex;gap:30px;justify-content:center;\"&gt;\n    ${panel(qq_good, \"#457b9d\", \"Normal residuals\")}\n    ${panel(qq_skew, \"#e63946\", \"Right-skewed residuals\")}\n  &lt;/div&gt;`\n}\n\n\n\n\n\n\n\nIf the residuals are normal, the dots sit close to the dashed line. With right skew, the biggest residuals are much bigger than a normal distribution would give, so the top end curves up and away from the line. The smallest ones aren’t as small as normal would give either, so the bottom end sits above the line too. You get a banana shape. Even the normal ones wobble a bit – with only 24 points they always will."
+  },
+  {
+    "objectID": "week5-slides.html#so-what-do-we-actually-check",
+    "href": "week5-slides.html#so-what-do-we-actually-check",
+    "title": "Model Problems & Inference",
+    "section": "So what do we actually check?",
+    "text": "So what do we actually check?\n\nhtml`&lt;p&gt;Now our own regression's residuals (n = &lt;strong&gt;${own_norm_n}&lt;/strong&gt;). Which of the two on the last slide does it look more like?&lt;/p&gt;`\n\n\n\n\n\n\n\n\n\n{\n  return Plot.plot({\n    width: 480, height: 530,\n    x: {label: \"Theoretical normal quantile\"}, y: {label: \"Residual\"},\n    marks: [\n      Plot.line([{x: -1500, y: -800}, {x: 1500, y: 2200}], {x: \"x\", y: \"y\", stroke: \"#ccc\", strokeDasharray: \"4,3\"}),\n      Plot.dot(own_qq_data, {x: \"theoretical\", y: \"sample\", fill: \"#457b9d\", r: 4}),\n    ]\n  })\n}\n\n\n\n\n\n\n\n\n\n\nhtml`&lt;pre style=\"font-family:'SF Mono','Menlo',monospace;font-size:0.5em;line-height:1.3;\n                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;\n                  padding:8px 14px;overflow-x:auto;white-space:pre;\"&gt;${normality_diag_text}&lt;/pre&gt;`\n\n\n\n\n\n\n\n\n\nhtml`&lt;p&gt;This is the diagnostic block &lt;code&gt;statsmodels&lt;/code&gt; computes by default on every OLS fit &ndash; Skew, Kurtosis, and the Jarque-Bera test. Here &lt;code&gt;Prob(JB) = ${norm_stats.jb_p}&lt;/code&gt;: ${norm_stats.jb_p &lt; 0.05 ? html`we &lt;strong&gt;reject&lt;/strong&gt; normality at 5%. The residuals are right-skewed (skew ${norm_stats.skew}), driven by a handful of very slow students` : html`we can't reject normality, though at n = ${own_norm_n} the test has little power either way`}. Skew on its own is survivable &ndash; but we also have an influential student. &lt;strong&gt;That combination is exactly when the CI is least trustworthy.&lt;/strong&gt; Would logging the outcome help? That's the next task.&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week5-slides.html#task-qq-plot-of-our-own-residuals",
+    "href": "week5-slides.html#task-qq-plot-of-our-own-residuals",
+    "title": "Model Problems & Inference",
+    "section": "Task — QQ-plot of our own residuals",
+    "text": "Task — QQ-plot of our own residuals\n\nIn the Week 5 in-class notebook, make a QQ-plot of the residuals from Week 4’s model, mean_rt ~ finger_mm. Then do the same for the log model from Task 1, np.log(mean_rt) ~ finger_mm.\nWhich one looks more like the normal panel? Check Prob(JB) and Skew in each model’s summary too.\n\n\n\n{\n  const qq = (rows, col) =&gt; {\n    const lim = d3.max(rows, d =&gt; Math.max(Math.abs(d.theoretical), Math.abs(d.sample))) * 1.05\n    return Plot.plot({ width: 360, height: 220, marginLeft: 55,\n      x: { label: \"Where it would be if normal\", domain: [-lim, lim] }, y: { label: \"Residual\", domain: [-lim, lim] },\n      marks: [Plot.line([{ x: -lim, y: -lim }, { x: lim, y: lim }], { x: \"x\", y: \"y\", stroke: \"#999\", strokeDasharray: \"4,3\" }),\n              Plot.dot(rows, { x: \"theoretical\", y: \"sample\", fill: col, r: 4 })] })\n  }\n  const panel = (title, chart, p, sk) =&gt; html`&lt;div&gt;&lt;p style=\"text-align:center;font-family:sans-serif;font-weight:700;margin:0;\"&gt;${title}&lt;/p&gt;${chart}&lt;p style=\"text-align:center;font-family:sans-serif;font-size:0.8em;margin:0;\"&gt;Skew ${sk} · Prob(JB) ${p}&lt;/p&gt;&lt;/div&gt;`\n  return html`&lt;div style=\"display:flex;gap:30px;justify-content:center;\"&gt;\n    ${panel(\"mean_rt ~ finger_mm\", qq(own_qq_data, \"#e63946\"), qq_task.lin_p, qq_task.lin_skew)}\n    ${panel(\"np.log(mean_rt) ~ finger_mm\", qq(log_qq_data, \"#457b9d\"), qq_task.log_p, qq_task.log_skew)}&lt;/div&gt;`\n}\n\n\n\n\n\n\n\nhtml`&lt;p style=\"font-family:sans-serif;font-size:0.9em;\"&gt;Logging pulls in the long top end: residual skew falls from ${qq_task.lin_skew} to ${qq_task.log_skew}, and Prob(JB) rises from ${qq_task.lin_p} to ${qq_task.log_p}, so we can no longer reject normality. It isn't perfect, though. There's a jump in the middle, because our class splits into a fast group and a slow group – something no transformation will remove.&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week5-slides.html#homoskedasticity-and-robust-se",
+    "href": "week5-slides.html#homoskedasticity-and-robust-se",
+    "title": "Model Problems & Inference",
+    "section": "Homoskedasticity — and robust SE",
+    "text": "Homoskedasticity — and robust SE\nThe simple SE formula above assumes homoskedasticity: the spread of residuals is the same across the whole range of x. A generic illustration, not our own data (24 points are too few to show this convincingly):\n\n\n\n{\n  const mkChart = (data, color) =&gt; Plot.plot({\n    height: 320, width: 340, marginLeft: 50,\n    x: { label: \"x\" }, y: { label: \"residual\", domain: [-4, 4] },\n    marks: [\n      Plot.ruleY([0], { stroke: \"#999\", strokeDasharray: \"3,2\" }),\n      Plot.dot(data, { x: \"x\", y: \"resid\", fill: color, r: 3, fillOpacity: 0.7 }),\n    ]\n  })\n  return html`&lt;div style=\"display:flex;gap:24px;justify-content:center;\"&gt;\n    &lt;div&gt;&lt;p style=\"text-align:center;font-family:sans-serif;font-weight:700;color:#457b9d;margin:0 0 4px;\"&gt;Homoskedastic&lt;/p&gt;${mkChart(homo_resid_data, \"#457b9d\")}&lt;/div&gt;\n    &lt;div&gt;&lt;p style=\"text-align:center;font-family:sans-serif;font-weight:700;color:#e63946;margin:0 0 4px;\"&gt;Heteroskedastic&lt;/p&gt;${mkChart(hetero_resid_data, \"#e63946\")}&lt;/div&gt;\n  &lt;/div&gt;`\n}\n\n\n\n\n\n\n\n\n\nLeft: residual spread constant across x. Right: residual spread fans out as x grows — the fit gets less precise for larger x, but OLS’s classical SE formula doesn’t know that.\n\n\nIn practice this is often false — the fit may be tighter for some x values than others. The fix is heteroskedasticity-robust SE (White/Huber), correct either way — but you have to ask for it. Software doesn’t default to it: statsmodels, R, and Excel all give you the classical formula above unless you explicitly request the robust version.\n\n\nimport statsmodels.formula.api as smf\n\nmodel = smf.ols('mean_rt ~ finger_mm', data=student_summary).fit(cov_type='HC1')\nAdd cov_type='HC1' to .fit() and every SE, CI, and p-value that comes out the other end is heteroskedasticity-robust. Practical rule: use it by default; it costs nothing when homoskedasticity holds, and saves you when it doesn’t.\n\n\nSource: Békés & Kézdi (2021), Ch. 9"
+  },
+  {
+    "objectID": "week5-slides.html#task-classical-vs.-robust-se",
+    "href": "week5-slides.html#task-classical-vs.-robust-se",
+    "title": "Model Problems & Inference",
+    "section": "Task — classical vs. robust SE",
+    "text": "Task — classical vs. robust SE\n\nIn the Week 5 in-class notebook, fit our regression twice: once as normal, and once with cov_type='HC1'. Compare the two results for finger_mm: the coefficient, the SE and the 95% CI.\nWhich numbers change, and which don’t? Does it change what you’d tell HR?\n\n\n\nhtml`&lt;table style=\"margin:10px auto;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;\"&gt;\n  &lt;caption class=\"visually-hidden\"&gt;Classical and robust results for finger_mm&lt;/caption&gt;\n  &lt;tr style=\"border-bottom:2px solid #1a1a2e;\"&gt;&lt;th scope=\"col\" style=\"padding:4px 18px;text-align:left;\"&gt;&lt;/th&gt;&lt;th scope=\"col\" style=\"padding:4px 18px;\"&gt;β̂&lt;/th&gt;&lt;th scope=\"col\" style=\"padding:4px 18px;\"&gt;SE&lt;/th&gt;&lt;th scope=\"col\" style=\"padding:4px 18px;\"&gt;95% CI&lt;/th&gt;&lt;/tr&gt;\n  &lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;&lt;td style=\"padding:4px 18px;\"&gt;Classical&lt;/td&gt;&lt;td style=\"padding:4px 18px;text-align:center;\"&gt;${task_ans.b}&lt;/td&gt;&lt;td style=\"padding:4px 18px;text-align:center;\"&gt;${task_ans.se}&lt;/td&gt;&lt;td style=\"padding:4px 18px;text-align:center;\"&gt;[${task_ans.ci_lo}, ${task_ans.ci_hi}]&lt;/td&gt;&lt;/tr&gt;\n  &lt;tr&gt;&lt;td style=\"padding:4px 18px;\"&gt;Robust (HC1)&lt;/td&gt;&lt;td style=\"padding:4px 18px;text-align:center;\"&gt;${task_ans.b}&lt;/td&gt;&lt;td style=\"padding:4px 18px;text-align:center;\"&gt;&lt;strong&gt;${task_ans.rse}&lt;/strong&gt;&lt;/td&gt;&lt;td style=\"padding:4px 18px;text-align:center;\"&gt;[${task_ans.rci_lo}, ${task_ans.rci_hi}]&lt;/td&gt;&lt;/tr&gt;\n&lt;/table&gt;\n&lt;p style=\"font-family:sans-serif;\"&gt;The coefficient doesn't move: robust SE only changes how sure we are, never the estimate itself. The SE is about ${task_ans.rse_pct}% bigger, so the CI is wider. Here the story for HR stays the same, because the interval included zero either way. On other data the robust SE can turn a \"significant\" result into one that isn't.&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week5-slides.html#testing-if-β-is-really-zero-a-quick-recap",
+    "href": "week5-slides.html#testing-if-β-is-really-zero-a-quick-recap",
+    "title": "Model Problems & Inference",
+    "section": "Testing if β is really zero: a quick recap",
+    "text": "Testing if β is really zero: a quick recap\nSame t-test as Week 2. The only difference is that we’re testing a slope, not a difference in means.\n\nHypotheses: \\(H_0: \\beta_{true} = 0\\) (no relationship) against \\(H_A: \\beta_{true} \\neq 0\\)\nt-statistic: \\(t = \\dfrac{\\hat{\\beta}}{SE(\\hat{\\beta})}\\) – how many SEs the estimate is from zero\nDecision: reject \\(H_0\\) at 5% if \\(|t| &gt; 2\\), or equivalently if \\(p &lt; 0.05\\)\nSame answer as the CI: reject exactly when the 95% CI doesn’t contain zero\n\nstatsmodels prints all of this for every coefficient: the t and P&gt;|t| columns.\n\nSource: Békés & Kézdi (2021), Ch. 9"
+  },
+  {
+    "objectID": "week5-slides.html#task-is-finger-length-significant",
+    "href": "week5-slides.html#task-is-finger-length-significant",
+    "title": "Model Problems & Inference",
+    "section": "Task — is finger length significant?",
+    "text": "Task — is finger length significant?\n\nFrom the summary output for mean_rt ~ finger_mm: what are the t-statistic and P&gt;|t| for finger_mm? Can we reject \\(H_0: \\beta = 0\\) at the 5% level? Check your answer against the CI.\n\n\n\nhtml`&lt;p style=\"font-family:sans-serif;\"&gt;t = ${task_ans.b} / ${task_ans.se} = &lt;strong&gt;${task_ans.t}&lt;/strong&gt;, and P&gt;|t| = &lt;strong&gt;${task_ans.p}&lt;/strong&gt;. Far from 2, and far above 0.05: we &lt;strong&gt;can't reject&lt;/strong&gt; β = 0. The 95% CI, [${task_ans.ci_lo}, ${task_ans.ci_hi}], includes zero &ndash; the same answer from a different angle. For HR, the formula's slope is indistinguishable from no relationship at all.&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week5-slides.html#two-different-questions-about-prediction",
+    "href": "week5-slides.html#two-different-questions-about-prediction",
+    "title": "Model Problems & Inference",
+    "section": "Two different questions about prediction",
+    "text": "Two different questions about prediction\n\nConfidence interval for the predicted value — where do we expect the average y to be, for a given x? Uncertainty about \\(\\hat\\alpha\\) and \\(\\hat\\beta\\) only\nPrediction interval — where do we expect one particular y to actually land, for a given x? Adds the extra spread of individual observations around their own average\n\n\nThe CI narrows toward zero as n grows. The PI never does — no amount of data removes the fact that individuals vary around the average.\n\n\nSource: Békés & Kézdi (2021), Ch. 9"
+  },
+  {
+    "objectID": "week5-slides.html#both-bands-on-our-own-data",
+    "href": "week5-slides.html#both-bands-on-our-own-data",
+    "title": "Model Problems & Inference",
+    "section": "Both bands, on our own data",
+    "text": "Both bands, on our own data\n\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm))\n  if (rows.length &lt; 4) return html`&lt;p style=\"color:#aaa;\"&gt;Not enough data yet.&lt;/p&gt;`\n  const x = rows.map(d =&gt; d.finger_mm), y = rows.map(d =&gt; d.mean_rt)\n  const n = x.length\n  const xbar = d3.mean(x), ybar = d3.mean(y)\n  const cov = d3.mean(x.map((xi, i) =&gt; (xi - xbar) * (y[i] - ybar)))\n  const varx = d3.mean(x.map(xi =&gt; (xi - xbar) ** 2))\n  const beta = cov / varx, alpha = ybar - beta * xbar\n  const resid = x.map((xi, i) =&gt; y[i] - (alpha + beta * xi))\n  const sdE = Math.sqrt(d3.sum(resid.map(e =&gt; e ** 2)) / (n - 2))\n  const grid = d3.range(d3.min(x) - 1, d3.max(x) + 1, (d3.max(x) - d3.min(x) + 2) / 60)\n  const bands = grid.map(x0 =&gt; {\n    const fit = alpha + beta * x0\n    const seFit = sdE * Math.sqrt(1 / n + ((x0 - xbar) ** 2) / (n * varx))\n    const sePred = sdE * Math.sqrt(1 + 1 / n + ((x0 - xbar) ** 2) / (n * varx))\n    return { x: x0, fit, ciLo: fit - 2 * seFit, ciHi: fit + 2 * seFit, piLo: fit - 2 * sePred, piHi: fit + 2 * sePred }\n  })\n  return Plot.plot({\n    height: 440, marginLeft: 60,\n    x: { label: \"Finger length (mm)\" }, y: { label: \"Mean reaction time (ms)\" },\n    marks: [\n      Plot.areaY(bands, { x: \"x\", y1: \"piLo\", y2: \"piHi\", fill: \"#457b9d\", fillOpacity: 0.12 }),\n      Plot.areaY(bands, { x: \"x\", y1: \"ciLo\", y2: \"ciHi\", fill: \"#e63946\", fillOpacity: 0.25 }),\n      Plot.line(bands, { x: \"x\", y: \"fit\", stroke: \"#1a1a2e\", strokeWidth: 2 }),\n      Plot.dot(rows, { x: \"finger_mm\", y: \"mean_rt\", fill: \"#1a1a2e\", r: 4 }),\n    ]\n  })\n}\n\n\n\n\n\n\n\n\n\nThe narrow red band is the CI of the regression line; the wide blue band is the prediction interval. For a new student HR hasn’t met yet, which band should they actually use to set expectations? Why is it so much wider? In the notebook, get both intervals at 80mm with model.get_prediction(...).\n\n\n\nhtml`&lt;p style=\"font-family:sans-serif;font-size:0.9em;\"&gt;At 80mm: the average student is predicted at &lt;strong&gt;${task_ans.pred80}ms&lt;/strong&gt;, CI [${task_ans.ci80_lo}, ${task_ans.ci80_hi}]. One student: &lt;strong&gt;[${task_ans.pi80_lo}, ${task_ans.pi80_hi}]&lt;/strong&gt; &ndash; the bottom end is a negative reaction time. HR could say very little about any one new candidate.&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week5-slides.html#wrapping-up",
+    "href": "week5-slides.html#wrapping-up",
+    "title": "Model Problems & Inference",
+    "section": "Wrapping up",
+    "text": "Wrapping up\nShape\n\nLog a variable when it’s skewed, when proportions matter more than amounts, or to straighten a curve. A log difference is roughly a % difference\nA quadratic lets the slope change with x: the slope is \\(\\beta_1 + 2\\beta_2 x\\)\n\nExtreme values\n\nExtreme isn’t the same as influential: check whether the slope moves when a point is dropped\nDon’t drop on y. Fix values you can show are errors\n\nHow sure are we?\n\n\\(SE(\\hat\\beta)\\) is smaller with less scatter, more spread in x, and more data. The 95% CI is \\(\\hat\\beta \\pm 2\\,SE\\)\nUse robust SEs by default. They change the SE, never \\(\\hat\\beta\\)\nt-test and CI give the same answer. A CI is for the average; a prediction interval is for one person, and it’s much wider"
+  },
+  {
+    "objectID": "week5-slides.html#online-session",
+    "href": "week5-slides.html#online-session",
+    "title": "Model Problems & Inference",
+    "section": "Online session",
+    "text": "Online session\nA walkthrough of the Vienna hotels again: choosing between logged and unlogged models, splines, and measurement error – what happens to a regression when x is measured with noise."
+  },
+  {
+    "objectID": "week5-slides.html#coming-up-week-6",
+    "href": "week5-slides.html#coming-up-week-6",
+    "title": "Model Problems & Inference",
+    "section": "Coming up: Week 6",
+    "text": "Coming up: Week 6\n\nOne x variable, on its own, barely moved the needle — and we still can’t rule out a third variable driving both.\nMultiple regression: what “controlling for” really means\n\nOmitted variable bias · multicollinearity · interactions"
+  },
+  {
+    "objectID": "week5-online-slides.html#section",
+    "href": "week5-online-slides.html#section",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "",
+    "text": "Hotels revisited: shape and noise\nThe same 207 Vienna hotels as last week. Is a straight line the right shape, and what happens when x is measured with noise?"
+  },
+  {
+    "objectID": "week5-online-slides.html#how-this-session-works",
+    "href": "week5-online-slides.html#how-this-session-works",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "How this session works",
+    "text": "How this session works\n\nWatch the recording and follow along in the Week 5 online walkthrough notebook (Colab)\nThe tasks in the notebook match the tasks on the slides\nBring your questions to Thursday’s live Q&A\n\nThree parts:\n\nWhat shape is the line? Logs on the hotel data\nSplines – letting the slope change at a point you choose\nMeasurement error – using the hotel ratings"
+  },
+  {
+    "objectID": "week5-online-slides.html#the-question",
+    "href": "week5-online-slides.html#the-question",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "The question",
+    "text": "The question\nLast week a straight line picked out the hotels that are cheap for their distance from the centre.\n\nBut that line assumed every extra mile knocks the same number of euros off the price, whether it’s the first mile or the sixth. Is that believable?\nToday we follow the workshop’s roadmap: check the distributions, look at the shape, then choose a functional form."
+  },
+  {
+    "objectID": "week5-online-slides.html#step-1-check-the-distributions",
+    "href": "week5-online-slides.html#step-1-check-the-distributions",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Step 1: check the distributions",
+    "text": "Step 1: check the distributions\n\n{\n  const h1 = Plot.plot({ height: 300, width: 400, marginLeft: 45,\n    x: { label: \"Price per night (€)\" }, y: { label: \"Hotels\", grid: true },\n    marks: [Plot.rectY(hotels, Plot.binX({ y: \"count\" }, { x: \"price\", fill: \"#457b9d\", thresholds: 20 })), Plot.ruleY([0])] })\n  const h2 = Plot.plot({ height: 300, width: 400, marginLeft: 45,\n    x: { label: \"ln(price)\" }, y: { label: \"Hotels\", grid: true },\n    marks: [Plot.rectY(hotels, Plot.binX({ y: \"count\" }, { x: \"ln_price\", fill: \"#2d6a4f\", thresholds: 20 })), Plot.ruleY([0])] })\n  return accessibleChart(html`&lt;div style=\"display:flex;gap:30px;justify-content:center;\"&gt;${h1}${h2}&lt;/div&gt;`,\n    `Two histograms. Price per night has a long right tail, skewness ${stats.p_skew}. Log price is much more symmetric, skewness ${stats.lp_skew}.`)\n}\n\n\n\n\n\n\n\nhtml`&lt;ul&gt;\n&lt;li&gt;Price has a long right tail (skew ${stats.p_skew}). Log price is much more even (skew ${stats.lp_skew}).&lt;/li&gt;\n&lt;li&gt;Distance runs from 0 to ${stats.d_max} miles, and ${stats.share_1mile}% of hotels are within 1 mile of the centre.&lt;/li&gt;\n&lt;/ul&gt;`"
+  },
+  {
+    "objectID": "week5-online-slides.html#step-2-look-at-the-shape",
+    "href": "week5-online-slides.html#step-2-look-at-the-shape",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Step 2: look at the shape",
+    "text": "Step 2: look at the shape\n\n{\n  const mk = (yk, line, ylab, col) =&gt; Plot.plot({ height: 330, width: 420, marginLeft: 50,\n    x: { label: \"Distance (miles)\" }, y: { label: ylab },\n    marks: [Plot.dot(hotels, { x: \"distance\", y: yk, r: 3, fill: col, fillOpacity: 0.4 }),\n            Plot.line(line, { x: \"distance\", y: \"y\", stroke: \"#e63946\", strokeWidth: 3 })] })\n  return accessibleChart(html`&lt;div style=\"display:flex;gap:30px;justify-content:center;\"&gt;\n    ${mk(\"price\", lowess_raw, \"Price (€)\", \"#457b9d\")}${mk(\"ln_price\", lowess_log, \"ln(price)\", \"#2d6a4f\")}&lt;/div&gt;`,\n    \"Two scatterplots of price and log price against distance, each with a LOWESS curve. Both fall steeply within about a mile of the centre, then flatten.\")\n}\n\n\n\n\n\n\n\nLOWESS on both versions of price. The drop is steep in the first mile, then flattens out. A single straight line can’t do both."
+  },
+  {
+    "objectID": "week5-online-slides.html#logging-distance-one-hotel-is-0-miles-out",
+    "href": "week5-online-slides.html#logging-distance-one-hotel-is-0-miles-out",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Logging distance: one hotel is 0 miles out",
+    "text": "Logging distance: one hotel is 0 miles out\nYou can’t take the log of zero, and one hotel is right in the centre.\n\nGabor & Kézdi set its distance to 0.05 miles before logging – a small value close to zero, just as advised in the workshop.\n\ncodeBox(`hotels['dist_for_log'] = hotels['distance'].replace(0, 0.05)\nhotels['ln_dist'] = np.log(hotels['dist_for_log'])\nhotels['ln_price'] = np.log(hotels['price'])`)\n\n\n\n\n\n\nWith only one hotel affected, the choice barely matters here. With many zeros, it would."
+  },
+  {
+    "objectID": "week5-online-slides.html#four-models-one-table",
+    "href": "week5-online-slides.html#four-models-one-table",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Four models, one table",
+    "text": "Four models, one table\n\ncodeBox(`m1 = smf.ols('price ~ distance', data=hotels).fit()\nm2 = smf.ols('ln_price ~ distance', data=hotels).fit()\nm3 = smf.ols('price ~ ln_dist', data=hotels).fit()\nm4 = smf.ols('ln_price ~ ln_dist', data=hotels).fit()`)\n\n\n\n\n\n\n\nhtml`&lt;table style=\"margin:14px auto;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;\"&gt;\n  &lt;caption class=\"visually-hidden\"&gt;Four regressions of price on distance: constant, slope and R-squared.&lt;/caption&gt;\n  &lt;tr style=\"border-bottom:2px solid #1a1a2e;\"&gt;${[\"Model\",\"y\",\"x\",\"Constant\",\"Slope\",\"R²\"].map(h =&gt; `&lt;th scope=\"col\" style=\"padding:5px 16px;\"&gt;${h}&lt;/th&gt;`).join('')}&lt;/tr&gt;\n  ${four.map(d =&gt; `&lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;&lt;td style=\"padding:5px 16px;\"&gt;${d.model}&lt;/td&gt;&lt;td style=\"padding:5px 16px;\"&gt;${d.y}&lt;/td&gt;&lt;td style=\"padding:5px 16px;\"&gt;${d.x}&lt;/td&gt;&lt;td style=\"padding:5px 16px;text-align:right;\"&gt;${d.a.toFixed(2)}&lt;/td&gt;&lt;td style=\"padding:5px 16px;text-align:right;\"&gt;${d.b.toFixed(2)}&lt;/td&gt;&lt;td style=\"padding:5px 16px;text-align:right;\"&gt;${d.r2.toFixed(3)}&lt;/td&gt;&lt;/tr&gt;`).join('')}\n&lt;/table&gt;`\n\n\n\n\n\n\n\nSource: Békés & Kézdi (2021), Ch. 8 – these match the book’s own table exactly."
+  },
+  {
+    "objectID": "week5-online-slides.html#what-each-slope-says",
+    "href": "week5-online-slides.html#what-each-slope-says",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "What each slope says",
+    "text": "What each slope says\n\nhtml`&lt;ul&gt;\n&lt;li&gt;&lt;strong&gt;level–level:&lt;/strong&gt; hotels 1 mile further out are &lt;strong&gt;€${(-four[0].b).toFixed(0)} cheaper&lt;/strong&gt;, on average&lt;/li&gt;\n&lt;li&gt;&lt;strong&gt;log–level:&lt;/strong&gt; hotels 1 mile further out are &lt;strong&gt;${(-four[1].b * 100).toFixed(0)}% cheaper&lt;/strong&gt;, on average&lt;/li&gt;\n&lt;li&gt;&lt;strong&gt;level–log:&lt;/strong&gt; hotels 10% further out are &lt;strong&gt;€${(-four[2].b / 10).toFixed(2)} cheaper&lt;/strong&gt;, on average&lt;/li&gt;\n&lt;li&gt;&lt;strong&gt;log–log:&lt;/strong&gt; hotels 10% further out are &lt;strong&gt;${(-four[3].b * 10).toFixed(1)}% cheaper&lt;/strong&gt;, on average – an elasticity&lt;/li&gt;\n&lt;/ul&gt;`\n\n\n\n\n\n\n\nFour different numbers from the same data. None is wrong; each answers a slightly different question."
+  },
+  {
+    "objectID": "week5-online-slides.html#task-fit-the-loglog-model-yourself",
+    "href": "week5-online-slides.html#task-fit-the-loglog-model-yourself",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Task: fit the log–log model yourself",
+    "text": "Task: fit the log–log model yourself\n\nIn the Week 5 online walkthrough notebook, create ln_price and ln_dist (with the 0-mile hotel set to 0.05), fit ln_price ~ ln_dist, and put the slope into one sentence about Vienna hotels.\nThen: why does the 10% wording suit this model better than “1 mile further out”?\n\n\n\nhtml`&lt;p&gt;Slope = &lt;strong&gt;${four[3].b.toFixed(2)}&lt;/strong&gt;: hotels 10% further from the centre are about ${(-four[3].b * 10).toFixed(1)}% cheaper, on average. Both sides are in logs, so both are percentage changes: a mile means something very different at 0.2 miles than at 5 miles out, while 10% further out means the same thing everywhere.&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week5-online-slides.html#the-r²-trap",
+    "href": "week5-online-slides.html#the-r²-trap",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "The R² trap",
+    "text": "The R² trap\nR² goes up with every row of the table: 0.157, 0.205, 0.280, 0.334. Is log–log simply the best model?\n\nNo – you can only compare R² between models with the same y. R² for price measures how much of the variation in euros we explain; R² for ln(price) measures variation in log euros. They’re different things.\nValid comparisons: level–level vs. level–log (both explain price), and log–level vs. log–log (both explain ln(price)). In both pairs, logging distance fits better.\n\n\nSource: Békés & Kézdi (2021), Ch. 8"
+  },
+  {
+    "objectID": "week5-online-slides.html#which-one-would-you-use",
+    "href": "week5-online-slides.html#which-one-would-you-use",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Which one would you use?",
+    "text": "Which one would you use?\nWhat you want to know comes first.\n\nLooking for a good deal on one night? You care about euros, so keep price in levels\nComparing across seasons, when prices rise and fall together? Percentages travel better, so log price\nFor finding a hotel, distance in miles is easier to think about than “10% further out”\n\n\nThen the statistics: the scatterplots and R² both say logging distance helps. Gabor’s own verdict: “your call”. There’s no single right answer, only a choice you can defend."
+  },
+  {
+    "objectID": "week5-online-slides.html#task-was-last-weeks-straight-line-defensible",
+    "href": "week5-online-slides.html#task-was-last-weeks-straight-line-defensible",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Task: was last week’s straight line defensible?",
+    "text": "Task: was last week’s straight line defensible?\n\nLast week we found the five best deals with price ~ distance. Go through the roadmap:\n\nWhat do the distributions of price and distance look like?\nWhat shape did LOWESS show?\nWhat transformation would you choose, and why?\nIf you changed the model, would the best deals change?\n\nKeep your answer to step 4 in mind – it’s exactly where Part 2 goes."
+  },
+  {
+    "objectID": "week5-online-slides.html#when-the-slope-changes-at-one-point",
+    "href": "week5-online-slides.html#when-the-slope-changes-at-one-point",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "When the slope changes at one point",
+    "text": "When the slope changes at one point\nLOWESS showed a steep drop within about a mile of the centre, then hardly any change.\n\nA log bends the line smoothly, everywhere\nA quadratic bends it smoothly too, as a parabola\n\n\nBut what if the pattern really is two straight lines: one steep slope near the centre, a flatter one further out? Then we want the slope to change at a point we choose."
+  },
+  {
+    "objectID": "week5-online-slides.html#piecewise-linear-splines",
+    "href": "week5-online-slides.html#piecewise-linear-splines",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Piecewise linear splines",
+    "text": "Piecewise linear splines\nA spline cuts x into intervals at knots and fits a straight line in each one. The lines join at the knots, but each can have its own slope.\n\\[y^E = \\alpha_1 + \\beta_1 x\\,[x&lt;k_1] + (\\alpha_2+\\beta_2 x)\\,[k_1\\le x&lt; k_2] + \\dots\\]\n\nEach \\(\\beta\\) is the slope within its own interval: easy to interpret\nIt can follow any shape, including ones that go up and then down\nThe cost: you choose how many knots, and where\n\n\nSource: Békés & Kézdi (2021), Ch. 8"
+  },
+  {
+    "objectID": "week5-online-slides.html#fitting-one-in-python",
+    "href": "week5-online-slides.html#fitting-one-in-python",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Fitting one in Python",
+    "text": "Fitting one in Python\n\ncodeBox(`# a new variable: miles beyond the knot (zero for hotels inside it)\nhotels['beyond_1'] = np.maximum(hotels['distance'] - 1, 0)\n\nspline = smf.ols('price ~ distance + beyond_1', data=hotels).fit()\nspline.params`)\n\n\n\n\n\n\n\nhtml`&lt;p style=\"font-family:sans-serif;\"&gt;Intercept ${stats.sp_a}, &lt;code&gt;distance&lt;/code&gt; ${stats.sp_b1}, &lt;code&gt;beyond_1&lt;/code&gt; ${stats.sp_d}&lt;/p&gt;`\n\n\n\n\n\n\n\nCareful reading the output. distance is the slope inside the first mile. beyond_1 is the change in slope after the knot, not the slope itself.\n\nhtml`&lt;p&gt;Slope beyond 1 mile = ${stats.sp_b1} + ${stats.sp_d} = &lt;strong&gt;${stats.sp_b2}&lt;/strong&gt;&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week5-online-slides.html#the-spline-on-the-hotels",
+    "href": "week5-online-slides.html#the-spline-on-the-hotels",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "The spline on the hotels",
+    "text": "The spline on the hotels\n\n{\n  const lin = [0, stats.d_max].map(x =&gt; ({ distance: x, price: four[0].a + four[0].b * x }))\n  return accessibleChart(Plot.plot({ height: 330, width: 900, marginLeft: 50,\n    x: { label: \"Distance (miles)\" }, y: { label: \"Price per night (€)\" },\n    color: { legend: true, domain: [\"Straight line\", \"Spline, knot at 1 mile\"], range: [\"#999\", \"#e63946\"] },\n    marks: [\n      Plot.dot(hotels, { x: \"distance\", y: \"price\", r: 3, fill: \"#457b9d\", fillOpacity: 0.4 }),\n      Plot.ruleX([1], { stroke: \"#ccc\", strokeDasharray: \"4,3\" }),\n      Plot.line(lin, { x: \"distance\", y: \"price\", stroke: () =&gt; \"Straight line\", strokeWidth: 2, strokeDasharray: \"5,4\" }),\n      Plot.line(spline_line, { x: \"distance\", y: \"price\", stroke: () =&gt; \"Spline, knot at 1 mile\", strokeWidth: 3 }),\n    ] }), `Scatterplot of price against distance with a straight line and a spline. The spline falls steeply to 1 mile, then is almost flat.`)\n}\n\n\n\n\n\n\n\nhtml`&lt;ul&gt;\n&lt;li&gt;Within 1 mile: &lt;strong&gt;€${(-stats.sp_b1).toFixed(0)} cheaper per extra mile&lt;/strong&gt;. Beyond 1 mile: only &lt;strong&gt;€${(-stats.sp_b2).toFixed(1)} per mile&lt;/strong&gt;.&lt;/li&gt;\n&lt;li&gt;R² rises from ${four[0].r2} to ${stats.sp_r2}. That comparison is fine: both models explain price.&lt;/li&gt;\n&lt;/ul&gt;`"
+  },
+  {
+    "objectID": "week5-online-slides.html#did-it-change-last-weeks-best-deals",
+    "href": "week5-online-slides.html#did-it-change-last-weeks-best-deals",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Did it change last week’s best deals?",
+    "text": "Did it change last week’s best deals?\n\n{\n  const tbl = (rows, key, title) =&gt; `&lt;div&gt;&lt;p style=\"text-align:center;font-weight:700;margin:0 0 4px;\"&gt;${title}&lt;/p&gt;&lt;table style=\"font-family:sans-serif;font-size:0.75em;border-collapse:collapse;\"&gt;\n    &lt;tr style=\"border-bottom:2px solid #1a1a2e;\"&gt;${[\"Hotel\",\"Miles\",\"Price\",\"Residual\"].map(h =&gt; `&lt;th scope=\"col\" style=\"padding:4px 10px;\"&gt;${h}&lt;/th&gt;`).join('')}&lt;/tr&gt;\n    ${rows.map(d =&gt; `&lt;tr style=\"border-bottom:1px solid #eee;${both_ids.includes(d.hotel_id) ? 'background:#fdf6e8;' : ''}\"&gt;&lt;td style=\"padding:4px 10px;\"&gt;${d.hotel_id}&lt;/td&gt;&lt;td style=\"padding:4px 10px;text-align:right;\"&gt;${d.distance}&lt;/td&gt;&lt;td style=\"padding:4px 10px;text-align:right;\"&gt;€${d.price}&lt;/td&gt;&lt;td style=\"padding:4px 10px;text-align:right;color:#e63946;\"&gt;${d[key].toFixed(1)}&lt;/td&gt;&lt;/tr&gt;`).join('')}&lt;/table&gt;&lt;/div&gt;`\n  return html`&lt;div style=\"display:flex;gap:40px;justify-content:center;\"&gt;${tbl(deals_line, \"res_line\", \"Straight line (Week 4)\")}${tbl(deals_spline, \"res_spline\", \"Spline\")}&lt;/div&gt;`\n}\n\n\n\n\n\n\n\n\nhtml`&lt;p&gt;Only ${stats.n_both} hotel (highlighted) is on both lists. The straight line predicts prices that are too low near the centre, so it couldn't see that some central hotels are good value. The spline picks up hotels just 0.1–0.2 miles out. &lt;strong&gt;The shape of the line changed the business answer.&lt;/strong&gt;&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week5-online-slides.html#task-move-the-knot",
+    "href": "week5-online-slides.html#task-move-the-knot",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Task: move the knot",
+    "text": "Task: move the knot\n\nIn the notebook, refit the spline with the knot at 2 miles instead of 1. Then try two knots, at 1 and 4 miles. Compare R² each time.\nWhere would you put the knot, and why? What else, apart from R², would you use to decide?\n\n\n\nhtml`&lt;p&gt;R²: knot at 1 mile ${stats.sp_r2}; knot at 2 miles ${stats.sp2_r2}; knots at 1 and 4 miles ${stats.sp14_r2}. The second knot adds almost nothing. Choose knots from the scatterplot and from what you know about the city, not by hunting for the highest R².&lt;/p&gt;`\n\n\n\n\n\n\n\n\nGabor’s guideline: if you only want the average association, a straight line (or a log) is fine. Bend it when you care about prediction or residuals – like finding deals. And simpler is usually better."
+  },
+  {
+    "objectID": "week5-online-slides.html#nothing-is-measured-exactly-even-in-a-hotel-listing",
+    "href": "week5-online-slides.html#nothing-is-measured-exactly-even-in-a-hotel-listing",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Nothing is measured exactly, even in a hotel listing",
+    "text": "Nothing is measured exactly, even in a hotel listing\n\nPrice is one night, on one date – not the hotel’s “true” price\nDistance is measured to a city centre someone chose\nRating is the average of whatever reviews guests happened to leave\n\n\nSo every variable we’ve used has some error in it. Does that matter for the regression? It depends on which variable has the error, and what kind of error it is.\n\n\nSource: Békés & Kézdi (2021), Ch. 8"
+  },
+  {
+    "objectID": "week5-online-slides.html#a-new-question-ratings-and-price",
+    "href": "week5-online-slides.html#a-new-question-ratings-and-price",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "A new question: ratings and price",
+    "text": "A new question: ratings and price\nDo better-rated hotels charge more? We regress ln(price) on the average customer rating.\n\nBut think about where that rating comes from. A hotel with 20 reviews has an average that a few unusual guests can move a lot. A hotel with 500 reviews has an average that’s hard to move.\nThe rating is measured with more noise for some hotels than others. That’s what we use to see measurement error in real data."
+  },
+  {
+    "objectID": "week5-online-slides.html#classical-measurement-error",
+    "href": "week5-online-slides.html#classical-measurement-error",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Classical measurement error",
+    "text": "Classical measurement error\nThe measured value = true value + error, and the error:\n\nis zero on average, so it doesn’t shift the mean, and\nis unrelated to everything else, including the true value\n\n\nFor a rating: each review is one guest’s opinion, sometimes above the hotel’s “true” quality, sometimes below. Averaging over more reviews cancels more of it out. That’s close to classical error.\n\n\nSource: Békés & Kézdi (2021), Ch. 8"
+  },
+  {
+    "objectID": "week5-online-slides.html#noise-in-y-doesnt-bias-the-slope",
+    "href": "week5-online-slides.html#noise-in-y-doesnt-bias-the-slope",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Noise in y doesn’t bias the slope",
+    "text": "Noise in y doesn’t bias the slope\nPrice on one night = “true” price + error. Because the error is unrelated to x:\n\\[\\beta = \\frac{Cov[y^* + e,\\ x]}{Var[x]} = \\frac{Cov[y^*, x] + \\overbrace{Cov[e, x]}^{=\\,0}}{Var[x]} = \\beta^*\\]\n\nThe same idea as Week 4’s \\(E[\\varepsilon \\mid x] = 0\\): random noise in y adds scatter around the line, which makes SEs bigger, but it doesn’t tilt the line."
+  },
+  {
+    "objectID": "week5-online-slides.html#noise-in-x-does-attenuation-bias",
+    "href": "week5-online-slides.html#noise-in-x-does-attenuation-bias",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Noise in x does: attenuation bias",
+    "text": "Noise in x does: attenuation bias\nNow the rating (x) has the noise:\n\\[\\hat\\beta = \\beta^* \\times \\frac{Var[x^*]}{Var[x^*] + Var[e]}\\]\n\nThe fraction is always below 1, so the slope is pulled towards zero\nMore noise, bigger shrinkage\n\n\nWhy: if two hotels’ ratings differ by 0.2, their true quality probably differs by less – some of that 0.2 is noise. So the price difference that goes with each rating point looks smaller than it really is.\n\n\nSource: Békés & Kézdi (2021), Ch. 8"
+  },
+  {
+    "objectID": "week5-online-slides.html#watch-attenuation-happen",
+    "href": "week5-online-slides.html#watch-attenuation-happen",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Watch attenuation happen",
+    "text": "Watch attenuation happen\n\nviewof noise_sd = Inputs.range([0, 0.6], { step: 0.05, value: 0, label: \"Noise added to the ratings (SD, rating points)\" })\n\n\n\n\n\n\n\n{\n  const rows = many.map(d =&gt; ({ ...d, noisy: d.rating + noise_sd * d.z }))\n  const f0 = olsFit(rows.map(d =&gt; ({ x: d.rating, y: d.ln_price })), \"x\", \"y\")\n  const f = olsFit(rows.map(d =&gt; ({ x: d.noisy, y: d.ln_price })), \"x\", \"y\")\n  const xr = d3.extent(rows, d =&gt; d.noisy)\n  const lam = stats.many_var / (stats.many_var + noise_sd ** 2)\n  return html`&lt;div&gt;${accessibleChart(Plot.plot({ height: 330, width: 820, marginLeft: 50,\n    x: { label: \"Rating (with added noise)\", domain: [2.6, 5.4] }, y: { label: \"ln(price)\" },\n    marks: [\n      Plot.dot(rows, { x: \"noisy\", y: \"ln_price\", r: 3.5, fill: \"#457b9d\", fillOpacity: 0.6 }),\n      Plot.line(xr.map(x =&gt; ({ x, y: f0.a + f0.b * x })), { x: \"x\", y: \"y\", stroke: \"#999\", strokeDasharray: \"5,4\", strokeWidth: 2 }),\n      Plot.line(xr.map(x =&gt; ({ x, y: f.a + f.b * x })), { x: \"x\", y: \"y\", stroke: \"#e63946\", strokeWidth: 3 }),\n    ] }), `Scatterplot of log price against rating for the ${stats.many_n} hotels with many reviews, with noise of SD ${noise_sd} added to the ratings. The fitted slope is ${f.b.toFixed(2)}, against ${f0.b.toFixed(2)} with no added noise.`)}\n    &lt;p style=\"font-family:sans-serif;text-align:center;\"&gt;Slope: &lt;strong style=\"color:#e63946;\"&gt;${f.b.toFixed(2)}&lt;/strong&gt; (no added noise: ${f0.b.toFixed(2)}) &nbsp;·&nbsp; formula predicts ${f0.b.toFixed(2)} × ${lam.toFixed(2)} = ${(f0.b * lam).toFixed(2)}&lt;/p&gt;&lt;/div&gt;`\n}\n\n\n\n\n\n\n\nhtml`&lt;p style=\"font-size:0.8em;color:#555;\"&gt;The ${stats.many_n} hotels with more than 200 reviews, whose ratings are the most reliable. One set of random noise, scaled up by the slider. One draw won't match the formula exactly: the formula gives the average over many draws, which is what the next task checks.&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week5-online-slides.html#task-how-much-noise-would-it-take",
+    "href": "week5-online-slides.html#task-how-much-noise-would-it-take",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Task: how much noise would it take?",
+    "text": "Task: how much noise would it take?\n\nIn the notebook, take the hotels with more than 200 reviews and add random noise to their ratings, as on the last slide. Repeat it many times and average the slopes.\nHow big does the noise SD need to be before their slope looks like the slope for hotels with fewer than 100 reviews? Check your answer against the attenuation formula.\n\n\n\nhtml`&lt;p&gt;Average slope over 500 runs: ${noise_grid.map(d =&gt; `SD ${d.sd} → ${d.mean_b}`).join(' · ')}. About &lt;strong&gt;0.2 rating points&lt;/strong&gt; of noise brings it down to ${noise_grid[1].mean_b}, close to the few-reviews slope of ${stats.few_b}. The formula agrees: Var[x] = ${stats.many_var}, so λ = ${stats.many_var} / (${stats.many_var} + 0.04) ≈ ${noise_grid[1].lam}, and ${stats.many_b} × ${noise_grid[1].lam} ≈ ${(stats.many_b * noise_grid[1].lam).toFixed(2)}.&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week5-online-slides.html#the-real-comparison",
+    "href": "week5-online-slides.html#the-real-comparison",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "The real comparison",
+    "text": "The real comparison\n\n{\n  const mk = (rows, col, title, fit) =&gt; {\n    const xr = d3.extent(rows, d =&gt; d.rating)\n    return html`&lt;div&gt;&lt;p style=\"text-align:center;font-weight:700;margin:0;\"&gt;${title}&lt;/p&gt;${Plot.plot({ height: 280, width: 400, marginLeft: 45,\n      x: { label: \"Rating\", domain: [2, 5] }, y: { label: \"ln(price)\", domain: [3.9, 5.9] },\n      marks: [Plot.dot(rows, { x: \"rating\", y: \"ln_price\", r: 3.5, fill: col, fillOpacity: 0.6 }),\n              Plot.line(xr.map(x =&gt; ({ x, y: fit.a + fit.b * x })), { x: \"x\", y: \"y\", stroke: \"#1a1a2e\", strokeWidth: 2.5 })] })}&lt;/div&gt;`\n  }\n  return accessibleChart(html`&lt;div style=\"display:flex;gap:30px;justify-content:center;\"&gt;\n    ${mk(few, \"#e63946\", \"Fewer than 100 reviews\", olsFit(few, \"rating\", \"ln_price\"))}${mk(many, \"#457b9d\", \"More than 200 reviews\", olsFit(many, \"rating\", \"ln_price\"))}&lt;/div&gt;`,\n    `Two scatterplots of log price against rating with fitted lines. The slope is ${stats.few_b} for hotels with few reviews and ${stats.many_b} for hotels with many.`)\n}\n\n\n\n\n\n\n\nhtml`&lt;table style=\"margin:6px auto;font-family:sans-serif;font-size:0.8em;border-collapse:collapse;\"&gt;\n  &lt;caption class=\"visually-hidden\"&gt;Slope of log price on rating by number of reviews.&lt;/caption&gt;\n  &lt;tr style=\"border-bottom:2px solid #1a1a2e;\"&gt;&lt;th scope=\"col\" style=\"padding:3px 14px;\"&gt;&lt;/th&gt;&lt;th scope=\"col\" style=\"padding:3px 14px;\"&gt;Hotels&lt;/th&gt;&lt;th scope=\"col\" style=\"padding:3px 14px;\"&gt;Avg reviews&lt;/th&gt;&lt;th scope=\"col\" style=\"padding:3px 14px;\"&gt;Slope&lt;/th&gt;&lt;th scope=\"col\" style=\"padding:3px 14px;\"&gt;Robust SE&lt;/th&gt;&lt;th scope=\"col\" style=\"padding:3px 14px;\"&gt;95% CI&lt;/th&gt;&lt;/tr&gt;\n  &lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;&lt;td style=\"padding:3px 14px;\"&gt;Few reviews&lt;/td&gt;&lt;td style=\"padding:3px 14px;text-align:center;\"&gt;${stats.few_n}&lt;/td&gt;&lt;td style=\"padding:3px 14px;text-align:center;\"&gt;${stats.few_reviews}&lt;/td&gt;&lt;td style=\"padding:3px 14px;text-align:center;\"&gt;${stats.few_b}&lt;/td&gt;&lt;td style=\"padding:3px 14px;text-align:center;\"&gt;${stats.few_se}&lt;/td&gt;&lt;td style=\"padding:3px 14px;text-align:center;\"&gt;[${stats.few_lo}, ${stats.few_hi}]&lt;/td&gt;&lt;/tr&gt;\n  &lt;tr&gt;&lt;td style=\"padding:3px 14px;\"&gt;Many reviews&lt;/td&gt;&lt;td style=\"padding:3px 14px;text-align:center;\"&gt;${stats.many_n}&lt;/td&gt;&lt;td style=\"padding:3px 14px;text-align:center;\"&gt;${stats.many_reviews}&lt;/td&gt;&lt;td style=\"padding:3px 14px;text-align:center;\"&gt;${stats.many_b}&lt;/td&gt;&lt;td style=\"padding:3px 14px;text-align:center;\"&gt;${stats.many_se}&lt;/td&gt;&lt;td style=\"padding:3px 14px;text-align:center;\"&gt;[${stats.many_lo}, ${stats.many_hi}]&lt;/td&gt;&lt;/tr&gt;\n&lt;/table&gt;`\n\n\n\n\n\n\n\nFlatter where the rating is noisier, as attenuation predicts. But the two CIs overlap, so this is consistent with attenuation rather than proof of it."
+  },
+  {
+    "objectID": "week5-online-slides.html#noise-to-signal-ratio",
+    "href": "week5-online-slides.html#noise-to-signal-ratio",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Noise-to-signal ratio",
+    "text": "Noise-to-signal ratio\n\\[\\text{noise-to-signal} = \\frac{Var[e]}{Var[x^*]}\\]\n\nLow: careful recording, or a variable averaged over lots of observations. Usually safe to ignore\nHigh: the noise is large compared with the real spread in x. Worth taking seriously\n\n\n\nhtml`&lt;p&gt;The hotel ratings are a warning: among well-reviewed hotels the ratings barely vary (SD ${stats.many_sd} on a 5-point scale). With so little real spread, even 0.2 points of noise is a big share of it.&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week5-online-slides.html#when-the-error-isnt-classical",
+    "href": "week5-online-slides.html#when-the-error-isnt-classical",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "When the error isn’t classical",
+    "text": "When the error isn’t classical\nThe “always towards zero” result needs the error to be random. Hotel ratings might not be:\n\nA hotel could ask its happiest guests to leave reviews\nA new hotel’s first reviews might come from friends and family\n\n\nThen the error is linked to the hotel itself, and the bias could go either way. There’s no formula to fix it; the answer is better measurement.\n\n\nWhat else could make hotel ratings, or the distance measure, non-classical?"
+  },
+  {
+    "objectID": "week5-online-slides.html#should-we-do-anything-about-it",
+    "href": "week5-online-slides.html#should-we-do-anything-about-it",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Should we do anything about it?",
+    "text": "Should we do anything about it?\n\nGabor & Kézdi leave this open. Given what you now know about attenuation bias, would you:\n\ndrop the hotels with few reviews,\nkeep them and say which way the bias probably goes, or\nsomething else?\n\nWhat would you tell someone using the rating slope to decide whether a better rating is worth paying for?"
+  },
+  {
+    "objectID": "week5-online-slides.html#bring-to-the-qa",
+    "href": "week5-online-slides.html#bring-to-the-qa",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Bring to the Q&A",
+    "text": "Bring to the Q&A\n\n\nWhich of the four functional forms would you use to find a good deal, and why?\nWhere would you put the spline’s knot? Would a second knot help?\nOnly one hotel is on both best-deal lists. Which list would you trust, and why?\nHow much noise did you need to add to the ratings? Does 0.2 rating points sound plausible for an average of about 50 reviews?\nIs the gap between the two rating slopes evidence of attenuation, or could something else explain it?"
+  },
+  {
+    "objectID": "week5-online-slides.html#coming-up-week-6",
+    "href": "week5-online-slides.html#coming-up-week-6",
+    "title": "Hotels Revisited: Shape and Noise",
+    "section": "Coming up: Week 6",
+    "text": "Coming up: Week 6\n\nWe’ve taken one x as far as it goes: its shape, its noise, and how sure we can be.\nMultiple regression: what “controlling for” really means"
+  },
+  {
+    "objectID": "week5-quadratic-tool.html",
+    "href": "week5-quadratic-tool.html",
+    "title": "Week 5 — Play with a Quadratic",
+    "section": "",
+    "text": "7002LBSAI — Week 5\n    Play with a quadratic\n    See what α, β₁ and β₂ each do to the curve\n  \n\nThe model is \\(y = \\alpha + \\beta_1 x + \\beta_2 x^2\\). Move the sliders and watch what happens.\n\nα moves the whole curve up or down. It’s the value of y when x = 0.\nβ₁ is the slope at x = 0, and it shifts where the curve turns.\nβ₂ decides the shape: above zero gives a U, below zero an upside-down U, and zero gives a straight line.\n\nThe slope changes as x changes: at any x it is β₁ + 2β₂x.\n\nviewof quad = Inputs.form({\n  a:  Inputs.range([-30, 30], { step: 1, value: 0, label: \"α\" }),\n  b1: Inputs.range([-5, 5], { step: 0.1, value: 2, label: \"β₁\" }),\n  b2: Inputs.range([-1, 1], { step: 0.05, value: -0.25, label: \"β₂\" })\n})\n\n\n\n\n\n\n\n{\n  const { a, b1, b2 } = quad\n  const f = x =&gt; a + b1 * x + b2 * x * x\n  const pts = d3.range(-10, 10.01, 0.1).map(x =&gt; ({ x, y: f(x) }))\n  const turn = b2 !== 0 ? -b1 / (2 * b2) : null\n  const shape = b2 &gt; 0 ? \"U-shaped\" : b2 &lt; 0 ? \"upside-down U\" : \"a straight line\"\n  const chart = Plot.plot({\n    height: 420, width: 800, marginLeft: 50, grid: true,\n    x: { label: \"x\", domain: [-10, 10] }, y: { label: \"y\", domain: [-60, 60] }, clip: true,\n    marks: [\n      Plot.ruleX([0], { stroke: \"#bbb\" }), Plot.ruleY([0], { stroke: \"#bbb\" }),\n      Plot.line(pts, { x: \"x\", y: \"y\", stroke: \"#e63946\", strokeWidth: 3 }),\n      Plot.dot([{ x: 0, y: a }], { x: \"x\", y: \"y\", fill: \"#457b9d\", r: 6 }),\n      Plot.text([{ x: 0, y: a }], { x: \"x\", y: \"y\", text: () =&gt; \"α\", dx: 12, dy: -10, fill: \"#457b9d\", fontSize: 16, fontWeight: 700 }),\n      turn !== null && Math.abs(turn) &lt;= 10 ? Plot.dot([{ x: turn, y: f(turn) }], { x: \"x\", y: \"y\", fill: \"#1a1a2e\", r: 6 }) : null\n    ]\n  })\n  const wrap = html`&lt;div role=\"img\" aria-label=\"${`A quadratic curve with alpha ${a}, beta 1 ${b1}, beta 2 ${b2}. It is ${shape}${turn !== null ? `, turning at x = ${turn.toFixed(1)}` : \"\"}.`}\"&gt;${chart}&lt;/div&gt;`\n  chart.setAttribute(\"aria-hidden\", \"true\")\n  return html`&lt;div&gt;${wrap}\n    &lt;p style=\"text-align:center;margin:6px 0 0;\"&gt;Shape: &lt;strong&gt;${shape}&lt;/strong&gt;${turn !== null ? html` &nbsp;·&nbsp; turns at x = &lt;strong&gt;${turn.toFixed(1)}&lt;/strong&gt;, y = &lt;strong&gt;${f(turn).toFixed(1)}&lt;/strong&gt;` : \"\"}&lt;/p&gt;\n    &lt;p style=\"text-align:center;margin:4px 0 0;\"&gt;Slope at x = 0: &lt;strong&gt;${b1.toFixed(1)}&lt;/strong&gt; &nbsp;·&nbsp; at x = 5: &lt;strong&gt;${(b1 + 10 * b2).toFixed(1)}&lt;/strong&gt; &nbsp;·&nbsp; at x = −5: &lt;strong&gt;${(b1 - 10 * b2).toFixed(1)}&lt;/strong&gt;&lt;/p&gt;\n  &lt;/div&gt;`\n}\n\n\n\n\n\n\nThings to try:\n\nChange only α. Does the shape or the turning point move?\nSet β₂ to 0. What’s left?\nKeep β₂ negative and change β₁. Where does the turning point go?"
   }
 ]

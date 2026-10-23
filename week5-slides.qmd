@@ -1,7 +1,6 @@
 ---
 title: "Model Problems & Inference"
 subtitle: "7002LBSAI Research Methods in Analytics — Week 5"
-search: false
 format:
   revealjs:
     theme: simple
@@ -26,16 +25,14 @@ execute:
 ```{python}
 import pandas as pd
 
-# Live Google Sheet (switch back to this once the module is running):
-# df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIOZ03GpUJgqvGVmI9cih169mMq0ajLMj6a0VTd2tytB3K5BmX5AUiKQ8FKIL6KUKEcgb-1LR-1eM/pub?gid=0&single=true&output=csv")
-# Synthetic data for building/testing slides before the module runs:
-df = pd.read_csv("data/synthetic_reaction_times.csv")
+# Real class data: cleaned Week 1 trials with Week 3's corrected finger
+# lengths, the same file Week 4 reads. Every regression on the class data is
+# fit on one row per student (student_summary), never on raw trials.
+df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week3_reaction_times.csv")
 
 if 'name' in df.columns and 'student_name' not in df.columns:
     df = df.rename(columns={'name': 'student_name'})
-if 'finger_mm' not in df.columns:
-    df['finger_mm'] = None
-df['finger_mm'] = pd.to_numeric(df['finger_mm'], errors='coerce')
+df['finger_mm'] = pd.to_numeric(df['finger_length_corrected'], errors='coerce')
 
 student_summary = (
     df.groupby('student_name')
@@ -46,20 +43,15 @@ student_summary = (
 
 trial_data = df[['reaction_time_ms', 'finger_mm', 'device']].copy()
 
-# Case study data — Bekes & Kezdi's own worldbank-lifeexpectancy dataset (N=182, 2017),
-# downloaded from https://osf.io/pguwf/ (their public data repo)
+# For "Watch one point move the line": Student 10's finger length exactly as
+# typed into the Week 1 form (8.2, i.e. cm typed as mm), before Week 3's fix.
+_fixed = df.groupby('student_name')['finger_length_corrected'].first()
+_typed = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/week3_reaction_times.csv").groupby('name')['finger_mm'].first()
+typo_point = {"student_name": "Student 10", "finger_mm": float(_typed["Student 10"]),
+              "finger_fixed": float(_fixed["Student 10"])}
+
 import numpy as np
 import statsmodels.formula.api as smf
-
-life_df = pd.read_csv("data/worldbank_lifeexp_2017.csv")
-life_df["ln_gdp_per_capita"] = np.log(life_df["gdp_per_capita"])
-
-model_level     = smf.ols("life_exp ~ gdp_per_capita", data=life_df).fit()
-model_quad_raw  = smf.ols("life_exp ~ gdp_per_capita + I(gdp_per_capita**2)", data=life_df).fit()
-model_log       = smf.ols("life_exp ~ ln_gdp_per_capita", data=life_df).fit()
-model_quad      = smf.ols("life_exp ~ ln_gdp_per_capita + I(ln_gdp_per_capita**2)", data=life_df).fit()
-
-life_df["quad_raw_fit"] = model_quad_raw.fittedvalues
 
 # Illustrative homoskedastic vs. heteroskedastic residual patterns — a generic
 # worked example, not tied to our own class data (too few points to show a
@@ -73,10 +65,109 @@ _resid_hetero = np.random.normal(0, 0.3 + 0.35 * _x_hsk, _n_hsk)
 homo_resid_data = [{"x": float(_x_hsk[i]), "resid": float(_resid_homo[i])} for i in range(_n_hsk)]
 hetero_resid_data = [{"x": float(_x_hsk[i]), "resid": float(_resid_hetero[i])} for i in range(_n_hsk)]
 
-life_r2 = pd.DataFrame({
-    "model": ["Level-level (GDP/capita)", "Quadratic on raw GDP/capita", "Log-level (ln GDP/capita)", "Quadratic on ln GDP/capita"],
-    "r_squared": [model_level.rsquared, model_quad_raw.rsquared, model_log.rsquared, model_quad.rsquared],
-}).round(3)
+from scipy import stats as _stats
+
+# Real diagnostics on our own finger-length regression — same model as the
+# "Task — SE and CI" slide two slides back, refit here in statsmodels so we
+# can show the Jarque-Bera/skew/kurtosis block it already computes but this
+# deck has never displayed.
+_norm_check_df = student_summary.dropna(subset=['finger_mm'])
+_norm_model = smf.ols('mean_rt ~ finger_mm', data=_norm_check_df).fit()
+_norm_lines = _norm_model.summary().as_text().splitlines()
+_norm_cut = next(i for i, l in enumerate(_norm_lines) if l.startswith("Omnibus"))
+_norm_end = next((i for i, l in enumerate(_norm_lines) if l.startswith("Notes:")), len(_norm_lines))
+normality_diag_text = "\n".join(_norm_lines[_norm_cut:_norm_end]).rstrip()
+
+from statsmodels.stats.stattools import jarque_bera as _jb
+_jb_stat, _jb_p, _jb_skew, _jb_kurt = _jb(_norm_model.resid)
+norm_stats = {"jb_p": round(float(_jb_p), 3), "skew": round(float(_jb_skew), 2),
+              "log_skew": round(float(np.log(_norm_check_df['mean_rt']).skew()), 2),
+              "raw_skew": round(float(_norm_check_df['mean_rt'].skew()), 2)}
+
+# ---- Task answers, computed live on the class data ----
+_lin = _norm_model
+_logm = smf.ols('np.log(mean_rt) ~ finger_mm', data=_norm_check_df).fit()
+_quadm = smf.ols('mean_rt ~ finger_mm + I(finger_mm**2)', data=_norm_check_df).fit()
+_drops = []
+for _nm in _norm_check_df['student_name']:
+    _b = smf.ols('mean_rt ~ finger_mm', data=_norm_check_df[_norm_check_df['student_name'] != _nm]).fit().params['finger_mm']
+    _drops.append((_nm, float(_b)))
+_drop_nm, _drop_b = max(_drops, key=lambda t: abs(t[1] - _lin.params['finger_mm']))
+_drop_row = _norm_check_df[_norm_check_df['student_name'] == _drop_nm].iloc[0]
+_noise_rng = np.random.default_rng(5)
+_noise_betas = [smf.ols('mean_rt ~ fn', data=_norm_check_df.assign(fn=_norm_check_df['finger_mm'] + _noise_rng.normal(0, 8, len(_norm_check_df)))).fit().params['fn'] for _ in range(500)]
+_varx = float(_norm_check_df['finger_mm'].var())
+_rob = smf.ols('mean_rt ~ finger_mm', data=_norm_check_df).fit(cov_type='HC1')
+_pred80 = _lin.get_prediction(pd.DataFrame({'finger_mm': [80]})).summary_frame(alpha=0.05).iloc[0]
+task_ans = {
+    "n": int(len(_norm_check_df)),
+    "b": round(float(_lin.params['finger_mm']), 2), "a": round(float(_lin.params['Intercept']), 1),
+    "se": round(float(_lin.bse['finger_mm']), 2), "t": round(float(_lin.tvalues['finger_mm']), 2),
+    "p": round(float(_lin.pvalues['finger_mm']), 3), "r2": round(float(_lin.rsquared), 3),
+    "ci_lo": round(float(_lin.conf_int().loc['finger_mm', 0]), 1), "ci_hi": round(float(_lin.conf_int().loc['finger_mm', 1]), 1),
+    "log_b": round(float(_logm.params['finger_mm']), 4), "log_r2": round(float(_logm.rsquared), 3),
+    "quad_b1": round(float(_quadm.params['finger_mm']), 1), "quad_b2": round(float(_quadm.params['I(finger_mm ** 2)']), 2),
+    "quad_r2": round(float(_quadm.rsquared), 3),
+    "quad_slope80": round(float(_quadm.params['finger_mm'] + 2 * _quadm.params['I(finger_mm ** 2)'] * 80), 1),
+    "drop_name": _drop_nm, "drop_x": float(_drop_row['finger_mm']), "drop_y": round(float(_drop_row['mean_rt']), 1),
+    "drop_b": round(_drop_b, 2),
+    "noise_b": round(float(np.mean(_noise_betas)), 1), "noise_lambda": round(_varx / (_varx + 64), 2),
+    "noise_min": round(float(np.min(_noise_betas)), 1), "noise_max": round(float(np.max(_noise_betas)), 1),
+    "pred80": round(float(_pred80['mean']), 0), "ci80_lo": round(float(_pred80['mean_ci_lower']), 0),
+    "ci80_hi": round(float(_pred80['mean_ci_upper']), 0), "pi80_lo": round(float(_pred80['obs_ci_lower']), 0),
+    "pi80_hi": round(float(_pred80['obs_ci_upper']), 0),
+    "rse": round(float(_rob.bse['finger_mm']), 2), "rt": round(float(_rob.tvalues['finger_mm']), 2),
+    "rp": round(float(_rob.pvalues['finger_mm']), 3),
+    "rci_lo": round(float(_rob.conf_int().loc['finger_mm', 0]), 1), "rci_hi": round(float(_rob.conf_int().loc['finger_mm', 1]), 1),
+    "rse_pct": round(float(100 * (_rob.bse['finger_mm'] / _lin.bse['finger_mm'] - 1)), 0),
+}
+_sumlines = _lin.summary().tables[1].as_text()
+lin_summary_text = _lin.summary().tables[0].as_text() + "\n" + _sumlines
+
+_own_resid = np.sort(_norm_model.resid.values)
+own_norm_n = len(_own_resid)
+_own_theo_q = _stats.norm.ppf((np.arange(1, own_norm_n + 1) - 0.5) / own_norm_n) * _own_resid.std(ddof=1)
+own_qq_data = [{"theoretical": round(float(t), 2), "sample": round(float(s), 2)} for t, s in zip(_own_theo_q, _own_resid)]
+
+# Same QQ-plot and normality check for the log model (the QQ-plot task)
+_log_model = smf.ols('np.log(mean_rt) ~ finger_mm', data=_norm_check_df).fit()
+_log_resid = np.sort(_log_model.resid.values)
+_log_theo_q = _stats.norm.ppf((np.arange(1, len(_log_resid) + 1) - 0.5) / len(_log_resid)) * _log_resid.std(ddof=1)
+log_qq_data = [{"theoretical": round(float(t), 4), "sample": round(float(s), 4)} for t, s in zip(_log_theo_q, _log_resid)]
+_ljb = _jb(_log_model.resid)
+qq_task = {"lin_p": round(float(_jb_p), 3), "lin_skew": round(float(_jb_skew), 2),
+           "log_p": round(float(_ljb[1]), 3), "log_skew": round(float(_ljb[2]), 2)}
+
+# Illustrative example for "Logging can straighten a curve": a new app's
+# monthly users growing about 8% a month for three years. Raw, it curves
+# upward; logged, it's a straight line whose slope reads as monthly % growth.
+_g_rng = np.random.default_rng(12)
+_g_month = np.arange(1, 37)
+_g_users = 500 * np.exp(0.077 * _g_month) * np.exp(_g_rng.normal(0, 0.08, 36))
+growth_df = pd.DataFrame({"month": _g_month, "users": np.round(_g_users).astype(int)})
+growth_df["ln_users"] = np.log(growth_df["users"])
+_g_raw = smf.ols("users ~ month", data=growth_df).fit()
+_g_log = smf.ols("np.log(users) ~ month", data=growth_df).fit()
+growth_stats = {"raw_r2": round(_g_raw.rsquared, 2), "log_r2": round(_g_log.rsquared, 2),
+                "log_b": round(_g_log.params["month"], 3),
+                "pct": round(100 * _g_log.params["month"], 1)}
+
+# Illustrative QQ-plots for the "QQ-plot" slide: 24 residuals
+# (our class size) drawn from a normal distribution vs. a right-skewed one,
+# both rescaled to the same SD so the panels are comparable.
+_qq_rng = np.random.default_rng(7)
+def _qq(vals):
+    v = np.sort((vals - vals.mean()) / vals.std(ddof=1) * 100)
+    t = _stats.norm.ppf((np.arange(1, len(v) + 1) - 0.5) / len(v)) * 100
+    return [{"theoretical": round(float(a), 1), "sample": round(float(b), 1)} for a, b in zip(t, v)]
+qq_good = _qq(_qq_rng.normal(0, 1, 24))
+qq_skew = _qq(_qq_rng.lognormal(0, 0.9, 24))
+
+# Higher-order polynomials on our own data: R² for powers 1 to 5
+poly_r2 = []
+for _k in range(1, 6):
+    _f = 'mean_rt ~ ' + ' + '.join(['finger_mm'] + [f'I(finger_mm**{_j})' for _j in range(2, _k + 1)])
+    poly_r2.append({"power": _k, "r2": round(float(smf.ols(_f, data=_norm_check_df).fit().rsquared), 3)})
 
 # NaN is not valid JSON — clean before ojs_define
 student_summary_clean = student_summary.astype(object).where(student_summary.notna(), None)
@@ -85,10 +176,22 @@ trial_data_clean = trial_data.astype(object).where(trial_data.notna(), None)
 ojs_define(
     student_summary   = student_summary_clean.to_dict(orient='records'),
     trial_data        = trial_data_clean.to_dict(orient='records'),
-    life_data         = life_df.to_dict(orient='records'),
-    life_r2           = life_r2.to_dict(orient='records'),
     homo_resid_data   = homo_resid_data,
     hetero_resid_data = hetero_resid_data,
+    normality_diag_text     = normality_diag_text,
+    own_qq_data             = own_qq_data,
+    own_norm_n              = own_norm_n,
+    log_qq_data             = log_qq_data,
+    qq_task                 = qq_task,
+    norm_stats              = norm_stats,
+    task_ans                = task_ans,
+    lin_summary_text        = lin_summary_text,
+    growth_data             = growth_df.to_dict(orient='records'),
+    growth_stats            = growth_stats,
+    typo_point              = typo_point,
+    poly_r2                 = poly_r2,
+    qq_good                 = qq_good,
+    qq_skew                 = qq_skew,
 )
 ```
 
@@ -107,10 +210,14 @@ ojs_define(
   // Sets each wrapper's correct starting state immediately, including on a
   // reload or direct navigation to a slide whose fragment is already shown
   // — matters because this cell (no reactive deps) only runs once, at load.
-  document.querySelectorAll('.shrink-on-reveal[data-frag]').forEach(el => {
-    const frag = document.getElementById(el.dataset.frag)
-    el.classList.toggle('is-small', !!frag?.classList.contains('visible'))
-  })
+  const syncAll = () => {
+    document.querySelectorAll('.fragment[id]').forEach(frag =>
+      wrapperFor(frag.id)?.classList.toggle('is-small', frag.classList.contains('visible'))
+    )
+  }
+  syncAll()
+  // PDF export rebuilds the slide DOM, so re-sync on any change (same fix as Weeks 2 and 4).
+  new MutationObserver(syncAll).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] })
 
   Reveal.on('fragmentshown', (event) => {
     wrapperFor(event.fragment.id)?.classList.add('is-small')
@@ -138,7 +245,7 @@ HR has last week's line: reaction time as a function of finger length. Someone o
 ::: {.fragment}
 **Naive answer:** the model's built, R² is computed, we're done.
 
-**Why it's not that simple:** we assumed a straight line without checking if that's the right shape. We assumed our measurements are exact. And we've given HR one number for $\hat\beta$ with no sense of how much it could be wrong by. Today, we think about how to fix these issues. 
+**Why it's not that simple:** we assumed a straight line without checking if that's the right shape. And we've given HR one number for $\hat\beta$ with no sense of how much it could be wrong by. Today, we think about how to fix these issues. 
 :::
 
 ---
@@ -147,12 +254,46 @@ HR has last week's line: reaction time as a function of finger length. Someone o
 
 ---
 
-## Recap: why we log
+## To log, or not to log?
 
-Week 3's online session showed logging turns differences into approximate percentages, for small changes. That's the tool — today is about knowing *when* and *how* to use it, and what else is in the toolbox.
+So why would you take the log of a variable in the first place?
+
+::: {.fragment}
+- **The data are skewed.** Income, prices, firm size, house values – and our own reaction times – have a long right tail. A few huge values dominate the picture and drag the line around. Logging pulls the tail in.
+:::
+
+::: {.fragment}
+- **It can straighten out a curve.** Something that grows faster and faster, or rises and then flattens off, can look like a straight line once it's logged. Then a straight-line model fits. We'll see an example in a bit. 
+:::
+
+::: {.fragment}
+- **What matters is the proportion, not the amount.** A £1,000 pay rise means a lot on £20,000 and very little on £200,000. A 10% price rise means the same thing on a £2 coffee and a £2,000 laptop; a £5 rise doesn't.
+:::
+
+
+
+::: {.fragment}
+That first reason is why we logged reaction time back in Week 3. And once a variable is in logs, its slope can be read as a **percentage** difference.
+:::
+
+## Logs turn differences into percentages
+
+**A difference in logs is roughly a percentage difference.**
+
+| Values | Difference in logs | Actual % difference |
+|---|---|---|
+| 100 → 101 | ln(101) − ln(100) = 0.010 | 1% |
+| 100 → 110 | ln(110) − ln(100) = 0.095 | 10% |
+| 100 → 150 | ln(150) − ln(100) = 0.405 | 50% |
+
+::: {.fragment}
+- Close for **small** differences, and drifts for big ones: 0.405 is a 50% gap, not 40%. As a rule of thumb, trust it up to about ±30%.
+- Why it matters: in cross-section data there's no "before" to build a percentage from. On a log scale, the gap between **any** two values is roughly their percentage difference, with no baseline needed. That's what lets a log model's slope read as a **%** difference.
+- x must be positive: ln(0) and ln(negative) don't exist.
+:::
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
-Source: Week 3 online session
+Source: Békés & Kézdi (2021), Ch. 4 and Ch. 8
 :::
 
 ## Interpreting log models — the full picture
@@ -167,14 +308,64 @@ The table you previewed in Week 4, with the equation behind each row and the rea
 | Log–log | $\ln(y)^E = \alpha + \beta \ln(x)$ | 1**%** higher x → $\hat\beta$**%** higher y, on average — an **elasticity** |
 
 ::: {.fragment}
-Which one to use is a substantive question first: is x likely to move y in **multiplicative** steps (percentages) or **additive** ones (fixed amounts)? Only then check whether the distributions agree.
+Which one to use is a substantive question you should consider first: is x likely to move y in **multiplicative** steps (percentages) or **additive** ones (fixed amounts)? Only then check whether the distributions agree.
 :::
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
 Source: Békés & Kézdi (2021), Ch. 8
 :::
 
-## When you can't just log
+## Task — log our own outcome
+
+::: {.instructions-box}
+Reaction time is right-skewed (Week 1). Open the **Week 5 in-class notebook** (Colab). Fit a **log–level** model, `np.log(mean_rt) ~ finger_mm`, on `student_summary`. You can log inside the formula: `smf.ols('np.log(y) ~ x', data=df).fit()`.
+
+How do we interpet $\hat\beta$ now? How does R² compare with Week 4's level–level model?
+:::
+
+::: {.fragment}
+```{ojs}
+html`<p style="font-family:sans-serif;font-size:1.05em;">β̂ = <strong>${task_ans.log_b}</strong>: students whose finger is 1mm longer have, on average, a mean reaction time about <strong>${(task_ans.log_b*100).toFixed(1)}% slower</strong>.<br>R² = <strong>${task_ans.log_r2}</strong>, against <strong>${task_ans.r2}</strong> for level–level. Logging tames the slowest students, but finger length still explains very little.</p>`
+```
+:::
+
+## Logging can straighten a curve
+
+A new app's monthly users over its first three years (made-up numbers):
+
+```{ojs}
+{
+  const rows = growth_data
+  const chartRaw = Plot.plot({
+    height: 330, width: 380, marginLeft: 60,
+    x: { label: "Month" }, y: { label: "Users", grid: true },
+    marks: [
+      Plot.dot(rows, { x: "month", y: "users", fill: "#1a1a2e", r: 3.5, fillOpacity: 0.7 }),
+      Plot.linearRegressionY(rows, { x: "month", y: "users", stroke: "#e63946", strokeWidth: 2.5 }),
+    ]
+  })
+  const chartLog = Plot.plot({
+    height: 330, width: 380, marginLeft: 60,
+    x: { label: "Month" }, y: { label: "ln(users)", grid: true },
+    marks: [
+      Plot.dot(rows, { x: "month", y: "ln_users", fill: "#457b9d", r: 3.5, fillOpacity: 0.7 }),
+      Plot.linearRegressionY(rows, { x: "month", y: "ln_users", stroke: "#e63946", strokeWidth: 2.5 }),
+    ]
+  })
+  return html`<div style="display:flex;gap:20px;justify-content:center;">
+    <div><div style="text-align:center;font-family:sans-serif;font-size:0.8em;">Raw: R² = ${growth_stats.raw_r2}</div>${chartRaw}</div>
+    <div><div style="text-align:center;font-family:sans-serif;font-size:0.8em;">Logged: R² = ${growth_stats.log_r2}</div>${chartLog}</div>
+  </div>`
+}
+```
+
+::: {.fragment}
+```{ojs}
+html`<p style="font-family:sans-serif;font-size:0.9em;">On the left, a straight line is a poor fit: it's too high in the middle and too low at both ends. Users grow by roughly the same <em>percentage</em> each month, not the same number, so the gains keep getting bigger. Log users and it's a straight line. The slope is <strong>${growth_stats.log_b}</strong>: users grow by about <strong>${growth_stats.pct}% a month</strong>.</p>`
+```
+:::
+
+## Sometimes a log isn't possible
 
 Logging needs a strictly positive variable — never zero, never negative. Real data often isn't:
 
@@ -189,21 +380,7 @@ Suppose a trial recorded exactly 0ms — a device timing glitch, not a real reac
 Source: Békés & Kézdi (2021), Ch. 8
 :::
 
-## Ratios and per-capita measures
-
-A common transform outside our own dataset: normalising a total by a size variable — GDP/capita, revenue/employee, sales/store.
-
-$$\ln\left(\frac{GDP}{Population}\right) = \ln(GDP) - \ln(Population)$$
-
-::: {.fragment}
-The log of a ratio is just the difference of the two logs — so a per-capita measure and its log both stay easy to interpret and combine with everything else you've learned about logs today.
-:::
-
-::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
-Source: Békés & Kézdi (2021), Ch. 8
-:::
-
-## Polynomials
+## Polynomials - what if the relationship curves?
 
 A quadratic lets the slope change smoothly, without deciding *where* it bends:
 
@@ -214,15 +391,52 @@ $$y^E = \alpha + \beta_1 x + \beta_2 x^2$$
 - $\beta_2$: shape only — U-shaped (convex) if positive, inverted-U (concave) if negative
 - The slope at any point x is $\beta_1 + 2\beta_2 x$ — it changes as x changes
 
-::: {.fragment}
-A trade-off, not a downside: what this gives up in flexibility, it gains back in a coefficient you can actually explain.
-:::
-
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
 Source: Békés & Kézdi (2021), Ch. 8
 :::
 
-## Fitting a quadratic to our own data
+## Play with a quadratic
+
+$y = \alpha + \beta_1 x + \beta_2 x^2$, with $\alpha = 0$. Move the sliders and watch the shape change.
+
+```{ojs}
+viewof quadB = Inputs.form({
+  b1: Inputs.range([-5, 5], { step: 0.1, value: 2, label: "β₁" }),
+  b2: Inputs.range([-1, 1], { step: 0.05, value: -0.25, label: "β₂" })
+})
+```
+
+```{ojs}
+{
+  const { b1, b2 } = quadB
+  const pts = d3.range(-10, 10.01, 0.1).map(x => ({ x, y: b1 * x + b2 * x * x }))
+  const turn = b2 !== 0 ? -b1 / (2 * b2) : null
+  const shape = b2 > 0 ? "U-shaped (convex)" : b2 < 0 ? "inverted U (concave)" : "a straight line"
+  const chart = Plot.plot({
+    height: 340, width: 760, marginLeft: 50, grid: true,
+    x: { label: "x", domain: [-10, 10] }, y: { label: "y", domain: [-60, 60] }, clip: true,
+    marks: [
+      Plot.ruleX([0], { stroke: "#ccc" }), Plot.ruleY([0], { stroke: "#ccc" }),
+      Plot.line(pts, { x: "x", y: "y", stroke: "#e63946", strokeWidth: 3 }),
+      turn !== null && Math.abs(turn) <= 10 ? Plot.dot([{ x: turn, y: b1 * turn + b2 * turn * turn }], { x: "x", y: "y", fill: "#1a1a2e", r: 6 }) : null
+    ]
+  })
+  return html`<div>${chart}<p style="font-family:sans-serif;text-align:center;margin:4px 0 0;">Shape: <strong>${shape}</strong>${turn !== null ? html` &nbsp;·&nbsp; turning point at x = <strong>${turn.toFixed(1)}</strong>` : ""} &nbsp;·&nbsp; slope at x = 0: <strong>${b1.toFixed(1)}</strong>, at x = 5: <strong>${(b1 + 10 * b2).toFixed(1)}</strong></p></div>`
+}
+```
+
+::: {style="font-size:0.8em;"}
+Try it yourself, with α as well: [quadratic tool](https://stevenolanecon.github.io/7002LBSAI/week5-quadratic-tool.html){target="_blank"}
+:::
+
+## Task — fit a quadratic to our own data
+
+::: {.instructions-box}
+In the notebook, add a squared term to Week 4's model: `smf.ols('y ~ x + I(x**2)', data=df).fit()`. Compare its R² with the straight line's. Then work out the slope at 80mm, $\hat\beta_1 + 2\hat\beta_2 \times 80$.
+:::
+
+## What you should have found: the quadratic {.smaller}
+
 
 ```{ojs}
 {
@@ -256,7 +470,7 @@ Source: Békés & Kézdi (2021), Ch. 8
   const grid = d3.range(d3.min(x), d3.max(x), (d3.max(x) - d3.min(x)) / 60)
   const curve = grid.map(xi => ({ finger_mm: xi, fit: a + b1 * xi + b2 * xi ** 2 }))
   const chart = Plot.plot({
-    height: 420, marginLeft: 60,
+    height: 330, marginLeft: 60,
     x: { label: "Finger length (mm)" }, y: { label: "Mean reaction time (ms)" },
     marks: [
       Plot.dot(rows, { x: "finger_mm", y: "mean_rt", fill: "#1a1a2e", r: 4 }),
@@ -271,111 +485,26 @@ Source: Békés & Kézdi (2021), Ch. 8
 Does the quadratic noticeably beat the straight line? If the improvement is tiny, that's a finding too — it says the relationship really is close to linear, for this data.
 :::
 
-## Case study: life expectancy and income
-
-Gabor & Kézdi's own example of this exact decision — replicated here on their real published data. Life expectancy vs. GDP per capita, 182 countries, 2017:
-
-- Raw GDP/capita: wildly skewed, hard to see a pattern
-- **Log** GDP/capita: a much clearer, close-to-linear association
-- Adding a **quadratic** on top of the log: does it actually buy much?
-
-::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
-Source: Békés & Kézdi (2021), Ch. 8. Data: `worldbank-lifeexpectancy`, osf.io/pguwf, World Bank WDI, CC-BY 4.0
-:::
-
-## Raw vs. logged, side by side
-
 ```{ojs}
-{
-  const rows = life_data
-  const chartRaw = Plot.plot({
-    height: 460, width: 380, marginLeft: 55,
-    x: { label: "GDP per capita ($000s)" }, y: { label: "Life expectancy (years)" },
-    marks: [Plot.dot(rows, { x: "gdp_per_capita", y: "life_exp", fill: "#1a1a2e", r: 3, fillOpacity: 0.6 })]
-  })
-  const chartLog = Plot.plot({
-    height: 460, width: 380, marginLeft: 55,
-    x: { label: "ln(GDP per capita)" }, y: { label: "Life expectancy (years)" },
-    marks: [
-      Plot.dot(rows, { x: "ln_gdp_per_capita", y: "life_exp", fill: "#457b9d", r: 3, fillOpacity: 0.6 }),
-      Plot.linearRegressionY(rows, { x: "ln_gdp_per_capita", y: "life_exp", stroke: "#e63946", strokeWidth: 2.5 }),
-    ]
-  })
-  return html`<div style="display:flex;gap:20px;justify-content:center;">${chartRaw}${chartLog}</div>`
-}
+html`<p style="font-family:sans-serif;font-size:0.95em;">The coefficients: β̂₁ = ${task_ans.quad_b1}, β̂₂ = ${task_ans.quad_b2}. Wildly large on their own, which is why β̂₁ has no clean interpretation. The slope at 80mm is ${task_ans.quad_b1} + 2 × ${task_ans.quad_b2} × 80 = <strong>${task_ans.quad_slope80} ms per mm</strong>.</p>`
 ```
 
-::: {.instructions-box}
-Same 182 countries, same y-axis. The left panel bunches almost everyone under $20k and stretches a handful of rich countries far to the right. Logging x pulls that tail in and straightens the pattern out.
-:::
+## Higher-order polynomials
 
-## What if we just curve the raw line instead?
+Nothing stops us adding $x^3$, $x^4$ and more: $y^E = \alpha + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 + \dots$
 
 ```{ojs}
-{
-  const rows = life_data
-  const sorted = [...rows].sort((a, b) => a.gdp_per_capita - b.gdp_per_capita)
-  const xbar = d3.mean(rows, d => d.gdp_per_capita), ybar = d3.mean(rows, d => d.life_exp)
-  const cov = d3.mean(rows, d => (d.gdp_per_capita - xbar) * (d.life_exp - ybar))
-  const varx = d3.mean(rows, d => (d.gdp_per_capita - xbar) ** 2)
-  const beta = cov / varx, alpha = ybar - beta * xbar
-  const [xmin, xmax] = d3.extent(rows, d => d.gdp_per_capita)
-  const straightLine = [{ x: xmin, y: alpha + beta * xmin }, { x: xmax, y: alpha + beta * xmax }]
-  const chartLinear = Plot.plot({
-    height: 400, width: 380, marginLeft: 55,
-    x: { label: "GDP per capita ($000s)" }, y: { label: "Life expectancy (years)" },
-    marks: [
-      Plot.dot(rows, { x: "gdp_per_capita", y: "life_exp", fill: "#1a1a2e", r: 3, fillOpacity: 0.6 }),
-      Plot.line(straightLine, { x: "x", y: "y", stroke: "#e63946", strokeWidth: 2.5 }),
-    ]
-  })
-  const chartQuad = Plot.plot({
-    height: 400, width: 380, marginLeft: 55,
-    x: { label: "GDP per capita ($000s)" }, y: { label: "Life expectancy (years)" },
-    marks: [
-      Plot.dot(rows, { x: "gdp_per_capita", y: "life_exp", fill: "#1a1a2e", r: 3, fillOpacity: 0.6 }),
-      Plot.line(sorted, { x: "gdp_per_capita", y: "quad_raw_fit", stroke: "#e63946", strokeWidth: 2.5 }),
-    ]
-  })
-  return html`<div style="display:flex;gap:20px;justify-content:center;">${chartLinear}${chartQuad}</div>`
-}
-```
-
-::: {.instructions-box}
-Left: a straight line through the raw data. Right: a quadratic through the same raw data — R² rises from 0.44 to 0.61, but the curve is still dragged around by a handful of very rich countries, and still doesn't resolve the bunching below $20k. Bending the line helped less than transforming the axis did.
-:::
-
-## Which model actually fits better? {.smaller}
-
-Same `smf.ols(...)` syntax from Week 4's "Doing this in Python" — now fitting all four functional-form candidates on the case study data at once:
-
-```{.python}
-import numpy as np
-import statsmodels.formula.api as smf
-
-life_df["ln_gdp_per_capita"] = np.log(life_df["gdp_per_capita"])
-
-model_level    = smf.ols("life_exp ~ gdp_per_capita", data=life_df).fit()
-model_quad_raw = smf.ols("life_exp ~ gdp_per_capita + I(gdp_per_capita**2)", data=life_df).fit()
-model_log      = smf.ols("life_exp ~ ln_gdp_per_capita", data=life_df).fit()
-model_quad     = smf.ols("life_exp ~ ln_gdp_per_capita + I(ln_gdp_per_capita**2)", data=life_df).fit()
-```
-
-```{ojs}
-{
-  return html`<table style="margin:0 auto;font-family:sans-serif;font-size:0.95em;border-collapse:collapse;">
-    <tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:4px 20px;text-align:left;">Model</th><th style="padding:4px 20px;">R²</th></tr>
-    ${life_r2.map(d => `<tr style="border-bottom:1px solid #ddd;"><td style="padding:4px 20px;">${d.model}</td><td style="padding:4px 20px;text-align:center;font-weight:700;">${d.r_squared.toFixed(3)}</td></tr>`).join('')}
-  </table>`
-}
+html`<table style="margin:10px auto;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;">
+  <caption class="visually-hidden">R-squared of polynomial fits of reaction time on finger length, powers 1 to 5</caption>
+  <tr style="border-bottom:2px solid #1a1a2e;"><th scope="col" style="padding:4px 16px;text-align:left;">Highest power of finger length</th>${poly_r2.map(d => `<th scope="col" style="padding:4px 16px;">${d.power}</th>`).join('')}</tr>
+  <tr><td style="padding:4px 16px;">R²</td>${poly_r2.map(d => `<td style="padding:4px 16px;text-align:center;">${d.r2.toFixed(3)}</td>`).join('')}</tr>
+</table>`
 ```
 
 ::: {.fragment}
-**The lesson, now with real numbers:** bending the raw line only gets you from 0.44 to 0.61. Logging gets you to 0.68 in one step — and once logged, the quadratic barely moves it further, to 0.68. The transform did more work than the extra flexibility did, and cost far less interpretability. Simpler is usually right.
-:::
+On our 24 students, R² goes up every time we add a power. It always will: an extra term can only help the fit to *this* sample. But with only 24 points, a wiggly curve is mostly chasing the odd student, not a real pattern, and none of the coefficients can be interpreted on their own.
 
-::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
-Source: Békés & Kézdi (2021), Ch. 8. Computed live from the real dataset above.
+In practice: a quadratic is usually enough, a cubic now and then. If you need more bends than that, a spline is easier to read. We come back to fitting the sample too closely in Week 10.
 :::
 
 ## The roadmap for choosing a functional form
@@ -384,12 +513,6 @@ Source: Békés & Kézdi (2021), Ch. 8. Computed live from the real dataset abov
 2. **Look at the shape** — scatterplot or a non-parametric fit (bin-scatter, lowess)
 3. **Choose a transform** to match what you see — and remember: not every variable can sensibly be logged or ratio'd
 4. **Compare models** — if the results agree, that's a robustness check; if they disagree sharply, find out why
-
-## Task — apply the roadmap to Week 4's choice
-
-::: {.instructions-box}
-Go back to Week 4's LOWESS curve for finger length vs. reaction time. At a wide bandwidth it was nearly flat; at a narrow one, a slight wiggle appeared. Using the roadmap above: was a plain straight line a defensible choice for last week's model? What would make you reconsider?
-:::
 
 ---
 
@@ -409,9 +532,65 @@ Every influential observation is extreme on *something* — but plenty of extrem
 Source: Békés & Kézdi (2021), Ch. 8
 :::
 
+## Watch one point move the line
+
+```{ojs}
+viewof add_extreme = Inputs.toggle({ label: "Use Student 10's finger length as typed", value: false })
+```
+
+:::: {.shrink-on-reveal data-frag="wk5-leverage-frag" style="--large-height:530px;--small-height:400px;--shrink-scale:0.755;"}
+::: {.shrink-on-reveal-inner}
+```{ojs}
+{
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
+  if (rows.length < 3) return html`<p style="color:#aaa;">Not enough data yet.</p>`
+
+  const fit = data => {
+    const xbar = d3.mean(data, d => d.finger_mm), ybar = d3.mean(data, d => d.mean_rt)
+    const cov = d3.mean(data, d => (d.finger_mm - xbar) * (d.mean_rt - ybar))
+    const varx = d3.mean(data, d => (d.finger_mm - xbar) ** 2)
+    const beta = cov / varx
+    return { alpha: ybar - beta * xbar, beta }
+  }
+
+  const own = rows.find(d => d.student_name === typo_point.student_name)
+  const extreme = { ...own, finger_mm: typo_point.finger_mm }
+  const others = rows.filter(d => d.student_name !== typo_point.student_name)
+  const withExtreme = add_extreme ? [...others, extreme] : rows
+
+  const base = fit(rows)
+  const withFit = fit(withExtreme)
+  const xr = d3.extent(withExtreme, d => d.finger_mm)
+  const baseLine = xr.map(x => ({ x, y: base.alpha + base.beta * x }))
+  const withLine = xr.map(x => ({ x, y: withFit.alpha + withFit.beta * x }))
+
+  return html`<div>
+    ${Plot.plot({
+      height: 480, marginLeft: 60,
+      x: { label: "Finger length (mm)" }, y: { label: "Mean reaction time (ms)" },
+      marks: [
+        Plot.dot(add_extreme ? others : rows, { x: "finger_mm", y: "mean_rt", fill: "#1a1a2e", r: 4 }),
+        add_extreme ? Plot.dot([extreme], { x: "finger_mm", y: "mean_rt", fill: "#e63946", r: 7, symbol: "diamond" }) : null,
+        Plot.line(baseLine, { x: "x", y: "y", stroke: "#999", strokeDasharray: "4,3", strokeWidth: 2 }),
+        add_extreme ? Plot.line(withLine, { x: "x", y: "y", stroke: "#e63946", strokeWidth: 2.5 }) : null,
+      ]
+    })}
+    <p style="font-family:sans-serif;text-align:center;">
+      β̂ with the corrected value: <strong>${base.beta.toFixed(2)}</strong>${add_extreme ? html`&nbsp;→&nbsp;as typed: <strong style="color:#e63946;">${withFit.beta.toFixed(2)}</strong>` : ''}
+    </p>
+  </div>`
+}
+```
+:::
+::::
+
+::: {.fragment #wk5-leverage-frag}
+Remember the finger lengths we fixed in Week 3? Student 10 typed 8.2 when they meant 82 – centimetres instead of millimetres. Put that one typo back and the slope flips sign. One student is now miles away from everyone else on the x-axis, so they get a huge say in where the line goes. That's leverage. It's also why we checked the data before running anything.
+:::
+
 ## What to do — and it depends which variable
 
-- **General rule: avoid dropping observations based on their y value.** A genuinely strange outcome is still information — dropping it because it's inconvenient biases what's left
+- **General rule: avoid dropping observations based on their y value.** A strange outcome is still information — dropping it because it's inconvenient biases what's left
 - **Dropping on x can be more defensible** — if that x value is atypical for the question you're asking
 - But often the opposite is true: **extreme x values are the most informative ones**, since they're where you see the most variation in the pattern
 - **Always try a transformation before ever dropping a point**
@@ -420,14 +599,14 @@ Source: Békés & Kézdi (2021), Ch. 8
 Source: Békés & Kézdi (2021), Ch. 8
 :::
 
-## Task — check our own data
+## Task — check our own data {.smaller}
 
 ```{ojs}
 {
   const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
   if (rows.length < 3) return html`<p style="color:#aaa;">Not enough data yet.</p>`
   return Plot.plot({
-    height: 480, marginLeft: 60,
+    height: 300, marginLeft: 60,
     x: { label: "Finger length (mm)" }, y: { label: "Mean reaction time (ms)" },
     marks: [
       Plot.dot(rows, { x: "finger_mm", y: "mean_rt", fill: "#1a1a2e", r: 4 }),
@@ -438,129 +617,13 @@ Source: Békés & Kézdi (2021), Ch. 8
 ```
 
 ::: {.instructions-box}
-Is there a point here that's extreme on x, extreme on y, or both? Would removing it change the slope much? Discuss what you'd actually do with it, and why.
-:::
-
----
-
-## Measurement error
-
----
-
-## Nothing here is measured exactly
-
-Every number in our dataset carries some noise:
-
-- Reaction time — self-timed by students on their own devices, with browser and reflex lag
-- Finger length — self-measured with a ruler, to the nearest millimetre, by hand
-
-::: {.fragment}
-This isn't a flaw specific to our exercise — almost all data in business and economics is measured with error. The question isn't whether it exists, but what it does to $\hat\beta$.
-:::
-
-## Classical measurement error
-
-A measured variable equals its true value plus noise: $x = x^* + e$
-
-::: {.instructions-box}
-**Classical** measurement error: (1) averages to zero — it doesn't shift the variable's mean — and (2) is independent of everything else in the model, including the true value itself.
+Is there a point here that's extreme on x, extreme on y, or both? In the **Week 5 in-class notebook**, refit Week 4's model **without** the student you think matters most, and compare the slope. Keep every row except one with `df[df['name'] != 'Student 1']`. What would you actually do with that student, and why?
 :::
 
 ::: {.fragment}
-Recording slips, rounding, reflex-timing lag — plausibly classical. A systematically miscalibrated ruler would not be.
-:::
-
-::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
-Source: Békés & Kézdi (2021), Ch. 8
-:::
-
-## Noise in y doesn't bias the slope
-
-If only the dependent variable is measured with classical error, $y = y^* + e$:
-
-$$\hat\beta = \frac{Cov[y,x]}{Var[x]} = \frac{Cov[y^*+e,\ x]}{Var[x]} = \frac{Cov[y^*,x] + Cov[e,x]}{Var[x]} = \frac{Cov[y^*,x]}{Var[x]} = \hat\beta^*$$
-
-::: {.fragment}
-$Cov[e,x]=0$ by the classical assumption, so it drops straight out. Noisy y makes the fit worse — more scatter around the line — but it doesn't move $\hat\beta$ on average.
-:::
-
-## Noise in x does — attenuation bias
-
-If the *explanatory* variable is measured with classical error, $x = x^*+e$, the noise inflates $Var[x]$ itself:
-
-$$\hat\beta = \hat\beta^* \times \frac{Var[x^*]}{Var[x^*] + Var[e]}$$
-
-::: {.fragment}
-That fraction is always less than one — so $\hat\beta$ is always pulled **toward zero**, never away from it. This is **attenuation bias**. The noisier x is relative to its real variation, the flatter the estimated slope looks, regardless of the true relationship.
-:::
-
-::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
-Source: Békés & Kézdi (2021), Ch. 8
-:::
-
-## Watch attenuation happen
-
 ```{ojs}
-viewof noiseSD = {
-  const f = html`<div style="display:flex;align-items:center;gap:14px;font-size:13px;
-                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;">
-    <span style="color:#666;white-space:nowrap;">Extra noise SD (mm)</span>
-    <input type="range" min="0" max="10" step="0.2" value="0"
-           style="width:200px;cursor:pointer;accent-color:#e63946;">
-    <span id="ns-label" style="font-weight:700;min-width:36px;color:#e63946;">0.0</span>
-  </div>`
-  const slider = f.querySelector('input')
-  const label  = f.querySelector('#ns-label')
-  slider.addEventListener('input', () => {
-    label.textContent = (+slider.value).toFixed(1)
-    f.dispatchEvent(new CustomEvent('input'))
-  })
-  Object.defineProperty(f, 'value', { get: () => +slider.value })
-  return f
-}
+html`<p style="font-family:sans-serif;">The most influential student is <strong>${task_ans.drop_name}</strong> (${task_ans.drop_x}mm, ${task_ans.drop_y}ms). With them, β̂ = ${task_ans.b}; without them, β̂ = <strong>${task_ans.drop_b}</strong>. One slow student with a long finger is carrying the whole positive slope.</p>`
 ```
-
-```{ojs}
-{
-  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
-  if (rows.length < 3) return html`<p style="color:#aaa;">Not enough data yet.</p>`
-  // True beta* and Var[x*] from our real, unperturbed data — fixed throughout
-  const xbar = d3.mean(rows, d => d.finger_mm), ybar = d3.mean(rows, d => d.mean_rt)
-  const cov = d3.mean(rows, d => (d.finger_mm - xbar) * (d.mean_rt - ybar))
-  const varXStar = d3.mean(rows, d => (d.finger_mm - xbar) ** 2)
-  const trueBeta = cov / varXStar
-  // The formula from the previous slide: beta = beta* x Var[x*] / (Var[x*] + Var[e])
-  // This ratio is always in (0, 1], so beta can shrink toward zero but can never cross it.
-  const betaFor = sd => trueBeta * (varXStar / (varXStar + sd ** 2))
-  const currentBeta = betaFor(noiseSD)
-  const curve = d3.range(0, 10.2, 0.2).map(sd => ({ sd, beta: betaFor(sd) }))
-  const chart = Plot.plot({
-    height: 350, marginLeft: 60,
-    x: { label: "extra noise SD added to finger length (mm)" },
-    y: { label: "attenuated β̂" },
-    marks: [
-      Plot.ruleY([0], { stroke: "#ccc" }),
-      Plot.line(curve, { x: "sd", y: "beta", stroke: "#457b9d", strokeWidth: 2 }),
-      Plot.dot([{ sd: noiseSD, beta: currentBeta }], { x: "sd", y: "beta", fill: "#e63946", r: 6 }),
-    ]
-  })
-  return html`<div>${chart}<p style="font-family:sans-serif;font-size:1em;text-align:center;">β̂* with no extra noise: <strong>${trueBeta.toFixed(3)}</strong> &nbsp;·&nbsp; attenuated β̂ at current noise: <strong>${currentBeta.toFixed(3)}</strong></p></div>`
-}
-```
-
-::: {.instructions-box}
-$\hat\beta$ shrinks toward zero as noise is added to finger length — but  it never crosses zero, no matter how much noise is added. $Var[x^*]/(Var[x^*]+Var[e])$ is always between 0 and 1, so attenuation can flatten the line but can never flip its sign.
-:::
-
-## Noise-to-signal ratio
-
-$$\text{noise-to-signal} = \frac{Var[e]}{Var[x^*]}$$
-
-- **Low ratio** — recording is careful, or the variable is an aggregate over a large sample. Often safe to ignore
-- **High ratio** — the noise added is large relative to the real spread in x. Worth taking seriously, and worth being upfront about in any write-up
-
-::: {.fragment}
-You can rarely eliminate measurement error. You can almost always say something honest about its likely direction — and for x, that direction is always toward zero.
 :::
 
 ---
@@ -594,7 +657,7 @@ SE(β̂) is smaller — the estimate more precise — when:
 - **n is large** — more observations
 
 ::: {.fragment}
-Notice: this is the same $Std[e]$ and $Std[x]$ from Week 4's slope formula. Precision and the estimate itself come from the same ingredients.
+$Std[x]$ is just the square root of $Var[x]$, the bottom of Week 4's slope formula. The more x varies, the more precisely we can pin down the slope. If everyone in the class had the same finger length, we couldn't estimate a slope at all.
 :::
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
@@ -604,7 +667,7 @@ Source: Békés & Kézdi (2021), Ch. 9
 ## Task — SE and CI for our own regression
 
 ::: {.instructions-box}
-By hand or in Excel: using the SE(β̂) formula from the last slide and β̂ from Week 4, calculate the 95% CI for our own finger-length regression.
+Using the SE(β̂) formula from the last slide and β̂ from Week 4, calculate the 95% CI for our own finger-length regression.
 :::
 
 ::: {.fragment}
@@ -634,9 +697,138 @@ By hand or in Excel: using the SE(β̂) formula from the last slide and β̂ fro
 Does the interval include zero? What would that mean for whether HR should trust this formula at all?
 :::
 
+## Finding SE(β̂) in the output
+
+You don't have to calculate it by hand. It's the `std err` column of `model.summary()`:
+
+```python
+model = smf.ols('mean_rt ~ finger_mm', data=student_summary).fit()
+print(model.summary())
+```
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.5em;line-height:1.3;background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;padding:8px 14px;overflow-x:auto;white-space:pre;">${lin_summary_text}</pre>`
+```
+
+## What did that CI actually assume?
+
+That $\hat\beta \pm 2\,SE(\hat\beta)$ formula is only an *exact* 95% interval if one more thing holds: $\varepsilon \mid x \sim N(0,\sigma^2)$ — the residuals are normally distributed.
+
+::: {.fragment}
+This is a different *kind* of assumption from the five BLUE needs (Week 4). Gauss-Markov never mentions it — $\hat\beta$ is unbiased and precise regardless of the residuals' shape. Normality only enters once we build a *test statistic* around $\hat\beta$ and ask what distribution it follows at a finite sample size.
+:::
+
+::: {.fragment}
+** Is this in an issue? **
+:::
+:::{.fragment} 
+Our own class regression runs on just 24 students. Does that matter? Simulations say: not much on its own. Even with badly skewed residuals and only 8 observations, 95% intervals still contain the true β about 95% of the time. It's when skew comes together with an influential point that the interval starts to miss. It is still worth getting into the habit of checking. 
+:::
+
+## QQ-plot {.smaller}
+
+A QQ-plot sorts the residuals from smallest to largest and plots each one against where it *would* be if the residuals were normal. Two sets of 24 made-up residuals:
+
+```{ojs}
+{
+  const panel = (rows, colour, title) => {
+    const hist = Plot.plot({
+      width: 400, height: 120, marginLeft: 40,
+      x: {label: null, domain: [-260, 360]}, y: {label: null, ticks: 3},
+      marks: [Plot.rectY(rows, Plot.binX({y: "count"}, {x: "sample", fill: colour, thresholds: 12})), Plot.ruleY([0])]
+    })
+    const qq = Plot.plot({
+      width: 400, height: 280, marginLeft: 40,
+      x: {label: "Where it would be if normal", domain: [-260, 260]},
+      y: {label: "Actual residual", domain: [-260, 360]},
+      marks: [
+        Plot.line([{x: -260, y: -260}, {x: 260, y: 260}], {x: "x", y: "y", stroke: "#999", strokeDasharray: "4,3"}),
+        Plot.dot(rows, {x: "theoretical", y: "sample", fill: colour, r: 4}),
+      ]
+    })
+    return html`<div><div style="text-align:center;font-family:sans-serif;font-size:0.9em;font-weight:600;">${title}</div>${hist}${qq}</div>`
+  }
+  return html`<div style="display:flex;gap:30px;justify-content:center;">
+    ${panel(qq_good, "#457b9d", "Normal residuals")}
+    ${panel(qq_skew, "#e63946", "Right-skewed residuals")}
+  </div>`
+}
+```
+
+::: {.fragment}
+If the residuals are normal, the dots sit close to the dashed line. With right skew, the biggest residuals are much bigger than a normal distribution would give, so the top end curves up and away from the line. The smallest ones aren't as small as normal would give either, so the bottom end sits above the line too. You get a banana shape. Even the normal ones wobble a bit – with only 24 points they always will.
+:::
+
+## So what do we actually check? {.smaller}
+
+```{ojs}
+html`<p>Now our own regression's residuals (n = <strong>${own_norm_n}</strong>). Which of the two on the last slide does it look more like?</p>`
+```
+
+:::: {.shrink-on-reveal data-frag="wk5-qq-frag" style="--large-height:530px;--small-height:260px;--shrink-scale:0.491;"}
+::: {.shrink-on-reveal-inner}
+```{ojs}
+{
+  return Plot.plot({
+    width: 480, height: 530,
+    x: {label: "Theoretical normal quantile"}, y: {label: "Residual"},
+    marks: [
+      Plot.line([{x: -1500, y: -800}, {x: 1500, y: 2200}], {x: "x", y: "y", stroke: "#ccc", strokeDasharray: "4,3"}),
+      Plot.dot(own_qq_data, {x: "theoretical", y: "sample", fill: "#457b9d", r: 4}),
+    ]
+  })
+}
+```
+:::
+::::
+
+::: {.fragment #wk5-qq-frag}
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.5em;line-height:1.3;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">${normality_diag_text}</pre>`
+```
+:::
+
+::: {.fragment}
+```{ojs}
+html`<p>This is the diagnostic block <code>statsmodels</code> computes by default on every OLS fit &ndash; Skew, Kurtosis, and the Jarque-Bera test. Here <code>Prob(JB) = ${norm_stats.jb_p}</code>: ${norm_stats.jb_p < 0.05 ? html`we <strong>reject</strong> normality at 5%. The residuals are right-skewed (skew ${norm_stats.skew}), driven by a handful of very slow students` : html`we can't reject normality, though at n = ${own_norm_n} the test has little power either way`}. Skew on its own is survivable &ndash; but we also have an influential student. <strong>That combination is exactly when the CI is least trustworthy.</strong> Would logging the outcome help? That's the next task.</p>`
+```
+:::
+
+## Task — QQ-plot of our own residuals {.smaller}
+
+::: {.instructions-box}
+In the **Week 5 in-class notebook**, make a QQ-plot of the residuals from Week 4's model, `mean_rt ~ finger_mm`. Then do the same for the log model from Task 1, `np.log(mean_rt) ~ finger_mm`.
+
+Which one looks more like the normal panel? Check `Prob(JB)` and `Skew` in each model's summary too.
+:::
+
+::: {.fragment}
+```{ojs}
+{
+  const qq = (rows, col) => {
+    const lim = d3.max(rows, d => Math.max(Math.abs(d.theoretical), Math.abs(d.sample))) * 1.05
+    return Plot.plot({ width: 360, height: 220, marginLeft: 55,
+      x: { label: "Where it would be if normal", domain: [-lim, lim] }, y: { label: "Residual", domain: [-lim, lim] },
+      marks: [Plot.line([{ x: -lim, y: -lim }, { x: lim, y: lim }], { x: "x", y: "y", stroke: "#999", strokeDasharray: "4,3" }),
+              Plot.dot(rows, { x: "theoretical", y: "sample", fill: col, r: 4 })] })
+  }
+  const panel = (title, chart, p, sk) => html`<div><p style="text-align:center;font-family:sans-serif;font-weight:700;margin:0;">${title}</p>${chart}<p style="text-align:center;font-family:sans-serif;font-size:0.8em;margin:0;">Skew ${sk} · Prob(JB) ${p}</p></div>`
+  return html`<div style="display:flex;gap:30px;justify-content:center;">
+    ${panel("mean_rt ~ finger_mm", qq(own_qq_data, "#e63946"), qq_task.lin_p, qq_task.lin_skew)}
+    ${panel("np.log(mean_rt) ~ finger_mm", qq(log_qq_data, "#457b9d"), qq_task.log_p, qq_task.log_skew)}</div>`
+}
+```
+
+```{ojs}
+html`<p style="font-family:sans-serif;font-size:0.9em;">Logging pulls in the long top end: residual skew falls from ${qq_task.lin_skew} to ${qq_task.log_skew}, and Prob(JB) rises from ${qq_task.lin_p} to ${qq_task.log_p}, so we can no longer reject normality. It isn't perfect, though. There's a jump in the middle, because our class splits into a fast group and a slow group – something no transformation will remove.</p>`
+```
+:::
+
 ## Homoskedasticity — and robust SE {.smaller}
 
-The simple SE formula above assumes **homoskedasticity**: the spread of residuals is the same across the whole range of x. A generic illustration, not our own data (too few points to show this convincingly at n=15-20):
+The simple SE formula above assumes **homoskedasticity**: the spread of residuals is the same across the whole range of x. A generic illustration, not our own data (24 points are too few to show this convincingly):
 
 :::: {.shrink-on-reveal data-frag="wk5-homosked-frag" style="--large-height:320px;--small-height:220px;--shrink-scale:0.6875;"}
 ::: {.shrink-on-reveal-inner}
@@ -671,7 +863,7 @@ In practice this is often false — the fit may be tighter for some x values tha
 ```python
 import statsmodels.formula.api as smf
 
-model = smf.ols('reaction_time_ms ~ device', data=df).fit(cov_type='HC1')
+model = smf.ols('mean_rt ~ finger_mm', data=student_summary).fit(cov_type='HC1')
 ```
 
 Add `cov_type='HC1'` to `.fit()` and every SE, CI, and p-value that comes out the other end is heteroskedasticity-robust. Practical rule: **use it by default**; it costs nothing when homoskedasticity holds, and saves you when it doesn't.
@@ -681,19 +873,51 @@ Add `cov_type='HC1'` to `.fit()` and every SE, CI, and p-value that comes out th
 Source: Békés & Kézdi (2021), Ch. 9
 :::
 
-## Testing if β is really zero
+## Task — classical vs. robust SE
 
-$$H_0: \beta_{true} = 0 \qquad H_A: \beta_{true} \neq 0 \qquad\qquad t = \frac{\hat\beta}{SE(\hat\beta)}$$
+::: {.instructions-box}
+In the **Week 5 in-class notebook**, fit our regression twice: once as normal, and once with `cov_type='HC1'`. Compare the two results for `finger_mm`: the coefficient, the SE and the 95% CI.
 
-- $t \approx 2$ corresponds to the 95% CI boundary — the same threshold, from a different angle
-- A coefficient is "**statistically significant**" if its CI doesn't contain zero — most commonly at the 5% level ($p<0.05$)
+Which numbers change, and which don't? Does it change what you'd tell HR?
+:::
 
 ::: {.fragment}
-This is the exact same t-statistic logic as Week 2's tea test — just applied to a slope instead of a mean difference.
+```{ojs}
+html`<table style="margin:10px auto;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;">
+  <caption class="visually-hidden">Classical and robust results for finger_mm</caption>
+  <tr style="border-bottom:2px solid #1a1a2e;"><th scope="col" style="padding:4px 18px;text-align:left;"></th><th scope="col" style="padding:4px 18px;">β̂</th><th scope="col" style="padding:4px 18px;">SE</th><th scope="col" style="padding:4px 18px;">95% CI</th></tr>
+  <tr style="border-bottom:1px solid #ddd;"><td style="padding:4px 18px;">Classical</td><td style="padding:4px 18px;text-align:center;">${task_ans.b}</td><td style="padding:4px 18px;text-align:center;">${task_ans.se}</td><td style="padding:4px 18px;text-align:center;">[${task_ans.ci_lo}, ${task_ans.ci_hi}]</td></tr>
+  <tr><td style="padding:4px 18px;">Robust (HC1)</td><td style="padding:4px 18px;text-align:center;">${task_ans.b}</td><td style="padding:4px 18px;text-align:center;"><strong>${task_ans.rse}</strong></td><td style="padding:4px 18px;text-align:center;">[${task_ans.rci_lo}, ${task_ans.rci_hi}]</td></tr>
+</table>
+<p style="font-family:sans-serif;">The coefficient doesn't move: robust SE only changes how sure we are, never the estimate itself. The SE is about ${task_ans.rse_pct}% bigger, so the CI is wider. Here the story for HR stays the same, because the interval included zero either way. On other data the robust SE can turn a "significant" result into one that isn't.</p>`
+```
 :::
+
+## Testing if β is really zero: a quick recap
+
+Same t-test as Week 2. The only difference is that we're testing a slope, not a difference in means.
+
+1. **Hypotheses:** $H_0: \beta_{true} = 0$ (no relationship) against $H_A: \beta_{true} \neq 0$
+2. **t-statistic:** $t = \dfrac{\hat{\beta}}{SE(\hat{\beta})}$ – how many SEs the estimate is from zero
+3. **Decision:** reject $H_0$ at 5% if $|t| > 2$, or equivalently if $p < 0.05$
+4. **Same answer as the CI:** reject exactly when the 95% CI doesn't contain zero
+
+statsmodels prints all of this for every coefficient: the `t` and `P>|t|` columns.
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
 Source: Békés & Kézdi (2021), Ch. 9
+:::
+
+## Task — is finger length significant?
+
+::: {.instructions-box}
+From the summary output for `mean_rt ~ finger_mm`: what are the t-statistic and P>|t| for `finger_mm`? Can we reject $H_0: \beta = 0$ at the 5% level? Check your answer against the CI.
+:::
+
+::: {.fragment}
+```{ojs}
+html`<p style="font-family:sans-serif;">t = ${task_ans.b} / ${task_ans.se} = <strong>${task_ans.t}</strong>, and P>|t| = <strong>${task_ans.p}</strong>. Far from 2, and far above 0.05: we <strong>can't reject</strong> β = 0. The 95% CI, [${task_ans.ci_lo}, ${task_ans.ci_hi}], includes zero &ndash; the same answer from a different angle. For HR, the formula's slope is indistinguishable from no relationship at all.</p>`
+```
 :::
 
 ## Two different questions about prediction
@@ -711,6 +935,8 @@ Source: Békés & Kézdi (2021), Ch. 9
 
 ## Both bands, on our own data
 
+:::: {.shrink-on-reveal data-frag="wk5-bands-frag" style="--large-height:440px;--small-height:280px;--shrink-scale:0.636;"}
+::: {.shrink-on-reveal-inner}
 ```{ojs}
 {
   const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm))
@@ -742,16 +968,40 @@ Source: Békés & Kézdi (2021), Ch. 9
   })
 }
 ```
+:::
+::::
 
 ::: {.instructions-box}
-The narrow red band is the CI of the regression line; the wide blue band is the prediction interval. For a new student HR hasn't met yet, which band should they actually use to set expectations? Why is it so much wider?
+The narrow red band is the CI of the regression line; the wide blue band is the prediction interval. For a new student HR hasn't met yet, which band should they actually use to set expectations? Why is it so much wider? In the notebook, get both intervals at 80mm with `model.get_prediction(...)`.
 :::
 
----
+::: {.fragment #wk5-bands-frag}
+```{ojs}
+html`<p style="font-family:sans-serif;font-size:0.9em;">At 80mm: the average student is predicted at <strong>${task_ans.pred80}ms</strong>, CI [${task_ans.ci80_lo}, ${task_ans.ci80_hi}]. One student: <strong>[${task_ans.pi80_lo}, ${task_ans.pi80_hi}]</strong> &ndash; the bottom end is a negative reaction time. HR could say very little about any one new candidate.</p>`
+```
+:::
+
+## Wrapping up {.smaller}
+
+**Shape**
+
+- Log a variable when it's skewed, when proportions matter more than amounts, or to straighten a curve. A log difference is roughly a % difference
+- A quadratic lets the slope change with x: the slope is $\beta_1 + 2\beta_2 x$
+
+**Extreme values**
+
+- Extreme isn't the same as influential: check whether the slope moves when a point is dropped
+- Don't drop on y. Fix values you can show are errors
+
+**How sure are we?**
+
+- $SE(\hat\beta)$ is smaller with less scatter, more spread in x, and more data. The 95% CI is $\hat\beta \pm 2\,SE$
+- Use robust SEs by default. They change the SE, never $\hat\beta$
+- t-test and CI give the same answer. A CI is for the average; a prediction interval is for one person, and it's much wider
 
 ## Online session
 
-See **week5-online.html** — a short standalone deck for this week's online session.
+A walkthrough of the Vienna hotels again: choosing between logged and unlogged models, splines, and measurement error – what happens to a regression when x is measured with noise.
 
 ## Coming up: Week 6
 
