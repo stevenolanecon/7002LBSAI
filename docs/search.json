@@ -2923,7 +2923,7 @@
     "href": "week5-online-slides.html#the-r²-trap",
     "title": "Hotels Revisited: Shape and Noise",
     "section": "The R² trap",
-    "text": "The R² trap\nR² goes up with every row of the table: 0.157, 0.205, 0.280, 0.334. Is log–log simply the best model?\n\nNo – you can only compare R² between models with the same y. R² for price measures how much of the variation in euros we explain; R² for ln(price) measures variation in log euros. They’re different things.\nValid comparisons: level–level vs. level–log (both explain price), and log–level vs. log–log (both explain ln(price)). In both pairs, logging distance fits better.\n\n\nSource: Békés & Kézdi (2021), Ch. 8"
+    "text": "The R² trap\nR² goes up with every row of the table: 0.157, 0.205, 0.280, 0.334. Is log–log simply the best model?\n\nNo – you can only compare R² between models with the same y. R² for price measures how much of the variation in euros we explain; R² for ln(price) measures variation in log euros. They’re different things.\nValid comparisons: level–level vs. level–log (both explain price), and log–level vs. log–log (both explain ln(price)). In both pairs, logging distance fits better.\n\n\nThe rule: only compare R² between models that explain the same y. Logging x is fine; logging y changes what R² is measuring. The same goes for Friday’s log task: R² of 0.056 for ln(reaction time) against 0.032 for reaction time is not a like-for-like comparison.\n\n\nSource: Békés & Kézdi (2021), Ch. 8"
   },
   {
     "objectID": "week5-online-slides.html#which-one-would-you-use",

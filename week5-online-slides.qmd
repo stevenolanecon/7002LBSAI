@@ -311,6 +311,10 @@ R² goes up with every row of the table: 0.157, 0.205, 0.280, 0.334. Is log–lo
 Valid comparisons: level–level vs. level–log (both explain **price**), and log–level vs. log–log (both explain **ln(price)**). In both pairs, logging distance fits better.
 :::
 
+::: {.fragment}
+**The rule:** only compare R² between models that explain the same y. Logging x is fine; logging y changes what R² is measuring. The same goes for Friday's log task: R² of 0.056 for ln(reaction time) against 0.032 for reaction time is not a like-for-like comparison.
+:::
+
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
 Source: Békés & Kézdi (2021), Ch. 8
 :::
