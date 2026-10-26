@@ -239,6 +239,20 @@ hotels['ln_price'] = np.log(hotels['price'])`)
 With only one hotel affected, the choice barely matters here. With many zeros, it would.
 :::
 
+## The log–log model
+
+Log both price and distance:
+
+```python
+m4 = smf.ols('ln_price ~ ln_dist', data=hotels).fit()
+```
+
+::: {.fragment}
+```{ojs}
+html`<p>Slope = <strong>${four[3].b.toFixed(2)}</strong>: hotels 10% further from the centre are about ${(-four[3].b * 10).toFixed(1)}% cheaper, on average. Both sides are in logs, so both are percentage changes: a mile means something very different at 0.2 miles than at 5 miles out, while 10% further out means the same thing everywhere.</p>`
+```
+:::
+
 ## Four models, one table
 
 ```{ojs}
@@ -273,18 +287,6 @@ html`<ul>
 
 ::: {.fragment}
 Four different numbers from the same data. None is wrong; each answers a slightly different question.
-:::
-
-## The log–log model
-
-```python
-m4 = smf.ols('ln_price ~ ln_dist', data=hotels).fit()
-```
-
-::: {.fragment}
-```{ojs}
-html`<p>Slope = <strong>${four[3].b.toFixed(2)}</strong>: hotels 10% further from the centre are about ${(-four[3].b * 10).toFixed(1)}% cheaper, on average. Both sides are in logs, so both are percentage changes: a mile means something very different at 0.2 miles than at 5 miles out, while 10% further out means the same thing everywhere.</p>`
-```
 :::
 
 ## The R² trap
@@ -503,51 +505,6 @@ $$\hat\beta = \beta^* \times \frac{Var[x^*]}{Var[x^*] + Var[e]}$$
 Source: Békés & Kézdi (2021), Ch. 8
 :::
 
-## Watch attenuation happen
-
-```{ojs}
-viewof noise_sd = Inputs.range([0, 0.6], { step: 0.05, value: 0, label: "Noise added to the ratings (SD, rating points)" })
-```
-
-```{ojs}
-{
-  const rows = many.map(d => ({ ...d, noisy: d.rating + noise_sd * d.z }))
-  const f0 = olsFit(rows.map(d => ({ x: d.rating, y: d.ln_price })), "x", "y")
-  const f = olsFit(rows.map(d => ({ x: d.noisy, y: d.ln_price })), "x", "y")
-  const xr = d3.extent(rows, d => d.noisy)
-  const lam = stats.many_var / (stats.many_var + noise_sd ** 2)
-  return html`<div>${accessibleChart(Plot.plot({ height: 330, width: 820, marginLeft: 50,
-    x: { label: "Rating (with added noise)", domain: [2.6, 5.4] }, y: { label: "ln(price)" },
-    marks: [
-      Plot.dot(rows, { x: "noisy", y: "ln_price", r: 3.5, fill: "#457b9d", fillOpacity: 0.6 }),
-      Plot.line(xr.map(x => ({ x, y: f0.a + f0.b * x })), { x: "x", y: "y", stroke: "#999", strokeDasharray: "5,4", strokeWidth: 2 }),
-      Plot.line(xr.map(x => ({ x, y: f.a + f.b * x })), { x: "x", y: "y", stroke: "#e63946", strokeWidth: 3 }),
-    ] }), `Scatterplot of log price against rating for the ${stats.many_n} hotels with many reviews, with noise of SD ${noise_sd} added to the ratings. The fitted slope is ${f.b.toFixed(2)}, against ${f0.b.toFixed(2)} with no added noise.`)}
-    <p style="font-family:sans-serif;text-align:center;">Slope: <strong style="color:#e63946;">${f.b.toFixed(2)}</strong> (no added noise: ${f0.b.toFixed(2)}) &nbsp;·&nbsp; formula predicts ${f0.b.toFixed(2)} × ${lam.toFixed(2)} = ${(f0.b * lam).toFixed(2)}</p></div>`
-}
-```
-
-```{ojs}
-html`<p style="font-size:0.8em;color:#555;">The ${stats.many_n} hotels with more than 200 reviews, whose ratings are the most reliable. One set of random noise, scaled up by the slider. One draw won't match the formula exactly: the formula gives the average over many draws, which the next slide checks.</p>`
-```
-
-## How much noise would it take?
-
-How much noise do the well-reviewed hotels' ratings need before their slope looks like the slope for hotels with **fewer than 100 reviews**? Add noise, refit, repeat 500 times, and average:
-
-```python
-rng = np.random.default_rng(1)
-slopes = [smf.ols('ln_price ~ r', data=many.assign(r=many['rating'] + rng.normal(0, 0.2, len(many))))
-          .fit().params['r'] for _ in range(500)]
-np.mean(slopes)
-```
-
-::: {.fragment}
-```{ojs}
-html`<p>Average slope over 500 runs: ${noise_grid.map(d => `SD ${d.sd} → ${d.mean_b}`).join(' · ')}. About <strong>0.2 rating points</strong> of noise brings it down to ${noise_grid[1].mean_b}, close to the few-reviews slope of ${stats.few_b}. The formula agrees: Var[x] = ${stats.many_var}, so λ = ${stats.many_var} / (${stats.many_var} + 0.04) ≈ ${noise_grid[1].lam}, and ${stats.many_b} × ${noise_grid[1].lam} ≈ ${(stats.many_b * noise_grid[1].lam).toFixed(2)}.</p>`
-```
-:::
-
 ## The real comparison
 
 ```{ojs}
@@ -587,7 +544,7 @@ $$\text{noise-to-signal} = \frac{Var[e]}{Var[x^*]}$$
 
 ::: {.fragment}
 ```{ojs}
-html`<p>The hotel ratings are a warning: among well-reviewed hotels the ratings barely vary (SD ${stats.many_sd} on a 5-point scale). With so little real spread, even 0.2 points of noise is a big share of it.</p>`
+html`<p>The hotel ratings are a warning: among well-reviewed hotels the ratings barely vary (SD ${stats.many_sd} on a 5-point scale). With so little real spread, even a little noise is a big share of it.</p>`
 ```
 :::
 

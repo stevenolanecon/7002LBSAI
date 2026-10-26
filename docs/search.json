@@ -3042,7 +3042,7 @@
     "href": "week5-online-slides.html#noise-to-signal-ratio",
     "title": "Hotels Revisited: Shape and Noise",
     "section": "Noise-to-signal ratio",
-    "text": "Noise-to-signal ratio\n\\[\\text{noise-to-signal} = \\frac{Var[e]}{Var[x^*]}\\]\n\nLow: careful recording, or a variable averaged over lots of observations. Usually safe to ignore\nHigh: the noise is large compared with the real spread in x. Worth taking seriously\n\n\n\nhtml`&lt;p&gt;The hotel ratings are a warning: among well-reviewed hotels the ratings barely vary (SD ${stats.many_sd} on a 5-point scale). With so little real spread, even 0.2 points of noise is a big share of it.&lt;/p&gt;`"
+    "text": "Noise-to-signal ratio\n\\[\\text{noise-to-signal} = \\frac{Var[e]}{Var[x^*]}\\]\n\nLow: careful recording, or a variable averaged over lots of observations. Usually safe to ignore\nHigh: the noise is large compared with the real spread in x. Worth taking seriously\n\n\n\nhtml`&lt;p&gt;The hotel ratings are a warning: among well-reviewed hotels the ratings barely vary (SD ${stats.many_sd} on a 5-point scale). With so little real spread, even a little noise is a big share of it.&lt;/p&gt;`"
   },
   {
     "objectID": "week5-online-slides.html#when-the-error-isnt-classical",
@@ -3105,7 +3105,7 @@
     "href": "week5-online-slides.html#the-loglog-model",
     "title": "Hotels Revisited: Shape and Noise",
     "section": "The log–log model",
-    "text": "The log–log model\nm4 = smf.ols('ln_price ~ ln_dist', data=hotels).fit()\n\n\nhtml`&lt;p&gt;Slope = &lt;strong&gt;${four[3].b.toFixed(2)}&lt;/strong&gt;: hotels 10% further from the centre are about ${(-four[3].b * 10).toFixed(1)}% cheaper, on average. Both sides are in logs, so both are percentage changes: a mile means something very different at 0.2 miles than at 5 miles out, while 10% further out means the same thing everywhere.&lt;/p&gt;`"
+    "text": "The log–log model\nLog both price and distance:\nm4 = smf.ols('ln_price ~ ln_dist', data=hotels).fit()\n\n\nhtml`&lt;p&gt;Slope = &lt;strong&gt;${four[3].b.toFixed(2)}&lt;/strong&gt;: hotels 10% further from the centre are about ${(-four[3].b * 10).toFixed(1)}% cheaper, on average. Both sides are in logs, so both are percentage changes: a mile means something very different at 0.2 miles than at 5 miles out, while 10% further out means the same thing everywhere.&lt;/p&gt;`"
   },
   {
     "objectID": "week5-online-slides.html#was-last-weeks-straight-line-defensible",
