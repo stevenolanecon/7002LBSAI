@@ -171,18 +171,6 @@ olsFit = (rows, xk, yk) => {
 [The same 207 Vienna hotels as last week. Is a straight line the right shape, and what happens when x is measured with noise?]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
 :::
 
-## How this session works
-
-- Watch the recording and follow along in the **Week 5 online walkthrough** notebook (Colab)
-- The tasks in the notebook match the tasks on the slides
-- Bring your questions to Thursday's **live Q&A**
-
-Three parts:
-
-1. **What shape is the line?** Logs on the hotel data
-2. **Splines** – letting the slope change at a point you choose
-3. **Measurement error** – using the hotel ratings
-
 # Part 1: what shape is the line? {background-color="#2d6a4f"}
 
 ## The question
@@ -287,13 +275,11 @@ html`<ul>
 Four different numbers from the same data. None is wrong; each answers a slightly different question.
 :::
 
-## Task: fit the log–log model yourself
+## The log–log model
 
-::: {.instructions-box}
-In the **Week 5 online walkthrough** notebook, create `ln_price` and `ln_dist` (with the 0-mile hotel set to 0.05), fit `ln_price ~ ln_dist`, and put the slope into one sentence about Vienna hotels.
-
-Then: why does the 10% wording suit this model better than "1 mile further out"?
-:::
+```python
+m4 = smf.ols('ln_price ~ ln_dist', data=hotels).fit()
+```
 
 ::: {.fragment}
 ```{ojs}
@@ -312,7 +298,7 @@ Valid comparisons: level–level vs. level–log (both explain **price**), and l
 :::
 
 ::: {.fragment}
-**The rule:** only compare R² between models that explain the same y. Logging x is fine; logging y changes what R² is measuring. The same goes for Friday's log task: R² of 0.056 for ln(reaction time) against 0.032 for reaction time is not a like-for-like comparison.
+**The rule:** only compare R² between models that explain the same y. Logging x is fine; logging y changes what R² is measuring. The same goes for Friday's log model of reaction time: R² of 0.056 for ln(reaction time) against 0.032 for reaction time is not a like-for-like comparison.
 :::
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
@@ -331,18 +317,14 @@ Source: Békés & Kézdi (2021), Ch. 8
 **Then the statistics:** the scatterplots and R² both say logging distance helps. Gabor's own verdict: "your call". There's no single right answer, only a choice you can defend.
 :::
 
-## Task: was last week's straight line defensible?
+## Was last week's straight line defensible?
 
-::: {.instructions-box}
-Last week we found the five best deals with `price ~ distance`. Go through the roadmap:
+Last week we found the five best deals with `price ~ distance`. Going through the roadmap:
 
-1. What do the distributions of price and distance look like?
-2. What shape did LOWESS show?
-3. What transformation would you choose, and why?
-4. If you changed the model, would the best deals change?
-
-Keep your answer to step 4 in mind – it's exactly where Part 2 goes.
-:::
+1. **Distributions:** price is right-skewed (skew 2.06), and about two in five hotels are within a mile of the centre
+2. **Shape:** LOWESS falls steeply in the first mile, then is nearly flat
+3. **Transformation:** a log of distance, or a spline with a knot near 1 mile
+4. **Would the best deals change?** That's where Part 2 goes
 
 # Part 2: splines {background-color="#2d6a4f"}
 
@@ -434,13 +416,14 @@ html`<p>Only ${stats.n_both} hotel (highlighted) is on both lists. The straight 
 ```
 :::
 
-## Task: move the knot
+## Where should the knot go?
 
-::: {.instructions-box}
-In the notebook, refit the spline with the knot at **2 miles** instead of 1. Then try **two knots**, at 1 and 4 miles. Compare R² each time.
-
-Where would you put the knot, and why? What else, apart from R², would you use to decide?
-:::
+```python
+hotels['beyond_2'] = np.maximum(hotels['distance'] - 2, 0)
+hotels['beyond_4'] = np.maximum(hotels['distance'] - 4, 0)
+smf.ols('price ~ distance + beyond_2', data=hotels).fit()              # knot at 2 miles
+smf.ols('price ~ distance + beyond_1 + beyond_4', data=hotels).fit()   # knots at 1 and 4
+```
 
 ::: {.fragment}
 ```{ojs}
@@ -545,16 +528,19 @@ viewof noise_sd = Inputs.range([0, 0.6], { step: 0.05, value: 0, label: "Noise a
 ```
 
 ```{ojs}
-html`<p style="font-size:0.8em;color:#555;">The ${stats.many_n} hotels with more than 200 reviews, whose ratings are the most reliable. One set of random noise, scaled up by the slider. One draw won't match the formula exactly: the formula gives the average over many draws, which is what the next task checks.</p>`
+html`<p style="font-size:0.8em;color:#555;">The ${stats.many_n} hotels with more than 200 reviews, whose ratings are the most reliable. One set of random noise, scaled up by the slider. One draw won't match the formula exactly: the formula gives the average over many draws, which the next slide checks.</p>`
 ```
 
-## Task: how much noise would it take?
+## How much noise would it take?
 
-::: {.instructions-box}
-In the notebook, take the hotels with **more than 200 reviews** and add random noise to their ratings, as on the last slide. Repeat it many times and average the slopes.
+How much noise do the well-reviewed hotels' ratings need before their slope looks like the slope for hotels with **fewer than 100 reviews**? Add noise, refit, repeat 500 times, and average:
 
-How big does the noise SD need to be before their slope looks like the slope for hotels with **fewer than 100 reviews**? Check your answer against the attenuation formula.
-:::
+```python
+rng = np.random.default_rng(1)
+slopes = [smf.ols('ln_price ~ r', data=many.assign(r=many['rating'] + rng.normal(0, 0.2, len(many))))
+          .fit().params['r'] for _ in range(500)]
+np.mean(slopes)
+```
 
 ::: {.fragment}
 ```{ojs}
@@ -630,16 +616,6 @@ Gabor & Kézdi leave this open. Given what you now know about attenuation bias, 
 - something else?
 
 What would you tell someone using the rating slope to decide whether a better rating is worth paying for?
-:::
-
-## Bring to the Q&A
-
-::: {.instructions-box}
-1. Which of the four functional forms would you use to find a good deal, and why?
-2. Where would you put the spline's knot? Would a second knot help?
-3. Only one hotel is on both best-deal lists. Which list would you trust, and why?
-4. How much noise did you need to add to the ratings? Does 0.2 rating points sound plausible for an average of about 50 reviews?
-5. Is the gap between the two rating slopes evidence of attenuation, or could something else explain it?
 :::
 
 ## Coming up: Week 6
