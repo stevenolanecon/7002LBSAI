@@ -24,13 +24,48 @@ execute:
 ---
 
 ```{python}
+import numpy as np
 import pandas as pd
 import statsmodels.formula.api as smf
 
 cps_df = pd.read_csv("data/cps_gender_pay_gap.csv")
+
+# Vienna hotels, same filters as Weeks 4 and 5
+hotels = pd.read_csv("data/hotels_vienna.csv")
+hotels = hotels[(hotels.accommodation_type == 'Hotel') & (hotels.city_actual == 'Vienna')
+                & hotels.stars.between(3, 4) & (hotels.price <= 600)].copy()
+hotels['ln_price'] = np.log(hotels['price'])
+hotels['dist_b1'] = np.maximum(hotels['distance'] - 1, 0)
+hotels['dist_b4'] = np.maximum(hotels['distance'] - 4, 0)
+hotels['rating_b35'] = np.maximum(hotels['rating'] - 3.5, 0)
+hotel_model = smf.ols('ln_price ~ distance + dist_b1 + dist_b4 + rating + rating_b35 + C(stars)',
+                      data=hotels).fit(cov_type='HC1')
+hotels['resid'] = hotel_model.resid
+
+# Building the hotels model up one block at a time, for the comparison table
+_hf = ['ln_price ~ distance',
+       'ln_price ~ distance + dist_b1 + dist_b4',
+       'ln_price ~ distance + dist_b1 + dist_b4 + rating + rating_b35',
+       'ln_price ~ distance + dist_b1 + dist_b4 + rating + rating_b35 + C(stars)']
+hotel_models = [smf.ols(_f, data=hotels).fit(cov_type='HC1') for _f in _hf]
+_deals = [set(hotels.assign(_r=_m.resid).nsmallest(5, '_r')['hotel_id']) for _m in hotel_models]
+hotel_overlap = len(_deals[0] & _deals[3])
+_st = hotel_models[3].f_test("C(stars)[T.3.5] = 0, C(stars)[T.4.0] = 0")
+hotel_stars_f = round(float(np.squeeze(_st.fvalue)), 1)
+hotel_deals = hotels.nsmallest(5, 'resid')[['hotel_id', 'price', 'resid', 'distance', 'stars', 'rating']]
 ```
 
 ## {background-color="#1a1a2e"}
+
+```{=html}
+<style>
+.reveal .big-code div.sourceCode { font-size: 1.15em !important; }
+.reveal .mid-code div.sourceCode { font-size: 0.8em !important; }
+.reveal .small-code div.sourceCode { font-size: 0.62em !important; }
+.reveal .big-code div.sourceCode pre.sourceCode, .reveal .small-code div.sourceCode pre.sourceCode, .reveal .mid-code div.sourceCode pre.sourceCode { font-size: 1em !important; }
+</style>
+```
+
 
 ::: {style="text-align: center; padding-top: 180px;"}
 [**Multiple regression, worked through**]{style="font-size: 2.2em; color: white;"}
@@ -47,14 +82,14 @@ cps_df = pd.read_csv("data/cps_gender_pay_gap.csv")
 
 ## Understanding the gender difference in earnings
 
-- In the USA (2014), women tend to eanr about 20% less than men
-- Aim 1: Find patterns to better understand the gender gap with a particular focus on the interaction with age. 
-- Aim 2L Think about if there is a causal link from femal to getting paid less. 
+- In the USA (2014), women tend to earn about 20% less than men
+- Aim 1: find patterns that help us understand the gender gap, focusing on how it interacts with age
+- Aim 2: think about whether there is a causal link from being female to being paid less
 
 ## Set up
 
 - 2014 census data
-  - Age between 15 to 65
+  - Age between 24 and 64
   - Self-employed excluded as earning are difficult to measure
   - Include those who reported 20 hours or more as their usual weekly time worked
 - Employees with a graduate degree
@@ -70,14 +105,16 @@ $$\ln w^E = \alpha + \beta\, female$$
 Let's include age as well: 
 
 $$\ln w^E = \beta_0 + \beta_1 female + \beta_2 age $$
-We can also calculate the correlation between female and age: 
+We can also regress age on female, to see how the two are related: 
 $$ age^E = \gamma + \delta female$$
 
 ## Adding age as a confounder
 
+::: {.big-code}
 ```{.python}
-smf.ols('ln_wage ~ female + age', data=df).fit(cov_type='HC1')
+smf.ols('ln_wage ~ female + age', data=cps_df).fit(cov_type='HC1')
 ```
+:::
 
 ```{python}
 #| output: asis
@@ -132,13 +169,14 @@ print(f"- $\\delta\\beta_2 = {_aux.params['female']:.3f}\\times{_m2.params['age'
 Source: Békés & Kézdi (2021), Ch. 10
 :::
 
-## Looking at in the age distribution
+## Looking at the age distribution {.smaller}
 
 
 Let's plot the difference in the age distribution of employees with graduate degrees. 
 
 
 
+::: {.small-code}
 ```{.python}
 import matplotlib.pyplot as plt
 from scipy.stats import gaussian_kde
@@ -159,6 +197,7 @@ ax.set_ylabel('Density')
 ax.legend(frameon=False)
 plt.show()
 ```
+:::
 
 ## The age distribution, plotted
 
@@ -197,11 +236,13 @@ Two explanations are consistent with this pattern: fewer women completed graduat
 Source: Békés & Kézdi (2021), Ch. 10
 :::
 
-## Should we consider a non-linear relationship?
+## Should we consider a non-linear relationship? {.smaller}
 
+::: {.big-code}
 ```{.python}
-smf.ols('ln_wage ~ female + age + I(age**2) + I(age**3) + I(age**4)', data=df).fit(cov_type='HC1')
+smf.ols('ln_wage ~ female + age + I(age**2) + I(age**3) + I(age**4)', data=cps_df).fit(cov_type='HC1')
 ```
+:::
 
 ```{python}
 #| output: asis
@@ -236,9 +277,11 @@ Source: Békés & Kézdi (2021), Ch. 10
 
 ## Does the gap even have the same slope for both?
 
+::: {.big-code}
 ```{.python}
-smf.ols('ln_wage ~ age * female', data=df).fit(cov_type='HC1')
+smf.ols('ln_wage ~ age * female', data=cps_df).fit(cov_type='HC1')
 ```
+:::
 
 ```{python}
 #| output: asis
@@ -294,7 +337,7 @@ def _gap_pct(age):
 
 _g25, _g30, _g40, _g50, _g60 = (_gap_pct(a) for a in [25, 30, 40, 50, 60])
 
-print(f"- The gap is around **{abs(_g25):.0f}–{abs(_g30):.0f}%** between ages 25–30")
+print(f"- The gap is around **{min(abs(_g25), abs(_g30)):.0f}–{max(abs(_g25), abs(_g30)):.0f}%** between ages 25 and 30")
 print(f"- Rises to **{abs(_g40):.0f}%** by 40, and **{abs(_g50):.0f}%** by 50")
 print(f"- {'Tapers slightly' if abs(_g60) < abs(_g50) else 'Keeps rising'} after 60 (**{abs(_g60):.0f}%**)")
 ```
@@ -307,8 +350,9 @@ A single "female" coefficient could never have told this story. The gap isn't a 
 Source: Békés & Kézdi (2021), Ch. 10
 :::
 
-## Predicting the gap by age
+## Predicting the gap by age {.smaller}
 
+::: {.small-code}
 ```{.python}
 import matplotlib.pyplot as plt
 import numpy as np
@@ -335,6 +379,7 @@ axes[0].set_ylabel('ln(earnings per hour)')
 axes[0].legend(frameon=False)
 plt.show()
 ```
+:::
 
 ## The gap by age, plotted
 
@@ -407,6 +452,43 @@ Source: Békés & Kézdi (2021), Ch. 10
 Source: Békés & Kézdi (2021), Ch. 10
 :::
 
+## Building the table in Python {.smaller}
+
+The four gender-gap models side by side, coefficients with stars, standard errors underneath:
+
+::: {.mid-code}
+```{.python}
+def stars(p):
+    return "***" if p < 0.01 else "**" if p < 0.05 else "*" if p < 0.1 else ""
+
+models = {'(1)': m1, '(2)': m2, '(3)': m3, '(4)': m4}
+rows = {}
+for name, label in [('female', 'Female'), ('age', 'Age')]:
+    rows[label] = {k: f"{m.params[name]:.3f}{stars(m.pvalues[name])}" if name in m.params else ""
+                   for k, m in models.items()}
+    rows[label + ' SE'] = {k: f"({m.bse[name]:.3f})" if name in m.params else "" for k, m in models.items()}
+rows['N'] = {k: f"{int(m.nobs):,}" for k, m in models.items()}
+rows['R²'] = {k: f"{m.rsquared:.3f}" for k, m in models.items()}
+print(pd.DataFrame(rows).T.to_markdown())
+```
+:::
+
+```{python}
+#| output: asis
+_models = {'(1)': _m1, '(2)': _m2, '(3)': _m3, '(4)': _m4}
+print("| | (1) | (2) | (3) | (4) |")
+print("|---|---|---|---|---|")
+for _n, _lab in [('female', 'Female'), ('age', 'Age')]:
+    print("| " + _lab + " | " + " | ".join(f"{m.params[_n]:.3f}{_stars(m.pvalues[_n])}" if _n in m.params else "" for m in _models.values()) + " |")
+    print("| | " + " | ".join(f"({m.bse[_n]:.3f})" if _n in m.params else "" for m in _models.values()) + " |")
+print("| N | " + " | ".join(f"{int(m.nobs):,}" for m in _models.values()) + " |")
+print("| R² | " + " | ".join(f"{m.rsquared:.3f}" for m in _models.values()) + " |")
+```
+
+::: {style="font-size:0.75em;color:#999;"}
+Models (3) and (4) add age², and age² to age⁴. Robust standard errors in brackets. `to_markdown()` needs the `tabulate` package, already installed in Colab.
+:::
+
 ## A word on curve-fitting
 
 ```{=html}
@@ -428,35 +510,101 @@ XKCD #2048, "Curve Fitting" — Randall Munroe, CC BY-NC 2.5 — click to view f
 
 ---
 
-## Back to Vienna, with everything we now have
+## Back to Vienna, with everything we now have {.smaller}
 
-Since Week 5's opening motivation — a good hotel deal, close to the centre, not overpriced — we've only ever used one x at a time. The full model:
+In Week 4 we went looking for a good hotel deal with one x at a time. Now we can put it all in one model:
 
-$$\ln(price)^E = f(\text{distance spline}) + f(\text{rating spline}) + \beta_{3.5\star} + \beta_{4\star}$$
+$$\ln(price)^E = f(\text{distance spline}) + f(\text{rating spline}) + \beta_{3.5\,stars} + \beta_{4\,stars}$$
 
 - Distance: piecewise linear spline, knots at 1 and 4 miles
 - Rating: piecewise linear spline, knot at 3.5
 - Stars: dummies for 3.5★ and 4★ (reference: 3★)
-- R² = 0.56 — far better than any single-x version from Week 5
+
+::: {.mid-code}
+```{.python}
+hotels['dist_b1'] = np.maximum(hotels['distance'] - 1, 0)
+hotels['dist_b4'] = np.maximum(hotels['distance'] - 4, 0)
+hotels['rating_b35'] = np.maximum(hotels['rating'] - 3.5, 0)
+
+model = smf.ols('ln_price ~ distance + dist_b1 + dist_b4 + rating + rating_b35 + C(stars)',
+                data=hotels).fit(cov_type='HC1')
+```
+:::
+
+```{python}
+#| output: asis
+print(f"R² = **{hotel_model.rsquared:.2f}**, against 0.16 for Week 4's straight line in distance alone.")
+```
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
 Source: Békés & Kézdi (2021), Ch. 10, hotels-vienna dataset
 :::
 
-## Finding the deals: most negative residuals
+## Comparing the hotel models {.smaller}
 
-A negative residual means the hotel costs *less* than the model expects, given its distance, rating, and stars — genuinely underpriced relative to comparable hotels:
+The same table code as before, now building the hotels model up one block at a time:
 
-| Hotel | Price | Residual (ln price) | Distance | Stars | Rating |
-|---|---|---|---|---|---|
-| 21912 | $60 | −0.565 | 1.1 mi | 4★ | 4.1 |
-| 21975 | $115 | −0.405 | 0.1 mi | 4★ | 4.3 |
-| 22344 | $50 | −0.385 | 3.9 mi | 3★ | 3.9 |
-| 22080 | $54 | −0.338 | 1.1 mi | 3★ | 3.2 |
-| 22184 | $75 | −0.335 | 0.7 mi | 3★ | 4.1 |
+::: {.small-code}
+```{.python}
+m1 = smf.ols('ln_price ~ distance', data=hotels).fit(cov_type='HC1')
+m2 = smf.ols('ln_price ~ distance + dist_b1 + dist_b4', data=hotels).fit(cov_type='HC1')
+m3 = smf.ols('ln_price ~ distance + dist_b1 + dist_b4 + rating + rating_b35', data=hotels).fit(cov_type='HC1')
+m4 = smf.ols('ln_price ~ distance + dist_b1 + dist_b4 + rating + rating_b35 + C(stars)', data=hotels).fit(cov_type='HC1')
+```
+:::
+
+```{python}
+#| output: asis
+def _stars(p):
+    return "***" if p < 0.01 else "**" if p < 0.05 else "*" if p < 0.1 else ""
+_rows = [('distance', 'Distance (first mile)'), ('dist_b1', 'Change in slope after 1 mile'), ('dist_b4', 'Change in slope after 4 miles'),
+         ('rating', 'Rating (up to 3.5)'), ('rating_b35', 'Change in slope above 3.5'),
+         ('C(stars)[T.3.5]', '3.5 stars'), ('C(stars)[T.4.0]', '4 stars')]
+print("| | (1) | (2) | (3) | (4) |")
+print("|---|---|---|---|---|")
+for _n, _lab in _rows:
+    print(f"| {_lab} | " + " | ".join(f"{m.params[_n]:.3f}{_stars(m.pvalues[_n])}" if _n in m.params else "" for m in hotel_models) + " |")
+print("| N | " + " | ".join(f"{int(m.nobs)}" for m in hotel_models) + " |")
+print("| R² | " + " | ".join(f"{m.rsquared:.3f}" for m in hotel_models) + " |")
+```
+
+::: {style="font-size:0.75em;color:#999;"}
+Outcome: ln(price). Stars show significance, using robust standard errors; the standard errors themselves are left out to keep the table readable.
+:::
+
+## What changed as we added variables
+
+```{python}
+#| output: asis
+_m = hotel_models
+print(f"- **Fit:** R² rises from {_m[0].rsquared:.2f} to {_m[1].rsquared:.2f} with the distance spline, {_m[2].rsquared:.2f} with rating and {_m[3].rsquared:.2f} with stars")
+print(f"- **The first mile matters most:** within a mile of the centre, prices fall by about {abs(_m[1].params['distance']):.2f} log points per mile, far more than the single straight line's {abs(_m[0].params['distance']):.2f}")
+print(f"- **Some of that is quality:** add rating and stars and the first-mile slope shrinks to {abs(_m[3].params['distance']):.2f}. Central hotels also tend to be better rated, so the simpler model was giving distance credit for quality. That's omitted variable bias, in the data we've used since Week 4")
+print(f"- **Rating matters above 3.5:** each extra point goes with about {_m[3].params['rating'] + _m[3].params['rating_b35']:.2f} log points higher prices. Only {(hotels['rating'] < 3.5).sum()} hotels are rated below 3.5, so the slope there is too imprecise to say much (p = {_m[3].pvalues['rating']:.2f})")
+print(f"- **Stars matter jointly:** an F-test that both star dummies are zero gives F = {hotel_stars_f}, p < 0.001")
+```
+
+## Finding the deals: most negative residuals {.smaller}
+
+A negative residual means the hotel costs *less* than the model expects, given its distance, rating and stars:
+
+::: {.big-code}
+```{.python}
+hotels['resid'] = model.resid
+hotels.nsmallest(5, 'resid')[['hotel_id', 'price', 'resid', 'distance', 'stars', 'rating']]
+```
+:::
+
+```{python}
+#| output: asis
+print("| Hotel | Price | Residual (ln price) | Distance | Stars | Rating |")
+print("|---|---|---|---|---|---|")
+for _r in hotel_deals.itertuples():
+    print(f"| {_r.hotel_id} | €{_r.price} | {_r.resid:.3f} | {_r.distance:.1f} mi | {_r.stars:g}★ | {_r.rating:.1f} |")
+```
 
 ::: {.fragment}
-This is the payoff of everything since Week 5: not a single fitted line, but a benchmark good enough to say *which specific hotels* are the outliers worth booking — and why.
+This is the payoff since Week 4: not a single fitted line, but a benchmark good enough to say which specific hotels look cheap for what they offer. And the model matters: only `{python} hotel_overlap` of the straight line's five best deals are still on this list.
 :::
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}

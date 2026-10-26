@@ -26,16 +26,14 @@ execute:
 ```{python}
 import pandas as pd
 
-# Live Google Sheet (switch back to this once the module is running):
-# df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRWIOZ03GpUJgqvGVmI9cih169mMq0ajLMj6a0VTd2tytB3K5BmX5AUiKQ8FKIL6KUKEcgb-1LR-1eM/pub?gid=0&single=true&output=csv")
-# Synthetic data for building/testing slides before the module runs:
-df = pd.read_csv("data/synthetic_reaction_times.csv")
+# Real class data: cleaned Week 1 trials with Week 3's corrected finger
+# lengths, the same file Weeks 4 and 5 read. Every regression on the class
+# data is fit on one row per student (student_summary), never on raw trials.
+df = pd.read_csv("data/week3_reaction_times.csv")
 
 if 'name' in df.columns and 'student_name' not in df.columns:
     df = df.rename(columns={'name': 'student_name'})
-if 'finger_mm' not in df.columns:
-    df['finger_mm'] = None
-df['finger_mm'] = pd.to_numeric(df['finger_mm'], errors='coerce')
+df['finger_mm'] = pd.to_numeric(df['finger_length_corrected'], errors='coerce')
 
 student_summary = (
     df.groupby('student_name')
@@ -43,36 +41,35 @@ student_summary = (
          caffeine=('caffeine', 'first'), finger_mm=('finger_mm', 'first'))
     .reset_index()
     .round(1)
+    .dropna(subset=['finger_mm'])
 )
 
-# Individual trial-level rows for the live regressions below — one row per trial, not per student
-trial_data = df[['reaction_time_ms', 'finger_mm', 'device', 'caffeine']].copy()
-
+import numpy as np
 import statsmodels.formula.api as smf
 
 # Real fitted model, used for both the raw statsmodels output and the booktabs table below.
-# Individual trial-level reaction times (not student means) as the dependent variable.
-reading_model = smf.ols("reaction_time_ms ~ finger_mm + device + caffeine", data=df).fit(cov_type="HC1")
+# One row per student: mean reaction time is the dependent variable.
+reading_model = smf.ols("mean_rt ~ finger_mm + device + caffeine", data=student_summary).fit(cov_type="HC1")
 
 _summary_lines = reading_model.summary().as_text().splitlines()
 _cut = next(i for i, line in enumerate(_summary_lines) if line.startswith("Omnibus"))
 reading_summary_text = "\n".join(_summary_lines[:_cut]).rstrip()
 
 # Device interaction task — captured real output for the "What you should have found" reveal
-interaction_model = smf.ols("reaction_time_ms ~ finger_mm * device", data=df).fit(cov_type="HC1")
+interaction_model = smf.ols("mean_rt ~ finger_mm * device", data=student_summary).fit(cov_type="HC1")
 _inter_lines = interaction_model.summary().as_text().splitlines()
 _inter_cut = next(i for i, line in enumerate(_inter_lines) if line.startswith("Omnibus"))
 interaction_summary_text = "\n".join(_inter_lines[:_inter_cut]).rstrip()
 
 # OVB task — simple vs multiple, captured as a compact real params printout
-simple_model = smf.ols("reaction_time_ms ~ finger_mm", data=df).fit(cov_type="HC1")
+simple_model = smf.ols("mean_rt ~ finger_mm", data=student_summary).fit(cov_type="HC1")
 ovb_output_text = (
     ">>> print(simple.params.round(3))\n" + simple_model.params.round(3).to_string()
     + "\n\n>>> print(multi.params.round(3))\n" + reading_model.params.round(3).to_string()
 )
 
 # Categorical-variable task — captured real output
-cat_model = smf.ols("reaction_time_ms ~ finger_mm + device", data=df).fit(cov_type="HC1")
+cat_model = smf.ols("mean_rt ~ finger_mm + device", data=student_summary).fit(cov_type="HC1")
 _cat_lines = cat_model.summary().as_text().splitlines()
 _cat_cut = next(i for i, line in enumerate(_cat_lines) if line.startswith("Omnibus"))
 cat_summary_text = "\n".join(_cat_lines[:_cat_cut]).rstrip()
@@ -144,13 +141,79 @@ gap_age_lines = (
     + [{"age": a, "ln_wage": (_a0 + _b_f) + (_b_age + _b_fage) * a, "group": "Women"} for a in _age_grid]
 )
 
+# Task answers, computed live so the slide text always matches the data
+task6 = {
+    "n": int(len(student_summary)),
+    "b_simple": round(float(simple_model.params['finger_mm']), 2),
+    "b_multi": round(float(reading_model.params['finger_mm']), 2),
+    "f_p": round(float(reading_model.f_pvalue), 3),
+    "phone": round(float(cat_model.params['device[T.Phone]']), 1),
+    "phone_p": round(float(cat_model.pvalues['device[T.Phone]']), 3),
+    "inter": round(float(interaction_model.params['finger_mm:device[T.Phone]']), 2),
+    "inter_p": round(float(interaction_model.pvalues['finger_mm:device[T.Phone]']), 3),
+    "caf_yes": int((student_summary['caffeine'] == 'Yes').sum()),
+    "caf_yes_phone": int(((student_summary['caffeine'] == 'Yes') & (student_summary['device'] == 'Phone')).sum()),
+}
+
+# Beer OVB simulation, run twice: with the two prices correlated (0.8), and with no correlation
+def _beer(corr):
+    rng = np.random.default_rng(42)
+    comp = rng.normal(0, 2.0, 300)
+    ours = corr * comp + rng.normal(0, 1.2, 300)
+    sales = -3 * ours + 3 * comp + rng.normal(0, 2.5, 300)
+    d = pd.DataFrame({'sales': sales, 'our_price': ours, 'competitor_price': comp})
+    sm_ = smf.ols('sales ~ our_price', data=d).fit()
+    mu_ = smf.ols('sales ~ our_price + competitor_price', data=d).fit()
+    ax_ = smf.ols('competitor_price ~ our_price', data=d).fit()
+    return {"beta": round(float(sm_.params['our_price']), 3), "beta1": round(float(mu_.params['our_price']), 3),
+            "beta2": round(float(mu_.params['competitor_price']), 3), "delta": round(float(ax_.params['our_price']), 3)}
+beer = {"c08": _beer(0.8), "c0": _beer(0.0)}
+
+# Vienna hotels (same filters as Weeks 4 and 5) for the multicollinearity and F-test examples
+hotels = pd.read_csv("data/hotels_vienna.csv")
+hotels = hotels[(hotels.accommodation_type == 'Hotel') & (hotels.city_actual == 'Vienna')
+                & hotels.stars.between(3, 4) & (hotels.price <= 600)].copy()
+hotels['ln_price'] = np.log(hotels['price'])
+hotels['beyond_1'] = np.maximum(hotels['distance'] - 1, 0)
+hotels['beyond_4'] = np.maximum(hotels['distance'] - 4, 0)
+_hr = hotels.dropna(subset=['rating', 'ratingta']).copy()
+_r1 = smf.ols('ln_price ~ rating', data=_hr).fit(cov_type='HC1')
+_r2 = smf.ols('ln_price ~ ratingta', data=_hr).fit(cov_type='HC1')
+_rb = smf.ols('ln_price ~ rating + ratingta', data=_hr).fit(cov_type='HC1')
+_hr['rating_z'] = ((_hr['rating'] - _hr['rating'].mean()) / _hr['rating'].std()
+                   + (_hr['ratingta'] - _hr['ratingta'].mean()) / _hr['ratingta'].std()) / 2
+_rz = smf.ols('ln_price ~ rating_z', data=_hr).fit(cov_type='HC1')
+_jr = _rb.f_test('rating = 0, ratingta = 0')
+ratings = {"n": int(len(_hr)), "corr": round(float(_hr['rating'].corr(_hr['ratingta'])), 2),
+           "vif": round(float(1 / (1 - _hr['rating'].corr(_hr['ratingta']) ** 2)), 2),
+           "r1_b": round(float(_r1.params['rating']), 3), "r1_se": round(float(_r1.bse['rating']), 3),
+           "r2_b": round(float(_r2.params['ratingta']), 3), "r2_se": round(float(_r2.bse['ratingta']), 3),
+           "rb_b1": round(float(_rb.params['rating']), 3), "rb_se1": round(float(_rb.bse['rating']), 3),
+           "rb_b2": round(float(_rb.params['ratingta']), 3), "rb_se2": round(float(_rb.bse['ratingta']), 3),
+           "rz_b": round(float(_rz.params['rating_z']), 3), "rz_se": round(float(_rz.bse['rating_z']), 3),
+           "joint_f": round(float(np.squeeze(_jr.fvalue)), 1)}
+_hf = smf.ols('ln_price ~ distance + stars + rating', data=hotels).fit(cov_type='HC1')
+_hf_lines = _hf.summary().as_text().splitlines()
+hotel_f_text = "\n".join(_hf_lines[:next(i for i, l in enumerate(_hf_lines) if l.startswith("Omnibus"))]).rstrip()
+_sp = smf.ols('price ~ distance + beyond_1 + beyond_4', data=hotels).fit(cov_type='HC1')
+_sp1 = smf.ols('price ~ distance + beyond_1', data=hotels).fit(cov_type='HC1')
+_lin = smf.ols('price ~ distance', data=hotels).fit(cov_type='HC1')
+_jt = _sp.f_test('beyond_1 = 0, beyond_4 = 0')
+_j4 = _sp.f_test('beyond_4 = 0')
+spline_f = {"f": round(float(np.squeeze(_jt.fvalue)), 1), "p": float(np.squeeze(_jt.pvalue)),
+            "f4": round(float(np.squeeze(_j4.fvalue)), 1), "p4": round(float(np.squeeze(_j4.pvalue)), 3),
+            "r2_lin": round(float(_lin.rsquared), 3), "r2_1": round(float(_sp1.rsquared), 3), "r2_14": round(float(_sp.rsquared), 3)}
+
 # NaN is not valid JSON — clean before ojs_define
 student_summary_clean = student_summary.astype(object).where(student_summary.notna(), None)
-trial_data_clean = trial_data.astype(object).where(trial_data.notna(), None)
 
 ojs_define(
     student_summary      = student_summary_clean.to_dict(orient='records'),
-    trial_data            = trial_data_clean.to_dict(orient='records'),
+    task6                 = task6,
+    beer                  = beer,
+    ratings               = ratings,
+    hotel_f_text          = hotel_f_text,
+    spline_f              = spline_f,
     reading_summary_text = reading_summary_text,
     interaction_summary_text = interaction_summary_text,
     ovb_output_text       = ovb_output_text,
@@ -181,10 +244,14 @@ ojs_define(
   // Sets each wrapper's correct starting state immediately, including on a
   // reload or direct navigation to a slide whose fragment is already shown
   // — matters because this cell (no reactive deps) only runs once, at load.
-  document.querySelectorAll('.shrink-on-reveal[data-frag]').forEach(el => {
-    const frag = document.getElementById(el.dataset.frag)
-    el.classList.toggle('is-small', !!frag?.classList.contains('visible'))
-  })
+  const syncAll = () => {
+    document.querySelectorAll('.fragment[id]').forEach(frag =>
+      wrapperFor(frag.id)?.classList.toggle('is-small', frag.classList.contains('visible'))
+    )
+  }
+  syncAll()
+  // PDF export rebuilds the slide DOM, so re-sync on any change (same fix as Weeks 2, 4 and 5).
+  new MutationObserver(syncAll).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] })
 
   Reveal.on('fragmentshown', (event) => {
     wrapperFor(event.fragment.id)?.classList.add('is-small')
@@ -221,6 +288,15 @@ olsFit = function(X, y) {
 
 ## {background-color="#1a1a2e"}
 
+```{=html}
+<style>
+.reveal .big-code div.sourceCode { font-size: 1.15em !important; }
+.reveal .big-code div.sourceCode pre.sourceCode { font-size: 1em !important; }
+.reveal .inter-ctl, .reveal .inter-ctl * { font-size: 24px !important; }
+</style>
+```
+
+
 ::: {style="text-align: center; padding-top: 180px;"}
 [**Multiple regression**]{style="font-size: 2.2em; color: white;"}
 
@@ -236,7 +312,7 @@ HR has separate regressions: reaction time on finger length, reaction time on de
 ::: {.fragment}
 **Naive answer:** run each regression separately, compare the slopes, done.
 
-**Why it's not that simple:** if finger length and device happen to be correlated in our sample — say, one device tends to attract a particular hand-size group — each regression is silently absorbing some of the other variable's effect. We can't tell which x is doing the work until we ask both questions at once.
+**Why it's not that simple:** if finger length and device happen to be correlated in our sample — say, one device tends to attract a particular hand-size group (just go with it...) — each regression is silently absorbing some of the other variable's effect. We can't tell which x is doing the work until we ask both questions at once.
 :::
 
 ---
@@ -267,20 +343,7 @@ $$y^E = \beta_0 + \beta_1 x_1 + \beta_2 x_2$$
 Source: Békés & Kézdi (2021), Ch. 10
 :::
 
-## Reading real output
 
-From here on, every regression we show comes with the code that produced it. We'll assume the data's already clean — the focus is the model-fitting call and how to read what comes back.
-
-```{.python}
-import statsmodels.formula.api as smf
-
-model = smf.ols('reaction_time_ms ~ finger_mm + device', data=df).fit(cov_type='HC1')
-print(model.summary())
-```
-
-::: {.fragment}
-`cov_type='HC1'` — heteroskedasticity-robust SE, the Week 5 default, carried forward as standard practice.
-:::
 
 ---
 
@@ -322,71 +385,46 @@ Neither condition is something you can assume — it has to be checked, or reaso
 Source: Békés & Kézdi (2021), Ch. 10
 :::
 
-## Worked example: beer sales and price {.smaller}
+## Task — watch OVB happen {.smaller}
 
 ::: {.instructions-box}
-A scenario where we can control the truth: monthly change in **our** log price ($x_1$) and a **competitor's** log price ($x_2$) tend to move together, both driving change in log sales (y). Simulate it, and check the OVB formula holds exactly.
+A made-up case where we know the truth. Monthly changes in **our** log price ($x_1$) and a **competitor's** log price ($x_2$) move together, and both drive log sales (y). The true effect of our own price is $-3$.
+
+In the **Week 6 in-class notebook**, run the simulation, fit the simple regression, the multiple regression, and $x_2$ on $x_1$. Check that $\hat\beta - \hat\beta_1 = \hat\delta\hat\beta_2$. Then set the correlation (the `0.8`) to `0` and run it again. What happens to the bias?
 :::
 
+::: {.big-code}
 ```python
-import numpy as np, pandas as pd
-import statsmodels.formula.api as smf
-
 rng = np.random.default_rng(42)
 competitor_price = rng.normal(0, 2.0, 300)
-our_price        = 0.8 * competitor_price + rng.normal(0, 1.2, 300)   # correlated with competitor's
-sales            = -3*our_price + 3*competitor_price + rng.normal(0, 2.5, 300)  # true betas: -3, +3
-df = pd.DataFrame({'sales': sales, 'our_price': our_price, 'competitor_price': competitor_price})
-
-simple = smf.ols('sales ~ our_price', data=df).fit()
-multi  = smf.ols('sales ~ our_price + competitor_price', data=df).fit()
-aux    = smf.ols('competitor_price ~ our_price', data=df).fit()   # x2 on x1, per the formula above
+our_price = 0.8 * competitor_price + rng.normal(0, 1.2, 300)
+sales = -3*our_price + 3*competitor_price + rng.normal(0, 2.5, 300)
 ```
+:::
 
-```{python}
-#| output: asis
-import numpy as np
+## What you should have found: OVB
 
-_rng = np.random.default_rng(42)
-_competitor_price = _rng.normal(0, 2.0, 300)
-_our_price        = 0.8 * _competitor_price + _rng.normal(0, 1.2, 300)
-_sales            = -3*_our_price + 3*_competitor_price + _rng.normal(0, 2.5, 300)
-_sim_df = pd.DataFrame({'sales': _sales, 'our_price': _our_price, 'competitor_price': _competitor_price})
-
-_simple = smf.ols('sales ~ our_price', data=_sim_df).fit()
-_multi  = smf.ols('sales ~ our_price + competitor_price', data=_sim_df).fit()
-_aux    = smf.ols('competitor_price ~ our_price', data=_sim_df).fit()
-
-_beta   = _simple.params['our_price']
-_beta1  = _multi.params['our_price']
-_beta2  = _multi.params['competitor_price']
-_delta  = _aux.params['our_price']
-
-_lines = (
-    f"beta&nbsp;(simple)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;{_beta:.3f}<br>"
-    f"beta1&nbsp;(multiple)&nbsp;&nbsp;=&nbsp;{_beta1:.3f}<br>"
-    f"beta2&nbsp;(multiple)&nbsp;&nbsp;=&nbsp;{_beta2:.3f}<br>"
-    f"delta&nbsp;(x2&nbsp;on&nbsp;x1)&nbsp;&nbsp;=&nbsp;{_delta:.3f}"
-)
-print(
-    '::: {style="font-family: monospace; font-size: 0.85em; background: #f8f8f8; '
-    'border-left: 4px solid #457b9d; padding: 14px 20px; border-radius: 4px; line-height: 1.9;"}\n'
-    f'{_lines}\n:::'
-)
+```{ojs}
+{
+  const row = (lab, a, b) => `<tr style="border-bottom:1px solid #ddd;"><td style="padding:6px 20px;text-align:left;">${lab}</td><td style="padding:6px 20px;">${a}</td><td style="padding:6px 20px;">${b}</td></tr>`
+  const c = beer.c08, z = beer.c0
+  return html`<table style="margin:0 auto;font-family:sans-serif;font-size:1em;border-collapse:collapse;text-align:center;">
+    <caption class="visually-hidden">OVB simulation results with correlated and uncorrelated prices</caption>
+    <tr style="border-bottom:2px solid #1a1a2e;"><th scope="col" style="padding:6px 20px;text-align:left;"></th><th scope="col" style="padding:6px 20px;">Prices correlated (0.8)</th><th scope="col" style="padding:6px 20px;">Not correlated (0)</th></tr>
+    ${row("β̂ (simple: our price only)", c.beta, z.beta)}
+    ${row("β̂₁ (multiple)", c.beta1, z.beta1)}
+    ${row("β̂₂ (competitor price)", c.beta2, z.beta2)}
+    ${row("δ̂ (competitor on our price)", c.delta, z.delta)}
+    ${row("β̂ − β̂₁", (c.beta - c.beta1).toFixed(3), (z.beta - z.beta1).toFixed(3))}
+    ${row("δ̂ × β̂₂", (c.delta * c.beta2).toFixed(3), (z.delta * z.beta2).toFixed(3))}
+  </table>`
+}
 ```
 
 ::: {.fragment}
-```{python}
-#| output: asis
-_lhs = _beta - _beta1
-_rhs = _delta * _beta2
-print(
-    '::: {style="font-family: monospace; font-size: 0.85em; text-align:center; margin-top: 8px;"}\n'
-    f'beta&nbsp;−&nbsp;beta1&nbsp;=&nbsp;{_lhs:.4f}&nbsp;&nbsp;&nbsp;&nbsp;delta×beta2&nbsp;=&nbsp;{_rhs:.4f}\n:::'
-)
+```{ojs}
+html`<p>With correlated prices, the simple regression says our price barely matters (β̂ = ${beer.c08.beta}), when the truth is −3. It's absorbing the competitor's effect through δ. The formula holds exactly. Set the correlation to 0 and δ̂ is close to zero, so the bias almost disappears: the simple and multiple slopes agree.</p>`
 ```
-
-The two sides match **exactly** —  $\hat\beta-\hat\beta_1$ and $\hat\delta\hat\beta_2$ are the same calculation, done two different ways. And since we built this dataset ourselves, we know the simple regression really is biased: the true effect of our own price is $-3$, but $\hat\beta$ lands nowhere near it — because it's silently absorbing the competitor-price effect too, through the correlation between the two.
 :::
 
 ## Language: conditioning, controlling, confounding
@@ -394,6 +432,7 @@ The two sides match **exactly** —  $\hat\beta-\hat\beta_1$ and $\hat\delta\hat
 - We measure differences in y by $x_1$, **conditional on** $x_2$ — or **controlling for** $x_2$
 - When a variable that belongs in the model is left out, it's an **omitted variable**
 - If it's correlated with both $x_1$ and y, it's a **confounder** — the slope on $x_1$ is *confounded*
+- However many variables we condition on, this is still a comparison of conditional means, not an experiment: say "is associated with", not "affects"
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
 Source: Békés & Kézdi (2021), Ch. 10
@@ -404,7 +443,7 @@ Source: Békés & Kézdi (2021), Ch. 10
 ::: {.instructions-box}
 **Business question**: does the finger-length coefficient change once we control for device and caffeine?
 
-Open the Colab notebook — `data_path` is already defined for you. Load it into a dataframe and fit **two** models with `smf.ols`: one with finger length alone, one adding device and caffeine. Compare the finger-length coefficient across both. No further syntax hints.
+Open the Colab notebook — the setup cell builds `student_summary` for you, one row per student. Fit **two** models with `smf.ols`: one with finger length alone, one adding device and caffeine. Compare the finger-length coefficient across both. No further syntax hints.
 :::
 
 ::: {.fragment}
@@ -414,8 +453,8 @@ We'll compare real answers together after.
 ## What you should have found
 
 ```{.python}
-simple = smf.ols('reaction_time_ms ~ finger_mm', data=df).fit(cov_type='HC1')
-multi  = smf.ols('reaction_time_ms ~ finger_mm + device + caffeine', data=df).fit(cov_type='HC1')
+simple = smf.ols('mean_rt ~ finger_mm', data=student_summary).fit(cov_type='HC1')
+multi  = smf.ols('mean_rt ~ finger_mm + device + caffeine', data=student_summary).fit(cov_type='HC1')
 
 print(simple.params.round(3))
 print(multi.params.round(3))
@@ -427,9 +466,9 @@ html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.55em;line-h
                   padding:8px 14px;overflow-x:auto;white-space:pre;">${ovb_output_text}</pre>`
 ```
 
-::: {.instructions-box}
-finger_mm moves from −1.46 (alone) to −0.55 (once device and caffeine are added) — a real shift. Did your models agree? What would a big move tell you — and what would almost no movement tell you?
-:::
+```{ojs}
+html`<div class="instructions-box"><p style="margin:0;">finger_mm goes from <strong>${task6.b_simple}</strong> (alone) to <strong>${task6.b_multi}</strong> once device and caffeine are added. Did your models agree? What would a big move tell you – and what does almost no movement tell you?</p><p style="margin:8px 0 0;font-size:0.85em;">Only ${task6.caf_yes} of our ${task6.n} students had caffeine, and just ${task6.caf_yes_phone} of those used a phone, so don't read much into the caffeine coefficient itself.</p></div>`
+```
 
 ---
 
@@ -448,7 +487,7 @@ finger_mm moves from −1.46 (alone) to −0.55 (once device and caffeine are ad
 - Intuition: if $x_1$ and $x_2$ move together almost every time, there's barely any data where one is high and the other is low — and that's exactly the comparison OLS needs to estimate their separate slopes
 
 ::: {.fragment}
-Contrast with Section B: **OVB is about what's missing** from the model. **Multicollinearity is about what's already in it**, just tangled together.
+Contrast with omitted variable bias: **OVB is about what's missing** from the model. **Multicollinearity is about what's already in it**, just tangled together.
 :::
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
@@ -547,7 +586,7 @@ Software usually calls this number the **Variance Inflation Factor**:
 
 $$VIF_k = \frac{1}{1-R_k^2}$$
 
-- The exact same $R_k^2$ from two slides ago — just flipped into one number per variable
+- The same $R_k^2$ as in the SE formula above — just flipped into one number per variable
 - Common rule of thumb: **VIF > 10** flags a real problem (some use a stricter >5)
 - One line in `statsmodels`: `variance_inflation_factor(X, k)`
 
@@ -557,7 +596,7 @@ $$VIF_k = \frac{1}{1-R_k^2}$$
 
 ```{ojs}
 {
-  const rows = trial_data.filter(d => d.finger_mm != null && !isNaN(d.finger_mm) && d.device != null && d.caffeine != null)
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm) && d.device != null && d.caffeine != null)
   const fm = rows.map(d => d.finger_mm)
   const dv = rows.map(d => d.device === "Phone" ? 1 : 0)
   const cf = rows.map(d => d.caffeine === "Yes" ? 1 : 0)
@@ -582,13 +621,13 @@ $$VIF_k = \frac{1}{1-R_k^2}$$
 ```
 
 ::: {.instructions-box}
-All close to 1 — finger length, device, and caffeine barely overlap in what they explain. That's why the Section B check earlier showed the finger-length coefficient barely moving: there was never much multicollinearity here to begin with, just weak signal.
+All close to 1 — finger length, device, and caffeine barely overlap in what they explain. So adding device and caffeine didn't make the finger-length estimate any less precise – the problem here was never multicollinearity, just weak signal.
 :::
 
 ## The VIF trap
 
 ::: {.instructions-box}
-A high VIF does **not** mean "drop this variable." If it's a genuine confounder, dropping it to fix a *precision* problem reintroduces the *bias* problem from Section B — often a worse trade.
+A high VIF does **not** mean "drop this variable." If it's a genuine confounder, dropping it to fix a *precision* problem reintroduces the *bias* problem from omitted variables — often a worse trade.
 :::
 
 ::: {.fragment}
@@ -598,12 +637,34 @@ The honest response to a high VIF is usually: report it, keep the variable if th
 ## What to actually do about it
 
 - Look at pairwise correlations (or a correlation heatmap) early, before modelling
-- Drop one of a highly correlated pair, or combine them (average, or a z-score index)
+- Drop one of a highly correlated pair, or combine them — average them, or first standardise each as a z-score (value minus its mean, divided by its SD) and then average
 - Mostly a **small-sample problem** — hundreds to a few thousand observations
 - With many x's: check $R_k^2$ for each variable regressed on all the others; drop if very high
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
 Source: Békés & Kézdi (2021), Ch. 10
+:::
+
+## Task — two ratings of the same hotel {.smaller}
+
+::: {.instructions-box}
+The Vienna hotels have two guest ratings: the booking site's own (`rating`) and TripAdvisor's (`ratingta`). They measure much the same thing.
+
+In the notebook, regress `ln_price` on each rating alone, then on both. Compare the coefficients and SEs. Then combine them into one variable – standardise each as a z-score and average – and use that instead.
+:::
+
+::: {.fragment}
+```{ojs}
+html`<table style="margin:6px auto;font-family:sans-serif;font-size:0.9em;border-collapse:collapse;text-align:center;">
+  <caption class="visually-hidden">Price regressed on two hotel ratings, alone, together and combined</caption>
+  <tr style="border-bottom:2px solid #1a1a2e;"><th scope="col" style="padding:4px 16px;text-align:left;">Model</th><th scope="col" style="padding:4px 16px;">rating</th><th scope="col" style="padding:4px 16px;">ratingta</th><th scope="col" style="padding:4px 16px;">combined</th></tr>
+  <tr style="border-bottom:1px solid #ddd;"><td style="padding:4px 16px;text-align:left;">rating alone</td><td>${ratings.r1_b} (${ratings.r1_se})</td><td></td><td></td></tr>
+  <tr style="border-bottom:1px solid #ddd;"><td style="padding:4px 16px;text-align:left;">ratingta alone</td><td></td><td>${ratings.r2_b} (${ratings.r2_se})</td><td></td></tr>
+  <tr style="border-bottom:1px solid #ddd;"><td style="padding:4px 16px;text-align:left;">both</td><td>${ratings.rb_b1} (${ratings.rb_se1})</td><td>${ratings.rb_b2} (${ratings.rb_se2})</td><td></td></tr>
+  <tr><td style="padding:4px 16px;text-align:left;">combined z-score</td><td></td><td></td><td>${ratings.rz_b} (${ratings.rz_se})</td></tr>
+</table>
+<p style="font-size:0.85em;">The two ratings correlate at ${ratings.corr} (VIF ${ratings.vif}). Together, each coefficient shrinks and its SE grows, because there's little information on one rating holding the other fixed. Combined into one index, the SE is back down. Coefficients in log points; robust SEs in brackets.</p>`
+```
 :::
 
 ## The distinction that matters
@@ -625,17 +686,9 @@ Confusing these two is the single most common mistake in reading regression outp
 
 ---
 
-## Individual coefficients — same as before
-
-Each $\hat\beta_k$ gets its own CI and t-test, exactly as in Week 5:
-
-$$CI(\hat\beta_k)_{95\%} = \hat\beta_k \pm 2\,SE(\hat\beta_k) \qquad\qquad t=\frac{\hat\beta_k}{SE(\hat\beta_k)}$$
-
-The only change is where $SE(\hat\beta_k)$ comes from — the formula with the $\sqrt{1-R_k^2}$ term from Section C.
-
 ## Testing several coefficients together
 
-Sometimes the question isn't about one coefficient, but a *group* of them — e.g. "are all the geography dummies jointly zero?"
+Each coefficient still gets its own CI and t-test, exactly as in Week 5. But sometimes the question isn't about one coefficient, but a *group* of them — e.g. "are all the geography dummies jointly zero?"
 
 ::: {.instructions-box}
 The **F-test** answers this. Individually, none of the coefficients might be statistically distinguishable from zero — but jointly, they might still be.
@@ -654,7 +707,7 @@ Source: Békés & Kézdi (2021), Ch. 10
 ```{.python}
 import statsmodels.formula.api as smf
 
-model = smf.ols('reaction_time_ms ~ finger_mm + device + caffeine', data=df).fit(cov_type='HC1')
+model = smf.ols('mean_rt ~ finger_mm + device + caffeine', data=student_summary).fit(cov_type='HC1')
 print(model.summary())
 ```
 
@@ -664,64 +717,45 @@ html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.38em;line-h
                   padding:6px 14px;overflow-x:auto;white-space:pre;">${reading_summary_text}</pre>`
 ```
 
-::: {.instructions-box}
-`Prob (F-statistic) = 0.115` — can't reject that all three slopes are jointly zero. 200 rows looks like a lot, but it's really only 20 students × 10 repeated trials each — since finger length, device, and caffeine don't change trial-to-trial, the coefficients are identical to what you'd get averaging each student down to one row first. Same multicollinearity warning as Section C, flagged again at the bottom.
-:::
-
-## Presenting it as a table
-
-Pull the real numbers straight off the fitted model into a small results table, then let pandas do the formatting:
-
-```{.python}
-def stars(p):
-    return "***" if p < 0.01 else "**" if p < 0.05 else "*" if p < 0.1 else ""
-
-results_df = pd.DataFrame(
-    [{"Variable": label,
-      "Coefficient": f"{model.params[name]:.2f}{stars(model.pvalues[name])}",
-      "Std. Error": f"({model.bse[name]:.2f})"}
-     for name, label in labels.items()]
-    + [{"Variable": "N", "Coefficient": str(int(model.nobs)), "Std. Error": ""},
-       {"Variable": "R²", "Coefficient": f"{model.rsquared:.3f}", "Std. Error": ""}]
-)
-print(results_df.to_markdown(index=False))
+```{ojs}
+html`<div class="instructions-box"><code>Prob (F-statistic) = ${task6.f_p}</code> – we can't reject that all three slopes are jointly zero. With one row per student we have only ${task6.n} observations, so there's very little to go on.</div>`
 ```
 
-::: {.instructions-box}
-`to_markdown()` is a built-in pandas method — no LaTeX, no extra formatting library beyond `tabulate` (one `pip install` away).
-:::
+## A significant F-test: the hotels {.smaller}
 
-## The generated markdown
+::: {.big-code}
+```python
+model = smf.ols('ln_price ~ distance + stars + rating', data=hotels).fit(cov_type='HC1')
+print(model.summary())
+```
+:::
 
 ```{ojs}
-html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.6em;line-height:1.4;
-                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
-                  padding:10px 16px;white-space:pre;">${results_markdown}</pre>`
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.5em;line-height:1.3;background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;padding:8px 14px;overflow-x:auto;white-space:pre;">${hotel_f_text}</pre>`
 ```
 
-::: {.instructions-box}
-Plain pipe-delimited text — this is genuinely what `print()` produced, from the real fitted model. Paste it straight into any `.qmd` or `.md` file and it renders as a table.
+::: {.fragment}
+Here `Prob (F-statistic)` is tiny: distance, stars and rating together explain a lot of the variation in hotel prices. Compare our class data, where the same test couldn't reject that every slope was zero.
 :::
 
-## How it renders
-
-```{ojs}
-{
-  return html`<table style="margin:20px auto 0;font-family:sans-serif;font-size:1.2em;border-collapse:collapse;">
-    <tr style="border-bottom:2px solid #1a1a2e;">
-      <th style="padding:6px 26px;text-align:left;">Variable</th><th style="padding:6px 26px;">Coefficient</th><th style="padding:6px 26px;">Std. Error</th>
-    </tr>
-    ${booktabs_rows.map(d => `
-      <tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 26px;">${d.label}</td><td style="padding:5px 26px;text-align:center;">${d.coef}</td><td style="padding:5px 26px;text-align:center;color:#555;">${d.se}</td></tr>
-    `).join('')}
-    <tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 26px;"><i>N</i></td><td style="padding:5px 26px;text-align:center;">${booktabs_n}</td><td></td></tr>
-    <tr><td style="padding:5px 26px;"><i>R²</i></td><td style="padding:5px 26px;text-align:center;">${booktabs_r2.toFixed(3)}</td><td></td></tr>
-  </table>`
-}
-```
+## Task — testing a group of coefficients {.smaller}
 
 ::: {.instructions-box}
-Exactly the same numbers as the raw statsmodels output two slides ago — just a plain markdown table, the kind you'd drop straight into an applied-project write-up.
+In Week 5's online session, the hotels spline had knots at 1 and 4 miles. Do we need the bends at all? Fit `price ~ distance + beyond_1 + beyond_4` and test whether **both** spline terms are zero together:
+
+::: {.big-code}
+```python
+model.f_test('beyond_1 = 0, beyond_4 = 0')
+```
+:::
+
+Then test `beyond_4` on its own. How does that fit with the R² from Week 5?
+:::
+
+::: {.fragment}
+```{ojs}
+html`<p style="font-size:0.95em;">Both spline terms together: F = <strong>${spline_f.f}</strong>, p < 0.001. The bends matter: price doesn't fall at the same rate everywhere. <code>beyond_4</code> alone: F = ${spline_f.f4}, p = ${spline_f.p4}, so it's also significant. Yet adding it only lifts R² from ${spline_f.r2_1} to ${spline_f.r2_14}. Statistically significant isn't the same as worth the extra complexity.</p>`
+```
 :::
 
 ---
@@ -757,23 +791,27 @@ Source: Békés & Kézdi (2021), Ch. 10
 Source: Békés & Kézdi (2021), Ch. 10
 :::
 
-## Real worked example: the gender pay gap
+## Task — the gender pay gap {.smaller}
 
-Log wage regressed on gender and graduate-degree category. 
+::: {.instructions-box}
+**Business question:** how big is the gender pay gap among people with a graduate degree, and does it change once we compare people with the same degree?
 
-```{.python}
-cps_df = pd.read_csv("cps_gender_pay_gap.csv")
+The data is the textbook's own: 18,241 people from the US CPS with an MA, a professional degree or a PhD. In the notebook, regress `ln_wage` on `female`, then add education as a categorical variable. Fit it twice, once with MA as the reference category and once with PhD:
 
-smf.ols('ln_wage ~ female', data=cps_df).fit(cov_type='HC1')                                    # (1)
-smf.ols('ln_wage ~ female + C(education, Treatment("MA"))', data=cps_df).fit(cov_type='HC1')    # (2), ref = MA
-smf.ols('ln_wage ~ female + C(education, Treatment("PhD"))', data=cps_df).fit(cov_type='HC1')   # (3), ref = PhD
+::: {.big-code}
+```python
+smf.ols('ln_wage ~ female + C(education, Treatment("MA"))', data=cps_df).fit(cov_type='HC1')
 ```
+:::
+
+What happens to the female coefficient, and to the education coefficients, when you change the reference?
+:::
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
 Source: Békés & Kézdi (2021), Ch. 10. Data: `cps-earnings`, osf.io/g8p9j, 2014 CPS MORG (NBER), filtered to graduate-degree holders aged 24–65 working 20+ hours/week — the same restriction the textbook applies.
 :::
 
-## Results
+## What you should have found: the gender pay gap
 
 ```{ojs}
 {
@@ -788,35 +826,7 @@ Source: Békés & Kézdi (2021), Ch. 10. Data: `cps-earnings`, osf.io/g8p9j, 201
 ```
 
 ::: {.fragment}
-Same data, same underlying pattern — the coefficients on education change with the reference category, but the **female** coefficient barely moves. 
-:::
-
-## Task — our own categorical variable
-
-::: {.instructions-box}
-**Business question**: how much slower is Phone than Laptop, holding finger length fixed?
-
-Open the Colab notebook — `data_path` is already defined for you. Load it into a dataframe and fit this with `smf.ols`. Remember: device only has two categories, so you only need one dummy. No further syntax hints.
-:::
-
-::: {.fragment}
-We'll compare real answers together after.
-:::
-
-## What you should have found
-
-```{.python}
-smf.ols('reaction_time_ms ~ finger_mm + device', data=df).fit(cov_type='HC1')
-```
-
-```{ojs}
-html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.42em;line-height:1.3;
-                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
-                  padding:8px 14px;overflow-x:auto;white-space:pre;">${cat_summary_text}</pre>`
-```
-
-::: {.instructions-box}
-Reference category: Laptop (device = 0). `device[T.Phone]` = +26.4 ms — Phone vs. Laptop, holding finger length fixed. Did your model agree? What would change if we added a third device type, like "tablet"?
+The female coefficient is −0.195 alone and −0.182 once education is added, whichever reference category we use: women earn roughly 17% less than men with the same degree, on average. The education coefficients do change with the reference, because each is a difference from whichever category was left out.
 :::
 
 ---
@@ -852,12 +862,50 @@ $\beta_3$ **is** the answer to the interaction question — literally the differ
 Source: Békés & Kézdi (2021), Ch. 10
 :::
 
+## Seeing β₂ and β₃
+
+```{ojs}
+viewof inter = {
+  const f = html`<div class="inter-ctl" style="display:flex;gap:40px;align-items:center;font-size:24px;font-family:sans-serif;color:#333;padding:4px;">
+    <label style="display:flex;align-items:center;gap:8px;"><span>β₂ (intercept shift)</span> <input name="b2" type="range" min="-4" max="4" step="0.5" value="2" style="width:220px;accent-color:#e63946;"> <strong id="b2v">2.0</strong></label>
+    <label style="display:flex;align-items:center;gap:8px;"><span>β₃ (slope shift)</span> <input name="b3" type="range" min="-1" max="1" step="0.1" value="0.5" style="width:220px;accent-color:#e63946;"> <strong id="b3v">0.5</strong></label>
+  </div>`
+  const b2 = f.querySelector('[name=b2]'), b3 = f.querySelector('[name=b3]')
+  const upd = () => { f.querySelector('#b2v').textContent = (+b2.value).toFixed(1); f.querySelector('#b3v').textContent = (+b3.value).toFixed(1); f.dispatchEvent(new CustomEvent('input')) }
+  b2.addEventListener('input', upd); b3.addEventListener('input', upd)
+  Object.defineProperty(f, 'value', { get: () => ({ b2: +b2.value, b3: +b3.value }) })
+  return f
+}
+```
+
+```{ojs}
+{
+  const b0 = 2, b1 = 0.6
+  const xs = d3.range(0, 10.01, 0.5)
+  const pts = xs.flatMap(x => [
+    { x, y: b0 + b1 * x, g: "D = 0" },
+    { x, y: (b0 + inter.b2) + (b1 + inter.b3) * x, g: "D = 1" }])
+  const chart = Plot.plot({
+    width: 1000, height: 360, marginLeft: 50, grid: true, style: { fontSize: '16px' },
+    x: { label: "x₁", domain: [0, 10] }, y: { label: "y", domain: [-6, 22], ticks: 6 },
+    color: { legend: true, domain: ["D = 0", "D = 1"], range: ["#457b9d", "#e63946"] },
+    marks: [Plot.ruleX([0], { stroke: "#ccc" }),
+            Plot.line(pts, { x: "x", y: "y", stroke: "g", strokeWidth: 3 })]
+  })
+  return html`<div>${chart}<p style="font-family:sans-serif;text-align:center;margin:4px 0 0;font-size:0.85em;">D = 0: intercept ${b0}, slope ${b1} &nbsp;·&nbsp; D = 1: intercept ${(b0 + inter.b2).toFixed(1)}, slope ${(b1 + inter.b3).toFixed(1)}</p></div>`
+}
+```
+
+::: {style="font-size:0.85em;"}
+β₂ moves the red line up or down at x₁ = 0. β₃ changes its slope. Set β₃ to 0 and the lines are parallel: no interaction.
+:::
+
 ## Task — does the pattern differ by device?
 
 ::: {.instructions-box}
 **Business question**: does the association between finger length and reaction time depend on which device someone used?
 
-Open the Colab notebook — `data_path` is already defined for you. Load it into a dataframe and answer this with `smf.ols`. You have 10 minutes — no further syntax hints. Work out the formula string yourselves.
+Open the Colab notebook — the setup cell builds `student_summary` for you, one row per student. Answer this with `smf.ols`. You have 10 minutes — no further syntax hints. Work out the formula string yourselves.
 :::
 
 ::: {.fragment}
@@ -867,7 +915,7 @@ We'll go through real answers together after.
 ## What you should have found
 
 ```{.python}
-smf.ols('reaction_time_ms ~ finger_mm * device', data=df).fit(cov_type='HC1')
+model = smf.ols('mean_rt ~ finger_mm * device', data=student_summary).fit(cov_type='HC1')
 # equivalent to: finger_mm + device + finger_mm:device
 ```
 
@@ -877,45 +925,17 @@ html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.42em;line-h
                   padding:8px 14px;overflow-x:auto;white-space:pre;">${interaction_summary_text}</pre>`
 ```
 
-::: {.instructions-box}
-Interaction term (`finger_mm:device[T.Phone]`) = −3.33, p = 0.49 — nowhere near significant. That's the real, honest answer at this sample size, before we even get to a picture.
-:::
-
-## Plotting it
-
-```{.python}
-import matplotlib.pyplot as plt
-import numpy as np
-
-fig, ax = plt.subplots(figsize=(6, 4))
-colors = {'Laptop': '#457b9d', 'Phone': '#e63946'}
-
-for device, group in df.groupby('device'):
-    ax.scatter(group['finger_mm'], group['reaction_time_ms'],
-               alpha=0.4, color=colors[device], label=device)
-
-x_grid = np.linspace(df['finger_mm'].min(), df['finger_mm'].max(), 50)
-for device in colors:
-    pred = model.predict(pd.DataFrame({'finger_mm': x_grid, 'device': device}))
-    ax.plot(x_grid, pred, color=colors[device], linewidth=2.5)
-
-ax.set_xlabel('Finger length (mm)')
-ax.set_ylabel('Reaction time (ms)')
-ax.legend()
-plt.show()
+```{ojs}
+html`<div class="instructions-box">Interaction term (<code>finger_mm:device[T.Phone]</code>) = ${task6.inter}, p = ${task6.inter_p} – not significant at 5%. With ${task6.n} students, that's the honest answer before we even look at a picture.</div>`
 ```
-
-::: {.instructions-box}
-`model.predict()` on a small grid of finger-length values is the key move — it applies the fitted coefficients (and the categorical encoding) for you, so the fitted lines are guaranteed to match the regression exactly, not redrawn by hand.
-:::
 
 ## The figure
 
 ```{ojs}
 {
-  const rows = trial_data.filter(d => d.finger_mm != null && !isNaN(d.finger_mm) && d.device != null)
+  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm) && d.device != null)
   if (rows.length < 8) return html`<p style="color:#aaa;">Not enough data yet.</p>`
-  const x = rows.map(d => d.finger_mm), y = rows.map(d => d.reaction_time_ms)
+  const x = rows.map(d => d.finger_mm), y = rows.map(d => d.mean_rt)
   const dev = rows.map(d => d.device === "Phone" ? 1 : 0)
   const inter = x.map((v, i) => v * dev[i])
   const model = olsFit(x.map((v, i) => [v, dev[i], inter[i]]), y)
@@ -925,10 +945,10 @@ plt.show()
   const phoneLine = grid.map(v => ({ finger_mm: v, fit: model.coefs[0] + model.coefs[2] + (model.coefs[1] + model.coefs[3]) * v, group: "Phone" }))
   const chart = Plot.plot({
     height: 360, marginLeft: 60,
-    x: { label: "Finger length (mm)" }, y: { label: "Reaction time (ms)" },
+    x: { label: "Finger length (mm)" }, y: { label: "Mean reaction time (ms)" },
     color: { legend: true, domain: ["Laptop", "Phone"], range: ["#457b9d", "#e63946"] },
     marks: [
-      Plot.dot(rows, { x: "finger_mm", y: "reaction_time_ms", stroke: d => d.device === "Phone" ? "#e63946" : "#457b9d", fill: "white", fillOpacity: 0.5, r: 2.5 }),
+      Plot.dot(rows, { x: "finger_mm", y: "mean_rt", stroke: d => d.device === "Phone" ? "#e63946" : "#457b9d", fill: "white", fillOpacity: 0.5, r: 4 }),
       Plot.line(laptopLine, { x: "finger_mm", y: "fit", stroke: "group", strokeWidth: 2.5 }),
       Plot.line(phoneLine, { x: "finger_mm", y: "fit", stroke: "group", strokeWidth: 2.5 }),
     ]
@@ -939,71 +959,6 @@ plt.show()
 
 ::: {.instructions-box}
 If the two lines are nearly parallel, the interaction term will be close to zero — the finger-length pattern doesn't meaningfully depend on device. If they visibly fan apart, it does.
-:::
-
-## Our own data hits its limit
-
-::: {.instructions-box}
-20 students, 200 trials — even a real interaction would be hard to detect at this scale, and a weak or noisy one is essentially invisible against sampling noise this size.
-:::
-
-::: {.fragment}
-To actually *see* an interaction at work, we need a dataset with enough power to show one. Back to the CPS earnings data from Section E — 18,241 people, real signal, real stakes.
-:::
-
-## Real case study: does the gender pay gap change with age?
-
-We already have `cps_df`. Add one more variable and interact it with gender:
-
-```{.python}
-smf.ols('ln_wage ~ female * age', data=cps_df).fit(cov_type='HC1')
-# equivalent to: female + age + female:age
-```
-
-```{ojs}
-{
-  return html`<table style="margin:0 auto;font-family:sans-serif;font-size:1.1em;border-collapse:collapse;">
-    <tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:6px 24px;text-align:left;">Variable</th><th style="padding:6px 24px;">Coefficient</th></tr>
-    ${gap_inter_rows.map(d => `<tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 24px;">${d.variable}</td><td style="padding:5px 24px;text-align:center;font-weight:700;">${d.value}</td></tr>`).join('')}
-  </table>`
-}
-```
-
-::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
-Source: Békés & Kézdi (2021), Ch. 10. Same `cps-earnings` sample as Section E.
-:::
-
-## Does a near-zero coefficient mean no gap?
-
-::: {.instructions-box}
-`female` = −0.036, not even statistically distinguishable from zero (p ≈ 0.30). Does this mean the gender gap has disappeared? What does `female × age` = −0.003, strongly significant, tell you that the female coefficient alone doesn't?
-:::
-
-::: {.fragment}
-Reread the structural model: at $D=1$ (female), the slope on age is $\beta_1+\beta_3$, not $\beta_1$. The "female" coefficient alone only describes the gap *at age zero* — a meaningless, never-observed point. The real story is in $\beta_3$.
-:::
-
-## Two slopes, not one
-
-:::: {.shrink-on-reveal data-frag="wk6-twoslopes-frag" style="--large-height:480px;--small-height:340px;--shrink-scale:0.708;"}
-::: {.shrink-on-reveal-inner}
-```{ojs}
-{
-  return Plot.plot({
-    height: 480, marginLeft: 60,
-    x: { label: "Age" }, y: { label: "ln(hourly wage)" },
-    color: { legend: true, domain: ["Men", "Women"], range: ["#457b9d", "#e63946"] },
-    marks: [
-      Plot.line(gap_age_lines, { x: "age", y: "ln_wage", stroke: "group", strokeWidth: 2.5 }),
-    ]
-  })
-}
-```
-:::
-::::
-
-::: {.fragment #wk6-twoslopes-frag}
-Men and women start close together at 24, and the gap widens every year after — a single "female" coefficient could never have shown this shape. Only the interaction reveals it.
 :::
 
 ---
@@ -1042,72 +997,7 @@ These are sometimes called **bad controls**. Telling a genuine confounder from a
 Source: Békés & Kézdi (2021), Ch. 10
 :::
 
-## Language, still
-
-Even with five variables conditioned on, a regression is still a comparison of conditional means — not a randomized experiment.
-
-::: {.instructions-box}
-Same rule as Week 4: avoid "effect," avoid "increases/decreases," in observational data. "Higher finger length is associated with a difference of X ms, holding device and caffeine fixed" is honest. "Finger length affects reaction time" is not — not yet.
-:::
-
 ---
-
-## Prediction, overfitting, and choosing variables
-
----
-
-## The ŷ–y plot
-
-$$\hat y = \hat\beta_0+\hat\beta_1x_1+\hat\beta_2x_2+\dots$$
-
-A scatterplot of $\hat y$ (predicted) against actual y, with the 45° line:
-
-- Points **right** of the line: overpredicted
-- Points **left** of the line: underpredicted
-- More informative than R² alone — it shows *where* the model struggles, not just how much
-
-## Our own predictions vs. reality
-
-```{ojs}
-{
-  const rows = trial_data.filter(d => d.finger_mm != null && !isNaN(d.finger_mm) && d.device != null && d.caffeine != null)
-  if (rows.length < 6) return html`<p style="color:#aaa;">Not enough data yet.</p>`
-  const x = rows.map(d => d.finger_mm), y = rows.map(d => d.reaction_time_ms)
-  const dev = rows.map(d => d.device === "Phone" ? 1 : 0)
-  const caf = rows.map(d => d.caffeine === "Yes" ? 1 : 0)
-  const model = olsFit(x.map((v, i) => [v, dev[i], caf[i]]), y)
-  const points = rows.map((d, i) => ({ yhat: model.fitted[i], y: d.reaction_time_ms }))
-  const lo = Math.min(d3.min(points, d => d.yhat), d3.min(points, d => d.y))
-  const hi = Math.max(d3.max(points, d => d.yhat), d3.max(points, d => d.y))
-  return Plot.plot({
-    height: 420, marginLeft: 60,
-    x: { label: "predicted ŷ (ms)", domain: [lo - 10, hi + 10] },
-    y: { label: "actual y (ms)", domain: [lo - 10, hi + 10] },
-    marks: [
-      Plot.line([{ x: lo - 10, y: lo - 10 }, { x: hi + 10, y: hi + 10 }], { x: "x", y: "y", stroke: "#ccc", strokeDasharray: "4,3" }),
-      Plot.dot(points, { x: "yhat", y: "y", fill: "#1a1a2e", fillOpacity: 0.4, r: 3 }),
-    ]
-  })
-}
-```
-
-::: {.instructions-box}
-Points scattered tightly around the diagonal mean good predictions. Given how weak finger length's own relationship was, does this look like a model HR should rely on for individual predictions?
-:::
-
-## Overfitting and choosing variables
-
-- **R² mechanically rises** every time you add a variable — even pure noise. It can never fall
-- **Overfitting**: capturing patterns specific to this dataset that won't hold up elsewhere
-- Purpose changes the rule: for a **causal** question, keep confounders that matter for comparison even if imprecise; for **prediction**, value simplicity and generalisability over fit
-
-::: {.extension}
-Rough sample-size guide (Gabor & Kézdi): 20–40 observations supports about 1–2 variables; 50–100 supports 2–4; a few hundred supports 5–10; a few thousand can support dozens, including dummies and interactions. Formal criteria like BIC penalise added variables directly — more in Week 10.
-:::
-
-::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
-Source: Békés & Kézdi (2021), Ch. 10
-:::
 
 ## Summary
 
@@ -1120,7 +1010,7 @@ Source: Békés & Kézdi (2021), Ch. 10
 
 ## Online session
 
-See **week6-online.html** — a short standalone deck for this week's online session.
+A walkthrough of the gender pay gap in more depth: adding age as a confounder, checking the OVB formula, non-linear age profiles and interactions, and presenting a regression table. It finishes by revisiting the Vienna hotels with multiple regression.
 
 ## Coming up
 

@@ -203,6 +203,12 @@
 </section>
 <section id="section" class="slide level2" data-background-color="#1a1a2e">
 <h2></h2>
+<style>
+.reveal .big-code div.sourceCode { font-size: 1.15em !important; }
+.reveal .mid-code div.sourceCode { font-size: 0.8em !important; }
+.reveal .small-code div.sourceCode { font-size: 0.62em !important; }
+.reveal .big-code div.sourceCode pre.sourceCode, .reveal .small-code div.sourceCode pre.sourceCode, .reveal .mid-code div.sourceCode pre.sourceCode { font-size: 1em !important; }
+</style>
 <div style="text-align: center; padding-top: 180px;">
 <p><span style="font-size: 2.2em; color: white;"><strong>Multiple regression, worked through</strong></span></p>
 </div>
@@ -221,9 +227,9 @@
 <section id="understanding-the-gender-difference-in-earnings" class="slide level2">
 <h2>Understanding the gender difference in earnings</h2>
 <ul>
-<li>In the USA (2014), women tend to eanr about 20% less than men</li>
-<li>Aim 1: Find patterns to better understand the gender gap with a particular focus on the interaction with age.</li>
-<li>Aim 2L Think about if there is a causal link from femal to getting paid less.</li>
+<li>In the USA (2014), women tend to earn about 20% less than men</li>
+<li>Aim 1: find patterns that help us understand the gender gap, focusing on how it interacts with age</li>
+<li>Aim 2: think about whether there is a causal link from being female to being paid less</li>
 </ul>
 </section>
 <section id="set-up" class="slide level2">
@@ -231,7 +237,7 @@
 <ul>
 <li>2014 census data
 <ul>
-<li>Age between 15 to 65</li>
+<li>Age between 24 and 64</li>
 <li>Self-employed excluded as earning are difficult to measure</li>
 <li>Include those who reported 20 hours or more as their usual weekly time worked</li>
 </ul></li>
@@ -245,11 +251,13 @@
 <p>The simple model of the relation between earnings and gender is:</p>
 <p><span class="math display">\[\ln w^E = \alpha + \beta\, female\]</span></p>
 <p>Let’s include age as well:</p>
-<p><span class="math display">\[\ln w^E = \beta_0 + \beta_1 female + \beta_2 age \]</span> We can also calculate the correlation between female and age: <span class="math display">\[ age^E = \gamma + \delta female\]</span></p>
+<p><span class="math display">\[\ln w^E = \beta_0 + \beta_1 female + \beta_2 age \]</span> We can also regress age on female, to see how the two are related: <span class="math display">\[ age^E = \gamma + \delta female\]</span></p>
 </section>
 <section id="adding-age-as-a-confounder" class="slide level2">
 <h2>Adding age as a confounder</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a></a>smf.ols(<span class="st">'ln_wage ~ female + age'</span>, data<span class="op">=</span>df).fit(cov_type<span class="op">=</span><span class="st">'HC1'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="big-code">
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a></a>smf.ols(<span class="st">'ln_wage ~ female + age'</span>, data<span class="op">=</span>cps_df).fit(cov_type<span class="op">=</span><span class="st">'HC1'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <table class="caption-top">
 <thead>
 <tr class="header">
@@ -311,9 +319,10 @@
 <p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
 </div>
 </section>
-<section id="looking-at-in-the-age-distribution" class="slide level2">
-<h2>Looking at in the age distribution</h2>
+<section id="looking-at-the-age-distribution" class="slide level2 smaller">
+<h2>Looking at the age distribution</h2>
 <p>Let’s plot the difference in the age distribution of employees with graduate degrees.</p>
+<div class="small-code">
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb2-2"><a></a><span class="im">from</span> scipy.stats <span class="im">import</span> gaussian_kde</span>
 <span id="cb2-3"><a></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -332,6 +341,7 @@
 <span id="cb2-16"><a></a>ax.set_ylabel(<span class="st">'Density'</span>)</span>
 <span id="cb2-17"><a></a>ax.legend(frameon<span class="op">=</span><span class="va">False</span>)</span>
 <span id="cb2-18"><a></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="the-age-distribution-plotted" class="slide level2">
 <h2>The age distribution, plotted</h2>
@@ -344,9 +354,11 @@
 <p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
 </div>
 </section>
-<section id="should-we-consider-a-non-linear-relationship" class="slide level2">
+<section id="should-we-consider-a-non-linear-relationship" class="slide level2 smaller">
 <h2>Should we consider a non-linear relationship?</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a></a>smf.ols(<span class="st">'ln_wage ~ female + age + I(age**2) + I(age**3) + I(age**4)'</span>, data<span class="op">=</span>df).fit(cov_type<span class="op">=</span><span class="st">'HC1'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="big-code">
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a></a>smf.ols(<span class="st">'ln_wage ~ female + age + I(age**2) + I(age**3) + I(age**4)'</span>, data<span class="op">=</span>cps_df).fit(cov_type<span class="op">=</span><span class="st">'HC1'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <table class="caption-top">
 <thead>
 <tr class="header">
@@ -404,7 +416,9 @@
 </section>
 <section id="does-the-gap-even-have-the-same-slope-for-both" class="slide level2">
 <h2>Does the gap even have the same slope for both?</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a></a>smf.ols(<span class="st">'ln_wage ~ age * female'</span>, data<span class="op">=</span>df).fit(cov_type<span class="op">=</span><span class="st">'HC1'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="big-code">
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a></a>smf.ols(<span class="st">'ln_wage ~ age * female'</span>, data<span class="op">=</span>cps_df).fit(cov_type<span class="op">=</span><span class="st">'HC1'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <table class="caption-top">
 <thead>
 <tr class="header">
@@ -453,7 +467,7 @@
 <h2>Interactions and non-linearities together</h2>
 <p>Running the fully flexible version — 4th-order polynomial in age, interacted with gender — reveals the real pattern:</p>
 <ul>
-<li>The gap is around <strong>10–8%</strong> between ages 25–30</li>
+<li>The gap is around <strong>8–10%</strong> between ages 25 and 30</li>
 <li>Rises to <strong>17%</strong> by 40, and <strong>22%</strong> by 50</li>
 <li>Tapers slightly after 60 (<strong>19%</strong>)</li>
 </ul>
@@ -464,8 +478,9 @@
 <p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
 </div>
 </section>
-<section id="predicting-the-gap-by-age" class="slide level2">
+<section id="predicting-the-gap-by-age" class="slide level2 smaller">
 <h2>Predicting the gap by age</h2>
+<div class="small-code">
 <div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb5-2"><a></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb5-3"><a></a></span>
@@ -490,6 +505,7 @@
 <span id="cb5-22"><a></a>axes[<span class="dv">0</span>].set_ylabel(<span class="st">'ln(earnings per hour)'</span>)</span>
 <span id="cb5-23"><a></a>axes[<span class="dv">0</span>].legend(frameon<span class="op">=</span><span class="va">False</span>)</span>
 <span id="cb5-24"><a></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="the-gap-by-age-plotted" class="slide level2">
 <h2>The gap by age, plotted</h2>
@@ -539,6 +555,82 @@
 <p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
 </div>
 </section>
+<section id="building-the-table-in-python" class="slide level2 smaller">
+<h2>Building the table in Python</h2>
+<p>The four gender-gap models side by side, coefficients with stars, standard errors underneath:</p>
+<div class="mid-code">
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a></a><span class="kw">def</span> stars(p):</span>
+<span id="cb6-2"><a></a>    <span class="cf">return</span> <span class="st">"***"</span> <span class="cf">if</span> p <span class="op">&lt;</span> <span class="fl">0.01</span> <span class="cf">else</span> <span class="st">"**"</span> <span class="cf">if</span> p <span class="op">&lt;</span> <span class="fl">0.05</span> <span class="cf">else</span> <span class="st">"*"</span> <span class="cf">if</span> p <span class="op">&lt;</span> <span class="fl">0.1</span> <span class="cf">else</span> <span class="st">""</span></span>
+<span id="cb6-3"><a></a></span>
+<span id="cb6-4"><a></a>models <span class="op">=</span> {<span class="st">'(1)'</span>: m1, <span class="st">'(2)'</span>: m2, <span class="st">'(3)'</span>: m3, <span class="st">'(4)'</span>: m4}</span>
+<span id="cb6-5"><a></a>rows <span class="op">=</span> {}</span>
+<span id="cb6-6"><a></a><span class="cf">for</span> name, label <span class="kw">in</span> [(<span class="st">'female'</span>, <span class="st">'Female'</span>), (<span class="st">'age'</span>, <span class="st">'Age'</span>)]:</span>
+<span id="cb6-7"><a></a>    rows[label] <span class="op">=</span> {k: <span class="ss">f"</span><span class="sc">{</span>m<span class="sc">.</span>params[name]<span class="sc">:.3f}{</span>stars(m.pvalues[name])<span class="sc">}</span><span class="ss">"</span> <span class="cf">if</span> name <span class="kw">in</span> m.params <span class="cf">else</span> <span class="st">""</span></span>
+<span id="cb6-8"><a></a>                   <span class="cf">for</span> k, m <span class="kw">in</span> models.items()}</span>
+<span id="cb6-9"><a></a>    rows[label <span class="op">+</span> <span class="st">' SE'</span>] <span class="op">=</span> {k: <span class="ss">f"(</span><span class="sc">{</span>m<span class="sc">.</span>bse[name]<span class="sc">:.3f}</span><span class="ss">)"</span> <span class="cf">if</span> name <span class="kw">in</span> m.params <span class="cf">else</span> <span class="st">""</span> <span class="cf">for</span> k, m <span class="kw">in</span> models.items()}</span>
+<span id="cb6-10"><a></a>rows[<span class="st">'N'</span>] <span class="op">=</span> {k: <span class="ss">f"</span><span class="sc">{</span><span class="bu">int</span>(m.nobs)<span class="sc">:,}</span><span class="ss">"</span> <span class="cf">for</span> k, m <span class="kw">in</span> models.items()}</span>
+<span id="cb6-11"><a></a>rows[<span class="st">'R²'</span>] <span class="op">=</span> {k: <span class="ss">f"</span><span class="sc">{</span>m<span class="sc">.</span>rsquared<span class="sc">:.3f}</span><span class="ss">"</span> <span class="cf">for</span> k, m <span class="kw">in</span> models.items()}</span>
+<span id="cb6-12"><a></a><span class="bu">print</span>(pd.DataFrame(rows).T.to_markdown())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th></th>
+<th>(1)</th>
+<th>(2)</th>
+<th>(3)</th>
+<th>(4)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Female</td>
+<td>-0.195***</td>
+<td>-0.185***</td>
+<td>-0.183***</td>
+<td>-0.183***</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>(0.008)</td>
+<td>(0.008)</td>
+<td>(0.008)</td>
+<td>(0.008)</td>
+</tr>
+<tr class="odd">
+<td>Age</td>
+<td></td>
+<td>0.007***</td>
+<td>0.063***</td>
+<td>0.572***</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td>(0.000)</td>
+<td>(0.003)</td>
+<td>(0.116)</td>
+</tr>
+<tr class="odd">
+<td>N</td>
+<td>18,241</td>
+<td>18,241</td>
+<td>18,241</td>
+<td>18,241</td>
+</tr>
+<tr class="even">
+<td>R²</td>
+<td>0.028</td>
+<td>0.046</td>
+<td>0.060</td>
+<td>0.062</td>
+</tr>
+</tbody>
+</table>
+<div style="font-size:0.75em;color:#999;">
+<p>Models (3) and (4) add age², and age² to age⁴. Robust standard errors in brackets. <code>to_markdown()</code> needs the <code>tabulate</code> package, already installed in Colab.</p>
+</div>
+</section>
 <section id="a-word-on-curve-fitting" class="slide level2">
 <h2>A word on curve-fitting</h2>
 <div style="text-align:center;">
@@ -561,23 +653,141 @@
 <section id="closing-the-hotels-thread-finding-a-good-deal" class="slide level2">
 <h2>Closing the hotels thread: finding a good deal</h2>
 </section>
-<section id="back-to-vienna-with-everything-we-now-have" class="slide level2">
+<section id="back-to-vienna-with-everything-we-now-have" class="slide level2 smaller">
 <h2>Back to Vienna, with everything we now have</h2>
-<p>Since Week 5’s opening motivation — a good hotel deal, close to the centre, not overpriced — we’ve only ever used one x at a time. The full model:</p>
-<p><span class="math display">\[\ln(price)^E = f(\text{distance spline}) + f(\text{rating spline}) + \beta_{3.5\star} + \beta_{4\star}\]</span></p>
+<p>In Week 4 we went looking for a good hotel deal with one x at a time. Now we can put it all in one model:</p>
+<p><span class="math display">\[\ln(price)^E = f(\text{distance spline}) + f(\text{rating spline}) + \beta_{3.5\,stars} + \beta_{4\,stars}\]</span></p>
 <ul>
 <li>Distance: piecewise linear spline, knots at 1 and 4 miles</li>
 <li>Rating: piecewise linear spline, knot at 3.5</li>
 <li>Stars: dummies for 3.5★ and 4★ (reference: 3★)</li>
-<li>R² = 0.56 — far better than any single-x version from Week 5</li>
 </ul>
+<div class="mid-code">
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a></a>hotels[<span class="st">'dist_b1'</span>] <span class="op">=</span> np.maximum(hotels[<span class="st">'distance'</span>] <span class="op">-</span> <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb7-2"><a></a>hotels[<span class="st">'dist_b4'</span>] <span class="op">=</span> np.maximum(hotels[<span class="st">'distance'</span>] <span class="op">-</span> <span class="dv">4</span>, <span class="dv">0</span>)</span>
+<span id="cb7-3"><a></a>hotels[<span class="st">'rating_b35'</span>] <span class="op">=</span> np.maximum(hotels[<span class="st">'rating'</span>] <span class="op">-</span> <span class="fl">3.5</span>, <span class="dv">0</span>)</span>
+<span id="cb7-4"><a></a></span>
+<span id="cb7-5"><a></a>model <span class="op">=</span> smf.ols(<span class="st">'ln_price ~ distance + dist_b1 + dist_b4 + rating + rating_b35 + C(stars)'</span>,</span>
+<span id="cb7-6"><a></a>                data<span class="op">=</span>hotels).fit(cov_type<span class="op">=</span><span class="st">'HC1'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>R² = <strong>0.55</strong>, against 0.16 for Week 4’s straight line in distance alone.</p>
 <div style="font-size:0.75em;color:#999;margin-top:12px;">
 <p>Source: Békés &amp; Kézdi (2021), Ch. 10, hotels-vienna dataset</p>
 </div>
 </section>
-<section id="finding-the-deals-most-negative-residuals" class="slide level2">
+<section id="comparing-the-hotel-models" class="slide level2 smaller">
+<h2>Comparing the hotel models</h2>
+<p>The same table code as before, now building the hotels model up one block at a time:</p>
+<div class="small-code">
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a></a>m1 <span class="op">=</span> smf.ols(<span class="st">'ln_price ~ distance'</span>, data<span class="op">=</span>hotels).fit(cov_type<span class="op">=</span><span class="st">'HC1'</span>)</span>
+<span id="cb8-2"><a></a>m2 <span class="op">=</span> smf.ols(<span class="st">'ln_price ~ distance + dist_b1 + dist_b4'</span>, data<span class="op">=</span>hotels).fit(cov_type<span class="op">=</span><span class="st">'HC1'</span>)</span>
+<span id="cb8-3"><a></a>m3 <span class="op">=</span> smf.ols(<span class="st">'ln_price ~ distance + dist_b1 + dist_b4 + rating + rating_b35'</span>, data<span class="op">=</span>hotels).fit(cov_type<span class="op">=</span><span class="st">'HC1'</span>)</span>
+<span id="cb8-4"><a></a>m4 <span class="op">=</span> smf.ols(<span class="st">'ln_price ~ distance + dist_b1 + dist_b4 + rating + rating_b35 + C(stars)'</span>, data<span class="op">=</span>hotels).fit(cov_type<span class="op">=</span><span class="st">'HC1'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<table class="caption-top">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>(1)</th>
+<th>(2)</th>
+<th>(3)</th>
+<th>(4)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Distance (first mile)</td>
+<td>-0.131***</td>
+<td>-0.599***</td>
+<td>-0.508***</td>
+<td>-0.460***</td>
+</tr>
+<tr class="even">
+<td>Change in slope after 1 mile</td>
+<td></td>
+<td>0.524***</td>
+<td>0.459***</td>
+<td>0.410***</td>
+</tr>
+<tr class="odd">
+<td>Change in slope after 4 miles</td>
+<td></td>
+<td>0.248***</td>
+<td>0.166***</td>
+<td>0.194***</td>
+</tr>
+<tr class="even">
+<td>Rating (up to 3.5)</td>
+<td></td>
+<td></td>
+<td>-0.052</td>
+<td>-0.113</td>
+</tr>
+<tr class="odd">
+<td>Change in slope above 3.5</td>
+<td></td>
+<td></td>
+<td>0.461***</td>
+<td>0.473***</td>
+</tr>
+<tr class="even">
+<td>3.5 stars</td>
+<td></td>
+<td></td>
+<td></td>
+<td>0.017</td>
+</tr>
+<tr class="odd">
+<td>4 stars</td>
+<td></td>
+<td></td>
+<td></td>
+<td>0.150***</td>
+</tr>
+<tr class="even">
+<td>N</td>
+<td>207</td>
+<td>207</td>
+<td>207</td>
+<td>207</td>
+</tr>
+<tr class="odd">
+<td>R²</td>
+<td>0.205</td>
+<td>0.371</td>
+<td>0.509</td>
+<td>0.550</td>
+</tr>
+</tbody>
+</table>
+<div style="font-size:0.75em;color:#999;">
+<p>Outcome: ln(price). Stars show significance, using robust standard errors; the standard errors themselves are left out to keep the table readable.</p>
+</div>
+</section>
+<section id="what-changed-as-we-added-variables" class="slide level2">
+<h2>What changed as we added variables</h2>
+<ul>
+<li><strong>Fit:</strong> R² rises from 0.21 to 0.37 with the distance spline, 0.51 with rating and 0.55 with stars</li>
+<li><strong>The first mile matters most:</strong> within a mile of the centre, prices fall by about 0.60 log points per mile, far more than the single straight line’s 0.13</li>
+<li><strong>Some of that is quality:</strong> add rating and stars and the first-mile slope shrinks to 0.46. Central hotels also tend to be better rated, so the simpler model was giving distance credit for quality. That’s omitted variable bias, in the data we’ve used since Week 4</li>
+<li><strong>Rating matters above 3.5:</strong> each extra point goes with about 0.36 log points higher prices. Only 9 hotels are rated below 3.5, so the slope there is too imprecise to say much (p = 0.19)</li>
+<li><strong>Stars matter jointly:</strong> an F-test that both star dummies are zero gives F = 9.3, p &lt; 0.001</li>
+</ul>
+</section>
+<section id="finding-the-deals-most-negative-residuals" class="slide level2 smaller">
 <h2>Finding the deals: most negative residuals</h2>
-<p>A negative residual means the hotel costs <em>less</em> than the model expects, given its distance, rating, and stars — genuinely underpriced relative to comparable hotels:</p>
+<p>A negative residual means the hotel costs <em>less</em> than the model expects, given its distance, rating and stars:</p>
+<div class="big-code">
+<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a></a>hotels[<span class="st">'resid'</span>] <span class="op">=</span> model.resid</span>
+<span id="cb9-2"><a></a>hotels.nsmallest(<span class="dv">5</span>, <span class="st">'resid'</span>)[[<span class="st">'hotel_id'</span>, <span class="st">'price'</span>, <span class="st">'resid'</span>, <span class="st">'distance'</span>, <span class="st">'stars'</span>, <span class="st">'rating'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <table class="caption-top">
 <thead>
 <tr class="header">
@@ -592,40 +802,40 @@
 <tbody>
 <tr class="odd">
 <td>21912</td>
-<td>$60</td>
-<td>−0.565</td>
+<td>€60</td>
+<td>-0.565</td>
 <td>1.1 mi</td>
 <td>4★</td>
 <td>4.1</td>
 </tr>
 <tr class="even">
 <td>21975</td>
-<td>$115</td>
-<td>−0.405</td>
+<td>€115</td>
+<td>-0.405</td>
 <td>0.1 mi</td>
 <td>4★</td>
 <td>4.3</td>
 </tr>
 <tr class="odd">
 <td>22344</td>
-<td>$50</td>
-<td>−0.385</td>
+<td>€50</td>
+<td>-0.385</td>
 <td>3.9 mi</td>
 <td>3★</td>
 <td>3.9</td>
 </tr>
 <tr class="even">
 <td>22080</td>
-<td>$54</td>
-<td>−0.338</td>
+<td>€54</td>
+<td>-0.338</td>
 <td>1.1 mi</td>
 <td>3★</td>
 <td>3.2</td>
 </tr>
 <tr class="odd">
 <td>22184</td>
-<td>$75</td>
-<td>−0.335</td>
+<td>€75</td>
+<td>-0.335</td>
 <td>0.7 mi</td>
 <td>3★</td>
 <td>4.1</td>
@@ -633,7 +843,7 @@
 </tbody>
 </table>
 <div class="fragment">
-<p>This is the payoff of everything since Week 5: not a single fitted line, but a benchmark good enough to say <em>which specific hotels</em> are the outliers worth booking — and why.</p>
+<p>This is the payoff since Week 4: not a single fitted line, but a benchmark good enough to say which specific hotels look cheap for what they offer. And the model matters: only 2 of the straight line’s five best deals are still on this list.</p>
 </div>
 <div style="font-size:0.75em;color:#999;margin-top:12px;">
 <p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
