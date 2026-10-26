@@ -900,22 +900,7 @@ student_summary.sort_values('cooks_d', ascending=False).head()</pre>
   </tbody>
 </table>
 
-<p>The slope is flatter where the rating is noisier, as attenuation predicts: among hotels with many reviews, a one-point higher rating goes with prices about 56% higher (in log points), against about 35% among hotels with few. Now take the well-reviewed hotels, with their reliable ratings, and add noise yourself:</p>
-
-<div class="figure" id="fig-atten">
-  <div class="figure-head"><div class="flabel">Figure 5.8 &middot; Interactive</div><h4>Watch attenuation happen</h4></div>
-  <div class="figure-body">
-    <div class="controls">
-      <div class="ctl"><span class="lbl">Noise SD added to ratings</span><input type="range" id="noise" min="0" max="0.6" step="0.02" value="0"><span class="val" id="noise-v"></span></div>
-      <button id="noise-redraw" type="button" style="font-family:var(--sans);font-size:12.5px;padding:4px 10px;border:1px solid var(--rule);border-radius:6px;background:var(--paper-sunk);color:var(--ink);cursor:pointer;">New random draw</button>
-    </div>
-    <div class="chart-wrap" id="atten-chart"></div>
-    <p id="atten-read" style="text-align:center;font-family:var(--sans);font-size:0.9rem;margin:6px 0 0;"></p>
-  </div>
-  <div class="figure-caption">The 72 hotels with more than 200 reviews. Left: log price against rating, with the noise added. Right: the slope from one draw (dot) against what the attenuation formula predicts on average (line).</div>
-</div>
-
-<p>Any single draw bounces around, but on average the slope falls exactly as the formula says. Averaging 500 runs, about <strong>0.2 rating points</strong> of noise brings the slope down to around 0.36, close to the few-reviews slope of 0.354. Check with the formula: the variance of the rating among these hotels is 0.07, so \(\lambda = 0.07 / (0.07 + 0.2^2) \approx 0.64\), and \(0.556 \times 0.64 \approx 0.35\). Is 0.2 plausible? If one guest's score has a standard deviation of about 1 point, an average of n reviews has noise of about \(1/\sqrt{n}\): 0.13 for 57 reviews. So 0.2 is on the high side, but in the right range.</p>
+<p>The slope is flatter where the rating is noisier, as attenuation predicts: among hotels with many reviews, a one-point higher rating goes with prices about 56% higher (in log points), against about 35% among hotels with few.</p>
 
 <p>Before calling it proved, use the second half of this chapter. The two slopes' 95% confidence intervals, [0.16, 0.55] and [0.34, 0.77], overlap a lot. And other things differ between the groups: hotels with many reviews may be bigger, more central or more established. The gap is consistent with attenuation, not proof of it.</p>
 
@@ -1059,7 +1044,7 @@ model.bse        <span class="c"># Intercept 1738.32, finger_mm 21.80</span></pr
 <p>To find out, simulate it. Generate thousands of samples from a known straight line, with heavily right-skewed errors (skewness about 2.8 &ndash; worse than our reaction times), fit OLS to each, build the usual 95% interval, and count how often it contains the true slope. If the method works, the answer should be 95%.</p>
 
 <div class="figure" id="fig-coverage">
-  <div class="figure-head"><div class="flabel">Figure 5.9</div><h4>How often does the 95% interval contain the true slope?</h4></div>
+  <div class="figure-head"><div class="flabel">Figure 5.8</div><h4>How often does the 95% interval contain the true slope?</h4></div>
   <div class="figure-body"><div class="chart-wrap" id="coverage-chart"></div></div>
   <div class="figure-caption">4,000 simulated samples at each sample size. Green: skewed errors only. Red: the same skewed errors plus one point far out on x. The dashed line is 95%.</div>
 </div>
@@ -1071,7 +1056,7 @@ model.bse        <span class="c"># Intercept 1738.32, finger_mm 21.80</span></pr
 <p>The standard visual check is a <strong>QQ-plot</strong> (quantile&ndash;quantile). Sort the residuals from smallest to largest. For each one, work out where it <em>would</em> be if the residuals came from a normal distribution with the same spread: the smallest of 24 normal draws tends to sit about 2 standard deviations below the mean, the middle ones near zero, and so on. Plot actual against expected. If the residuals are normal, the points lie close to the 45-degree line.</p>
 
 <div class="figure" id="fig-qq">
-  <div class="figure-head"><div class="flabel">Figure 5.10 &middot; Interactive</div><h4>Reading a QQ-plot</h4></div>
+  <div class="figure-head"><div class="flabel">Figure 5.9 &middot; Interactive</div><h4>Reading a QQ-plot</h4></div>
   <div class="figure-body">
     <div class="controls">
       <div class="ctl"><span class="lbl">Residuals from</span><select id="qq-pick">
@@ -1146,7 +1131,7 @@ Kurtosis:                       3.726   Cond. No.                         760.</
 <p>The simple SE formula in Part Thirteen has one more assumption hidden in it: <strong>homoskedasticity</strong>, the fourth BLUE assumption from Chapter 4. It says the spread of the residuals is the same across the whole range of x &ndash; the line fits just as tightly at small x as at large x. In real data that's rarely true. Spending varies more among high earners than low earners; prices vary more among big houses than small ones. When the spread changes with x, the residuals are <strong>heteroskedastic</strong>.</p>
 
 <div class="figure" id="fig-hsk">
-  <div class="figure-head"><div class="flabel">Figure 5.11</div><h4>Residuals against x: constant spread versus a fan</h4></div>
+  <div class="figure-head"><div class="flabel">Figure 5.10</div><h4>Residuals against x: constant spread versus a fan</h4></div>
   <div class="figure-body"><div class="chart-row"><div class="chart-wrap" id="hsk-homo"></div><div class="chart-wrap" id="hsk-hetero"></div></div></div>
   <div class="figure-caption">A made-up illustration, 90 points each. Left: the spread of the residuals is constant. Right: it fans out as x grows. Our own 24 students are too few to show a pattern like this convincingly.</div>
 </div>
@@ -1220,7 +1205,7 @@ lm_p      <span class="c"># 0.82 on our data</span></pre>
 <p>The <strong>standard prediction error</strong> (SPE) has an extra 1 inside the square root. That's the individual scatter, and it never goes away. As n grows, both \(\frac{1}{n}\) terms shrink towards zero, so the confidence interval narrows towards nothing &ndash; with enough data you'd know the average almost exactly. The prediction interval narrows too, but only down to about \(\pm 2 \times Std[e]\). No amount of data removes the fact that people differ. Both intervals are also narrowest at the average x and widen as you move away from it, which is the formula's way of saying that predicting far from the middle of your data is riskier.</p>
 
 <div class="figure" id="fig-bands">
-  <div class="figure-head"><div class="flabel">Figure 5.12 &middot; Interactive</div><h4>Both bands, on our own data</h4></div>
+  <div class="figure-head"><div class="flabel">Figure 5.11 &middot; Interactive</div><h4>Both bands, on our own data</h4></div>
   <div class="figure-body">
     <div class="controls">
       <div class="ctl"><span class="lbl">Finger length</span><input type="range" id="band-x" min="60" max="110" step="1" value="80"><span class="val" id="band-x-v"></span></div>
@@ -1496,43 +1481,6 @@ const LIFE = [["Afghanistan", 1.76, 64.05], ["Albania", 11.8, 78.5], ["Algeria",
   typoEl.addEventListener('change', renderTypo);
   dropEl.addEventListener('change', renderTypo);
 
-  /* ---------- Figure 5.6: attenuation ---------- */
-  const MANY = HROWS.filter(h => h.n > 200 && h.r != null).map(h => ({ r: h.r, lp: Math.log(h.p) }));
-  const MBASE = ols1(MANY.map(h => h.r), MANY.map(h => h.lp));
-  const MVAR = d3.variance(MANY, h => h.r);
-  const MYDOM = (() => { const [lo, hi] = d3.extent(MANY, h => h.lp); return [Math.floor((lo - 0.1) * 10) / 10, Math.ceil((hi + 0.1) * 10) / 10]; })();
-  const MXDOM = (() => { const [lo, hi] = d3.extent(MANY, h => h.r); return [Math.floor((lo - 1.2) * 2) / 2, Math.ceil((hi + 1.2) * 2) / 2]; })();
-  const noiseEl = document.getElementById('noise');
-  let noiseSeed = 11;
-  function renderAtten() {
-    const sd = +noiseEl.value;
-    document.getElementById('noise-v').textContent = sd.toFixed(2);
-    const z = normalGen(noiseSeed);
-    const rows = MANY.map(h => ({ rn: h.r + sd * z(), lp: h.lp }));
-    const f = ols1(rows.map(d => d.rn), rows.map(d => d.lp));
-    const [x0, x1] = MXDOM;
-    const left = Plot.plot({ width: Math.min(width('atten-chart', 640) / 2 - 10, 320), height: 280, marginLeft: 46, style: plotStyle(),
-      x: { label: 'Rating (with noise)', grid: true, domain: MXDOM }, y: { label: 'ln(price)', grid: true, domain: MYDOM }, clip: true,
-      marks: [Plot.dot(rows, { x: 'rn', y: 'lp', fill: BLUE, r: 3, fillOpacity: 0.65 }),
-              Plot.line([x0, x1].map(x => ({ x, v: f.beta[0] + f.beta[1] * x })), { x: 'x', y: 'v', stroke: RED, strokeWidth: 2.4 })] });
-    const curve = d3.range(0, 0.6001, 0.02).map(s => ({ s, b: MBASE.beta[1] * MVAR / (MVAR + s * s) }));
-    const right = Plot.plot({ width: Math.min(width('atten-chart', 640) / 2 - 10, 320), height: 280, marginLeft: 46, style: plotStyle(),
-      x: { label: 'Noise SD', grid: true }, y: { label: 'Slope', grid: true, domain: [-0.1, 0.8] },
-      marks: [Plot.ruleY([0], { stroke: GREY }),
-              Plot.ruleY([0.354], { stroke: GOLD_C, strokeDasharray: '4,3' }),
-              Plot.text([{ s: 0.6, b: 0.354 }], { x: 's', y: 'b', text: () => 'few-reviews slope', dy: -8, textAnchor: 'end', fill: GOLD_C, fontSize: 11 }),
-              Plot.line(curve, { x: 's', y: 'b', stroke: BLUE, strokeWidth: 2 }),
-              Plot.dot([{ s: sd, b: f.beta[1] }], { x: 's', y: 'b', fill: RED, r: 6 })] });
-    const row = document.createElement('div'); row.className = 'chart-row';
-    const a = document.createElement('div'); a.appendChild(left);
-    const b = document.createElement('div'); b.appendChild(right);
-    row.appendChild(a); row.appendChild(b);
-    mount('atten-chart', accessibleChart(row, `Adding noise with standard deviation ${sd.toFixed(2)} to the ratings of 72 well-reviewed hotels. This draw's slope is ${f.beta[1].toFixed(3)}; the formula predicts ${(MBASE.beta[1] * MVAR / (MVAR + sd * sd)).toFixed(3)} on average.`));
-    document.getElementById('atten-read').innerHTML = `No noise: slope <strong>${MBASE.beta[1].toFixed(3)}</strong> &middot; this draw: <strong>${f.beta[1].toFixed(3)}</strong> &middot; formula, on average: <strong>${(MBASE.beta[1] * MVAR / (MVAR + sd * sd)).toFixed(3)}</strong>`;
-  }
-  noiseEl.addEventListener('input', renderAtten);
-  document.getElementById('noise-redraw').addEventListener('click', () => { noiseSeed += 1; renderAtten(); });
-
   /* ---------- Figure 5.7: coverage (simulated offline) ---------- */
   function renderCoverage() {
     const sims = [[8, 95.4, 91.1], [10, 96.1, 91.7], [15, 95.7, 93.2], [20, 95.4, 94.4], [30, 95.3, 94.5], [50, 95.7, 95.4], [75, 95.2, 95.0], [100, 95.3, 95.2]];
@@ -1666,7 +1614,7 @@ const LIFE = [["Afghanistan", 1.76, 64.05], ["Albania", 11.8, 78.5], ["Algeria",
   /* ---------- render all, and on resize ---------- */
   function renderAll() {
     renderGrowth(); renderLife(); renderQuad(); renderClassQuad(); renderHotelLowess(); renderSpline(); renderTypo();
-    renderAtten(); renderCoverage(); renderQQ(); renderHSK(); renderBands();
+    renderCoverage(); renderQQ(); renderHSK(); renderBands();
   }
   renderAll();
   let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(renderAll, 200); });
