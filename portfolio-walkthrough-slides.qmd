@@ -1,7 +1,6 @@
 ---
 title: "Portfolio Assessment"
 subtitle: "7002LBSAI Research Methods in Analytics – Online Session"
-search: false
 format:
   revealjs:
     theme: simple

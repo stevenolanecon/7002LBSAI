@@ -676,7 +676,7 @@
     "href": "index.html#weeks",
     "title": "Research Methods in Analytics",
     "section": "Weeks",
-    "text": "Weeks\nWorkshop and online-session slides, published as each week runs.\n\n\n\n\nWeek 01Distributions and Summarising Data\n\nLive\n\n\nWorkshop slidesOnline sessionOutliers addendumReaction-time toolPooled histogram toolDownload the data\n\n\n\n\n\nWeek 02Inference\n\nLive\n\n\nWorkshop slidesOnline sessionBootstrap toolDownload the data\n\n\n\n\n\nWeek 03Relationships Between Variables\n\nLive\n\n\nWorkshop slidesOnline sessionDownload the data\n\n\n\n\n\nWeek 04Regression I — Fitting the Line\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 05Regression I — Model Problems & Inference\n\nLive\n\n\nWorkshop slidesOnline sessionQuadratic tool\n\n\n\n\n\nWeek 06Regression II — Multiple Regression\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\nWeek 07\n\nCurriculum Enrichment Week — no session\n\n\n\n\n\nWeek 08Other Models (GLMs)\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 09Causal Analysis and Experiments\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 10Prediction\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 11Time Series\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\nWeek 12\n\nPortfolio presentations — see Canvas"
+    "text": "Weeks\nWorkshop and online-session slides, published as each week runs.\n\n\n\n\nWeek 01Distributions and Summarising Data\n\nLive\n\n\nWorkshop slidesOnline sessionOutliers addendumReaction-time toolPooled histogram toolDownload the data\n\n\n\n\n\nWeek 02Inference\n\nLive\n\n\nWorkshop slidesOnline sessionBootstrap toolDownload the data\n\n\n\n\n\nWeek 03Relationships Between Variables\n\nLive\n\n\nWorkshop slidesOnline sessionDownload the data\n\n\n\n\n\nWeek 04Regression I — Fitting the Line\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 05Regression I — Model Problems & Inference\n\nLive\n\n\nWorkshop slidesOnline sessionQuadratic tool\n\n\n\n\n\nWeek 06Regression II — Multiple Regression\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\nWeek 07\n\nCurriculum Enrichment Week — no session\n\n\n\n\n\nWeek 08Other Models (GLMs)\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 09Causal Analysis and Experiments\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 10Prediction\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 11Time Series\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 12Portfolio Presentations\n\nLive\n\n\nPortfolio walkthrough"
   },
   {
     "objectID": "data.html",
@@ -3127,5 +3127,173 @@
     "title": "Hotels Revisited: Shape and Noise",
     "section": "How much noise would it take?",
     "text": "How much noise would it take?\nHow much noise do the well-reviewed hotels’ ratings need before their slope looks like the slope for hotels with fewer than 100 reviews? Add noise, refit, repeat 500 times, and average:\nrng = np.random.default_rng(1)\nslopes = [smf.ols('ln_price ~ r', data=many.assign(r=many['rating'] + rng.normal(0, 0.2, len(many))))\n          .fit().params['r'] for _ in range(500)]\nnp.mean(slopes)\n\n\nhtml`&lt;p&gt;Average slope over 500 runs: ${noise_grid.map(d =&gt; `SD ${d.sd} → ${d.mean_b}`).join(' · ')}. About &lt;strong&gt;0.2 rating points&lt;/strong&gt; of noise brings it down to ${noise_grid[1].mean_b}, close to the few-reviews slope of ${stats.few_b}. The formula agrees: Var[x] = ${stats.many_var}, so λ = ${stats.many_var} / (${stats.many_var} + 0.04) ≈ ${noise_grid[1].lam}, and ${stats.many_b} × ${noise_grid[1].lam} ≈ ${(stats.many_b * noise_grid[1].lam).toFixed(2)}.&lt;/p&gt;`"
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#section",
+    "href": "portfolio-walkthrough-slides.html#section",
+    "title": "Portfolio Assessment",
+    "section": "",
+    "text": "Your portfolio\nWhat you’re asked to do, how it’s marked, and what good reasoning looks like"
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#today",
+    "href": "portfolio-walkthrough-slides.html#today",
+    "title": "Portfolio Assessment",
+    "section": "Today",
+    "text": "Today\n\nThe task, the data and the deadlines\nWhat goes in your notebook, and where the words should go\nHow it’s marked – and what “synthesis” means\nA worked example on data you already know: the used cars\nThe presentation, submitting, and the mistakes to avoid\nYour questions\n\nThe full brief and the rubric are on the Canvas assignment page. Everything here comes from those."
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#the-portfolio-at-a-glance",
+    "href": "portfolio-walkthrough-slides.html#the-portfolio-at-a-glance",
+    "title": "Portfolio Assessment",
+    "section": "The portfolio at a glance",
+    "text": "The portfolio at a glance\n\n\n\n\n\n\n\n\n\nTechnical notebook report\nPresentation\n\n\n\n\nWeight\n75% of the portfolio\n25% of the portfolio\n\n\nWhat\nA Colab notebook: code, output and narrative together\nYour own slides, presented in class\n\n\nLength\n1,500 words of narrative (code and output don’t count)\n10 minutes: 8 presenting, 2 for questions\n\n\nWhen\nSubmit by 10:00am, Friday 11th December\nLater that day, in the Week 12 workshop\n\n\n\nThe portfolio is 60% of your module grade. It assesses all three module learning outcomes.\nYou submit first, then present. Your presentation is based on the analysis you’ve already handed in."
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#the-question",
+    "href": "portfolio-walkthrough-slides.html#the-question",
+    "title": "Portfolio Assessment",
+    "section": "The question",
+    "text": "The question\n\nA company has seen rising staff turnover and wants to understand why employees are leaving – and whether there’s anything the organisation could realistically do about it.\nProduce a statistical analysis of attrition and advise leadership on how much confidence they should place in your conclusions.\n\n\nThere is no single right model. You choose which variables to explore, which to include and which to set aside – and you justify those choices.\nTwo of you can reach different conclusions and both score well, if the reasoning behind each is sound."
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#what-were-marking",
+    "href": "portfolio-walkthrough-slides.html#what-were-marking",
+    "title": "Portfolio Assessment",
+    "section": "What we’re marking",
+    "text": "What we’re marking\nWe’re marking your statistical judgement: what you chose to model, why, what you checked, and how honestly you tell a decision-maker what your analysis can and can’t support.\n\nWe’re not marking:\n\nYour code. Inelegant code that works loses nothing. Python skills belong to Programming for Business Analytics.\nWhether you find “the” answer. There isn’t one. A different, well-argued model scores as well as mine would.\nData cleaning. The data is already clean. You don’t need a cleaning narrative."
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#the-data",
+    "href": "portfolio-walkthrough-slides.html#the-data",
+    "title": "Portfolio Assessment",
+    "section": "The data",
+    "text": "The data\n\nHR records for 1,470 employees at one organisation: role, pay, working conditions, career history\n31 variables, no missing values – the data dictionary is in the brief\nThe outcome is Attrition: did the employee leave? Yes or No\n\nLoad it straight into Colab – please don’t upload your own copy:\n\nimport pandas as pd\ndf = pd.read_csv(\"https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/hr_attrition.csv\")\n\n\nThe data was generated for this module, but treat it exactly like real observational business data. Just don’t present your findings as facts about a real company. When you talk about how far a result would generalise, frame it hypothetically: “if a real organisation showed this pattern…”"
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#you-dont-need-every-variable",
+    "href": "portfolio-walkthrough-slides.html#you-dont-need-every-variable",
+    "title": "Portfolio Assessment",
+    "section": "You don’t need every variable",
+    "text": "You don’t need every variable\nThere are 30 possible explanatory variables. You are not expected to explore or model all of them.\n\nStrong submissions pick a focused set – guided by a clear question about why people might leave – explore those properly, and explain why the rest were set aside.\n\n\nA smaller model you can justify and stress-test is better than a large one you can’t explain.\n\n\nGood reasons to set a variable aside:\n\nit overlaps heavily with another variable you’ve kept\nit isn’t something the business can change, and you don’t need it as a control\nit might be a result of someone deciding to leave, rather than a cause\nit barely varies"
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#your-toolkit-weeks-18",
+    "href": "portfolio-walkthrough-slides.html#your-toolkit-weeks-18",
+    "title": "Portfolio Assessment",
+    "section": "Your toolkit: Weeks 1–8",
+    "text": "Your toolkit: Weeks 1–8\n\n\n\nWeek\n\n\nWhat it gives you\n\n\nWhere it helps\n\n\n\n\n1\n\n\nDistributions, summary statistics, outliers\n\n\nExploratory analysis\n\n\n\n\n2\n\n\nStandard errors, confidence intervals, hypothesis tests\n\n\nResults, robustness\n\n\n\n\n3\n\n\nConditional means, bin-scatters, correlation\n\n\nExploratory analysis\n\n\n\n\n4–5\n\n\nRegression, logs, quadratics, extreme values, robust SE\n\n\nModel specification, robustness\n\n\n\n\n6\n\n\nMultiple regression, omitted variable bias, dummies, interactions, bad controls\n\n\nSpecification, reasoning and synthesis\n\n\n\n\n8\n\n\nModels for a Yes/No outcome: the linear probability model, logit and probit, marginal effects\n\n\nYour main model\n\n\n\n\nAttrition is a Yes/No outcome, and Week 8 is where we model that properly. You don’t need to wait for it to start, though. Exploring the data uses Weeks 1–3, and thinking through what might explain leaving uses Week 6."
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#structuring-your-notebook",
+    "href": "portfolio-walkthrough-slides.html#structuring-your-notebook",
+    "title": "Portfolio Assessment",
+    "section": "Structuring your notebook",
+    "text": "Structuring your notebook\nYour notebook is your report. Narrative goes in markdown cells, next to the code and output it explains.\n\n\n\nSection\n\n\nWords\n\n\nWhat it covers\n\n\n\n\n\nFraming\n\n\n~150\n\n\nThe business problem in your own words\n\n\n\n\n\nData overview and exploratory analysis\n\n\n~250\n\n\nWhat’s in front of you; the patterns that shape your model\n\n\n\n\n3. Model specification and justification\n\n\n~400\n\n\nWhat you fitted, what you left out, and why\n\n\n\n\n\nResults\n\n\n~200\n\n\nYour key results and what they show\n\n\n\n\n5. Robustness and limitations\n\n\n~350\n\n\nAlternatives you tried, what changed, what you can and can’t claim\n\n\n\n\n\nConclusion\n\n\n~150\n\n\nYour advice to leadership, hedged appropriately\n\n\n\n\n\n\n\n\nMost of your words belong in sections 3 and 5. A model briefly justified and thoroughly stress-tested reads better than the reverse."
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#how-its-marked",
+    "href": "portfolio-walkthrough-slides.html#how-its-marked",
+    "title": "Portfolio Assessment",
+    "section": "How it’s marked",
+    "text": "How it’s marked\n\n\n\nTechnical notebook report (75%)\n\n\nWeight\n\n\nOutcome\n\n\n\n\nExploratory data analysis\n\n\n15%\n\n\nMLO1\n\n\n\n\nModel specification and justification\n\n\n20%\n\n\nMLO1\n\n\n\n\nModel reasoning and synthesis\n\n\n35%\n\n\nMLO3\n\n\n\n\nRobustness and limitations\n\n\n10%\n\n\nMLO2\n\n\n\n\nStructure, clarity and conclusion\n\n\n20%\n\n\n\n\n\n\n\n\nPresentation (25%)\n\n\nWeight\n\n\n\n\nContent coverage and clarity\n\n\n40%\n\n\n\n\nIndependent understanding and reasoning (your answers to questions)\n\n\n40%\n\n\n\n\nDelivery, time management and professionalism\n\n\n20%\n\n\n\nEach criterion is marked on seven bands, from Exceptional (80–100%) to Unacceptable (0–19%). The band descriptors are in the rubric on Canvas. The pass mark is 50%."
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#two-things-the-rubric-is-looking-for",
+    "href": "portfolio-walkthrough-slides.html#two-things-the-rubric-is-looking-for",
+    "title": "Portfolio Assessment",
+    "section": "Two things the rubric is looking for",
+    "text": "Two things the rubric is looking for\nYour exploration should drive your model. Top marks for EDA go to work where the patterns you find directly and explicitly justify your modelling choices. A page of summary statistics that the model never refers back to won’t get there.\n\nSynthesis, not just analysis. This is the biggest criterion, at 35%. A correct model, correctly reported, with no alternative explanation considered, matches the Needs Improvement descriptor: “little or no engagement with alternative explanations”.\nTo go higher, weigh a competing explanation against your own – a confounder you might have missed, a control that might be a bad one, a different specification – and argue for the position you take.\n\n\nThat’s easier to see than to describe, so here’s an example."
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#used-cars-again",
+    "href": "portfolio-walkthrough-slides.html#used-cars-again",
+    "title": "Portfolio Assessment",
+    "section": "Used cars, again",
+    "text": "Used cars, again"
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#the-question-what-does-mileage-cost-a-seller",
+    "href": "portfolio-walkthrough-slides.html#the-question-what-does-mileage-cost-a-seller",
+    "title": "Portfolio Assessment",
+    "section": "The question: what does mileage cost a seller?",
+    "text": "The question: what does mileage cost a seller?\n281 used Toyota Camrys for sale in Chicago, from Week 6’s data exercises. odometer is in units of 10,000 miles.\n\nsmf.ols('price ~ odometer', data=cars).fit(cov_type='HC1')\n\nEach extra 10,000 miles goes with a price 734 dollars lower (robust SE 31). R² = 0.72.\n\nA Level 6 write-up stops here: “mileage is significant, so lower your mileage to get a better price.”\nWhat story is this regression telling, and what else could explain the same pattern?"
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#the-competing-explanation-age",
+    "href": "portfolio-walkthrough-slides.html#the-competing-explanation-age",
+    "title": "Portfolio Assessment",
+    "section": "The competing explanation: age",
+    "text": "The competing explanation: age\nOlder cars have done more miles: the correlation between age and mileage is 0.74. Older cars are also cheaper for reasons that have nothing to do with miles – newer models, wear, fashion.\nSo some of that mileage effect may really be an age effect.\n\nsmf.ols('price ~ odometer + age', data=cars).fit(cov_type='HC1')\n\n\nHolding age fixed, 10,000 more miles goes with a price 385 dollars lower – about half the 734 we started with. Age was a confounder: leaving it out roughly doubled the mileage effect."
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#but-should-age-be-controlled-for-at-all",
+    "href": "portfolio-walkthrough-slides.html#but-should-age-be-controlled-for-at-all",
+    "title": "Portfolio Assessment",
+    "section": "But should age be controlled for at all?",
+    "text": "But should age be controlled for at all?\nIt depends on the question you’re answering – and saying so is the synthesis.\n\n\nSeller’s question: “what do my extra miles cost me?” Age is a confounder. Control for it.\nBuyer’s question: “how much cheaper is a car that’s two years older?” Older cars are cheaper partly because they’ve done more miles. Mileage is one route by which age lowers price, so controlling for it is a bad control – it takes away part of the effect you want.\n\n\n\nOn age alone, each extra year goes with a price 664 dollars lower. Holding mileage fixed, it’s 412. Neither number is wrong – they answer different questions."
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#stress-testing-the-answer",
+    "href": "portfolio-walkthrough-slides.html#stress-testing-the-answer",
+    "title": "Portfolio Assessment",
+    "section": "Stress-testing the answer",
+    "text": "Stress-testing the answer\n\nspecs = ['price ~ odometer',\n         'price ~ odometer + age',\n         'price ~ odometer + age + agesq',\n         'price ~ odometer + age + dealer + cond_excellent + cond_good + cond_likenew']\nmodels = [smf.ols(f, data=cars).fit(cov_type='HC1') for f in specs]\n\n\n\n\n\n\n\n\n\n\n\n\n(1) Mileage only\n(2) + age\n(3) + age²\n(4) + dealer, condition\n\n\nMileage (10,000 miles)\n-734***\n(31)\n-385***\n(33)\n-304***\n(31)\n-357***\n(34)\n\n\nAge (years)\n\n-412***\n(30)\n-1,149***\n(70)\n-404***\n(31)\n\n\nR²\n0.72\n0.85\n0.90\n0.85\n\n\n\n\nRobust standard errors in brackets. *** p &lt; 0.01. Column (3) also includes age²; column (4) dealer and condition dummies.\n\nOnce age is in, the mileage effect stays between about 300 and 390 dollars whatever else we add. The big change comes from age; the rest barely moves it. That’s what makes the answer worth trusting."
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#what-we-can-and-cant-claim",
+    "href": "portfolio-walkthrough-slides.html#what-we-can-and-cant-claim",
+    "title": "Portfolio Assessment",
+    "section": "What we can and can’t claim",
+    "text": "What we can and can’t claim\nWe can say: holding age fixed, cars with 10,000 more miles sell for roughly 300–400 dollars less, and that range survives every specification we tried.\n\nWe can’t say:\n\nthat this is the causal cost of driving 10,000 miles. Accident history and servicing aren’t in the data, and high-mileage cars may differ in both\nthat it holds beyond Camrys listed in Chicago\nmuch about condition: sellers rate it themselves, so it’s measured with noise\n\n\n\nEach of these limitations is specific to this analysis. “Correlation is not causation” on its own earns very little – say which missing variable worries you and why."
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#writing-it-up",
+    "href": "portfolio-walkthrough-slides.html#writing-it-up",
+    "title": "Portfolio Assessment",
+    "section": "Writing it up",
+    "text": "Writing it up\n\nWeaker: “We ran a regression of price on mileage. The coefficient is −734 and significant at 1%, so mileage reduces price. We then added age and the R² went up, so the second model is better.”\n\n\n\nStronger: “Mileage alone suggests 10,000 extra miles cost a seller about 730 dollars. But older cars have done more miles (r = 0.74) and are cheaper for other reasons, so this mixes the two. Holding age fixed, the cost falls to about 390 dollars, and it stays between 300 and 390 when we allow age to have a curved effect or add dealer and condition. We control for age because the question is the seller’s; for a buyer comparing car ages, mileage would be a bad control. Unrecorded accident history could still bias this, so we treat it as an association, not a price the seller is guaranteed.”\n\n\n\nThe stronger version names the alternative, shows what changed, explains the choice, and is honest about what’s left."
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#advising-leadership",
+    "href": "portfolio-walkthrough-slides.html#advising-leadership",
+    "title": "Portfolio Assessment",
+    "section": "Advising leadership",
+    "text": "Advising leadership\nThe conclusion is for a manager, not a statistician.\n\nWeaker: “Mileage has a statistically significant negative effect on price (p &lt; 0.001).”\n\n\n\nStronger: “Expect each 10,000 miles to knock roughly 300–400 dollars off a Camry’s price. We’re fairly confident in that range, because it holds across every model we tried. We can’t rule out that high-mileage cars also differ in ways our data doesn’t record, so use it as a guide when pricing, not a guarantee.”\n\n\n\nState the size of the effect, how sure you are, why, and what would change your mind."
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#the-presentation",
+    "href": "portfolio-walkthrough-slides.html#the-presentation",
+    "title": "Portfolio Assessment",
+    "section": "The presentation",
+    "text": "The presentation\nYour own slides, in the Week 12 workshop on Friday 11th December. 8 minutes presenting, then 2 minutes of questions.\nYour slides must include:\n\nan overview of the data\na description of your model – what you fitted, and why\nyour key results and what they show\nrobustness and limitations – what your analysis can and can’t claim\n\n\nThe questions check that the reasoning is yours, and give you a chance to explain things that didn’t fit on a slide. The best answers go beyond the slides – for example, what would change your conclusion.\nPractise to time. Using the full 8 minutes well is part of the mark."
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#submitting",
+    "href": "portfolio-walkthrough-slides.html#submitting",
+    "title": "Portfolio Assessment",
+    "section": "Submitting",
+    "text": "Submitting\n\nSubmit on Canvas by 10:00am, Friday 11th December: your Colab notebook link and the .ipynb file\nRestart and run all before you submit. A marker must be able to rerun it top to bottom and get your results\nLoad the data from the GitHub URL, not a copy on your own drive\nStay within 1,500 words of narrative. Code and output don’t count"
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#using-ai",
+    "href": "portfolio-walkthrough-slides.html#using-ai",
+    "title": "Portfolio Assessment",
+    "section": "Using AI",
+    "text": "Using AI\nYou can use AI tools in the ways LJMU’s academic integrity policy allows – for example, help with Python syntax or an error message.\nThe statistical judgement has to be yours: what to model, what to control for, what your results mean.\n\nThe questions after your presentation are there to check that. If you can’t explain a choice in your own notebook, that will show."
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#common-mistakes",
+    "href": "portfolio-walkthrough-slides.html#common-mistakes",
+    "title": "Portfolio Assessment",
+    "section": "Common mistakes",
+    "text": "Common mistakes\n\nCode without narrative. Output with no sentence saying what it shows earns nothing\nExploration that goes nowhere. Every chart in your EDA should feed a modelling decision\nEverything in the model, nothing explained. Each variable you include or drop needs a reason\nCausal language you can’t back up. “Drives”, “causes”, “leads to” need an argument, not just a p-value\nOne model, no alternatives. On your biggest criterion, that’s the Needs Improvement band\nGeneric limitations. Name the specific variable or problem that worries you\nA conclusion that says “significant” and stops. Tell leadership how big, how sure, and what to do"
+  },
+  {
+    "objectID": "portfolio-walkthrough-slides.html#questions",
+    "href": "portfolio-walkthrough-slides.html#questions",
+    "title": "Portfolio Assessment",
+    "section": "Questions?",
+    "text": "Questions?\n\nThe brief and rubric are on the portfolio assignment page on Canvas\nBring questions to office hours, or email me\nStart exploring the data now – Week 8 then gives you the tools for your main model\n\n\nDeadline: 10:00am, Friday 11th December. Presentations later that day."
   }
 ]

@@ -90,7 +90,10 @@ weeks = [
          ("Workshop slides", "week11-slides.html", False),
          ("Online session", "week11-online-slides.html", False),
      ]},
-    {"n": 12, "note": "Portfolio presentations — see Canvas"},
+    {"n": 12, "topic": "Portfolio Presentations", "status": "live",
+     "links": [
+         ("Portfolio walkthrough", "portfolio-walkthrough-slides.html", False),
+     ]},
 ]
 
 def week_card(w):
