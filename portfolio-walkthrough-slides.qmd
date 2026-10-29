@@ -47,7 +47,7 @@ def _cell(m, v):
     return f"{m.params[v]:,.0f}{_stars(m.pvalues[v])}<br><span style='color:#888;font-size:0.85em'>({m.bse[v]:,.0f})</span>"
 ```
 
-## {background-color="#1a1a2e"}
+## Today
 
 ```{=html}
 <style>
@@ -62,20 +62,12 @@ def _cell(m, v):
 </style>
 ```
 
-::: {style="text-align: center; padding-top: 180px;"}
-[**Your portfolio**]{style="font-size: 2.2em; color: white;"}
-
-[What you're asked to do, how it's marked, and what good reasoning looks like]{style="font-size: 1.1em; color: #cccccc;"}
-:::
-
-## Today
-
 1. The task, the data and the deadlines
-2. What goes in your notebook, and where the words should go
-3. How it's marked – and what "synthesis" means
-4. A worked example on data you already know: the used cars
+2. What goes in your notebook
+3. How it's marked
+4. A worked example
 5. The presentation, submitting, and the mistakes to avoid
-6. Your questions
+6. Any questions
 
 The full brief and the rubric are on the Canvas assignment page. Everything here comes from those.
 
@@ -108,13 +100,13 @@ Two of you can reach different conclusions and both score well, if the reasoning
 
 ## What we're marking
 
-We're marking your **statistical judgement**: what you chose to model, why, what you checked, and how honestly you tell a decision-maker what your analysis can and can't support.
+You are marked on your **statistical judgement**: what you chose to model, why, what you checked, and how well you communicate to a decision-maker what your analysis can and can't support.
 
 ::: {.fragment}
 We're **not** marking:
 
-- **Your code.** Inelegant code that works loses nothing. Python skills belong to Programming for Business Analytics.
-- **Whether you find "the" answer.** There isn't one. A different, well-argued model scores as well as mine would.
+- **Your code.** Inelegant code that works loses nothing – but clean code is still worth aiming for.
+- **Whether you find "the" answer.** There isn't just one. A different, well-argued model scores as well as mine would.
 - **Data cleaning.** The data is already clean. You don't need a cleaning narrative.
 :::
 
@@ -122,9 +114,9 @@ We're **not** marking:
 
 - HR records for **1,470 employees** at one organisation: role, pay, working conditions, career history
 - **31 variables**, no missing values – the data dictionary is in the brief
-- The outcome is **Attrition**: did the employee leave? Yes or No
+- The outcome is **Attrition**: did the employee leave? Yes or No – a binary dependent variable.
 
-Load it straight into Colab – please don't upload your own copy:
+Load the raw dataset straight into Colab – please don't upload your own copy:
 
 ::: {.mid-code}
 ```{.python}
@@ -134,12 +126,12 @@ df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/mai
 :::
 
 ::: {.fragment}
-The data was generated for this module, but treat it exactly like real observational business data. Just don't present your findings as facts about a real company. When you talk about how far a result would generalise, frame it hypothetically: "if a real organisation showed this pattern…"
+The data was generated for this module, but treat it exactly like real observational business data.
 :::
 
 ## You don't need every variable
 
-There are 30 possible explanatory variables. You are not expected to explore or model all of them.
+There are 30 possible explanatory variables. You are not expected to explore or model all of them in your notebook.
 
 ::: {.fragment}
 Strong submissions pick a focused set – guided by a clear question about why people might leave – explore those properly, and explain why the rest were set aside.
@@ -223,11 +215,11 @@ To go higher, weigh a competing explanation against your own – a confounder yo
 :::
 
 ::: {.fragment}
-That's easier to see than to describe, so here's an example.
+An example should help to clarify this.
 :::
 
 # Worked example {background-color="#2d6a4f"}
-## Used cars, again
+## Used cars
 
 ## The question: what does mileage cost a seller?
 
@@ -247,7 +239,7 @@ print(f"Each extra 10,000 miles goes with a price **{abs(_m.params['odometer']):
 ```
 
 ::: {.fragment}
-A Level 6 write-up stops here: "mileage is significant, so lower your mileage to get a better price."
+A basic write-up would stop here: "mileage is significant, so lower your mileage to get a better price."
 
 What story is this regression telling, and what else could explain the same pattern?
 :::
@@ -278,7 +270,7 @@ print(f"::: {{.fragment}}\nHolding age fixed, 10,000 more miles goes with a pric
 
 ## But should age be controlled for at all?
 
-It depends on the question you're answering – and saying so is the synthesis.
+It depends on the question you're answering – explaining this is the synthesis.
 
 ::: {.fragment}
 - **Seller's question: "what do my extra miles cost me?"** Age is a confounder. Control for it.
@@ -327,8 +319,8 @@ Once age is in, the mileage effect stays between about 300 and 390 dollars whate
 ::: {.fragment}
 **We can't say:**
 
-- that this is the *causal* cost of driving 10,000 miles. Accident history and servicing aren't in the data, and high-mileage cars may differ in both
-- that it holds beyond Camrys listed in Chicago
+- that this is the *causal* cost of driving 10,000 miles – **CAUSAL KLAXON!** Accident history and servicing aren't in the data, and high-mileage cars may differ in both
+- that it holds beyond Camrys listed in Chicago – the external validity of the model
 - much about condition: sellers rate it themselves, so it's measured with noise
 :::
 
@@ -344,7 +336,7 @@ Each of these limitations is specific to *this* analysis. "Correlation is not ca
 
 ::: {.fragment}
 ::: {.strong}
-**Stronger:** "Mileage alone suggests 10,000 extra miles cost a seller about 730 dollars. But older cars have done more miles (r = 0.74) and are cheaper for other reasons, so this mixes the two. Holding age fixed, the cost falls to about 390 dollars, and it stays between 300 and 390 when we allow age to have a curved effect or add dealer and condition. We control for age because the question is the seller's; for a buyer comparing car ages, mileage would be a bad control. Unrecorded accident history could still bias this, so we treat it as an association, not a price the seller is guaranteed."
+**Stronger:** "Mileage alone suggests 10,000 extra miles cost a seller about 730 dollars. But older cars have done more miles (r = 0.74) and are cheaper for other reasons, so this mixes the two. Holding age fixed, the marginal cost of 10,000 extra miles falls to about 390 dollars on average. This stays between 300 and 390 when we allow age to have a curved effect or add dealer and condition as explanatory variables. We control for age because the question is the seller's; for a buyer comparing car ages, mileage would be a bad control, because it's one of the ways age lowers price. Unrecorded accident history could still bias this, so we treat it as an association, not a price the seller is guaranteed."
 :::
 :::
 
@@ -376,9 +368,9 @@ State the size of the effect, how sure you are, why, and what would change your 
 
 Your own slides, in the Week 12 workshop on Friday 11th December. **8 minutes presenting, then 2 minutes of questions.**
 
-Your slides must include:
+Aim for around 4 to 5 slides. They must include:
 
-- an overview of the data
+- a quick overview of the data
 - a description of your model – what you fitted, and why
 - your key results and what they show
 - robustness and limitations – what your analysis can and can't claim
@@ -386,7 +378,7 @@ Your slides must include:
 ::: {.fragment}
 The questions check that the reasoning is yours, and give you a chance to explain things that didn't fit on a slide. The best answers go beyond the slides – for example, what would change your conclusion.
 
-Practise to time. Using the full 8 minutes well is part of the mark.
+Practise to time. Using the full 8 minutes well is part of the mark. Having too many slides won't help you.
 :::
 
 ## Submitting

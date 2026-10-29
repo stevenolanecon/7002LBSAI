@@ -201,8 +201,8 @@
 </div>
 
 </section>
-<section id="section" class="slide level2" data-background-color="#1a1a2e">
-<h2></h2>
+<section id="today" class="slide level2">
+<h2>Today</h2>
 <style>
 .reveal .big-code div.sourceCode { font-size: 1.15em !important; }
 .reveal .mid-code div.sourceCode { font-size: 0.8em !important; }
@@ -213,20 +213,13 @@
 .reveal .weak { background: #fdf0f0; border-left: 5px solid #e63946; padding: 0.6em 1.2em; border-radius: 6px; margin: 0.4em 0; font-size: 0.85em; }
 .reveal .strong { background: #eef6f0; border-left: 5px solid #2d6a4f; padding: 0.6em 1.2em; border-radius: 6px; margin: 0.4em 0; font-size: 0.85em; }
 </style>
-<div style="text-align: center; padding-top: 180px;">
-<p><span style="font-size: 2.2em; color: white;"><strong>Your portfolio</strong></span></p>
-<p><span style="font-size: 1.1em; color: #cccccc;">What you’re asked to do, how it’s marked, and what good reasoning looks like</span></p>
-</div>
-</section>
-<section id="today" class="slide level2">
-<h2>Today</h2>
 <ol type="1">
 <li>The task, the data and the deadlines</li>
-<li>What goes in your notebook, and where the words should go</li>
-<li>How it’s marked – and what “synthesis” means</li>
-<li>A worked example on data you already know: the used cars</li>
+<li>What goes in your notebook</li>
+<li>How it’s marked</li>
+<li>A worked example</li>
 <li>The presentation, submitting, and the mistakes to avoid</li>
-<li>Your questions</li>
+<li>Any questions</li>
 </ol>
 <p>The full brief and the rubric are on the Canvas assignment page. Everything here comes from those.</p>
 </section>
@@ -284,12 +277,12 @@
 </section>
 <section id="what-were-marking" class="slide level2">
 <h2>What we’re marking</h2>
-<p>We’re marking your <strong>statistical judgement</strong>: what you chose to model, why, what you checked, and how honestly you tell a decision-maker what your analysis can and can’t support.</p>
+<p>You are marked on your <strong>statistical judgement</strong>: what you chose to model, why, what you checked, and how well you communicate to a decision-maker what your analysis can and can’t support.</p>
 <div class="fragment">
 <p>We’re <strong>not</strong> marking:</p>
 <ul>
-<li><strong>Your code.</strong> Inelegant code that works loses nothing. Python skills belong to Programming for Business Analytics.</li>
-<li><strong>Whether you find “the” answer.</strong> There isn’t one. A different, well-argued model scores as well as mine would.</li>
+<li><strong>Your code.</strong> Inelegant code that works loses nothing – but clean code is still worth aiming for.</li>
+<li><strong>Whether you find “the” answer.</strong> There isn’t just one. A different, well-argued model scores as well as mine would.</li>
 <li><strong>Data cleaning.</strong> The data is already clean. You don’t need a cleaning narrative.</li>
 </ul>
 </div>
@@ -299,20 +292,20 @@
 <ul>
 <li>HR records for <strong>1,470 employees</strong> at one organisation: role, pay, working conditions, career history</li>
 <li><strong>31 variables</strong>, no missing values – the data dictionary is in the brief</li>
-<li>The outcome is <strong>Attrition</strong>: did the employee leave? Yes or No</li>
+<li>The outcome is <strong>Attrition</strong>: did the employee leave? Yes or No – a binary dependent variable.</li>
 </ul>
-<p>Load it straight into Colab – please don’t upload your own copy:</p>
+<p>Load the raw dataset straight into Colab – please don’t upload your own copy:</p>
 <div class="mid-code">
 <div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a></a>df <span class="op">=</span> pd.read_csv(<span class="st">"https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/hr_attrition.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="fragment">
-<p>The data was generated for this module, but treat it exactly like real observational business data. Just don’t present your findings as facts about a real company. When you talk about how far a result would generalise, frame it hypothetically: “if a real organisation showed this pattern…”</p>
+<p>The data was generated for this module, but treat it exactly like real observational business data.</p>
 </div>
 </section>
 <section id="you-dont-need-every-variable" class="slide level2">
 <h2>You don’t need every variable</h2>
-<p>There are 30 possible explanatory variables. You are not expected to explore or model all of them.</p>
+<p>There are 30 possible explanatory variables. You are not expected to explore or model all of them in your notebook.</p>
 <div class="fragment">
 <p>Strong submissions pick a focused set – guided by a clear question about why people might leave – explore those properly, and explain why the rest were set aside.</p>
 </div>
@@ -621,7 +614,7 @@ Delivery, time management and professionalism
 <p>To go higher, weigh a competing explanation against your own – a confounder you might have missed, a control that might be a bad one, a different specification – and argue for the position you take.</p>
 </div>
 <div class="fragment">
-<p>That’s easier to see than to describe, so here’s an example.</p>
+<p>An example should help to clarify this.</p>
 </div>
 </section>
 <section>
@@ -629,8 +622,8 @@ Delivery, time management and professionalism
 <h1>Worked example</h1>
 
 </section>
-<section id="used-cars-again" class="slide level2">
-<h2>Used cars, again</h2>
+<section id="used-cars" class="slide level2">
+<h2>Used cars</h2>
 </section>
 <section id="the-question-what-does-mileage-cost-a-seller" class="slide level2">
 <h2>The question: what does mileage cost a seller?</h2>
@@ -640,7 +633,7 @@ Delivery, time management and professionalism
 </div>
 <p>Each extra 10,000 miles goes with a price <strong>734 dollars lower</strong> (robust SE 31). R² = 0.72.</p>
 <div class="fragment">
-<p>A Level 6 write-up stops here: “mileage is significant, so lower your mileage to get a better price.”</p>
+<p>A basic write-up would stop here: “mileage is significant, so lower your mileage to get a better price.”</p>
 <p>What story is this regression telling, and what else could explain the same pattern?</p>
 </div>
 </section>
@@ -657,7 +650,7 @@ Delivery, time management and professionalism
 </section>
 <section id="but-should-age-be-controlled-for-at-all" class="slide level2">
 <h2>But should age be controlled for at all?</h2>
-<p>It depends on the question you’re answering – and saying so is the synthesis.</p>
+<p>It depends on the question you’re answering – explaining this is the synthesis.</p>
 <div class="fragment">
 <ul>
 <li><strong>Seller’s question: “what do my extra miles cost me?”</strong> Age is a confounder. Control for it.</li>
@@ -735,8 +728,8 @@ Delivery, time management and professionalism
 <div class="fragment">
 <p><strong>We can’t say:</strong></p>
 <ul>
-<li>that this is the <em>causal</em> cost of driving 10,000 miles. Accident history and servicing aren’t in the data, and high-mileage cars may differ in both</li>
-<li>that it holds beyond Camrys listed in Chicago</li>
+<li>that this is the <em>causal</em> cost of driving 10,000 miles – <strong>CAUSAL KLAXON!</strong> Accident history and servicing aren’t in the data, and high-mileage cars may differ in both</li>
+<li>that it holds beyond Camrys listed in Chicago – the external validity of the model</li>
 <li>much about condition: sellers rate it themselves, so it’s measured with noise</li>
 </ul>
 </div>
@@ -751,7 +744,7 @@ Delivery, time management and professionalism
 </div>
 <div class="fragment">
 <div class="strong">
-<p><strong>Stronger:</strong> “Mileage alone suggests 10,000 extra miles cost a seller about 730 dollars. But older cars have done more miles (r = 0.74) and are cheaper for other reasons, so this mixes the two. Holding age fixed, the cost falls to about 390 dollars, and it stays between 300 and 390 when we allow age to have a curved effect or add dealer and condition. We control for age because the question is the seller’s; for a buyer comparing car ages, mileage would be a bad control. Unrecorded accident history could still bias this, so we treat it as an association, not a price the seller is guaranteed.”</p>
+<p><strong>Stronger:</strong> “Mileage alone suggests 10,000 extra miles cost a seller about 730 dollars. But older cars have done more miles (r = 0.74) and are cheaper for other reasons, so this mixes the two. Holding age fixed, the marginal cost of 10,000 extra miles falls to about 390 dollars on average. This stays between 300 and 390 when we allow age to have a curved effect or add dealer and condition as explanatory variables. We control for age because the question is the seller’s; for a buyer comparing car ages, mileage would be a bad control, because it’s one of the ways age lowers price. Unrecorded accident history could still bias this, so we treat it as an association, not a price the seller is guaranteed.”</p>
 </div>
 </div>
 <div class="fragment">
@@ -781,16 +774,16 @@ Delivery, time management and professionalism
 <section id="the-presentation" class="slide level2">
 <h2>The presentation</h2>
 <p>Your own slides, in the Week 12 workshop on Friday 11th December. <strong>8 minutes presenting, then 2 minutes of questions.</strong></p>
-<p>Your slides must include:</p>
+<p>Aim for around 4 to 5 slides. They must include:</p>
 <ul>
-<li>an overview of the data</li>
+<li>a quick overview of the data</li>
 <li>a description of your model – what you fitted, and why</li>
 <li>your key results and what they show</li>
 <li>robustness and limitations – what your analysis can and can’t claim</li>
 </ul>
 <div class="fragment">
 <p>The questions check that the reasoning is yours, and give you a chance to explain things that didn’t fit on a slide. The best answers go beyond the slides – for example, what would change your conclusion.</p>
-<p>Practise to time. Using the full 8 minutes well is part of the mark.</p>
+<p>Practise to time. Using the full 8 minutes well is part of the mark. Having too many slides won’t help you.</p>
 </div>
 </section>
 <section id="submitting" class="slide level2">
