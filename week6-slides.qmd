@@ -233,18 +233,29 @@ hotel_scatter = _hb.assign(group=np.where(_hb["four"] == 1, "4 stars", "3 stars"
 # NaN is not valid JSON — clean before ojs_define
 student_summary_clean = student_summary.astype(object).where(student_summary.notna(), None)
 
-# Student-facing redacted deck: send only what the remaining slides display.
-# Task answers (OVB, ratings, spline test, gender gap, interaction output) are
-# computed above but deliberately NOT passed to the page, so they can't be read
-# from the HTML source.
 ojs_define(
-    student_summary = student_summary_clean.to_dict(orient='records'),
-    task6           = {"f_p": task6["f_p"], "n": task6["n"]},
-    hotel_f_text    = hotel_f_text,
-    class_bands     = [{"x": r["x"], "fit": r["fit"], "group": r["group"]} for r in class_bands],
-    hotel_bands     = hotel_bands,
-    hotel_inter     = hotel_inter,
-    hotel_scatter   = hotel_scatter,
+    student_summary      = student_summary_clean.to_dict(orient='records'),
+    task6                 = task6,
+    beer                  = beer,
+    ratings               = ratings,
+    hotel_f_text          = hotel_f_text,
+    spline_f              = spline_f,
+    reading_summary_text = reading_summary_text,
+    interaction_summary_text = interaction_summary_text,
+    ovb_output_text       = ovb_output_text,
+    cat_summary_text      = cat_summary_text,
+    results_markdown      = results_markdown,
+    booktabs_rows         = booktabs_rows,
+    booktabs_n            = booktabs_n,
+    booktabs_r2           = booktabs_r2,
+    gap_rows               = gap_rows,
+    gap_n                   = gap_n,
+    gap_inter_rows          = gap_inter_rows,
+    gap_age_lines           = gap_age_lines,
+    class_bands            = class_bands,
+    hotel_bands            = hotel_bands,
+    hotel_inter            = hotel_inter,
+    hotel_scatter          = hotel_scatter,
 )
 ```
 
@@ -425,8 +436,27 @@ sales = -3*our_price + 3*competitor_price + rng.normal(0, 2.5, 300)
 
 ## What you should have found: OVB
 
-::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
-Answer revealed in the workshop.
+```{ojs}
+{
+  const row = (lab, a, b) => `<tr style="border-bottom:1px solid #ddd;"><td style="padding:6px 20px;text-align:left;">${lab}</td><td style="padding:6px 20px;">${a}</td><td style="padding:6px 20px;">${b}</td></tr>`
+  const c = beer.c08, z = beer.c0
+  return html`<table style="margin:0 auto;font-family:sans-serif;font-size:1em;border-collapse:collapse;text-align:center;">
+    <caption class="visually-hidden">OVB simulation results with correlated and uncorrelated prices</caption>
+    <tr style="border-bottom:2px solid #1a1a2e;"><th scope="col" style="padding:6px 20px;text-align:left;"></th><th scope="col" style="padding:6px 20px;">Prices correlated (0.8)</th><th scope="col" style="padding:6px 20px;">Not correlated (0)</th></tr>
+    ${row("β̂ (simple: our price only)", c.beta, z.beta)}
+    ${row("β̂₁ (multiple)", c.beta1, z.beta1)}
+    ${row("β̂₂ (competitor price)", c.beta2, z.beta2)}
+    ${row("δ̂ (competitor on our price)", c.delta, z.delta)}
+    ${row("β̂ − β̂₁", (c.beta - c.beta1).toFixed(3), (z.beta - z.beta1).toFixed(3))}
+    ${row("δ̂ × β̂₂", (c.delta * c.beta2).toFixed(3), (z.delta * z.beta2).toFixed(3))}
+  </table>`
+}
+```
+
+::: {.fragment}
+```{ojs}
+html`<p>With correlated prices, the simple regression says our price barely matters (β̂ = ${beer.c08.beta}), when the truth is −3. It's absorbing the competitor's effect through δ. The formula holds exactly. Set the correlation to 0 and δ̂ is close to zero, so the bias almost disappears: the simple and multiple slopes agree.</p>`
+```
 :::
 
 ## Language: conditioning, controlling, confounding
@@ -454,9 +484,23 @@ We'll compare real answers together after.
 
 ## What you should have found
 
-::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
-Answer revealed in the workshop.
-:::
+```{.python}
+simple = smf.ols('mean_rt ~ finger_mm', data=student_summary).fit(cov_type='HC1')
+multi  = smf.ols('mean_rt ~ finger_mm + device + caffeine', data=student_summary).fit(cov_type='HC1')
+
+print(simple.params.round(3))
+print(multi.params.round(3))
+```
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.55em;line-height:1.4;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">${ovb_output_text}</pre>`
+```
+
+```{ojs}
+html`<div class="instructions-box"><p style="margin:0;">finger_mm goes from <strong>${task6.b_simple}</strong> (alone) to <strong>${task6.b_multi}</strong> once device and caffeine are added. Did your models agree? What would a big move tell you – and what does almost no movement tell you?</p><p style="margin:8px 0 0;font-size:0.85em;">Only ${task6.caf_yes} of our ${task6.n} students had caffeine, and just ${task6.caf_yes_phone} of those used a phone, so don't read much into the caffeine coefficient itself.</p></div>`
+```
 
 ---
 
@@ -687,9 +731,11 @@ model = smf.ols('mean_rt ~ finger_mm + device + caffeine', data=student_summary)
 print(model.summary())
 ```
 
-::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
-Answer revealed in the workshop.
-:::
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.38em;line-height:1.25;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:6px 14px;overflow-x:auto;white-space:pre;">${reading_summary_text}</pre>`
+```
 
 ```{ojs}
 html`<div class="instructions-box"><code>Prob (F-statistic) = ${task6.f_p}</code> – we can't reject that all three slopes are jointly zero. With one row per student we have only ${task6.n} observations, so there's very little to go on.</div>`
@@ -726,8 +772,10 @@ model.f_test('beyond_1 = 0, beyond_4 = 0')
 Then test `beyond_4` on its own. How does that fit with the R² from Week 5?
 :::
 
-::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
-Answer revealed in the workshop.
+::: {.fragment}
+```{ojs}
+html`<p style="font-size:0.95em;">Both spline terms together: F = <strong>${spline_f.f}</strong>, p < 0.001. The bends matter: price doesn't fall at the same rate everywhere. <code>beyond_4</code> alone: F = ${spline_f.f4}, p = ${spline_f.p4}, so it's also significant. Yet adding it only lifts R² from ${spline_f.r2_1} to ${spline_f.r2_14}. Statistically significant isn't the same as worth the extra complexity.</p>`
+```
 :::
 
 ---
@@ -785,8 +833,20 @@ Source: Békés & Kézdi (2021), Ch. 10. Data: `cps-earnings`, osf.io/g8p9j, 201
 
 ## What you should have found: the gender pay gap
 
-::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
-Answer revealed in the workshop.
+```{ojs}
+{
+  return html`<table style="margin:0 auto;font-family:sans-serif;font-size:1.1em;border-collapse:collapse;">
+    <tr style="border-bottom:2px solid #1a1a2e;">
+      <th style="padding:6px 22px;text-align:left;">Variable</th><th style="padding:6px 22px;">(1)</th><th style="padding:6px 22px;">(2), ref = MA</th><th style="padding:6px 22px;">(3), ref = PhD</th>
+    </tr>
+    ${gap_rows.map(d => `<tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 22px;">${d.variable}</td><td style="padding:5px 22px;text-align:center;">${d.m1}</td><td style="padding:5px 22px;text-align:center;">${d.m2}</td><td style="padding:5px 22px;text-align:center;">${d.m3}</td></tr>`).join('')}
+  </table>
+  <p style="font-family:sans-serif;font-size:0.9em;text-align:center;color:#666;margin-top:8px;">n = ${gap_n}</p>`
+}
+```
+
+::: {.fragment}
+The female coefficient is −0.195 alone and −0.182 once education is added, whichever reference category we use: women earn roughly 17% less than men with the same degree, on average. The education coefficients do change with the reference, because each is a difference from whichever category was left out.
 :::
 
 ---
@@ -874,9 +934,20 @@ We'll go through real answers together after.
 
 ## What you should have found
 
-::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
-Answer revealed in the workshop.
-:::
+```{.python}
+model = smf.ols('mean_rt ~ finger_mm * device', data=student_summary).fit(cov_type='HC1')
+# equivalent to: finger_mm + device + finger_mm:device
+```
+
+```{ojs}
+html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.42em;line-height:1.3;
+                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
+                  padding:8px 14px;overflow-x:auto;white-space:pre;">${interaction_summary_text}</pre>`
+```
+
+```{ojs}
+html`<div class="instructions-box">Interaction term (<code>finger_mm:device[T.Phone]</code>) = ${task6.inter}, p = ${task6.inter_p} – not significant at 5%. With ${task6.n} students, that's the honest answer before we even look at a picture.</div>`
+```
 
 ## The figure
 
@@ -898,9 +969,23 @@ class_chart = (withBands) => {
 }
 ```
 
+::: {style="position: relative;"}
 ```{ojs}
 class_chart(false)
 ```
+
+::: {.fragment fragment-index=1 style="position: absolute; top: 0; left: 0; width: 100%; background: white;"}
+```{ojs}
+class_chart(true)
+```
+:::
+:::
+
+::: {.fragment fragment-index=1}
+```{ojs}
+html`<div class="instructions-box">The two lines look different. Add the 95% confidence bands and they overlap along almost the whole range: with ${task6.n} students, we can't tell the two slopes apart. That's p = ${task6.inter_p} in a picture.</div>`
+```
+:::
 
 ## When the interaction does matter
 

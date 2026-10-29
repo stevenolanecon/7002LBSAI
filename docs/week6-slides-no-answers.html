@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/tabby.min.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.7.32">
+
+  <title>7002LBSAI – Multiple Regression</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="site_libs/revealjs/dist/theme/quarto-2c1b5f745a11cfad616ebade4a4a7d24.css">
+  <link href="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+  <link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+  
+  <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="styles-slides.css?v=20260914-2">
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Multiple Regression</h1>
+  <p class="subtitle">7002LBSAI Research Methods in Analytics — Week 6</p>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section class="slide level2">
+
+<div id="350c95f8" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<script type="ojs-define">{"contents": [{"name": "student_summary", "value": [{"student_name": "Student 1", "mean_rt": 1601.1, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 10", "mean_rt": 1867.3, "device": "Laptop", "caffeine": "No", "finger_mm": 82.0}, {"student_name": "Student 11", "mean_rt": 1353.8, "device": "Laptop", "caffeine": "Yes", "finger_mm": 80.0}, {"student_name": "Student 12", "mean_rt": 497.3, "device": "Phone", "caffeine": "No", "finger_mm": 94.0}, {"student_name": "Student 13", "mean_rt": 1314.5, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 14", "mean_rt": 1970.3, "device": "Laptop", "caffeine": "No", "finger_mm": 90.0}, {"student_name": "Student 15", "mean_rt": 1101.1, "device": "Laptop", "caffeine": "No", "finger_mm": 100.0}, {"student_name": "Student 16", "mean_rt": 1260.0, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 17", "mean_rt": 466.9, "device": "Phone", "caffeine": "Yes", "finger_mm": 70.0}, {"student_name": "Student 18", "mean_rt": 435.4, "device": "Phone", "caffeine": "No", "finger_mm": 82.0}, {"student_name": "Student 19", "mean_rt": 283.4, "device": "Laptop", "caffeine": "No", "finger_mm": 74.0}, {"student_name": "Student 2", "mean_rt": 419.6, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 20", "mean_rt": 2339.3, "device": "Laptop", "caffeine": "No", "finger_mm": 70.0}, {"student_name": "Student 21", "mean_rt": 386.1, "device": "Laptop", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 22", "mean_rt": 373.5, "device": "Laptop", "caffeine": "No", "finger_mm": 76.0}, {"student_name": "Student 23", "mean_rt": 3253.4, "device": "Phone", "caffeine": "Yes", "finger_mm": 70.0}, {"student_name": "Student 24", "mean_rt": 528.4, "device": "Laptop", "caffeine": "Yes", "finger_mm": 81.0}, {"student_name": "Student 3", "mean_rt": 406.3, "device": "Laptop", "caffeine": "Yes", "finger_mm": 72.0}, {"student_name": "Student 4", "mean_rt": 416.3, "device": "Phone", "caffeine": "No", "finger_mm": 80.0}, {"student_name": "Student 5", "mean_rt": 1081.1, "device": "Laptop", "caffeine": "No", "finger_mm": 69.0}, {"student_name": "Student 6", "mean_rt": 3135.4, "device": "Laptop", "caffeine": "No", "finger_mm": 95.0}, {"student_name": "Student 7", "mean_rt": 370.1, "device": "Laptop", "caffeine": "No", "finger_mm": 71.0}, {"student_name": "Student 8", "mean_rt": 395.2, "device": "Phone", "caffeine": "No", "finger_mm": 79.0}, {"student_name": "Student 9", "mean_rt": 426.2, "device": "Phone", "caffeine": "Yes", "finger_mm": 68.0}]}, {"name": "task6", "value": {"f_p": 0.792, "n": 24}}, {"name": "hotel_f_text", "value": "                            OLS Regression Results                            \n==============================================================================\nDep. Variable:               ln_price   R-squared:                       0.417\nModel:                            OLS   Adj. R-squared:                  0.409\nMethod:                 Least Squares   F-statistic:                     34.38\nDate:                Thu, 29 Oct 2026   Prob (F-statistic):           5.19e-18\nTime:                        17:12:12   Log-Likelihood:                -12.017\nNo. Observations:                 207   AIC:                             32.03\nDf Residuals:                     203   BIC:                             45.37\nDf Model:                           3                                         \nCovariance Type:                  HC1                                         \n==============================================================================\n                 coef    std err          z      P>|z|      [0.025      0.975]\n------------------------------------------------------------------------------\nIntercept      2.9769      0.257     11.592      0.000       2.474       3.480\ndistance      -0.0925      0.021     -4.387      0.000      -0.134      -0.051\nstars          0.1734      0.041      4.223      0.000       0.093       0.254\nrating         0.2924      0.063      4.644      0.000       0.169       0.416\n=============================================================================="}, {"name": "class_bands", "value": [{"x": 69.0, "fit": 677.3577090593394, "group": "Laptop"}, {"x": 69.7948717948718, "fit": 710.5638244886281, "group": "Laptop"}, {"x": 70.58974358974359, "fit": 743.769939917917, "group": "Laptop"}, {"x": 71.38461538461539, "fit": 776.9760553472058, "group": "Laptop"}, {"x": 72.17948717948718, "fit": 810.1821707764946, "group": "Laptop"}, {"x": 72.97435897435898, "fit": 843.3882862057834, "group": "Laptop"}, {"x": 73.76923076923077, "fit": 876.5944016350721, "group": "Laptop"}, {"x": 74.56410256410257, "fit": 909.800517064361, "group": "Laptop"}, {"x": 75.35897435897436, "fit": 943.0066324936498, "group": "Laptop"}, {"x": 76.15384615384616, "fit": 976.2127479229385, "group": "Laptop"}, {"x": 76.94871794871794, "fit": 1009.4188633522268, "group": "Laptop"}, {"x": 77.74358974358974, "fit": 1042.6249787815157, "group": "Laptop"}, {"x": 78.53846153846153, "fit": 1075.8310942108044, "group": "Laptop"}, {"x": 79.33333333333333, "fit": 1109.0372096400931, "group": "Laptop"}, {"x": 80.12820512820512, "fit": 1142.243325069382, "group": "Laptop"}, {"x": 80.92307692307692, "fit": 1175.4494404986708, "group": "Laptop"}, {"x": 81.71794871794872, "fit": 1208.6555559279595, "group": "Laptop"}, {"x": 82.51282051282051, "fit": 1241.8616713572485, "group": "Laptop"}, {"x": 83.3076923076923, "fit": 1275.0677867865372, "group": "Laptop"}, {"x": 84.1025641025641, "fit": 1308.273902215826, "group": "Laptop"}, {"x": 84.8974358974359, "fit": 1341.480017645115, "group": "Laptop"}, {"x": 85.6923076923077, "fit": 1374.6861330744036, "group": "Laptop"}, {"x": 86.48717948717949, "fit": 1407.8922485036924, "group": "Laptop"}, {"x": 87.28205128205128, "fit": 1441.098363932981, "group": "Laptop"}, {"x": 88.07692307692308, "fit": 1474.30447936227, "group": "Laptop"}, {"x": 88.87179487179488, "fit": 1507.5105947915588, "group": "Laptop"}, {"x": 89.66666666666666, "fit": 1540.716710220847, "group": "Laptop"}, {"x": 90.46153846153845, "fit": 1573.9228256501358, "group": "Laptop"}, {"x": 91.25641025641025, "fit": 1607.1289410794245, "group": "Laptop"}, {"x": 92.05128205128204, "fit": 1640.3350565087135, "group": "Laptop"}, {"x": 92.84615384615384, "fit": 1673.5411719380022, "group": "Laptop"}, {"x": 93.64102564102564, "fit": 1706.747287367291, "group": "Laptop"}, {"x": 94.43589743589743, "fit": 1739.95340279658, "group": "Laptop"}, {"x": 95.23076923076923, "fit": 1773.1595182258686, "group": "Laptop"}, {"x": 96.02564102564102, "fit": 1806.3656336551574, "group": "Laptop"}, {"x": 96.82051282051282, "fit": 1839.5717490844463, "group": "Laptop"}, {"x": 97.61538461538461, "fit": 1872.777864513735, "group": "Laptop"}, {"x": 98.41025641025641, "fit": 1905.9839799430238, "group": "Laptop"}, {"x": 99.2051282051282, "fit": 1939.1900953723127, "group": "Laptop"}, {"x": 100.0, "fit": 1972.3962108016015, "group": "Laptop"}, {"x": 68.0, "fit": 1304.3950380743456, "group": "Phone"}, {"x": 68.66666666666667, "fit": 1279.5565544912815, "group": "Phone"}, {"x": 69.33333333333333, "fit": 1254.7180709082177, "group": "Phone"}, {"x": 70.0, "fit": 1229.8795873251527, "group": "Phone"}, {"x": 70.66666666666667, "fit": 1205.0411037420886, "group": "Phone"}, {"x": 71.33333333333333, "fit": 1180.2026201590247, "group": "Phone"}, {"x": 72.0, "fit": 1155.36413657596, "group": "Phone"}, {"x": 72.66666666666667, "fit": 1130.5256529928959, "group": "Phone"}, {"x": 73.33333333333333, "fit": 1105.687169409832, "group": "Phone"}, {"x": 74.0, "fit": 1080.848685826767, "group": "Phone"}, {"x": 74.66666666666667, "fit": 1056.010202243703, "group": "Phone"}, {"x": 75.33333333333333, "fit": 1031.171718660639, "group": "Phone"}, {"x": 76.0, "fit": 1006.333235077574, "group": "Phone"}, {"x": 76.66666666666667, "fit": 981.4947514945101, "group": "Phone"}, {"x": 77.33333333333333, "fit": 956.6562679114462, "group": "Phone"}, {"x": 78.0, "fit": 931.8177843283812, "group": "Phone"}, {"x": 78.66666666666667, "fit": 906.9793007453172, "group": "Phone"}, {"x": 79.33333333333333, "fit": 882.1408171622534, "group": "Phone"}, {"x": 80.0, "fit": 857.3023335791884, "group": "Phone"}, {"x": 80.66666666666667, "fit": 832.4638499961243, "group": "Phone"}, {"x": 81.33333333333333, "fit": 807.6253664130604, "group": "Phone"}, {"x": 82.0, "fit": 782.7868828299955, "group": "Phone"}, {"x": 82.66666666666667, "fit": 757.9483992469314, "group": "Phone"}, {"x": 83.33333333333333, "fit": 733.1099156638676, "group": "Phone"}, {"x": 84.0, "fit": 708.2714320808027, "group": "Phone"}, {"x": 84.66666666666666, "fit": 683.4329484977388, "group": "Phone"}, {"x": 85.33333333333333, "fit": 658.5944649146747, "group": "Phone"}, {"x": 86.0, "fit": 633.7559813316097, "group": "Phone"}, {"x": 86.66666666666666, "fit": 608.9174977485459, "group": "Phone"}, {"x": 87.33333333333333, "fit": 584.0790141654819, "group": "Phone"}, {"x": 88.0, "fit": 559.2405305824169, "group": "Phone"}, {"x": 88.66666666666666, "fit": 534.402046999353, "group": "Phone"}, {"x": 89.33333333333333, "fit": 509.563563416289, "group": "Phone"}, {"x": 90.0, "fit": 484.7250798332241, "group": "Phone"}, {"x": 90.66666666666666, "fit": 459.8865962501602, "group": "Phone"}, {"x": 91.33333333333333, "fit": 435.0481126670961, "group": "Phone"}, {"x": 92.0, "fit": 410.2096290840312, "group": "Phone"}, {"x": 92.66666666666666, "fit": 385.3711455009673, "group": "Phone"}, {"x": 93.33333333333333, "fit": 360.5326619179033, "group": "Phone"}, {"x": 94.0, "fit": 335.6941783348383, "group": "Phone"}]}, {"name": "hotel_bands", "value": [{"x": 0.2, "fit": 102.60884576313585, "lo": 91.51719032184772, "hi": 113.70050120442397, "group": "3 stars"}, {"x": 0.36410256410256414, "fit": 101.68251520881188, "lo": 91.24538578594017, "hi": 112.11964463168358, "group": "3 stars"}, {"x": 0.5282051282051282, "fit": 100.75618465448791, "lo": 90.93256672778183, "hi": 110.57980258119399, "group": "3 stars"}, {"x": 0.6923076923076923, "fit": 99.82985410016396, "lo": 90.57057679744553, "hi": 109.08913140288239, "group": "3 stars"}, {"x": 0.8564102564102565, "fit": 98.90352354583999, "lo": 90.14990077661004, "hi": 107.65714631506994, "group": "3 stars"}, {"x": 1.0205128205128204, "fit": 97.97719299151602, "lo": 89.65982829938342, "hi": 106.29455768364862, "group": "3 stars"}, {"x": 1.1846153846153846, "fit": 97.05086243719207, "lo": 89.08894384451003, "hi": 105.0127810298741, "group": "3 stars"}, {"x": 1.3487179487179486, "fit": 96.1245318828681, "lo": 88.42604577521897, "hi": 103.82301799051723, "group": "3 stars"}, {"x": 1.5128205128205128, "fit": 95.19820132854413, "lo": 87.66147939912109, "hi": 102.73492325796717, "group": "3 stars"}, {"x": 1.676923076923077, "fit": 94.27187077422018, "lo": 86.78864854366773, "hi": 101.75509300477262, "group": "3 stars"}, {"x": 1.841025641025641, "fit": 93.34554021989621, "lo": 85.80524838994485, "hi": 100.88583204984756, "group": "3 stars"}, {"x": 2.005128205128205, "fit": 92.41920966557224, "lo": 84.71373529805683, "hi": 100.12468403308765, "group": "3 stars"}, {"x": 2.1692307692307695, "fit": 91.49287911124827, "lo": 83.52082680367705, "hi": 99.46493141881949, "group": "3 stars"}, {"x": 2.3333333333333335, "fit": 90.56654855692432, "lo": 82.23625149262493, "hi": 98.8968456212237, "group": "3 stars"}, {"x": 2.4974358974358974, "fit": 89.64021800260035, "lo": 80.87123694532197, "hi": 98.40919905987873, "group": "3 stars"}, {"x": 2.661538461538462, "fit": 88.71388744827638, "lo": 79.43718777625142, "hi": 97.99058712030134, "group": "3 stars"}, {"x": 2.825641025641026, "fit": 87.78755689395241, "lo": 77.94478120588568, "hi": 97.63033258201915, "group": "3 stars"}, {"x": 2.98974358974359, "fit": 86.86122633962846, "lo": 76.40348958137832, "hi": 97.3189630978786, "group": "3 stars"}, {"x": 3.153846153846154, "fit": 85.93489578530449, "lo": 74.82142506807473, "hi": 97.04836650253425, "group": "3 stars"}, {"x": 3.317948717948718, "fit": 85.00856523098052, "lo": 73.20538120804844, "hi": 96.81174925391261, "group": "3 stars"}, {"x": 3.482051282051282, "fit": 84.08223467665657, "lo": 71.56097183322564, "hi": 96.6034975200875, "group": "3 stars"}, {"x": 3.6461538461538465, "fit": 83.1559041223326, "lo": 69.89280336391349, "hi": 96.41900488075171, "group": "3 stars"}, {"x": 3.8102564102564105, "fit": 82.22957356800863, "lo": 68.20464545124882, "hi": 96.25450168476844, "group": "3 stars"}, {"x": 3.9743589743589745, "fit": 81.30324301368468, "lo": 66.49958386970305, "hi": 96.10690215766631, "group": "3 stars"}, {"x": 4.138461538461539, "fit": 80.37691245936071, "lo": 64.7801503645953, "hi": 95.97367455412612, "group": "3 stars"}, {"x": 4.302564102564102, "fit": 79.45058190503674, "lo": 63.048429605754805, "hi": 95.85273420431868, "group": "3 stars"}, {"x": 4.466666666666667, "fit": 78.52425135071277, "lo": 61.3061457442421, "hi": 95.74235695718345, "group": "3 stars"}, {"x": 4.630769230769231, "fit": 77.59792079638882, "lo": 59.554731784439646, "hi": 95.641109808338, "group": "3 stars"}, {"x": 4.794871794871795, "fit": 76.67159024206485, "lo": 57.79538492465854, "hi": 95.54779555947115, "group": "3 stars"}, {"x": 4.958974358974359, "fit": 75.74525968774088, "lo": 56.02911064520618, "hi": 95.4614087302756, "group": "3 stars"}, {"x": 5.1230769230769235, "fit": 74.81892913341692, "lo": 54.25675786264362, "hi": 95.38110040419022, "group": "3 stars"}, {"x": 5.287179487179487, "fit": 73.89259857909296, "lo": 52.47904702666719, "hi": 95.30615013151873, "group": "3 stars"}, {"x": 5.4512820512820515, "fit": 72.966268024769, "lo": 50.69659265158975, "hi": 95.23594339794823, "group": "3 stars"}, {"x": 5.615384615384616, "fit": 72.03993747044503, "lo": 48.909921456966245, "hi": 95.1699534839238, "group": "3 stars"}, {"x": 5.779487179487179, "fit": 71.11360691612107, "lo": 47.11948703729674, "hi": 95.10772679494539, "group": "3 stars"}, {"x": 5.943589743589744, "fit": 70.1872763617971, "lo": 45.32568177992024, "hi": 95.04887094367396, "group": "3 stars"}, {"x": 6.107692307692308, "fit": 69.26094580747314, "lo": 43.52884659333138, "hi": 94.99304502161489, "group": "3 stars"}, {"x": 6.271794871794872, "fit": 68.33461525314918, "lo": 41.72927888621203, "hi": 94.93995162008633, "group": "3 stars"}, {"x": 6.435897435897436, "fit": 67.40828469882521, "lo": 39.92723914288045, "hi": 94.88933025476997, "group": "3 stars"}, {"x": 6.6, "fit": 66.48195414450124, "lo": 38.1229563674894, "hi": 94.8409519215131, "group": "3 stars"}, {"x": 0.0, "fit": 149.9305101244147, "lo": 139.38598995897615, "hi": 160.47503028985324, "group": "4 stars"}, {"x": 0.12307692307692307, "fit": 147.5042323359024, "lo": 137.54569228019693, "hi": 157.46277239160787, "group": "4 stars"}, {"x": 0.24615384615384614, "fit": 145.07795454739016, "lo": 135.68047005641296, "hi": 154.47543903836737, "group": "4 stars"}, {"x": 0.3692307692307692, "fit": 142.65167675887787, "lo": 133.7855902676158, "hi": 151.51776325013995, "group": "4 stars"}, {"x": 0.4923076923076923, "fit": 140.2253989703656, "lo": 131.8554022691572, "hi": 148.595395671574, "group": "4 stars"}, {"x": 0.6153846153846153, "fit": 137.79912118185334, "lo": 129.88326493750074, "hi": 145.71497742620593, "group": "4 stars"}, {"x": 0.7384615384615384, "fit": 135.37284339334104, "lo": 127.86156550075918, "hi": 142.8841212859229, "group": "4 stars"}, {"x": 0.8615384615384615, "fit": 132.94656560482878, "lo": 125.78190292796545, "hi": 140.11122828169212, "group": "4 stars"}, {"x": 0.9846153846153846, "fit": 130.5202878163165, "lo": 123.6355171474994, "hi": 137.40505848513362, "group": "4 stars"}, {"x": 1.1076923076923075, "fit": 128.09401002780422, "lo": 121.41401577283011, "hi": 134.77400428277832, "group": "4 stars"}, {"x": 1.2307692307692306, "fit": 125.66773223929196, "lo": 119.11035780083824, "hi": 132.22510667774569, "group": "4 stars"}, {"x": 1.3538461538461537, "fit": 123.24145445077967, "lo": 116.71990739498057, "hi": 129.76300150657877, "group": "4 stars"}, {"x": 1.4769230769230768, "fit": 120.8151766622674, "lo": 114.24124536727852, "hi": 127.38910795725629, "group": "4 stars"}, {"x": 1.5999999999999999, "fit": 118.38889887375514, "lo": 111.6764366178625, "hi": 125.10136112964777, "group": "4 stars"}, {"x": 1.723076923076923, "fit": 115.96262108524284, "lo": 109.030643979276, "hi": 122.8945981912097, "group": "4 stars"}, {"x": 1.846153846153846, "fit": 113.53634329673058, "lo": 106.31124510682127, "hi": 120.76144148663988, "group": "4 stars"}, {"x": 1.9692307692307691, "fit": 111.11006550821831, "lo": 103.52677062371532, "hi": 118.6933603927213, "group": "4 stars"}, {"x": 2.092307692307692, "fit": 108.68378771970602, "lo": 100.68595932994019, "hi": 116.68161610947185, "group": "4 stars"}, {"x": 2.215384615384615, "fit": 106.25750993119378, "lo": 97.79708814535614, "hi": 114.71793171703142, "group": "4 stars"}, {"x": 2.338461538461538, "fit": 103.83123214268149, "lo": 94.86759477653797, "hi": 112.794869508825, "group": "4 stars"}, {"x": 2.4615384615384612, "fit": 101.4049543541692, "lo": 91.90393161635359, "hi": 110.90597709198482, "group": "4 stars"}, {"x": 2.5846153846153843, "fit": 98.97867656565694, "lo": 88.91156916121496, "hi": 109.04578397009892, "group": "4 stars"}, {"x": 2.7076923076923074, "fit": 96.55239877714465, "lo": 85.89507969043392, "hi": 107.20971786385537, "group": "4 stars"}, {"x": 2.8307692307692305, "fit": 94.12612098863238, "lo": 82.85825389078803, "hi": 105.39398808647672, "group": "4 stars"}, {"x": 2.9538461538461536, "fit": 91.69984320012011, "lo": 79.80422266360692, "hi": 103.5954637366333, "group": "4 stars"}, {"x": 3.0769230769230766, "fit": 89.27356541160782, "lo": 76.73557007112127, "hi": 101.81156075209437, "group": "4 stars"}, {"x": 3.1999999999999997, "fit": 86.84728762309555, "lo": 73.6544317320185, "hi": 100.04014351417261, "group": "4 stars"}, {"x": 3.323076923076923, "fit": 84.42100983458329, "lo": 70.5625775219908, "hi": 98.27944214717577, "group": "4 stars"}, {"x": 3.446153846153846, "fit": 81.994732046071, "lo": 67.46147962419361, "hi": 96.52798446794837, "group": "4 stars"}, {"x": 3.569230769230769, "fit": 79.56845425755876, "lo": 64.3523678373054, "hi": 94.78454067781212, "group": "4 stars"}, {"x": 3.692307692307692, "fit": 77.14217646904645, "lo": 61.23627422696821, "hi": 93.04807871112467, "group": "4 stars"}, {"x": 3.815384615384615, "fit": 74.71589868053418, "lo": 58.11406906703084, "hi": 91.31772829403752, "group": "4 stars"}, {"x": 3.9384615384615382, "fit": 72.2896208920219, "lo": 54.98648975652043, "hi": 89.59275202752337, "group": "4 stars"}, {"x": 4.061538461538461, "fit": 69.86334310350964, "lo": 51.85416411433191, "hi": 87.87252209268736, "group": "4 stars"}, {"x": 4.184615384615384, "fit": 67.43706531499737, "lo": 48.71762919017145, "hi": 86.15650143982329, "group": "4 stars"}, {"x": 4.3076923076923075, "fit": 65.01078752648509, "lo": 45.57734650349714, "hi": 84.44422854947304, "group": "4 stars"}, {"x": 4.43076923076923, "fit": 62.584509737972816, "lo": 42.43371443476504, "hi": 82.7353050411806, "group": "4 stars"}, {"x": 4.553846153846154, "fit": 60.15823194946053, "lo": 39.28707834203078, "hi": 81.02938555689028, "group": "4 stars"}, {"x": 4.676923076923076, "fit": 57.73195416094826, "lo": 36.13773885560802, "hi": 79.3261694662885, "group": "4 stars"}, {"x": 4.8, "fit": 55.305676372435975, "lo": 32.985958708514445, "hi": 77.6253940363575, "group": "4 stars"}]}, {"name": "hotel_inter", "value": {"b3": -5.6, "b4": -19.7, "inter": -14.1, "p": 0.001, "n3": 96, "n4": 111}}, {"name": "hotel_scatter", "value": [{"distance": 1.7, "price": 81, "group": "4 stars"}, {"distance": 1.4, "price": 85, "group": "4 stars"}, {"distance": 1.7, "price": 83, "group": "3 stars"}, {"distance": 1.2, "price": 82, "group": "4 stars"}, {"distance": 0.9, "price": 103, "group": "4 stars"}, {"distance": 1.0, "price": 150, "group": "4 stars"}, {"distance": 1.1, "price": 60, "group": "4 stars"}, {"distance": 0.8, "price": 128, "group": "4 stars"}, {"distance": 1.7, "price": 85, "group": "4 stars"}, {"distance": 0.9, "price": 77, "group": "3 stars"}, {"distance": 0.8, "price": 78, "group": "3 stars"}, {"distance": 0.9, "price": 78, "group": "3 stars"}, {"distance": 4.2, "price": 77, "group": "3 stars"}, {"distance": 3.9, "price": 77, "group": "3 stars"}, {"distance": 3.6, "price": 95, "group": "4 stars"}, {"distance": 2.9, "price": 208, "group": "4 stars"}, {"distance": 3.4, "price": 87, "group": "3 stars"}, {"distance": 2.0, "price": 54, "group": "3 stars"}, {"distance": 1.7, "price": 99, "group": "3 stars"}, {"distance": 1.7, "price": 75, "group": "3 stars"}, {"distance": 2.1, "price": 76, "group": "3 stars"}, {"distance": 1.9, "price": 91, "group": "4 stars"}, {"distance": 1.7, "price": 71, "group": "4 stars"}, {"distance": 0.2, "price": 113, "group": "3 stars"}, {"distance": 0.3, "price": 156, "group": "3 stars"}, {"distance": 0.3, "price": 133, "group": "4 stars"}, {"distance": 0.5, "price": 123, "group": "4 stars"}, {"distance": 0.3, "price": 219, "group": "4 stars"}, {"distance": 0.3, "price": 152, "group": "4 stars"}, {"distance": 0.1, "price": 115, "group": "4 stars"}, {"distance": 0.2, "price": 138, "group": "4 stars"}, {"distance": 0.1, "price": 146, "group": "4 stars"}, {"distance": 0.5, "price": 98, "group": "3 stars"}, {"distance": 0.3, "price": 121, "group": "3 stars"}, {"distance": 0.2, "price": 149, "group": "4 stars"}, {"distance": 0.3, "price": 120, "group": "3 stars"}, {"distance": 0.4, "price": 157, "group": "3 stars"}, {"distance": 0.2, "price": 112, "group": "4 stars"}, {"distance": 0.3, "price": 138, "group": "4 stars"}, {"distance": 0.3, "price": 158, "group": "3 stars"}, {"distance": 0.2, "price": 218, "group": "4 stars"}, {"distance": 0.1, "price": 218, "group": "4 stars"}, {"distance": 0.3, "price": 135, "group": "3 stars"}, {"distance": 0.5, "price": 179, "group": "4 stars"}, {"distance": 0.7, "price": 157, "group": "4 stars"}, {"distance": 0.3, "price": 146, "group": "4 stars"}, {"distance": 0.1, "price": 157, "group": "4 stars"}, {"distance": 0.3, "price": 108, "group": "3 stars"}, {"distance": 0.8, "price": 127, "group": "4 stars"}, {"distance": 0.4, "price": 163, "group": "4 stars"}, {"distance": 0.1, "price": 231, "group": "4 stars"}, {"distance": 0.4, "price": 116, "group": "4 stars"}, {"distance": 0.6, "price": 166, "group": "4 stars"}, {"distance": 0.3, "price": 169, "group": "4 stars"}, {"distance": 0.0, "price": 242, "group": "4 stars"}, {"distance": 0.5, "price": 223, "group": "4 stars"}, {"distance": 0.3, "price": 149, "group": "4 stars"}, {"distance": 0.5, "price": 114, "group": "4 stars"}, {"distance": 0.2, "price": 139, "group": "4 stars"}, {"distance": 1.4, "price": 79, "group": "3 stars"}, {"distance": 0.9, "price": 110, "group": "3 stars"}, {"distance": 0.9, "price": 88, "group": "3 stars"}, {"distance": 1.6, "price": 59, "group": "3 stars"}, {"distance": 0.9, "price": 119, "group": "4 stars"}, {"distance": 0.9, "price": 152, "group": "4 stars"}, {"distance": 1.0, "price": 102, "group": "4 stars"}, {"distance": 1.1, "price": 54, "group": "3 stars"}, {"distance": 1.0, "price": 94, "group": "3 stars"}, {"distance": 0.9, "price": 115, "group": "4 stars"}, {"distance": 0.9, "price": 68, "group": "3 stars"}, {"distance": 0.2, "price": 153, "group": "4 stars"}, {"distance": 0.3, "price": 169, "group": "4 stars"}, {"distance": 0.5, "price": 182, "group": "4 stars"}, {"distance": 0.1, "price": 142, "group": "4 stars"}, {"distance": 0.6, "price": 110, "group": "4 stars"}, {"distance": 1.4, "price": 82, "group": "4 stars"}, {"distance": 1.7, "price": 82, "group": "4 stars"}, {"distance": 1.8, "price": 66, "group": "3 stars"}, {"distance": 0.8, "price": 169, "group": "4 stars"}, {"distance": 1.5, "price": 109, "group": "4 stars"}, {"distance": 0.7, "price": 104, "group": "3 stars"}, {"distance": 0.9, "price": 145, "group": "3 stars"}, {"distance": 0.8, "price": 85, "group": "3 stars"}, {"distance": 1.3, "price": 110, "group": "3 stars"}, {"distance": 0.6, "price": 134, "group": "4 stars"}, {"distance": 1.3, "price": 79, "group": "4 stars"}, {"distance": 1.0, "price": 132, "group": "4 stars"}, {"distance": 0.6, "price": 128, "group": "4 stars"}, {"distance": 1.5, "price": 99, "group": "3 stars"}, {"distance": 1.8, "price": 86, "group": "4 stars"}, {"distance": 1.0, "price": 63, "group": "3 stars"}, {"distance": 0.6, "price": 134, "group": "3 stars"}, {"distance": 0.9, "price": 79, "group": "3 stars"}, {"distance": 0.5, "price": 138, "group": "4 stars"}, {"distance": 1.0, "price": 113, "group": "4 stars"}, {"distance": 1.5, "price": 84, "group": "3 stars"}, {"distance": 0.9, "price": 68, "group": "3 stars"}, {"distance": 1.5, "price": 102, "group": "3 stars"}, {"distance": 1.6, "price": 82, "group": "3 stars"}, {"distance": 1.1, "price": 66, "group": "3 stars"}, {"distance": 0.8, "price": 113, "group": "3 stars"}, {"distance": 1.0, "price": 106, "group": "3 stars"}, {"distance": 1.6, "price": 89, "group": "3 stars"}, {"distance": 0.8, "price": 106, "group": "4 stars"}, {"distance": 0.8, "price": 100, "group": "4 stars"}, {"distance": 0.7, "price": 75, "group": "3 stars"}, {"distance": 0.8, "price": 84, "group": "3 stars"}, {"distance": 0.5, "price": 151, "group": "4 stars"}, {"distance": 0.9, "price": 87, "group": "3 stars"}, {"distance": 0.5, "price": 117, "group": "4 stars"}, {"distance": 1.9, "price": 120, "group": "4 stars"}, {"distance": 1.9, "price": 383, "group": "3 stars"}, {"distance": 1.5, "price": 174, "group": "4 stars"}, {"distance": 2.0, "price": 63, "group": "3 stars"}, {"distance": 1.5, "price": 100, "group": "3 stars"}, {"distance": 1.4, "price": 86, "group": "4 stars"}, {"distance": 1.8, "price": 67, "group": "3 stars"}, {"distance": 1.3, "price": 129, "group": "4 stars"}, {"distance": 1.3, "price": 86, "group": "3 stars"}, {"distance": 0.7, "price": 131, "group": "4 stars"}, {"distance": 1.4, "price": 80, "group": "3 stars"}, {"distance": 1.1, "price": 93, "group": "4 stars"}, {"distance": 1.9, "price": 77, "group": "3 stars"}, {"distance": 0.8, "price": 140, "group": "4 stars"}, {"distance": 1.0, "price": 99, "group": "4 stars"}, {"distance": 1.4, "price": 105, "group": "4 stars"}, {"distance": 1.7, "price": 100, "group": "3 stars"}, {"distance": 1.1, "price": 82, "group": "3 stars"}, {"distance": 1.8, "price": 82, "group": "4 stars"}, {"distance": 1.9, "price": 87, "group": "4 stars"}, {"distance": 1.6, "price": 100, "group": "4 stars"}, {"distance": 1.6, "price": 84, "group": "4 stars"}, {"distance": 0.8, "price": 98, "group": "4 stars"}, {"distance": 1.8, "price": 99, "group": "3 stars"}, {"distance": 1.6, "price": 76, "group": "3 stars"}, {"distance": 0.8, "price": 113, "group": "3 stars"}, {"distance": 0.9, "price": 110, "group": "4 stars"}, {"distance": 1.0, "price": 184, "group": "4 stars"}, {"distance": 1.7, "price": 99, "group": "4 stars"}, {"distance": 0.8, "price": 122, "group": "3 stars"}, {"distance": 1.7, "price": 122, "group": "4 stars"}, {"distance": 1.7, "price": 105, "group": "4 stars"}, {"distance": 1.4, "price": 109, "group": "4 stars"}, {"distance": 1.2, "price": 105, "group": "3 stars"}, {"distance": 3.1, "price": 52, "group": "3 stars"}, {"distance": 4.1, "price": 80, "group": "4 stars"}, {"distance": 1.8, "price": 70, "group": "4 stars"}, {"distance": 1.9, "price": 136, "group": "3 stars"}, {"distance": 2.1, "price": 80, "group": "3 stars"}, {"distance": 2.4, "price": 81, "group": "3 stars"}, {"distance": 3.6, "price": 66, "group": "4 stars"}, {"distance": 2.8, "price": 77, "group": "3 stars"}, {"distance": 2.1, "price": 69, "group": "4 stars"}, {"distance": 2.1, "price": 83, "group": "3 stars"}, {"distance": 1.8, "price": 77, "group": "4 stars"}, {"distance": 1.7, "price": 121, "group": "4 stars"}, {"distance": 3.6, "price": 68, "group": "3 stars"}, {"distance": 2.0, "price": 63, "group": "3 stars"}, {"distance": 2.1, "price": 101, "group": "3 stars"}, {"distance": 2.6, "price": 75, "group": "4 stars"}, {"distance": 3.6, "price": 156, "group": "4 stars"}, {"distance": 3.7, "price": 56, "group": "3 stars"}, {"distance": 2.4, "price": 82, "group": "3 stars"}, {"distance": 2.6, "price": 82, "group": "4 stars"}, {"distance": 4.1, "price": 106, "group": "3 stars"}, {"distance": 3.1, "price": 85, "group": "3 stars"}, {"distance": 2.6, "price": 83, "group": "3 stars"}, {"distance": 2.9, "price": 92, "group": "4 stars"}, {"distance": 2.0, "price": 117, "group": "4 stars"}, {"distance": 3.9, "price": 66, "group": "3 stars"}, {"distance": 3.7, "price": 81, "group": "3 stars"}, {"distance": 3.5, "price": 109, "group": "4 stars"}, {"distance": 3.1, "price": 97, "group": "4 stars"}, {"distance": 4.8, "price": 74, "group": "4 stars"}, {"distance": 3.7, "price": 69, "group": "4 stars"}, {"distance": 3.9, "price": 83, "group": "4 stars"}, {"distance": 3.9, "price": 50, "group": "3 stars"}, {"distance": 3.7, "price": 77, "group": "3 stars"}, {"distance": 5.3, "price": 102, "group": "3 stars"}, {"distance": 6.6, "price": 130, "group": "3 stars"}, {"distance": 3.2, "price": 78, "group": "3 stars"}, {"distance": 3.3, "price": 76, "group": "3 stars"}, {"distance": 4.5, "price": 68, "group": "4 stars"}, {"distance": 2.7, "price": 116, "group": "4 stars"}, {"distance": 2.2, "price": 172, "group": "4 stars"}, {"distance": 2.4, "price": 87, "group": "3 stars"}, {"distance": 4.6, "price": 90, "group": "3 stars"}, {"distance": 2.7, "price": 100, "group": "3 stars"}, {"distance": 1.9, "price": 84, "group": "3 stars"}, {"distance": 2.1, "price": 185, "group": "4 stars"}, {"distance": 3.0, "price": 85, "group": "4 stars"}, {"distance": 1.6, "price": 110, "group": "3 stars"}, {"distance": 1.6, "price": 86, "group": "3 stars"}, {"distance": 1.0, "price": 118, "group": "4 stars"}, {"distance": 0.9, "price": 126, "group": "3 stars"}, {"distance": 1.3, "price": 92, "group": "3 stars"}, {"distance": 0.8, "price": 197, "group": "4 stars"}, {"distance": 1.2, "price": 135, "group": "4 stars"}, {"distance": 1.2, "price": 125, "group": "4 stars"}, {"distance": 0.8, "price": 134, "group": "4 stars"}, {"distance": 0.9, "price": 91, "group": "3 stars"}, {"distance": 0.8, "price": 110, "group": "3 stars"}, {"distance": 1.2, "price": 100, "group": "3 stars"}, {"distance": 1.5, "price": 95, "group": "4 stars"}, {"distance": 1.5, "price": 73, "group": "3 stars"}, {"distance": 1.0, "price": 100, "group": "4 stars"}, {"distance": 1.4, "price": 58, "group": "3 stars"}]}]}</script>
+</div>
+</div>
+<div class="cell hidden">
+<div class="sourceCode cell-code hidden" id="cb1" data-startfrom="252" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 251;"><span id="cb1-252"><a></a>{</span>
+<span id="cb1-253"><a></a>  <span class="co">// Generic "shrink on reveal" wiring, used by every chart wrapped as</span></span>
+<span id="cb1-254"><a></a>  <span class="co">// `:::: {.shrink-on-reveal data-frag="some-fragment-id" style="--large-height:...;--small-height:...;--shrink-scale:..."}`</span></span>
+<span id="cb1-255"><a></a>  <span class="co">// Each chart renders large while its named fragment is hidden, then</span></span>
+<span id="cb1-256"><a></a>  <span class="co">// shrinks smoothly to make room the moment that fragment is revealed.</span></span>
+<span id="cb1-257"><a></a>  <span class="co">// Sizes live entirely in each wrapper's own inline style — this cell only</span></span>
+<span id="cb1-258"><a></a>  <span class="co">// handles show/hide, once, for every wrapper on the page, so adding a new</span></span>
+<span id="cb1-259"><a></a>  <span class="co">// chart to this pattern never means touching this cell.</span></span>
+<span id="cb1-260"><a></a>  <span class="kw">const</span> wrapperFor <span class="op">=</span> (fragId) <span class="kw">=&gt;</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="vs">`.shrink-on-reveal[data-frag="</span><span class="sc">${</span>fragId<span class="sc">}</span><span class="vs">"]`</span>)</span>
+<span id="cb1-261"><a></a></span>
+<span id="cb1-262"><a></a>  <span class="co">// Sets each wrapper's correct starting state immediately, including on a</span></span>
+<span id="cb1-263"><a></a>  <span class="co">// reload or direct navigation to a slide whose fragment is already shown</span></span>
+<span id="cb1-264"><a></a>  <span class="co">// — matters because this cell (no reactive deps) only runs once, at load.</span></span>
+<span id="cb1-265"><a></a>  <span class="kw">const</span> syncAll <span class="op">=</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb1-266"><a></a>    <span class="bu">document</span><span class="op">.</span><span class="fu">querySelectorAll</span>(<span class="st">'.fragment[id]'</span>)<span class="op">.</span><span class="fu">forEach</span>(frag <span class="kw">=&gt;</span></span>
+<span id="cb1-267"><a></a>      <span class="fu">wrapperFor</span>(frag<span class="op">.</span><span class="at">id</span>)<span class="op">?.</span><span class="at">classList</span><span class="op">.</span><span class="fu">toggle</span>(<span class="st">'is-small'</span><span class="op">,</span> frag<span class="op">.</span><span class="at">classList</span><span class="op">.</span><span class="fu">contains</span>(<span class="st">'visible'</span>))</span>
+<span id="cb1-268"><a></a>    )</span>
+<span id="cb1-269"><a></a>  }</span>
+<span id="cb1-270"><a></a>  <span class="fu">syncAll</span>()</span>
+<span id="cb1-271"><a></a>  <span class="co">// PDF export rebuilds the slide DOM, so re-sync on any change (same fix as Weeks 2, 4 and 5).</span></span>
+<span id="cb1-272"><a></a>  <span class="kw">new</span> <span class="bu">MutationObserver</span>(syncAll)<span class="op">.</span><span class="fu">observe</span>(<span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">,</span> { <span class="dt">childList</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">subtree</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">attributes</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">attributeFilter</span><span class="op">:</span> [<span class="st">'class'</span>] })</span>
+<span id="cb1-273"><a></a></span>
+<span id="cb1-274"><a></a>  Reveal<span class="op">.</span><span class="fu">on</span>(<span class="st">'fragmentshown'</span><span class="op">,</span> (<span class="bu">event</span>) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-275"><a></a>    <span class="fu">wrapperFor</span>(<span class="bu">event</span><span class="op">.</span><span class="at">fragment</span><span class="op">.</span><span class="at">id</span>)<span class="op">?.</span><span class="at">classList</span><span class="op">.</span><span class="fu">add</span>(<span class="st">'is-small'</span>)</span>
+<span id="cb1-276"><a></a>  })</span>
+<span id="cb1-277"><a></a>  Reveal<span class="op">.</span><span class="fu">on</span>(<span class="st">'fragmenthidden'</span><span class="op">,</span> (<span class="bu">event</span>) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-278"><a></a>    <span class="fu">wrapperFor</span>(<span class="bu">event</span><span class="op">.</span><span class="at">fragment</span><span class="op">.</span><span class="at">id</span>)<span class="op">?.</span><span class="at">classList</span><span class="op">.</span><span class="fu">remove</span>(<span class="st">'is-small'</span>)</span>
+<span id="cb1-279"><a></a>  })</span>
+<span id="cb1-280"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display hidden">
+<div id="ojs-cell-1" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="284" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 283;"><span id="cb2-284"><a></a>olsFit <span class="op">=</span> <span class="kw">function</span>(X<span class="op">,</span> y) {</span>
+<span id="cb2-285"><a></a>  <span class="kw">const</span> n <span class="op">=</span> X<span class="op">.</span><span class="at">length</span><span class="op">,</span> k <span class="op">=</span> X[<span class="dv">0</span>]<span class="op">.</span><span class="at">length</span> <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb2-286"><a></a>  <span class="kw">const</span> design <span class="op">=</span> X<span class="op">.</span><span class="fu">map</span>(row <span class="kw">=&gt;</span> [<span class="dv">1</span><span class="op">,</span> <span class="op">...</span>row])</span>
+<span id="cb2-287"><a></a>  <span class="kw">const</span> XtX <span class="op">=</span> <span class="bu">Array</span><span class="op">.</span><span class="fu">from</span>({<span class="dt">length</span><span class="op">:</span> k}<span class="op">,</span> (_<span class="op">,</span> i) <span class="kw">=&gt;</span> <span class="bu">Array</span><span class="op">.</span><span class="fu">from</span>({<span class="dt">length</span><span class="op">:</span> k}<span class="op">,</span> (_<span class="op">,</span> j) <span class="kw">=&gt;</span> d3<span class="op">.</span><span class="fu">sum</span>(design<span class="op">.</span><span class="fu">map</span>(r <span class="kw">=&gt;</span> r[i] <span class="op">*</span> r[j]))))</span>
+<span id="cb2-288"><a></a>  <span class="kw">const</span> Xty <span class="op">=</span> <span class="bu">Array</span><span class="op">.</span><span class="fu">from</span>({<span class="dt">length</span><span class="op">:</span> k}<span class="op">,</span> (_<span class="op">,</span> i) <span class="kw">=&gt;</span> d3<span class="op">.</span><span class="fu">sum</span>(design<span class="op">.</span><span class="fu">map</span>((r<span class="op">,</span> idx) <span class="kw">=&gt;</span> r[i] <span class="op">*</span> y[idx])))</span>
+<span id="cb2-289"><a></a>  <span class="kw">const</span> A <span class="op">=</span> XtX<span class="op">.</span><span class="fu">map</span>((row<span class="op">,</span> i) <span class="kw">=&gt;</span> [<span class="op">...</span>row<span class="op">,</span> Xty[i]])</span>
+<span id="cb2-290"><a></a>  <span class="cf">for</span> (<span class="kw">let</span> col <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> col <span class="op">&lt;</span> k<span class="op">;</span> col<span class="op">++</span>) {</span>
+<span id="cb2-291"><a></a>    <span class="kw">let</span> piv <span class="op">=</span> col</span>
+<span id="cb2-292"><a></a>    <span class="cf">for</span> (<span class="kw">let</span> r <span class="op">=</span> col <span class="op">+</span> <span class="dv">1</span><span class="op">;</span> r <span class="op">&lt;</span> k<span class="op">;</span> r<span class="op">++</span>) <span class="cf">if</span> (<span class="bu">Math</span><span class="op">.</span><span class="fu">abs</span>(A[r][col]) <span class="op">&gt;</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">abs</span>(A[piv][col])) piv <span class="op">=</span> r</span>
+<span id="cb2-293"><a></a>    <span class="kw">const</span> tmp <span class="op">=</span> A[col]<span class="op">;</span> A[col] <span class="op">=</span> A[piv]<span class="op">;</span> A[piv] <span class="op">=</span> tmp</span>
+<span id="cb2-294"><a></a>    <span class="cf">for</span> (<span class="kw">let</span> r <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> r <span class="op">&lt;</span> k<span class="op">;</span> r<span class="op">++</span>) {</span>
+<span id="cb2-295"><a></a>      <span class="cf">if</span> (r <span class="op">===</span> col) <span class="cf">continue</span></span>
+<span id="cb2-296"><a></a>      <span class="kw">const</span> factor <span class="op">=</span> A[r][col] <span class="op">/</span> A[col][col]</span>
+<span id="cb2-297"><a></a>      <span class="cf">for</span> (<span class="kw">let</span> c <span class="op">=</span> col<span class="op">;</span> c <span class="op">&lt;=</span> k<span class="op">;</span> c<span class="op">++</span>) A[r][c] <span class="op">-=</span> factor <span class="op">*</span> A[col][c]</span>
+<span id="cb2-298"><a></a>    }</span>
+<span id="cb2-299"><a></a>  }</span>
+<span id="cb2-300"><a></a>  <span class="kw">const</span> coefs <span class="op">=</span> A<span class="op">.</span><span class="fu">map</span>((row<span class="op">,</span> i) <span class="kw">=&gt;</span> row[k] <span class="op">/</span> row[i])</span>
+<span id="cb2-301"><a></a>  <span class="kw">const</span> fitted <span class="op">=</span> design<span class="op">.</span><span class="fu">map</span>(r <span class="kw">=&gt;</span> d3<span class="op">.</span><span class="fu">sum</span>(r<span class="op">.</span><span class="fu">map</span>((v<span class="op">,</span> i) <span class="kw">=&gt;</span> v <span class="op">*</span> coefs[i])))</span>
+<span id="cb2-302"><a></a>  <span class="kw">const</span> resid <span class="op">=</span> y<span class="op">.</span><span class="fu">map</span>((yi<span class="op">,</span> i) <span class="kw">=&gt;</span> yi <span class="op">-</span> fitted[i])</span>
+<span id="cb2-303"><a></a>  <span class="cf">return</span> { coefs<span class="op">,</span> fitted<span class="op">,</span> resid<span class="op">,</span> n<span class="op">,</span> k }</span>
+<span id="cb2-304"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+</section>
+<section id="section" class="slide level2" data-background-color="#1a1a2e">
+<h2></h2>
+<style>
+.reveal .big-code div.sourceCode { font-size: 1.15em !important; }
+.reveal .big-code div.sourceCode pre.sourceCode { font-size: 1em !important; }
+.reveal .mid-code div.sourceCode { font-size: 0.72em !important; }
+.reveal .mid-code div.sourceCode pre.sourceCode { font-size: 1em !important; }
+.reveal .inter-ctl, .reveal .inter-ctl * { font-size: 24px !important; }
+</style>
+<div style="text-align: center; padding-top: 180px;">
+<p><span style="font-size: 2.2em; color: white;"><strong>Multiple regression</strong></span></p>
+<p><span style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;">Finger length alone barely moved the needle. What if device or caffeine matter too — and are tangled up with finger length itself?</span></p>
+</div>
+</section>
+<section id="one-x-at-a-time-was-never-the-whole-story" class="slide level2">
+<h2>One x at a time was never the whole story</h2>
+<div class="instructions-box">
+<p>HR has separate regressions: reaction time on finger length, reaction time on device. Someone asks: which one actually matters?</p>
+</div>
+<div class="fragment">
+<p><strong>Naive answer:</strong> run each regression separately, compare the slopes, done.</p>
+<p><strong>Why it’s not that simple:</strong> if finger length and device happen to be correlated in our sample — say, one device tends to attract a particular hand-size group (just go with it…) — each regression is silently absorbing some of the other variable’s effect. We can’t tell which x is doing the work until we ask both questions at once.</p>
+</div>
+</section>
+<section id="why-more-than-one-x" class="slide level2">
+<h2>Why more than one x?</h2>
+</section>
+<section id="three-reasons-to-add-a-second-x" class="slide level2">
+<h2>Three reasons to add a second x</h2>
+<ul>
+<li><strong>Broader patterns</strong> — plain exploratory work, understanding the data more fully</li>
+<li><strong>Closer to comparing similar observations</strong> — holding one variable fixed while looking at another gets nearer to <em>ceteris paribus</em>, “all else equal”</li>
+<li><strong>Better prediction</strong> — more of the variation in y gets explained</li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
+</div>
+</section>
+<section id="two-x-variables" class="slide level2">
+<h2>Two x variables</h2>
+<p><span class="math display">\[y^E = \beta_0 + \beta_1 x_1 + \beta_2 x_2\]</span></p>
+<ul>
+<li><span class="math inline">\(\beta_1\)</span>: the difference in average y across observations that differ in <span class="math inline">\(x_1\)</span> <strong>but share the same <span class="math inline">\(x_2\)</span></strong></li>
+<li><span class="math inline">\(\beta_2\)</span>: the same idea, the other way round</li>
+<li>We can now compare observations that are similar in one explanatory variable, to isolate what the other one is doing</li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
+</div>
+</section>
+<section id="omitted-variable-bias" class="slide level2">
+<h2>Omitted variable bias</h2>
+</section>
+<section id="comparing-the-simple-and-multiple-slope" class="slide level2">
+<h2>Comparing the simple and multiple slope</h2>
+<p><span class="math display">\[y^E = \alpha + \beta x_1 \qquad\qquad y^E = \beta_0 + \beta_1 x_1 + \beta_2 x_2\]</span></p>
+<p>An intermediate step — regress <span class="math inline">\(x_2\)</span> on <span class="math inline">\(x_1\)</span> itself, slope <span class="math inline">\(\delta\)</span>:</p>
+<p><span class="math display">\[x_2^E = \gamma + \delta x_1\]</span></p>
+<div class="fragment">
+<p>Substituting back in gives a precise relationship between the two versions of the <span class="math inline">\(x_1\)</span> slope:</p>
+<p><span class="math display">\[\beta - \beta_1 = \delta\beta_2\]</span></p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
+</div>
+</section>
+<section id="omitted-variable-bias-named" class="slide level2">
+<h2>Omitted variable bias, named</h2>
+<p><span class="math display">\[\beta - \beta_1 = \delta\beta_2\]</span></p>
+<ul>
+<li>This gap is the <strong>omitted variable bias (OVB)</strong></li>
+<li>If you care about <span class="math inline">\(\beta_1\)</span>, the simple regression <span class="math inline">\(y^E=\alpha+\beta x_1\)</span> is <strong>the wrong regression</strong> — it omits <span class="math inline">\(x_2\)</span></li>
+<li>The bias is exactly zero only if <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span> are uncorrelated (<span class="math inline">\(\delta=0\)</span>), or <span class="math inline">\(x_2\)</span> has no effect on y in the full model (<span class="math inline">\(\beta_2=0\)</span>)</li>
+</ul>
+<div class="fragment">
+<p>Neither condition is something you can assume — it has to be checked, or reasoned about.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
+</div>
+</section>
+<section id="task-watch-ovb-happen" class="slide level2 smaller">
+<h2>Task — watch OVB happen</h2>
+<div class="instructions-box">
+<p>A made-up case where we know the truth. Monthly changes in <strong>our</strong> log price (<span class="math inline">\(x_1\)</span>) and a <strong>competitor’s</strong> log price (<span class="math inline">\(x_2\)</span>) move together, and both drive log sales (y). The true effect of our own price is <span class="math inline">\(-3\)</span>.</p>
+<p>In the <strong>Week 6 in-class notebook</strong>, run the simulation, fit the simple regression, the multiple regression, and <span class="math inline">\(x_2\)</span> on <span class="math inline">\(x_1\)</span>. Check that <span class="math inline">\(\hat\beta - \hat\beta_1 = \hat\delta\hat\beta_2\)</span>. Then set the correlation (the <code>0.8</code>) to <code>0</code> and run it again. What happens to the bias?</p>
+</div>
+<div class="big-code">
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">42</span>)</span>
+<span id="cb3-2"><a></a>competitor_price <span class="op">=</span> rng.normal(<span class="dv">0</span>, <span class="fl">2.0</span>, <span class="dv">300</span>)</span>
+<span id="cb3-3"><a></a>our_price <span class="op">=</span> <span class="fl">0.8</span> <span class="op">*</span> competitor_price <span class="op">+</span> rng.normal(<span class="dv">0</span>, <span class="fl">1.2</span>, <span class="dv">300</span>)</span>
+<span id="cb3-4"><a></a>sales <span class="op">=</span> <span class="op">-</span><span class="dv">3</span><span class="op">*</span>our_price <span class="op">+</span> <span class="dv">3</span><span class="op">*</span>competitor_price <span class="op">+</span> rng.normal(<span class="dv">0</span>, <span class="fl">2.5</span>, <span class="dv">300</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="what-you-should-have-found-ovb" class="slide level2">
+<h2>What you should have found: OVB</h2>
+<div style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;">
+<p>Answer revealed in the workshop.</p>
+</div>
+</section>
+<section id="language-conditioning-controlling-confounding" class="slide level2">
+<h2>Language: conditioning, controlling, confounding</h2>
+<ul>
+<li>We measure differences in y by <span class="math inline">\(x_1\)</span>, <strong>conditional on</strong> <span class="math inline">\(x_2\)</span> — or <strong>controlling for</strong> <span class="math inline">\(x_2\)</span></li>
+<li>When a variable that belongs in the model is left out, it’s an <strong>omitted variable</strong></li>
+<li>If it’s correlated with both <span class="math inline">\(x_1\)</span> and y, it’s a <strong>confounder</strong> — the slope on <span class="math inline">\(x_1\)</span> is <em>confounded</em></li>
+<li>However many variables we condition on, this is still a comparison of conditional means, not an experiment: say “is associated with”, not “affects”</li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
+</div>
+</section>
+<section id="task-does-our-own-coefficient-move" class="slide level2">
+<h2>Task — does our own coefficient move?</h2>
+<div class="instructions-box">
+<p><strong>Business question</strong>: does the finger-length coefficient change once we control for device and caffeine?</p>
+<p>Open the Colab notebook — the setup cell builds <code>student_summary</code> for you, one row per student. Fit <strong>two</strong> models with <code>smf.ols</code>: one with finger length alone, one adding device and caffeine. Compare the finger-length coefficient across both. No further syntax hints.</p>
+</div>
+<div class="fragment">
+<p>We’ll compare real answers together after.</p>
+</div>
+</section>
+<section id="what-you-should-have-found" class="slide level2">
+<h2>What you should have found</h2>
+<div style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;">
+<p>Answer revealed in the workshop.</p>
+</div>
+</section>
+<section id="multicollinearity-a-different-problem" class="slide level2">
+<h2>Multicollinearity — a different problem</h2>
+</section>
+<section id="multicollinearity-defined" class="slide level2">
+<h2>Multicollinearity, defined</h2>
+<div class="instructions-box">
+<p><strong>Multicollinearity</strong>: two or more explanatory variables in the same regression are strongly correlated with <em>each other</em>.</p>
+</div>
+<ul>
+<li>It does <strong>not</strong> bias any coefficient — β̂ is still right, on average</li>
+<li>It <strong>inflates the standard errors</strong> — β̂ becomes imprecise, harder to pin down</li>
+<li>Intuition: if <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span> move together almost every time, there’s barely any data where one is high and the other is low — and that’s exactly the comparison OLS needs to estimate their separate slopes</li>
+</ul>
+<div class="fragment">
+<p>Contrast with omitted variable bias: <strong>OVB is about what’s missing</strong> from the model. <strong>Multicollinearity is about what’s already in it</strong>, just tangled together.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
+</div>
+</section>
+<section id="where-the-standard-error-comes-from" class="slide level2">
+<h2>Where the standard error comes from</h2>
+<p><span class="math display">\[SE(\hat\beta_1) = \frac{Std[e]}{\sqrt{n}\cdot Std[x_1]\cdot\sqrt{1-R_1^2}}\]</span></p>
+<ul>
+<li>Same ingredients as Week 5’s simple-regression SE — fit, spread of <span class="math inline">\(x_1\)</span>, sample size</li>
+<li><strong>New</strong>: <span class="math inline">\(R_1^2\)</span> — the R² from regressing <span class="math inline">\(x_1\)</span> on <span class="math inline">\(x_2\)</span> (and any other x’s). The more <span class="math inline">\(x_1\)</span> is <em>explained by</em> the other regressors, the bigger this term, the bigger the SE</li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
+</div>
+</section>
+<section id="perfect-vs.-imperfect-collinearity" class="slide level2">
+<h2>Perfect vs.&nbsp;imperfect collinearity</h2>
+<ul>
+<li><strong>Perfect collinearity</strong> — <span class="math inline">\(x_1\)</span> is an exact linear function of <span class="math inline">\(x_2\)</span>. Coefficients literally can’t be calculated; software drops one variable for you</li>
+<li><strong>Multicollinearity</strong> — strong but <em>imperfect</em> correlation between explanatory variables. Coefficients and SEs can still be computed — but the SEs may be large</li>
+</ul>
+<div class="fragment">
+<p>Intuition: multicollinearity means there aren’t many observations that differ in <span class="math inline">\(x_1\)</span> while staying similar in <span class="math inline">\(x_2\)</span> — so there’s little clean information left to estimate <span class="math inline">\(\beta_1\)</span> precisely.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
+</div>
+</section>
+<section id="see-it-happen" class="slide level2">
+<h2>See it happen</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb4" data-startfrom="511" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 510;"><span id="cb4-511"><a></a>viewof corrSlider <span class="op">=</span> {</span>
+<span id="cb4-512"><a></a>  <span class="kw">const</span> f <span class="op">=</span> <span class="fu">html</span><span class="vs">`&lt;div style="display:flex;align-items:center;gap:14px;font-size:13px;</span></span>
+<span id="cb4-513"><a></a><span class="vs">                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;"&gt;</span></span>
+<span id="cb4-514"><a></a><span class="vs">    &lt;span style="color:#666;white-space:nowrap;"&gt;Correlation between x₁ and x₂&lt;/span&gt;</span></span>
+<span id="cb4-515"><a></a><span class="vs">    &lt;input type="range" min="0" max="0.98" step="0.02" value="0"</span></span>
+<span id="cb4-516"><a></a><span class="vs">           style="width:200px;cursor:pointer;accent-color:#e63946;"&gt;</span></span>
+<span id="cb4-517"><a></a><span class="vs">    &lt;span id="cs-label" style="font-weight:700;min-width:36px;color:#e63946;"&gt;0.00&lt;/span&gt;</span></span>
+<span id="cb4-518"><a></a><span class="vs">  &lt;/div&gt;`</span></span>
+<span id="cb4-519"><a></a>  <span class="kw">const</span> slider <span class="op">=</span> f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'input'</span>)</span>
+<span id="cb4-520"><a></a>  <span class="kw">const</span> label  <span class="op">=</span> f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'#cs-label'</span>)</span>
+<span id="cb4-521"><a></a>  slider<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">'input'</span><span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb4-522"><a></a>    label<span class="op">.</span><span class="at">textContent</span> <span class="op">=</span> (<span class="op">+</span>slider<span class="op">.</span><span class="at">value</span>)<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">2</span>)</span>
+<span id="cb4-523"><a></a>    f<span class="op">.</span><span class="fu">dispatchEvent</span>(<span class="kw">new</span> <span class="bu">CustomEvent</span>(<span class="st">'input'</span>))</span>
+<span id="cb4-524"><a></a>  })</span>
+<span id="cb4-525"><a></a>  <span class="bu">Object</span><span class="op">.</span><span class="fu">defineProperty</span>(f<span class="op">,</span> <span class="st">'value'</span><span class="op">,</span> { <span class="kw">get</span><span class="op">:</span> () <span class="kw">=&gt;</span> <span class="op">+</span>slider<span class="op">.</span><span class="at">value</span> })</span>
+<span id="cb4-526"><a></a>  <span class="cf">return</span> f</span>
+<span id="cb4-527"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb5" data-startfrom="531" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 530;"><span id="cb5-531"><a></a>{</span>
+<span id="cb5-532"><a></a>  <span class="kw">const</span> n <span class="op">=</span> <span class="dv">200</span></span>
+<span id="cb5-533"><a></a>  <span class="kw">const</span> seed <span class="op">=</span> i <span class="kw">=&gt;</span> { <span class="kw">const</span> s <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sin</span>(i <span class="op">*</span> <span class="fl">12.9898</span>) <span class="op">*</span> <span class="fl">43758.5453</span><span class="op">;</span> <span class="cf">return</span> (s <span class="op">-</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">floor</span>(s)) <span class="op">*</span> <span class="dv">2</span> <span class="op">-</span> <span class="dv">1</span> }</span>
+<span id="cb5-534"><a></a>  <span class="kw">const</span> seed2 <span class="op">=</span> i <span class="kw">=&gt;</span> { <span class="kw">const</span> s <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sin</span>(i <span class="op">*</span> <span class="fl">78.233</span>) <span class="op">*</span> <span class="fl">12345.6789</span><span class="op">;</span> <span class="cf">return</span> (s <span class="op">-</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">floor</span>(s)) <span class="op">*</span> <span class="dv">2</span> <span class="op">-</span> <span class="dv">1</span> }</span>
+<span id="cb5-535"><a></a>  <span class="kw">const</span> x1 <span class="op">=</span> d3<span class="op">.</span><span class="fu">range</span>(n)<span class="op">.</span><span class="fu">map</span>(i <span class="kw">=&gt;</span> <span class="fu">seed</span>(i))</span>
+<span id="cb5-536"><a></a>  <span class="kw">const</span> x2 <span class="op">=</span> d3<span class="op">.</span><span class="fu">range</span>(n)<span class="op">.</span><span class="fu">map</span>(i <span class="kw">=&gt;</span> corrSlider <span class="op">*</span> x1[i] <span class="op">+</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="op">-</span> corrSlider <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> <span class="fu">seed2</span>(i))</span>
+<span id="cb5-537"><a></a>  <span class="kw">const</span> y <span class="op">=</span> d3<span class="op">.</span><span class="fu">range</span>(n)<span class="op">.</span><span class="fu">map</span>(i <span class="kw">=&gt;</span> <span class="dv">2</span> <span class="op">*</span> x1[i] <span class="op">+</span> <span class="fl">1.5</span> <span class="op">*</span> x2[i] <span class="op">+</span> <span class="fu">seed2</span>(i <span class="op">*</span> <span class="fl">3.1</span>))</span>
+<span id="cb5-538"><a></a>  <span class="kw">const</span> fitFor <span class="op">=</span> c <span class="kw">=&gt;</span> {</span>
+<span id="cb5-539"><a></a>    <span class="kw">const</span> x2c <span class="op">=</span> d3<span class="op">.</span><span class="fu">range</span>(n)<span class="op">.</span><span class="fu">map</span>(i <span class="kw">=&gt;</span> c <span class="op">*</span> x1[i] <span class="op">+</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="op">-</span> c <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> <span class="fu">seed2</span>(i))</span>
+<span id="cb5-540"><a></a>    <span class="kw">const</span> model <span class="op">=</span> <span class="fu">olsFit</span>(x1<span class="op">.</span><span class="fu">map</span>((v<span class="op">,</span> i) <span class="kw">=&gt;</span> [v<span class="op">,</span> x2c[i]])<span class="op">,</span> y)</span>
+<span id="cb5-541"><a></a>    <span class="kw">const</span> sdE <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sqrt</span>(d3<span class="op">.</span><span class="fu">sum</span>(model<span class="op">.</span><span class="at">resid</span><span class="op">.</span><span class="fu">map</span>(e <span class="kw">=&gt;</span> e <span class="op">**</span> <span class="dv">2</span>)) <span class="op">/</span> (n <span class="op">-</span> model<span class="op">.</span><span class="at">k</span>))</span>
+<span id="cb5-542"><a></a>    <span class="kw">const</span> sdX1 <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sqrt</span>(d3<span class="op">.</span><span class="fu">mean</span>(x1<span class="op">.</span><span class="fu">map</span>(v <span class="kw">=&gt;</span> (v <span class="op">-</span> d3<span class="op">.</span><span class="fu">mean</span>(x1)) <span class="op">**</span> <span class="dv">2</span>)))</span>
+<span id="cb5-543"><a></a>    <span class="kw">const</span> auxR2 <span class="op">=</span> (() <span class="kw">=&gt;</span> {</span>
+<span id="cb5-544"><a></a>      <span class="kw">const</span> aux <span class="op">=</span> <span class="fu">olsFit</span>(x2c<span class="op">.</span><span class="fu">map</span>(v <span class="kw">=&gt;</span> [v])<span class="op">,</span> x1)</span>
+<span id="cb5-545"><a></a>      <span class="kw">const</span> ybar <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(x1)</span>
+<span id="cb5-546"><a></a>      <span class="kw">const</span> varY <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(x1<span class="op">.</span><span class="fu">map</span>(v <span class="kw">=&gt;</span> (v <span class="op">-</span> ybar) <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb5-547"><a></a>      <span class="kw">const</span> varYhat <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(aux<span class="op">.</span><span class="at">fitted</span><span class="op">.</span><span class="fu">map</span>(f <span class="kw">=&gt;</span> (f <span class="op">-</span> ybar) <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb5-548"><a></a>      <span class="cf">return</span> varYhat <span class="op">/</span> varY</span>
+<span id="cb5-549"><a></a>    })()</span>
+<span id="cb5-550"><a></a>    <span class="cf">return</span> sdE <span class="op">/</span> (<span class="bu">Math</span><span class="op">.</span><span class="fu">sqrt</span>(n) <span class="op">*</span> sdX1 <span class="op">*</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="op">-</span> auxR2))</span>
+<span id="cb5-551"><a></a>  }</span>
+<span id="cb5-552"><a></a>  <span class="kw">const</span> curve <span class="op">=</span> d3<span class="op">.</span><span class="fu">range</span>(<span class="dv">0</span><span class="op">,</span> <span class="fl">0.99</span><span class="op">,</span> <span class="fl">0.02</span>)<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> ({ c<span class="op">,</span> <span class="dt">se</span><span class="op">:</span> <span class="fu">fitFor</span>(c) }))</span>
+<span id="cb5-553"><a></a>  <span class="kw">const</span> currentSE <span class="op">=</span> <span class="fu">fitFor</span>(corrSlider)</span>
+<span id="cb5-554"><a></a>  <span class="kw">const</span> chart <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb5-555"><a></a>    <span class="dt">height</span><span class="op">:</span> <span class="dv">320</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">60</span><span class="op">,</span></span>
+<span id="cb5-556"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"correlation between x₁ and x₂"</span> }<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"SE(β̂₁)"</span> }<span class="op">,</span></span>
+<span id="cb5-557"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb5-558"><a></a>      Plot<span class="op">.</span><span class="fu">line</span>(curve<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"c"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"se"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#457b9d"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="dv">2</span> })<span class="op">,</span></span>
+<span id="cb5-559"><a></a>      Plot<span class="op">.</span><span class="fu">dot</span>([{ <span class="dt">c</span><span class="op">:</span> corrSlider<span class="op">,</span> <span class="dt">se</span><span class="op">:</span> currentSE }]<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"c"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"se"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#e63946"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">6</span> })<span class="op">,</span></span>
+<span id="cb5-560"><a></a>    ]</span>
+<span id="cb5-561"><a></a>  })</span>
+<span id="cb5-562"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div&gt;</span><span class="sc">${</span>chart<span class="sc">}</span><span class="vs">&lt;p style="font-family:sans-serif;font-size:1em;text-align:center;"&gt;SE(β̂₁) at this correlation: &lt;strong&gt;</span><span class="sc">${</span>currentSE<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">3</span>)<span class="sc">}</span><span class="vs">&lt;/strong&gt;&lt;/p&gt;&lt;/div&gt;`</span></span>
+<span id="cb5-563"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-4" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="instructions-box">
+<p>Simulated data, true coefficients fixed throughout. Drag the correlation up. The point estimate barely changes — but watch the SE climb, slowly at first, then sharply as correlation approaches 1.</p>
+</div>
+</section>
+<section id="naming-it-vif" class="slide level2">
+<h2>Naming it: VIF</h2>
+<p>Software usually calls this number the <strong>Variance Inflation Factor</strong>:</p>
+<p><span class="math display">\[VIF_k = \frac{1}{1-R_k^2}\]</span></p>
+<ul>
+<li>The same <span class="math inline">\(R_k^2\)</span> as in the SE formula above — just flipped into one number per variable</li>
+<li>Common rule of thumb: <strong>VIF &gt; 10</strong> flags a real problem (some use a stricter &gt;5)</li>
+<li>One line in <code>statsmodels</code>: <code>variance_inflation_factor(X, k)</code></li>
+</ul>
+</section>
+<section id="vif-on-our-own-data" class="slide level2">
+<h2>VIF on our own data</h2>
+<div class="mid-code">
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a></a><span class="im">from</span> statsmodels.stats.outliers_influence <span class="im">import</span> variance_inflation_factor</span>
+<span id="cb6-2"><a></a>model <span class="op">=</span> smf.ols(<span class="st">'mean_rt ~ finger_mm + device + caffeine'</span>, data<span class="op">=</span>student_summary).fit()</span>
+<span id="cb6-3"><a></a>X, names <span class="op">=</span> model.model.exog, model.model.exog_names</span>
+<span id="cb6-4"><a></a><span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="bu">len</span>(names)):          <span class="co"># 0 is the intercept</span></span>
+<span id="cb6-5"><a></a>    <span class="bu">print</span>(names[k], <span class="bu">round</span>(variance_inflation_factor(X, k), <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="595" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 594;"><span id="cb7-595"><a></a>{</span>
+<span id="cb7-596"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> student_summary<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">finger_mm</span> <span class="op">!=</span> <span class="kw">null</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="pp">isNaN</span>(d<span class="op">.</span><span class="at">finger_mm</span>) <span class="op">&amp;&amp;</span> d<span class="op">.</span><span class="at">device</span> <span class="op">!=</span> <span class="kw">null</span> <span class="op">&amp;&amp;</span> d<span class="op">.</span><span class="at">caffeine</span> <span class="op">!=</span> <span class="kw">null</span>)</span>
+<span id="cb7-597"><a></a>  <span class="kw">const</span> fm <span class="op">=</span> rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">finger_mm</span>)</span>
+<span id="cb7-598"><a></a>  <span class="kw">const</span> dv <span class="op">=</span> rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">device</span> <span class="op">===</span> <span class="st">"Phone"</span> <span class="op">?</span> <span class="dv">1</span> <span class="op">:</span> <span class="dv">0</span>)</span>
+<span id="cb7-599"><a></a>  <span class="kw">const</span> cf <span class="op">=</span> rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">caffeine</span> <span class="op">===</span> <span class="st">"Yes"</span> <span class="op">?</span> <span class="dv">1</span> <span class="op">:</span> <span class="dv">0</span>)</span>
+<span id="cb7-600"><a></a>  <span class="kw">const</span> r2 <span class="op">=</span> (y<span class="op">,</span> X) <span class="kw">=&gt;</span> {</span>
+<span id="cb7-601"><a></a>    <span class="kw">const</span> model <span class="op">=</span> <span class="fu">olsFit</span>(X<span class="op">,</span> y)</span>
+<span id="cb7-602"><a></a>    <span class="kw">const</span> ybar <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(y)</span>
+<span id="cb7-603"><a></a>    <span class="kw">const</span> varY <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(y<span class="op">.</span><span class="fu">map</span>(v <span class="kw">=&gt;</span> (v <span class="op">-</span> ybar) <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb7-604"><a></a>    <span class="kw">const</span> varYhat <span class="op">=</span> d3<span class="op">.</span><span class="fu">mean</span>(model<span class="op">.</span><span class="at">fitted</span><span class="op">.</span><span class="fu">map</span>(f <span class="kw">=&gt;</span> (f <span class="op">-</span> ybar) <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb7-605"><a></a>    <span class="cf">return</span> varYhat <span class="op">/</span> varY</span>
+<span id="cb7-606"><a></a>  }</span>
+<span id="cb7-607"><a></a>  <span class="kw">const</span> vif <span class="op">=</span> (y<span class="op">,</span> X) <span class="kw">=&gt;</span> <span class="dv">1</span> <span class="op">/</span> (<span class="dv">1</span> <span class="op">-</span> <span class="fu">r2</span>(y<span class="op">,</span> X))</span>
+<span id="cb7-608"><a></a>  <span class="kw">const</span> rows3 <span class="op">=</span> [</span>
+<span id="cb7-609"><a></a>    { <span class="dt">label</span><span class="op">:</span> <span class="st">"Finger length"</span><span class="op">,</span> <span class="dt">vif</span><span class="op">:</span> <span class="fu">vif</span>(fm<span class="op">,</span> dv<span class="op">.</span><span class="fu">map</span>((v<span class="op">,</span> i) <span class="kw">=&gt;</span> [v<span class="op">,</span> cf[i]])) }<span class="op">,</span></span>
+<span id="cb7-610"><a></a>    { <span class="dt">label</span><span class="op">:</span> <span class="st">"Device"</span><span class="op">,</span> <span class="dt">vif</span><span class="op">:</span> <span class="fu">vif</span>(dv<span class="op">,</span> fm<span class="op">.</span><span class="fu">map</span>((v<span class="op">,</span> i) <span class="kw">=&gt;</span> [v<span class="op">,</span> cf[i]])) }<span class="op">,</span></span>
+<span id="cb7-611"><a></a>    { <span class="dt">label</span><span class="op">:</span> <span class="st">"Caffeine"</span><span class="op">,</span> <span class="dt">vif</span><span class="op">:</span> <span class="fu">vif</span>(cf<span class="op">,</span> fm<span class="op">.</span><span class="fu">map</span>((v<span class="op">,</span> i) <span class="kw">=&gt;</span> [v<span class="op">,</span> dv[i]])) }<span class="op">,</span></span>
+<span id="cb7-612"><a></a>  ]</span>
+<span id="cb7-613"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:0 auto;font-family:sans-serif;font-size:1.1em;border-collapse:collapse;"&gt;</span></span>
+<span id="cb7-614"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;&lt;th style="padding:8px 24px;text-align:left;"&gt;Variable&lt;/th&gt;&lt;th style="padding:8px 24px;"&gt;VIF&lt;/th&gt;&lt;/tr&gt;</span></span>
+<span id="cb7-615"><a></a><span class="vs">    </span><span class="sc">${</span>rows3<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="border-bottom:1px solid #ddd;"&gt;&lt;td style="padding:6px 24px;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">label</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:6px 24px;text-align:center;font-weight:700;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">vif</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">2</span>)<span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb7-616"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
+<span id="cb7-617"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-5" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="instructions-box">
+<p>All close to 1 — finger length, device, and caffeine barely overlap in what they explain. So adding device and caffeine didn’t make the finger-length estimate any less precise – the problem here was never multicollinearity, just weak signal.</p>
+</div>
+</section>
+<section id="the-vif-trap" class="slide level2">
+<h2>The VIF trap</h2>
+<div class="instructions-box">
+<p>A high VIF does <strong>not</strong> mean “drop this variable.” If it’s a genuine confounder, dropping it to fix a <em>precision</em> problem reintroduces the <em>bias</em> problem from omitted variables — often a worse trade.</p>
+</div>
+<div class="fragment">
+<p>The honest response to a high VIF is usually: report it, keep the variable if the causal story needs it, and be upfront that the estimate is imprecise. VIF is a diagnostic, not a decision rule.</p>
+</div>
+</section>
+<section id="what-to-actually-do-about-it" class="slide level2">
+<h2>What to actually do about it</h2>
+<ul>
+<li>Look at pairwise correlations (or a correlation heatmap) early, before modelling</li>
+<li>Drop one of a highly correlated pair, or combine them — average them, or first standardise each as a z-score (value minus its mean, divided by its SD) and then average</li>
+<li>Mostly a <strong>small-sample problem</strong> — hundreds to a few thousand observations</li>
+<li>With many x’s: check <span class="math inline">\(R_k^2\)</span> for each variable regressed on all the others; drop if very high</li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
+</div>
+</section>
+<section id="the-distinction-that-matters" class="slide level2">
+<h2>The distinction that matters</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Omitted variable bias</th>
+<th>Multicollinearity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>What it is</strong></td>
+<td>Leaving out a variable that belongs in the model</td>
+<td>Including two variables that are strongly correlated</td>
+</tr>
+<tr class="even">
+<td><strong>What it breaks</strong></td>
+<td>The point estimate itself — wrong on average</td>
+<td>Precision — the estimate is right on average, just noisy</td>
+</tr>
+<tr class="odd">
+<td><strong>Does more data fix it?</strong></td>
+<td>No.&nbsp;Same bias at any sample size</td>
+<td>Yes. More data narrows the SE back down</td>
+</tr>
+<tr class="even">
+<td><strong>Direction known?</strong></td>
+<td>Depends on <span class="math inline">\(\delta\)</span> and <span class="math inline">\(\beta_2\)</span> — could go either way</td>
+<td>N/A — SE inflates, doesn’t shift the estimate</td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<p>Confusing these two is the single most common mistake in reading regression output. One is a bias problem you fix by <em>adding</em> the right variable. The other is a precision problem you sometimes fix by <em>removing</em> one.</p>
+</div>
+</section>
+<section id="testing-more-than-one-coefficient" class="slide level2">
+<h2>Testing more than one coefficient</h2>
+</section>
+<section id="testing-several-coefficients-together" class="slide level2">
+<h2>Testing several coefficients together</h2>
+<p>Each coefficient still gets its own CI and t-test, exactly as in Week 5. But sometimes the question isn’t about one coefficient, but a <em>group</em> of them — e.g.&nbsp;“are all the geography dummies jointly zero?”</p>
+<div class="instructions-box">
+<p>The <strong>F-test</strong> answers this. Individually, none of the coefficients might be statistically distinguishable from zero — but jointly, they might still be.</p>
+</div>
+<div class="fragment">
+<p>The <strong>global F-test</strong> — are <em>all</em> slope coefficients zero? — is reported by default in most software. Gabor &amp; Kézdi’s own advice: don’t lean on it too heavily. R² tells you almost the same thing, more simply, for that particular question.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
+</div>
+</section>
+<section id="the-full-output-f-test-included" class="slide level2 smaller">
+<h2>The full output, F-test included</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb8-2"><a></a></span>
+<span id="cb8-3"><a></a>model <span class="op">=</span> smf.ols(<span class="st">'mean_rt ~ finger_mm + device + caffeine'</span>, data<span class="op">=</span>student_summary).fit(cov_type<span class="op">=</span><span class="st">'HC1'</span>)</span>
+<span id="cb8-4"><a></a><span class="bu">print</span>(model.summary())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;">
+<p>Answer revealed in the workshop.</p>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb9" data-startfrom="694" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 693;"><span id="cb9-694"><a></a><span class="fu">html</span><span class="vs">`&lt;div class="instructions-box"&gt;&lt;code&gt;Prob (F-statistic) = </span><span class="sc">${</span>task6<span class="op">.</span><span class="at">f_p</span><span class="sc">}</span><span class="vs">&lt;/code&gt; – we can't reject that all three slopes are jointly zero. With one row per student we have only </span><span class="sc">${</span>task6<span class="op">.</span><span class="at">n</span><span class="sc">}</span><span class="vs"> observations, so there's very little to go on.&lt;/div&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-6" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</section>
+<section id="a-significant-f-test-the-hotels" class="slide level2 smaller">
+<h2>A significant F-test: the hotels</h2>
+<div class="big-code">
+<div class="sourceCode" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a></a>model <span class="op">=</span> smf.ols(<span class="st">'ln_price ~ distance + stars + rating'</span>, data<span class="op">=</span>hotels).fit(cov_type<span class="op">=</span><span class="st">'HC1'</span>)</span>
+<span id="cb10-2"><a></a><span class="bu">print</span>(model.summary())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb11" data-startfrom="707" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 706;"><span id="cb11-707"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.5em;line-height:1.3;background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>hotel_f_text<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-7" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Here <code>Prob (F-statistic)</code> is tiny: distance, stars and rating together explain a lot of the variation in hotel prices. Compare our class data, where the same test couldn’t reject that every slope was zero.</p>
+</div>
+</section>
+<section id="task-testing-a-group-of-coefficients" class="slide level2 smaller">
+<h2>Task — testing a group of coefficients</h2>
+<div class="instructions-box">
+<p>In Week 5’s online session, the hotels spline had knots at 1 and 4 miles. Do we need the bends at all? Fit <code>price ~ distance + beyond_1 + beyond_4</code> and test whether <strong>both</strong> spline terms are zero together:</p>
+<div class="big-code">
+<div class="sourceCode" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a></a>model.f_test(<span class="st">'beyond_1 = 0, beyond_4 = 0'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Then test <code>beyond_4</code> on its own. How does that fit with the R² from Week 5?</p>
+</div>
+<div style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;">
+<p>Answer revealed in the workshop.</p>
+</div>
+</section>
+<section id="categorical-variables-properly" class="slide level2">
+<h2>Categorical variables, properly</h2>
+</section>
+<section id="k-categories-k-1-dummies" class="slide level2">
+<h2>k categories, k − 1 dummies</h2>
+<p>A categorical x with values low/medium/high becomes two binary variables — one category left out as the <strong>reference</strong>:</p>
+<p><span class="math display">\[y^E = \beta_0 + \beta_1 x_{medium} + \beta_2 x_{high}\]</span></p>
+<ul>
+<li><span class="math inline">\(\beta_0\)</span> — average y in the reference category (low)</li>
+<li><span class="math inline">\(\beta_1\)</span> — difference between medium and low</li>
+<li><span class="math inline">\(\beta_2\)</span> — difference between high and low</li>
+</ul>
+<div class="fragment">
+<p>Include all <em>k</em> dummies (no reference left out) and you get the <strong>dummy variable trap</strong> — perfect collinearity with the intercept, and the model can’t be estimated.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
+</div>
+</section>
+<section id="choosing-a-reference-category" class="slide level2">
+<h2>Choosing a reference category</h2>
+<ul>
+<li><strong>Substantive guide</strong> — pick whatever you naturally want everything else compared to (the home market, the base product, the lowest tier)</li>
+<li><strong>Statistical guide</strong> — pick a category with plenty of observations. A thin reference category means <em>every</em> comparison against it inherits a large SE</li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
+</div>
+</section>
+<section id="task-the-gender-pay-gap" class="slide level2 smaller">
+<h2>Task — the gender pay gap</h2>
+<div class="instructions-box">
+<p><strong>Business question:</strong> how big is the gender pay gap among people with a graduate degree, and does it change once we compare people with the same degree?</p>
+<p>The data is the textbook’s own: 18,241 people from the US CPS with an MA, a professional degree or a PhD. In the notebook, regress <code>ln_wage</code> on <code>female</code>, then add education as a categorical variable. Fit it twice, once with MA as the reference category and once with PhD:</p>
+<div class="big-code">
+<div class="sourceCode" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a></a>smf.ols(<span class="st">'ln_wage ~ female + C(education, Treatment("MA"))'</span>, data<span class="op">=</span>cps_df).fit(cov_type<span class="op">=</span><span class="st">'HC1'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>What happens to the female coefficient, and to the education coefficients, when you change the reference?</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 10. Data: <code>cps-earnings</code>, osf.io/g8p9j, 2014 CPS MORG (NBER), filtered to graduate-degree holders aged 24–65 working 20+ hours/week — the same restriction the textbook applies.</p>
+</div>
+</section>
+<section id="what-you-should-have-found-the-gender-pay-gap" class="slide level2">
+<h2>What you should have found: the gender pay gap</h2>
+<div style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;">
+<p>Answer revealed in the workshop.</p>
+</div>
+</section>
+<section id="interactions-different-slopes-for-different-groups" class="slide level2">
+<h2>Interactions: different slopes for different groups</h2>
+</section>
+<section id="when-the-pattern-itself-varies-by-group" class="slide level2">
+<h2>When the pattern itself varies by group</h2>
+<p>An <strong>interaction</strong> asks: does the relationship between y and <span class="math inline">\(x_1\)</span> differ depending on a second variable, D? D is sometimes called a <strong>moderator</strong>.</p>
+<div class="fragment">
+<p>Examples: does customer rating relate to hotel price differently by star category? Does a drug’s effect vary with patient age? Does the finger-length/reaction-time pattern differ by device?</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
+</div>
+</section>
+<section id="the-structural-model" class="slide level2">
+<h2>The structural model</h2>
+<p><span class="math display">\[y^E = \beta_0 + \beta_1 x_1 + \beta_2 D + \beta_3\,(x_1 \times D)\]</span></p>
+<ul>
+<li>When <span class="math inline">\(D=0\)</span>: <span class="math inline">\(y^E = \beta_0 + \beta_1 x_1\)</span> — intercept <span class="math inline">\(\beta_0\)</span>, slope <span class="math inline">\(\beta_1\)</span></li>
+<li>When <span class="math inline">\(D=1\)</span>: <span class="math inline">\(y^E = (\beta_0+\beta_2) + (\beta_1+\beta_3)\,x_1\)</span> — intercept shifts by <span class="math inline">\(\beta_2\)</span>, slope shifts by <span class="math inline">\(\beta_3\)</span></li>
+</ul>
+<div class="fragment">
+<p><span class="math inline">\(\beta_3\)</span> <strong>is</strong> the answer to the interaction question — literally the difference in slopes between the two groups. It gets its own SE, its own t-stat, its own CI, exactly like any other coefficient.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
+</div>
+</section>
+<section id="seeing-β₂-and-β₃" class="slide level2">
+<h2>Seeing β₂ and β₃</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb14" data-startfrom="827" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 826;"><span id="cb14-827"><a></a>viewof inter <span class="op">=</span> {</span>
+<span id="cb14-828"><a></a>  <span class="kw">const</span> f <span class="op">=</span> <span class="fu">html</span><span class="vs">`&lt;div class="inter-ctl" style="display:flex;gap:40px;align-items:center;font-size:24px;font-family:sans-serif;color:#333;padding:4px;"&gt;</span></span>
+<span id="cb14-829"><a></a><span class="vs">    &lt;label style="display:flex;align-items:center;gap:8px;"&gt;&lt;span&gt;β₂ (intercept shift)&lt;/span&gt; &lt;input name="b2" type="range" min="-4" max="4" step="0.5" value="2" style="width:220px;accent-color:#e63946;"&gt; &lt;strong id="b2v"&gt;2.0&lt;/strong&gt;&lt;/label&gt;</span></span>
+<span id="cb14-830"><a></a><span class="vs">    &lt;label style="display:flex;align-items:center;gap:8px;"&gt;&lt;span&gt;β₃ (slope shift)&lt;/span&gt; &lt;input name="b3" type="range" min="-1" max="1" step="0.1" value="0.5" style="width:220px;accent-color:#e63946;"&gt; &lt;strong id="b3v"&gt;0.5&lt;/strong&gt;&lt;/label&gt;</span></span>
+<span id="cb14-831"><a></a><span class="vs">  &lt;/div&gt;`</span></span>
+<span id="cb14-832"><a></a>  <span class="kw">const</span> b2 <span class="op">=</span> f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'[name=b2]'</span>)<span class="op">,</span> b3 <span class="op">=</span> f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'[name=b3]'</span>)</span>
+<span id="cb14-833"><a></a>  <span class="kw">const</span> upd <span class="op">=</span> () <span class="kw">=&gt;</span> { f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'#b2v'</span>)<span class="op">.</span><span class="at">textContent</span> <span class="op">=</span> (<span class="op">+</span>b2<span class="op">.</span><span class="at">value</span>)<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>)<span class="op">;</span> f<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">'#b3v'</span>)<span class="op">.</span><span class="at">textContent</span> <span class="op">=</span> (<span class="op">+</span>b3<span class="op">.</span><span class="at">value</span>)<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>)<span class="op">;</span> f<span class="op">.</span><span class="fu">dispatchEvent</span>(<span class="kw">new</span> <span class="bu">CustomEvent</span>(<span class="st">'input'</span>)) }</span>
+<span id="cb14-834"><a></a>  b2<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">'input'</span><span class="op">,</span> upd)<span class="op">;</span> b3<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">'input'</span><span class="op">,</span> upd)</span>
+<span id="cb14-835"><a></a>  <span class="bu">Object</span><span class="op">.</span><span class="fu">defineProperty</span>(f<span class="op">,</span> <span class="st">'value'</span><span class="op">,</span> { <span class="kw">get</span><span class="op">:</span> () <span class="kw">=&gt;</span> ({ <span class="dt">b2</span><span class="op">:</span> <span class="op">+</span>b2<span class="op">.</span><span class="at">value</span><span class="op">,</span> <span class="dt">b3</span><span class="op">:</span> <span class="op">+</span>b3<span class="op">.</span><span class="at">value</span> }) })</span>
+<span id="cb14-836"><a></a>  <span class="cf">return</span> f</span>
+<span id="cb14-837"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-8" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb15" data-startfrom="841" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 840;"><span id="cb15-841"><a></a>{</span>
+<span id="cb15-842"><a></a>  <span class="kw">const</span> b0 <span class="op">=</span> <span class="dv">2</span><span class="op">,</span> b1 <span class="op">=</span> <span class="fl">0.6</span></span>
+<span id="cb15-843"><a></a>  <span class="kw">const</span> xs <span class="op">=</span> d3<span class="op">.</span><span class="fu">range</span>(<span class="dv">0</span><span class="op">,</span> <span class="fl">10.01</span><span class="op">,</span> <span class="fl">0.5</span>)</span>
+<span id="cb15-844"><a></a>  <span class="kw">const</span> pts <span class="op">=</span> xs<span class="op">.</span><span class="fu">flatMap</span>(x <span class="kw">=&gt;</span> [</span>
+<span id="cb15-845"><a></a>    { x<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> b0 <span class="op">+</span> b1 <span class="op">*</span> x<span class="op">,</span> <span class="dt">g</span><span class="op">:</span> <span class="st">"D = 0"</span> }<span class="op">,</span></span>
+<span id="cb15-846"><a></a>    { x<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> (b0 <span class="op">+</span> inter<span class="op">.</span><span class="at">b2</span>) <span class="op">+</span> (b1 <span class="op">+</span> inter<span class="op">.</span><span class="at">b3</span>) <span class="op">*</span> x<span class="op">,</span> <span class="dt">g</span><span class="op">:</span> <span class="st">"D = 1"</span> }])</span>
+<span id="cb15-847"><a></a>  <span class="kw">const</span> chart <span class="op">=</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb15-848"><a></a>    <span class="dt">width</span><span class="op">:</span> <span class="dv">1000</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">360</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">50</span><span class="op">,</span> <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">style</span><span class="op">:</span> { <span class="dt">fontSize</span><span class="op">:</span> <span class="st">'16px'</span> }<span class="op">,</span></span>
+<span id="cb15-849"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"x₁"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">10</span>] }<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"y"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="op">-</span><span class="dv">6</span><span class="op">,</span> <span class="dv">22</span>]<span class="op">,</span> <span class="dt">ticks</span><span class="op">:</span> <span class="dv">6</span> }<span class="op">,</span></span>
+<span id="cb15-850"><a></a>    <span class="dt">color</span><span class="op">:</span> { <span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="st">"D = 0"</span><span class="op">,</span> <span class="st">"D = 1"</span>]<span class="op">,</span> <span class="dt">range</span><span class="op">:</span> [<span class="st">"#457b9d"</span><span class="op">,</span> <span class="st">"#e63946"</span>] }<span class="op">,</span></span>
+<span id="cb15-851"><a></a>    <span class="dt">marks</span><span class="op">:</span> [Plot<span class="op">.</span><span class="fu">ruleX</span>([<span class="dv">0</span>]<span class="op">,</span> { <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#ccc"</span> })<span class="op">,</span></span>
+<span id="cb15-852"><a></a>            Plot<span class="op">.</span><span class="fu">line</span>(pts<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"y"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"g"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="dv">3</span> })]</span>
+<span id="cb15-853"><a></a>  })</span>
+<span id="cb15-854"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div&gt;</span><span class="sc">${</span>chart<span class="sc">}</span><span class="vs">&lt;p style="font-family:sans-serif;text-align:center;margin:4px 0 0;font-size:0.85em;"&gt;D = 0: intercept </span><span class="sc">${</span>b0<span class="sc">}</span><span class="vs">, slope </span><span class="sc">${</span>b1<span class="sc">}</span><span class="vs"> &amp;nbsp;·&amp;nbsp; D = 1: intercept </span><span class="sc">${</span>(b0 <span class="op">+</span> inter<span class="op">.</span><span class="at">b2</span>)<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>)<span class="sc">}</span><span class="vs">, slope </span><span class="sc">${</span>(b1 <span class="op">+</span> inter<span class="op">.</span><span class="at">b3</span>)<span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">1</span>)<span class="sc">}</span><span class="vs">&lt;/p&gt;&lt;/div&gt;`</span></span>
+<span id="cb15-855"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-9" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div style="font-size:0.85em;">
+<p>β₂ moves the red line up or down at x₁ = 0. β₃ changes its slope. Set β₃ to 0 and the lines are parallel: no interaction.</p>
+</div>
+</section>
+<section id="task-does-the-pattern-differ-by-device" class="slide level2">
+<h2>Task — does the pattern differ by device?</h2>
+<div class="instructions-box">
+<p><strong>Business question</strong>: does the association between finger length and reaction time depend on which device someone used?</p>
+<p>Open the Colab notebook — the setup cell builds <code>student_summary</code> for you, one row per student. Answer this with <code>smf.ols</code>. You have 10 minutes — no further syntax hints. Work out the formula string yourselves.</p>
+</div>
+<div class="fragment">
+<p>We’ll go through real answers together after.</p>
+</div>
+</section>
+<section id="what-you-should-have-found-1" class="slide level2">
+<h2>What you should have found</h2>
+<div style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;">
+<p>Answer revealed in the workshop.</p>
+</div>
+</section>
+<section id="the-figure" class="slide level2">
+<h2>The figure</h2>
+<div class="cell hidden">
+<div class="sourceCode cell-code hidden" id="cb16" data-startfrom="884" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 883;"><span id="cb16-884"><a></a>class_chart <span class="op">=</span> (withBands) <span class="kw">=&gt;</span> {</span>
+<span id="cb16-885"><a></a>  <span class="kw">const</span> pts <span class="op">=</span> student_summary<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">finger_mm</span> <span class="op">!=</span> <span class="kw">null</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="pp">isNaN</span>(d<span class="op">.</span><span class="at">finger_mm</span>) <span class="op">&amp;&amp;</span> d<span class="op">.</span><span class="at">device</span> <span class="op">!=</span> <span class="kw">null</span>)</span>
+<span id="cb16-886"><a></a>  <span class="cf">return</span> Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb16-887"><a></a>    <span class="dt">width</span><span class="op">:</span> <span class="dv">1000</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">360</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">60</span><span class="op">,</span></span>
+<span id="cb16-888"><a></a>    <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Finger length (mm)"</span> }<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Mean reaction time (ms)"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">3500</span>] }<span class="op">,</span></span>
+<span id="cb16-889"><a></a>    <span class="dt">clip</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb16-890"><a></a>    <span class="dt">color</span><span class="op">:</span> { <span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="st">"Laptop"</span><span class="op">,</span> <span class="st">"Phone"</span>]<span class="op">,</span> <span class="dt">range</span><span class="op">:</span> [<span class="st">"#457b9d"</span><span class="op">,</span> <span class="st">"#e63946"</span>] }<span class="op">,</span></span>
+<span id="cb16-891"><a></a>    <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb16-892"><a></a>      withBands <span class="op">?</span> Plot<span class="op">.</span><span class="fu">areaY</span>(class_bands<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span> <span class="dt">y1</span><span class="op">:</span> <span class="st">"lo"</span><span class="op">,</span> <span class="dt">y2</span><span class="op">:</span> <span class="st">"hi"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"group"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.18</span> }) <span class="op">:</span> <span class="kw">null</span><span class="op">,</span></span>
+<span id="cb16-893"><a></a>      Plot<span class="op">.</span><span class="fu">dot</span>(pts<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"finger_mm"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"mean_rt"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">device</span> <span class="op">===</span> <span class="st">"Phone"</span> <span class="op">?</span> <span class="st">"#e63946"</span> <span class="op">:</span> <span class="st">"#457b9d"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"white"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.5</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">4</span> })<span class="op">,</span></span>
+<span id="cb16-894"><a></a>      Plot<span class="op">.</span><span class="fu">line</span>(class_bands<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"fit"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"group"</span><span class="op">,</span> <span class="dt">z</span><span class="op">:</span> <span class="st">"group"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">2.5</span> })<span class="op">,</span></span>
+<span id="cb16-895"><a></a>    ]</span>
+<span id="cb16-896"><a></a>  })</span>
+<span id="cb16-897"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display hidden">
+<div id="ojs-cell-10" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb17" data-startfrom="901" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 900;"><span id="cb17-901"><a></a><span class="fu">class_chart</span>(<span class="kw">false</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-11" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</section>
+<section id="when-the-interaction-does-matter" class="slide level2">
+<h2>When the interaction does matter</h2>
+<div class="mid-code">
+<div class="sourceCode" id="cb18"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a></a>hotels[<span class="st">'four'</span>] <span class="op">=</span> (hotels[<span class="st">'stars'</span>] <span class="op">&gt;=</span> <span class="dv">4</span>).astype(<span class="bu">int</span>)</span>
+<span id="cb18-2"><a></a>model <span class="op">=</span> smf.ols(<span class="st">'price ~ distance * four'</span>, data<span class="op">=</span>hotels).fit(cov_type<span class="op">=</span><span class="st">'HC1'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb19" data-startfrom="914" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 913;"><span id="cb19-914"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb19-915"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">1000</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">260</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">60</span><span class="op">,</span></span>
+<span id="cb19-916"><a></a>  <span class="dt">x</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Distance from the city centre (miles)"</span> }<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> { <span class="dt">label</span><span class="op">:</span> <span class="st">"Price (</span><span class="sc">\u20ac</span><span class="st">)"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">300</span>] }<span class="op">,</span></span>
+<span id="cb19-917"><a></a>  <span class="dt">clip</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb19-918"><a></a>  <span class="dt">color</span><span class="op">:</span> { <span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> [<span class="st">"3 stars"</span><span class="op">,</span> <span class="st">"4 stars"</span>]<span class="op">,</span> <span class="dt">range</span><span class="op">:</span> [<span class="st">"#457b9d"</span><span class="op">,</span> <span class="st">"#e63946"</span>] }<span class="op">,</span></span>
+<span id="cb19-919"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb19-920"><a></a>    Plot<span class="op">.</span><span class="fu">dot</span>(hotel_scatter<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"distance"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"price"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"group"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="fl">2.5</span><span class="op">,</span> <span class="dt">strokeOpacity</span><span class="op">:</span> <span class="fl">0.4</span> })<span class="op">,</span></span>
+<span id="cb19-921"><a></a>    Plot<span class="op">.</span><span class="fu">areaY</span>(hotel_bands<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span> <span class="dt">y1</span><span class="op">:</span> <span class="st">"lo"</span><span class="op">,</span> <span class="dt">y2</span><span class="op">:</span> <span class="st">"hi"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"group"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.2</span> })<span class="op">,</span></span>
+<span id="cb19-922"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(hotel_bands<span class="op">,</span> { <span class="dt">x</span><span class="op">:</span> <span class="st">"x"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"fit"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"group"</span><span class="op">,</span> <span class="dt">z</span><span class="op">:</span> <span class="st">"group"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">2.5</span> })<span class="op">,</span></span>
+<span id="cb19-923"><a></a>  ]</span>
+<span id="cb19-924"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-12" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb20" data-startfrom="929" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 928;"><span id="cb20-929"><a></a><span class="fu">html</span><span class="vs">`&lt;div class="instructions-box" style="font-size:0.85em;"&gt;Each extra mile from the centre goes with a price about </span><span class="sc">\u20ac${</span><span class="bu">Math</span><span class="op">.</span><span class="fu">abs</span>(hotel_inter<span class="op">.</span><span class="at">b3</span>)<span class="sc">}</span><span class="vs"> lower for three-star hotels, and about </span><span class="sc">\u20ac${</span><span class="bu">Math</span><span class="op">.</span><span class="fu">abs</span>(hotel_inter<span class="op">.</span><span class="at">b4</span>)<span class="sc">}</span><span class="vs"> lower for four-star. The interaction, </span><span class="sc">\u2212${</span><span class="bu">Math</span><span class="op">.</span><span class="fu">abs</span>(hotel_inter<span class="op">.</span><span class="at">inter</span>)<span class="sc">}</span><span class="vs"> (p = </span><span class="sc">${</span>hotel_inter<span class="op">.</span><span class="at">p</span><span class="sc">}</span><span class="vs">), is that difference. Near the centre the bands are well apart; by about 3 miles the four-star premium has gone. With </span><span class="sc">${</span>hotel_inter<span class="op">.</span><span class="at">n3</span> <span class="op">+</span> hotel_inter<span class="op">.</span><span class="at">n4</span><span class="sc">}</span><span class="vs"> hotels, the data can show it.&lt;/div&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-13" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="is-it-more-causal" class="slide level2">
+<h2>Is it (more) causal?</h2>
+</section>
+<section id="ceteris-paribus-is-a-destination-not-a-guarantee" class="slide level2">
+<h2>Ceteris paribus is a destination, not a guarantee</h2>
+<p>Conditioning on more variables gets us closer to comparing “apples to apples,” even in observational data. But:</p>
+<ul>
+<li><em>Ceteris paribus</em> means conditioning on <strong>every</strong> relevant confounder</li>
+<li>A regression can only condition on what’s actually in the dataset, measured the way it happens to be measured</li>
+<li><strong>Conditioning on everything is impossible in general.</strong> Multiple regression is hardly ever truly ceteris paribus</li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
+</div>
+</section>
+<section id="not-every-correlated-variable-belongs" class="slide level2">
+<h2>Not every correlated variable belongs</h2>
+<div class="instructions-box">
+<p>Question: to see how TV advertising affects sales, should you control for how many people <em>viewed</em> the advert?</p>
+</div>
+<div class="fragment">
+<p>No.&nbsp;Fewer views is part of <em>why</em> less advertising hurts sales — it’s not a confounder, it’s a step in the causal chain itself. Controlling for it would control away the very thing you’re trying to measure.</p>
+</div>
+<div class="fragment">
+<div style="display:flex;gap:40px;justify-content:center;margin:6px 0;"><div style="flex:1;max-width:460px;"><svg viewbox="0 0 500 230" width="100%" role="img" aria-label="Diagram: the season affects both advertising and sales, and advertising affects sales. The season is a confounder."><defs><marker id="ah" viewbox="0 0 10 10" refx="9" refy="5" markerwidth="7" markerheight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a1a2e"></path></marker></defs><rect x="170" y="10" width="160" height="44" rx="8" fill="#fdecee" stroke="#e63946" stroke-width="2"></rect><text x="250.0" y="38" text-anchor="middle" font-family="sans-serif" font-size="19" fill="#1a1a2e">Season</text><rect x="20" y="150" width="170" height="44" rx="8" fill="#e6eef5" stroke="#457b9d" stroke-width="2"></rect><text x="105.0" y="178" text-anchor="middle" font-family="sans-serif" font-size="19" fill="#1a1a2e">Advertising</text><rect x="330" y="150" width="150" height="44" rx="8" fill="#e6eef5" stroke="#457b9d" stroke-width="2"></rect><text x="405.0" y="178" text-anchor="middle" font-family="sans-serif" font-size="19" fill="#1a1a2e">Sales</text><line x1="215" y1="54" x2="135" y2="146" stroke="#1a1a2e" stroke-width="2.5" marker-end="url(#ah)"></line><line x1="285" y1="54" x2="370" y2="146" stroke="#1a1a2e" stroke-width="2.5" marker-end="url(#ah)"></line><line x1="190" y1="172" x2="326" y2="172" stroke="#1a1a2e" stroke-width="2.5" marker-end="url(#ah)"></line><text x="250" y="222" text-anchor="middle" font-family="sans-serif" font-size="20" fill="#2d6a4f" font-weight="bold">Confounder: control for it</text></svg></div><div style="flex:1;max-width:460px;"><svg viewbox="0 0 500 230" width="100%" role="img" aria-label="Diagram: advertising leads to views, and views lead to sales. Views are a step in the chain."><defs><marker id="ah" viewbox="0 0 10 10" refx="9" refy="5" markerwidth="7" markerheight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a1a2e"></path></marker></defs><rect x="0" y="100" width="135" height="44" rx="8" fill="#e6eef5" stroke="#457b9d" stroke-width="2"></rect><text x="67.5" y="128" text-anchor="middle" font-family="sans-serif" font-size="19" fill="#1a1a2e">Advertising</text><rect x="195" y="100" width="110" height="44" rx="8" fill="#fdecee" stroke="#e63946" stroke-width="2"></rect><text x="250.0" y="128" text-anchor="middle" font-family="sans-serif" font-size="19" fill="#1a1a2e">Views</text><rect x="365" y="100" width="135" height="44" rx="8" fill="#e6eef5" stroke="#457b9d" stroke-width="2"></rect><text x="432.5" y="128" text-anchor="middle" font-family="sans-serif" font-size="19" fill="#1a1a2e">Sales</text><line x1="135" y1="122" x2="191" y2="122" stroke="#1a1a2e" stroke-width="2.5" marker-end="url(#ah)"></line><line x1="305" y1="122" x2="361" y2="122" stroke="#1a1a2e" stroke-width="2.5" marker-end="url(#ah)"></line><text x="250" y="222" text-anchor="middle" font-family="sans-serif" font-size="20" fill="#e63946" font-weight="bold">Step in the chain: don't control for it</text></svg></div></div>
+</div>
+<div class="fragment">
+<p>These are sometimes called <strong>bad controls</strong>. Telling a genuine confounder from a bad control by eye is genuinely hard — we’ll draw these diagrams properly in Week 9.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 10</p>
+</div>
+</section>
+<section id="summary" class="slide level2">
+<h2>Summary</h2>
+<ul>
+<li>Multiple regression is a linear model with several x’s, letting us compare observations that are similar in one variable while differing in another</li>
+<li><strong>Omitted variable bias</strong> (leaving out a relevant, correlated variable) and <strong>multicollinearity</strong> (including two correlated variables) are opposite problems — bias vs.&nbsp;precision — and the fix for one is not the fix for the other</li>
+<li>It gets us closer to a causal comparison, never all the way there</li>
+<li>More variables always raises R² — that’s not the same as a better model</li>
+</ul>
+</section>
+<section id="online-session" class="slide level2">
+<h2>Online session</h2>
+<p>A walkthrough of the gender pay gap in more depth: adding age as a confounder, checking the OVB formula, non-linear age profiles and interactions, and presenting a regression table. It finishes by revisiting the Vienna hotels with multiple regression.</p>
+</section>
+<section id="coming-up" class="slide level2">
+<h2>Coming up</h2>
+<div style="text-align: center; padding-top: 60px;">
+<p><span style="font-size: 1.3em;">Week 7 is reading week — no workshop.</span></p>
+<p><span style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"><strong>Week 8: GLMs</strong></span></p>
+<div class="fragment" style="padding-top:40px;">
+<p><em>Logistic and Poisson regression, marginal effects · real named datasets, at last</em></p>
+</div>
+</div>
+
+
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":false,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'fade',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1280,
+
+        height: 720,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 8.0e-2,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script type="ojs-module-contents">
+    eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgLy8gR2VuZXJpYyBcInNocmluayBvbiByZXZlYWxcIiB3aXJpbmcsIHVzZWQgYnkgZXZlcnkgY2hhcnQgd3JhcHBlZCBhc1xuICAvLyBgOjo6OiB7LnNocmluay1vbi1yZXZlYWwgZGF0YS1mcmFnPVwic29tZS1mcmFnbWVudC1pZFwiIHN0eWxlPVwiLS1sYXJnZS1oZWlnaHQ6Li4uOy0tc21hbGwtaGVpZ2h0Oi4uLjstLXNocmluay1zY2FsZTouLi5cIn1gXG4gIC8vIEVhY2ggY2hhcnQgcmVuZGVycyBsYXJnZSB3aGlsZSBpdHMgbmFtZWQgZnJhZ21lbnQgaXMgaGlkZGVuLCB0aGVuXG4gIC8vIHNocmlua3Mgc21vb3RobHkgdG8gbWFrZSByb29tIHRoZSBtb21lbnQgdGhhdCBmcmFnbWVudCBpcyByZXZlYWxlZC5cbiAgLy8gU2l6ZXMgbGl2ZSBlbnRpcmVseSBpbiBlYWNoIHdyYXBwZXIncyBvd24gaW5saW5lIHN0eWxlIOKAlCB0aGlzIGNlbGwgb25seVxuICAvLyBoYW5kbGVzIHNob3cvaGlkZSwgb25jZSwgZm9yIGV2ZXJ5IHdyYXBwZXIgb24gdGhlIHBhZ2UsIHNvIGFkZGluZyBhIG5ld1xuICAvLyBjaGFydCB0byB0aGlzIHBhdHRlcm4gbmV2ZXIgbWVhbnMgdG91Y2hpbmcgdGhpcyBjZWxsLlxuICBjb25zdCB3cmFwcGVyRm9yID0gKGZyYWdJZCkgPT4gZG9jdW1lbnQucXVlcnlTZWxlY3RvcihgLnNocmluay1vbi1yZXZlYWxbZGF0YS1mcmFnPVwiJHtmcmFnSWR9XCJdYClcblxuICAvLyBTZXRzIGVhY2ggd3JhcHBlcidzIGNvcnJlY3Qgc3RhcnRpbmcgc3RhdGUgaW1tZWRpYXRlbHksIGluY2x1ZGluZyBvbiBhXG4gIC8vIHJlbG9hZCBvciBkaXJlY3QgbmF2aWdhdGlvbiB0byBhIHNsaWRlIHdob3NlIGZyYWdtZW50IGlzIGFscmVhZHkgc2hvd25cbiAgLy8g4oCUIG1hdHRlcnMgYmVjYXVzZSB0aGlzIGNlbGwgKG5vIHJlYWN0aXZlIGRlcHMpIG9ubHkgcnVucyBvbmNlLCBhdCBsb2FkLlxuICBjb25zdCBzeW5jQWxsID0gKCkgPT4ge1xuICAgIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoJy5mcmFnbWVudFtpZF0nKS5mb3JFYWNoKGZyYWcgPT5cbiAgICAgIHdyYXBwZXJGb3IoZnJhZy5pZCk/LmNsYXNzTGlzdC50b2dnbGUoJ2lzLXNtYWxsJywgZnJhZy5jbGFzc0xpc3QuY29udGFpbnMoJ3Zpc2libGUnKSlcbiAgICApXG4gIH1cbiAgc3luY0FsbCgpXG4gIC8vIFBERiBleHBvcnQgcmVidWlsZHMgdGhlIHNsaWRlIERPTSwgc28gcmUtc3luYyBvbiBhbnkgY2hhbmdlIChzYW1lIGZpeCBhcyBXZWVrcyAyLCA0IGFuZCA1KS5cbiAgbmV3IE11dGF0aW9uT2JzZXJ2ZXIoc3luY0FsbCkub2JzZXJ2ZShkb2N1bWVudC5ib2R5LCB7IGNoaWxkTGlzdDogdHJ1ZSwgc3VidHJlZTogdHJ1ZSwgYXR0cmlidXRlczogdHJ1ZSwgYXR0cmlidXRlRmlsdGVyOiBbJ2NsYXNzJ10gfSlcblxuICBSZXZlYWwub24oJ2ZyYWdtZW50c2hvd24nLCAoZXZlbnQpID0+IHtcbiAgICB3cmFwcGVyRm9yKGV2ZW50LmZyYWdtZW50LmlkKT8uY2xhc3NMaXN0LmFkZCgnaXMtc21hbGwnKVxuICB9KVxuICBSZXZlYWwub24oJ2ZyYWdtZW50aGlkZGVuJywgKGV2ZW50KSA9PiB7XG4gICAgd3JhcHBlckZvcihldmVudC5mcmFnbWVudC5pZCk/LmNsYXNzTGlzdC5yZW1vdmUoJ2lzLXNtYWxsJylcbiAgfSlcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMiIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Im9sc0ZpdCA9IGZ1bmN0aW9uKFgsIHkpIHtcbiAgY29uc3QgbiA9IFgubGVuZ3RoLCBrID0gWFswXS5sZW5ndGggKyAxXG4gIGNvbnN0IGRlc2lnbiA9IFgubWFwKHJvdyA9PiBbMSwgLi4ucm93XSlcbiAgY29uc3QgWHRYID0gQXJyYXkuZnJvbSh7bGVuZ3RoOiBrfSwgKF8sIGkpID0+IEFycmF5LmZyb20oe2xlbmd0aDoga30sIChfLCBqKSA9PiBkMy5zdW0oZGVzaWduLm1hcChyID0+IHJbaV0gKiByW2pdKSkpKVxuICBjb25zdCBYdHkgPSBBcnJheS5mcm9tKHtsZW5ndGg6IGt9LCAoXywgaSkgPT4gZDMuc3VtKGRlc2lnbi5tYXAoKHIsIGlkeCkgPT4gcltpXSAqIHlbaWR4XSkpKVxuICBjb25zdCBBID0gWHRYLm1hcCgocm93LCBpKSA9PiBbLi4ucm93LCBYdHlbaV1dKVxuICBmb3IgKGxldCBjb2wgPSAwOyBjb2wgPCBrOyBjb2wrKykge1xuICAgIGxldCBwaXYgPSBjb2xcbiAgICBmb3IgKGxldCByID0gY29sICsgMTsgciA8IGs7IHIrKykgaWYgKE1hdGguYWJzKEFbcl1bY29sXSkgPiBNYXRoLmFicyhBW3Bpdl1bY29sXSkpIHBpdiA9IHJcbiAgICBjb25zdCB0bXAgPSBBW2NvbF07IEFbY29sXSA9IEFbcGl2XTsgQVtwaXZdID0gdG1wXG4gICAgZm9yIChsZXQgciA9IDA7IHIgPCBrOyByKyspIHtcbiAgICAgIGlmIChyID09PSBjb2wpIGNvbnRpbnVlXG4gICAgICBjb25zdCBmYWN0b3IgPSBBW3JdW2NvbF0gLyBBW2NvbF1bY29sXVxuICAgICAgZm9yIChsZXQgYyA9IGNvbDsgYyA8PSBrOyBjKyspIEFbcl1bY10gLT0gZmFjdG9yICogQVtjb2xdW2NdXG4gICAgfVxuICB9XG4gIGNvbnN0IGNvZWZzID0gQS5tYXAoKHJvdywgaSkgPT4gcm93W2tdIC8gcm93W2ldKVxuICBjb25zdCBmaXR0ZWQgPSBkZXNpZ24ubWFwKHIgPT4gZDMuc3VtKHIubWFwKCh2LCBpKSA9PiB2ICogY29lZnNbaV0pKSlcbiAgY29uc3QgcmVzaWQgPSB5Lm1hcCgoeWksIGkpID0+IHlpIC0gZml0dGVkW2ldKVxuICByZXR1cm4geyBjb2VmcywgZml0dGVkLCByZXNpZCwgbiwgayB9XG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTMiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ2aWV3b2YgY29yclNsaWRlciA9IHtcbiAgY29uc3QgZiA9IGh0bWxgPGRpdiBzdHlsZT1cImRpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7Z2FwOjE0cHg7Zm9udC1zaXplOjEzcHg7XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICBmb250LWZhbWlseTonSGVsdmV0aWNhIE5ldWUnLHNhbnMtc2VyaWY7cGFkZGluZzo0cHggMnB4O2NvbG9yOiMzMzM7XCI+XG4gICAgPHNwYW4gc3R5bGU9XCJjb2xvcjojNjY2O3doaXRlLXNwYWNlOm5vd3JhcDtcIj5Db3JyZWxhdGlvbiBiZXR3ZWVuIHjigoEgYW5kIHjigoI8L3NwYW4+XG4gICAgPGlucHV0IHR5cGU9XCJyYW5nZVwiIG1pbj1cIjBcIiBtYXg9XCIwLjk4XCIgc3RlcD1cIjAuMDJcIiB2YWx1ZT1cIjBcIlxuICAgICAgICAgICBzdHlsZT1cIndpZHRoOjIwMHB4O2N1cnNvcjpwb2ludGVyO2FjY2VudC1jb2xvcjojZTYzOTQ2O1wiPlxuICAgIDxzcGFuIGlkPVwiY3MtbGFiZWxcIiBzdHlsZT1cImZvbnQtd2VpZ2h0OjcwMDttaW4td2lkdGg6MzZweDtjb2xvcjojZTYzOTQ2O1wiPjAuMDA8L3NwYW4+XG4gIDwvZGl2PmBcbiAgY29uc3Qgc2xpZGVyID0gZi5xdWVyeVNlbGVjdG9yKCdpbnB1dCcpXG4gIGNvbnN0IGxhYmVsICA9IGYucXVlcnlTZWxlY3RvcignI2NzLWxhYmVsJylcbiAgc2xpZGVyLmFkZEV2ZW50TGlzdGVuZXIoJ2lucHV0JywgKCkgPT4ge1xuICAgIGxhYmVsLnRleHRDb250ZW50ID0gKCtzbGlkZXIudmFsdWUpLnRvRml4ZWQoMilcbiAgICBmLmRpc3BhdGNoRXZlbnQobmV3IEN1c3RvbUV2ZW50KCdpbnB1dCcpKVxuICB9KVxuICBPYmplY3QuZGVmaW5lUHJvcGVydHkoZiwgJ3ZhbHVlJywgeyBnZXQ6ICgpID0+ICtzbGlkZXIudmFsdWUgfSlcbiAgcmV0dXJuIGZcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNCIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgY29uc3QgbiA9IDIwMFxuICBjb25zdCBzZWVkID0gaSA9PiB7IGNvbnN0IHMgPSBNYXRoLnNpbihpICogMTIuOTg5OCkgKiA0Mzc1OC41NDUzOyByZXR1cm4gKHMgLSBNYXRoLmZsb29yKHMpKSAqIDIgLSAxIH1cbiAgY29uc3Qgc2VlZDIgPSBpID0+IHsgY29uc3QgcyA9IE1hdGguc2luKGkgKiA3OC4yMzMpICogMTIzNDUuNjc4OTsgcmV0dXJuIChzIC0gTWF0aC5mbG9vcihzKSkgKiAyIC0gMSB9XG4gIGNvbnN0IHgxID0gZDMucmFuZ2UobikubWFwKGkgPT4gc2VlZChpKSlcbiAgY29uc3QgeDIgPSBkMy5yYW5nZShuKS5tYXAoaSA9PiBjb3JyU2xpZGVyICogeDFbaV0gKyBNYXRoLnNxcnQoMSAtIGNvcnJTbGlkZXIgKiogMikgKiBzZWVkMihpKSlcbiAgY29uc3QgeSA9IGQzLnJhbmdlKG4pLm1hcChpID0+IDIgKiB4MVtpXSArIDEuNSAqIHgyW2ldICsgc2VlZDIoaSAqIDMuMSkpXG4gIGNvbnN0IGZpdEZvciA9IGMgPT4ge1xuICAgIGNvbnN0IHgyYyA9IGQzLnJhbmdlKG4pLm1hcChpID0+IGMgKiB4MVtpXSArIE1hdGguc3FydCgxIC0gYyAqKiAyKSAqIHNlZWQyKGkpKVxuICAgIGNvbnN0IG1vZGVsID0gb2xzRml0KHgxLm1hcCgodiwgaSkgPT4gW3YsIHgyY1tpXV0pLCB5KVxuICAgIGNvbnN0IHNkRSA9IE1hdGguc3FydChkMy5zdW0obW9kZWwucmVzaWQubWFwKGUgPT4gZSAqKiAyKSkgLyAobiAtIG1vZGVsLmspKVxuICAgIGNvbnN0IHNkWDEgPSBNYXRoLnNxcnQoZDMubWVhbih4MS5tYXAodiA9PiAodiAtIGQzLm1lYW4oeDEpKSAqKiAyKSkpXG4gICAgY29uc3QgYXV4UjIgPSAoKCkgPT4ge1xuICAgICAgY29uc3QgYXV4ID0gb2xzRml0KHgyYy5tYXAodiA9PiBbdl0pLCB4MSlcbiAgICAgIGNvbnN0IHliYXIgPSBkMy5tZWFuKHgxKVxuICAgICAgY29uc3QgdmFyWSA9IGQzLm1lYW4oeDEubWFwKHYgPT4gKHYgLSB5YmFyKSAqKiAyKSlcbiAgICAgIGNvbnN0IHZhclloYXQgPSBkMy5tZWFuKGF1eC5maXR0ZWQubWFwKGYgPT4gKGYgLSB5YmFyKSAqKiAyKSlcbiAgICAgIHJldHVybiB2YXJZaGF0IC8gdmFyWVxuICAgIH0pKClcbiAgICByZXR1cm4gc2RFIC8gKE1hdGguc3FydChuKSAqIHNkWDEgKiBNYXRoLnNxcnQoMSAtIGF1eFIyKSlcbiAgfVxuICBjb25zdCBjdXJ2ZSA9IGQzLnJhbmdlKDAsIDAuOTksIDAuMDIpLm1hcChjID0+ICh7IGMsIHNlOiBmaXRGb3IoYykgfSkpXG4gIGNvbnN0IGN1cnJlbnRTRSA9IGZpdEZvcihjb3JyU2xpZGVyKVxuICBjb25zdCBjaGFydCA9IFBsb3QucGxvdCh7XG4gICAgaGVpZ2h0OiAzMjAsIG1hcmdpbkxlZnQ6IDYwLFxuICAgIHg6IHsgbGFiZWw6IFwiY29ycmVsYXRpb24gYmV0d2VlbiB44oKBIGFuZCB44oKCXCIgfSwgeTogeyBsYWJlbDogXCJTRSjOssyC4oKBKVwiIH0sXG4gICAgbWFya3M6IFtcbiAgICAgIFBsb3QubGluZShjdXJ2ZSwgeyB4OiBcImNcIiwgeTogXCJzZVwiLCBzdHJva2U6IFwiIzQ1N2I5ZFwiLCBzdHJva2VXaWR0aDogMiB9KSxcbiAgICAgIFBsb3QuZG90KFt7IGM6IGNvcnJTbGlkZXIsIHNlOiBjdXJyZW50U0UgfV0sIHsgeDogXCJjXCIsIHk6IFwic2VcIiwgZmlsbDogXCIjZTYzOTQ2XCIsIHI6IDYgfSksXG4gICAgXVxuICB9KVxuICByZXR1cm4gaHRtbGA8ZGl2PiR7Y2hhcnR9PHAgc3R5bGU9XCJmb250LWZhbWlseTpzYW5zLXNlcmlmO2ZvbnQtc2l6ZToxZW07dGV4dC1hbGlnbjpjZW50ZXI7XCI+U0UozrLMguKCgSkgYXQgdGhpcyBjb3JyZWxhdGlvbjogPHN0cm9uZz4ke2N1cnJlbnRTRS50b0ZpeGVkKDMpfTwvc3Ryb25nPjwvcD48L2Rpdj5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTUiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIGNvbnN0IHJvd3MgPSBzdHVkZW50X3N1bW1hcnkuZmlsdGVyKGQgPT4gZC5maW5nZXJfbW0gIT0gbnVsbCAmJiAhaXNOYU4oZC5maW5nZXJfbW0pICYmIGQuZGV2aWNlICE9IG51bGwgJiYgZC5jYWZmZWluZSAhPSBudWxsKVxuICBjb25zdCBmbSA9IHJvd3MubWFwKGQgPT4gZC5maW5nZXJfbW0pXG4gIGNvbnN0IGR2ID0gcm93cy5tYXAoZCA9PiBkLmRldmljZSA9PT0gXCJQaG9uZVwiID8gMSA6IDApXG4gIGNvbnN0IGNmID0gcm93cy5tYXAoZCA9PiBkLmNhZmZlaW5lID09PSBcIlllc1wiID8gMSA6IDApXG4gIGNvbnN0IHIyID0gKHksIFgpID0+IHtcbiAgICBjb25zdCBtb2RlbCA9IG9sc0ZpdChYLCB5KVxuICAgIGNvbnN0IHliYXIgPSBkMy5tZWFuKHkpXG4gICAgY29uc3QgdmFyWSA9IGQzLm1lYW4oeS5tYXAodiA9PiAodiAtIHliYXIpICoqIDIpKVxuICAgIGNvbnN0IHZhclloYXQgPSBkMy5tZWFuKG1vZGVsLmZpdHRlZC5tYXAoZiA9PiAoZiAtIHliYXIpICoqIDIpKVxuICAgIHJldHVybiB2YXJZaGF0IC8gdmFyWVxuICB9XG4gIGNvbnN0IHZpZiA9ICh5LCBYKSA9PiAxIC8gKDEgLSByMih5LCBYKSlcbiAgY29uc3Qgcm93czMgPSBbXG4gICAgeyBsYWJlbDogXCJGaW5nZXIgbGVuZ3RoXCIsIHZpZjogdmlmKGZtLCBkdi5tYXAoKHYsIGkpID0+IFt2LCBjZltpXV0pKSB9LFxuICAgIHsgbGFiZWw6IFwiRGV2aWNlXCIsIHZpZjogdmlmKGR2LCBmbS5tYXAoKHYsIGkpID0+IFt2LCBjZltpXV0pKSB9LFxuICAgIHsgbGFiZWw6IFwiQ2FmZmVpbmVcIiwgdmlmOiB2aWYoY2YsIGZtLm1hcCgodiwgaSkgPT4gW3YsIGR2W2ldXSkpIH0sXG4gIF1cbiAgcmV0dXJuIGh0bWxgPHRhYmxlIHN0eWxlPVwibWFyZ2luOjAgYXV0bztmb250LWZhbWlseTpzYW5zLXNlcmlmO2ZvbnQtc2l6ZToxLjFlbTtib3JkZXItY29sbGFwc2U6Y29sbGFwc2U7XCI+XG4gICAgPHRyIHN0eWxlPVwiYm9yZGVyLWJvdHRvbToycHggc29saWQgIzFhMWEyZTtcIj48dGggc3R5bGU9XCJwYWRkaW5nOjhweCAyNHB4O3RleHQtYWxpZ246bGVmdDtcIj5WYXJpYWJsZTwvdGg+PHRoIHN0eWxlPVwicGFkZGluZzo4cHggMjRweDtcIj5WSUY8L3RoPjwvdHI+XG4gICAgJHtyb3dzMy5tYXAoZCA9PiBgPHRyIHN0eWxlPVwiYm9yZGVyLWJvdHRvbToxcHggc29saWQgI2RkZDtcIj48dGQgc3R5bGU9XCJwYWRkaW5nOjZweCAyNHB4O1wiPiR7ZC5sYWJlbH08L3RkPjx0ZCBzdHlsZT1cInBhZGRpbmc6NnB4IDI0cHg7dGV4dC1hbGlnbjpjZW50ZXI7Zm9udC13ZWlnaHQ6NzAwO1wiPiR7ZC52aWYudG9GaXhlZCgyKX08L3RkPjwvdHI+YCkuam9pbignJyl9XG4gIDwvdGFibGU+YFxufVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC02IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8ZGl2IGNsYXNzPVwiaW5zdHJ1Y3Rpb25zLWJveFwiPjxjb2RlPlByb2IgKEYtc3RhdGlzdGljKSA9ICR7dGFzazYuZl9wfTwvY29kZT4g4oCTIHdlIGNhbid0IHJlamVjdCB0aGF0IGFsbCB0aHJlZSBzbG9wZXMgYXJlIGpvaW50bHkgemVyby4gV2l0aCBvbmUgcm93IHBlciBzdHVkZW50IHdlIGhhdmUgb25seSAke3Rhc2s2Lm59IG9ic2VydmF0aW9ucywgc28gdGhlcmUncyB2ZXJ5IGxpdHRsZSB0byBnbyBvbi48L2Rpdj5gXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTciLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJodG1sYDxwcmUgc3R5bGU9XCJmb250LWZhbWlseTonU0YgTW9ubycsJ01lbmxvJyxtb25vc3BhY2U7Zm9udC1zaXplOjAuNWVtO2xpbmUtaGVpZ2h0OjEuMztiYWNrZ3JvdW5kOiNmNmY2Zjg7Ym9yZGVyOjFweCBzb2xpZCAjZTBlMGU2O2JvcmRlci1yYWRpdXM6NnB4O3BhZGRpbmc6OHB4IDE0cHg7b3ZlcmZsb3cteDphdXRvO3doaXRlLXNwYWNlOnByZTtcIj4ke2hvdGVsX2ZfdGV4dH08L3ByZT5gXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTgiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ2aWV3b2YgaW50ZXIgPSB7XG4gIGNvbnN0IGYgPSBodG1sYDxkaXYgY2xhc3M9XCJpbnRlci1jdGxcIiBzdHlsZT1cImRpc3BsYXk6ZmxleDtnYXA6NDBweDthbGlnbi1pdGVtczpjZW50ZXI7Zm9udC1zaXplOjI0cHg7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtjb2xvcjojMzMzO3BhZGRpbmc6NHB4O1wiPlxuICAgIDxsYWJlbCBzdHlsZT1cImRpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7Z2FwOjhweDtcIj48c3Bhbj7OsuKCgiAoaW50ZXJjZXB0IHNoaWZ0KTwvc3Bhbj4gPGlucHV0IG5hbWU9XCJiMlwiIHR5cGU9XCJyYW5nZVwiIG1pbj1cIi00XCIgbWF4PVwiNFwiIHN0ZXA9XCIwLjVcIiB2YWx1ZT1cIjJcIiBzdHlsZT1cIndpZHRoOjIyMHB4O2FjY2VudC1jb2xvcjojZTYzOTQ2O1wiPiA8c3Ryb25nIGlkPVwiYjJ2XCI+Mi4wPC9zdHJvbmc+PC9sYWJlbD5cbiAgICA8bGFiZWwgc3R5bGU9XCJkaXNwbGF5OmZsZXg7YWxpZ24taXRlbXM6Y2VudGVyO2dhcDo4cHg7XCI+PHNwYW4+zrLigoMgKHNsb3BlIHNoaWZ0KTwvc3Bhbj4gPGlucHV0IG5hbWU9XCJiM1wiIHR5cGU9XCJyYW5nZVwiIG1pbj1cIi0xXCIgbWF4PVwiMVwiIHN0ZXA9XCIwLjFcIiB2YWx1ZT1cIjAuNVwiIHN0eWxlPVwid2lkdGg6MjIwcHg7YWNjZW50LWNvbG9yOiNlNjM5NDY7XCI+IDxzdHJvbmcgaWQ9XCJiM3ZcIj4wLjU8L3N0cm9uZz48L2xhYmVsPlxuICA8L2Rpdj5gXG4gIGNvbnN0IGIyID0gZi5xdWVyeVNlbGVjdG9yKCdbbmFtZT1iMl0nKSwgYjMgPSBmLnF1ZXJ5U2VsZWN0b3IoJ1tuYW1lPWIzXScpXG4gIGNvbnN0IHVwZCA9ICgpID0+IHsgZi5xdWVyeVNlbGVjdG9yKCcjYjJ2JykudGV4dENvbnRlbnQgPSAoK2IyLnZhbHVlKS50b0ZpeGVkKDEpOyBmLnF1ZXJ5U2VsZWN0b3IoJyNiM3YnKS50ZXh0Q29udGVudCA9ICgrYjMudmFsdWUpLnRvRml4ZWQoMSk7IGYuZGlzcGF0Y2hFdmVudChuZXcgQ3VzdG9tRXZlbnQoJ2lucHV0JykpIH1cbiAgYjIuYWRkRXZlbnRMaXN0ZW5lcignaW5wdXQnLCB1cGQpOyBiMy5hZGRFdmVudExpc3RlbmVyKCdpbnB1dCcsIHVwZClcbiAgT2JqZWN0LmRlZmluZVByb3BlcnR5KGYsICd2YWx1ZScsIHsgZ2V0OiAoKSA9PiAoeyBiMjogK2IyLnZhbHVlLCBiMzogK2IzLnZhbHVlIH0pIH0pXG4gIHJldHVybiBmXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTkiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIGNvbnN0IGIwID0gMiwgYjEgPSAwLjZcbiAgY29uc3QgeHMgPSBkMy5yYW5nZSgwLCAxMC4wMSwgMC41KVxuICBjb25zdCBwdHMgPSB4cy5mbGF0TWFwKHggPT4gW1xuICAgIHsgeCwgeTogYjAgKyBiMSAqIHgsIGc6IFwiRCA9IDBcIiB9LFxuICAgIHsgeCwgeTogKGIwICsgaW50ZXIuYjIpICsgKGIxICsgaW50ZXIuYjMpICogeCwgZzogXCJEID0gMVwiIH1dKVxuICBjb25zdCBjaGFydCA9IFBsb3QucGxvdCh7XG4gICAgd2lkdGg6IDEwMDAsIGhlaWdodDogMzYwLCBtYXJnaW5MZWZ0OiA1MCwgZ3JpZDogdHJ1ZSwgc3R5bGU6IHsgZm9udFNpemU6ICcxNnB4JyB9LFxuICAgIHg6IHsgbGFiZWw6IFwieOKCgVwiLCBkb21haW46IFswLCAxMF0gfSwgeTogeyBsYWJlbDogXCJ5XCIsIGRvbWFpbjogWy02LCAyMl0sIHRpY2tzOiA2IH0sXG4gICAgY29sb3I6IHsgbGVnZW5kOiB0cnVlLCBkb21haW46IFtcIkQgPSAwXCIsIFwiRCA9IDFcIl0sIHJhbmdlOiBbXCIjNDU3YjlkXCIsIFwiI2U2Mzk0NlwiXSB9LFxuICAgIG1hcmtzOiBbUGxvdC5ydWxlWChbMF0sIHsgc3Ryb2tlOiBcIiNjY2NcIiB9KSxcbiAgICAgICAgICAgIFBsb3QubGluZShwdHMsIHsgeDogXCJ4XCIsIHk6IFwieVwiLCBzdHJva2U6IFwiZ1wiLCBzdHJva2VXaWR0aDogMyB9KV1cbiAgfSlcbiAgcmV0dXJuIGh0bWxgPGRpdj4ke2NoYXJ0fTxwIHN0eWxlPVwiZm9udC1mYW1pbHk6c2Fucy1zZXJpZjt0ZXh0LWFsaWduOmNlbnRlcjttYXJnaW46NHB4IDAgMDtmb250LXNpemU6MC44NWVtO1wiPkQgPSAwOiBpbnRlcmNlcHQgJHtiMH0sIHNsb3BlICR7YjF9ICZuYnNwO8K3Jm5ic3A7IEQgPSAxOiBpbnRlcmNlcHQgJHsoYjAgKyBpbnRlci5iMikudG9GaXhlZCgxKX0sIHNsb3BlICR7KGIxICsgaW50ZXIuYjMpLnRvRml4ZWQoMSl9PC9wPjwvZGl2PmBcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMTAiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJjbGFzc19jaGFydCA9ICh3aXRoQmFuZHMpID0+IHtcbiAgY29uc3QgcHRzID0gc3R1ZGVudF9zdW1tYXJ5LmZpbHRlcihkID0+IGQuZmluZ2VyX21tICE9IG51bGwgJiYgIWlzTmFOKGQuZmluZ2VyX21tKSAmJiBkLmRldmljZSAhPSBudWxsKVxuICByZXR1cm4gUGxvdC5wbG90KHtcbiAgICB3aWR0aDogMTAwMCwgaGVpZ2h0OiAzNjAsIG1hcmdpbkxlZnQ6IDYwLFxuICAgIHg6IHsgbGFiZWw6IFwiRmluZ2VyIGxlbmd0aCAobW0pXCIgfSwgeTogeyBsYWJlbDogXCJNZWFuIHJlYWN0aW9uIHRpbWUgKG1zKVwiLCBkb21haW46IFswLCAzNTAwXSB9LFxuICAgIGNsaXA6IHRydWUsXG4gICAgY29sb3I6IHsgbGVnZW5kOiB0cnVlLCBkb21haW46IFtcIkxhcHRvcFwiLCBcIlBob25lXCJdLCByYW5nZTogW1wiIzQ1N2I5ZFwiLCBcIiNlNjM5NDZcIl0gfSxcbiAgICBtYXJrczogW1xuICAgICAgd2l0aEJhbmRzID8gUGxvdC5hcmVhWShjbGFzc19iYW5kcywgeyB4OiBcInhcIiwgeTE6IFwibG9cIiwgeTI6IFwiaGlcIiwgZmlsbDogXCJncm91cFwiLCBmaWxsT3BhY2l0eTogMC4xOCB9KSA6IG51bGwsXG4gICAgICBQbG90LmRvdChwdHMsIHsgeDogXCJmaW5nZXJfbW1cIiwgeTogXCJtZWFuX3J0XCIsIHN0cm9rZTogZCA9PiBkLmRldmljZSA9PT0gXCJQaG9uZVwiID8gXCIjZTYzOTQ2XCIgOiBcIiM0NTdiOWRcIiwgZmlsbDogXCJ3aGl0ZVwiLCBmaWxsT3BhY2l0eTogMC41LCByOiA0IH0pLFxuICAgICAgUGxvdC5saW5lKGNsYXNzX2JhbmRzLCB7IHg6IFwieFwiLCB5OiBcImZpdFwiLCBzdHJva2U6IFwiZ3JvdXBcIiwgejogXCJncm91cFwiLCBzdHJva2VXaWR0aDogMi41IH0pLFxuICAgIF1cbiAgfSlcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMTEiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJjbGFzc19jaGFydChmYWxzZSlcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJQbG90LnBsb3Qoe1xuICB3aWR0aDogMTAwMCwgaGVpZ2h0OiAyNjAsIG1hcmdpbkxlZnQ6IDYwLFxuICB4OiB7IGxhYmVsOiBcIkRpc3RhbmNlIGZyb20gdGhlIGNpdHkgY2VudHJlIChtaWxlcylcIiB9LCB5OiB7IGxhYmVsOiBcIlByaWNlIChcXHUyMGFjKVwiLCBkb21haW46IFswLCAzMDBdIH0sXG4gIGNsaXA6IHRydWUsXG4gIGNvbG9yOiB7IGxlZ2VuZDogdHJ1ZSwgZG9tYWluOiBbXCIzIHN0YXJzXCIsIFwiNCBzdGFyc1wiXSwgcmFuZ2U6IFtcIiM0NTdiOWRcIiwgXCIjZTYzOTQ2XCJdIH0sXG4gIG1hcmtzOiBbXG4gICAgUGxvdC5kb3QoaG90ZWxfc2NhdHRlciwgeyB4OiBcImRpc3RhbmNlXCIsIHk6IFwicHJpY2VcIiwgc3Ryb2tlOiBcImdyb3VwXCIsIHI6IDIuNSwgc3Ryb2tlT3BhY2l0eTogMC40IH0pLFxuICAgIFBsb3QuYXJlYVkoaG90ZWxfYmFuZHMsIHsgeDogXCJ4XCIsIHkxOiBcImxvXCIsIHkyOiBcImhpXCIsIGZpbGw6IFwiZ3JvdXBcIiwgZmlsbE9wYWNpdHk6IDAuMiB9KSxcbiAgICBQbG90LmxpbmUoaG90ZWxfYmFuZHMsIHsgeDogXCJ4XCIsIHk6IFwiZml0XCIsIHN0cm9rZTogXCJncm91cFwiLCB6OiBcImdyb3VwXCIsIHN0cm9rZVdpZHRoOiAyLjUgfSksXG4gIF1cbn0pXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTEzIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8ZGl2IGNsYXNzPVwiaW5zdHJ1Y3Rpb25zLWJveFwiIHN0eWxlPVwiZm9udC1zaXplOjAuODVlbTtcIj5FYWNoIGV4dHJhIG1pbGUgZnJvbSB0aGUgY2VudHJlIGdvZXMgd2l0aCBhIHByaWNlIGFib3V0IFxcdTIwYWMke01hdGguYWJzKGhvdGVsX2ludGVyLmIzKX0gbG93ZXIgZm9yIHRocmVlLXN0YXIgaG90ZWxzLCBhbmQgYWJvdXQgXFx1MjBhYyR7TWF0aC5hYnMoaG90ZWxfaW50ZXIuYjQpfSBsb3dlciBmb3IgZm91ci1zdGFyLiBUaGUgaW50ZXJhY3Rpb24sIFxcdTIyMTIke01hdGguYWJzKGhvdGVsX2ludGVyLmludGVyKX0gKHAgPSAke2hvdGVsX2ludGVyLnB9KSwgaXMgdGhhdCBkaWZmZXJlbmNlLiBOZWFyIHRoZSBjZW50cmUgdGhlIGJhbmRzIGFyZSB3ZWxsIGFwYXJ0OyBieSBhYm91dCAzIG1pbGVzIHRoZSBmb3VyLXN0YXIgcHJlbWl1bSBoYXMgZ29uZS4gV2l0aCAke2hvdGVsX2ludGVyLm4zICsgaG90ZWxfaW50ZXIubjR9IGhvdGVscywgdGhlIGRhdGEgY2FuIHNob3cgaXQuPC9kaXY+YFxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJzaGlueUlucHV0KCdjb3JyU2xpZGVyJykifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6InNoaW55SW5wdXQoJ2ludGVyJykifV19
+    </script>
+    <script type="module">
+    if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+    window._ojs.paths.runtimeToDoc = "../..";
+    window._ojs.paths.runtimeToRoot = "../..";
+    window._ojs.paths.docToRoot = "";
+    window._ojs.selfContained = false;
+    window._ojs.runtime.interpretFromScriptTags();
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
+              }
+            }
+            return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>
