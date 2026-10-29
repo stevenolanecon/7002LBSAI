@@ -676,7 +676,7 @@
     "href": "index.html#weeks",
     "title": "Research Methods in Analytics",
     "section": "Weeks",
-    "text": "Weeks\nWorkshop and online-session slides, published as each week runs.\n\n\n\n\nWeek 01Distributions and Summarising Data\n\nLive\n\n\nWorkshop slidesOnline sessionOutliers addendumReaction-time toolPooled histogram toolDownload the data\n\n\n\n\n\nWeek 02Inference\n\nLive\n\n\nWorkshop slidesOnline sessionBootstrap toolDownload the data\n\n\n\n\n\nWeek 03Relationships Between Variables\n\nLive\n\n\nWorkshop slidesOnline sessionDownload the data\n\n\n\n\n\nWeek 04Regression I — Fitting the Line\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 05Regression I — Model Problems & Inference\n\nLive\n\n\nWorkshop slidesOnline sessionQuadratic tool\n\n\n\n\n\nWeek 06Regression II — Multiple Regression\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\nWeek 07\n\nCurriculum Enrichment Week — no session\n\n\n\n\n\nWeek 08Other Models (GLMs)\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 09Causal Analysis and Experiments\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 10Prediction\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 11Time Series\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 12Portfolio Presentations\n\nLive\n\n\nPortfolio walkthrough"
+    "text": "Weeks\nWorkshop and online-session slides, published as each week runs.\n\n\n\n\nWeek 01Distributions and Summarising Data\n\nLive\n\n\nWorkshop slidesOnline sessionOutliers addendumReaction-time toolPooled histogram toolDownload the data\n\n\n\n\n\nWeek 02Inference\n\nLive\n\n\nWorkshop slidesOnline sessionBootstrap toolDownload the data\n\n\n\n\n\nWeek 03Relationships Between Variables\n\nLive\n\n\nWorkshop slidesOnline sessionDownload the data\n\n\n\n\n\nWeek 04Regression I — Fitting the Line\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 05Regression I — Model Problems & Inference\n\nLive\n\n\nWorkshop slidesOnline sessionQuadratic tool\n\n\n\n\n\nWeek 06Regression II — Multiple Regression\n\nLive\n\n\nWorkshop slides\n\n\n\nWeek 07\n\nCurriculum Enrichment Week — no session\n\n\n\n\n\nWeek 08Other Models (GLMs)\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 09Causal Analysis and Experiments\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 10Prediction\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 11Time Series\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 12Portfolio Presentations\n\nLive\n\n\nPortfolio walkthrough"
   },
   {
     "objectID": "data.html",
@@ -3302,5 +3302,334 @@
     "title": "Portfolio Assessment",
     "section": "Used cars",
     "text": "Used cars"
+  },
+  {
+    "objectID": "week6-slides.html#section",
+    "href": "week6-slides.html#section",
+    "title": "Multiple Regression",
+    "section": "",
+    "text": "Multiple regression\nFinger length alone barely moved the needle. What if device or caffeine matter too — and are tangled up with finger length itself?"
+  },
+  {
+    "objectID": "week6-slides.html#one-x-at-a-time-was-never-the-whole-story",
+    "href": "week6-slides.html#one-x-at-a-time-was-never-the-whole-story",
+    "title": "Multiple Regression",
+    "section": "One x at a time was never the whole story",
+    "text": "One x at a time was never the whole story\n\nHR has separate regressions: reaction time on finger length, reaction time on device. Someone asks: which one actually matters?\n\n\nNaive answer: run each regression separately, compare the slopes, done.\nWhy it’s not that simple: if finger length and device happen to be correlated in our sample — say, one device tends to attract a particular hand-size group (just go with it…) — each regression is silently absorbing some of the other variable’s effect. We can’t tell which x is doing the work until we ask both questions at once."
+  },
+  {
+    "objectID": "week6-slides.html#why-more-than-one-x",
+    "href": "week6-slides.html#why-more-than-one-x",
+    "title": "Multiple Regression",
+    "section": "Why more than one x?",
+    "text": "Why more than one x?"
+  },
+  {
+    "objectID": "week6-slides.html#three-reasons-to-add-a-second-x",
+    "href": "week6-slides.html#three-reasons-to-add-a-second-x",
+    "title": "Multiple Regression",
+    "section": "Three reasons to add a second x",
+    "text": "Three reasons to add a second x\n\nBroader patterns — plain exploratory work, understanding the data more fully\nCloser to comparing similar observations — holding one variable fixed while looking at another gets nearer to ceteris paribus, “all else equal”\nBetter prediction — more of the variation in y gets explained\n\n\nSource: Békés & Kézdi (2021), Ch. 10"
+  },
+  {
+    "objectID": "week6-slides.html#two-x-variables",
+    "href": "week6-slides.html#two-x-variables",
+    "title": "Multiple Regression",
+    "section": "Two x variables",
+    "text": "Two x variables\n\\[y^E = \\beta_0 + \\beta_1 x_1 + \\beta_2 x_2\\]\n\n\\(\\beta_1\\): the difference in average y across observations that differ in \\(x_1\\) but share the same \\(x_2\\)\n\\(\\beta_2\\): the same idea, the other way round\nWe can now compare observations that are similar in one explanatory variable, to isolate what the other one is doing\n\n\nSource: Békés & Kézdi (2021), Ch. 10"
+  },
+  {
+    "objectID": "week6-slides.html#omitted-variable-bias",
+    "href": "week6-slides.html#omitted-variable-bias",
+    "title": "Multiple Regression",
+    "section": "Omitted variable bias",
+    "text": "Omitted variable bias"
+  },
+  {
+    "objectID": "week6-slides.html#comparing-the-simple-and-multiple-slope",
+    "href": "week6-slides.html#comparing-the-simple-and-multiple-slope",
+    "title": "Multiple Regression",
+    "section": "Comparing the simple and multiple slope",
+    "text": "Comparing the simple and multiple slope\n\\[y^E = \\alpha + \\beta x_1 \\qquad\\qquad y^E = \\beta_0 + \\beta_1 x_1 + \\beta_2 x_2\\]\nAn intermediate step — regress \\(x_2\\) on \\(x_1\\) itself, slope \\(\\delta\\):\n\\[x_2^E = \\gamma + \\delta x_1\\]\n\nSubstituting back in gives a precise relationship between the two versions of the \\(x_1\\) slope:\n\\[\\beta - \\beta_1 = \\delta\\beta_2\\]\n\n\nSource: Békés & Kézdi (2021), Ch. 10"
+  },
+  {
+    "objectID": "week6-slides.html#omitted-variable-bias-named",
+    "href": "week6-slides.html#omitted-variable-bias-named",
+    "title": "Multiple Regression",
+    "section": "Omitted variable bias, named",
+    "text": "Omitted variable bias, named\n\\[\\beta - \\beta_1 = \\delta\\beta_2\\]\n\nThis gap is the omitted variable bias (OVB)\nIf you care about \\(\\beta_1\\), the simple regression \\(y^E=\\alpha+\\beta x_1\\) is the wrong regression — it omits \\(x_2\\)\nThe bias is exactly zero only if \\(x_1\\) and \\(x_2\\) are uncorrelated (\\(\\delta=0\\)), or \\(x_2\\) has no effect on y in the full model (\\(\\beta_2=0\\))\n\n\nNeither condition is something you can assume — it has to be checked, or reasoned about.\n\n\nSource: Békés & Kézdi (2021), Ch. 10"
+  },
+  {
+    "objectID": "week6-slides.html#task-watch-ovb-happen",
+    "href": "week6-slides.html#task-watch-ovb-happen",
+    "title": "Multiple Regression",
+    "section": "Task — watch OVB happen",
+    "text": "Task — watch OVB happen\n\nA made-up case where we know the truth. Monthly changes in our log price (\\(x_1\\)) and a competitor’s log price (\\(x_2\\)) move together, and both drive log sales (y). The true effect of our own price is \\(-3\\).\nIn the Week 6 in-class notebook, run the simulation, fit the simple regression, the multiple regression, and \\(x_2\\) on \\(x_1\\). Check that \\(\\hat\\beta - \\hat\\beta_1 = \\hat\\delta\\hat\\beta_2\\). Then set the correlation (the 0.8) to 0 and run it again. What happens to the bias?\n\n\nrng = np.random.default_rng(42)\ncompetitor_price = rng.normal(0, 2.0, 300)\nour_price = 0.8 * competitor_price + rng.normal(0, 1.2, 300)\nsales = -3*our_price + 3*competitor_price + rng.normal(0, 2.5, 300)"
+  },
+  {
+    "objectID": "week6-slides.html#what-you-should-have-found-ovb",
+    "href": "week6-slides.html#what-you-should-have-found-ovb",
+    "title": "Multiple Regression",
+    "section": "What you should have found: OVB",
+    "text": "What you should have found: OVB\n\nAnswer revealed in the workshop."
+  },
+  {
+    "objectID": "week6-slides.html#language-conditioning-controlling-confounding",
+    "href": "week6-slides.html#language-conditioning-controlling-confounding",
+    "title": "Multiple Regression",
+    "section": "Language: conditioning, controlling, confounding",
+    "text": "Language: conditioning, controlling, confounding\n\nWe measure differences in y by \\(x_1\\), conditional on \\(x_2\\) — or controlling for \\(x_2\\)\nWhen a variable that belongs in the model is left out, it’s an omitted variable\nIf it’s correlated with both \\(x_1\\) and y, it’s a confounder — the slope on \\(x_1\\) is confounded\nHowever many variables we condition on, this is still a comparison of conditional means, not an experiment: say “is associated with”, not “affects”\n\n\nSource: Békés & Kézdi (2021), Ch. 10"
+  },
+  {
+    "objectID": "week6-slides.html#task-does-our-own-coefficient-move",
+    "href": "week6-slides.html#task-does-our-own-coefficient-move",
+    "title": "Multiple Regression",
+    "section": "Task — does our own coefficient move?",
+    "text": "Task — does our own coefficient move?\n\nBusiness question: does the finger-length coefficient change once we control for device and caffeine?\nOpen the Colab notebook — the setup cell builds student_summary for you, one row per student. Fit two models with smf.ols: one with finger length alone, one adding device and caffeine. Compare the finger-length coefficient across both. No further syntax hints.\n\n\nWe’ll compare real answers together after."
+  },
+  {
+    "objectID": "week6-slides.html#what-you-should-have-found",
+    "href": "week6-slides.html#what-you-should-have-found",
+    "title": "Multiple Regression",
+    "section": "What you should have found",
+    "text": "What you should have found\n\nAnswer revealed in the workshop."
+  },
+  {
+    "objectID": "week6-slides.html#multicollinearity-a-different-problem",
+    "href": "week6-slides.html#multicollinearity-a-different-problem",
+    "title": "Multiple Regression",
+    "section": "Multicollinearity — a different problem",
+    "text": "Multicollinearity — a different problem"
+  },
+  {
+    "objectID": "week6-slides.html#multicollinearity-defined",
+    "href": "week6-slides.html#multicollinearity-defined",
+    "title": "Multiple Regression",
+    "section": "Multicollinearity, defined",
+    "text": "Multicollinearity, defined\n\nMulticollinearity: two or more explanatory variables in the same regression are strongly correlated with each other.\n\n\nIt does not bias any coefficient — β̂ is still right, on average\nIt inflates the standard errors — β̂ becomes imprecise, harder to pin down\nIntuition: if \\(x_1\\) and \\(x_2\\) move together almost every time, there’s barely any data where one is high and the other is low — and that’s exactly the comparison OLS needs to estimate their separate slopes\n\n\nContrast with omitted variable bias: OVB is about what’s missing from the model. Multicollinearity is about what’s already in it, just tangled together.\n\n\nSource: Békés & Kézdi (2021), Ch. 10"
+  },
+  {
+    "objectID": "week6-slides.html#where-the-standard-error-comes-from",
+    "href": "week6-slides.html#where-the-standard-error-comes-from",
+    "title": "Multiple Regression",
+    "section": "Where the standard error comes from",
+    "text": "Where the standard error comes from\n\\[SE(\\hat\\beta_1) = \\frac{Std[e]}{\\sqrt{n}\\cdot Std[x_1]\\cdot\\sqrt{1-R_1^2}}\\]\n\nSame ingredients as Week 5’s simple-regression SE — fit, spread of \\(x_1\\), sample size\nNew: \\(R_1^2\\) — the R² from regressing \\(x_1\\) on \\(x_2\\) (and any other x’s). The more \\(x_1\\) is explained by the other regressors, the bigger this term, the bigger the SE\n\n\nSource: Békés & Kézdi (2021), Ch. 10"
+  },
+  {
+    "objectID": "week6-slides.html#perfect-vs.-imperfect-collinearity",
+    "href": "week6-slides.html#perfect-vs.-imperfect-collinearity",
+    "title": "Multiple Regression",
+    "section": "Perfect vs. imperfect collinearity",
+    "text": "Perfect vs. imperfect collinearity\n\nPerfect collinearity — \\(x_1\\) is an exact linear function of \\(x_2\\). Coefficients literally can’t be calculated; software drops one variable for you\nMulticollinearity — strong but imperfect correlation between explanatory variables. Coefficients and SEs can still be computed — but the SEs may be large\n\n\nIntuition: multicollinearity means there aren’t many observations that differ in \\(x_1\\) while staying similar in \\(x_2\\) — so there’s little clean information left to estimate \\(\\beta_1\\) precisely.\n\n\nSource: Békés & Kézdi (2021), Ch. 10"
+  },
+  {
+    "objectID": "week6-slides.html#see-it-happen",
+    "href": "week6-slides.html#see-it-happen",
+    "title": "Multiple Regression",
+    "section": "See it happen",
+    "text": "See it happen\n\nviewof corrSlider = {\n  const f = html`&lt;div style=\"display:flex;align-items:center;gap:14px;font-size:13px;\n                              font-family:'Helvetica Neue',sans-serif;padding:4px 2px;color:#333;\"&gt;\n    &lt;span style=\"color:#666;white-space:nowrap;\"&gt;Correlation between x₁ and x₂&lt;/span&gt;\n    &lt;input type=\"range\" min=\"0\" max=\"0.98\" step=\"0.02\" value=\"0\"\n           style=\"width:200px;cursor:pointer;accent-color:#e63946;\"&gt;\n    &lt;span id=\"cs-label\" style=\"font-weight:700;min-width:36px;color:#e63946;\"&gt;0.00&lt;/span&gt;\n  &lt;/div&gt;`\n  const slider = f.querySelector('input')\n  const label  = f.querySelector('#cs-label')\n  slider.addEventListener('input', () =&gt; {\n    label.textContent = (+slider.value).toFixed(2)\n    f.dispatchEvent(new CustomEvent('input'))\n  })\n  Object.defineProperty(f, 'value', { get: () =&gt; +slider.value })\n  return f\n}\n\n\n\n\n\n\n\n{\n  const n = 200\n  const seed = i =&gt; { const s = Math.sin(i * 12.9898) * 43758.5453; return (s - Math.floor(s)) * 2 - 1 }\n  const seed2 = i =&gt; { const s = Math.sin(i * 78.233) * 12345.6789; return (s - Math.floor(s)) * 2 - 1 }\n  const x1 = d3.range(n).map(i =&gt; seed(i))\n  const x2 = d3.range(n).map(i =&gt; corrSlider * x1[i] + Math.sqrt(1 - corrSlider ** 2) * seed2(i))\n  const y = d3.range(n).map(i =&gt; 2 * x1[i] + 1.5 * x2[i] + seed2(i * 3.1))\n  const fitFor = c =&gt; {\n    const x2c = d3.range(n).map(i =&gt; c * x1[i] + Math.sqrt(1 - c ** 2) * seed2(i))\n    const model = olsFit(x1.map((v, i) =&gt; [v, x2c[i]]), y)\n    const sdE = Math.sqrt(d3.sum(model.resid.map(e =&gt; e ** 2)) / (n - model.k))\n    const sdX1 = Math.sqrt(d3.mean(x1.map(v =&gt; (v - d3.mean(x1)) ** 2)))\n    const auxR2 = (() =&gt; {\n      const aux = olsFit(x2c.map(v =&gt; [v]), x1)\n      const ybar = d3.mean(x1)\n      const varY = d3.mean(x1.map(v =&gt; (v - ybar) ** 2))\n      const varYhat = d3.mean(aux.fitted.map(f =&gt; (f - ybar) ** 2))\n      return varYhat / varY\n    })()\n    return sdE / (Math.sqrt(n) * sdX1 * Math.sqrt(1 - auxR2))\n  }\n  const curve = d3.range(0, 0.99, 0.02).map(c =&gt; ({ c, se: fitFor(c) }))\n  const currentSE = fitFor(corrSlider)\n  const chart = Plot.plot({\n    height: 320, marginLeft: 60,\n    x: { label: \"correlation between x₁ and x₂\" }, y: { label: \"SE(β̂₁)\" },\n    marks: [\n      Plot.line(curve, { x: \"c\", y: \"se\", stroke: \"#457b9d\", strokeWidth: 2 }),\n      Plot.dot([{ c: corrSlider, se: currentSE }], { x: \"c\", y: \"se\", fill: \"#e63946\", r: 6 }),\n    ]\n  })\n  return html`&lt;div&gt;${chart}&lt;p style=\"font-family:sans-serif;font-size:1em;text-align:center;\"&gt;SE(β̂₁) at this correlation: &lt;strong&gt;${currentSE.toFixed(3)}&lt;/strong&gt;&lt;/p&gt;&lt;/div&gt;`\n}\n\n\n\n\n\n\n\nSimulated data, true coefficients fixed throughout. Drag the correlation up. The point estimate barely changes — but watch the SE climb, slowly at first, then sharply as correlation approaches 1."
+  },
+  {
+    "objectID": "week6-slides.html#naming-it-vif",
+    "href": "week6-slides.html#naming-it-vif",
+    "title": "Multiple Regression",
+    "section": "Naming it: VIF",
+    "text": "Naming it: VIF\nSoftware usually calls this number the Variance Inflation Factor:\n\\[VIF_k = \\frac{1}{1-R_k^2}\\]\n\nThe same \\(R_k^2\\) as in the SE formula above — just flipped into one number per variable\nCommon rule of thumb: VIF &gt; 10 flags a real problem (some use a stricter &gt;5)\nOne line in statsmodels: variance_inflation_factor(X, k)"
+  },
+  {
+    "objectID": "week6-slides.html#vif-on-our-own-data",
+    "href": "week6-slides.html#vif-on-our-own-data",
+    "title": "Multiple Regression",
+    "section": "VIF on our own data",
+    "text": "VIF on our own data\n\nfrom statsmodels.stats.outliers_influence import variance_inflation_factor\nmodel = smf.ols('mean_rt ~ finger_mm + device + caffeine', data=student_summary).fit()\nX, names = model.model.exog, model.model.exog_names\nfor k in range(1, len(names)):          # 0 is the intercept\n    print(names[k], round(variance_inflation_factor(X, k), 2))\n\n\n{\n  const rows = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm) && d.device != null && d.caffeine != null)\n  const fm = rows.map(d =&gt; d.finger_mm)\n  const dv = rows.map(d =&gt; d.device === \"Phone\" ? 1 : 0)\n  const cf = rows.map(d =&gt; d.caffeine === \"Yes\" ? 1 : 0)\n  const r2 = (y, X) =&gt; {\n    const model = olsFit(X, y)\n    const ybar = d3.mean(y)\n    const varY = d3.mean(y.map(v =&gt; (v - ybar) ** 2))\n    const varYhat = d3.mean(model.fitted.map(f =&gt; (f - ybar) ** 2))\n    return varYhat / varY\n  }\n  const vif = (y, X) =&gt; 1 / (1 - r2(y, X))\n  const rows3 = [\n    { label: \"Finger length\", vif: vif(fm, dv.map((v, i) =&gt; [v, cf[i]])) },\n    { label: \"Device\", vif: vif(dv, fm.map((v, i) =&gt; [v, cf[i]])) },\n    { label: \"Caffeine\", vif: vif(cf, fm.map((v, i) =&gt; [v, dv[i]])) },\n  ]\n  return html`&lt;table style=\"margin:0 auto;font-family:sans-serif;font-size:1.1em;border-collapse:collapse;\"&gt;\n    &lt;tr style=\"border-bottom:2px solid #1a1a2e;\"&gt;&lt;th style=\"padding:8px 24px;text-align:left;\"&gt;Variable&lt;/th&gt;&lt;th style=\"padding:8px 24px;\"&gt;VIF&lt;/th&gt;&lt;/tr&gt;\n    ${rows3.map(d =&gt; `&lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;&lt;td style=\"padding:6px 24px;\"&gt;${d.label}&lt;/td&gt;&lt;td style=\"padding:6px 24px;text-align:center;font-weight:700;\"&gt;${d.vif.toFixed(2)}&lt;/td&gt;&lt;/tr&gt;`).join('')}\n  &lt;/table&gt;`\n}\n\n\n\n\n\n\n\nAll close to 1 — finger length, device, and caffeine barely overlap in what they explain. So adding device and caffeine didn’t make the finger-length estimate any less precise – the problem here was never multicollinearity, just weak signal."
+  },
+  {
+    "objectID": "week6-slides.html#the-vif-trap",
+    "href": "week6-slides.html#the-vif-trap",
+    "title": "Multiple Regression",
+    "section": "The VIF trap",
+    "text": "The VIF trap\n\nA high VIF does not mean “drop this variable.” If it’s a genuine confounder, dropping it to fix a precision problem reintroduces the bias problem from omitted variables — often a worse trade.\n\n\nThe honest response to a high VIF is usually: report it, keep the variable if the causal story needs it, and be upfront that the estimate is imprecise. VIF is a diagnostic, not a decision rule."
+  },
+  {
+    "objectID": "week6-slides.html#what-to-actually-do-about-it",
+    "href": "week6-slides.html#what-to-actually-do-about-it",
+    "title": "Multiple Regression",
+    "section": "What to actually do about it",
+    "text": "What to actually do about it\n\nLook at pairwise correlations (or a correlation heatmap) early, before modelling\nDrop one of a highly correlated pair, or combine them — average them, or first standardise each as a z-score (value minus its mean, divided by its SD) and then average\nMostly a small-sample problem — hundreds to a few thousand observations\nWith many x’s: check \\(R_k^2\\) for each variable regressed on all the others; drop if very high\n\n\nSource: Békés & Kézdi (2021), Ch. 10"
+  },
+  {
+    "objectID": "week6-slides.html#the-distinction-that-matters",
+    "href": "week6-slides.html#the-distinction-that-matters",
+    "title": "Multiple Regression",
+    "section": "The distinction that matters",
+    "text": "The distinction that matters\n\n\n\n\n\n\n\n\n\nOmitted variable bias\nMulticollinearity\n\n\n\n\nWhat it is\nLeaving out a variable that belongs in the model\nIncluding two variables that are strongly correlated\n\n\nWhat it breaks\nThe point estimate itself — wrong on average\nPrecision — the estimate is right on average, just noisy\n\n\nDoes more data fix it?\nNo. Same bias at any sample size\nYes. More data narrows the SE back down\n\n\nDirection known?\nDepends on \\(\\delta\\) and \\(\\beta_2\\) — could go either way\nN/A — SE inflates, doesn’t shift the estimate\n\n\n\n\nConfusing these two is the single most common mistake in reading regression output. One is a bias problem you fix by adding the right variable. The other is a precision problem you sometimes fix by removing one."
+  },
+  {
+    "objectID": "week6-slides.html#testing-more-than-one-coefficient",
+    "href": "week6-slides.html#testing-more-than-one-coefficient",
+    "title": "Multiple Regression",
+    "section": "Testing more than one coefficient",
+    "text": "Testing more than one coefficient"
+  },
+  {
+    "objectID": "week6-slides.html#testing-several-coefficients-together",
+    "href": "week6-slides.html#testing-several-coefficients-together",
+    "title": "Multiple Regression",
+    "section": "Testing several coefficients together",
+    "text": "Testing several coefficients together\nEach coefficient still gets its own CI and t-test, exactly as in Week 5. But sometimes the question isn’t about one coefficient, but a group of them — e.g. “are all the geography dummies jointly zero?”\n\nThe F-test answers this. Individually, none of the coefficients might be statistically distinguishable from zero — but jointly, they might still be.\n\n\nThe global F-test — are all slope coefficients zero? — is reported by default in most software. Gabor & Kézdi’s own advice: don’t lean on it too heavily. R² tells you almost the same thing, more simply, for that particular question.\n\n\nSource: Békés & Kézdi (2021), Ch. 10"
+  },
+  {
+    "objectID": "week6-slides.html#the-full-output-f-test-included",
+    "href": "week6-slides.html#the-full-output-f-test-included",
+    "title": "Multiple Regression",
+    "section": "The full output, F-test included",
+    "text": "The full output, F-test included\nimport statsmodels.formula.api as smf\n\nmodel = smf.ols('mean_rt ~ finger_mm + device + caffeine', data=student_summary).fit(cov_type='HC1')\nprint(model.summary())\n\nAnswer revealed in the workshop.\n\n\nhtml`&lt;div class=\"instructions-box\"&gt;&lt;code&gt;Prob (F-statistic) = ${task6.f_p}&lt;/code&gt; – we can't reject that all three slopes are jointly zero. With one row per student we have only ${task6.n} observations, so there's very little to go on.&lt;/div&gt;`"
+  },
+  {
+    "objectID": "week6-slides.html#a-significant-f-test-the-hotels",
+    "href": "week6-slides.html#a-significant-f-test-the-hotels",
+    "title": "Multiple Regression",
+    "section": "A significant F-test: the hotels",
+    "text": "A significant F-test: the hotels\n\nmodel = smf.ols('ln_price ~ distance + stars + rating', data=hotels).fit(cov_type='HC1')\nprint(model.summary())\n\n\nhtml`&lt;pre style=\"font-family:'SF Mono','Menlo',monospace;font-size:0.5em;line-height:1.3;background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;padding:8px 14px;overflow-x:auto;white-space:pre;\"&gt;${hotel_f_text}&lt;/pre&gt;`\n\n\n\n\n\n\n\nHere Prob (F-statistic) is tiny: distance, stars and rating together explain a lot of the variation in hotel prices. Compare our class data, where the same test couldn’t reject that every slope was zero."
+  },
+  {
+    "objectID": "week6-slides.html#task-testing-a-group-of-coefficients",
+    "href": "week6-slides.html#task-testing-a-group-of-coefficients",
+    "title": "Multiple Regression",
+    "section": "Task — testing a group of coefficients",
+    "text": "Task — testing a group of coefficients\n\nIn Week 5’s online session, the hotels spline had knots at 1 and 4 miles. Do we need the bends at all? Fit price ~ distance + beyond_1 + beyond_4 and test whether both spline terms are zero together:\n\nmodel.f_test('beyond_1 = 0, beyond_4 = 0')\n\nThen test beyond_4 on its own. How does that fit with the R² from Week 5?\n\n\nAnswer revealed in the workshop."
+  },
+  {
+    "objectID": "week6-slides.html#categorical-variables-properly",
+    "href": "week6-slides.html#categorical-variables-properly",
+    "title": "Multiple Regression",
+    "section": "Categorical variables, properly",
+    "text": "Categorical variables, properly"
+  },
+  {
+    "objectID": "week6-slides.html#k-categories-k-1-dummies",
+    "href": "week6-slides.html#k-categories-k-1-dummies",
+    "title": "Multiple Regression",
+    "section": "k categories, k − 1 dummies",
+    "text": "k categories, k − 1 dummies\nA categorical x with values low/medium/high becomes two binary variables — one category left out as the reference:\n\\[y^E = \\beta_0 + \\beta_1 x_{medium} + \\beta_2 x_{high}\\]\n\n\\(\\beta_0\\) — average y in the reference category (low)\n\\(\\beta_1\\) — difference between medium and low\n\\(\\beta_2\\) — difference between high and low\n\n\nInclude all k dummies (no reference left out) and you get the dummy variable trap — perfect collinearity with the intercept, and the model can’t be estimated.\n\n\nSource: Békés & Kézdi (2021), Ch. 10"
+  },
+  {
+    "objectID": "week6-slides.html#choosing-a-reference-category",
+    "href": "week6-slides.html#choosing-a-reference-category",
+    "title": "Multiple Regression",
+    "section": "Choosing a reference category",
+    "text": "Choosing a reference category\n\nSubstantive guide — pick whatever you naturally want everything else compared to (the home market, the base product, the lowest tier)\nStatistical guide — pick a category with plenty of observations. A thin reference category means every comparison against it inherits a large SE\n\n\nSource: Békés & Kézdi (2021), Ch. 10"
+  },
+  {
+    "objectID": "week6-slides.html#task-the-gender-pay-gap",
+    "href": "week6-slides.html#task-the-gender-pay-gap",
+    "title": "Multiple Regression",
+    "section": "Task — the gender pay gap",
+    "text": "Task — the gender pay gap\n\nBusiness question: how big is the gender pay gap among people with a graduate degree, and does it change once we compare people with the same degree?\nThe data is the textbook’s own: 18,241 people from the US CPS with an MA, a professional degree or a PhD. In the notebook, regress ln_wage on female, then add education as a categorical variable. Fit it twice, once with MA as the reference category and once with PhD:\n\nsmf.ols('ln_wage ~ female + C(education, Treatment(\"MA\"))', data=cps_df).fit(cov_type='HC1')\n\nWhat happens to the female coefficient, and to the education coefficients, when you change the reference?\n\n\nSource: Békés & Kézdi (2021), Ch. 10. Data: cps-earnings, osf.io/g8p9j, 2014 CPS MORG (NBER), filtered to graduate-degree holders aged 24–65 working 20+ hours/week — the same restriction the textbook applies."
+  },
+  {
+    "objectID": "week6-slides.html#what-you-should-have-found-the-gender-pay-gap",
+    "href": "week6-slides.html#what-you-should-have-found-the-gender-pay-gap",
+    "title": "Multiple Regression",
+    "section": "What you should have found: the gender pay gap",
+    "text": "What you should have found: the gender pay gap\n\nAnswer revealed in the workshop."
+  },
+  {
+    "objectID": "week6-slides.html#interactions-different-slopes-for-different-groups",
+    "href": "week6-slides.html#interactions-different-slopes-for-different-groups",
+    "title": "Multiple Regression",
+    "section": "Interactions: different slopes for different groups",
+    "text": "Interactions: different slopes for different groups"
+  },
+  {
+    "objectID": "week6-slides.html#when-the-pattern-itself-varies-by-group",
+    "href": "week6-slides.html#when-the-pattern-itself-varies-by-group",
+    "title": "Multiple Regression",
+    "section": "When the pattern itself varies by group",
+    "text": "When the pattern itself varies by group\nAn interaction asks: does the relationship between y and \\(x_1\\) differ depending on a second variable, D? D is sometimes called a moderator.\n\nExamples: does customer rating relate to hotel price differently by star category? Does a drug’s effect vary with patient age? Does the finger-length/reaction-time pattern differ by device?\n\n\nSource: Békés & Kézdi (2021), Ch. 10"
+  },
+  {
+    "objectID": "week6-slides.html#the-structural-model",
+    "href": "week6-slides.html#the-structural-model",
+    "title": "Multiple Regression",
+    "section": "The structural model",
+    "text": "The structural model\n\\[y^E = \\beta_0 + \\beta_1 x_1 + \\beta_2 D + \\beta_3\\,(x_1 \\times D)\\]\n\nWhen \\(D=0\\): \\(y^E = \\beta_0 + \\beta_1 x_1\\) — intercept \\(\\beta_0\\), slope \\(\\beta_1\\)\nWhen \\(D=1\\): \\(y^E = (\\beta_0+\\beta_2) + (\\beta_1+\\beta_3)\\,x_1\\) — intercept shifts by \\(\\beta_2\\), slope shifts by \\(\\beta_3\\)\n\n\n\\(\\beta_3\\) is the answer to the interaction question — literally the difference in slopes between the two groups. It gets its own SE, its own t-stat, its own CI, exactly like any other coefficient.\n\n\nSource: Békés & Kézdi (2021), Ch. 10"
+  },
+  {
+    "objectID": "week6-slides.html#seeing-β₂-and-β₃",
+    "href": "week6-slides.html#seeing-β₂-and-β₃",
+    "title": "Multiple Regression",
+    "section": "Seeing β₂ and β₃",
+    "text": "Seeing β₂ and β₃\n\nviewof inter = {\n  const f = html`&lt;div class=\"inter-ctl\" style=\"display:flex;gap:40px;align-items:center;font-size:24px;font-family:sans-serif;color:#333;padding:4px;\"&gt;\n    &lt;label style=\"display:flex;align-items:center;gap:8px;\"&gt;&lt;span&gt;β₂ (intercept shift)&lt;/span&gt; &lt;input name=\"b2\" type=\"range\" min=\"-4\" max=\"4\" step=\"0.5\" value=\"2\" style=\"width:220px;accent-color:#e63946;\"&gt; &lt;strong id=\"b2v\"&gt;2.0&lt;/strong&gt;&lt;/label&gt;\n    &lt;label style=\"display:flex;align-items:center;gap:8px;\"&gt;&lt;span&gt;β₃ (slope shift)&lt;/span&gt; &lt;input name=\"b3\" type=\"range\" min=\"-1\" max=\"1\" step=\"0.1\" value=\"0.5\" style=\"width:220px;accent-color:#e63946;\"&gt; &lt;strong id=\"b3v\"&gt;0.5&lt;/strong&gt;&lt;/label&gt;\n  &lt;/div&gt;`\n  const b2 = f.querySelector('[name=b2]'), b3 = f.querySelector('[name=b3]')\n  const upd = () =&gt; { f.querySelector('#b2v').textContent = (+b2.value).toFixed(1); f.querySelector('#b3v').textContent = (+b3.value).toFixed(1); f.dispatchEvent(new CustomEvent('input')) }\n  b2.addEventListener('input', upd); b3.addEventListener('input', upd)\n  Object.defineProperty(f, 'value', { get: () =&gt; ({ b2: +b2.value, b3: +b3.value }) })\n  return f\n}\n\n\n\n\n\n\n\n{\n  const b0 = 2, b1 = 0.6\n  const xs = d3.range(0, 10.01, 0.5)\n  const pts = xs.flatMap(x =&gt; [\n    { x, y: b0 + b1 * x, g: \"D = 0\" },\n    { x, y: (b0 + inter.b2) + (b1 + inter.b3) * x, g: \"D = 1\" }])\n  const chart = Plot.plot({\n    width: 1000, height: 360, marginLeft: 50, grid: true, style: { fontSize: '16px' },\n    x: { label: \"x₁\", domain: [0, 10] }, y: { label: \"y\", domain: [-6, 22], ticks: 6 },\n    color: { legend: true, domain: [\"D = 0\", \"D = 1\"], range: [\"#457b9d\", \"#e63946\"] },\n    marks: [Plot.ruleX([0], { stroke: \"#ccc\" }),\n            Plot.line(pts, { x: \"x\", y: \"y\", stroke: \"g\", strokeWidth: 3 })]\n  })\n  return html`&lt;div&gt;${chart}&lt;p style=\"font-family:sans-serif;text-align:center;margin:4px 0 0;font-size:0.85em;\"&gt;D = 0: intercept ${b0}, slope ${b1} &nbsp;·&nbsp; D = 1: intercept ${(b0 + inter.b2).toFixed(1)}, slope ${(b1 + inter.b3).toFixed(1)}&lt;/p&gt;&lt;/div&gt;`\n}\n\n\n\n\n\n\n\nβ₂ moves the red line up or down at x₁ = 0. β₃ changes its slope. Set β₃ to 0 and the lines are parallel: no interaction."
+  },
+  {
+    "objectID": "week6-slides.html#task-does-the-pattern-differ-by-device",
+    "href": "week6-slides.html#task-does-the-pattern-differ-by-device",
+    "title": "Multiple Regression",
+    "section": "Task — does the pattern differ by device?",
+    "text": "Task — does the pattern differ by device?\n\nBusiness question: does the association between finger length and reaction time depend on which device someone used?\nOpen the Colab notebook — the setup cell builds student_summary for you, one row per student. Answer this with smf.ols. You have 10 minutes — no further syntax hints. Work out the formula string yourselves.\n\n\nWe’ll go through real answers together after."
+  },
+  {
+    "objectID": "week6-slides.html#what-you-should-have-found-1",
+    "href": "week6-slides.html#what-you-should-have-found-1",
+    "title": "Multiple Regression",
+    "section": "What you should have found",
+    "text": "What you should have found\n\nAnswer revealed in the workshop."
+  },
+  {
+    "objectID": "week6-slides.html#the-figure",
+    "href": "week6-slides.html#the-figure",
+    "title": "Multiple Regression",
+    "section": "The figure",
+    "text": "The figure\n\nclass_chart = (withBands) =&gt; {\n  const pts = student_summary.filter(d =&gt; d.finger_mm != null && !isNaN(d.finger_mm) && d.device != null)\n  return Plot.plot({\n    width: 1000, height: 360, marginLeft: 60,\n    x: { label: \"Finger length (mm)\" }, y: { label: \"Mean reaction time (ms)\", domain: [0, 3500] },\n    clip: true,\n    color: { legend: true, domain: [\"Laptop\", \"Phone\"], range: [\"#457b9d\", \"#e63946\"] },\n    marks: [\n      withBands ? Plot.areaY(class_bands, { x: \"x\", y1: \"lo\", y2: \"hi\", fill: \"group\", fillOpacity: 0.18 }) : null,\n      Plot.dot(pts, { x: \"finger_mm\", y: \"mean_rt\", stroke: d =&gt; d.device === \"Phone\" ? \"#e63946\" : \"#457b9d\", fill: \"white\", fillOpacity: 0.5, r: 4 }),\n      Plot.line(class_bands, { x: \"x\", y: \"fit\", stroke: \"group\", z: \"group\", strokeWidth: 2.5 }),\n    ]\n  })\n}\n\n\n\n\n\n\n\nclass_chart(false)"
+  },
+  {
+    "objectID": "week6-slides.html#when-the-interaction-does-matter",
+    "href": "week6-slides.html#when-the-interaction-does-matter",
+    "title": "Multiple Regression",
+    "section": "When the interaction does matter",
+    "text": "When the interaction does matter\n\nhotels['four'] = (hotels['stars'] &gt;= 4).astype(int)\nmodel = smf.ols('price ~ distance * four', data=hotels).fit(cov_type='HC1')\n\n\nPlot.plot({\n  width: 1000, height: 260, marginLeft: 60,\n  x: { label: \"Distance from the city centre (miles)\" }, y: { label: \"Price (\\u20ac)\", domain: [0, 300] },\n  clip: true,\n  color: { legend: true, domain: [\"3 stars\", \"4 stars\"], range: [\"#457b9d\", \"#e63946\"] },\n  marks: [\n    Plot.dot(hotel_scatter, { x: \"distance\", y: \"price\", stroke: \"group\", r: 2.5, strokeOpacity: 0.4 }),\n    Plot.areaY(hotel_bands, { x: \"x\", y1: \"lo\", y2: \"hi\", fill: \"group\", fillOpacity: 0.2 }),\n    Plot.line(hotel_bands, { x: \"x\", y: \"fit\", stroke: \"group\", z: \"group\", strokeWidth: 2.5 }),\n  ]\n})\n\n\n\n\n\n\n\n\nhtml`&lt;div class=\"instructions-box\" style=\"font-size:0.85em;\"&gt;Each extra mile from the centre goes with a price about \\u20ac${Math.abs(hotel_inter.b3)} lower for three-star hotels, and about \\u20ac${Math.abs(hotel_inter.b4)} lower for four-star. The interaction, \\u2212${Math.abs(hotel_inter.inter)} (p = ${hotel_inter.p}), is that difference. Near the centre the bands are well apart; by about 3 miles the four-star premium has gone. With ${hotel_inter.n3 + hotel_inter.n4} hotels, the data can show it.&lt;/div&gt;`"
+  },
+  {
+    "objectID": "week6-slides.html#is-it-more-causal",
+    "href": "week6-slides.html#is-it-more-causal",
+    "title": "Multiple Regression",
+    "section": "Is it (more) causal?",
+    "text": "Is it (more) causal?"
+  },
+  {
+    "objectID": "week6-slides.html#ceteris-paribus-is-a-destination-not-a-guarantee",
+    "href": "week6-slides.html#ceteris-paribus-is-a-destination-not-a-guarantee",
+    "title": "Multiple Regression",
+    "section": "Ceteris paribus is a destination, not a guarantee",
+    "text": "Ceteris paribus is a destination, not a guarantee\nConditioning on more variables gets us closer to comparing “apples to apples,” even in observational data. But:\n\nCeteris paribus means conditioning on every relevant confounder\nA regression can only condition on what’s actually in the dataset, measured the way it happens to be measured\nConditioning on everything is impossible in general. Multiple regression is hardly ever truly ceteris paribus\n\n\nSource: Békés & Kézdi (2021), Ch. 10"
+  },
+  {
+    "objectID": "week6-slides.html#not-every-correlated-variable-belongs",
+    "href": "week6-slides.html#not-every-correlated-variable-belongs",
+    "title": "Multiple Regression",
+    "section": "Not every correlated variable belongs",
+    "text": "Not every correlated variable belongs\n\nQuestion: to see how TV advertising affects sales, should you control for how many people viewed the advert?\n\n\nNo. Fewer views is part of why less advertising hurts sales — it’s not a confounder, it’s a step in the causal chain itself. Controlling for it would control away the very thing you’re trying to measure.\n\n\nSeasonAdvertisingSalesConfounder: control for itAdvertisingViewsSalesStep in the chain: don't control for it\n\n\nThese are sometimes called bad controls. Telling a genuine confounder from a bad control by eye is genuinely hard — we’ll draw these diagrams properly in Week 9.\n\n\nSource: Békés & Kézdi (2021), Ch. 10"
+  },
+  {
+    "objectID": "week6-slides.html#summary",
+    "href": "week6-slides.html#summary",
+    "title": "Multiple Regression",
+    "section": "Summary",
+    "text": "Summary\n\nMultiple regression is a linear model with several x’s, letting us compare observations that are similar in one variable while differing in another\nOmitted variable bias (leaving out a relevant, correlated variable) and multicollinearity (including two correlated variables) are opposite problems — bias vs. precision — and the fix for one is not the fix for the other\nIt gets us closer to a causal comparison, never all the way there\nMore variables always raises R² — that’s not the same as a better model"
+  },
+  {
+    "objectID": "week6-slides.html#online-session",
+    "href": "week6-slides.html#online-session",
+    "title": "Multiple Regression",
+    "section": "Online session",
+    "text": "Online session\nA walkthrough of the gender pay gap in more depth: adding age as a confounder, checking the OVB formula, non-linear age profiles and interactions, and presenting a regression table. It finishes by revisiting the Vienna hotels with multiple regression."
+  },
+  {
+    "objectID": "week6-slides.html#coming-up",
+    "href": "week6-slides.html#coming-up",
+    "title": "Multiple Regression",
+    "section": "Coming up",
+    "text": "Coming up\n\nWeek 7 is reading week — no workshop.\nWeek 8: GLMs\n\nLogistic and Poisson regression, marginal effects · real named datasets, at last"
   }
 ]

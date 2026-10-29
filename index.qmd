@@ -64,10 +64,9 @@ weeks = [
          ("Online session", "week5-online-slides.html", False),
          ("Quadratic tool", "week5-quadratic-tool.html", True),
      ]},
-    {"n": 6, "topic": "Regression II — Multiple Regression", "status": "pending",
+    {"n": 6, "topic": "Regression II — Multiple Regression", "status": "live",
      "links": [
          ("Workshop slides", "week6-slides.html", False),
-         ("Online session", "week6-online-slides.html", False),
      ]},
     {"n": 7, "note": "Curriculum Enrichment Week — no session"},
     {"n": 8, "topic": "Other Models (GLMs)", "status": "pending",

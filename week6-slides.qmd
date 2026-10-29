@@ -1,7 +1,6 @@
 ---
 title: "Multiple Regression"
 subtitle: "7002LBSAI Research Methods in Analytics — Week 6"
-search: false
 format:
   revealjs:
     theme: simple
@@ -204,28 +203,48 @@ spline_f = {"f": round(float(np.squeeze(_jt.fvalue)), 1), "p": float(np.squeeze(
             "f4": round(float(np.squeeze(_j4.fvalue)), 1), "p4": round(float(np.squeeze(_j4.pvalue)), 3),
             "r2_lin": round(float(_lin.rsquared), 3), "r2_1": round(float(_sp1.rsquared), 3), "r2_14": round(float(_sp.rsquared), 3)}
 
+# Confidence bands for the two interaction figures (fitted mean, 95% CI, robust SEs)
+def _bands(model, data, xcol, gcol, groups, n=40):
+    out = []
+    for g in groups:
+        sub = data[data[gcol] == g]
+        grid = np.linspace(sub[xcol].min(), sub[xcol].max(), n)
+        fr = model.get_prediction(pd.DataFrame({xcol: grid, gcol: g})).summary_frame()
+        out += [{"x": float(a), "fit": float(b), "lo": float(c), "hi": float(d), "group": str(g)}
+                for a, b, c, d in zip(grid, fr["mean"], fr["mean_ci_lower"], fr["mean_ci_upper"])]
+    return out
+
+class_bands = _bands(interaction_model, student_summary, "finger_mm", "device", ["Laptop", "Phone"])
+
+_hb = hotels.copy()
+_hb["four"] = (_hb["stars"] >= 4).astype(int)
+hotel_inter_model = smf.ols("price ~ distance * four", data=_hb).fit(cov_type="HC1")
+hotel_bands = _bands(hotel_inter_model, _hb, "distance", "four", [0, 1])
+for _r in hotel_bands:
+    _r["group"] = "4 stars" if _r["group"] == "1" else "3 stars"
+_hp = hotel_inter_model.params
+hotel_inter = {"b3": round(float(_hp["distance"]), 1),
+               "b4": round(float(_hp["distance"] + _hp["distance:four"]), 1),
+               "inter": round(float(_hp["distance:four"]), 1),
+               "p": round(float(hotel_inter_model.pvalues["distance:four"]), 3),
+               "n3": int((_hb["four"] == 0).sum()), "n4": int((_hb["four"] == 1).sum())}
+hotel_scatter = _hb.assign(group=np.where(_hb["four"] == 1, "4 stars", "3 stars"))[["distance", "price", "group"]].to_dict(orient="records")
+
 # NaN is not valid JSON — clean before ojs_define
 student_summary_clean = student_summary.astype(object).where(student_summary.notna(), None)
 
+# Student-facing redacted deck: send only what the remaining slides display.
+# Task answers (OVB, ratings, spline test, gender gap, interaction output) are
+# computed above but deliberately NOT passed to the page, so they can't be read
+# from the HTML source.
 ojs_define(
-    student_summary      = student_summary_clean.to_dict(orient='records'),
-    task6                 = task6,
-    beer                  = beer,
-    ratings               = ratings,
-    hotel_f_text          = hotel_f_text,
-    spline_f              = spline_f,
-    reading_summary_text = reading_summary_text,
-    interaction_summary_text = interaction_summary_text,
-    ovb_output_text       = ovb_output_text,
-    cat_summary_text      = cat_summary_text,
-    results_markdown      = results_markdown,
-    booktabs_rows         = booktabs_rows,
-    booktabs_n            = booktabs_n,
-    booktabs_r2           = booktabs_r2,
-    gap_rows               = gap_rows,
-    gap_n                   = gap_n,
-    gap_inter_rows          = gap_inter_rows,
-    gap_age_lines           = gap_age_lines,
+    student_summary = student_summary_clean.to_dict(orient='records'),
+    task6           = {"f_p": task6["f_p"], "n": task6["n"]},
+    hotel_f_text    = hotel_f_text,
+    class_bands     = [{"x": r["x"], "fit": r["fit"], "group": r["group"]} for r in class_bands],
+    hotel_bands     = hotel_bands,
+    hotel_inter     = hotel_inter,
+    hotel_scatter   = hotel_scatter,
 )
 ```
 
@@ -292,6 +311,8 @@ olsFit = function(X, y) {
 <style>
 .reveal .big-code div.sourceCode { font-size: 1.15em !important; }
 .reveal .big-code div.sourceCode pre.sourceCode { font-size: 1em !important; }
+.reveal .mid-code div.sourceCode { font-size: 0.72em !important; }
+.reveal .mid-code div.sourceCode pre.sourceCode { font-size: 1em !important; }
 .reveal .inter-ctl, .reveal .inter-ctl * { font-size: 24px !important; }
 </style>
 ```
@@ -404,27 +425,8 @@ sales = -3*our_price + 3*competitor_price + rng.normal(0, 2.5, 300)
 
 ## What you should have found: OVB
 
-```{ojs}
-{
-  const row = (lab, a, b) => `<tr style="border-bottom:1px solid #ddd;"><td style="padding:6px 20px;text-align:left;">${lab}</td><td style="padding:6px 20px;">${a}</td><td style="padding:6px 20px;">${b}</td></tr>`
-  const c = beer.c08, z = beer.c0
-  return html`<table style="margin:0 auto;font-family:sans-serif;font-size:1em;border-collapse:collapse;text-align:center;">
-    <caption class="visually-hidden">OVB simulation results with correlated and uncorrelated prices</caption>
-    <tr style="border-bottom:2px solid #1a1a2e;"><th scope="col" style="padding:6px 20px;text-align:left;"></th><th scope="col" style="padding:6px 20px;">Prices correlated (0.8)</th><th scope="col" style="padding:6px 20px;">Not correlated (0)</th></tr>
-    ${row("β̂ (simple: our price only)", c.beta, z.beta)}
-    ${row("β̂₁ (multiple)", c.beta1, z.beta1)}
-    ${row("β̂₂ (competitor price)", c.beta2, z.beta2)}
-    ${row("δ̂ (competitor on our price)", c.delta, z.delta)}
-    ${row("β̂ − β̂₁", (c.beta - c.beta1).toFixed(3), (z.beta - z.beta1).toFixed(3))}
-    ${row("δ̂ × β̂₂", (c.delta * c.beta2).toFixed(3), (z.delta * z.beta2).toFixed(3))}
-  </table>`
-}
-```
-
-::: {.fragment}
-```{ojs}
-html`<p>With correlated prices, the simple regression says our price barely matters (β̂ = ${beer.c08.beta}), when the truth is −3. It's absorbing the competitor's effect through δ. The formula holds exactly. Set the correlation to 0 and δ̂ is close to zero, so the bias almost disappears: the simple and multiple slopes agree.</p>`
-```
+::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
+Answer revealed in the workshop.
 :::
 
 ## Language: conditioning, controlling, confounding
@@ -452,23 +454,9 @@ We'll compare real answers together after.
 
 ## What you should have found
 
-```{.python}
-simple = smf.ols('mean_rt ~ finger_mm', data=student_summary).fit(cov_type='HC1')
-multi  = smf.ols('mean_rt ~ finger_mm + device + caffeine', data=student_summary).fit(cov_type='HC1')
-
-print(simple.params.round(3))
-print(multi.params.round(3))
-```
-
-```{ojs}
-html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.55em;line-height:1.4;
-                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
-                  padding:8px 14px;overflow-x:auto;white-space:pre;">${ovb_output_text}</pre>`
-```
-
-```{ojs}
-html`<div class="instructions-box"><p style="margin:0;">finger_mm goes from <strong>${task6.b_simple}</strong> (alone) to <strong>${task6.b_multi}</strong> once device and caffeine are added. Did your models agree? What would a big move tell you – and what does almost no movement tell you?</p><p style="margin:8px 0 0;font-size:0.85em;">Only ${task6.caf_yes} of our ${task6.n} students had caffeine, and just ${task6.caf_yes_phone} of those used a phone, so don't read much into the caffeine coefficient itself.</p></div>`
-```
+::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
+Answer revealed in the workshop.
+:::
 
 ---
 
@@ -594,6 +582,16 @@ $$VIF_k = \frac{1}{1-R_k^2}$$
 
 ## VIF on our own data
 
+::: {.mid-code}
+```{.python}
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+model = smf.ols('mean_rt ~ finger_mm + device + caffeine', data=student_summary).fit()
+X, names = model.model.exog, model.model.exog_names
+for k in range(1, len(names)):          # 0 is the intercept
+    print(names[k], round(variance_inflation_factor(X, k), 2))
+```
+:::
+
 ```{ojs}
 {
   const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm) && d.device != null && d.caffeine != null)
@@ -645,28 +643,6 @@ The honest response to a high VIF is usually: report it, keep the variable if th
 Source: Békés & Kézdi (2021), Ch. 10
 :::
 
-## Task — two ratings of the same hotel {.smaller}
-
-::: {.instructions-box}
-The Vienna hotels have two guest ratings: the booking site's own (`rating`) and TripAdvisor's (`ratingta`). They measure much the same thing.
-
-In the notebook, regress `ln_price` on each rating alone, then on both. Compare the coefficients and SEs. Then combine them into one variable – standardise each as a z-score and average – and use that instead.
-:::
-
-::: {.fragment}
-```{ojs}
-html`<table style="margin:6px auto;font-family:sans-serif;font-size:0.9em;border-collapse:collapse;text-align:center;">
-  <caption class="visually-hidden">Price regressed on two hotel ratings, alone, together and combined</caption>
-  <tr style="border-bottom:2px solid #1a1a2e;"><th scope="col" style="padding:4px 16px;text-align:left;">Model</th><th scope="col" style="padding:4px 16px;">rating</th><th scope="col" style="padding:4px 16px;">ratingta</th><th scope="col" style="padding:4px 16px;">combined</th></tr>
-  <tr style="border-bottom:1px solid #ddd;"><td style="padding:4px 16px;text-align:left;">rating alone</td><td>${ratings.r1_b} (${ratings.r1_se})</td><td></td><td></td></tr>
-  <tr style="border-bottom:1px solid #ddd;"><td style="padding:4px 16px;text-align:left;">ratingta alone</td><td></td><td>${ratings.r2_b} (${ratings.r2_se})</td><td></td></tr>
-  <tr style="border-bottom:1px solid #ddd;"><td style="padding:4px 16px;text-align:left;">both</td><td>${ratings.rb_b1} (${ratings.rb_se1})</td><td>${ratings.rb_b2} (${ratings.rb_se2})</td><td></td></tr>
-  <tr><td style="padding:4px 16px;text-align:left;">combined z-score</td><td></td><td></td><td>${ratings.rz_b} (${ratings.rz_se})</td></tr>
-</table>
-<p style="font-size:0.85em;">The two ratings correlate at ${ratings.corr} (VIF ${ratings.vif}). Together, each coefficient shrinks and its SE grows, because there's little information on one rating holding the other fixed. Combined into one index, the SE is back down. Coefficients in log points; robust SEs in brackets.</p>`
-```
-:::
-
 ## The distinction that matters
 
 |  | Omitted variable bias | Multicollinearity |
@@ -711,11 +687,9 @@ model = smf.ols('mean_rt ~ finger_mm + device + caffeine', data=student_summary)
 print(model.summary())
 ```
 
-```{ojs}
-html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.38em;line-height:1.25;
-                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
-                  padding:6px 14px;overflow-x:auto;white-space:pre;">${reading_summary_text}</pre>`
-```
+::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
+Answer revealed in the workshop.
+:::
 
 ```{ojs}
 html`<div class="instructions-box"><code>Prob (F-statistic) = ${task6.f_p}</code> – we can't reject that all three slopes are jointly zero. With one row per student we have only ${task6.n} observations, so there's very little to go on.</div>`
@@ -752,10 +726,8 @@ model.f_test('beyond_1 = 0, beyond_4 = 0')
 Then test `beyond_4` on its own. How does that fit with the R² from Week 5?
 :::
 
-::: {.fragment}
-```{ojs}
-html`<p style="font-size:0.95em;">Both spline terms together: F = <strong>${spline_f.f}</strong>, p < 0.001. The bends matter: price doesn't fall at the same rate everywhere. <code>beyond_4</code> alone: F = ${spline_f.f4}, p = ${spline_f.p4}, so it's also significant. Yet adding it only lifts R² from ${spline_f.r2_1} to ${spline_f.r2_14}. Statistically significant isn't the same as worth the extra complexity.</p>`
-```
+::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
+Answer revealed in the workshop.
 :::
 
 ---
@@ -813,20 +785,8 @@ Source: Békés & Kézdi (2021), Ch. 10. Data: `cps-earnings`, osf.io/g8p9j, 201
 
 ## What you should have found: the gender pay gap
 
-```{ojs}
-{
-  return html`<table style="margin:0 auto;font-family:sans-serif;font-size:1.1em;border-collapse:collapse;">
-    <tr style="border-bottom:2px solid #1a1a2e;">
-      <th style="padding:6px 22px;text-align:left;">Variable</th><th style="padding:6px 22px;">(1)</th><th style="padding:6px 22px;">(2), ref = MA</th><th style="padding:6px 22px;">(3), ref = PhD</th>
-    </tr>
-    ${gap_rows.map(d => `<tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 22px;">${d.variable}</td><td style="padding:5px 22px;text-align:center;">${d.m1}</td><td style="padding:5px 22px;text-align:center;">${d.m2}</td><td style="padding:5px 22px;text-align:center;">${d.m3}</td></tr>`).join('')}
-  </table>
-  <p style="font-family:sans-serif;font-size:0.9em;text-align:center;color:#666;margin-top:8px;">n = ${gap_n}</p>`
-}
-```
-
-::: {.fragment}
-The female coefficient is −0.195 alone and −0.182 once education is added, whichever reference category we use: women earn roughly 17% less than men with the same degree, on average. The education coefficients do change with the reference, because each is a difference from whichever category was left out.
+::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
+Answer revealed in the workshop.
 :::
 
 ---
@@ -914,51 +874,61 @@ We'll go through real answers together after.
 
 ## What you should have found
 
-```{.python}
-model = smf.ols('mean_rt ~ finger_mm * device', data=student_summary).fit(cov_type='HC1')
-# equivalent to: finger_mm + device + finger_mm:device
-```
-
-```{ojs}
-html`<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.42em;line-height:1.3;
-                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;
-                  padding:8px 14px;overflow-x:auto;white-space:pre;">${interaction_summary_text}</pre>`
-```
-
-```{ojs}
-html`<div class="instructions-box">Interaction term (<code>finger_mm:device[T.Phone]</code>) = ${task6.inter}, p = ${task6.inter_p} – not significant at 5%. With ${task6.n} students, that's the honest answer before we even look at a picture.</div>`
-```
+::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
+Answer revealed in the workshop.
+:::
 
 ## The figure
 
 ```{ojs}
-{
-  const rows = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm) && d.device != null)
-  if (rows.length < 8) return html`<p style="color:#aaa;">Not enough data yet.</p>`
-  const x = rows.map(d => d.finger_mm), y = rows.map(d => d.mean_rt)
-  const dev = rows.map(d => d.device === "Phone" ? 1 : 0)
-  const inter = x.map((v, i) => v * dev[i])
-  const model = olsFit(x.map((v, i) => [v, dev[i], inter[i]]), y)
-  const xbar = d3.mean(x)
-  const grid = d3.range(d3.min(x), d3.max(x), (d3.max(x) - d3.min(x)) / 40)
-  const laptopLine = grid.map(v => ({ finger_mm: v, fit: model.coefs[0] + model.coefs[1] * v, group: "Laptop" }))
-  const phoneLine = grid.map(v => ({ finger_mm: v, fit: model.coefs[0] + model.coefs[2] + (model.coefs[1] + model.coefs[3]) * v, group: "Phone" }))
-  const chart = Plot.plot({
-    height: 360, marginLeft: 60,
-    x: { label: "Finger length (mm)" }, y: { label: "Mean reaction time (ms)" },
+//| output: false
+class_chart = (withBands) => {
+  const pts = student_summary.filter(d => d.finger_mm != null && !isNaN(d.finger_mm) && d.device != null)
+  return Plot.plot({
+    width: 1000, height: 360, marginLeft: 60,
+    x: { label: "Finger length (mm)" }, y: { label: "Mean reaction time (ms)", domain: [0, 3500] },
+    clip: true,
     color: { legend: true, domain: ["Laptop", "Phone"], range: ["#457b9d", "#e63946"] },
     marks: [
-      Plot.dot(rows, { x: "finger_mm", y: "mean_rt", stroke: d => d.device === "Phone" ? "#e63946" : "#457b9d", fill: "white", fillOpacity: 0.5, r: 4 }),
-      Plot.line(laptopLine, { x: "finger_mm", y: "fit", stroke: "group", strokeWidth: 2.5 }),
-      Plot.line(phoneLine, { x: "finger_mm", y: "fit", stroke: "group", strokeWidth: 2.5 }),
+      withBands ? Plot.areaY(class_bands, { x: "x", y1: "lo", y2: "hi", fill: "group", fillOpacity: 0.18 }) : null,
+      Plot.dot(pts, { x: "finger_mm", y: "mean_rt", stroke: d => d.device === "Phone" ? "#e63946" : "#457b9d", fill: "white", fillOpacity: 0.5, r: 4 }),
+      Plot.line(class_bands, { x: "x", y: "fit", stroke: "group", z: "group", strokeWidth: 2.5 }),
     ]
   })
-  return html`<div>${chart}<p style="font-family:sans-serif;font-size:1em;text-align:center;">Interaction term (finger_mm × Phone): <strong>${model.coefs[3].toFixed(2)}</strong></p></div>`
 }
 ```
 
-::: {.instructions-box}
-If the two lines are nearly parallel, the interaction term will be close to zero — the finger-length pattern doesn't meaningfully depend on device. If they visibly fan apart, it does.
+```{ojs}
+class_chart(false)
+```
+
+## When the interaction does matter
+
+::: {.mid-code}
+```{.python}
+hotels['four'] = (hotels['stars'] >= 4).astype(int)
+model = smf.ols('price ~ distance * four', data=hotels).fit(cov_type='HC1')
+```
+:::
+
+```{ojs}
+Plot.plot({
+  width: 1000, height: 260, marginLeft: 60,
+  x: { label: "Distance from the city centre (miles)" }, y: { label: "Price (\u20ac)", domain: [0, 300] },
+  clip: true,
+  color: { legend: true, domain: ["3 stars", "4 stars"], range: ["#457b9d", "#e63946"] },
+  marks: [
+    Plot.dot(hotel_scatter, { x: "distance", y: "price", stroke: "group", r: 2.5, strokeOpacity: 0.4 }),
+    Plot.areaY(hotel_bands, { x: "x", y1: "lo", y2: "hi", fill: "group", fillOpacity: 0.2 }),
+    Plot.line(hotel_bands, { x: "x", y: "fit", stroke: "group", z: "group", strokeWidth: 2.5 }),
+  ]
+})
+```
+
+::: {.fragment}
+```{ojs}
+html`<div class="instructions-box" style="font-size:0.85em;">Each extra mile from the centre goes with a price about \u20ac${Math.abs(hotel_inter.b3)} lower for three-star hotels, and about \u20ac${Math.abs(hotel_inter.b4)} lower for four-star. The interaction, \u2212${Math.abs(hotel_inter.inter)} (p = ${hotel_inter.p}), is that difference. Near the centre the bands are well apart; by about 3 miles the four-star premium has gone. With ${hotel_inter.n3 + hotel_inter.n4} hotels, the data can show it.</div>`
+```
 :::
 
 ---
@@ -990,7 +960,13 @@ No. Fewer views is part of *why* less advertising hurts sales — it's not a con
 :::
 
 ::: {.fragment}
-These are sometimes called **bad controls**. Telling a genuine confounder from a bad control by eye is genuinely hard — we'll get a proper diagram for reasoning about this in Week 9.
+```{=html}
+<div style="display:flex;gap:40px;justify-content:center;margin:6px 0;"><div style="flex:1;max-width:460px;"><svg viewBox="0 0 500 230" width="100%" role="img" aria-label="Diagram: the season affects both advertising and sales, and advertising affects sales. The season is a confounder."><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a1a2e"/></marker></defs><rect x="170" y="10" width="160" height="44" rx="8" fill="#fdecee" stroke="#e63946" stroke-width="2"/><text x="250.0" y="38" text-anchor="middle" font-family="sans-serif" font-size="19" fill="#1a1a2e">Season</text><rect x="20" y="150" width="170" height="44" rx="8" fill="#e6eef5" stroke="#457b9d" stroke-width="2"/><text x="105.0" y="178" text-anchor="middle" font-family="sans-serif" font-size="19" fill="#1a1a2e">Advertising</text><rect x="330" y="150" width="150" height="44" rx="8" fill="#e6eef5" stroke="#457b9d" stroke-width="2"/><text x="405.0" y="178" text-anchor="middle" font-family="sans-serif" font-size="19" fill="#1a1a2e">Sales</text><line x1="215" y1="54" x2="135" y2="146" stroke="#1a1a2e" stroke-width="2.5" marker-end="url(#ah)"/><line x1="285" y1="54" x2="370" y2="146" stroke="#1a1a2e" stroke-width="2.5" marker-end="url(#ah)"/><line x1="190" y1="172" x2="326" y2="172" stroke="#1a1a2e" stroke-width="2.5" marker-end="url(#ah)"/><text x="250" y="222" text-anchor="middle" font-family="sans-serif" font-size="20" fill="#2d6a4f" font-weight="bold">Confounder: control for it</text></svg></div><div style="flex:1;max-width:460px;"><svg viewBox="0 0 500 230" width="100%" role="img" aria-label="Diagram: advertising leads to views, and views lead to sales. Views are a step in the chain."><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a1a2e"/></marker></defs><rect x="0" y="100" width="135" height="44" rx="8" fill="#e6eef5" stroke="#457b9d" stroke-width="2"/><text x="67.5" y="128" text-anchor="middle" font-family="sans-serif" font-size="19" fill="#1a1a2e">Advertising</text><rect x="195" y="100" width="110" height="44" rx="8" fill="#fdecee" stroke="#e63946" stroke-width="2"/><text x="250.0" y="128" text-anchor="middle" font-family="sans-serif" font-size="19" fill="#1a1a2e">Views</text><rect x="365" y="100" width="135" height="44" rx="8" fill="#e6eef5" stroke="#457b9d" stroke-width="2"/><text x="432.5" y="128" text-anchor="middle" font-family="sans-serif" font-size="19" fill="#1a1a2e">Sales</text><line x1="135" y1="122" x2="191" y2="122" stroke="#1a1a2e" stroke-width="2.5" marker-end="url(#ah)"/><line x1="305" y1="122" x2="361" y2="122" stroke="#1a1a2e" stroke-width="2.5" marker-end="url(#ah)"/><text x="250" y="222" text-anchor="middle" font-family="sans-serif" font-size="20" fill="#e63946" font-weight="bold">Step in the chain: don't control for it</text></svg></div></div>
+```
+:::
+
+::: {.fragment}
+These are sometimes called **bad controls**. Telling a genuine confounder from a bad control by eye is genuinely hard — we'll draw these diagrams properly in Week 9.
 :::
 
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
