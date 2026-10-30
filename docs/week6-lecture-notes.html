@@ -1,0 +1,1932 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Multiple Regression</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.17/dist/plot.umd.min.js"></script>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['$$', '$$']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #fdfbf6;
+    --paper-raised: #ffffff;
+    --paper-sunk: #f6f1e7;
+    --ink: #1a1a2e;
+    --ink-soft: #4a4d63;
+    --ink-faint: #86869c;
+    --rule: #e6ddc9;
+    --accent: #1f7a79;
+    --accent-soft: #f3fbfb;
+    --warm: #c8373f;
+    --warm-soft: #fbeceb;
+    --gold: #c97f31;
+    --green: #2d6a4f;
+    --green-soft: #eaf5ef;
+    --quote-bg: #eef7f7;
+    --quote-border: #bfe0df;
+    --quote-ink: #1e4a49;
+    --chip-bg: #f1ece0;
+    --code-bg: #f4f0e6;
+    --shadow: 0 1px 2px rgba(26,26,46,0.06), 0 8px 24px -12px rgba(26,26,46,0.18);
+    --serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    --sans: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #14151f;
+      --paper-raised: #1c1e2b;
+      --paper-sunk: #10111a;
+      --ink: #eef0f6;
+      --ink-soft: #b7bbcf;
+      --ink-faint: #7c8098;
+      --rule: #303350;
+      --accent: #5ecbc8;
+      --accent-soft: #15302f;
+      --warm: #ff8a86;
+      --warm-soft: #2e1c1d;
+      --gold: #f2b872;
+      --green: #6fbb95;
+      --green-soft: #14261f;
+      --quote-bg: #142726;
+      --quote-border: #29504c;
+      --quote-ink: #bfe7e2;
+      --chip-bg: #23253a;
+      --code-bg: #191b2a;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #14151f;
+    --paper-raised: #1c1e2b;
+    --paper-sunk: #10111a;
+    --ink: #eef0f6;
+    --ink-soft: #b7bbcf;
+    --ink-faint: #7c8098;
+    --rule: #303350;
+    --accent: #5ecbc8;
+    --accent-soft: #15302f;
+    --warm: #ff8a86;
+    --warm-soft: #2e1c1d;
+    --gold: #f2b872;
+    --green: #6fbb95;
+    --green-soft: #14261f;
+    --quote-bg: #142726;
+    --quote-border: #29504c;
+    --quote-ink: #bfe7e2;
+    --chip-bg: #23253a;
+    --code-bg: #191b2a;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--accent-soft); color: var(--ink); }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  h1, h2, h3, h4 { font-family: var(--serif); color: var(--ink); text-wrap: balance; line-height: 1.18; font-weight: 600; }
+  p { line-height: 1.68; color: var(--ink-soft); }
+  strong { color: var(--ink); font-weight: 600; }
+
+  /* ---------- shell layout ---------- */
+  .shell {
+    display: grid;
+    grid-template-columns: 240px minmax(0,1fr);
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  @media (max-width: 880px) {
+    .shell { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    padding: 56px 16px 38px;
+    border-bottom: 1px solid var(--rule);
+    background:
+      radial-gradient(ellipse 900px 320px at 15% -10%, var(--accent-soft), transparent 60%),
+      var(--paper);
+  }
+  .hero-inner { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; display:flex; align-items:center; gap: 10px; flex-wrap: wrap;
+  }
+  .eyebrow .dot { width:5px; height:5px; border-radius:50%; background: var(--warm); display:inline-block; }
+  .hero h1 { font-size: clamp(2.1rem, 4.6vw, 3.1rem); margin: 14px 0 10px; max-width: 16ch; }
+  .hero .dek { font-size: 1.15rem; color: var(--ink-soft); max-width: 62ch; line-height: 1.55; margin: 0 0 26px; }
+  .hero .dek em { color: var(--ink); font-style: normal; border-bottom: 2px solid var(--gold); }
+
+  .headline-strip {
+    display: flex; gap: 0; flex-wrap: wrap;
+    border: 1px solid var(--rule); border-radius: 14px; overflow: hidden;
+    background: var(--paper-raised); box-shadow: var(--shadow);
+    max-width: 780px;
+  }
+  .headline-strip .stat {
+    flex: 1 1 150px; padding: 16px 20px; border-right: 1px solid var(--rule);
+  }
+  .headline-strip .stat:last-child { border-right: none; }
+  .headline-strip .stat .n {
+    font-family: var(--serif); font-size: 1.7rem; font-weight: 700; color: var(--accent);
+    font-variant-numeric: tabular-nums; display:block;
+  }
+  .headline-strip .stat .n.warm { color: var(--warm); }
+  .headline-strip .stat .l { font-size: 12.5px; color: var(--ink-faint); margin-top: 2px; }
+
+  /* ---------- TOC ---------- */
+  nav.toc {
+    padding: 34px 20px 40px 24px;
+    font-family: var(--sans);
+  }
+  nav.toc .toc-label { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 10px; display:block; }
+  .toc-block.chapter-nav { padding-bottom: 18px; margin-bottom: 18px; border-bottom: 1px solid var(--rule); }
+  nav.toc ol.chapter-list { list-style: none; margin: 0; padding: 0; columns: 1; }
+  nav.toc ol.chapter-list li { margin-bottom: 2px; }
+  nav.toc .chapter-link { display: block; padding: 8px 10px; border-radius: 8px; text-decoration: none; }
+  nav.toc .chapter-link strong { display: block; font-family: var(--serif); font-size: 13.5px; color: var(--ink); font-weight: 600; }
+  nav.toc .chapter-link .chapter-sub { display: block; font-size: 11px; color: var(--ink-faint); margin-top: 1px; line-height: 1.3; }
+  nav.toc a.chapter-link:hover { background: var(--paper-sunk); }
+  nav.toc .chapter-link.current { background: var(--accent-soft); cursor: default; }
+  nav.toc .chapter-link.current strong { color: var(--accent); }
+  nav.toc .chapter-link:before { content: none; }
+  nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: sec; }
+  nav.toc li { counter-increment: sec; margin-bottom: 2px; }
+  nav.toc a {
+    display: flex; gap: 9px; padding: 6px 8px; border-radius: 7px;
+    color: var(--ink-soft); text-decoration: none; font-size: 13.5px; line-height: 1.35;
+  }
+  nav.toc a:before {
+    content: counter(sec, decimal-leading-zero); font-family: var(--mono); font-size: 11px;
+    color: var(--ink-faint); padding-top: 1px; flex-shrink: 0;
+  }
+  nav.toc a:hover { background: var(--paper-sunk); color: var(--ink); }
+  nav.toc a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  nav.toc a.active:before { color: var(--accent); }
+  @media (max-width: 880px) {
+    nav.toc { position: static; border-bottom: 1px solid var(--rule); padding: 18px 20px; }
+    nav.toc ol { columns: 2; column-gap: 20px; }
+    nav.toc.desktop-sticky { display: none; }
+  }
+  @media (min-width: 881px) {
+    nav.toc.desktop-sticky { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; }
+    .mobile-toc { display: none; }
+  }
+
+  /* ---------- main column ---------- */
+  main { padding: 8px 24px 100px; min-width: 0; }
+  .col { max-width: 700px; margin: 0 auto; }
+
+  section.chapter { padding-top: 54px; scroll-margin-top: 14px; }
+  section.chapter:first-of-type { padding-top: 40px; }
+  .chapter-kicker {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 6px;
+  }
+  section.chapter h2 { font-size: clamp(1.5rem, 3vw, 1.95rem); margin: 0 0 18px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  section.chapter h3 { font-size: 1.18rem; margin: 34px 0 12px; }
+  section.chapter > p { margin: 0 0 16px; font-size: 1.02rem; }
+  section.chapter ul, section.chapter ol { color: var(--ink-soft); line-height: 1.68; padding-left: 22px; }
+  section.chapter li { margin-bottom: 6px; }
+  section.chapter li strong { color: var(--ink); }
+
+  /* first-paragraph drop treatment on the very first section only */
+  #real-or-noise > p:first-of-type::first-letter {
+    font-family: var(--serif); font-size: 3.6em; float: left; line-height: 0.85; padding: 6px 8px 0 0;
+    color: var(--warm); font-weight: 700;
+  }
+
+  /* ---------- inline components ---------- */
+  .lede-figure {
+    display: flex; gap: 20px; align-items: flex-start; margin: 0 0 20px; padding-bottom: 4px;
+  }
+  .lede-figure .art {
+    flex: 0 0 168px; width: 168px; height: 168px; border-radius: 12px; overflow: hidden;
+    background: linear-gradient(150deg, var(--accent-soft), var(--paper-sunk));
+    display:flex; align-items:center; justify-content:center; box-shadow: var(--shadow);
+  }
+  @media (max-width: 560px) { .lede-figure { flex-direction: column; } .lede-figure .art { width: 100%; height: 150px; } }
+
+  blockquote.field-note {
+    margin: 24px 0; padding: 16px 20px 16px 18px;
+    background: var(--quote-bg); border-left: 3px solid var(--quote-border); border-radius: 4px 10px 10px 4px;
+  }
+  blockquote.field-note .tag {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--quote-ink); opacity: 0.85; display: block; margin-bottom: 6px;
+  }
+  blockquote.field-note p { margin: 0; color: var(--quote-ink); font-size: 0.98rem; font-style: italic; line-height: 1.6; }
+  blockquote.field-note p + p { margin-top: 8px; }
+
+  .callout {
+    margin: 22px 0; padding: 16px 20px; border-radius: 10px; border: 1px solid var(--rule);
+    background: var(--paper-sunk); font-size: 0.96rem; color: var(--ink-soft); line-height: 1.6;
+  }
+  .callout strong { color: var(--ink); }
+  .callout.gold { border-color: color-mix(in srgb, var(--gold) 40%, var(--rule)); background: color-mix(in srgb, var(--gold) 10%, var(--paper-sunk)); }
+
+  .formula-block {
+    margin: 20px 0; padding: 18px 22px; background: var(--code-bg); border-radius: 10px;
+    border: 1px solid var(--rule); overflow-x: auto; text-align: center; font-size: 1.05rem;
+  }
+  .formula-caption { text-align: center; font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin-top: -12px; margin-bottom: 20px; }
+
+  code, .inline-code { font-family: var(--mono); font-size: 0.86em; background: var(--code-bg); padding: 2px 6px; border-radius: 4px; color: var(--ink); }
+  pre.code-block {
+    font-family: var(--mono); font-size: 0.82rem; background: var(--code-bg); border: 1px solid var(--rule);
+    border-radius: 10px; padding: 16px 18px; overflow-x: auto; line-height: 1.55; color: var(--ink);
+    margin: 16px 0;
+  }
+  pre.code-block .c { color: var(--ink-faint); }
+  pre.code-block .k { color: var(--accent); }
+
+  table.data-table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 0.92rem; overflow-x: auto; display: block; }
+  table.data-table thead, table.data-table tbody { display: table; width: 100%; table-layout: fixed; }
+  table.data-table th { text-align: left; font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 600; padding: 8px 12px; border-bottom: 2px solid var(--ink); }
+  table.data-table td { padding: 9px 12px; border-bottom: 1px solid var(--rule); color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data-table tr:last-child td { border-bottom: none; }
+  table.data-table td:first-child, table.data-table th:first-child { color: var(--ink); font-weight: 500; }
+
+  .term-list { list-style: none; padding: 0; margin: 18px 0; }
+  .term-list li { display: grid; grid-template-columns: 170px 1fr; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .term-list li:last-child { border-bottom: none; }
+  .term-list dt, .term-list .term { font-weight: 600; color: var(--ink); font-family: var(--serif); }
+  @media (max-width: 560px) { .term-list li { grid-template-columns: 1fr; gap: 3px; } }
+
+  /* ---------- interactive figure shell ---------- */
+  .figure {
+    margin: 26px 0; background: var(--paper-raised); border: 1px solid var(--rule); border-radius: 14px;
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .figure-head { padding: 16px 20px 12px; border-bottom: 1px solid var(--rule); }
+  .figure-head .flabel { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .figure-head h4 { margin: 4px 0 0; font-size: 1.05rem; }
+  .figure-body { padding: 16px 20px; }
+  .figure-caption { padding: 0 20px 18px; font-size: 0.86rem; color: var(--ink-faint); line-height: 1.5; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 16px 22px; align-items: center; padding: 12px 4px 18px; font-size: 13px; }
+  .ctl { display: flex; align-items: center; gap: 8px; }
+  .ctl .lbl { color: var(--ink-soft); white-space: nowrap; }
+  .ctl input[type=range] { accent-color: var(--accent); cursor: pointer; width: 110px; }
+  .ctl .val { font-family: var(--mono); font-weight: 600; min-width: 46px; color: var(--accent); font-size: 12.5px; }
+
+  .chart-wrap { overflow-x: auto; }
+  .chart-wrap svg { display: block; margin: 0 auto; }
+  .chart-row { display: flex; gap: 20px; flex-wrap: wrap; }
+  .chart-row > div { flex: 1 1 200px; min-width: 0; }
+
+  .mini-table-wrap { overflow-x: auto; }
+
+  /* ---------- collapsible code box ---------- */
+  details.code-reveal {
+    margin: 20px 0; border: 1px solid var(--rule); border-radius: 10px; overflow: hidden;
+    background: var(--paper-raised);
+  }
+  details.code-reveal summary {
+    cursor: pointer; padding: 12px 18px; font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
+    color: var(--accent); list-style: none; display: flex; align-items: center; gap: 9px;
+    background: var(--paper-sunk); user-select: none;
+  }
+  details.code-reveal summary::-webkit-details-marker { display: none; }
+  details.code-reveal summary::before { content: '\25B8'; font-size: 0.85em; transition: transform 0.15s ease; display: inline-block; }
+  details.code-reveal[open] summary::before { transform: rotate(90deg); }
+  details.code-reveal .code-reveal-body { padding: 2px 18px 16px; }
+  details.code-reveal .code-reveal-body p { font-size: 0.9rem; margin: 12px 0 0; }
+
+  /* ---------- divider ---------- */
+  .divider {
+    margin: 60px 0 0; padding: 46px 24px; background: var(--ink); border-radius: 16px; text-align: center;
+    color: #f2f2f6;
+  }
+  .divider .k { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: #8fb4cc; }
+  .divider h3 { color: #fff; font-size: 1.5rem; margin: 10px 0 0; }
+  .divider p { color: #c3c4d6; max-width: 46ch; margin: 10px auto 0; }
+
+  /* ---------- footnotes ---------- */
+  .footnote-ref { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .footnote-ref:hover { text-decoration: underline; }
+  .footnotes {
+    max-width: 700px; margin: 46px auto 0; padding: 18px 0 0; border-top: 1px solid var(--rule);
+    font-size: 0.86rem; color: var(--ink-soft); line-height: 1.6;
+  }
+  .footnotes ol { padding-left: 20px; margin: 0; }
+  .footnotes li { margin-bottom: 6px; }
+  .footnotes a.footnote-back { color: var(--ink-faint); text-decoration: none; margin-left: 4px; }
+  .footnotes a.footnote-back:hover { color: var(--accent); }
+
+  /* ---------- footer ---------- */
+  footer.colophon {
+    max-width: 700px; margin: 70px auto 0; padding: 26px 0 0; border-top: 1px solid var(--rule);
+    font-size: 0.86rem; color: var(--ink-faint); line-height: 1.6;
+  }
+  footer.colophon strong { color: var(--ink-soft); }
+
+  @media (max-width: 400px) {
+    .hero { padding: 40px 12px 30px; }
+    main { padding: 8px 14px 80px; }
+  }
+  /* ---------- week 3 additions: checkbox labels and a plain button in .controls ---------- */
+  .controls label.chk { display:flex; align-items:center; gap:6px; cursor:pointer; color: var(--ink-soft); }
+  .controls input[type=checkbox] { accent-color: var(--accent); cursor: pointer; }
+  select.picker {
+    font-family: var(--sans); font-size: 13.5px; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--rule);
+    background: var(--paper-sunk); color: var(--ink); cursor: pointer;
+  }
+  button.btn {
+    font-family: var(--sans); font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 8px;
+    border: 1px solid var(--accent); background: var(--accent-soft); color: var(--accent); cursor: pointer;
+  }
+  .visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  button.btn:hover { background: var(--accent); color: var(--paper); }
+  .extension { background: var(--green-soft); border-left: 4px solid var(--green); border-radius: 6px; padding: 12px 18px; margin: 18px 0; }
+  .extension p { margin: 0; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="toc desktop-sticky" id="toc"></nav>
+
+  <main>
+    <div class="hero" style="margin: -8px -24px 30px; border-radius: 0;">
+      <div class="hero-inner" style="padding:0;">
+        <div class="eyebrow"><span class="dot"></span>7002LBSAI &middot; Research Methods in Analytics &middot; Chapter Six</div>
+        <h1>Multiple Regression</h1>
+      </div>
+    </div>
+
+    <nav class="toc mobile-toc" id="toc-mobile"></nav>
+
+    <div class="col">
+
+<section class="chapter" id="whole-story">
+<div class="chapter-kicker">Part One</div>
+<h2>One x at a Time Was Never the Whole Story</h2>
+
+<p>We are halfway through the module. For three chapters we have explained one outcome, y, with one explanatory variable, x. That was the right place to start, but it is rarely how the world works. Unless a business is very simple, its outcomes are driven by many things at once, and a model that only ever looks at one of them is going to miss most of the story.</p>
+
+<p>Back in Week 1 we didn't only collect reaction times and finger lengths. We also asked which device each person used and whether they'd had caffeine in the last two hours. Last chapter, finger length on its own barely moved the needle. So HR now has a set of separate regressions &ndash; reaction time on finger length, reaction time on device &ndash; and someone asks the obvious question. <em>Which one actually matters?</em></p>
+
+<p>The <strong>naive answer</strong> is to run each regression separately, compare the slopes, and tell a story. That fails as soon as the explanatory variables are related to each other. Suppose one device tends to attract people with a particular hand size. People with small hands may drift towards a laptop as phones get bigger. Then the finger-length regression is quietly picking up some of the device effect, and the device regression is picking up some of the finger-length effect. Neither regression can tell us which variable is doing the work, because neither one asks both questions at once.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;What is the interaction in the real world between finger length, the amount of caffeine you've had, whether you're using a laptop or a phone? These all happen at once, so we don't want separate models to explain each one. We want one regression model &ndash; essentially one equation &ndash; that explains everything, which we can then estimate.&rdquo;</p>
+</blockquote>
+
+<p>Remember the <strong>data generating process</strong>: the real-world mechanism that produced the numbers in front of us. Every model imposes our idea of that mechanism on the data. If the real process involves several variables at once and our model includes only one, the process doesn't go away. Our model just fails to capture it, and the one coefficient we do estimate silently absorbs the effects we left out. What we need is a regression with more than one x. That is <strong>multiple regression</strong>, and it is the subject of this chapter.</p>
+</section>
+
+<section class="chapter" id="why-more">
+<div class="chapter-kicker">Part Two</div>
+<h2>Why Add a Second x?</h2>
+
+<p>B&eacute;k&eacute;s and K&eacute;zdi give three reasons to move beyond a single explanatory variable.</p>
+
+<ul class="term-list">
+  <li><span class="term">Broader patterns</span><span>Plain exploratory work. Adding variables lets us describe the data more fully and see how several things relate to y together.</span></li>
+  <li><span class="term">Comparing like with like</span><span>Holding one variable fixed while looking at another gets us closer to comparing observations that are similar in every respect but one. This is the big one.</span></li>
+  <li><span class="term">Better prediction</span><span>More of the variation in y gets explained, so predictions for new observations can be more accurate.</span></li>
+</ul>
+
+<p>The second reason has a Latin name you'll meet constantly: <strong>ceteris paribus</strong>, &ldquo;all else equal&rdquo;. When we want to know the impact of finger length on reaction time, what we really want is the difference in reaction time between two people who are identical in every way except their finger length. Adding variables to a regression is how we <strong>control for</strong> the other things that differ between people, so that the comparison we make gets closer to all else equal.</p>
+
+<p>Closer, but not all the way. Controlling for every possible driver of y is very hard. Some drivers we can't measure, some we measure badly, and some we don't even know exist. We'll come back to this in Part Nineteen. For now, the point is that a multiple regression is a better model, and a more honest one, without automatically being a causal one.</p>
+
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 10</p>
+</section>
+
+<section class="chapter" id="two-x">
+<div class="chapter-kicker">Part Three</div>
+<h2>Reading a Regression with Two x Variables</h2>
+
+<p>In Chapter 4 the model was \(y^E = \alpha + \beta x\). The intercept \(\alpha\) is the average of y when x is zero, and the slope \(\beta\) is the average difference in y for a one-unit difference in x. With two explanatory variables the model becomes</p>
+
+<div class="formula-block">$$y^E = \beta_0 + \beta_1 x_1 + \beta_2 x_2$$</div>
+
+<p>Different textbooks label the intercept \(\alpha\) or \(\beta_0\). It makes no difference: there is no x next to it, so it is still the intercept, the average of y when every x is zero. What has changed is the meaning of the slopes.</p>
+
+<ul class="term-list">
+  <li><span class="term">\(\beta_1\)</span><span>The average difference in y between observations that differ by one unit in \(x_1\) <strong>but have the same \(x_2\)</strong>.</span></li>
+  <li><span class="term">\(\beta_2\)</span><span>The same idea the other way round: the average difference in y for one unit more \(x_2\), with \(x_1\) the same.</span></li>
+</ul>
+
+<p>That extra clause &ndash; &ldquo;with the other variables the same&rdquo; &ndash; is the whole difference. In practice, every interpretation you have learned so far carries over, and you add &ldquo;holding the other variables fixed&rdquo; (or &ldquo;controlling for&rdquo; them) at the end. The units don't change either. If y is reaction time in milliseconds and \(x_1\) is finger length in millimetres, \(\beta_1\) is still in milliseconds per millimetre.</p>
+
+<p>What <em>can</em> change is the number itself. In a simple regression, every influence of \(x_2\) that happens to line up with \(x_1\) gets folded into the one slope. In the multiple regression, \(x_2\) has its own coefficient, so that influence is pulled out of \(\beta_1\). If \(x_1\) and \(x_2\) are related, the two versions of the \(x_1\) slope will differ. The next part shows exactly by how much.</p>
+
+<p>All of this extends to as many variables as you like, \(y^E = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \dots\). Each slope is the average difference in y for one unit more of its own x, with all the other x variables the same.</p>
+
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 10.1&ndash;10.2</p>
+</section>
+
+<section class="chapter" id="ovb">
+<div class="chapter-kicker">Part Four</div>
+<h2>Omitted Variable Bias, Step by Step</h2>
+
+<p>In Chapter 4 we said OLS is the <strong>best linear unbiased estimator</strong>. The word &ldquo;unbiased&rdquo; came with a condition: the model has to be right. If a variable that belongs in the model has been left out, you can meet every other assumption, find a slope that is precise and statistically significant, and still be wrong. The slope is <strong>biased</strong> &ndash; on average it sits away from the true value in the population. This is <strong>omitted variable bias</strong>, and it is worth seeing exactly where it comes from.</p>
+
+<h3>Two models of the same world</h3>
+
+<p>Suppose the true model has two explanatory variables, but we only fit a regression with the first one. Write the two side by side:</p>
+
+<div class="formula-block">$$\textbf{Simple (what we fit):}\quad y^E = \alpha + \beta\, x_1 \qquad\qquad \textbf{Multiple (the truth):}\quad y^E = \beta_0 + \beta_1 x_1 + \beta_2 x_2$$</div>
+
+<p>We care about the effect of \(x_1\). The question is how far \(\beta\), the slope we estimate when \(x_2\) is missing, is from \(\beta_1\), the slope we would get if \(x_2\) were included. The answer depends on how \(x_1\) and \(x_2\) are related, so we need a way to describe that relationship.</p>
+
+<h3>The intermediate step: regress x&#8322; on x&#8321;</h3>
+
+<p>Nothing stops us running a regression between two explanatory variables. Regress \(x_2\) on \(x_1\):</p>
+
+<div class="formula-block">$$x_2^E = \gamma + \delta\, x_1$$</div>
+
+<p>The symbols are new but the form is familiar. \(\gamma\) (gamma) is the intercept, and \(\delta\) (delta) is the slope: on average, how much higher \(x_2\) is for observations with one unit more \(x_1\). If \(\delta\) is zero, the two explanatory variables are unrelated. If it is large, knowing \(x_1\) tells you a lot about \(x_2\).</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Just think about the format here. We've got a left-hand-side variable and a right-hand-side variable with a parameter in front of it, and another parameter with no variable attached to it. This is just a regression model, but between \(x_2\) and \(x_1\). They're both right-hand-side variables, but if there's a relationship between the two, we can model that with a regression as well.&rdquo;</p>
+</blockquote>
+
+<h3>Substitute it into the full model</h3>
+
+<p>Now the algebra. Start from the true model:</p>
+
+<div class="formula-block">$$y^E = \beta_0 + \beta_1 x_1 + \beta_2\, x_2 \tag{1}$$</div>
+
+<p>We are going to write the whole thing in terms of \(x_1\) alone, which is all the simple regression can see. Replace \(x_2\) with what \(x_1\) tells us about it, \(\gamma + \delta x_1\):</p>
+
+<div class="formula-block">$$y^E = \beta_0 + \beta_1 x_1 + \beta_2\,(\gamma + \delta x_1) \tag{2}$$</div>
+
+<p>Multiply out the bracket. \(\beta_2\) multiplies both terms inside it:</p>
+
+<div class="formula-block">$$y^E = \beta_0 + \beta_1 x_1 + \beta_2\gamma + \beta_2\delta\, x_1 \tag{3}$$</div>
+
+<p>Gather the terms with no \(x_1\) in them at the front, and the terms that multiply \(x_1\) together:</p>
+
+<div class="formula-block">$$y^E = \underbrace{(\beta_0 + \beta_2\gamma)}_{\text{a constant}} \;+\; \underbrace{(\beta_1 + \beta_2\delta)}_{\text{a slope on } x_1}\, x_1 \tag{4}$$</div>
+
+<p>Look at what this is. It has the shape of the simple model: a constant plus a slope times \(x_1\). Nothing in the first bracket varies with \(x_1\), so it plays the role of \(\alpha\). The second bracket is the slope on \(x_1\), so it plays the role of \(\beta\). Match them up:</p>
+
+<div class="formula-block">$$\alpha = \beta_0 + \beta_2\gamma \qquad\qquad \beta = \beta_1 + \delta\beta_2 \tag{5}$$</div>
+
+<p>The second equation is the one that matters. Rearrange it:</p>
+
+<div class="formula-block">$$\beta - \beta_1 = \delta\,\beta_2 \tag{6}$$</div>
+
+<p>The left-hand side is the gap between the slope we estimated and the slope we wanted. That gap is the <strong>omitted variable bias</strong>. The right-hand side says it is the product of two things: how strongly the omitted variable moves with \(x_1\) (\(\delta\)), and how strongly the omitted variable affects y (\(\beta_2\)). When we run the simple regression, we think we have found \(\beta_1\). What we have actually found is \(\beta_1 + \delta\beta_2\): the true effect of \(x_1\) plus a share of \(x_2\)'s effect, borrowed through the correlation between them.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;If I use the simple model, I'm going out confidently talking about this estimated parameter as if it's the other one, because I haven't taken account of the other variable. My estimate is biased. It's incorrect. I'm going out into the world talking confidently about something I shouldn't be.&rdquo;</p>
+</blockquote>
+
+<p>Two details are worth knowing. First, equation (6) is not an approximation. For OLS estimates on the same data it holds exactly: \(\hat\beta - \hat\beta_1 = \hat\delta\hat\beta_2\) to the last decimal place, as you'll see in Part Five. Second, the intercept absorbs the omitted variable too, through \(\beta_2\gamma\). We rarely care about intercepts, which is why the slope gets all the attention.</p>
+
+<h3>Why it happens, without the algebra</h3>
+
+<p>Suppose \(x_1\) and \(x_2\) are positively correlated. Observations with higher \(x_1\) then tend to have higher \(x_2\) as well. The simple regression ignores \(x_2\) and compares observations with different \(x_1\) &ndash; but those observations also differ in \(x_2\). Any difference in y between them might be due to \(x_1\), or to \(x_2\), and the simple regression has no way of telling them apart. It hands all of it to \(x_1\). The multiple regression compares observations with different \(x_1\) <em>and the same \(x_2\)</em>, so \(x_2\) can't be responsible for the difference.</p>
+
+<h3>Which way does the bias go?</h3>
+
+<p>Because the bias is a product, its sign follows the signs of \(\delta\) and \(\beta_2\):</p>
+
+<table class="data-table">
+  <caption class="visually-hidden">Direction of omitted variable bias by sign of delta and beta two</caption>
+  <thead><tr><th scope="col"></th><th scope="col">\(\beta_2 > 0\) (omitted variable raises y)</th><th scope="col">\(\beta_2 < 0\) (omitted variable lowers y)</th></tr></thead>
+  <tbody>
+    <tr><td><strong>\(\delta > 0\)</strong> (x&#8321; and x&#8322; move together)</td><td>Positive bias: \(\beta\) too high</td><td>Negative bias: \(\beta\) too low</td></tr>
+    <tr><td><strong>\(\delta < 0\)</strong> (they move in opposite directions)</td><td>Negative bias: \(\beta\) too low</td><td>Positive bias: \(\beta\) too high</td></tr>
+  </tbody>
+</table>
+
+<p>This is useful even when you don't have the omitted variable. If you can argue about the likely signs of \(\delta\) and \(\beta_2\) from what you know about the business, you can say which way your estimate is probably wrong.</p>
+
+<h3>When there is no bias</h3>
+
+<p>The bias is exactly zero in two cases:</p>
+
+<ul class="term-list">
+  <li><span class="term">\(\delta = 0\)</span><span>The omitted variable is unrelated to \(x_1\). Then leaving it out costs nothing in terms of bias. Including it can still help, because it explains some of y and makes the estimates more precise.</span></li>
+  <li><span class="term">\(\beta_2 = 0\)</span><span>The omitted variable has no effect on y once \(x_1\) is in the model. Then it didn't belong in the model in the first place.</span></li>
+</ul>
+
+<p>Neither condition can be assumed. Both are empirical questions. In practice, you check them by adding the variable and seeing whether the coefficient you care about moves, and whether the new variable has a sizeable coefficient of its own.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;If you've got two completely independent variables, you might want to include one because it has explanatory power in your model. But if it's independent, you're not running the risk of omitted variable bias. A lot of the time, though, you will be.&rdquo;</p>
+</blockquote>
+
+<h3>A first example from the textbook</h3>
+
+<p>B&eacute;k&eacute;s and K&eacute;zdi use monthly data on a beer brand. Regress the month-to-month change in log quantity sold on the change in our own log price, and the slope is \(\hat\beta = -0.5\): sales fall by about 0.5% when our price rises by 1%. Now add the change in competitors' average log price. Our own price slope becomes \(\hat\beta_1 = -3\) and the competitor slope \(\hat\beta_2 = 3\). The simple regression was out by \(-0.5 - (-3) = +2.5\). The auxiliary regression of competitor price on our price gives \(\hat\delta = 0.83\), and \(0.83 \times 3 = 2.5\). The two calculations agree. The bias is positive because our price and the competitors' price move together (\(\delta > 0\)) and higher competitor prices mean more sales for us (\(\beta_2 > 0\)). Customers are much more price-sensitive than the simple regression suggested.</p>
+
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 10.3</p>
+</section>
+
+<section class="chapter" id="watch-ovb">
+<div class="chapter-kicker">Part Five</div>
+<h2>Watching the Bias Happen</h2>
+
+<p>The best way to believe a formula is to build a world where you know the answer and check that the formula finds it. We can do that with a <strong>simulation</strong>: we write down the data generating process ourselves, generate data from it, and then fit regressions as if we didn't know the truth.</p>
+
+<h3>The structural model of the simulation</h3>
+
+<p>Here is the world we create. There are 300 observations (think of them as months), and three variables, each built from the ones before it plus random noise.</p>
+
+<div class="formula-block">$$\begin{aligned}
+\text{competitor price}_i &= \varepsilon_i, & \varepsilon_i &\sim N(0,\;2^2)\\[4pt]
+\text{our price}_i &= 0.8\times\text{competitor price}_i + u_i, & u_i &\sim N(0,\;1.2^2)\\[4pt]
+\text{sales}_i &= -3\times\text{our price}_i + 3\times\text{competitor price}_i + v_i, & v_i &\sim N(0,\;2.5^2)
+\end{aligned}$$</div>
+
+<p>Read it from the top. The competitor sets its price first: a random number with mean zero and standard deviation 2 (these are changes in log prices, so zero means &ldquo;no change&rdquo;). We follow them. Our price is 0.8 times theirs, plus our own random adjustment with standard deviation 1.2. Sales then depend on both prices: each unit rise in our price lowers sales by 3, each unit rise in theirs raises our sales by 3, and \(v_i\) is everything else that moves sales, with standard deviation 2.5. The three noise terms \(\varepsilon\), \(u\) and \(v\) are drawn independently of each other.</p>
+
+<p>Map this onto Part Four. The third line is the true model, with \(x_1\) our price, \(x_2\) the competitor's price, \(\beta_0 = 0\), \(\beta_1 = -3\) and \(\beta_2 = 3\). The second line is where the two prices become correlated, and it fixes \(\delta\). Be careful here: \(\delta\) is the slope of competitor price on <em>our</em> price, the reverse of the way the second line is written. In the population,</p>
+
+<div class="formula-block">$$\delta = \frac{Cov[\text{comp},\,\text{our}]}{Var[\text{our}]} = \frac{0.8\times 2^2}{0.8^2\times 2^2 + 1.2^2} = \frac{3.2}{2.56+1.44} = \frac{3.2}{4.0} = 0.8$$</div>
+
+<p>So with these particular standard deviations \(\delta\) happens to equal 0.8 as well, because our price and the competitor's price end up with the same variance (4). Change either standard deviation and the two numbers part company. With \(\delta = 0.8\), equation (6) tells us in advance what the simple regression should find:</p>
+
+<div class="formula-block">$$\beta = \beta_1 + \delta\beta_2 = -3 + 0.8\times 3 = -0.6$$</div>
+
+<p>The truth is \(-3\). A simple regression of sales on our own price should report something close to \(-0.6\): it says customers barely react to our price, when in fact they react strongly.</p>
+
+<pre class="code-block">import numpy as np
+import pandas as pd
+import statsmodels.formula.api as smf
+
+rng = np.random.default_rng(42)
+competitor_price = rng.normal(0, 2.0, 300)
+our_price = 0.8 * competitor_price + rng.normal(0, 1.2, 300)
+sales = -3*our_price + 3*competitor_price + rng.normal(0, 2.5, 300)
+sim = pd.DataFrame({'sales': sales, 'our_price': our_price,
+                    'competitor_price': competitor_price})
+
+simple = smf.ols('sales ~ our_price', data=sim).fit()
+multi  = smf.ols('sales ~ our_price + competitor_price', data=sim).fit()
+aux    = smf.ols('competitor_price ~ our_price', data=sim).fit()</pre>
+
+<p>The <code>rng.normal(mean, sd, size)</code> calls draw the three noise terms. Each line of code is one line of the structural model.</p>
+
+<h3>What the three regressions find</h3>
+
+<table class="data-table" id="beer-table">
+  <caption class="visually-hidden">Simulation results with correlated and uncorrelated prices</caption>
+  <thead><tr><th scope="col"></th><th scope="col">Prices correlated (0.8)</th><th scope="col">Not correlated (0)</th></tr></thead>
+  <tbody></tbody>
+</table>
+
+<p id="beer-text"></p>
+
+<p>One sample of 300 is not the population, so the numbers don't hit \(-0.6\), \(-3\), 3 and 0.8 exactly. But notice that the last two rows of the table agree to every decimal place in both columns. The gap between the simple and multiple slopes is <em>exactly</em> \(\hat\delta\hat\beta_2\). The intercepts obey their own version too: \(\hat\alpha = \hat\beta_0 + \hat\beta_2\hat\gamma\), here <span id="beer-int"></span>.</p>
+
+<p>The right-hand column re-runs the whole simulation with the 0.8 replaced by 0, so the two prices are unrelated. Now \(\hat\delta\) is close to zero, the bias almost disappears, and the simple regression lands close to the truth on its own. Including competitor price still helps &ndash; it explains a lot of the variation in sales &ndash; but leaving it out no longer biases our price's slope.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Our model, if we're including both, should be around minus three and around three, which they are. I created the variables &ndash; I'm in charge of what the real model is. This is the incorrect model, because I'm not accounting for the relationship between competitor price and our price, which I've imposed. And so this one is biased.&rdquo;</p>
+</blockquote>
+
+<div class="figure" id="fig-ovbsim">
+  <div class="figure-head"><div class="flabel">Figure 6.1 &middot; Interactive</div><h4>Build your own omitted variable bias</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Our price follows theirs by</span><input type="range" id="ov-a" min="-1" max="1" step="0.1" value="0.8"><span class="val" id="ov-a-v"></span></div>
+      <div class="ctl"><span class="lbl">True &beta;&#8321; (our price)</span><input type="range" id="ov-b1" min="-4" max="0" step="0.5" value="-3"><span class="val" id="ov-b1-v"></span></div>
+      <div class="ctl"><span class="lbl">True &beta;&#8322; (their price)</span><input type="range" id="ov-b2" min="-4" max="4" step="0.5" value="3"><span class="val" id="ov-b2-v"></span></div>
+    </div>
+    <div class="chart-wrap" id="ovb-chart"></div>
+    <p id="ovb-read" style="text-align:center;font-family:var(--sans);font-size:0.9rem;margin:6px 0 0;line-height:1.6;"></p>
+  </div>
+  <div class="figure-caption">A fresh simulated draw from the structural model above (300 months), with the three numbers you choose. Each dot is a month, shaded by the competitor's price. The red line is the simple regression of sales on our price. The dashed blue line has the slope from the multiple regression, which compares months with the same competitor price.</div>
+</div>
+
+<p>Two things to try. First, set &ldquo;Our price follows theirs by&rdquo; to 0. The red and blue lines line up: no correlation, no bias.</p>
+
+<p>Second, put &ldquo;Our price follows theirs by&rdquo; back to 0.8 (anything above about 0.5 works), then set the true &beta;&#8321; (our price) to &minus;2 and the true &beta;&#8322; (their price) to 4. The simple regression now reports a <em>positive</em> slope: roughly &minus;2 + 0.8 &times; 4 = +1.2. Taken at face value, it says that raising our price raises sales. The first slider matters here. Without the link between the two prices there is no bias, however large the competitor effect.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Can you imagine presenting that to a board and saying, as we raise our price, our sales go up? What's the first question they're going to ask you? Are you sure? And to a certain extent, everything we're teaching going forward about multiple regression is answering that: are you sure?&rdquo;</p>
+</blockquote>
+</section>
+
+<section class="chapter" id="language">
+<div class="chapter-kicker">Part Six</div>
+<h2>Conditioning, Controlling and Confounding</h2>
+
+<p>Multiple regression comes with its own vocabulary, and you'll use it constantly.</p>
+
+<ul class="term-list">
+  <li><span class="term">Conditioning on, controlling for</span><span>When \(x_2\) is in the regression, we measure differences in y by \(x_1\) <strong>conditional on</strong> \(x_2\), or <strong>controlling for</strong> \(x_2\). Both mean the same thing: the comparison holds \(x_2\) fixed.</span></li>
+  <li><span class="term">Omitted variable</span><span>A variable that belongs in the model but has been left out.</span></li>
+  <li><span class="term">Confounder</span><span>An omitted variable that is correlated with both \(x_1\) and y. The slope on \(x_1\) is then <strong>confounded</strong> &ndash; another way of saying it is biased by the omission.</span></li>
+</ul>
+
+<p>In the simulation, competitor price is a confounder. It moves with our price, and it moves sales. Leave it out and our price's slope is confounded.</p>
+
+<p>However many variables we condition on, a regression on observational data is still a comparison of conditional means. It is not an experiment. So the language rule from Chapter 4 still stands, with one addition: say &ldquo;is associated with&rdquo;, not &ldquo;affects&rdquo; or &ldquo;increases&rdquo;, and say what was held fixed. &ldquo;A &#163;1 higher price is associated with about 3,000 fewer sales on average, holding the competitor's price fixed&rdquo; is honest. &ldquo;Raising our price by &#163;1 cuts sales by 3,000&rdquo; is a causal claim the data can't make on their own.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;A one pound change in our price is associated with an average decline in sales of about 3,200. Get that tattooed on your arm: on average.&rdquo;</p>
+</blockquote>
+
+<p>This is awkward with prices and sales, because most of us carry a mental model in which price obviously drives sales. That model may well be right. But until the data come from a controlled experiment (Chapter 9), the precise statement is about association.</p>
+
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 10.4</p>
+</section>
+
+<section class="chapter" id="class-move">
+<div class="chapter-kicker">Part Seven</div>
+<h2>Does Our Own Coefficient Move?</h2>
+
+<p>Now to our own data, one row per student. Fit reaction time on finger length alone, then add device and caffeine:</p>
+
+<pre class="code-block">simple = smf.ols('mean_rt ~ finger_mm', data=student_summary).fit(cov_type='HC1')
+multi  = smf.ols('mean_rt ~ finger_mm + device + caffeine', data=student_summary).fit(cov_type='HC1')
+print(simple.params.round(3))
+print(multi.params.round(3))</pre>
+
+<p id="class-move-text"></p>
+
+<div class="figure" id="fig-classcoef">
+  <div class="figure-head"><div class="flabel">Figure 6.2</div><h4>The finger-length coefficient, with and without controls</h4></div>
+  <div class="figure-body"><div class="chart-wrap" id="classcoef-chart"></div></div>
+  <div class="figure-caption">Point estimates with 95% confidence intervals (robust standard errors), 24 students.</div>
+</div>
+
+<p>What would a big move have told us? If the coefficient had jumped from 18.6 to, say, 200, device or caffeine would have to be strongly related to finger length <em>and</em> to reaction time &ndash; a confounder at work. We added two variables at once, so we couldn't say which. The natural next step would be to add them one at a time and watch which one moves the coefficient. Almost no movement tells us the opposite: whatever confounding there is, it doesn't run through device or caffeine.</p>
+
+<h3>The formula with two omitted variables</h3>
+
+<p>Equation (6) extends naturally. With several omitted variables, the bias is the sum of one \(\delta\times\beta\) term for each of them:</p>
+
+<div class="formula-block">$$\beta - \beta_1 = \delta_{\text{device}}\,\beta_{\text{device}} + \delta_{\text{caffeine}}\,\beta_{\text{caffeine}}$$</div>
+
+<p>Each \(\delta\) comes from regressing that omitted variable (coded 0/1) on finger length, and each \(\beta\) is its coefficient in the full model. On our data:</p>
+
+<div class="formula-block" id="class-ovb-formula"></div>
+
+<p>The two terms pull in opposite directions and are both small, because finger length barely predicts either device or caffeine (the two \(\delta\)s are tiny). That is exactly why the coefficient barely moves.</p>
+
+<h3>Our own data hits its limit</h3>
+
+<p id="class-limit"></p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;That doesn't mean the underlying data generating process has no relationship between finger length and reaction time. It just means the way we collected the data was suboptimal in many ways &ndash; how we measured things, the instructions I gave. We can't infer much from it. But it has been useful data to learn with, and we're beginning to say goodbye to it.&rdquo;</p>
+</blockquote>
+
+<p>From here on, the bigger and better datasets do the heavy lifting.</p>
+</section>
+
+<section class="chapter" id="mc">
+<div class="chapter-kicker">Part Eight</div>
+<h2>Multicollinearity: A Different Problem</h2>
+
+<p>Omitted variable bias is about what is missing from a model. <strong>Multicollinearity</strong> is about what is already in it. It happens when two or more explanatory variables in the same regression are strongly correlated with <em>each other</em>.</p>
+
+<p>Multicollinearity does not bias anything. The estimated coefficients are still right on average. What it does is <strong>inflate the standard errors</strong>, so each coefficient is estimated less precisely, the confidence intervals widen, and it gets harder to say anything with confidence.</p>
+
+<p>The intuition is about variation. OLS learns the separate effect of \(x_1\) by comparing observations that differ in \(x_1\) but are similar in \(x_2\). If the two variables move together almost all the time, there are hardly any such observations: whenever \(x_1\) is high, \(x_2\) is high too. The data contain very little information about what happens when one changes and the other doesn't, and that is exactly the comparison the regression needs.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;If you've got two variables, \(x_1\) and \(x_2\), and they're moving together almost every time, there's barely any data where one is high and one is low. We're talking about a lack of variation. And one thing OLS is hungry for is variation in your right-hand-side variables.&rdquo;</p>
+</blockquote>
+
+<div class="figure" id="fig-mc">
+  <div class="figure-head"><div class="flabel">Figure 6.3 &middot; Interactive</div><h4>As x&#8321; and x&#8322; move together, the standard error climbs</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Correlation</span><input type="range" id="mc-r" min="0" max="0.98" step="0.02" value="0.3"><span class="val" id="mc-r-v"></span></div>
+    </div>
+    <div class="chart-row"><div class="chart-wrap" id="mc-scatter"></div><div class="chart-wrap" id="mc-se"></div></div>
+    <p id="mc-read" style="text-align:center;font-family:var(--sans);font-size:0.9rem;margin:6px 0 0;"></p>
+  </div>
+  <div class="figure-caption">Simulated data, 200 observations, with the true coefficients fixed at 2 and 1.5 throughout. Left: \(x_1\) against \(x_2\); the red points are the observations with \(x_2\) in a narrow band around zero &ndash; the ones that let us see \(x_1\) vary while \(x_2\) stays put. Right: the standard error of \(\hat\beta_1\) at each correlation.</div>
+</div>
+
+<p>Drag the correlation up. On the left, the cloud squeezes into a thin diagonal line, and the red band (observations with roughly the same \(x_2\)) covers an ever narrower range of \(x_1\). On the right, the standard error rises slowly at first and then very sharply as the correlation approaches 1.</p>
+
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 10.5&ndash;10.6</p>
+</section>
+
+<section class="chapter" id="se-formula">
+<div class="chapter-kicker">Part Nine</div>
+<h2>Where the Standard Error Comes From</h2>
+
+<p>In Chapter 5 the standard error of a simple-regression slope was \(SE(\hat\beta) = \dfrac{Std[e]}{\sqrt{n}\,Std[x]}\). In a multiple regression one new term appears:</p>
+
+<div class="formula-block">$$SE(\hat\beta_1) = \frac{Std[e]}{\sqrt{n}\;\cdot\;Std[x_1]\;\cdot\;\sqrt{1-R_1^2}}$$</div>
+
+<p>Take it piece by piece.</p>
+
+<ul class="term-list">
+  <li><span class="term">\(Std[e]\)</span><span>The standard deviation of the residuals. A better-fitting model has smaller residuals and a smaller SE. Same as before.</span></li>
+  <li><span class="term">\(\sqrt{n}\)</span><span>More observations, smaller SE. Same as before.</span></li>
+  <li><span class="term">\(Std[x_1]\)</span><span>More spread in \(x_1\), smaller SE. Same as before.</span></li>
+  <li><span class="term">\(R_1^2\)</span><span><strong>New.</strong> The R&sup2; from regressing \(x_1\) on all the <em>other</em> explanatory variables. It measures how much of \(x_1\) the other variables already explain.</span></li>
+</ul>
+
+<p>If the other variables explain none of \(x_1\), \(R_1^2 = 0\), the new term is \(\sqrt{1}=1\), and the formula collapses back to the simple-regression one. As \(R_1^2\) rises towards 1, \(\sqrt{1-R_1^2}\) shrinks towards zero, and since it sits in the denominator, the SE blows up. That is multicollinearity in one line of maths: the more \(x_1\) is predictable from the other x variables, the less independent variation it has left, and the less precisely its own slope can be estimated. The formula is symmetric &ndash; the same applies to every coefficient, each with its own \(R_k^2\).</p>
+
+<h3>Checking it on our own regression</h3>
+
+<p>Take the finger-length coefficient in the model with device and caffeine. The pieces are:</p>
+
+<div class="formula-block" id="se-hand"></div>
+
+<p id="se-hand-text"></p>
+
+<h3>Perfect and imperfect collinearity</h3>
+
+<p>There are two degrees of the problem.</p>
+
+<ul class="term-list">
+  <li><span class="term">Perfect collinearity</span><span>One explanatory variable is an exact linear function of the others, say \(x_1 = 2x_2\). Then \(R_1^2 = 1\), the denominator is zero, and the coefficients cannot be calculated at all. There is no way to separate the two effects, because the data never show one move without the other. Software will refuse, or drop one of the variables for you. Check which one it dropped: it may be the one you care about.</span></li>
+  <li><span class="term">Multicollinearity</span><span>Strong but <em>imperfect</em> correlation. Everything can be calculated, but the standard errors may be large.</span></li>
+</ul>
+
+<p>This is the fifth Gauss&ndash;Markov condition from Chapter 4 &ndash; no explanatory variable is an exact linear combination of the others &ndash; finally doing some work. Notice that it rules out only <em>perfect</em> collinearity. OLS stays unbiased at any level of imperfect correlation; it just gets less precise. You'll meet perfect collinearity again in Part Fourteen as the &ldquo;dummy variable trap&rdquo;.</p>
+
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 10.5&ndash;10.6</p>
+</section>
+
+<section class="chapter" id="vif">
+<div class="chapter-kicker">Part Ten</div>
+<h2>Measuring It: The Variance Inflation Factor</h2>
+
+<p>Software summarises the new term as the <strong>variance inflation factor</strong>, one number per explanatory variable:</p>
+
+<div class="formula-block">$$VIF_k = \frac{1}{1-R_k^2}$$</div>
+
+<p>It is the same \(R_k^2\) as in the SE formula, flipped into a single number. The name comes from the variance, which is the SE squared: a VIF of 4 means the variance of \(\hat\beta_k\) is four times what it would be if \(x_k\) were unrelated to the other variables, so the SE is twice as large. A VIF of 1 means no inflation. A common rule of thumb treats a <strong>VIF above 10</strong> as a real problem (some use a stricter 5).</p>
+
+<p>In Python, reuse the fitted model. It already holds the design matrix (the columns of x values) and their names:</p>
+
+<pre class="code-block">from statsmodels.stats.outliers_influence import variance_inflation_factor
+
+model = smf.ols('mean_rt ~ finger_mm + device + caffeine', data=student_summary).fit()
+X, names = model.model.exog, model.model.exog_names
+for k in range(1, len(names)):          # 0 is the intercept
+    print(names[k], round(variance_inflation_factor(X, k), 2))</pre>
+
+<pre class="code-block" id="vif-out"></pre>
+
+<p>All three are close to 1. Finger length, device and caffeine barely overlap in what they explain, so adding device and caffeine made the finger-length estimate no less precise. The trouble with our model was never multicollinearity. It was a weak signal and 24 observations.</p>
+
+<h3>The VIF trap</h3>
+
+<p>A high VIF does <strong>not</strong> mean &ldquo;drop this variable&rdquo;. If the variable is a genuine confounder, dropping it to fix a <em>precision</em> problem brings back the <em>bias</em> problem from Part Four, and that is usually the worse of the two. The honest response to a high VIF is usually to report it, keep the variable if your argument needs it, and say plainly that the estimate is imprecise. The VIF is a diagnostic, not a decision rule.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;It's not, it's over ten, I drop it. It's, it's over ten, I report it, and I explain that this could be a limitation of my model.&rdquo;</p>
+</blockquote>
+
+<h3>What you can do about it</h3>
+
+<ul class="term-list">
+  <li><span class="term">Look early</span><span>Before modelling, check the pairwise correlations between your explanatory variables. A correlation heatmap does this at a glance.</span></li>
+  <li><span class="term">Drop one of a pair</span><span>If two variables are near-duplicates, keep one &ndash; as long as that doesn't create omitted variable bias.</span></li>
+  <li><span class="term">Combine them</span><span>Average them, or standardise each as a z-score (value minus its mean, divided by its standard deviation) and average the z-scores. This is the latent-variable idea from Chapter 3.</span></li>
+  <li><span class="term">With many variables</span><span>Pairwise correlations aren't enough, because one variable can be a combination of several others. Check \(R_k^2\) (or the VIF) for each variable regressed on all the others.</span></li>
+</ul>
+
+<p>Multicollinearity is mostly a small-sample problem &ndash; hundreds to a few thousand observations. With much more data, the extra precision usually swamps it.</p>
+
+<h3>Worked example: two ratings of the same hotel</h3>
+
+<p>The Vienna hotels data carry two customer ratings for most hotels: <code>rating</code>, from the booking site, and <code>ratingta</code>, from TripAdvisor. Both try to measure the same thing &ndash; how good the hotel is &ndash; so we'd expect them to move together.</p>
+
+<div class="figure" id="fig-ratings">
+  <div class="figure-head"><div class="flabel">Figure 6.4</div><h4>Two ratings of the same hotels</h4></div>
+  <div class="figure-body"><div class="chart-wrap" id="ratings-chart"></div></div>
+  <div class="figure-caption">Booking-site rating against TripAdvisor rating, Vienna hotels (3&ndash;4 stars, price up to &euro;600). Points are jittered slightly because both ratings come in steps.</div>
+</div>
+
+<p id="ratings-intro"></p>
+
+<pre class="code-block">smf.ols('ln_price ~ rating', data=hotels).fit(cov_type='HC1')
+smf.ols('ln_price ~ ratingta', data=hotels).fit(cov_type='HC1')
+smf.ols('ln_price ~ rating + ratingta', data=hotels).fit(cov_type='HC1')
+
+# combine them: average of the two z-scores
+hotels['rating_z'] = ((hotels['rating'] - hotels['rating'].mean()) / hotels['rating'].std()
+                      + (hotels['ratingta'] - hotels['ratingta'].mean()) / hotels['ratingta'].std()) / 2
+smf.ols('ln_price ~ rating_z', data=hotels).fit(cov_type='HC1')</pre>
+
+<table class="data-table" id="ratings-table">
+  <caption class="visually-hidden">Log price on one rating, the other, both, and their average z-score</caption>
+  <thead><tr><th scope="col">Dependent variable: ln(price)</th><th scope="col">(1) Booking only</th><th scope="col">(2) TripAdvisor only</th><th scope="col">(3) Both</th><th scope="col">(4) Average z-score</th></tr></thead>
+  <tbody></tbody>
+</table>
+
+<p id="ratings-text"></p>
+
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 10.6. Data: <code>hotels-vienna</code>, filtered as in Chapters 7&ndash;9.</p>
+</section>
+
+<section class="chapter" id="distinction">
+<div class="chapter-kicker">Part Eleven</div>
+<h2>Bias or Precision? The Distinction That Matters</h2>
+
+<p>Omitted variable bias and multicollinearity both involve correlated explanatory variables, which is why they're so easily confused. They are opposite problems.</p>
+
+<table class="data-table">
+  <caption class="visually-hidden">Omitted variable bias compared with multicollinearity</caption>
+  <thead><tr><th scope="col"></th><th scope="col">Omitted variable bias</th><th scope="col">Multicollinearity</th></tr></thead>
+  <tbody>
+    <tr><td><strong>What it is</strong></td><td>Leaving out a variable that belongs in the model</td><td>Including two variables that are strongly correlated</td></tr>
+    <tr><td><strong>What it breaks</strong></td><td>The estimate itself: wrong on average</td><td>Precision: right on average, but noisy</td></tr>
+    <tr><td><strong>Where you see it</strong></td><td>The coefficient</td><td>The standard error</td></tr>
+    <tr><td><strong>Does more data fix it?</strong></td><td>No. The bias is the same at any sample size</td><td>Yes. More data narrows the SE</td></tr>
+    <tr><td><strong>Direction</strong></td><td>Set by the signs of \(\delta\) and \(\beta_2\)</td><td>None: the SE grows, the estimate doesn't shift</td></tr>
+    <tr><td><strong>Usual fix</strong></td><td>Add the right variable</td><td>Sometimes remove or combine one</td></tr>
+  </tbody>
+</table>
+
+<p>Confusing these two is one of the most common mistakes in reading regression output. A large standard error is not evidence of bias, and a precise, significant coefficient is no protection against it.</p>
+</section>
+
+<section class="chapter" id="ftest">
+<div class="chapter-kicker">Part Twelve</div>
+<h2>Testing Several Coefficients at Once: The F-Test</h2>
+
+<h3>One coefficient at a time, as before</h3>
+
+<p>Every coefficient in a multiple regression gets its own confidence interval and its own t-test, exactly as in Chapter 5:</p>
+
+<div class="formula-block">$$CI(\hat\beta_k)_{95\%} = \hat\beta_k \pm 2\,SE(\hat\beta_k) \qquad\qquad t=\frac{\hat\beta_k}{SE(\hat\beta_k)}$$</div>
+
+<p>The only change is where \(SE(\hat\beta_k)\) comes from: the formula in Part Nine, with its \(\sqrt{1-R_k^2}\) term. In the simulation from Part Five, the 95% confidence interval for our price's coefficient runs from <span id="beer-ci"></span>. Zero is nowhere near it, so the coefficient is significantly different from zero at 5% &ndash; and the true value, \(-3\), sits inside it.</p>
+
+<h3>When the question is about a group of coefficients</h3>
+
+<p>Sometimes the question isn't about one coefficient but about several together. Do the location variables matter at all? Is a curve needed, or would a straight line do? Are all the education dummies jointly zero? This is a <strong>joint hypothesis</strong>: a null hypothesis that makes a statement about more than one coefficient. For two coefficients:</p>
+
+<div class="formula-block">$$H_0:\ \beta_1 = 0 \ \text{ and }\ \beta_2 = 0 \qquad\qquad H_A:\ \text{at least one of them is not zero}$$</div>
+
+<p>Running two separate t-tests doesn't answer this. Each coefficient can be individually indistinguishable from zero while the two together clearly matter &ndash; this happens a lot with correlated variables, where each one's SE is inflated. The <strong>F-test</strong> tests the group as a whole.</p>
+
+<h3>What the F-statistic measures</h3>
+
+<p>The idea is a comparison of two models. The <strong>unrestricted</strong> model is the one you fitted, with all the variables. The <strong>restricted</strong> model is the same model with the null hypothesis imposed, i.e. with the tested variables dropped. If those variables really don't matter, dropping them should cost very little fit. If they do matter, R&sup2; should fall noticeably. The F-statistic measures that fall, scaled so it can be compared with a known distribution:</p>
+
+<div class="formula-block">$$F = \frac{\left(R^2_{U} - R^2_{R}\right)/\,q}{\left(1 - R^2_{U}\right)/\,(n-k-1)}$$</div>
+
+<ul class="term-list">
+  <li><span class="term">\(R^2_U,\ R^2_R\)</span><span>R&sup2; of the unrestricted and the restricted model.</span></li>
+  <li><span class="term">\(q\)</span><span>The number of restrictions &ndash; how many coefficients the null sets to zero.</span></li>
+  <li><span class="term">\(n-k-1\)</span><span>The number of observations minus the number of estimated coefficients in the unrestricted model (k slopes plus the intercept).</span></li>
+</ul>
+
+<p>The top of the fraction is the gain in fit per tested variable. The bottom is the fit still unexplained, per remaining degree of freedom. A big F means the tested variables explain far more than you'd expect from chance. If the null is true, F follows an <strong>F-distribution</strong> with \(q\) and \(n-k-1\) degrees of freedom, and its p-value is the probability of an F at least this large when all the tested coefficients are really zero. The logic is exactly the t-test logic from Chapter 2, with a different reference distribution.</p>
+
+<div class="figure" id="fig-fdist">
+  <div class="figure-head"><div class="flabel">Figure 6.5 &middot; Interactive</div><h4>The F-distribution under the null, and where our F-statistics land</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <label class="chk"><input type="radio" name="fcase" value="class" checked> Our class: all three slopes zero?</label>
+      <label class="chk"><input type="radio" name="fcase" value="spline"> Hotels: are the spline bends zero?</label>
+    </div>
+    <div class="chart-wrap" id="fdist-chart"></div>
+    <p id="fdist-read" style="text-align:center;font-family:var(--sans);font-size:0.9rem;margin:6px 0 0;"></p>
+  </div>
+  <div class="figure-caption">The curve is the distribution of F if the null hypothesis is true. The shaded area to the right of the dashed line is the 5% rejection region. The red line is the F-statistic from the data.</div>
+</div>
+
+<p>One practical note. With robust standard errors, statsmodels computes the F-statistic in a slightly different way (a robust Wald test) rather than from the two R&sup2;s, so its number won't exactly match the formula above. The formula is the one to understand; the robust version is the one to report.</p>
+
+<h3>The global F-test</h3>
+
+<p>The most common F-test asks whether <em>all</em> the slope coefficients are zero at once. Every regression summary reports it by default, as <code>F-statistic</code> and <code>Prob (F-statistic)</code> in the top block. Here's ours:</p>
+
+<pre class="code-block">model = smf.ols('mean_rt ~ finger_mm + device + caffeine', data=student_summary).fit(cov_type='HC1')
+print(model.summary())</pre>
+
+<pre class="code-block" id="class-summary" style="font-size:0.7rem;"></pre>
+
+<p id="class-f-text"></p>
+
+<p>B&eacute;k&eacute;s and K&eacute;zdi's advice on the global F-test is blunt: don't lean on it. For the question &ldquo;does this model explain anything?&rdquo;, R&sup2; tells you nearly the same thing more simply. You still need to know what it means, because it's on every output you'll ever read.</p>
+
+<h3>A significant F-test: the hotels</h3>
+
+<p>Our class data can't reject anything. Better data can. Regress log hotel price on distance, stars and rating:</p>
+
+<pre class="code-block">model = smf.ols('ln_price ~ distance + stars + rating', data=hotels).fit(cov_type='HC1')
+print(model.summary())</pre>
+
+<pre class="code-block" id="hotel-summary" style="font-size:0.7rem;"></pre>
+
+<p id="hotel-f-text"></p>
+
+<h3>Testing a chosen group of coefficients</h3>
+
+<p>The global F-test covers every slope. To test a subset, set up the null hypothesis yourself with <code>f_test</code>, after fitting the model:</p>
+
+<pre class="code-block">model.f_test('stars = 0, rating = 0')</pre>
+
+<p id="hotel-subset-text"></p>
+
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 10.7</p>
+</section>
+
+<section class="chapter" id="spline-test">
+<div class="chapter-kicker">Part Thirteen</div>
+<h2>Worked Example: Do the Hotel Prices Need a Bend?</h2>
+
+<p>This example puts the F-test to work on a real modelling decision. In Chapter 4 we fitted a straight line of hotel price on distance from the city centre. In Chapter 5 we saw that a straight line doesn't fit well: prices fall steeply over the first mile or so and then flatten out. One way to let a line bend is a <strong>piecewise linear spline</strong>. The question here is whether the bends are really needed, or whether the straight line would do.</p>
+
+<h3>What a spline is</h3>
+
+<p>A spline cuts the x-axis at points called <strong>knots</strong> and fits a straight line in each interval. The lines join at the knots, so there are no jumps, but each segment can have its own slope. Here we put knots at 1 mile and 4 miles, the same choice B&eacute;k&eacute;s and K&eacute;zdi make, which gives three segments: the first mile, 1&ndash;4 miles, and beyond 4 miles.</p>
+
+<p>A spline is built from ordinary variables, so it's just a multiple regression. For each knot, create a new variable that measures how far beyond the knot a hotel is, and is zero for hotels inside it:</p>
+
+<div class="formula-block">$$\text{beyond}_1 = \max(\text{distance} - 1,\ 0) \qquad\qquad \text{beyond}_4 = \max(\text{distance} - 4,\ 0)$$</div>
+
+<table class="data-table">
+  <caption class="visually-hidden">Example values of the spline variables for three hotels</caption>
+  <thead><tr><th scope="col">Hotel at</th><th scope="col">distance</th><th scope="col">beyond_1</th><th scope="col">beyond_4</th></tr></thead>
+  <tbody>
+    <tr><td>0.5 miles</td><td>0.5</td><td>0</td><td>0</td></tr>
+    <tr><td>2.5 miles</td><td>2.5</td><td>1.5</td><td>0</td></tr>
+    <tr><td>6 miles</td><td>6</td><td>5</td><td>2</td></tr>
+  </tbody>
+</table>
+
+<pre class="code-block">hotels['beyond_1'] = np.maximum(hotels['distance'] - 1, 0)
+hotels['beyond_4'] = np.maximum(hotels['distance'] - 4, 0)
+
+model = smf.ols('price ~ distance + beyond_1 + beyond_4', data=hotels).fit(cov_type='HC1')
+print(model.summary())</pre>
+
+<pre class="code-block" id="spline-summary" style="font-size:0.7rem;"></pre>
+
+<h3>Reading the coefficients</h3>
+
+<p>The model is</p>
+
+<div class="formula-block">$$\text{price}^E = \beta_0 + \beta_1\,\text{distance} + \beta_2\,\text{beyond}_1 + \beta_3\,\text{beyond}_4$$</div>
+
+<p>Read it segment by segment. Inside the first mile, both <code>beyond</code> variables are zero, so only \(\beta_1\) is at work: it is the slope in the first mile. Between 1 and 4 miles, each extra mile adds one to both <code>distance</code> and <code>beyond_1</code>, so the slope there is \(\beta_1 + \beta_2\). Beyond 4 miles, an extra mile adds one to all three variables, so the slope is \(\beta_1 + \beta_2 + \beta_3\). The coefficient on each <code>beyond</code> variable is therefore the <strong>change in slope</strong> at that knot, not the slope itself. This is the most common mistake in reading spline output.</p>
+
+<div class="formula-block" id="spline-slopes"></div>
+
+<div class="figure" id="fig-spline">
+  <div class="figure-head"><div class="flabel">Figure 6.6 &middot; Interactive</div><h4>Hotel prices: a straight line, or a line that bends?</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <label class="chk"><input type="radio" name="spl" value="lin"> Straight line</label>
+      <label class="chk"><input type="radio" name="spl" value="k1"> Knot at 1 mile</label>
+      <label class="chk"><input type="radio" name="spl" value="k14" checked> Knots at 1 and 4 miles</label>
+    </div>
+    <div class="chart-wrap" id="spline-chart"></div>
+    <p id="spline-read" style="text-align:center;font-family:var(--sans);font-size:0.9rem;margin:6px 0 0;"></p>
+  </div>
+  <div class="figure-caption">207 Vienna hotels, 3&ndash;4 stars, price up to &euro;600. Dashed vertical lines mark the knots.</div>
+</div>
+
+<h3>Setting up the test</h3>
+
+<p>If prices fell at the same rate everywhere, the slope would never change, so \(\beta_2\) and \(\beta_3\) would both be zero. The question &ldquo;do we need the bends?&rdquo; is therefore the joint hypothesis</p>
+
+<div class="formula-block">$$H_0:\ \beta_2 = 0 \ \text{ and }\ \beta_3 = 0 \qquad (\text{a straight line is enough})$$</div>
+
+<p>Under the null, the model collapses to <code>price ~ distance</code>, the straight line from Chapter 4. That is the restricted model; the spline is the unrestricted one. There are \(q = 2\) restrictions.</p>
+
+<h3>The F-statistic by hand</h3>
+
+<p id="spline-hand-intro"></p>
+
+<div class="formula-block" id="spline-hand"></div>
+
+<p id="spline-hand-text"></p>
+
+<pre class="code-block">model.f_test('beyond_1 = 0, beyond_4 = 0')   # robust, since the model used HC1</pre>
+
+<p id="spline-robust-text"></p>
+
+<h3>And the second knot on its own?</h3>
+
+<p>The joint test says the bends matter. It doesn't say both of them do. Test the second knot alone:</p>
+
+<pre class="code-block">model.f_test('beyond_4 = 0')</pre>
+
+<p id="spline-k4-text"></p>
+
+<p>This is a good example of <strong>statistical significance</strong> without much <strong>practical significance</strong>. The first bend is the story: prices fall steeply in the centre and then level off. The second knot passes a test, but it describes the handful of hotels on the fringe of the city, and a modeller could reasonably leave it out for simplicity. In Chapter 10 we'll see formal tools for this trade-off between fit and simplicity.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;What it's doing here is an F-test on two coefficients within your model. The model will tell you if they're individually significant. If you're interested in whether they're jointly significant, you have to do post-estimation tests like this.&rdquo;</p>
+</blockquote>
+
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Chs. 8 and 10. Data: <code>hotels-vienna</code>.</p>
+</section>
+
+<section class="chapter" id="categorical">
+<div class="chapter-kicker">Part Fourteen</div>
+<h2>Categorical Variables, Properly</h2>
+
+<p>So far our explanatory variables have been continuous (price, finger length) or binary (laptop or phone, caffeine or not). Many variables have several categories instead: region, product line, job role, education level. These go into a regression as a set of binary variables, called <strong>dummy variables</strong>.</p>
+
+<h3>k categories, k &minus; 1 dummies</h3>
+
+<p>Take a variable with three values: low, medium and high. Create a dummy for medium (1 if medium, 0 otherwise) and a dummy for high. There is no dummy for low:</p>
+
+<div class="formula-block">$$y^E = \beta_0 + \beta_1\, x_{\text{medium}} + \beta_2\, x_{\text{high}}$$</div>
+
+<ul class="term-list">
+  <li><span class="term">\(\beta_0\)</span><span>The average of y in the left-out category, low. For a low observation both dummies are zero, so only the intercept is left.</span></li>
+  <li><span class="term">\(\beta_1\)</span><span>The difference in average y between medium and low. The average for medium itself is \(\beta_0 + \beta_1\).</span></li>
+  <li><span class="term">\(\beta_2\)</span><span>The difference in average y between high and low.</span></li>
+</ul>
+
+<p>The left-out category is the <strong>reference category</strong>. Every dummy coefficient is a difference from it. In general, a variable with k categories enters as k &minus; 1 dummies. A variable with 122 categories enters as 121 dummies plus one reference.</p>
+
+<p>Why leave one out? If you included all k dummies, they would add up to 1 for every observation &ndash; exactly the column of 1s behind the intercept. That is perfect collinearity (Part Nine), so the model can't be estimated. This is the <strong>dummy variable trap</strong>. statsmodels avoids it for you by leaving one category out automatically.</p>
+
+<p>This works the same way whether the categories have a natural order or not. An <strong>ordinal</strong> variable has one (strongly disagree, disagree, neutral, agree, strongly agree; low, medium, high). A <strong>nominal</strong> variable doesn't (country, product type, cat, dog, horse). Both enter as dummies against a reference.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Cat, dog, horse, potato &ndash; they don't have an order. But you'd still have a reference category against them. Your reference categories are always important.&rdquo;</p>
+</blockquote>
+
+<h3>Choosing the reference category</h3>
+
+<ul class="term-list">
+  <li><span class="term">Substantive guide</span><span>Pick the category you naturally want everything else compared to: the home market, the base product, the lowest tier.</span></li>
+  <li><span class="term">Statistical guide</span><span>Pick a category with plenty of observations. Every coefficient is a comparison with the reference, so a thin reference category gives every one of them a large standard error.</span></li>
+</ul>
+
+<p>Start with the substantive reason, but check how many observations sit in the category you've picked.</p>
+
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 10.8</p>
+</section>
+
+<section class="chapter" id="paygap">
+<div class="chapter-kicker">Part Fifteen</div>
+<h2>Case Study: The Gender Pay Gap</h2>
+
+<p>B&eacute;k&eacute;s and K&eacute;zdi's own case study uses the 2014 US Current Population Survey. The sample is employees aged 24&ndash;65 with a graduate degree (an MA, a professional degree or a PhD) who work at least 20 hours a week: 18,241 people. The outcome is the log of hourly earnings, so coefficients read as approximate percentage differences (Chapter 5).</p>
+
+<h3>The raw gap, then education</h3>
+
+<pre class="code-block">smf.ols('ln_wage ~ female', data=cps_df).fit(cov_type='HC1')
+smf.ols('ln_wage ~ female + C(education, Treatment("MA"))', data=cps_df).fit(cov_type='HC1')
+smf.ols('ln_wage ~ female + C(education, Treatment("PhD"))', data=cps_df).fit(cov_type='HC1')</pre>
+
+<p><code>C(education, ...)</code> tells statsmodels to treat education as categorical, and <code>Treatment("MA")</code> sets the reference category. Without it, statsmodels picks the first category in alphabetical order.</p>
+
+<table class="data-table" id="gap-table">
+  <caption class="visually-hidden">Gender pay gap regressions with different education reference categories</caption>
+  <thead><tr><th scope="col">Dependent variable: ln(wage)</th><th scope="col">(1)</th><th scope="col">(2) ref = MA</th><th scope="col">(3) ref = PhD</th></tr></thead>
+  <tbody></tbody>
+</table>
+
+<p id="gap-text"></p>
+
+<div class="figure" id="fig-edu">
+  <div class="figure-head"><div class="flabel">Figure 6.7 &middot; Interactive</div><h4>Same model, different reference category</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <span class="lbl" style="font-family:var(--sans);font-size:0.85rem;">Reference category:</span>
+      <label class="chk"><input type="radio" name="eduref" value="MA" checked> MA</label>
+      <label class="chk"><input type="radio" name="eduref" value="Professional"> Professional</label>
+      <label class="chk"><input type="radio" name="eduref" value="PhD"> PhD</label>
+    </div>
+    <div class="chart-wrap" id="edu-chart"></div>
+  </div>
+  <div class="figure-caption">Each bar is the coefficient on that education dummy: the difference in average log wage from the reference category, holding gender fixed, with a 95% confidence interval. The reference category has no coefficient, so it sits at zero.</div>
+</div>
+
+<p>Change the reference and the bars change, because each one is now a difference from a different baseline. The <em>fitted model</em> doesn't change at all: the predicted wage for every person is identical, the female coefficient is identical, and R&sup2; is identical. Only the labels on the comparisons move.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;The wage premium from a PhD compared with a professional qualification is zero &ndash; which is sad for me, because I have a PhD. Change the reference category and the interpretation changes, but the actual magnitudes don't. And our estimate for female didn't move an iota.&rdquo;</p>
+</blockquote>
+
+<h3>Is age a confounder?</h3>
+
+<p>Now the omitted variable bias formula on real data. Women in this sample are slightly younger than men on average, and younger employees tend to earn less. Age is correlated with gender and with wages, so leaving it out could bias the gender gap. Add it:</p>
+
+<pre class="code-block">smf.ols('ln_wage ~ female', data=cps_df).fit(cov_type='HC1')           # beta
+smf.ols('ln_wage ~ female + age', data=cps_df).fit(cov_type='HC1')     # beta_1 and beta_2
+smf.ols('age ~ female', data=cps_df).fit(cov_type='HC1')               # delta</pre>
+
+<div class="formula-block" id="age-ovb"></div>
+
+<p id="age-text"></p>
+
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 10, case study &ldquo;Understanding the gender difference in earnings&rdquo;. Data: <code>cps-earnings</code>, 2014 CPS MORG.</p>
+</section>
+
+<section class="chapter" id="interactions">
+<div class="chapter-kicker">Part Sixteen</div>
+<h2>Interactions: When the Slope Differs by Group</h2>
+
+<p>The models so far let groups differ in their <em>level</em> but not in their <em>slope</em>. With female and age both in the model, women's wages sit a fixed amount below men's at every age: two parallel lines. But what if wages rise with age faster for one group than the other? What if the gender gap itself changes with age? Then the slope on age is different for men and women, and a model with parallel lines can't show it.</p>
+
+<p>An <strong>interaction</strong> asks whether the relationship between y and \(x_1\) depends on a second variable. That second variable is sometimes called a <strong>moderator</strong>. Does customer rating relate to hotel price differently by star category? Does a drug's effect depend on the patient's age? Does financial health change how hard a recession hits a firm?</p>
+
+<h3>The structural model</h3>
+
+<p>Take a continuous \(x_1\) and a binary D (say, D = 1 for women). Add their product as a third variable:</p>
+
+<div class="formula-block">$$y^E = \beta_0 + \beta_1 x_1 + \beta_2 D + \beta_3\,(x_1 \times D)$$</div>
+
+<p>Work out what this says for each group. When D = 0, both terms with D drop out:</p>
+
+<div class="formula-block">$$D=0:\quad y^E = \beta_0 + \beta_1 x_1$$</div>
+
+<p>When D = 1, both come back in. Collect the terms:</p>
+
+<div class="formula-block">$$D=1:\quad y^E = \beta_0 + \beta_1 x_1 + \beta_2 + \beta_3 x_1 = (\beta_0 + \beta_2) + (\beta_1 + \beta_3)\, x_1$$</div>
+
+<ul class="term-list">
+  <li><span class="term">\(\beta_1\)</span><span>The slope for the D = 0 group only.</span></li>
+  <li><span class="term">\(\beta_2\)</span><span>The shift in the intercept for the D = 1 group: the gap between the groups <em>at \(x_1 = 0\)</em>.</span></li>
+  <li><span class="term">\(\beta_3\)</span><span>The shift in the slope for the D = 1 group. This is the answer to the interaction question: the difference in slopes between the two groups.</span></li>
+</ul>
+
+<p>Because \(\beta_3\) is just another coefficient, it comes with its own standard error, t-statistic, p-value and confidence interval. Testing \(H_0:\beta_3 = 0\) tests whether the slopes are the same in the two groups. If it's significant, they differ.</p>
+
+<div class="figure" id="fig-intertool">
+  <div class="figure-head"><div class="flabel">Figure 6.8 &middot; Interactive</div><h4>What &beta;&#8322; and &beta;&#8323; do</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">&beta;&#8322; (intercept shift)</span><input type="range" id="it-b2" min="-4" max="4" step="0.5" value="2"><span class="val" id="it-b2-v"></span></div>
+      <div class="ctl"><span class="lbl">&beta;&#8323; (slope shift)</span><input type="range" id="it-b3" min="-1" max="1" step="0.1" value="0.5"><span class="val" id="it-b3-v"></span></div>
+    </div>
+    <div class="chart-wrap" id="intertool-chart"></div>
+    <p id="intertool-read" style="text-align:center;font-family:var(--sans);font-size:0.9rem;margin:6px 0 0;"></p>
+  </div>
+  <div class="figure-caption">The blue line (D = 0) is fixed at intercept 2 and slope 0.6. The red line (D = 1) has intercept 2 + &beta;&#8322; and slope 0.6 + &beta;&#8323;.</div>
+</div>
+
+<p>Set \(\beta_3\) to zero and the lines are parallel: no interaction, only a difference in level. Any non-zero \(\beta_3\) makes the lines converge or diverge.</p>
+
+<p>Two useful facts from the textbook. First, an interacted model fitted on everyone gives exactly the same lines as two separate regressions, one per group. The separate regressions are easier to read; the pooled one lets you test directly whether the slopes differ. Second, the same structure works with two continuous variables: \(y^E = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1x_2\), where the slope on \(x_1\) is \(\beta_1 + \beta_3 x_2\) and so changes smoothly with \(x_2\).</p>
+
+<p>In Python, use <code>*</code> between the two variables. statsmodels writes out the main effects and the product for you:</p>
+
+<pre class="code-block">smf.ols('y ~ x * d', data=df).fit(cov_type='HC1')
+# the same as: y ~ x + d + x:d</pre>
+
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 10.9</p>
+</section>
+
+<section class="chapter" id="inter-data">
+<div class="chapter-kicker">Part Seventeen</div>
+<h2>Interactions in Three Datasets</h2>
+
+<h3>Our class: does the finger-length pattern differ by device?</h3>
+
+<pre class="code-block">model = smf.ols('mean_rt ~ finger_mm * device', data=student_summary).fit(cov_type='HC1')
+print(model.summary())</pre>
+
+<pre class="code-block" id="inter-summary" style="font-size:0.7rem;"></pre>
+
+<p id="inter-text"></p>
+
+<div class="figure" id="fig-classinter">
+  <div class="figure-head"><div class="flabel">Figure 6.9 &middot; Interactive</div><h4>Finger length and reaction time, by device</h4></div>
+  <div class="figure-body">
+    <div class="controls"><label class="chk"><input type="checkbox" id="ci-bands"> Show 95% confidence bands</label></div>
+    <div class="chart-wrap" id="classinter-chart"></div>
+  </div>
+  <div class="figure-caption">Each dot is a student. The lines are the fitted values from the interacted model, one for each device.</div>
+</div>
+
+<p>The two lines look very different. Tick the box and add the confidence bands: they overlap along almost the whole range. With 24 students, we can't tell the two slopes apart, which is the insignificant \(\beta_3\) drawn as a picture. A plot of fitted lines without their uncertainty can tell a story the data don't support.</p>
+
+<p>To draw this kind of figure yourself, predict from the model on a grid of x values, once per group. Using <code>model.predict</code> guarantees the lines match the regression exactly:</p>
+
+<pre class="code-block">import matplotlib.pyplot as plt
+fig, ax = plt.subplots(figsize=(6, 4))
+colors = {'Laptop': '#457b9d', 'Phone': '#e63946'}
+for device, group in student_summary.groupby('device'):
+    ax.scatter(group['finger_mm'], group['mean_rt'], alpha=0.5, color=colors[device], label=device)
+grid = np.linspace(student_summary['finger_mm'].min(), student_summary['finger_mm'].max(), 50)
+for device in colors:
+    pred = model.get_prediction(pd.DataFrame({'finger_mm': grid, 'device': device})).summary_frame()
+    ax.plot(grid, pred['mean'], color=colors[device], linewidth=2.5)
+    ax.fill_between(grid, pred['mean_ci_lower'], pred['mean_ci_upper'], color=colors[device], alpha=0.15)
+ax.set_xlabel('Finger length (mm)'); ax.set_ylabel('Mean reaction time (ms)'); ax.legend()
+plt.show()</pre>
+
+<h3>Hotels: an interaction that matters</h3>
+
+<p>Do prices fall with distance at the same rate for three-star and four-star hotels? Create a dummy for four stars and interact it with distance:</p>
+
+<pre class="code-block">hotels['four'] = (hotels['stars'] >= 4).astype(int)
+model = smf.ols('price ~ distance * four', data=hotels).fit(cov_type='HC1')</pre>
+
+<div class="figure" id="fig-hotelinter">
+  <div class="figure-head"><div class="flabel">Figure 6.10</div><h4>Hotel price and distance, three stars against four</h4></div>
+  <div class="figure-body"><div class="chart-wrap" id="hotelinter-chart"></div></div>
+  <div class="figure-caption">207 Vienna hotels. Fitted lines from the interacted model with 95% confidence bands (robust standard errors).</div>
+</div>
+
+<p id="hotelinter-text"></p>
+
+<h3>Does the gender pay gap change with age?</h3>
+
+<p>Back to the CPS data, which have enough observations to show an interaction clearly:</p>
+
+<pre class="code-block">smf.ols('ln_wage ~ female * age', data=cps_df).fit(cov_type='HC1')
+# the same as: female + age + female:age</pre>
+
+<table class="data-table" id="gapinter-table">
+  <caption class="visually-hidden">Gender and age interaction regression</caption>
+  <thead><tr><th scope="col">Variable</th><th scope="col">Coefficient</th><th scope="col">p-value</th></tr></thead>
+  <tbody></tbody>
+</table>
+
+<p id="gapinter-puzzle"></p>
+
+<p>Go back to the structural model. With an interaction in it, the female coefficient (\(\beta_2\)) is the gap between women and men <strong>at age zero</strong> &ndash; a point no one in the data is anywhere near. It isn't the gender gap. The gap at any given age is \(\beta_2 + \beta_3\times\text{age}\), and the real story is in \(\beta_3\).</p>
+
+<div class="figure" id="fig-gapage">
+  <div class="figure-head"><div class="flabel">Figure 6.11</div><h4>Log wage by age for men and women, and the gap between them</h4></div>
+  <div class="figure-body"><div class="chart-row"><div class="chart-wrap" id="gapage-lines"></div><div class="chart-wrap" id="gapage-gap"></div></div></div>
+  <div class="figure-caption">Left: fitted lines from the linear interaction model, with 95% confidence bands (narrow, because n = 18,241). Right: the predicted gap in log wage (women minus men) by age from a more flexible model, a fourth-order polynomial in age interacted with gender, as in the textbook.</div>
+</div>
+
+<p id="gapage-text"></p>
+
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 10.10</p>
+</section>
+
+<section class="chapter" id="present">
+<div class="chapter-kicker">Part Eighteen</div>
+<h2>Presenting Results and Predicting</h2>
+
+<h3>A regression table</h3>
+
+<p>Regression summaries are for you. Readers need a table. Pull the numbers off the fitted model and let pandas format them:</p>
+
+<pre class="code-block">def stars(p):
+    return "***" if p < 0.01 else "**" if p < 0.05 else "*" if p < 0.1 else ""
+
+labels = {'finger_mm': 'Finger length (mm)', 'device[T.Phone]': 'Device: Phone',
+          'caffeine[T.Yes]': 'Caffeine: Yes', 'Intercept': 'Constant'}
+results_df = pd.DataFrame(
+    [{'Variable': label,
+      'Coefficient': f"{model.params[name]:.2f}{stars(model.pvalues[name])}",
+      'Std. Error': f"({model.bse[name]:.2f})"}
+     for name, label in labels.items()]
+    + [{'Variable': 'N', 'Coefficient': str(int(model.nobs)), 'Std. Error': ''},
+       {'Variable': 'R&#178;', 'Coefficient': f"{model.rsquared:.3f}", 'Std. Error': ''}])
+print(results_df.to_markdown(index=False))</pre>
+
+<pre class="code-block" id="results-md"></pre>
+
+<p><code>to_markdown()</code> is built into pandas (it needs the small <code>tabulate</code> package). The output is plain text that turns into a table in any Markdown cell, including a Colab notebook. With several models, put one column per model, one row per variable, and the number of observations and R&sup2; at the bottom, as in the gender pay gap table in Part Fifteen.</p>
+
+<p>B&eacute;k&eacute;s and K&eacute;zdi's advice for tables with many variables:</p>
+<ul class="term-list">
+  <li><span class="term">Leave out what doesn't matter</span><span>In a presentation, show the coefficients you discuss and note which controls are included (&ldquo;Age and education: yes&rdquo;).</span></li>
+  <li><span class="term">Sanity-check the controls</span><span>Do their coefficients make sense, by and large? A control with a wildly implausible sign is a warning.</span></li>
+  <li><span class="term">Check N</span><span>Models that are meant to use the same sample should have exactly the same number of observations. If not, missing values have quietly changed the sample.</span></li>
+</ul>
+
+<h3>Prediction and the &ycirc;&ndash;y plot</h3>
+
+<p>Another reason to fit a multiple regression is to predict y for a new observation: \(\hat y = \hat\beta_0 + \hat\beta_1x_1 + \hat\beta_2x_2 + \dots\). A good way to see how well a model predicts is the <strong>&ycirc;&ndash;y plot</strong>: predicted values on the horizontal axis, actual values on the vertical axis, and the 45-degree line. Points on the line are predicted exactly. Points below it are <strong>overpredicted</strong> (\(\hat y > y\)); points above it are <strong>underpredicted</strong>. Unlike R&sup2;, it shows <em>where</em> the model struggles, not just how much.</p>
+
+<div class="figure" id="fig-yhat">
+  <div class="figure-head"><div class="flabel">Figure 6.12 &middot; Interactive</div><h4>Predicted against actual</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <label class="chk"><input type="radio" name="yhat" value="hotels" checked> Vienna hotels, log price</label>
+      <label class="chk"><input type="radio" name="yhat" value="class"> Our class, reaction time</label>
+    </div>
+    <div class="chart-wrap" id="yhat-chart"></div>
+    <p id="yhat-read" style="text-align:center;font-family:var(--sans);font-size:0.9rem;margin:6px 0 0;"></p>
+  </div>
+  <div class="figure-caption">Hotels: the textbook's model of log price on a distance spline (knots at 1 and 4 miles), a rating spline (knot at 3.5) and star dummies. The red points are the five hotels furthest below the line &ndash; the cheapest relative to what the model predicts. Class: reaction time on finger length, device and caffeine.</div>
+</div>
+
+<p id="yhat-text"></p>
+
+<h3>More variables, better fit &ndash; up to a point</h3>
+
+<p>R&sup2; can only go up when you add a variable, even one that is pure noise. It never falls. A higher R&sup2; is therefore no proof of a better model. The danger is <strong>overfitting</strong>: capturing patterns that happen to be in this sample but won't hold anywhere else. Which variables to keep depends on the purpose.</p>
+
+<ul class="term-list">
+  <li><span class="term">For a causal question</span><span>Focus on the coefficient you care about and its confidence interval. Keep the variables that help compare like with like, even if their own coefficients are imprecise. Drop the ones that don't matter. Present your preferred model, then report a few alternatives as robustness checks.</span></li>
+  <li><span class="term">For prediction</span><span>Value a fit that will hold up on new data over the best fit to this data. Simpler is often better.</span></li>
+</ul>
+
+<div class="extension">
+  <p><strong>Going further: how many variables can the data support?</strong> B&eacute;k&eacute;s and K&eacute;zdi give a rough guide. With 20&ndash;40 observations, one or two explanatory variables; 50&ndash;100 observations, two to four; a few hundred, five to ten; a few thousand, dozens, including dummies and interactions. Our class regression, with three variables and 24 students, is already at the edge. Formal criteria that penalise extra variables, such as BIC and cross-validation, come in Chapter 10.</p>
+</div>
+
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 10.11&ndash;10.12</p>
+</section>
+
+<section class="chapter" id="causal">
+<div class="chapter-kicker">Part Nineteen</div>
+<h2>Is It More Causal?</h2>
+
+<p>Conditioning on more variables gets us closer to comparing like with like, even in observational data. But getting closer is not the same as getting there.</p>
+
+<p>Ceteris paribus means conditioning on <em>every</em> relevant confounder: every variable that affects both y and the variable we're interested in. A regression can only condition on what is in the dataset, measured the way it happens to be measured. Some confounders are measured with error. Some could be measured but weren't, because it was too expensive. And some can't be measured at all. In a wage regression, one of the biggest drivers of pay in economic theory is ability, and there is no reliable way to measure it. Conditioning on everything is impossible in general, so a multiple regression on observational data is hardly ever truly ceteris paribus. Treat ceteris paribus as a destination, not something any dataset gets you to.</p>
+
+<p>The textbook's gender gap case shows both the progress and the limit. Restrict the sample to employees aged 40&ndash;60 and add more and more controls: age and education, then family circumstances, demographic background, job characteristics and union membership. The female coefficient falls from &minus;0.224 to &minus;0.151. Comparing a man and a woman who are the same in all those respects, the woman earns about 14% less on average. That's much closer to a like-for-like comparison than the raw gap. It still can't prove the remaining gap is discrimination: plenty of differences between people remain unmeasured.</p>
+
+<h3>Not every correlated variable belongs</h3>
+
+<p>There is a second limit, and it pushes in the opposite direction. You might think the safe thing is to add every variable that is correlated with both x and y. It isn't. Suppose you want to know how TV advertising affects sales, and you also have data on how many people viewed the adverts. Should you control for views?</p>
+
+<p>No. Fewer views is part of <em>why</em> less advertising leads to fewer sales. Views aren't a confounder; they are a step in the causal chain from advertising to sales. Control for views, and you hold fixed the very channel through which advertising works. What's left is the effect of advertising on sales <em>for the same number of views</em>, which is close to nothing and isn't the question. A variable like this is a <strong>bad control</strong>.</p>
+
+<p>Compare the season. Sales are seasonal, and so are advertising budgets. The season affects both advertising and sales, but it isn't caused by advertising. It's a confounder: leave it out and the advertising coefficient is biased. Control for it.</p>
+
+<div class="figure" id="fig-bad">
+  <div class="figure-head"><div class="flabel">Figure 6.13</div><h4>A confounder and a step in the chain</h4></div>
+  <div class="figure-body">
+    <div class="chart-row">
+      <div class="chart-wrap"><svg viewBox="0 0 500 230" width="100%" role="img" aria-label="Diagram: the season affects both advertising and sales, and advertising affects sales. The season is a confounder."><defs><marker id="ah1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs><g style="color:var(--ink)"><rect x="170" y="10" width="160" height="44" rx="8" fill="var(--warm-soft)" stroke="#e63946" stroke-width="2"/><text x="250" y="38" text-anchor="middle" font-family="sans-serif" font-size="19" fill="currentColor">Season</text><rect x="20" y="150" width="170" height="44" rx="8" fill="var(--accent-soft)" stroke="#457b9d" stroke-width="2"/><text x="105" y="178" text-anchor="middle" font-family="sans-serif" font-size="19" fill="currentColor">Advertising</text><rect x="330" y="150" width="150" height="44" rx="8" fill="var(--accent-soft)" stroke="#457b9d" stroke-width="2"/><text x="405" y="178" text-anchor="middle" font-family="sans-serif" font-size="19" fill="currentColor">Sales</text><line x1="215" y1="54" x2="135" y2="146" stroke="currentColor" stroke-width="2.5" marker-end="url(#ah1)"/><line x1="285" y1="54" x2="370" y2="146" stroke="currentColor" stroke-width="2.5" marker-end="url(#ah1)"/><line x1="190" y1="172" x2="326" y2="172" stroke="currentColor" stroke-width="2.5" marker-end="url(#ah1)"/><text x="250" y="222" text-anchor="middle" font-family="sans-serif" font-size="19" fill="var(--green)" font-weight="bold">Confounder: control for it</text></g></svg></div>
+      <div class="chart-wrap"><svg viewBox="0 0 500 230" width="100%" role="img" aria-label="Diagram: advertising leads to views, and views lead to sales. Views are a step in the chain."><defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs><g style="color:var(--ink)"><rect x="0" y="100" width="135" height="44" rx="8" fill="var(--accent-soft)" stroke="#457b9d" stroke-width="2"/><text x="67.5" y="128" text-anchor="middle" font-family="sans-serif" font-size="19" fill="currentColor">Advertising</text><rect x="195" y="100" width="110" height="44" rx="8" fill="var(--warm-soft)" stroke="#e63946" stroke-width="2"/><text x="250" y="128" text-anchor="middle" font-family="sans-serif" font-size="19" fill="currentColor">Views</text><rect x="365" y="100" width="135" height="44" rx="8" fill="var(--accent-soft)" stroke="#457b9d" stroke-width="2"/><text x="432.5" y="128" text-anchor="middle" font-family="sans-serif" font-size="19" fill="currentColor">Sales</text><line x1="135" y1="122" x2="191" y2="122" stroke="currentColor" stroke-width="2.5" marker-end="url(#ah2)"/><line x1="305" y1="122" x2="361" y2="122" stroke="currentColor" stroke-width="2.5" marker-end="url(#ah2)"/><text x="250" y="222" text-anchor="middle" font-family="sans-serif" font-size="19" fill="var(--warm)" font-weight="bold">Step in the chain: don't control for it</text></g></svg></div>
+    </div>
+  </div>
+  <div class="figure-caption">Arrows point from cause to effect.</div>
+</div>
+
+<p>A simulation makes the point concrete. Build a world where the season drives both advertising and sales, advertising drives views, and views drive sales:</p>
+
+<div class="formula-block">$$\begin{aligned}
+\text{season}_i &\sim N(0,1)\\
+\text{advertising}_i &= 0.8\times\text{season}_i + u_i, & u_i&\sim N(0,1)\\
+\text{views}_i &= 2\times\text{advertising}_i + w_i, & w_i&\sim N(0,1)\\
+\text{sales}_i &= 1.5\times\text{views}_i + 2\times\text{season}_i + v_i, & v_i&\sim N(0,2^2)
+\end{aligned}$$</div>
+
+<p>One more unit of advertising brings two more units of views, and each unit of views brings 1.5 more sales, so the true total effect of advertising on sales is \(2\times 1.5 = 3\). Now fit three regressions on 500 simulated weeks:</p>
+
+<div class="figure" id="fig-badsim">
+  <div class="figure-head"><div class="flabel">Figure 6.14</div><h4>The advertising coefficient under three sets of controls</h4></div>
+  <div class="figure-body"><div class="chart-wrap" id="bad-chart"></div></div>
+  <div class="figure-caption">Coefficient on advertising with 95% confidence intervals. The dashed line is the true total effect, 3.</div>
+</div>
+
+<p id="bad-text"></p>
+
+<p>How do you tell the two apart? It isn't a statistical question; no test will do it for you. It takes knowledge of the business &ndash; <strong>domain knowledge</strong>. One useful check: could this variable be an outcome of the thing you're studying? Views could be the dependent variable in a regression on advertising. That's the warning sign. We'll draw these diagrams properly, and give them their proper name, in Chapter 9.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;This is where you become a sophisticated analyst. You've got, say, 31 variables. You wouldn't just throw them all in and say, I've got as many variables as possible and my R-squared has gone up &ndash; it always goes up. You have to think about why every variable should be in there. That isn't necessarily a statistical question. It's your knowledge, your business knowledge.&rdquo;</p>
+</blockquote>
+
+<p>Throwing in every available variable has a name: a <strong>kitchen-sink regression</strong>. It risks bad controls, it invites overfitting, and it makes the model harder to explain. Aim for the simplest model that answers the question.</p>
+
+<p style="font-size:0.85rem;color:var(--ink-faint);">Source: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 10.12&ndash;10.13</p>
+</section>
+
+<section class="chapter" id="next">
+<div class="chapter-kicker">Part Twenty</div>
+<h2>Summary and What's Next</h2>
+
+<ul class="term-list">
+  <li><span class="term">Multiple regression</span><span>A linear model with several x variables. Each slope compares observations that differ in one variable while being the same in the others.</span></li>
+  <li><span class="term">Omitted variable bias</span><span>Leave out a variable that belongs, and the slope you estimate is \(\beta_1 + \delta\beta_2\) instead of \(\beta_1\). The bias is zero only if the omitted variable is unrelated to \(x_1\) or doesn't affect y.</span></li>
+  <li><span class="term">Multicollinearity</span><span>Correlated explanatory variables inflate standard errors through \(\sqrt{1-R_k^2}\). Estimates stay unbiased. A high VIF is a reason to report, not automatically to drop.</span></li>
+  <li><span class="term">F-tests</span><span>Test several coefficients at once by comparing the fit with and without them.</span></li>
+  <li><span class="term">Categorical variables</span><span>k categories enter as k &minus; 1 dummies, each a difference from the reference category.</span></li>
+  <li><span class="term">Interactions</span><span>Let the slope differ by group. \(\beta_3\) is the difference in slopes, with its own test.</span></li>
+  <li><span class="term">Causality</span><span>More controls get us closer to like-for-like, never all the way. Bad controls, which sit in the causal chain, should stay out.</span></li>
+</ul>
+
+<p>Week 7 is reading week. In Chapter 8 we take on a problem every model so far has dodged: what if y itself is a yes-or-no outcome? Whether an employee leaves, whether a customer buys, whether a patient is healthy. That needs models for binary outcomes &ndash; the linear probability model, logit and probit &ndash; and everything in this chapter carries straight over: controls, omitted variable bias, dummies and interactions all work the same way.</p>
+</section>
+
+    </div>
+
+    <footer class="colophon">
+      <p><strong>About these notes.</strong> Written from the Week 6 workshop recording and slide deck for 7002LBSAI Research Methods in Analytics, Liverpool John Moores University, with material from the Week 6 online session and the textbook's Chapter 10 slides. Quotations from the workshop are lightly edited from an automatic transcript. Class data are the Week 1 reaction-time trials, cleaned and anonymised, with Week 3's corrected finger lengths, one row per student. Hotel data: <code>hotels-vienna</code>, filtered as in the textbook (207 hotels). Wage data: <code>cps-earnings</code>, 2014 CPS MORG, graduate-degree employees aged 24&ndash;65 (18,241 people). The price, multicollinearity, interaction and advertising examples are simulated for illustration. Textbook: B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), <em>Data Analysis for Business, Economics, and Policy</em>, Ch. 10.</p>
+    </footer>
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+const STUDENTS = [["Student 1", 71.0, 370.1, "Laptop", "No"], ["Student 2", 80.0, 1260.0, "Laptop", "No"], ["Student 3", 90.0, 1970.3, "Laptop", "No"], ["Student 4", 100.0, 1101.1, "Laptop", "No"], ["Student 5", 70.0, 466.9, "Phone", "Yes"], ["Student 6", 80.0, 1353.8, "Laptop", "Yes"], ["Student 7", 72.0, 406.3, "Laptop", "Yes"], ["Student 8", 81.0, 528.4, "Laptop", "Yes"], ["Student 9", 80.0, 1314.5, "Laptop", "No"], ["Student 10", 70.0, 2339.3, "Laptop", "No"], ["Student 11", 80.0, 416.3, "Phone", "No"], ["Student 12", 80.0, 419.6, "Laptop", "No"], ["Student 13", 82.0, 1867.3, "Laptop", "No"], ["Student 14", 79.0, 395.2, "Phone", "No"], ["Student 15", 76.0, 373.5, "Laptop", "No"], ["Student 16", 80.0, 1601.1, "Phone", "No"], ["Student 17", 69.0, 1081.1, "Laptop", "No"], ["Student 18", 70.0, 3253.4, "Phone", "Yes"], ["Student 19", 80.0, 386.1, "Laptop", "No"], ["Student 20", 68.0, 426.2, "Phone", "Yes"], ["Student 21", 95.0, 3135.4, "Laptop", "No"], ["Student 22", 94.0, 497.3, "Phone", "No"], ["Student 23", 82.0, 435.4, "Phone", "No"], ["Student 24", 74.0, 283.4, "Laptop", "No"]];
+const CLASS = {"n": 24, "b": 18.60249361723222, "b1": 21.718607367094336, "a": -404.9393897330376, "se_b": 26.408734926419882, "se_b1": 26.68165206180067, "b_dev": -194.4118534906387, "b_caf": 214.14076877714697, "d_dev": -0.006742185757132605, "d_caf": -0.020672731328855096, "p_dev": 0.6164687575040211, "p_caf": 0.658475960950199, "p_b1": 0.4156504777885638, "f": 0.3460381678384345, "f_p": 0.792360282843051, "r2": 0.04901161602807369, "r2_s": 0.03203211030122732, "caf_yes": 6, "caf_phone": 3, "n_phone": 8};
+const CLASS_SUMMARY = "                            OLS Regression Results                            \n==============================================================================\nDep. Variable:                mean_rt   R-squared:                       0.049\nModel:                            OLS   Adj. R-squared:                 -0.094\nMethod:                 Least Squares   F-statistic:                    0.3460\nDate:                Fri, 30 Oct 2026   Prob (F-statistic):              0.792\nTime:                        18:25:39   Log-Likelihood:                -195.89\nNo. Observations:                  24   AIC:                             399.8\nDf Residuals:                      20   BIC:                             404.5\nDf Model:                           3                                         \nCovariance Type:                  HC1                                         \n===================================================================================\n                      coef    std err          z      P>|z|      [0.025      0.975]\n-----------------------------------------------------------------------------------\nIntercept        -640.7525   2134.849     -0.300      0.764   -4824.979    3543.474\ndevice[T.Phone]  -194.4119    388.155     -0.501      0.616    -955.182     566.358\ncaffeine[T.Yes]   214.1408    484.461      0.442      0.658    -735.386    1163.667\nfinger_mm          21.7186     26.682      0.814      0.416     -30.576      74.014\n==============================================================================";
+const SEHAND = {"std_e": 929.2433698455751, "sdx": 8.36898623224794, "r2_1": 0.1611572073814863, "se_hand": 24.74632476033257, "se_sm": 24.746324760332566, "n": 24};
+const VIF = {"device[T.Phone]": 1.0453663055194755, "caffeine[T.Yes]": 1.2261274768646102, "finger_mm": 1.1921184860853622};
+const RESULTS_MD = "| Variable           |   Coefficient | Std. Error   |\n|:-------------------|--------------:|:-------------|\n| Finger length (mm) |        21.72  | (26.68)      |\n| Device: Phone      |      -194.41  | (388.16)     |\n| Caffeine: Yes      |       214.14  | (484.46)     |\n| Constant           |      -640.75  | (2134.85)    |\n| N                  |        24     |              |\n| R\u00b2                 |         0.049 |              |";
+const CLASS_INTER = {"b0": -2205.147343205677, "b1": 41.775435540072436, "b2": 6043.067706752618, "b3": -79.03316091466871, "p3": 0.13001314397346972};
+const CLASS_INTER_SUMMARY = "                            OLS Regression Results                            \n==============================================================================\nDep. Variable:                mean_rt   R-squared:                       0.161\nModel:                            OLS   Adj. R-squared:                  0.035\nMethod:                 Least Squares   F-statistic:                     1.650\nDate:                Fri, 30 Oct 2026   Prob (F-statistic):              0.210\nTime:                        18:25:39   Log-Likelihood:                -194.39\nNo. Observations:                  24   AIC:                             396.8\nDf Residuals:                      20   BIC:                             401.5\nDf Model:                           3                                         \nCovariance Type:                  HC1                                         \n=============================================================================================\n                                coef    std err          z      P>|z|      [0.025      0.975]\n---------------------------------------------------------------------------------------------\nIntercept                 -2205.1473   2479.646     -0.889      0.374   -7065.165    2654.870\ndevice[T.Phone]            6043.0677   4336.060      1.394      0.163   -2455.454    1.45e+04\nfinger_mm                    41.7754     31.212      1.338      0.181     -19.399     102.950\nfinger_mm:device[T.Phone]   -79.0332     52.200     -1.514      0.130    -181.343      23.277\n==============================================================================";
+const CLASS_BANDS = [[69.0, 677.36, -58.53, 1413.24, "Laptop"], [69.795, 710.56, 15.37, 1405.75, "Laptop"], [70.59, 743.77, 88.2, 1399.34, "Laptop"], [71.385, 776.98, 159.73, 1394.22, "Laptop"], [72.179, 810.18, 229.72, 1390.65, "Laptop"], [72.974, 843.39, 297.85, 1388.93, "Laptop"], [73.769, 876.59, 363.74, 1389.45, "Laptop"], [74.564, 909.8, 426.94, 1392.66, "Laptop"], [75.359, 943.01, 486.92, 1399.09, "Laptop"], [76.154, 976.21, 543.08, 1409.35, "Laptop"], [76.949, 1009.42, 594.78, 1424.06, "Laptop"], [77.744, 1042.62, 641.41, 1443.84, "Laptop"], [78.538, 1075.83, 682.45, 1469.21, "Laptop"], [79.333, 1109.04, 717.56, 1500.52, "Laptop"], [80.128, 1142.24, 746.65, 1537.83, "Laptop"], [80.923, 1175.45, 769.92, 1580.98, "Laptop"], [81.718, 1208.66, 787.76, 1629.55, "Laptop"], [82.513, 1241.86, 800.76, 1682.97, "Laptop"], [83.308, 1275.07, 809.53, 1740.6, "Laptop"], [84.103, 1308.27, 814.71, 1801.84, "Laptop"], [84.897, 1341.48, 816.87, 1866.09, "Laptop"], [85.692, 1374.69, 816.52, 1932.86, "Laptop"], [86.487, 1407.89, 814.07, 2001.71, "Laptop"], [87.282, 1441.1, 809.9, 2072.3, "Laptop"], [88.077, 1474.3, 804.27, 2144.34, "Laptop"], [88.872, 1507.51, 797.44, 2217.58, "Laptop"], [89.667, 1540.72, 789.6, 2291.84, "Laptop"], [90.462, 1573.92, 780.9, 2366.95, "Laptop"], [91.256, 1607.13, 771.46, 2442.79, "Laptop"], [92.051, 1640.34, 761.41, 2519.26, "Laptop"], [92.846, 1673.54, 750.83, 2596.26, "Laptop"], [93.641, 1706.75, 739.78, 2673.72, "Laptop"], [94.436, 1739.95, 728.33, 2751.58, "Laptop"], [95.231, 1773.16, 716.53, 2829.79, "Laptop"], [96.026, 1806.37, 704.42, 2908.31, "Laptop"], [96.821, 1839.57, 692.04, 2987.11, "Laptop"], [97.615, 1872.78, 679.42, 3066.14, "Laptop"], [98.41, 1905.98, 666.58, 3145.38, "Laptop"], [99.205, 1939.19, 653.56, 3224.82, "Laptop"], [100.0, 1972.4, 640.37, 3304.43, "Laptop"], [68.0, 1304.4, -131.64, 2740.43, "Phone"], [68.667, 1279.56, -103.82, 2662.94, "Phone"], [69.333, 1254.72, -76.17, 2585.61, "Phone"], [70.0, 1229.88, -48.7, 2508.46, "Phone"], [70.667, 1205.04, -21.44, 2431.52, "Phone"], [71.333, 1180.2, 5.59, 2354.82, "Phone"], [72.0, 1155.36, 32.35, 2278.38, "Phone"], [72.667, 1130.53, 58.81, 2202.24, "Phone"], [73.333, 1105.69, 84.92, 2126.46, "Phone"], [74.0, 1080.85, 110.62, 2051.08, "Phone"], [74.667, 1056.01, 135.85, 1976.17, "Phone"], [75.333, 1031.17, 160.53, 1901.81, "Phone"], [76.0, 1006.33, 184.55, 1828.11, "Phone"], [76.667, 981.49, 207.8, 1755.19, "Phone"], [77.333, 956.66, 230.11, 1683.2, "Phone"], [78.0, 931.82, 251.3, 1612.34, "Phone"], [78.667, 906.98, 271.11, 1542.84, "Phone"], [79.333, 882.14, 289.25, 1475.03, "Phone"], [80.0, 857.3, 305.31, 1409.29, "Phone"], [80.667, 832.46, 318.81, 1346.12, "Phone"], [81.333, 807.63, 329.12, 1286.13, "Phone"], [82.0, 782.79, 335.49, 1230.08, "Phone"], [82.667, 757.95, 337.05, 1178.85, "Phone"], [83.333, 733.11, 332.84, 1133.38, "Phone"], [84.0, 708.27, 321.94, 1094.61, "Phone"], [84.667, 683.43, 303.6, 1063.26, "Phone"], [85.333, 658.59, 277.46, 1039.73, "Phone"], [86.0, 633.76, 243.58, 1023.93, "Phone"], [86.667, 608.92, 202.49, 1015.35, "Phone"], [87.333, 584.08, 155.0, 1013.16, "Phone"], [88.0, 559.24, 102.06, 1016.42, "Phone"], [88.667, 534.4, 44.61, 1024.2, "Phone"], [89.333, 509.56, -16.52, 1035.64, "Phone"], [90.0, 484.73, -80.6, 1050.05, "Phone"], [90.667, 459.89, -147.08, 1066.86, "Phone"], [91.333, 435.05, -215.5, 1085.59, "Phone"], [92.0, 410.21, -285.48, 1105.89, "Phone"], [92.667, 385.37, -356.74, 1127.48, "Phone"], [93.333, 360.53, -429.06, 1150.12, "Phone"], [94.0, 335.69, -502.25, 1173.64, "Phone"]];
+const CLASS_YHAT = [[901.3, 370.1], [1096.7, 1260.0], [1313.9, 1970.3], [1531.1, 1101.1], [899.3, 466.9], [1310.9, 1353.8], [1137.1, 406.3], [1332.6, 528.4], [1096.7, 1314.5], [879.6, 2339.3], [902.3, 416.3], [1096.7, 419.6], [1140.2, 1867.3], [880.6, 395.2], [1009.9, 373.5], [902.3, 1601.1], [857.8, 1081.1], [899.3, 3253.4], [1096.7, 386.1], [855.8, 426.2], [1422.5, 3135.4], [1206.4, 497.3], [945.8, 435.4], [966.4, 283.4]];
+const BEER = {"c08": {"b": -0.9488864559756958, "a": -0.2820623954810565, "b1": -3.2733201225557638, "b2": 3.125068162804278, "b0": -0.20947492634455447, "d": 0.7438025494119909, "g": -0.02322748348355017, "se_b1": 0.11929005733970582, "lo": -3.508080990141489, "hi": -3.0385592549700386}, "c0": {"b": -3.1290084241301805, "a": -0.4463108445295154, "b1": -3.2733201225557624, "b2": 2.90641206475967, "b0": -0.20947492634455128, "d": 0.04965286931449401, "g": -0.08148738475751813, "se_b1": 0.11929005733970573, "lo": -3.5080809901414876, "hi": -3.0385592549700373}};
+const AGE_OVB = {"b": -0.195267289496618, "b1": -0.18473534012208617, "b2": 0.0070953080566153945, "d": -1.4843540675745366, "n": 18241, "age_m": 44.62973352033661, "age_f": 43.145379452762};
+const EDU = {"MA": {"const": 3.473265997936986, "female": -0.18203069915713382, "Professional": {"b": 0.13360844609407374, "se": 0.014869966113913937, "p": 2.584495543233098e-19}, "PhD": {"b": 0.13563501287352206, "se": 0.012850410000641483, "p": 4.8206468346978915e-26}}, "Professional": {"const": 3.6068744440310594, "female": -0.1820306991571295, "MA": {"b": -0.1336084460940734, "se": 0.01486996611391399, "p": 2.5844955432343426e-19}, "PhD": {"b": 0.0020265667794611836, "se": 0.01836661716474301, "p": 0.9121399841489507}}, "PhD": {"const": 3.60890101081052, "female": -0.18203069915712955, "MA": {"b": -0.13563501287353552, "se": 0.012850410000642767, "p": 4.820646834698273e-26}, "Professional": {"b": -0.0020265667794631863, "se": 0.018366617164743058, "p": 0.9121399841488644}}};
+const EDU_N = {"MA": 13611, "PhD": 2457, "Professional": 2173};
+const GAP_INTER = {"b0": 3.116973095797228, "age": 0.008906770692938774, "f": -0.03553232519597765, "fa": -0.003395825111563563, "p_f": 0.3044720781366005, "p_fa": 1.294842774358255e-05};
+const GAP_BANDS = [[24.0, 3.33, 3.31, 3.36, "Men"], [24.976, 3.34, 3.31, 3.36, "Men"], [25.951, 3.35, 3.32, 3.37, "Men"], [26.927, 3.36, 3.33, 3.38, "Men"], [27.902, 3.37, 3.34, 3.39, "Men"], [28.878, 3.37, 3.35, 3.4, "Men"], [29.854, 3.38, 3.36, 3.4, "Men"], [30.829, 3.39, 3.37, 3.41, "Men"], [31.805, 3.4, 3.38, 3.42, "Men"], [32.78, 3.41, 3.39, 3.43, "Men"], [33.756, 3.42, 3.4, 3.43, "Men"], [34.732, 3.43, 3.41, 3.44, "Men"], [35.707, 3.44, 3.42, 3.45, "Men"], [36.683, 3.44, 3.43, 3.46, "Men"], [37.659, 3.45, 3.44, 3.47, "Men"], [38.634, 3.46, 3.45, 3.47, "Men"], [39.61, 3.47, 3.46, 3.48, "Men"], [40.585, 3.48, 3.47, 3.49, "Men"], [41.561, 3.49, 3.48, 3.5, "Men"], [42.537, 3.5, 3.48, 3.51, "Men"], [43.512, 3.5, 3.49, 3.52, "Men"], [44.488, 3.51, 3.5, 3.53, "Men"], [45.463, 3.52, 3.51, 3.53, "Men"], [46.439, 3.53, 3.52, 3.54, "Men"], [47.415, 3.54, 3.53, 3.55, "Men"], [48.39, 3.55, 3.54, 3.56, "Men"], [49.366, 3.56, 3.54, 3.57, "Men"], [50.341, 3.57, 3.55, 3.58, "Men"], [51.317, 3.57, 3.56, 3.59, "Men"], [52.293, 3.58, 3.57, 3.6, "Men"], [53.268, 3.59, 3.58, 3.61, "Men"], [54.244, 3.6, 3.58, 3.62, "Men"], [55.22, 3.61, 3.59, 3.63, "Men"], [56.195, 3.62, 3.6, 3.64, "Men"], [57.171, 3.63, 3.61, 3.65, "Men"], [58.146, 3.63, 3.61, 3.65, "Men"], [59.122, 3.64, 3.62, 3.66, "Men"], [60.098, 3.65, 3.63, 3.67, "Men"], [61.073, 3.66, 3.64, 3.68, "Men"], [62.049, 3.67, 3.65, 3.69, "Men"], [63.024, 3.68, 3.65, 3.7, "Men"], [64.0, 3.69, 3.66, 3.71, "Men"], [24.0, 3.21, 3.19, 3.24, "Women"], [24.976, 3.22, 3.2, 3.24, "Women"], [25.951, 3.22, 3.2, 3.24, "Women"], [26.927, 3.23, 3.21, 3.25, "Women"], [27.902, 3.24, 3.22, 3.25, "Women"], [28.878, 3.24, 3.22, 3.26, "Women"], [29.854, 3.25, 3.23, 3.26, "Women"], [30.829, 3.25, 3.24, 3.27, "Women"], [31.805, 3.26, 3.24, 3.27, "Women"], [32.78, 3.26, 3.25, 3.28, "Women"], [33.756, 3.27, 3.25, 3.28, "Women"], [34.732, 3.27, 3.26, 3.29, "Women"], [35.707, 3.28, 3.27, 3.29, "Women"], [36.683, 3.28, 3.27, 3.3, "Women"], [37.659, 3.29, 3.28, 3.3, "Women"], [38.634, 3.29, 3.28, 3.31, "Women"], [39.61, 3.3, 3.29, 3.31, "Women"], [40.585, 3.31, 3.29, 3.32, "Women"], [41.561, 3.31, 3.3, 3.32, "Women"], [42.537, 3.32, 3.3, 3.33, "Women"], [43.512, 3.32, 3.31, 3.33, "Women"], [44.488, 3.33, 3.32, 3.34, "Women"], [45.463, 3.33, 3.32, 3.34, "Women"], [46.439, 3.34, 3.33, 3.35, "Women"], [47.415, 3.34, 3.33, 3.36, "Women"], [48.39, 3.35, 3.34, 3.36, "Women"], [49.366, 3.35, 3.34, 3.37, "Women"], [50.341, 3.36, 3.34, 3.37, "Women"], [51.317, 3.36, 3.35, 3.38, "Women"], [52.293, 3.37, 3.35, 3.38, "Women"], [53.268, 3.37, 3.36, 3.39, "Women"], [54.244, 3.38, 3.36, 3.4, "Women"], [55.22, 3.39, 3.37, 3.4, "Women"], [56.195, 3.39, 3.37, 3.41, "Women"], [57.171, 3.4, 3.38, 3.42, "Women"], [58.146, 3.4, 3.38, 3.42, "Women"], [59.122, 3.41, 3.39, 3.43, "Women"], [60.098, 3.41, 3.39, 3.43, "Women"], [61.073, 3.42, 3.4, 3.44, "Women"], [62.049, 3.42, 3.4, 3.45, "Women"], [63.024, 3.43, 3.4, 3.45, "Women"], [64.0, 3.43, 3.41, 3.46, "Women"]];
+const GAP_POLY = [[25, -0.1071], [26, -0.0955], [27, -0.0879], [28, -0.0841], [29, -0.0836], [30, -0.0858], [31, -0.0905], [32, -0.0972], [33, -0.1055], [34, -0.1151], [35, -0.1258], [36, -0.1371], [37, -0.1487], [38, -0.1606], [39, -0.1723], [40, -0.1837], [41, -0.1947], [42, -0.2049], [43, -0.2143], [44, -0.2228], [45, -0.2302], [46, -0.2365], [47, -0.2416], [48, -0.2454], [49, -0.248], [50, -0.2493], [51, -0.2494], [52, -0.2483], [53, -0.2461], [54, -0.2428], [55, -0.2386], [56, -0.2337], [57, -0.2281], [58, -0.2221], [59, -0.2158], [60, -0.2095], [61, -0.2034], [62, -0.1978], [63, -0.1929], [64, -0.1892]];
+const HOTEL_F_SUMMARY = "                            OLS Regression Results                            \n==============================================================================\nDep. Variable:               ln_price   R-squared:                       0.417\nModel:                            OLS   Adj. R-squared:                  0.409\nMethod:                 Least Squares   F-statistic:                     34.38\nDate:                Fri, 30 Oct 2026   Prob (F-statistic):           5.19e-18\nTime:                        18:25:39   Log-Likelihood:                -12.017\nNo. Observations:                 207   AIC:                             32.03\nDf Residuals:                     203   BIC:                             45.37\nDf Model:                           3                                         \nCovariance Type:                  HC1                                         \n==============================================================================\n                 coef    std err          z      P>|z|      [0.025      0.975]\n------------------------------------------------------------------------------\nIntercept      2.9769      0.257     11.592      0.000       2.474       3.480\ndistance      -0.0925      0.021     -4.387      0.000      -0.134      -0.051\nstars          0.1734      0.041      4.223      0.000       0.093       0.254\nrating         0.2924      0.063      4.644      0.000       0.169       0.416\n==============================================================================";
+const HOTEL_F = {"f": 34.37894519993462, "p": 5.194739021748964e-18, "n": 207, "j_f": 30.925159040408033, "j_p": 1.88928386101199e-12};
+const SPLINE = {"a": 174.31960847393648, "d": -73.38264995658335, "b1": 67.16456309356296, "b4": 20.731127113490643, "s1": -73.38264995658335, "s2": -6.218086863020389, "s3": 14.513040250470254, "se_d": 10.197800872420489, "se_b1": 11.418920305137682, "se_b4": 6.811067740545161, "p_d": 6.203695437707279e-13, "p_b1": 4.056658611572559e-09, "p_b4": 0.002336560949276705, "lin_a": 132.01697270176442, "lin_b": -14.406420427108369, "r2_lin": 0.15706917621227856, "r2_1": 0.30054975237627624, "r2_14": 0.3082672604517436, "n": 207, "f": 31.926356989419492, "p": 8.795853843054031e-13, "f4": 9.264360149017, "p4": 0.0026457279018606682, "f_nr": 22.185744107367256, "f_r2": 22.1857441073672, "crit": 3.040379363531844, "n_in1": 92, "n_mid": 107, "n_out": 8};
+const SPLINE_SUMMARY = "                            OLS Regression Results                            \n==============================================================================\nDep. Variable:                  price   R-squared:                       0.308\nModel:                            OLS   Adj. R-squared:                  0.298\nMethod:                 Least Squares   F-statistic:                     29.32\nDate:                Fri, 30 Oct 2026   Prob (F-statistic):           8.55e-16\nTime:                        18:25:39   Log-Likelihood:                -1029.9\nNo. Observations:                 207   AIC:                             2068.\nDf Residuals:                     203   BIC:                             2081.\nDf Model:                           3                                         \nCovariance Type:                  HC1                                         \n==============================================================================\n                 coef    std err          z      P>|z|      [0.025      0.975]\n------------------------------------------------------------------------------\nIntercept    174.3196      8.191     21.282      0.000     158.266     190.374\ndistance     -73.3826     10.198     -7.196      0.000     -93.370     -53.395\nbeyond_1      67.1646     11.419      5.882      0.000      44.784      89.545\nbeyond_4      20.7311      6.811      3.044      0.002       7.382      34.081\n==============================================================================";
+const HOTELS = [[1.7, 81.0, 4], [1.4, 85.0, 4], [1.7, 83.0, 3], [1.2, 82.0, 4], [0.9, 103.0, 4], [1.0, 150.0, 4], [1.1, 60.0, 4], [0.8, 128.0, 4], [1.7, 85.0, 4], [0.9, 77.0, 3], [0.8, 78.0, 3], [0.9, 78.0, 3], [4.2, 77.0, 3], [3.9, 77.0, 3], [3.6, 95.0, 4], [2.9, 208.0, 4], [3.4, 87.0, 3], [2.0, 54.0, 3], [1.7, 99.0, 3], [1.7, 75.0, 3], [2.1, 76.0, 3], [1.9, 91.0, 4], [1.7, 71.0, 4], [0.2, 113.0, 3], [0.3, 156.0, 3], [0.3, 133.0, 4], [0.5, 123.0, 4], [0.3, 219.0, 4], [0.3, 152.0, 4], [0.1, 115.0, 4], [0.2, 138.0, 4], [0.1, 146.0, 4], [0.5, 98.0, 3], [0.3, 121.0, 3], [0.2, 149.0, 4], [0.3, 120.0, 3], [0.4, 157.0, 3], [0.2, 112.0, 4], [0.3, 138.0, 4], [0.3, 158.0, 3], [0.2, 218.0, 4], [0.1, 218.0, 4], [0.3, 135.0, 3], [0.5, 179.0, 4], [0.7, 157.0, 4], [0.3, 146.0, 4], [0.1, 157.0, 4], [0.3, 108.0, 3], [0.8, 127.0, 4], [0.4, 163.0, 4], [0.1, 231.0, 4], [0.4, 116.0, 4], [0.6, 166.0, 4], [0.3, 169.0, 4], [0.0, 242.0, 4], [0.5, 223.0, 4], [0.3, 149.0, 4], [0.5, 114.0, 4], [0.2, 139.0, 4], [1.4, 79.0, 3], [0.9, 110.0, 3], [0.9, 88.0, 3], [1.6, 59.0, 3], [0.9, 119.0, 4], [0.9, 152.0, 4], [1.0, 102.0, 4], [1.1, 54.0, 3], [1.0, 94.0, 3], [0.9, 115.0, 4], [0.9, 68.0, 3], [0.2, 153.0, 4], [0.3, 169.0, 4], [0.5, 182.0, 4], [0.1, 142.0, 4], [0.6, 110.0, 4], [1.4, 82.0, 4], [1.7, 82.0, 4], [1.8, 66.0, 3], [0.8, 169.0, 4], [1.5, 109.0, 4], [0.7, 104.0, 3], [0.9, 145.0, 3], [0.8, 85.0, 3], [1.3, 110.0, 3], [0.6, 134.0, 4], [1.3, 79.0, 4], [1.0, 132.0, 4], [0.6, 128.0, 4], [1.5, 99.0, 3], [1.8, 86.0, 4], [1.0, 63.0, 3], [0.6, 134.0, 3], [0.9, 79.0, 3], [0.5, 138.0, 4], [1.0, 113.0, 4], [1.5, 84.0, 3], [0.9, 68.0, 3], [1.5, 102.0, 3], [1.6, 82.0, 3], [1.1, 66.0, 3], [0.8, 113.0, 3], [1.0, 106.0, 3], [1.6, 89.0, 3], [0.8, 106.0, 4], [0.8, 100.0, 4], [0.7, 75.0, 3], [0.8, 84.0, 3], [0.5, 151.0, 4], [0.9, 87.0, 3], [0.5, 117.0, 4], [1.9, 120.0, 4], [1.9, 383.0, 3], [1.5, 174.0, 4], [2.0, 63.0, 3], [1.5, 100.0, 3], [1.4, 86.0, 4], [1.8, 67.0, 3], [1.3, 129.0, 4], [1.3, 86.0, 3], [0.7, 131.0, 4], [1.4, 80.0, 3], [1.1, 93.0, 4], [1.9, 77.0, 3], [0.8, 140.0, 4], [1.0, 99.0, 4], [1.4, 105.0, 4], [1.7, 100.0, 3], [1.1, 82.0, 3], [1.8, 82.0, 4], [1.9, 87.0, 4], [1.6, 100.0, 4], [1.6, 84.0, 4], [0.8, 98.0, 4], [1.8, 99.0, 3], [1.6, 76.0, 3], [0.8, 113.0, 3], [0.9, 110.0, 4], [1.0, 184.0, 4], [1.7, 99.0, 4], [0.8, 122.0, 3], [1.7, 122.0, 4], [1.7, 105.0, 4], [1.4, 109.0, 4], [1.2, 105.0, 3], [3.1, 52.0, 3], [4.1, 80.0, 4], [1.8, 70.0, 4], [1.9, 136.0, 3], [2.1, 80.0, 3], [2.4, 81.0, 3], [3.6, 66.0, 4], [2.8, 77.0, 3], [2.1, 69.0, 4], [2.1, 83.0, 3], [1.8, 77.0, 4], [1.7, 121.0, 4], [3.6, 68.0, 3], [2.0, 63.0, 3], [2.1, 101.0, 3], [2.6, 75.0, 4], [3.6, 156.0, 4], [3.7, 56.0, 3], [2.4, 82.0, 3], [2.6, 82.0, 4], [4.1, 106.0, 3], [3.1, 85.0, 3], [2.6, 83.0, 3], [2.9, 92.0, 4], [2.0, 117.0, 4], [3.9, 66.0, 3], [3.7, 81.0, 3], [3.5, 109.0, 4], [3.1, 97.0, 4], [4.8, 74.0, 4], [3.7, 69.0, 4], [3.9, 83.0, 4], [3.9, 50.0, 3], [3.7, 77.0, 3], [5.3, 102.0, 3], [6.6, 130.0, 3], [3.2, 78.0, 3], [3.3, 76.0, 3], [4.5, 68.0, 4], [2.7, 116.0, 4], [2.2, 172.0, 4], [2.4, 87.0, 3], [4.6, 90.0, 3], [2.7, 100.0, 3], [1.9, 84.0, 3], [2.1, 185.0, 4], [3.0, 85.0, 4], [1.6, 110.0, 3], [1.6, 86.0, 3], [1.0, 118.0, 4], [0.9, 126.0, 3], [1.3, 92.0, 3], [0.8, 197.0, 4], [1.2, 135.0, 4], [1.2, 125.0, 4], [0.8, 134.0, 4], [0.9, 91.0, 3], [0.8, 110.0, 3], [1.2, 100.0, 3], [1.5, 95.0, 4], [1.5, 73.0, 3], [1.0, 100.0, 4], [1.4, 58.0, 3]];
+const F_CURVE = [[0.01, 0.9899527891319861], [0.07, 0.9315374859699286], [0.131, 0.876600779730485], [0.191, 0.8249336414316211], [0.251, 0.776339715521616], [0.311, 0.7306345446541291], [0.372, 0.6876448422993431], [0.432, 0.6472078102160669], [0.492, 0.6091704979926473], [0.552, 0.5733892020413976], [0.613, 0.5397289015957605], [0.673, 0.5080627294105676], [0.733, 0.47827147501269596], [0.793, 0.4502431184828183], [0.854, 0.42387239287463646], [0.914, 0.3990603734979602], [0.974, 0.37571409240191145], [1.034, 0.353746176497845], [1.095, 0.33307450786109083], [1.155, 0.31362190483894026], [1.215, 0.2953158226804385], [1.275, 0.2780880724818064], [1.336, 0.261874557317765], [1.396, 0.24661502449811798], [1.456, 0.2322528329558165], [1.516, 0.21873473483460693], [1.577, 0.20601067040100451], [1.637, 0.19403357546169628], [1.697, 0.18275920051636796], [1.757, 0.17214594092510474], [1.818, 0.16215467741318584], [1.878, 0.15274862627929942], [1.938, 0.14389319871072648], [1.998, 0.13555586864780667], [2.059, 0.1277060486731853], [2.119, 0.1203149734343675], [2.179, 0.11335559013819188], [2.239, 0.10680245568480927], [2.3, 0.10063164003460294], [2.36, 0.09482063542753814], [2.42, 0.089348271097087], [2.48, 0.0841946331434354], [2.541, 0.07934098925106407], [2.601, 0.07476971795529214], [2.661, 0.07046424218049159], [2.721, 0.06640896678977413], [2.782, 0.06258921990188022], [2.842, 0.05899119774603362], [2.902, 0.05560191283969077], [2.962, 0.052409145287038716], [3.023, 0.04940139700882721], [3.083, 0.046567848725461235], [3.143, 0.043898319526335286], [3.203, 0.04138322886852503], [3.264, 0.03901356085765155], [3.324, 0.03678083067254851], [3.384, 0.03467705300409445], [3.444, 0.03269471238619323], [3.505, 0.030826735304536418], [3.565, 0.029066463975708886], [3.625, 0.02740763169564797], [3.685, 0.02584433966282815], [3.746, 0.024371035187052546], [3.806, 0.022982491200397137], [3.866, 0.021673786991727617], [3.926, 0.02044029009116352], [3.987, 0.019277639235166646], [4.047, 0.01818172834730844], [4.107, 0.017148691473566378], [4.167, 0.016174888614811107], [4.228, 0.015256892402567678], [4.288, 0.014391475567432066], [4.348, 0.013575599152560068], [4.408, 0.012806401427560963], [4.469, 0.012081187460790597], [4.529, 0.011397419310622237], [4.589, 0.010752706798609497], [4.649, 0.010144798829737317], [4.71, 0.0095715752270305], [4.77, 0.009031039049773128], [4.83, 0.008521309366448787], [4.89, 0.008040614455244056], [4.951, 0.007587285406605628], [5.011, 0.0071597501038630895], [5.071, 0.00675652755938038], [5.131, 0.006376222585064092], [5.192, 0.0060175207772976795], [5.252, 0.005679183797610714], [5.312, 0.005360044931473508], [5.372, 0.005059004908696938], [5.433, 0.004775027969879458], [5.493, 0.004507138164305364], [5.553, 0.004254415865540879], [5.613, 0.0040159944918289284], [5.674, 0.003791057419128439], [5.734, 0.003578835075389338], [5.794, 0.003378602205331461], [5.854, 0.0031896752956286937], [5.915, 0.0030114101510138095], [5.975, 0.0028431996123782586], [6.035, 0.002684471408480108], [6.095, 0.0025346861333606844], [6.156, 0.0023933353420582254], [6.216, 0.0022599397576334324], [6.276, 0.0021340475829468106], [6.336, 0.002015232911009959], [6.397, 0.0019030942281104818], [6.457, 0.0017972530042439268], [6.517, 0.0016973523657192624], [6.577, 0.0016030558451018341], [6.638, 0.0015140462039530032], [6.698, 0.001430024324086867], [6.758, 0.0013507081633210203], [6.818, 0.0012758317719406612], [6.879, 0.0012051443663106324], [6.939, 0.0011384094562891759], [6.999, 0.0010754040232899998], [7.059, 0.0010159177460267964], [7.12, 0.0009597522711508206], [7.18, 0.0009067205261555131], [7.24, 0.0008566460720756769], [7.3, 0.0008093624936594488], [7.361, 0.0007647128248213965], [7.421, 0.0007225490073198891], [7.481, 0.0006827313807201007], [7.541, 0.0006451282018179663], [7.602, 0.0006096151918094977], [7.662, 0.000576075109588883], [7.722, 0.0005443973496547506], [7.782, 0.0005144775631932915], [7.843, 0.00048621730098964683], [7.903, 0.0004595236769005655], [7.963, 0.00043430905069264167], [8.023, 0.0004104907291224895], [8.084, 0.00038799068420127116], [8.144, 0.00036673528764520565], [8.204, 0.00034665506057601574], [8.264, 0.0003276844375863672], [8.325, 0.0003097615443392503], [8.385, 0.00029282798791861427], [8.445, 0.0002768286591925629], [8.505, 0.00026171154649599936], [8.566, 0.0002474275599780377], [8.626, 0.00023393036599850657], [8.686, 0.00022117623099373573], [8.746, 0.00020912387426526025], [8.807, 0.0001977343291772809], [8.867, 0.00018697081227789266], [8.927, 0.00017679859988847557], [8.987, 0.00016718491173054384], [9.048, 0.0001580988011859983], [9.108, 0.00014951105180877725], [9.168, 0.00014139407972907995], [9.228, 0.0001337218416113686], [9.289, 0.00012646974784758904], [9.349, 0.00011961458068505429], [9.409, 0.00011313441700619916], [9.469, 0.00010700855549334028], [9.53, 0.00010121744792744475], [9.59, 9.574263438412878e-05], [9.65, 9.056668210389293e-05], [9.71, 8.567312782640463e-05], [9.771, 8.104642339087327e-05], [9.831, 7.667188441588359e-05], [9.891, 7.25356418827773e-05], [9.951, 6.862459645697502e-05], [10.012, 6.492637539099372e-05], [10.072, 6.142929186192474e-05], [10.132, 5.8122306604746234e-05], [10.192, 5.499499171063306e-05], [10.253, 5.203749646702353e-05], [10.313, 4.924051512336907e-05], [10.373, 4.659525647290991e-05], [10.433, 4.409341514741798e-05], [10.494, 4.1727144527485766e-05], [10.554, 3.948903117670403e-05], [10.614, 3.7372070713230634e-05], [10.674, 3.536964503722279e-05], [10.735, 3.3475500837263345e-05], [10.795, 3.168372930337566e-05], [10.855, 2.9988746978209307e-05], [10.915, 2.8385277682043832e-05], [10.976, 2.686833545086758e-05], [11.036, 2.5433208430212497e-05], [11.096, 2.4075443670738883e-05], [11.156, 2.2790832774720084e-05], [11.217, 2.1575398345256265e-05], [11.277, 2.042538119304773e-05], [11.337, 1.9337228257949493e-05], [11.397, 1.830758120501423e-05], [11.458, 1.733326565706348e-05], [11.518, 1.6411281027917414e-05], [11.578, 1.553879092248363e-05], [11.638, 1.4713114071845336e-05], [11.699, 1.393171577324247e-05], [11.759, 1.3192199806592746e-05], [11.819, 1.2492300800794383e-05], [11.879, 1.1829877024547715e-05], [11.94, 1.1202903577900834e-05], [12.0, 1.060946596203729e-05]];
+const F_CRIT_CLASS = 3.0983912121407813;
+const RATINGS = {"n": 204, "corr": 0.761005616303701, "vif": 2.376028051759653, "r1": 0.4516557771869259, "r1se": 0.06621926293273314, "r2": 0.38454527726884075, "r2se": 0.04353304141611519, "b1": 0.3077997852573958, "b1se": 0.08763824859485661, "b2": 0.17173887401329557, "b2se": 0.06765824453836508, "p1": 0.0004444758539159149, "p2": 0.011138326818125242, "z": 0.1896163878526153, "zse": 0.02122751728821959, "jf": 38.94339657815184, "jp": 5.078026320538785e-15, "r2_1": 0.2592546482451159, "r2_2": 0.2276928231977673, "r2_b": 0.27836814013686284, "r2_z": 0.2762259833194243, "sd_r": 0.3816494877477454, "sd_t": 0.42008402520840293};
+const RATING_PTS = [[3.9, 3.5], [3.7, 3.5], [4.0, 4.0], [3.9, 3.5], [3.9, 3.5], [4.6, 4.5], [4.1, 4.0], [4.0, 4.0], [4.1, 4.0], [3.7, 3.5], [3.9, 3.5], [4.0, 3.5], [3.9, 4.0], [2.7, 3.0], [4.3, 4.0], [4.1, 4.0], [3.7, 3.5], [3.5, 4.0], [4.4, 4.5], [4.4, 4.5], [4.4, 4.0], [4.5, 4.5], [4.0, 4.0], [4.4, 4.0], [4.5, 4.5], [4.3, 4.0], [4.1, 3.5], [4.5, 4.5], [4.3, 4.0], [4.3, 4.5], [4.5, 4.5], [4.4, 4.0], [3.7, 3.5], [4.5, 4.5], [4.0, 4.0], [3.9, 3.5], [4.4, 4.5], [4.0, 4.0], [4.3, 4.0], [4.3, 4.0], [4.6, 5.0], [4.5, 4.5], [3.9, 3.5], [4.4, 4.5], [4.5, 4.5], [4.5, 4.5], [4.1, 4.0], [3.5, 3.5], [4.0, 4.0], [4.1, 4.0], [4.4, 4.5], [4.4, 4.5], [4.3, 4.0], [4.5, 4.5], [4.8, 4.5], [3.5, 3.5], [4.4, 4.5], [4.0, 4.0], [3.5, 3.5], [3.5, 3.5], [4.1, 4.0], [4.4, 4.0], [3.9, 4.0], [4.0, 4.0], [4.3, 4.0], [4.0, 4.0], [3.2, 3.0], [4.1, 4.0], [4.5, 4.5], [3.7, 3.5], [4.1, 4.0], [4.1, 4.0], [4.5, 4.5], [4.4, 4.0], [4.3, 4.5], [4.0, 4.0], [4.1, 4.0], [3.9, 3.5], [4.1, 4.0], [4.1, 4.0], [3.4, 3.0], [4.3, 4.5], [3.5, 3.5], [3.7, 3.5], [4.3, 4.5], [3.7, 3.5], [4.1, 4.0], [4.1, 4.0], [4.5, 4.5], [4.0, 3.5], [3.4, 3.0], [4.0, 4.5], [3.7, 4.0], [4.0, 4.0], [4.5, 4.5], [3.9, 4.0], [4.0, 4.0], [3.9, 4.0], [4.1, 4.0], [4.0, 4.0], [4.5, 4.5], [4.5, 4.5], [4.1, 4.0], [4.1, 4.0], [4.0, 4.0], [4.1, 4.0], [2.2, 4.0], [4.6, 4.5], [3.5, 3.5], [4.4, 4.5], [4.5, 4.0], [4.0, 4.0], [4.3, 4.5], [3.5, 3.5], [4.5, 4.5], [3.9, 3.5], [4.0, 4.0], [4.1, 4.0], [4.0, 4.0], [4.1, 4.0], [3.9, 3.5], [4.0, 4.0], [4.0, 4.0], [4.8, 5.0], [4.0, 4.0], [4.4, 4.5], [4.5, 4.5], [3.9, 3.5], [3.9, 4.0], [3.5, 4.0], [3.7, 3.5], [4.3, 4.0], [3.7, 4.0], [4.1, 4.0], [3.5, 3.5], [4.4, 4.5], [4.6, 4.5], [4.1, 4.0], [3.9, 4.0], [4.3, 4.0], [4.0, 4.0], [4.0, 4.0], [4.1, 4.5], [3.5, 3.5], [4.0, 4.0], [3.9, 3.5], [4.5, 4.5], [4.1, 4.0], [4.1, 4.5], [3.7, 3.5], [4.0, 4.0], [3.7, 3.5], [4.1, 4.0], [3.9, 3.0], [3.9, 4.0], [3.5, 4.0], [3.7, 3.5], [4.5, 4.5], [3.7, 3.5], [4.3, 4.0], [3.5, 4.0], [4.5, 4.5], [4.4, 4.0], [3.7, 3.0], [2.7, 3.0], [4.1, 4.0], [4.0, 4.0], [3.7, 3.5], [4.1, 3.0], [4.0, 3.5], [4.0, 4.0], [3.9, 4.0], [3.7, 3.5], [4.0, 3.5], [3.9, 4.0], [4.0, 3.5], [4.0, 4.5], [4.4, 4.0], [4.3, 4.0], [3.7, 4.0], [4.0, 3.5], [4.0, 4.0], [4.1, 4.0], [4.0, 4.0], [3.0, 3.0], [4.4, 4.0], [4.4, 4.5], [4.4, 4.0], [4.0, 3.5], [4.5, 4.5], [4.3, 4.0], [4.1, 4.0], [4.3, 4.0], [4.8, 4.5], [4.5, 4.0], [4.4, 4.5], [4.5, 4.5], [3.5, 3.5], [3.9, 4.0], [4.0, 4.0], [4.1, 4.0], [3.4, 3.0], [4.4, 4.5], [3.2, 3.0]];
+const HOTEL_INTER = {"b0": 103.73781112621818, "b3": -5.644826815411656, "b2": 46.19269899819652, "inter": -14.068680216250577, "b4": -19.713507031662232, "p": 0.0008977137342155101, "n3": 96, "n4": 111};
+const HOTEL_BANDS = [[0.2, 102.61, 91.52, 113.7, "3 stars"], [0.364, 101.68, 91.25, 112.12, "3 stars"], [0.528, 100.76, 90.93, 110.58, "3 stars"], [0.692, 99.83, 90.57, 109.09, "3 stars"], [0.856, 98.9, 90.15, 107.66, "3 stars"], [1.021, 97.98, 89.66, 106.29, "3 stars"], [1.185, 97.05, 89.09, 105.01, "3 stars"], [1.349, 96.12, 88.43, 103.82, "3 stars"], [1.513, 95.2, 87.66, 102.73, "3 stars"], [1.677, 94.27, 86.79, 101.76, "3 stars"], [1.841, 93.35, 85.81, 100.89, "3 stars"], [2.005, 92.42, 84.71, 100.12, "3 stars"], [2.169, 91.49, 83.52, 99.46, "3 stars"], [2.333, 90.57, 82.24, 98.9, "3 stars"], [2.497, 89.64, 80.87, 98.41, "3 stars"], [2.662, 88.71, 79.44, 97.99, "3 stars"], [2.826, 87.79, 77.94, 97.63, "3 stars"], [2.99, 86.86, 76.4, 97.32, "3 stars"], [3.154, 85.93, 74.82, 97.05, "3 stars"], [3.318, 85.01, 73.21, 96.81, "3 stars"], [3.482, 84.08, 71.56, 96.6, "3 stars"], [3.646, 83.16, 69.89, 96.42, "3 stars"], [3.81, 82.23, 68.2, 96.25, "3 stars"], [3.974, 81.3, 66.5, 96.11, "3 stars"], [4.138, 80.38, 64.78, 95.97, "3 stars"], [4.303, 79.45, 63.05, 95.85, "3 stars"], [4.467, 78.52, 61.31, 95.74, "3 stars"], [4.631, 77.6, 59.55, 95.64, "3 stars"], [4.795, 76.67, 57.8, 95.55, "3 stars"], [4.959, 75.75, 56.03, 95.46, "3 stars"], [5.123, 74.82, 54.26, 95.38, "3 stars"], [5.287, 73.89, 52.48, 95.31, "3 stars"], [5.451, 72.97, 50.7, 95.24, "3 stars"], [5.615, 72.04, 48.91, 95.17, "3 stars"], [5.779, 71.11, 47.12, 95.11, "3 stars"], [5.944, 70.19, 45.33, 95.05, "3 stars"], [6.108, 69.26, 43.53, 94.99, "3 stars"], [6.272, 68.33, 41.73, 94.94, "3 stars"], [6.436, 67.41, 39.93, 94.89, "3 stars"], [6.6, 66.48, 38.12, 94.84, "3 stars"], [0.0, 149.93, 139.39, 160.48, "4 stars"], [0.123, 147.5, 137.55, 157.46, "4 stars"], [0.246, 145.08, 135.68, 154.48, "4 stars"], [0.369, 142.65, 133.79, 151.52, "4 stars"], [0.492, 140.23, 131.86, 148.6, "4 stars"], [0.615, 137.8, 129.88, 145.71, "4 stars"], [0.738, 135.37, 127.86, 142.88, "4 stars"], [0.862, 132.95, 125.78, 140.11, "4 stars"], [0.985, 130.52, 123.64, 137.41, "4 stars"], [1.108, 128.09, 121.41, 134.77, "4 stars"], [1.231, 125.67, 119.11, 132.23, "4 stars"], [1.354, 123.24, 116.72, 129.76, "4 stars"], [1.477, 120.82, 114.24, 127.39, "4 stars"], [1.6, 118.39, 111.68, 125.1, "4 stars"], [1.723, 115.96, 109.03, 122.89, "4 stars"], [1.846, 113.54, 106.31, 120.76, "4 stars"], [1.969, 111.11, 103.53, 118.69, "4 stars"], [2.092, 108.68, 100.69, 116.68, "4 stars"], [2.215, 106.26, 97.8, 114.72, "4 stars"], [2.338, 103.83, 94.87, 112.79, "4 stars"], [2.462, 101.4, 91.9, 110.91, "4 stars"], [2.585, 98.98, 88.91, 109.05, "4 stars"], [2.708, 96.55, 85.9, 107.21, "4 stars"], [2.831, 94.13, 82.86, 105.39, "4 stars"], [2.954, 91.7, 79.8, 103.6, "4 stars"], [3.077, 89.27, 76.74, 101.81, "4 stars"], [3.2, 86.85, 73.65, 100.04, "4 stars"], [3.323, 84.42, 70.56, 98.28, "4 stars"], [3.446, 81.99, 67.46, 96.53, "4 stars"], [3.569, 79.57, 64.35, 94.78, "4 stars"], [3.692, 77.14, 61.24, 93.05, "4 stars"], [3.815, 74.72, 58.11, 91.32, "4 stars"], [3.938, 72.29, 54.99, 89.59, "4 stars"], [4.062, 69.86, 51.85, 87.87, "4 stars"], [4.185, 67.44, 48.72, 86.16, "4 stars"], [4.308, 65.01, 45.58, 84.44, "4 stars"], [4.431, 62.58, 42.43, 82.74, "4 stars"], [4.554, 60.16, 39.29, 81.03, "4 stars"], [4.677, 57.73, 36.14, 79.33, "4 stars"], [4.8, 55.31, 32.99, 77.63, "4 stars"]];
+const HOTEL_YHAT = [[4.557, 4.394, 0], [4.5, 4.443, 0], [4.443, 4.419, 0], [4.582, 4.407, 0], [4.638, 4.635, 0], [4.844, 5.011, 0], [4.659, 4.094, 1], [4.72, 4.852, 0], [4.629, 4.443, 0], [4.416, 4.344, 0], [4.534, 4.357, 0], [4.524, 4.357, 0], [4.32, 4.344, 0], [4.243, 4.344, 0], [4.605, 4.554, 0], [4.568, 5.338, 0], [4.25, 4.466, 0], [4.248, 3.989, 0], [4.605, 4.595, 0], [4.605, 4.317, 0], [4.567, 4.331, 0], [4.763, 4.511, 0], [4.593, 4.263, 0], [4.99, 4.727, 0], [4.98, 5.05, 0], [5.058, 4.89, 0], [4.894, 4.812, 0], [5.13, 5.389, 0], [5.058, 5.024, 0], [5.15, 4.745, 1], [5.176, 4.927, 0], [5.186, 4.984, 0], [4.6, 4.585, 0], [4.998, 4.796, 0], [4.996, 5.004, 0], [4.764, 4.787, 0], [4.898, 5.056, 0], [4.996, 4.718, 0], [5.058, 4.927, 0], [4.908, 5.063, 0], [5.212, 5.384, 0], [5.222, 5.384, 0], [4.764, 4.905, 0], [5.002, 5.187, 0], [4.946, 5.056, 0], [5.13, 4.984, 0], [5.078, 5.056, 0], [4.62, 4.682, 0], [4.72, 4.844, 0], [4.94, 5.094, 0], [5.186, 5.442, 0], [5.048, 4.754, 0], [4.92, 5.112, 0], [5.13, 5.13, 0], [5.376, 5.489, 0], [4.678, 5.407, 0], [5.094, 5.004, 0], [4.858, 4.736, 0], [4.816, 4.934, 0], [4.278, 4.369, 0], [4.56, 4.7, 0], [4.668, 4.477, 0], [4.412, 4.078, 0], [4.674, 4.779, 0], [4.782, 5.024, 0], [4.628, 4.625, 0], [4.327, 3.989, 1], [4.514, 4.543, 0], [4.854, 4.745, 0], [4.416, 4.22, 0], [5.032, 5.03, 0], [4.986, 5.13, 0], [5.038, 5.204, 0], [5.186, 4.956, 0], [4.92, 4.7, 0], [4.608, 4.407, 0], [4.629, 4.407, 0], [4.402, 4.19, 0], [4.756, 5.13, 0], [4.639, 4.691, 0], [4.448, 4.644, 0], [4.65, 4.977, 0], [4.39, 4.443, 0], [4.355, 4.7, 0], [4.92, 4.898, 0], [4.505, 4.369, 0], [4.664, 4.883, 0], [4.848, 4.852, 0], [4.633, 4.595, 0], [4.588, 4.454, 0], [4.31, 4.143, 0], [4.68, 4.898, 0], [4.416, 4.369, 0], [4.858, 4.927, 0], [4.808, 4.727, 0], [4.417, 4.431, 0], [4.524, 4.22, 0], [4.435, 4.625, 0], [4.484, 4.407, 0], [4.473, 4.19, 0], [4.75, 4.727, 0], [4.658, 4.663, 0], [4.484, 4.489, 0], [4.756, 4.663, 0], [4.72, 4.605, 0], [4.652, 4.317, 1], [4.538, 4.431, 0], [5.074, 5.017, 0], [4.344, 4.466, 0], [5.002, 4.762, 0], [4.763, 4.787, 0], [4.433, 5.948, 0], [4.711, 5.159, 0], [4.248, 4.143, 0], [4.651, 4.605, 0], [4.572, 4.454, 0], [4.438, 4.205, 0], [4.649, 4.86, 0], [4.463, 4.454, 0], [4.802, 4.875, 0], [4.422, 4.382, 0], [4.623, 4.533, 0], [4.433, 4.344, 0], [5.008, 4.942, 0], [4.628, 4.595, 0], [4.752, 4.654, 0], [4.641, 4.605, 0], [4.437, 4.407, 0], [4.552, 4.407, 0], [4.403, 4.466, 0], [4.49, 4.605, 0], [4.706, 4.431, 0], [4.612, 4.585, 0], [4.474, 4.595, 0], [4.268, 4.331, 0], [4.462, 4.727, 0], [4.818, 4.7, 0], [4.844, 5.215, 0], [4.629, 4.595, 0], [4.534, 4.804, 0], [4.701, 4.804, 0], [4.593, 4.654, 0], [4.608, 4.691, 0], [4.504, 4.654, 0], [4.193, 3.951, 0], [4.491, 4.382, 0], [4.552, 4.248, 0], [4.613, 4.913, 0], [4.459, 4.382, 0], [4.444, 4.394, 0], [4.389, 4.19, 0], [4.388, 4.344, 0], [4.465, 4.234, 0], [4.459, 4.419, 0], [4.552, 4.344, 0], [4.557, 4.796, 0], [4.168, 4.22, 0], [4.32, 4.143, 0], [4.603, 4.615, 0], [4.44, 4.317, 0], [4.605, 5.05, 0], [4.163, 4.025, 0], [4.605, 4.407, 0], [4.691, 4.407, 0], [4.234, 4.663, 0], [4.283, 4.443, 0], [4.595, 4.419, 0], [4.568, 4.522, 0], [4.578, 4.762, 0], [4.225, 4.19, 0], [4.396, 4.394, 0], [4.502, 4.691, 0], [4.522, 4.575, 0], [4.556, 4.304, 0], [4.384, 4.234, 0], [4.482, 4.419, 0], [4.297, 3.912, 1], [4.343, 4.344, 0], [4.514, 4.625, 0], [4.845, 4.868, 0], [4.476, 4.357, 0], [4.255, 4.331, 0], [4.549, 4.22, 0], [4.543, 4.754, 0], [4.604, 5.147, 0], [4.408, 4.466, 0], [4.29, 4.5, 0], [4.554, 4.605, 0], [4.577, 4.431, 0], [4.717, 5.22, 0], [4.527, 4.443, 0], [4.646, 4.7, 0], [4.556, 4.454, 0], [4.664, 4.771, 0], [4.722, 4.836, 0], [4.571, 4.522, 0], [5.008, 5.283, 0], [4.798, 4.905, 0], [4.762, 4.828, 0], [4.9, 4.898, 0], [4.344, 4.511, 0], [4.534, 4.7, 0], [4.468, 4.605, 0], [4.639, 4.554, 0], [4.285, 4.29, 0], [4.772, 4.605, 0], [4.312, 4.06, 0]];
+const HOTEL_FULL = {"r2": 0.5500695493436099, "n": 207};
+const DEALS = [[21912, 60.0, -0.565, 1.1, 4.0, 4.1], [21975, 115.0, -0.405, 0.1, 4.0, 4.3], [22344, 50.0, -0.385, 3.9, 3.0, 3.9], [22080, 54.0, -0.338, 1.1, 3.0, 3.2], [22184, 75.0, -0.335, 0.7, 3.0, 4.1]];
+const BAD = [{"b": 4.171975923138468, "se": 0.10017314560490806, "lo": 3.975640165534761, "hi": 4.368311680742174, "r2": 0.7677921159279222}, {"b": 3.260269953206423, "se": 0.11495419617009167, "lo": 3.034963868841291, "hi": 3.485576037571555, "r2": 0.822649288796206}, {"b": 0.00835237132653957, "se": 0.19997206997155265, "lo": -0.38358568373162727, "hi": 0.40029042638470635, "r2": 0.8918833201680003}];
+
+  const plotStyle = () => ({ color: 'var(--ink-soft)', fontFamily: "'Public Sans', sans-serif", fontSize: '12px' });
+  const BLUE = '#457b9d', RED = '#e63946', GREEN = '#2d6a4f', NAVY = 'var(--ink)', GREY = '#9aa0ad';
+  const MINUS = '\u2212';
+  function fmtS(v, d) { const s = Math.abs(v).toLocaleString('en-GB', { minimumFractionDigits: d, maximumFractionDigits: d }); return v < 0 ? MINUS + s : s; }
+
+  function accessibleChart(node, label) {
+    node.setAttribute('aria-hidden', 'true');
+    const wrap = document.createElement('div');
+    wrap.setAttribute('role', 'img');
+    wrap.setAttribute('aria-label', label);
+    wrap.appendChild(node);
+    return wrap;
+  }
+  function mount(id, node) { const el = document.getElementById(id); el.innerHTML = ''; el.appendChild(node); }
+  function width(id, max) { const el = document.getElementById(id); return Math.max(260, Math.min(max, (el && el.clientWidth) || max)); }
+  function chartLabel(t) {
+    const el = document.createElement('div');
+    el.textContent = t;
+    el.style.cssText = 'font-family:var(--sans);font-weight:600;font-size:13px;color:var(--ink);text-align:center;margin:0 0 4px;';
+    return el;
+  }
+  function withLabel(t, node) { const d = document.createElement('div'); d.appendChild(chartLabel(t)); d.appendChild(node); return d; }
+
+  /* ---------- least squares: solve (X'X) b = X'y ---------- */
+  function lstsq(X, y) {
+    const k = X[0].length;
+    const A = Array.from({ length: k }, () => new Array(k + 1).fill(0));
+    X.forEach((row, i) => {
+      for (let a = 0; a < k; a++) {
+        for (let b = 0; b < k; b++) A[a][b] += row[a] * row[b];
+        A[a][k] += row[a] * y[i];
+      }
+    });
+    for (let c = 0; c < k; c++) {
+      let p = c;
+      for (let r = c + 1; r < k; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r;
+      [A[c], A[p]] = [A[p], A[c]];
+      for (let r = 0; r < k; r++) {
+        if (r === c) continue;
+        const f = A[r][c] / A[c][c];
+        for (let j = c; j <= k; j++) A[r][j] -= f * A[c][j];
+      }
+    }
+    const beta = A.map((row, i) => row[k] / row[i]);
+    const fit = X.map(row => d3.sum(row.map((v, j) => v * beta[j])));
+    const my = d3.mean(y);
+    const r2 = 1 - d3.sum(y.map((v, i) => (v - fit[i]) ** 2)) / d3.sum(y.map(v => (v - my) ** 2));
+    return { beta, fit, r2 };
+  }
+  const ols1 = (xs, ys) => lstsq(xs.map(x => [1, x]), ys);
+
+  /* ---------- seeded normal draws ---------- */
+  function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function normalGen(seed) { const r = mulberry32(seed); return () => { const u = 1 - r(), v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }; }
+
+
+
+  const f2 = v => fmtS(v, 2), f3 = v => fmtS(v, 3), f1 = v => fmtS(v, 1);
+  const set = (id, h) => { const el = document.getElementById(id); if (el) el.innerHTML = h; };
+  const txt = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
+  const pfmt = p => p < 0.001 ? '< 0.001' : p.toFixed(3);
+  const ST = STUDENTS.map(([s, x, y, dev, caf]) => ({ s, x, y, dev, caf }));
+  const C = CLASS;
+
+  /* ---------- Part Five: simulation table ---------- */
+  (function () {
+    const a = BEER.c08, z = BEER.c0;
+    const rows = [
+      ['\u03b2\u0302 (simple: our price only)', a.b, z.b],
+      ['\u03b2\u0302\u2081 (multiple: our price)', a.b1, z.b1],
+      ['\u03b2\u0302\u2082 (multiple: competitor price)', a.b2, z.b2],
+      ['\u03b4\u0302 (competitor price on our price)', a.d, z.d],
+      ['\u03b2\u0302 \u2212 \u03b2\u0302\u2081 (the bias)', a.b - a.b1, z.b - z.b1],
+      ['\u03b4\u0302 \u00d7 \u03b2\u0302\u2082', a.d * a.b2, z.d * z.b2]];
+    document.querySelector('#beer-table tbody').innerHTML = rows.map(r => `<tr><td>${r[0]}</td><td>${f3(r[1])}</td><td>${f3(r[2])}</td></tr>`).join('');
+    set('beer-text', `With the prices correlated, the simple regression finds <strong>${f3(a.b)}</strong>, close to the \u22120.6 that equation (6) predicted, and nowhere near the true \u22123. The multiple regression recovers <strong>${f3(a.b1)}</strong> for our price and <strong>${f3(a.b2)}</strong> for the competitor's: close to \u22123 and 3. The auxiliary regression gives \u03b4\u0302 = ${f3(a.d)}, close to its population value of 0.8.`);
+    set('beer-int', `${f3(a.a)} = ${f3(a.b0)} + ${f3(a.b2)} \u00d7 (${f3(a.g)})`);
+    set('beer-ci', `<strong>${f2(a.lo)}</strong> to <strong>${f2(a.hi)}</strong>`);
+  })();
+
+  /* ---------- Figure 6.1: build your own OVB ---------- */
+  const ovA = document.getElementById('ov-a'), ovB1 = document.getElementById('ov-b1'), ovB2 = document.getElementById('ov-b2');
+  function renderOVB() {
+    const a = +ovA.value, b1 = +ovB1.value, b2 = +ovB2.value;
+    txt('ov-a-v', fmtS(a, 1)); txt('ov-b1-v', fmtS(b1, 1)); txt('ov-b2-v', fmtS(b2, 1));
+    const g = normalGen(42), n = 300;
+    const comp = d3.range(n).map(() => 2 * g()), u = d3.range(n).map(() => 1.2 * g()), v = d3.range(n).map(() => 2.5 * g());
+    const ours = comp.map((c, i) => a * c + u[i]);
+    const sales = ours.map((o, i) => b1 * o + b2 * comp[i] + v[i]);
+    const s = ols1(ours, sales), m = lstsq(ours.map((o, i) => [1, o, comp[i]]), sales), aux = ols1(ours, comp);
+    const bh = s.beta[1], b1h = m.beta[1], b2h = m.beta[2], dh = aux.beta[1];
+    const pts = ours.map((o, i) => ({ o, s: sales[i], c: comp[i] }));
+    const [x0, x1] = d3.extent(ours), mx = d3.mean(ours), my = d3.mean(sales);
+    const naive = [x0, x1].map(x => ({ x, y: s.beta[0] + bh * x }));
+    const held = [x0, x1].map(x => ({ x, y: my + b1h * (x - mx) }));
+    const svg = Plot.plot({ width: width('ovb-chart', 680), height: 360, marginLeft: 50, style: plotStyle(),
+      x: { label: 'Change in our price', grid: true }, y: { label: 'Change in sales', grid: true },
+      color: { type: 'diverging', scheme: 'PuOr', domain: [-6, 6], legend: true, label: 'Competitor price' },
+      marks: [Plot.dot(pts, { x: 'o', y: 's', fill: 'c', r: 3, fillOpacity: 0.8 }),
+              Plot.line(naive, { x: 'x', y: 'y', stroke: RED, strokeWidth: 3 }),
+              Plot.line(held, { x: 'x', y: 'y', stroke: BLUE, strokeWidth: 3, strokeDasharray: '7,5' })] });
+    mount('ovb-chart', accessibleChart(svg, `Simulated sales against our price, shaded by competitor price. The simple regression slope is ${bh.toFixed(2)}; the slope holding competitor price fixed is ${b1h.toFixed(2)}.`));
+    set('ovb-read', `True \u03b2\u2081 = <strong>${fmtS(b1, 1)}</strong> &middot; simple slope \u03b2\u0302 = <strong style="color:${RED}">${f2(bh)}</strong> &middot; multiple slope \u03b2\u0302\u2081 = <strong style="color:${BLUE}">${f2(b1h)}</strong><br>` +
+      `Bias \u03b2\u0302 \u2212 \u03b2\u0302\u2081 = <strong>${f2(bh - b1h)}</strong> &middot; \u03b4\u0302 \u00d7 \u03b2\u0302\u2082 = ${f2(dh)} \u00d7 ${f2(b2h)} = <strong>${f2(dh * b2h)}</strong>`);
+  }
+  [ovA, ovB1, ovB2].forEach(el => el.addEventListener('input', renderOVB));
+
+  /* ---------- Part Seven: class ---------- */
+  set('class-move-text', `The finger-length coefficient goes from <strong>${f2(C.b)}</strong> ms per mm on its own to <strong>${f2(C.b1)}</strong> once device and caffeine are in the model. Holding device and caffeine fixed, a student with one millimetre longer fingers has a mean reaction time about 22 ms higher on average. That's a move of about 3 ms: almost nothing next to a standard error of about ${Math.round(C.se_b1)} ms. None of the coefficients is statistically significant (finger length p = ${C.p_b1.toFixed(2)}, phone p = ${C.p_dev.toFixed(2)}, caffeine p = ${C.p_caf.toFixed(2)}).`);
+  (function () {
+    const rows = [{ m: 'Finger length only', b: C.b, se: C.se_b }, { m: '+ device and caffeine', b: C.b1, se: C.se_b1 }]
+      .map(d => ({ ...d, lo: d.b - 1.96 * d.se, hi: d.b + 1.96 * d.se }));
+    const svg = Plot.plot({ width: width('classcoef-chart', 620), height: 150, marginLeft: 160, style: plotStyle(),
+      x: { label: 'Coefficient on finger length (ms per mm)', grid: true }, y: { label: null },
+      marks: [Plot.ruleX([0], { stroke: GREY, strokeDasharray: '4,3' }),
+              Plot.link(rows, { x1: 'lo', x2: 'hi', y1: 'm', y2: 'm', stroke: BLUE, strokeWidth: 3 }),
+              Plot.dot(rows, { x: 'b', y: 'm', fill: RED, r: 6 })] });
+    mount('classcoef-chart', accessibleChart(svg, `Finger length coefficient ${C.b.toFixed(1)} alone and ${C.b1.toFixed(1)} with controls; both 95% intervals cross zero widely.`));
+  })();
+  set('class-ovb-formula', `$$\\underbrace{${C.b.toFixed(2)} - ${C.b1.toFixed(2)}}_{=\\,${(C.b - C.b1).toFixed(2)}} \\;=\\; \\underbrace{(${C.d_dev.toFixed(4)})(${C.b_dev.toFixed(1)})}_{\\text{device}\\;=\\;${(C.d_dev * C.b_dev).toFixed(2)}} \\;+\\; \\underbrace{(${C.d_caf.toFixed(4)})(${C.b_caf.toFixed(1)})}_{\\text{caffeine}\\;=\\;${(C.d_caf * C.b_caf).toFixed(2)}}$$`);
+  set('class-limit', `There are ${C.n} students in this regression. Only ${C.caf_yes} of them had caffeine, and just ${C.caf_phone} of those used a phone, so the caffeine coefficient rests on a handful of people. Every confidence interval contains zero, and the global F-test (Part Twelve) can't reject that all three slopes are zero. Even a genuine relationship would be very hard to detect with data like these.`);
+
+  /* ---------- Figure 6.3: multicollinearity ---------- */
+  const mcR = document.getElementById('mc-r');
+  const MC_N = 200, gA = normalGen(7), gB = normalGen(8), gE = normalGen(9);
+  const Z1 = d3.range(MC_N).map(() => gA()), Z2 = d3.range(MC_N).map(() => gB()), EE = d3.range(MC_N).map(() => gE());
+  function mcFit(r) {
+    const x1 = Z1, x2 = Z1.map((v, i) => r * v + Math.sqrt(1 - r * r) * Z2[i]);
+    const y = x1.map((v, i) => 2 * v + 1.5 * x2[i] + EE[i]);
+    const m = lstsq(x1.map((v, i) => [1, v, x2[i]]), y);
+    const sde = Math.sqrt(d3.sum(y.map((v, i) => (v - m.fit[i]) ** 2)) / (MC_N - 3));
+    const sdx = d3.deviation(x1) * Math.sqrt((MC_N - 1) / MC_N);
+    const r21 = ols1(x2, x1).r2;
+    return { x1, x2, b1: m.beta[1], se: sde / (Math.sqrt(MC_N) * sdx * Math.sqrt(1 - r21)), r21 };
+  }
+  const MC_CURVE = d3.range(0, 0.981, 0.02).map(r => ({ r, se: mcFit(r).se }));
+  function renderMC() {
+    const r = +mcR.value; txt('mc-r-v', r.toFixed(2));
+    const f = mcFit(r);
+    const pts = f.x1.map((v, i) => ({ x1: v, x2: f.x2[i], band: Math.abs(f.x2[i]) < 0.25 }));
+    const w = Math.min(width('mc-scatter', 330), 330);
+    const sc = Plot.plot({ width: w, height: 290, marginLeft: 44, style: plotStyle(),
+      x: { label: 'x\u2082', domain: [-3.5, 3.5], grid: true }, y: { label: 'x\u2081', domain: [-3.5, 3.5], grid: true },
+      marks: [Plot.rectX([{ a: -0.25, b: 0.25 }], { x1: 'a', x2: 'b', fill: RED, fillOpacity: 0.08 }),
+              Plot.dot(pts, { x: 'x2', y: 'x1', fill: d => d.band ? RED : GREY, r: d => d.band ? 3.5 : 2.5, fillOpacity: 0.8 })] });
+    const se = Plot.plot({ width: w, height: 290, marginLeft: 50, style: plotStyle(),
+      x: { label: 'Correlation between x\u2081 and x\u2082', domain: [0, 1], grid: true }, y: { label: 'SE(\u03b2\u0302\u2081)', grid: true, domain: [0, d3.max(MC_CURVE, d => d.se) * 1.05] },
+      marks: [Plot.line(MC_CURVE, { x: 'r', y: 'se', stroke: BLUE, strokeWidth: 2.5 }), Plot.dot([{ r, se: f.se }], { x: 'r', y: 'se', fill: RED, r: 6 })] });
+    mount('mc-scatter', accessibleChart(withLabel('x\u2081 against x\u2082', sc), `Scatter of x one against x two at correlation ${r.toFixed(2)}.`));
+    mount('mc-se', accessibleChart(withLabel('Standard error of \u03b2\u0302\u2081', se), `The standard error of beta one rises with the correlation; at ${r.toFixed(2)} it is ${f.se.toFixed(3)}.`));
+    const nb = pts.filter(d => d.band); const spread = nb.length > 1 ? d3.deviation(nb, d => d.x1) : 0;
+    set('mc-read', `R\u2081\u00b2 = <strong>${f.r21.toFixed(2)}</strong> &middot; VIF = <strong>${(1 / (1 - f.r21)).toFixed(1)}</strong> &middot; \u03b2\u0302\u2081 = <strong>${f.b1.toFixed(2)}</strong> (true 2) &middot; SE = <strong>${f.se.toFixed(3)}</strong> &middot; spread of x\u2081 in the red band: ${spread.toFixed(2)}`);
+  }
+  mcR.addEventListener('input', renderMC);
+
+  /* ---------- Part Nine: SE by hand ---------- */
+  const SH = SEHAND;
+  set('se-hand', `$$SE(\\hat\\beta_{\\text{finger}}) = \\frac{${SH.std_e.toFixed(1)}}{\\sqrt{${SH.n}}\\times ${SH.sdx.toFixed(2)}\\times\\sqrt{1-${SH.r2_1.toFixed(3)}}} = \\frac{${SH.std_e.toFixed(1)}}{${Math.sqrt(SH.n).toFixed(3)}\\times ${SH.sdx.toFixed(2)}\\times ${Math.sqrt(1 - SH.r2_1).toFixed(3)}} = ${SH.se_hand.toFixed(2)}$$`);
+  set('se-hand-text', `Here \\(Std[e] = ${SH.std_e.toFixed(1)}\\) ms is the standard deviation of the residuals, \\(Std[x_1] = ${SH.sdx.toFixed(2)}\\) mm is the standard deviation of finger length, and \\(R_1^2 = ${SH.r2_1.toFixed(3)}\\) comes from regressing finger length on device and caffeine (<code>smf.ols('finger_mm ~ device + caffeine', ...)</code>). The result, ${SH.se_hand.toFixed(2)}, is exactly the classical standard error statsmodels reports for this model. (The robust standard error is a little larger, ${C.se_b1.toFixed(2)}, because it doesn't assume homoskedasticity.) Device and caffeine explain only ${Math.round(SH.r2_1 * 100)}% of the variation in finger length, so \\(\\sqrt{1-R_1^2} = ${Math.sqrt(1 - SH.r2_1).toFixed(3)}\\) and the inflation is small: the SE is about ${Math.round((1 / Math.sqrt(1 - SH.r2_1) - 1) * 100)}% bigger than it would be if finger length were unrelated to the other two.`);
+  txt('vif-out', `device[T.Phone] ${VIF['device[T.Phone]'].toFixed(2)}\ncaffeine[T.Yes] ${VIF['caffeine[T.Yes]'].toFixed(2)}\nfinger_mm ${VIF['finger_mm'].toFixed(2)}`);
+
+  /* ---------- ratings ---------- */
+  const RT = RATINGS;
+  (function () {
+    const jit = mulberry32(3);
+    const pts = RATING_PTS.map(([a, b]) => ({ a: a + (jit() - 0.5) * 0.08, b: b + (jit() - 0.5) * 0.08 }));
+    const svg = Plot.plot({ width: width('ratings-chart', 520), height: 320, marginLeft: 50, style: plotStyle(),
+      x: { label: 'TripAdvisor rating (ratingta)', grid: true }, y: { label: 'Booking-site rating (rating)', grid: true },
+      marks: [Plot.dot(pts, { x: 'b', y: 'a', fill: BLUE, r: 3, fillOpacity: 0.6 })] });
+    mount('ratings-chart', accessibleChart(svg, `Two hotel ratings plotted against each other; correlation ${RT.corr.toFixed(2)}.`));
+  })();
+  set('ratings-intro', `They do. For the ${RT.n} hotels with both ratings, the correlation is <strong>${RT.corr.toFixed(2)}</strong>. With only two explanatory variables, \\(R_k^2\\) is simply the squared correlation, so the VIF for each is \\(1/(1-${RT.corr.toFixed(2)}^2) = ${RT.vif.toFixed(2)}\\). That's well below 10, but it's enough to see the effect. Regress log price on each rating alone, on both, and on a combined rating:`);
+  const cell = (b, se, p) => `${f3(b)}<br><span style="color:var(--ink-faint)">(${se.toFixed(3)})</span>`;
+  document.querySelector('#ratings-table tbody').innerHTML = [
+    `<tr><td>rating</td><td>${cell(RT.r1, RT.r1se)}</td><td></td><td>${cell(RT.b1, RT.b1se)}</td><td></td></tr>`,
+    `<tr><td>ratingta</td><td></td><td>${cell(RT.r2, RT.r2se)}</td><td>${cell(RT.b2, RT.b2se)}</td><td></td></tr>`,
+    `<tr><td>rating_z (average z-score)</td><td></td><td></td><td></td><td>${cell(RT.z, RT.zse)}</td></tr>`,
+    `<tr><td>R\u00b2</td><td>${RT.r2_1.toFixed(3)}</td><td>${RT.r2_2.toFixed(3)}</td><td>${RT.r2_b.toFixed(3)}</td><td>${RT.r2_z.toFixed(3)}</td></tr>`,
+    `<tr><td>N</td><td>${RT.n}</td><td>${RT.n}</td><td>${RT.n}</td><td>${RT.n}</td></tr>`].join('');
+  set('ratings-text', `Read across the table. On its own, each rating has a large, precise coefficient: one point higher on the booking site goes with prices about ${Math.round(RT.r1 * 100)} log points (roughly ${Math.round((Math.exp(RT.r1) - 1) * 100)}%) higher. Put both in together, column (3), and two things happen. Each coefficient shrinks, because each now measures the difference in price for a higher score on one site <em>holding the other site's score fixed</em> &ndash; a much narrower comparison. And each standard error grows: from ${RT.r1se.toFixed(3)} to ${RT.b1se.toFixed(3)} for <code>rating</code>, and from ${RT.r2se.toFixed(3)} to ${RT.b2se.toFixed(3)} for <code>ratingta</code>. That's the multicollinearity. R\u00b2 barely moves (${RT.r2_1.toFixed(3)} to ${RT.r2_b.toFixed(3)}): the second rating adds very little that the first didn't already capture. Here both coefficients stay significant, because 204 hotels is enough data; with fewer hotels, or more closely matched ratings, one or both could easily lose significance even though, jointly, they clearly matter (an F-test of both being zero gives F = ${RT.jf.toFixed(1)}, p < 0.001; Part Twelve).<br><br>Column (4) combines them. Each rating is turned into a z-score and the two are averaged into one quality measure. Its coefficient, ${f3(RT.z)}, means a hotel rated one standard deviation higher on both sites is about ${Math.round(RT.z * 100)}% more expensive, and its standard error is small (${RT.zse.toFixed(3)}). One clean, precise measure of quality, with almost the same R\u00b2 as using both.`);
+
+  /* ---------- Part Twelve: F ---------- */
+  txt('class-summary', CLASS_SUMMARY);
+  set('class-f-text', `Find <code>F-statistic: ${C.f.toFixed(3)}</code> and <code>Prob (F-statistic): ${C.f_p.toFixed(3)}</code> in the top right. The null hypothesis is that the slopes on finger length, device and caffeine are all zero. A p-value of ${C.f_p.toFixed(2)} means data like ours would be very common if none of the three variables mattered at all, so we can't reject the null. With ${C.n} students there is simply very little to go on. Every individual p-value is large too, so here the joint test and the individual tests agree.`);
+  txt('hotel-summary', HOTEL_F_SUMMARY);
+  set('hotel-f-text', `Here <code>F-statistic</code> is ${HOTEL_F.f.toFixed(1)} and <code>Prob (F-statistic)</code> is ${HOTEL_F.p.toExponential(2).replace('-', '\u2212')} &ndash; a decimal point followed by 17 zeros. The chance of an F this large if distance, stars and rating were all unrelated to price is essentially nil. We reject the null: together, the three variables clearly explain hotel prices. Each one is significant on its own as well. Same kind of test, very different data, very different answer.`);
+  set('hotel-subset-text', `This tests whether stars and rating are jointly zero, with distance left in the model. F = <strong>${HOTEL_F.j_f.toFixed(1)}</strong>, p < 0.001. Once distance is accounted for, quality still matters for price.`);
+
+  // F-distribution figure
+  function lgamma(z) { const g = 7, c = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+    if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - lgamma(1 - z);
+    z -= 1; let x = c[0]; for (let i = 1; i < g + 2; i++) x += c[i] / (z + i); const t = z + g + 0.5;
+    return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x); }
+  function fpdf(x, d1, d2) { const lb = lgamma(d1 / 2) + lgamma(d2 / 2) - lgamma((d1 + d2) / 2);
+    return Math.exp((d1 / 2) * Math.log(d1 / d2) + (d1 / 2 - 1) * Math.log(x) - ((d1 + d2) / 2) * Math.log(1 + d1 * x / d2) - lb); }
+  function renderF() {
+    const mode = document.querySelector('input[name="fcase"]:checked').value;
+    const cfg = mode === 'class' ? { d1: 3, d2: C.n - 4, F: C.f, crit: F_CRIT_CLASS, p: C.f_p, xmax: 6, lab: 'our class' }
+                                 : { d1: 2, d2: SPLINE.n - 4, F: SPLINE.f, crit: SPLINE.crit, p: SPLINE.p, xmax: 35, lab: 'the hotel spline' };
+    const curve = d3.range(0.02, cfg.xmax, cfg.xmax / 300).map(x => ({ x, y: fpdf(x, cfg.d1, cfg.d2) }));
+    const tail = curve.filter(d => d.x >= cfg.crit);
+    const ymax = d3.max(curve, d => d.y);
+    const svg = Plot.plot({ width: width('fdist-chart', 640), height: 280, marginLeft: 46, style: plotStyle(),
+      x: { label: `F with (${cfg.d1}, ${cfg.d2}) degrees of freedom`, domain: [0, cfg.xmax], grid: true }, y: { label: 'Density', domain: [0, Math.min(ymax, 1.2) * 1.05] },
+      marks: [Plot.areaY(tail, { x: 'x', y: 'y', fill: GREY, fillOpacity: 0.35 }),
+              Plot.line(curve, { x: 'x', y: 'y', stroke: NAVY, strokeWidth: 2 }),
+              Plot.ruleX([cfg.crit], { stroke: GREY, strokeDasharray: '5,4', strokeWidth: 2 }),
+              Plot.ruleX([cfg.F], { stroke: RED, strokeWidth: 3 })] });
+    mount('fdist-chart', accessibleChart(svg, `F distribution with ${cfg.d1} and ${cfg.d2} degrees of freedom. The 5 percent critical value is ${cfg.crit.toFixed(2)}; the observed F for ${cfg.lab} is ${cfg.F.toFixed(2)}.`));
+    set('fdist-read', `Observed F = <strong style="color:${RED}">${cfg.F.toFixed(2)}</strong> &middot; 5% critical value = <strong>${cfg.crit.toFixed(2)}</strong> &middot; p = <strong>${pfmt(cfg.p)}</strong> &middot; ${cfg.F > cfg.crit ? 'reject the null' : 'can\u2019t reject the null'}`);
+  }
+  document.querySelectorAll('input[name="fcase"]').forEach(el => el.addEventListener('change', renderF));
+
+  /* ---------- Part Thirteen: spline ---------- */
+  const S = SPLINE;
+  txt('spline-summary', SPLINE_SUMMARY);
+  set('spline-slopes', `$$\\begin{aligned}
+\\text{first mile:}\\quad & \\hat\\beta_1 = ${f2(S.s1)} \\\\
+\\text{1 to 4 miles:}\\quad & \\hat\\beta_1+\\hat\\beta_2 = ${f2(S.d)} + ${f2(S.b1)} = ${f2(S.s2)} \\\\
+\\text{beyond 4 miles:}\\quad & \\hat\\beta_1+\\hat\\beta_2+\\hat\\beta_3 = ${f2(S.d)} + ${f2(S.b1)} + ${f2(S.b4)} = ${f2(S.s3)}
+\\end{aligned}$$`.replace(/\u2212/g, '-'));
+  const HO = HOTELS.map(([d, p, s]) => ({ d, p, s }));
+  function renderSpline() {
+    const mode = document.querySelector('input[name="spl"]:checked').value;
+    const knots = mode === 'lin' ? [] : mode === 'k1' ? [1] : [1, 4];
+    const row = d => [1, d, ...knots.map(k => Math.max(d - k, 0))];
+    const f = lstsq(HO.map(h => row(h.d)), HO.map(h => h.p));
+    const [x0, x1] = d3.extent(HO, h => h.d);
+    const line = d3.range(x0, x1 + 1e-9, (x1 - x0) / 200).map(d => ({ d, p: d3.sum(row(d).map((v, j) => v * f.beta[j])) }));
+    const svg = Plot.plot({ width: width('spline-chart', 680), height: 340, marginLeft: 50, style: plotStyle(),
+      x: { label: 'Distance from the city centre (miles)', grid: true }, y: { label: 'Price (\u20ac)', grid: true },
+      marks: [Plot.dot(HO, { x: 'd', y: 'p', fill: BLUE, r: 3, fillOpacity: 0.5 }),
+              ...knots.map(k => Plot.ruleX([k], { stroke: GREY, strokeDasharray: '5,4' })),
+              Plot.line(line, { x: 'd', y: 'p', stroke: RED, strokeWidth: 3 })] });
+    mount('spline-chart', accessibleChart(svg, `Hotel price against distance with a ${mode === 'lin' ? 'straight line' : 'spline'} fit, R squared ${f.r2.toFixed(3)}.`));
+    let slopes = [f.beta[1]]; for (let j = 2; j < f.beta.length; j++) slopes.push(slopes[slopes.length - 1] + f.beta[j]);
+    const labs = knots.length === 0 ? ['every mile'] : knots.length === 1 ? ['first mile', 'beyond 1 mile'] : ['first mile', '1\u20134 miles', 'beyond 4 miles'];
+    set('spline-read', `R\u00b2 = <strong>${f.r2.toFixed(3)}</strong> &middot; slope: ` + slopes.map((s, i) => `${labs[i]} <strong>${fmtS(s, 1)}</strong> \u20ac/mile`).join(' &middot; '));
+  }
+  document.querySelectorAll('input[name="spl"]').forEach(el => el.addEventListener('change', renderSpline));
+  set('spline-hand-intro', `For the classical F, fit both models and take their R\u00b2. The straight line has \\(R^2_R = ${S.r2_lin.toFixed(3)}\\). The spline with knots at 1 and 4 miles has \\(R^2_U = ${S.r2_14.toFixed(3)}\\). There are \\(n = ${S.n}\\) hotels, \\(k = 3\\) slopes in the unrestricted model, and \\(q = 2\\) restrictions:`);
+  set('spline-hand', `$$F = \\frac{(${S.r2_14.toFixed(4)} - ${S.r2_lin.toFixed(4)})/2}{(1-${S.r2_14.toFixed(4)})/(${S.n}-3-1)} = \\frac{${((S.r2_14 - S.r2_lin) / 2).toFixed(4)}}{${((1 - S.r2_14) / (S.n - 4)).toFixed(5)}} = ${S.f_r2.toFixed(1)}$$`);
+  set('spline-hand-text', `Adding the two bends nearly doubles R\u00b2, and the F-statistic is ${S.f_r2.toFixed(1)}. Under the null it would follow an F-distribution with 2 and ${S.n - 4} degrees of freedom, whose 5% critical value is ${S.crit.toFixed(2)}. Our F is many times larger (flip Figure 6.5 to the hotel case to see where it lands), and the p-value is far below 0.001. We reject the null: a straight line is not enough, and hotel prices do not fall at the same rate at every distance.`);
+  set('spline-robust-text', `The robust version, which is what statsmodels reports for a model fitted with <code>cov_type='HC1'</code>, gives F = <strong>${S.f.toFixed(1)}</strong>, p < 0.001. It differs from the hand calculation because it allows for heteroskedasticity, but the conclusion is identical.`);
+  set('spline-k4-text', `F = <strong>${S.f4.toFixed(1)}</strong>, p = ${S.p4.toFixed(3)}, so the second bend is statistically significant too. But look at what it adds. R\u00b2 goes from ${S.r2_1.toFixed(3)} with one knot to ${S.r2_14.toFixed(3)} with two &ndash; less than one percentage point. And only <strong>${S.n_out}</strong> of the ${S.n} hotels are more than 4 miles out (${S.n_in1} are within the first mile, ${S.n_mid} between 1 and 4). The positive slope beyond 4 miles (${fmtS(S.s3, 1)} \u20ac/mile) is the line chasing those eight hotels, not evidence that prices rise as you leave the city.`);
+
+  /* ---------- Part Fifteen: pay gap ---------- */
+  const E = EDU, star = p => p < 0.01 ? '***' : p < 0.05 ? '**' : p < 0.1 ? '*' : '';
+  (function () {
+    const ed = (ref, c) => E[ref][c] ? `${f3(E[ref][c].b)}${star(E[ref][c].p)}` : '';
+    const r = AGE_OVB;
+    document.querySelector('#gap-table tbody').innerHTML = [
+      `<tr><td>female</td><td>${f3(r.b)}***</td><td>${f3(E.MA.female)}***</td><td>${f3(E.PhD.female)}***</td></tr>`,
+      `<tr><td>ed: Professional</td><td></td><td>${ed('MA', 'Professional')}</td><td>${ed('PhD', 'Professional')}</td></tr>`,
+      `<tr><td>ed: PhD</td><td></td><td>${ed('MA', 'PhD')}</td><td></td></tr>`,
+      `<tr><td>ed: MA</td><td></td><td></td><td>${ed('PhD', 'MA')}</td></tr>`,
+      `<tr><td>Constant</td><td>3.514***</td><td>${f3(E.MA.const)}***</td><td>${f3(E.PhD.const)}***</td></tr>`,
+      `<tr><td>N</td><td>${r.n.toLocaleString('en-GB')}</td><td>${r.n.toLocaleString('en-GB')}</td><td>${r.n.toLocaleString('en-GB')}</td></tr>`].join('');
+    set('gap-text', `Column (1) is the raw gap: women in this sample earn about ${Math.round(-r.b * 100)} log points less per hour than men, roughly ${Math.round((1 - Math.exp(r.b)) * 100)}% less. Add education and the female coefficient barely changes, to ${f3(E.MA.female)}: comparing a man and a woman with the same degree, the woman earns about ${Math.round((1 - Math.exp(E.MA.female)) * 100)}% less on average. With MA as the reference, a PhD goes with wages about ${Math.round(E.MA.PhD.b * 100)}% higher than an MA, and a professional degree about ${Math.round(E.MA.Professional.b * 100)}% higher, holding gender fixed. Switch the reference to PhD and the MA coefficient becomes ${f3(E.PhD.MA.b)}: the same comparison, seen from the other end. The professional-versus-PhD difference is ${f3(E.PhD.Professional.b)} with p = ${E.PhD.Professional.p.toFixed(2)}, indistinguishable from zero. The MA is the natural reference on both guides here: it's the lowest graduate degree, and with ${E.MA ? EDU_N.MA.toLocaleString('en-GB') : ''} people it's by far the largest group (${EDU_N.PhD.toLocaleString('en-GB')} PhDs, ${EDU_N.Professional.toLocaleString('en-GB')} professional degrees).`);
+  })();
+  function renderEdu() {
+    const ref = document.querySelector('input[name="eduref"]:checked').value;
+    const cats = ['MA', 'Professional', 'PhD'];
+    const rows = cats.map(c => c === ref ? { c, b: 0, lo: 0, hi: 0, ref: true } : { c, b: E[ref][c].b, lo: E[ref][c].b - 1.96 * E[ref][c].se, hi: E[ref][c].b + 1.96 * E[ref][c].se, ref: false });
+    const svg = Plot.plot({ width: width('edu-chart', 600), height: 220, marginLeft: 100, style: plotStyle(),
+      x: { label: `Difference in ln(wage) from ${ref}, holding gender fixed`, domain: [-0.2, 0.2], grid: true }, y: { label: null, domain: cats },
+      marks: [Plot.ruleX([0], { stroke: NAVY }),
+              Plot.barX(rows.filter(d => !d.ref), { x: 'b', y: 'c', fill: BLUE, fillOpacity: 0.7 }),
+              Plot.link(rows.filter(d => !d.ref), { x1: 'lo', x2: 'hi', y1: 'c', y2: 'c', stroke: NAVY, strokeWidth: 2 }),
+              Plot.text(rows.filter(d => d.ref), { x: 0, y: 'c', text: () => 'reference', dx: 40, fill: 'var(--ink-faint)' })] });
+    mount('edu-chart', accessibleChart(svg, `Education coefficients relative to ${ref}: ` + rows.filter(d => !d.ref).map(d => `${d.c} ${d.b.toFixed(3)}`).join(', ')));
+  }
+  document.querySelectorAll('input[name="eduref"]').forEach(el => el.addEventListener('change', renderEdu));
+  (function () {
+    const r = AGE_OVB;
+    set('age-ovb', `$$\\underbrace{(${f3(r.b)}) - (${f3(r.b1)})}_{\\hat\\beta-\\hat\\beta_1\\;=\\;${(r.b - r.b1).toFixed(4)}} \\;=\\; \\underbrace{(${r.d.toFixed(3)})}_{\\hat\\delta}\\times\\underbrace{(${r.b2.toFixed(4)})}_{\\hat\\beta_2} \\;=\\; ${(r.d * r.b2).toFixed(4)}$$`.replace(/\u2212/g, '-'));
+    set('age-text', `The female coefficient moves from ${f3(r.b)} to ${f3(r.b1)}. The auxiliary regression of age on female gives \u03b4\u0302 = ${r.d.toFixed(2)}: women in the sample are about ${Math.abs(r.d).toFixed(1)} years younger on average (${r.age_f.toFixed(1)} against ${r.age_m.toFixed(1)}). Each extra year of age goes with wages about ${(r.b2 * 100).toFixed(1)}% higher (\u03b2\u0302\u2082 = ${r.b2.toFixed(4)}). Multiply them and you get the bias exactly. Both signs line up with the table in Part Four: \u03b4 is negative and \u03b2\u2082 is positive, so the bias is negative, and leaving age out makes the gap look slightly larger than it is. Age is a confounder, but a weak one. It accounts for about one percentage point of a 20% gap &ndash; roughly a twentieth of it. Part of women's earnings disadvantage in this data is because they are a little younger on average; almost all of it is not.`);
+  })();
+
+  /* ---------- Figure 6.8: interaction tool ---------- */
+  const itB2 = document.getElementById('it-b2'), itB3 = document.getElementById('it-b3');
+  function renderInterTool() {
+    const b2 = +itB2.value, b3 = +itB3.value, b0 = 2, b1 = 0.6;
+    txt('it-b2-v', fmtS(b2, 1)); txt('it-b3-v', fmtS(b3, 1));
+    const pts = d3.range(0, 10.01, 0.5).flatMap(x => [{ x, y: b0 + b1 * x, g: 'D = 0' }, { x, y: (b0 + b2) + (b1 + b3) * x, g: 'D = 1' }]);
+    const svg = Plot.plot({ width: width('intertool-chart', 640), height: 300, marginLeft: 44, style: plotStyle(), clip: true,
+      x: { label: 'x\u2081', domain: [0, 10], grid: true }, y: { label: 'y', domain: [-6, 22], grid: true },
+      color: { legend: true, domain: ['D = 0', 'D = 1'], range: [BLUE, RED] },
+      marks: [Plot.ruleX([0], { stroke: GREY }), Plot.line(pts, { x: 'x', y: 'y', stroke: 'g', strokeWidth: 3 })] });
+    mount('intertool-chart', accessibleChart(svg, `Two lines: D equals 0 with intercept 2 and slope 0.6; D equals 1 with intercept ${(b0 + b2).toFixed(1)} and slope ${(b1 + b3).toFixed(1)}.`));
+    set('intertool-read', `D = 0: intercept <strong>2.0</strong>, slope <strong>0.6</strong> &middot; D = 1: intercept <strong>${fmtS(b0 + b2, 1)}</strong>, slope <strong>${fmtS(b1 + b3, 1)}</strong>${b3 === 0 ? ' &middot; parallel: no interaction' : ''}`);
+  }
+  [itB2, itB3].forEach(el => el.addEventListener('input', renderInterTool));
+
+  /* ---------- Part Seventeen ---------- */
+  const CI = CLASS_INTER;
+  txt('inter-summary', CLASS_INTER_SUMMARY);
+  set('inter-text', `Read it with the structural model. <code>finger_mm</code> (${f1(CI.b1)}) is now the slope for the reference group, laptop users: longer fingers go with slower reactions among them. The interaction <code>finger_mm:device[T.Phone]</code> (${f2(CI.b3)}) is how much steeper or flatter the slope is for phone users, so their slope is ${f1(CI.b1)} + (${f2(CI.b3)}) = <strong>${f1(CI.b1 + CI.b3)}</strong>: the opposite direction. The <code>device[T.Phone]</code> coefficient (${f1(CI.b2)}) is the phone&ndash;laptop gap at a finger length of zero, which is meaningless. But the interaction's p-value is ${CI.p3.toFixed(2)}, so we can't reject that the two slopes are the same.`);
+  function renderClassInter() {
+    const show = document.getElementById('ci-bands').checked;
+    const B = CLASS_BANDS.map(([x, fit, lo, hi, g]) => ({ x, fit, lo, hi, g }));
+    const svg = Plot.plot({ width: width('classinter-chart', 680), height: 340, marginLeft: 56, style: plotStyle(), clip: true,
+      x: { label: 'Finger length (mm)', grid: true }, y: { label: 'Mean reaction time (ms)', domain: [-2000, 4500], grid: true },
+      color: { legend: true, domain: ['Laptop', 'Phone'], range: [BLUE, RED] },
+      marks: [show ? Plot.areaY(B, { x: 'x', y1: 'lo', y2: 'hi', fill: 'g', fillOpacity: 0.18 }) : null,
+              Plot.dot(ST, { x: 'x', y: 'y', stroke: 'dev', r: 4, strokeWidth: 1.8 }),
+              Plot.line(B, { x: 'x', y: 'fit', stroke: 'g', z: 'g', strokeWidth: 2.5 })] });
+    mount('classinter-chart', accessibleChart(svg, `Reaction time against finger length with separate fitted lines for laptop and phone users${show ? '; the confidence bands overlap almost everywhere' : ''}.`));
+  }
+  document.getElementById('ci-bands').addEventListener('change', renderClassInter);
+  (function () {
+    const B = HOTEL_BANDS.map(([x, fit, lo, hi, g]) => ({ x, fit, lo, hi, g }));
+    const pts = HOTELS.map(([d, p, s]) => ({ d, p, g: s >= 4 ? '4 stars' : '3 stars' }));
+    const svg = Plot.plot({ width: width('hotelinter-chart', 680), height: 320, marginLeft: 50, style: plotStyle(), clip: true,
+      x: { label: 'Distance from the city centre (miles)', grid: true }, y: { label: 'Price (\u20ac)', domain: [0, 300], grid: true },
+      color: { legend: true, domain: ['3 stars', '4 stars'], range: [BLUE, RED] },
+      marks: [Plot.dot(pts, { x: 'd', y: 'p', stroke: 'g', r: 2.5, strokeOpacity: 0.45 }),
+              Plot.areaY(B, { x: 'x', y1: 'lo', y2: 'hi', fill: 'g', fillOpacity: 0.2 }),
+              Plot.line(B, { x: 'x', y: 'fit', stroke: 'g', z: 'g', strokeWidth: 2.5 })] });
+    mount('hotelinter-chart', accessibleChart(svg, 'Price against distance for three- and four-star hotels; the four-star line falls more steeply and the bands separate near the centre.'));
+    const H = HOTEL_INTER;
+    set('hotelinter-text', `For three-star hotels (the reference), each extra mile goes with a price about <strong>\u20ac${Math.abs(H.b3).toFixed(1)}</strong> lower. For four-star hotels it's about <strong>\u20ac${Math.abs(H.b4).toFixed(1)}</strong> lower: \u2212${Math.abs(H.b3).toFixed(1)} plus the interaction, \u2212${Math.abs(H.inter).toFixed(1)}. The interaction has p = ${H.p.toFixed(3)}, so the slopes really do differ. Near the centre, four-star hotels charge about \u20ac${Math.round(H.b2)} more (the <code>four</code> coefficient, which here is meaningful, because zero distance is the city centre). With ${H.n3} three-star and ${H.n4} four-star hotels, the bands are clearly apart near the centre and meet at around 3 miles, where the four-star premium has gone. Location seems to be a bigger part of what you pay for at a four-star hotel.`);
+  })();
+  (function () {
+    const G = GAP_INTER;
+    document.querySelector('#gapinter-table tbody').innerHTML = [
+      ['female', G.f, G.p_f], ['age', G.age, 0], ['female \u00d7 age', G.fa, G.p_fa], ['Constant', G.b0, 0]]
+      .map(([l, b, p]) => `<tr><td>${l}</td><td>${fmtS(b, 4)}</td><td>${pfmt(p)}</td></tr>`).join('');
+    set('gapinter-puzzle', `The female coefficient is now ${f3(G.f)}, with p = ${G.p_f.toFixed(2)}: not even distinguishable from zero. Has the gender pay gap disappeared? No. The interaction, ${fmtS(G.fa, 4)}, is strongly significant (p < 0.001).`);
+    const B = GAP_BANDS.map(([x, fit, lo, hi, g]) => ({ x, fit, lo, hi, g }));
+    const w = Math.min(width('gapage-lines', 330), 330);
+    const l = Plot.plot({ width: w, height: 280, marginLeft: 48, style: plotStyle(),
+      x: { label: 'Age', grid: true }, y: { label: 'ln(hourly wage)', grid: true },
+      color: { legend: true, domain: ['Men', 'Women'], range: [BLUE, RED] },
+      marks: [Plot.areaY(B, { x: 'x', y1: 'lo', y2: 'hi', fill: 'g', fillOpacity: 0.25 }), Plot.line(B, { x: 'x', y: 'fit', stroke: 'g', z: 'g', strokeWidth: 2.5 })] });
+    const P = GAP_POLY.map(([a, g]) => ({ a, g: g * 100 }));
+    const r = Plot.plot({ width: w, height: 280, marginLeft: 48, style: plotStyle(),
+      x: { label: 'Age', grid: true }, y: { label: 'Gap in log points \u00d7 100', domain: [-30, 0], grid: true },
+      marks: [Plot.ruleY([0], { stroke: GREY }), Plot.line(P, { x: 'a', y: 'g', stroke: RED, strokeWidth: 2.5 })] });
+    mount('gapage-lines', accessibleChart(withLabel('Linear interaction', l), 'Fitted log wage by age for men and women; the lines start close at 24 and diverge with age.'));
+    mount('gapage-gap', accessibleChart(withLabel('Gap by age, flexible model', r), 'The gender gap in log wages by age from a fourth-order polynomial model: about 10 at 25 to 30, widening to about 25 around age 50, then narrowing slightly.'));
+    const at = a => (G.f + G.fa * a) * 100;
+    const pg = a => GAP_POLY.find(d => d[0] === a)[1] * 100;
+    set('gapage-text', `In the linear model, men's log wage rises by about ${(G.age * 100).toFixed(1)}% per year of age and women's by about ${((G.age + G.fa) * 100).toFixed(1)}%. So the lines start close together and pull apart: the gap is about ${Math.round(-at(25))} log points at 25, ${Math.round(-at(45))} at 45 and ${Math.round(-at(64))} at 64. A single female coefficient could never show this shape. The more flexible model on the right tells a richer version of the same story, close to the textbook's: a gap of about ${Math.round(-pg(25))}% at 25&ndash;30, widening to about ${Math.round(-pg(40))}% by 40 and ${Math.round(-pg(50))}% by 50, then narrowing a little towards 60. The bands on the left are narrow because there are over 18,000 people. This is what an interaction looks like when the data can show it.`);
+  })();
+
+  /* ---------- Part Eighteen ---------- */
+  txt('results-md', RESULTS_MD);
+  function renderYhat() {
+    const mode = document.querySelector('input[name="yhat"]:checked').value;
+    const rows = mode === 'hotels' ? HOTEL_YHAT.map(([yh, y, deal]) => ({ yh, y, deal })) : CLASS_YHAT.map(([yh, y]) => ({ yh, y, deal: 0 }));
+    const lo = d3.min(rows, d => Math.min(d.yh, d.y)), hi = d3.max(rows, d => Math.max(d.yh, d.y)), pad = (hi - lo) * 0.04;
+    const dom = [lo - pad, hi + pad];
+    const svg = Plot.plot({ width: width('yhat-chart', 560), height: 400, marginLeft: 56, style: plotStyle(),
+      x: { label: mode === 'hotels' ? 'Predicted ln(price)' : 'Predicted mean reaction time (ms)', domain: dom, grid: true },
+      y: { label: mode === 'hotels' ? 'Actual ln(price)' : 'Actual mean reaction time (ms)', domain: dom, grid: true },
+      marks: [Plot.line([{ x: dom[0], y: dom[0] }, { x: dom[1], y: dom[1] }], { x: 'x', y: 'y', stroke: GREY, strokeDasharray: '5,4' }),
+              Plot.dot(rows, { x: 'yh', y: 'y', fill: d => d.deal ? RED : NAVY, r: d => d.deal ? 6 : 3.5, fillOpacity: 0.7 })] });
+    mount('yhat-chart', accessibleChart(svg, mode === 'hotels' ? 'Predicted against actual log hotel price; points cluster around the 45 degree line, five deals highlighted below it.' : 'Predicted against actual reaction time for 24 students; predictions bunch in a narrow band while actual values spread widely.'));
+    set('yhat-read', mode === 'hotels' ? `R\u00b2 = <strong>${HOTEL_FULL.r2.toFixed(2)}</strong>, ${HOTEL_FULL.n} hotels` : `R\u00b2 = <strong>${C.r2.toFixed(3)}</strong>, ${C.n} students`);
+  }
+  document.querySelectorAll('input[name="yhat"]').forEach(el => el.addEventListener('change', renderYhat));
+  set('yhat-text', `Flip between the two. The hotel points follow the diagonal reasonably well (R\u00b2 ${HOTEL_FULL.r2.toFixed(2)}), with the cheapest-relative-to-prediction hotels standing out below it. These five are the textbook's &ldquo;good deals&rdquo;, and the model reproduces its list exactly: hotels ${DEALS.map(d => d[0]).join(', ')}. For our class, every prediction sits in a narrow band while the actual reaction times range from a few hundred to over 3,000 ms. The model barely distinguishes one student from another: no use to HR for predicting an individual.`);
+
+  /* ---------- Part Nineteen: bad controls ---------- */
+  (function () {
+    const labs = ['sales ~ adv', 'sales ~ adv + season', 'sales ~ adv + season + views'];
+    const rows = BAD.map((d, i) => ({ ...d, m: labs[i] }));
+    const svg = Plot.plot({ width: width('bad-chart', 620), height: 190, marginLeft: 200, style: plotStyle(),
+      x: { label: 'Coefficient on advertising', domain: [-1, 5], grid: true }, y: { label: null, domain: labs },
+      marks: [Plot.ruleX([3], { stroke: GREEN, strokeDasharray: '6,4', strokeWidth: 2 }), Plot.ruleX([0], { stroke: GREY }),
+              Plot.link(rows, { x1: 'lo', x2: 'hi', y1: 'm', y2: 'm', stroke: BLUE, strokeWidth: 3 }),
+              Plot.dot(rows, { x: 'b', y: 'm', fill: RED, r: 6 })] });
+    mount('bad-chart', accessibleChart(svg, `Advertising coefficient: ${BAD[0].b.toFixed(2)} with no controls, ${BAD[1].b.toFixed(2)} controlling for season, ${BAD[2].b.toFixed(2)} also controlling for views. The true effect is 3.`));
+    set('bad-text', `With no controls, the coefficient is <strong>${f2(BAD[0].b)}</strong>: too high, because busy seasons bring both more advertising and more sales, and the regression credits some of the season to advertising. Control for the season, the confounder, and it falls to <strong>${f2(BAD[1].b)}</strong>, close to the true 3. Now also control for views, the bad control, and it collapses to <strong>${f2(BAD[2].b)}</strong>. Holding views fixed has blocked the very channel through which advertising works, and the regression concludes that advertising does nothing. Meanwhile R\u00b2 has gone <em>up</em>, from ${BAD[1].r2.toFixed(2)} to ${BAD[2].r2.toFixed(2)}. A better fit, and a worse answer.`);
+  })();
+
+  /* ---------- initial render ---------- */
+  renderOVB(); renderMC(); renderF(); renderSpline(); renderEdu(); renderInterTool(); renderClassInter(); renderYhat();
+  window.addEventListener('resize', () => { renderOVB(); renderMC(); renderF(); renderSpline(); renderEdu(); renderInterTool(); renderClassInter(); renderYhat(); });
+
+
+  /* ================= Chapter nav =================
+     Hardcoded -- add a new entry here (and to every other chapter's own copy
+     of this array) when the next chapter exists. */
+  const CHAPTERS = [
+    { href: 'week1-lecture-notes.html', num: 'One', title: 'Distributions &amp; Summarising Data' },
+    { href: 'week2-lecture-notes.html', num: 'Two', title: 'Inference: When Is a Difference Real?' },
+    { href: 'week3-lecture-notes.html', num: 'Three', title: 'When y Met x: Correlation and Covariance' },
+    { href: 'week4-lecture-notes.html', num: 'Four', title: 'Regression I: Fitting the Line' },
+    { href: 'week5-lecture-notes.html', num: 'Five', title: 'Model Problems &amp; Inference' },
+    { href: 'week6-lecture-notes.html', num: 'Six', title: 'Multiple Regression' },
+  ];
+  const CURRENT_CHAPTER_HREF = 'week6-lecture-notes.html';
+  function buildChapterNav(container) {
+    const wrap = document.createElement('div');
+    wrap.className = 'toc-block chapter-nav';
+    const label = document.createElement('span');
+    label.className = 'toc-label';
+    label.textContent = 'Chapters';
+    wrap.appendChild(label);
+    const ol = document.createElement('ol');
+    ol.className = 'chapter-list';
+    CHAPTERS.forEach(c => {
+      const li = document.createElement('li');
+      const isCurrent = c.href === CURRENT_CHAPTER_HREF;
+      const el = document.createElement(isCurrent ? 'span' : 'a');
+      if (!isCurrent) el.href = c.href;
+      el.className = 'chapter-link' + (isCurrent ? ' current' : '');
+      el.innerHTML = `<strong>Chapter ${c.num}</strong><span class="chapter-sub">${c.title}</span>`;
+      li.appendChild(el);
+      ol.appendChild(li);
+    });
+    wrap.appendChild(ol);
+    container.appendChild(wrap);
+  }
+
+  /* ================= TOC ================= */
+  const sections = [...document.querySelectorAll('section.chapter')].map(s => ({
+    id: s.id, title: s.querySelector('h2').textContent
+  }));
+  function buildTOC(container) {
+    buildChapterNav(container);
+    const label = document.createElement('span');
+    label.className = 'toc-label';
+    label.textContent = 'Contents';
+    container.appendChild(label);
+    const ol = document.createElement('ol');
+    sections.forEach(s => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = '#' + s.id; a.textContent = s.title; a.dataset.id = s.id;
+      li.appendChild(a); ol.appendChild(li);
+    });
+    container.appendChild(ol);
+  }
+  buildTOC(document.getElementById('toc'));
+  buildTOC(document.getElementById('toc-mobile'));
+
+  const allTocLinks = () => [...document.querySelectorAll('nav.toc a')];
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        allTocLinks().forEach(a => a.classList.toggle('active', a.dataset.id === id));
+      }
+    });
+  }, { rootMargin: '-10% 0px -70% 0px' });
+  sections.forEach(s => io.observe(document.getElementById(s.id)));
+
+})();
+</script>
+
+</body>
+</html>
