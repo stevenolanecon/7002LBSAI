@@ -449,7 +449,10 @@
 
 <p>Suppose the true model has two explanatory variables, but we only fit a regression with the first one. Write the two side by side:</p>
 
-<div class="formula-block">$$\textbf{Simple (what we fit):}\quad y^E = \alpha + \beta\, x_1 \qquad\qquad \textbf{Multiple (the truth):}\quad y^E = \beta_0 + \beta_1 x_1 + \beta_2 x_2$$</div>
+<div class="formula-block">$$\begin{aligned}
+\textbf{Simple (what we fit):}&\quad y^E = \alpha + \beta\, x_1\\[6pt]
+\textbf{Multiple (the truth):}&\quad y^E = \beta_0 + \beta_1 x_1 + \beta_2 x_2
+\end{aligned}$$</div>
 
 <p>We care about the effect of \(x_1\). The question is how far \(\beta\), the slope we estimate when \(x_2\) is missing, is from \(\beta_1\), the slope we would get if \(x_2\) were included. The answer depends on how \(x_1\) and \(x_2\) are related, so we need a way to describe that relationship.</p>
 
