@@ -71,10 +71,10 @@ weeks = [
          ("Online session", "week6-online-slides.html", False),
      ]},
     {"n": 7, "note": "Curriculum Enrichment Week — no session"},
-    {"n": 8, "topic": "Other Models (GLMs)", "status": "pending",
+    {"n": 8, "topic": "Other Models (GLMs)", "status": "live",
      "links": [
          ("Workshop slides", "week8-slides.html", False),
-         ("Online session", "week8-online-slides.html", False),
+         ("Workshop slides (no answers)", "week8-slides-no-answers.html", False),
      ]},
     {"n": 9, "topic": "Causal Analysis and Experiments", "status": "pending",
      "links": [

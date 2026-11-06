@@ -1,0 +1,737 @@
+---
+title: "GLMs — Binary Outcomes"
+subtitle: "7002LBSAI Research Methods in Analytics — Week 8"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="stylesheet" href="styles-slides.css?v=20260914-2">
+    menu:
+      useTextContentForMissingTitles: false
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{python}
+import pandas as pd
+import numpy as np
+import statsmodels.formula.api as smf
+import marginaleffects as me
+
+# Bekes & Kezdi's Ch.11 case study — "Does smoking pose a health risk?"
+# Source: SHARE (Survey of Health, Ageing and Retirement in Europe), via their
+# official case-study pipeline (osf.io/download/kbjzp), cleaned offline to
+# their exact published sample: age 50-60, healthy at baseline, N=3,112
+# (published N=3,109 — the handful-row gap is a EasySHARE data-version update
+# since publication, not a pipeline difference; every coefficient reproduces closely).
+# GitHub raw URL (once pushed to the student data repo):
+# share_df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/share_health.csv")
+share_df = pd.read_csv("data/share_health.csv")
+share_df["country"] = share_df["country"].astype(str).astype("category")   # text labels: marginaleffects needs a non-numeric category
+
+# country is a categorical column, so it enters the formula as plain `country`
+# (statsmodels makes the dummies). Writing C(country) instead breaks marginaleffects.
+f_full = "stayshealthy ~ smoking + ever_smoked + female + age + eduyears + income10 + bmi + exerc + country"
+
+uni_model = smf.ols("stayshealthy ~ smoking", data=share_df).fit(cov_type="HC1")
+
+lpm_full = smf.ols(f_full, data=share_df).fit(cov_type="HC1")
+logit_full = smf.logit(f_full, data=share_df).fit(disp=0, cov_type="HC1")
+probit_full = smf.probit(f_full, data=share_df).fit(disp=0, cov_type="HC1")
+
+def _stars(p):
+    return "***" if p < 0.01 else "**" if p < 0.05 else "*" if p < 0.1 else ""
+
+_labels = {"smoking": "Current smoker", "ever_smoked": "Ever smoked", "female": "Female",
+           "age": "Age", "eduyears": "Years of education", "income10": "Income group",
+           "bmi": "BMI", "exerc": "Exercises regularly", "Intercept": "Constant"}
+_order = ["smoking", "ever_smoked", "female", "age", "eduyears", "income10", "bmi", "exerc", "Intercept"]
+
+results_rows = [
+    {"variable": _labels[v],
+     "lpm": f"{lpm_full.params[v]:.3f}{_stars(lpm_full.pvalues[v])}",
+     "logit": f"{logit_full.params[v]:.3f}{_stars(logit_full.pvalues[v])}",
+     "probit": f"{probit_full.params[v]:.3f}{_stars(probit_full.pvalues[v])}"}
+    for v in _order
+]
+results_n = int(lpm_full.nobs)
+
+# LPM range problem — real, with country controls included
+lpm_pred = lpm_full.predict(share_df)
+lpm_pred_min = round(lpm_pred.min(), 3)
+lpm_pred_max = round(lpm_pred.max(), 4)
+n_above_1 = int((lpm_pred > 1).sum())
+
+# Numbers quoted in the slide text
+key = {"uni_pp": round(-uni_model.params["smoking"] * 100, 1),
+       "lpm": round(lpm_full.params["smoking"], 3), "logit": round(logit_full.params["smoking"], 3),
+       "probit": round(probit_full.params["smoking"], 3), "lpm_pp": round(-lpm_full.params["smoking"] * 100, 1)}
+_uci = uni_model.conf_int().loc["smoking"]
+key.update({"uni_se_pp": round(uni_model.bse["smoking"] * 100, 1),
+            "uni_lo_pp": round(-_uci[1] * 100, 1), "uni_hi_pp": round(-_uci[0] * 100, 1),
+            "uni_p": round(float(uni_model.pvalues["smoking"]), 3)})
+results_ns = {"lpm": int(lpm_full.nobs), "logit": int(logit_full.nobs), "probit": int(probit_full.nobs)}
+
+# Real captured statsmodels output — LPM, univariate
+_uni_lines = uni_model.summary().as_text().splitlines()
+_uni_cut = next(i for i, l in enumerate(_uni_lines) if l.startswith("Omnibus"))
+uni_summary_text = "\n".join(_uni_lines[:_uni_cut]).rstrip()
+
+# Real captured statsmodels output — logit, full model
+_logit_lines = logit_full.summary().as_text().splitlines()
+logit_summary_text = "\n".join(l for l in _logit_lines if not l.startswith("country[")).rstrip()
+
+# Average marginal effects on the full logit model, country included
+_ame_pd = me.avg_slopes(logit_full).to_pandas()
+_ame_pd = _ame_pd[_ame_pd["term"].isin(_order)].set_index("term").loc[[t for t in _order if t != "Intercept"]].reset_index()
+_ame_idx = _ame_pd.set_index("term")
+key["ame_pp"] = round(-_ame_idx.loc["smoking", "estimate"] * 100, 1)
+key["exerc_pp"] = round(_ame_idx.loc["exerc", "estimate"] * 100, 1)
+_ame_cols = ["term", "contrast", "estimate", "std_error", "p_value", "conf_low", "conf_high"]
+ame_print_text = _ame_pd[_ame_cols].round(4).to_string(index=False)
+ame_rows = [
+    {"variable": _labels.get(row["term"], row["term"]),
+     "ame": f"{row['estimate']:.3f}{_stars(row['p_value'])}",
+     "se": f"({row['std_error']:.3f})"}
+    for _, row in _ame_pd.iterrows()
+]
+
+# Goodness of fit table
+y = share_df["stayshealthy"].values
+def _brier(pred): return float(np.mean((pred - y) ** 2))
+def _logloss(pred):
+    p = np.clip(pred, 1e-6, 1 - 1e-6)
+    return float(np.mean(y * np.log(p) + (1 - y) * np.log(1 - p)))
+
+gof_rows = []
+for name, m in [("Linear probability", lpm_full), ("Logit", logit_full), ("Probit", probit_full)]:
+    pred = m.predict(share_df)
+    r2 = 1 - np.sum((y - pred) ** 2) / np.sum((y - y.mean()) ** 2)
+    gof_rows.append({
+        "model": name,
+        "r2": f"{r2:.3f}",
+        "brier": f"{_brier(pred):.3f}",
+        "pseudo_r2": f"{m.prsquared:.3f}" if hasattr(m, "prsquared") else "n.a.",
+        "logloss": f"{_logloss(pred):.3f}",
+    })
+
+# Task 3 reveal — same hypothetical person, logit vs probit predicted probability
+_mode_country = share_df["country"].mode().iloc[0]
+_profile = pd.DataFrame({
+    "smoking": [1], "ever_smoked": [1], "female": [1], "age": [55],
+    "eduyears": [share_df["eduyears"].mean()], "income10": [share_df["income10"].mean()],
+    "bmi": [share_df["bmi"].mean()], "exerc": [1], "country": [_mode_country],
+})
+_profile["country"] = _profile["country"].astype(share_df["country"].dtype)
+logit_pred_profile = round(float(logit_full.predict(_profile).iloc[0]), 3)
+probit_pred_profile = round(float(probit_full.predict(_profile).iloc[0]), 3)
+profile_diff = round(abs(logit_pred_profile - probit_pred_profile), 3)
+
+task3_output_text = (
+    ">>> profile = pd.DataFrame({'smoking': [1], 'ever_smoked': [1], 'female': [1], 'age': [55],\n"
+    "...                         'eduyears': [df.eduyears.mean()], 'income10': [df.income10.mean()],\n"
+    "...                         'bmi': [df.bmi.mean()], 'exerc': [1], 'country': [df.country.mode()[0]]})\n"
+    ">>> logit_model.predict(profile)\n"
+    f"{logit_pred_profile}\n\n"
+    ">>> probit_model.predict(profile)\n"
+    f"{probit_pred_profile}"
+)
+
+# Task 4 reveal — Brier score computed by hand from logit's own predictions
+logit_pred_full = logit_full.predict(share_df)
+brier_logit_manual = round(float(np.mean((logit_pred_full - y) ** 2)), 3)
+task4_output_text = (
+    ">>> pred = logit_model.predict(df)\n"
+    ">>> brier = np.mean((pred - df['stayshealthy']) ** 2)\n"
+    f">>> round(brier, 3)\n{brier_logit_manual}"
+)
+
+# Calibration curve — real deciles of predicted probability vs actual outcome rate
+share_df["pred_logit"] = logit_full.predict(share_df)
+share_df["decile"] = pd.qcut(share_df["pred_logit"], 10, labels=False, duplicates="drop")
+calib = share_df.groupby("decile").agg(pred=("pred_logit", "mean"), actual=("stayshealthy", "mean")).reset_index()
+calibration_data = calib[["pred", "actual"]].round(4).to_dict(orient="records")
+
+ojs_define(
+    results_n            = results_n,
+    lpm_pred_min         = lpm_pred_min,
+    lpm_pred_max         = lpm_pred_max,
+    n_above_1            = n_above_1,
+    gof_rows             = gof_rows,
+    calibration_data     = calibration_data,
+)
+```
+
+```{ojs}
+//| output: false
+{
+  // Generic "shrink on reveal" wiring, used by every chart wrapped as
+  // `:::: {.shrink-on-reveal data-frag="some-fragment-id" style="--large-height:...;--small-height:...;--shrink-scale:..."}`
+  // Each chart renders large while its named fragment is hidden, then
+  // shrinks smoothly to make room the moment that fragment is revealed.
+  // Sizes live entirely in each wrapper's own inline style — this cell only
+  // handles show/hide, once, for every wrapper on the page, so adding a new
+  // chart to this pattern never means touching this cell.
+  const wrapperFor = (fragId) => document.querySelector(`.shrink-on-reveal[data-frag="${fragId}"]`)
+
+  // Sets each wrapper's correct starting state immediately, including on a
+  // reload or direct navigation to a slide whose fragment is already shown
+  // — matters because this cell (no reactive deps) only runs once, at load.
+  const syncAll = () => {
+    document.querySelectorAll('.fragment[id]').forEach(frag =>
+      wrapperFor(frag.id)?.classList.toggle('is-small', frag.classList.contains('visible'))
+    )
+  }
+  syncAll()
+  // PDF export rebuilds the slide DOM, so re-sync on any change (same fix as Weeks 2, 4, 5 and 6).
+  new MutationObserver(syncAll).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] })
+
+  Reveal.on('fragmentshown', (event) => {
+    wrapperFor(event.fragment.id)?.classList.add('is-small')
+  })
+  Reveal.on('fragmenthidden', (event) => {
+    wrapperFor(event.fragment.id)?.classList.remove('is-small')
+  })
+}
+```
+
+## {background-color="#1a1a2e"}
+
+::: {style="text-align: center; padding-top: 180px;"}
+[**Binary outcomes**]{style="font-size: 2.2em; color: white;"}
+
+[Every model so far has had a continuous y. What changes when the outcome is just yes or no?]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+:::
+
+## Does smoking pose a health risk?
+
+```{=html}
+<style>
+.reveal .big-code div.sourceCode { font-size: 1.15em !important; }
+.reveal .big-code div.sourceCode pre.sourceCode { font-size: 1em !important; }
+.reveal .mid-code div.sourceCode { font-size: 0.72em !important; }
+.reveal .mid-code div.sourceCode pre.sourceCode { font-size: 1em !important; }
+.reveal .small-code div.sourceCode { font-size: 0.55em !important; }
+.reveal .small-code div.sourceCode pre.sourceCode { font-size: 1em !important; }
+</style>
+```
+
+::: {.instructions-box}
+**Business question**: among people who are currently healthy, does smoking meaningfully raise the chance their health declines over the next few years — once other differences between smokers and non-smokers are accounted for?
+:::
+
+::: {.fragment}
+We have real data: 3,112 people aged 50–60, healthy at the start, tracked four years later. `stayshealthy` is 1 if still healthy, 0 if not.
+:::
+
+## The naive answer
+
+**Naive answer:** compare the fraction of smokers who stayed healthy to the fraction of non-smokers who did. Done.
+
+::: {.fragment}
+**Why it's not that simple:** smokers and non-smokers differ in plenty of other ways — age, exercise, income, education — exactly the confounding problem from Week 6. And the outcome itself is different from anything we've modelled so far: it only ever takes the value 0 or 1.
+:::
+
+## What we need
+
+- A regression framework built for a 0/1 outcome, not just a workaround bolted onto OLS
+- A way to interpret coefficients when the outcome is a probability, not a quantity
+- A sense of whether the model is actually any good, when it can never predict a 0 or a 1 exactly
+
+---
+
+## Binary outcomes and the latent variable
+
+---
+
+## What's different about a 0/1 y
+
+- The expected value of a binary variable **is** a probability: $E[y] = P[y=1]$
+- Frequency and probability become the same idea: 25% of cases having $y=1$ is the same statement as a 25% chance of the event
+- So "modelling y" here really means **modelling a probability**
+
+## Where does the 0/1 actually come from?
+
+Think about what "staying healthy" really is — it isn't binary at all. Health is a continuum: some people are robustly healthy, some are fragile but not yet ill, some are already declining.
+
+::: {.fragment}
+There's an unobserved, continuous **latent variable** — call it $y^*$ — representing that underlying health trajectory. We don't observe $y^*$ directly. We only observe whether it crossed a threshold:
+
+$$y = \begin{cases} 1 & \text{if } y^* > 0 \\ 0 & \text{if } y^* \le 0 \end{cases}$$
+:::
+
+## Why the latent variable matters
+
+::: {.fragment}
+If $y^*$ is linear in $x$ plus some random error — $y^* = \beta_0 + \beta_1 x_1 + \dots + e$ — then:
+
+$$P[y=1|x] = P[y^*>0|x] = P[e > -(\beta_0+\beta_1 x_1+\dots)]$$
+:::
+
+::: {.fragment}
+This is a **probability**, so it has to come from the distribution of that error term $e$ — specifically, its **cumulative distribution function (CDF)**: the chance that $e$ falls below a given value. A CDF always runs from 0 to 1, which is exactly what we want for a probability.
+
+- Assume $e$ is **logistic** → you get the **logit** model
+- Assume $e$ is **normal** → you get the **probit** model
+- Ignore this altogether and model $y$ directly with a straight line → you get the **linear probability model**
+:::
+
+
+
+## One family: the Generalized Linear Model
+
+Every model in this session shares the same three-part structure:
+
+1. A linear predictor: $\eta = \beta_0 + \beta_1 x_1 + \dots$
+2. A **link function** connecting $\eta$ to $E[y|x]$
+3. A distributional assumption for $y$
+
+::: {.fragment}
+This is the **Generalized Linear Model (GLM)**. Logit and probit aren't a separate technique from what you already know — and neither, in a moment, will Poisson be.
+:::
+
+## The family, laid out
+
+| Model | Link function | Distributional assumption |
+|---|---|---|
+| **OLS** | Identity | Gaussian (normal errors) |
+| **LPM** | Identity | None — plain OLS applied to a 0/1 y |
+| **Logit** | Logistic | Binomial |
+| **Probit** | Normal CDF | Binomial |
+| Poisson *(online session)* | Log | Poisson |
+| Negative binomial *(online session)* | Log | Poisson + dispersion |
+
+::: {.fragment}
+OLS is the special case where the link function does nothing at all.
+:::
+
+---
+
+## The linear probability model
+
+---
+
+## LPM — the simplest option
+
+$$y^P = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots$$
+
+- $y^P$ denotes $P[y=1|x_1,x_2,\dots]$
+- Just OLS, with a binary y — everything from Weeks 4–6 still applies: logs, splines, interactions, robust SEs
+- **Heteroskedasticity-robust SEs are essential** — LPM residuals are mechanically heteroskedastic
+
+::: {.fragment}
+y is either 0 or 1, so $Var[y\mid x] = y^P(1-y^P)$. The spread of the residuals depends on the predicted probability, and that changes with x. So the residuals can't have a constant spread: a 0/1 outcome is always heteroskedastic.
+:::
+
+## Why the spread can't be constant {.smaller}
+
+A made-up LPM, $\hat y^P = 0.1 + 0.08x$. At any $x$, $y$ is 0 or 1, so the residual can only take **two** values: $1-\hat y^P$ or $-\hat y^P$. Move $x$ and watch the spread change.
+
+```{ojs}
+viewof hx = Inputs.range([0, 10], {step: 0.5, value: 1, label: "x"})
+```
+
+```{ojs}
+hsim = {
+  const rnd = d3.randomLcg(8), pts = [];
+  for (let i = 0; i < 220; i++) {
+    const x = rnd() * 10, p = 0.1 + 0.08 * x, y = rnd() < p ? 1 : 0;
+    pts.push({x, y, resid: y - p, lab: y === 1 ? "y = 1" : "y = 0"});
+  }
+  return pts;
+}
+```
+
+```{ojs}
+{
+  const p = 0.1 + 0.08 * hx, v = p * (1 - p);
+  const left = Plot.plot({
+    width: 560, height: 330, marginLeft: 50,
+    x: {label: "x", domain: [0, 10]}, y: {label: "Residual", domain: [-1, 1]},
+    color: {domain: ["y = 1", "y = 0"], range: ["#2d6a4f", "#c8373f"], legend: true},
+    marks: [
+      Plot.ruleY([0], {stroke: "#bbb"}),
+      Plot.dot(hsim, {x: "x", y: "resid", fill: "lab", r: 2.5, fillOpacity: 0.45}),
+      Plot.ruleX([hx], {stroke: "#1a1a2e", strokeDasharray: "4,3"}),
+      Plot.dot([{x: hx, r: 1 - p}, {x: hx, r: -p}], {x: "x", y: "r", r: 7, stroke: "#1a1a2e", strokeWidth: 2.5, fill: "white"})
+    ]
+  });
+  const curve = d3.range(0, 10.01, 0.1).map(x => { const q = 0.1 + 0.08 * x; return {x, v: q * (1 - q)}; });
+  const right = Plot.plot({
+    width: 420, height: 330, marginLeft: 50,
+    x: {label: "x", domain: [0, 10]}, y: {label: "Variance of the residual", domain: [0, 0.27]},
+    marks: [
+      Plot.line(curve, {x: "x", y: "v", stroke: "#2f6690", strokeWidth: 2.5}),
+      Plot.dot([{x: hx, v}], {x: "x", y: "v", r: 7, fill: "#1a1a2e"})
+    ]
+  });
+  return html`<div style="display:flex;gap:24px;justify-content:center;align-items:flex-end;">${left}${right}</div>
+  <p style="text-align:center;font-size:0.95em;margin-top:6px;">At <i>x</i> = ${hx}, <i>ŷ<sup>P</sup></i> = ${p.toFixed(2)}: the residual is <b>+${(1 - p).toFixed(2)}</b> (${(100 * p).toFixed(0)}% of the time) or <b>−${p.toFixed(2)}</b> (${(100 * (1 - p)).toFixed(0)}%). Variance = ${p.toFixed(2)} × ${(1 - p).toFixed(2)} = <b>${v.toFixed(3)}</b>.</p>`
+}
+```
+
+## Task — fit the LPM yourself
+
+::: {.instructions-box}
+**Business question**: how big is the raw gap between smokers and non-smokers, before any controls?
+
+Open the Colab notebook — `data_path` is already defined for you. Load the data and fit `stayshealthy ~ smoking` with `smf.ols` and `cov_type='HC1'`. What's the coefficient, and how would you phrase it as a sentence a health policy team could use? No further syntax hints.
+:::
+
+## LPM on real data — one variable first
+
+::: {.small-code}
+```{.python}
+model = smf.ols("stayshealthy ~ smoking", data=df).fit(cov_type="HC1")
+```
+:::
+
+::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
+The regression output appears here in the workshop – run the code above in the notebook to see it.
+:::
+
+
+## What you should have found
+
+::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
+Answer revealed in the workshop.
+:::
+
+::: {.fragment}
+**Task**: Does that survive adding controls for age, exercise, income, education?
+:::
+
+## LPM with controls {.smaller}
+
+::: {.mid-code}
+```{.python}
+df["country"] = df["country"].astype(str).astype("category")   # one dummy per country
+model = smf.ols("stayshealthy ~ smoking + ever_smoked + female + age + eduyears"
+                " + income10 + bmi + exerc + country", data=df).fit(cov_type="HC1")
+```
+:::
+
+::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
+The coefficient table appears here in the workshop – it's part of the next task's answer.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Robust SEs. Country fixed effects included but not shown. Source: Békés & Kézdi (2021), Ch. 11, share-health dataset
+:::
+
+## Is this a kitchen sink?
+
+Fair question: we've added every control the dataset offers. Each one should earn its place.
+
+::: {.fragment}
+- **Age, education, income, gender, country** come before smoking or alongside it. They could drive both smoking and health — likely confounders, so control for them.
+- **BMI and exercise** are less clear. Smoking may itself change weight and how much people exercise. If so, they're partly **bad controls** (Week 6): holding them fixed soaks up part of smoking's own effect.
+:::
+
+::: {.fragment}
+We follow Békés & Kézdi's specification here. In your own work, justify each control rather than adding everything — and check whether the result moves when the doubtful ones come out.
+:::
+
+## The bigger problem with LPM
+
+We often want to use our model to predict outcomes. Let's do that here.
+
+Predicted values - $\hat{y}^P$ - may cause problems.
+
+```{.python}
+lpm_pred = model.predict(df)
+lpm_pred.min(), lpm_pred.max(), (lpm_pred > 1).sum()
+```
+
+```{ojs}
+html`<div style="font-family:sans-serif;">
+  <p>Predicted probabilities in this model range from <b>${lpm_pred_min.toFixed(3)}</b> to <b>${lpm_pred_max.toFixed(4)}</b>, across <b>${results_n}</b> observations.</p>
+</div>`
+```
+
+::: {.fragment}
+```{ojs}
+html`<p>${n_above_1 === 1 ? 'One observation gets' : n_above_1 + ' observations get'} a predicted probability <em>above 1</em>. That's meaningless for a probability, and nothing in the LPM stops it happening.</p>`
+```
+:::
+
+::: {.fragment}
+For **inference** — uncovering patterns of association — this is rarely a big problem. For **prediction**, it's a real one: you can't tell a client their chance of an outcome is 104%.
+:::
+
+---
+
+## Logit and probit
+
+---
+
+## Fixing the range problem
+
+Recall the latent-variable story: $P[y=1|x]$ has to come from a genuine probability distribution's CDF — which is bounded between 0 and 1 by construction.
+
+- **Logit**: assumes $e$ is logistic → link function is the logistic function $\Lambda(z) = \dfrac{\exp(z)}{1+\exp(z)}$
+- **Probit**: assumes $e$ is normal → link function is $\Phi(z)$, the standard normal CDF
+- Both are increasing, S-shaped, and strictly between 0 and 1
+
+## Same data, three link functions
+
+```{ojs}
+Plot.plot({
+  width: 640, height: 560,
+  x: {label: "Linear index (z)"}, y: {label: "P(y=1)"},
+  marks: [
+    Plot.line(d3.range(-6,6.1,0.2).map(z => ({z, p: Math.max(0,Math.min(1,0.5+z/8)), series:"LPM"})), {x:"z",y:"p",stroke:"series"}),
+    Plot.line(d3.range(-6,6.1,0.2).map(z => ({z, p: 1/(1+Math.exp(-z)), series:"Logit"})), {x:"z",y:"p",stroke:"series"}),
+    Plot.line(d3.range(-6,6.1,0.2).map(z => ({z, p: jStat_norm_cdf(z), series:"Probit"})), {x:"z",y:"p",stroke:"series"})
+  ],
+  color: {legend: true}
+})
+```
+
+```{ojs}
+function jStat_norm_cdf(z) {
+  return 0.5 * (1 + erf(z / Math.sqrt(2)));
+}
+function erf(x) {
+  const sign = x < 0 ? -1 : 1;
+  x = Math.abs(x);
+  const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
+  const t = 1/(1+p*x);
+  const y = 1-((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);
+  return sign*y;
+}
+```
+
+## Task — fit all three yourself
+
+::: {.instructions-box}
+**Business question**: does the *smoking* coefficient tell the same story whichever model you use?
+
+Using the full model with controls (age, income, education, exercise, country), fit all three: `smf.ols`, `smf.logit`, `smf.probit` — same formula each time. For country, the notebook has already turned it into a category, so just add `country` to the formula: each country gets its own dummy, rather than being read as one continuous number.
+
+Compare the three outputs in one table.  
+
+No further syntax hints.
+:::
+
+## What you should have found {.smaller}
+
+::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
+Answer revealed in the workshop.
+:::
+
+## Why raw coefficients stop working
+
+- LPM's slope is constant — a one-unit change in $x$ shifts $y^P$ by the same amount everywhere
+- Logit and probit's slope **changes** depending on where you are on the S-curve — steepest at $y^P=0.5$, flattest near 0 or 1
+- Direct consequence: **you cannot read raw logit/probit coefficients the way you read an LPM or OLS coefficient**
+
+## Marginal effects — the fix
+
+The **average marginal effect (AME)** is the average, across everyone in the data, of how much $y^P$ changes for a one-unit change in $x$.
+
+::: {.fragment}
+- Computed via numerical derivatives, not by hand — that's what the `marginaleffects` package is for
+- Has the **exact same interpretation as an LPM coefficient**
+:::
+
+::: {.mid-code}
+```{.python}
+import marginaleffects as me
+
+logit_model = smf.logit("stayshealthy ~ smoking + ever_smoked + female + age + eduyears"
+                        " + income10 + bmi + exerc + country", data=df).fit(cov_type="HC1")
+ame = me.avg_slopes(logit_model)
+```
+:::
+
+## Real marginal effects, on real data
+
+::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
+The AME table appears here in the workshop – the next task asks you to produce it yourself.
+:::
+
+## Task — compute an AME yourself
+
+::: {.instructions-box}
+**Business question**: does exercising regularly matter as much as not smoking?
+
+Fit the full logit model (country included) and use `marginaleffects.avg_slopes()` to get the AME for `exerc`. Compare its size to smoking's AME. No further syntax hints.
+:::
+
+## Reading the real logit output
+
+::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
+The logit output appears here in the workshop – run the full logit model in the notebook to see it.
+:::
+
+
+::: {style="font-size:0.7em;color:#999;margin-top:8px;"}
+Country dummies left out of the printout. Raw coefficients can't be read as changes in probability, which is why we use the AMEs on the next slide.
+:::
+
+## Reading the real AME output
+
+::: {.small-code}
+```{.python}
+ame = me.avg_slopes(logit_model).to_pandas()
+ame[ame.term != "country"][["term", "contrast", "estimate", "std_error",
+                            "p_value", "conf_low", "conf_high"]]
+```
+:::
+
+::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
+The AME output appears here in the workshop – run the code above in the notebook to see it.
+:::
+
+
+::: {.fragment}
+- `estimate` is the AME: the change in the probability of staying healthy, so an estimate of −0.05 would mean 5 percentage points lower
+- `contrast` says how: `1 - 0` compares the two values of a dummy, `dY/dX` is the slope of a continuous variable
+- `std_error`, `p_value`, `conf_low`, `conf_high` read exactly as in any regression output
+:::
+
+## Task — does probit agree with logit?
+
+::: {.instructions-box}
+**Business question**: we've been treating logit and probit as interchangeable. Are they, really?
+
+Fit both `smf.logit` and `smf.probit` on the full model. Pick one hypothetical person — a 55-year-old female smoker, sample-average on everything else — and use `.predict()` on a one-row dataframe to get each model's predicted probability for that person. How close are they? No further syntax hints.
+:::
+
+## What you should have found
+
+::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
+Answer revealed in the workshop.
+:::
+
+---
+
+## Is the model any good?
+
+---
+
+## Why R² doesn't quite work here
+
+- A probability model will never predict exactly 0 or exactly 1 — so it can never "perfectly" fit a 0/1 outcome the way OLS can fit a continuous one
+- $R^2$ can still be computed, but it no longer carries the same "share of variance explained" meaning
+- We need measures built for probability outcomes
+
+## Three purpose-built measures
+
+- **Brier score** — mean squared distance between predicted probability and actual outcome. Smaller is better.
+- **Pseudo R²** (McFadden's) — ratio of the model's log-likelihood to an intercept-only model's. Works for logit/probit, not LPM (no likelihood function there).
+- **Log-loss** — a negative number; closer to zero is better.
+
+## Goodness of fit, on real data
+
+```{ojs}
+{
+  const cols = [["model","Model"],["r2","R²"],["brier","Brier"],["pseudo_r2","Pseudo R²"],["logloss","Log-loss"]];
+  return html`<table style="margin:16px auto 0;font-family:sans-serif;font-size:1em;border-collapse:collapse;">
+    <tr style="border-bottom:2px solid #1a1a2e;">${cols.map(c=>`<th style="padding:6px 20px;">${c[1]}</th>`).join('')}</tr>
+    ${gof_rows.map(d => `<tr style="border-bottom:1px solid #ddd;">${cols.map(c=>`<td style="padding:5px 20px;text-align:${c[0]==='model'?'left':'center'};">${d[c[0]]}</td>`).join('')}</tr>`).join('')}
+  </table>`
+}
+```
+
+::: {.fragment}
+Logit and probit edge out LPM on every measure, but the differences are small — consistent with what the marginal effects already told us.
+:::
+
+## Task — compute the Brier score yourself
+
+::: {.instructions-box}
+**Business question**: how would you check the table above wasn't just typed in?
+
+The Brier score is nothing more than the same squared-error idea behind $R^2$ back in Week 4 — just applied to a probability instead of a price. Get logit's predicted probabilities with `.predict()`, then compute `np.mean((pred - y) ** 2)` by hand. Does it match the table? No further syntax hints.
+:::
+
+## What you should have found
+
+::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
+Answer revealed in the workshop.
+:::
+
+## Calibration — a sharper question
+
+Unbiasedness asks: is the model right *on average*? Calibration asks something stricter: is it right at **every** predicted probability level?
+
+::: {.fragment}
+Take everyone predicted around a 30% chance of staying healthy. If roughly 30% of them actually did, the model is well calibrated there. Do this across the whole range of predictions — that's a **calibration curve**.
+:::
+
+## Real calibration curve
+
+```{.python}
+df["pred_logit"] = logit_model.predict(df)
+df["decile"] = pd.qcut(df["pred_logit"], 10, labels=False)
+
+calib = (df.groupby("decile")
+           .agg(pred=("pred_logit", "mean"), actual=("stayshealthy", "mean"))
+           .reset_index())
+```
+
+:::: {.shrink-on-reveal data-frag="wk8-calib-frag" style="--large-height:500px;--small-height:420px;--shrink-scale:0.84;"}
+::: {.shrink-on-reveal-inner}
+```{ojs}
+Plot.plot({
+  width: 500, height: 500,
+  x: {label: "Predicted probability", domain: [0,1]},
+  y: {label: "Actual outcome rate", domain: [0,1]},
+  marks: [
+    Plot.line([{x:0,y:0},{x:1,y:1}], {x:"x", y:"y", stroke:"#ccc", strokeDasharray:"4,4"}),
+    Plot.line(calibration_data, {x:"pred", y:"actual", stroke:"#2d6a4f", strokeWidth:2}),
+    Plot.dot(calibration_data, {x:"pred", y:"actual", fill:"#2d6a4f", r:4})
+  ]
+})
+```
+:::
+::::
+
+::: {.fragment #wk8-calib-frag}
+Deciles of predicted probability from the logit model, against the actual fraction who stayed healthy in each decile. Close to the diagonal — well calibrated, not just unbiased on average.
+:::
+
+---
+
+## Back to the question
+
+---
+
+## So, does smoking matter?
+
+- Smokers are less likely to stay healthy, even after controlling for age, income, education, exercise and country. The tasks give you the size of the gap.
+- The model is well calibrated: its predicted probabilities can be trusted across the range, not just on average
+- LPM, logit and probit tell the same story here. The fancier model doesn't always change the answer
+
+## Summary
+
+- A binary y is really a probability to be modelled; the latent-variable story explains why link functions are needed
+- LPM is OLS with a 0/1 y — simple, but predicted probabilities can fall outside [0,1]
+- Logit and probit fix the range problem, at the cost of needing marginal effects to interpret coefficients
+- Goodness of fit for probability models means Brier score, pseudo-R², log-loss, and calibration — not $R^2$ alone
+
+## Online session
+
+What happens when y is a count rather than a 0/1: Poisson regression, incidence rate ratios, and what to do when the data are more spread out than Poisson allows.
+
+## Coming up
+
+::: {style="text-align: center; padding-top: 60px;"}
+[**Week 9: Causal Analysis and Experiments**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
+
+::: {.fragment style="padding-top:40px;"}
+*We've been careful all module to describe association, not effect. Next week: a formal framework for when you're allowed to make that claim — and experiments, the most direct way to earn it.*
+:::
+:::

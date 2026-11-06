@@ -676,7 +676,7 @@
     "href": "index.html#weeks",
     "title": "Research Methods in Analytics",
     "section": "Weeks",
-    "text": "Weeks\nWorkshop and online-session slides, published as each week runs.\n\n\n\n\nWeek 01Distributions and Summarising Data\n\nLive\n\n\nWorkshop slidesOnline sessionOutliers addendumReaction-time toolPooled histogram toolDownload the data\n\n\n\n\n\nWeek 02Inference\n\nLive\n\n\nWorkshop slidesOnline sessionBootstrap toolDownload the data\n\n\n\n\n\nWeek 03Relationships Between Variables\n\nLive\n\n\nWorkshop slidesOnline sessionDownload the data\n\n\n\n\n\nWeek 04Regression I — Fitting the Line\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 05Regression I — Model Problems & Inference\n\nLive\n\n\nWorkshop slidesOnline sessionQuadratic tool\n\n\n\n\n\nWeek 06Regression II — Multiple Regression\n\nLive\n\n\nWorkshop slidesWorkshop slides (no answers)Online session\n\n\n\nWeek 07\n\nCurriculum Enrichment Week — no session\n\n\n\n\n\nWeek 08Other Models (GLMs)\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 09Causal Analysis and Experiments\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 10Prediction\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 11Time Series\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 12Portfolio Presentations\n\nLive\n\n\nPortfolio walkthrough"
+    "text": "Weeks\nWorkshop and online-session slides, published as each week runs.\n\n\n\n\nWeek 01Distributions and Summarising Data\n\nLive\n\n\nWorkshop slidesOnline sessionOutliers addendumReaction-time toolPooled histogram toolDownload the data\n\n\n\n\n\nWeek 02Inference\n\nLive\n\n\nWorkshop slidesOnline sessionBootstrap toolDownload the data\n\n\n\n\n\nWeek 03Relationships Between Variables\n\nLive\n\n\nWorkshop slidesOnline sessionDownload the data\n\n\n\n\n\nWeek 04Regression I — Fitting the Line\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 05Regression I — Model Problems & Inference\n\nLive\n\n\nWorkshop slidesOnline sessionQuadratic tool\n\n\n\n\n\nWeek 06Regression II — Multiple Regression\n\nLive\n\n\nWorkshop slidesWorkshop slides (no answers)Online session\n\n\n\nWeek 07\n\nCurriculum Enrichment Week — no session\n\n\n\n\n\nWeek 08Other Models (GLMs)\n\nLive\n\n\nWorkshop slidesWorkshop slides (no answers)\n\n\n\n\n\nWeek 09Causal Analysis and Experiments\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 10Prediction\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 11Time Series\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 12Portfolio Presentations\n\nLive\n\n\nPortfolio walkthrough"
   },
   {
     "objectID": "data.html",
@@ -4142,5 +4142,635 @@
     "title": "Multiple Regression",
     "section": "Coming up",
     "text": "Coming up\n\nWeek 7 is reading week — no workshop.\nWeek 8: GLMs\n\nLogistic and Poisson regression, marginal effects · real named datasets, at last"
+  },
+  {
+    "objectID": "week8-slides.html#section",
+    "href": "week8-slides.html#section",
+    "title": "GLMs — Binary Outcomes",
+    "section": "",
+    "text": "Binary outcomes\nEvery model so far has had a continuous y. What changes when the outcome is just yes or no?"
+  },
+  {
+    "objectID": "week8-slides.html#does-smoking-pose-a-health-risk",
+    "href": "week8-slides.html#does-smoking-pose-a-health-risk",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Does smoking pose a health risk?",
+    "text": "Does smoking pose a health risk?\n\n\nBusiness question: among people who are currently healthy, does smoking meaningfully raise the chance their health declines over the next few years — once other differences between smokers and non-smokers are accounted for?\n\n\nWe have real data: 3,112 people aged 50–60, healthy at the start, tracked four years later. stayshealthy is 1 if still healthy, 0 if not."
+  },
+  {
+    "objectID": "week8-slides.html#the-naive-answer",
+    "href": "week8-slides.html#the-naive-answer",
+    "title": "GLMs — Binary Outcomes",
+    "section": "The naive answer",
+    "text": "The naive answer\nNaive answer: compare the fraction of smokers who stayed healthy to the fraction of non-smokers who did. Done.\n\nWhy it’s not that simple: smokers and non-smokers differ in plenty of other ways — age, exercise, income, education — exactly the confounding problem from Week 6. And the outcome itself is different from anything we’ve modelled so far: it only ever takes the value 0 or 1."
+  },
+  {
+    "objectID": "week8-slides.html#what-we-need",
+    "href": "week8-slides.html#what-we-need",
+    "title": "GLMs — Binary Outcomes",
+    "section": "What we need",
+    "text": "What we need\n\nA regression framework built for a 0/1 outcome, not just a workaround bolted onto OLS\nA way to interpret coefficients when the outcome is a probability, not a quantity\nA sense of whether the model is actually any good, when it can never predict a 0 or a 1 exactly"
+  },
+  {
+    "objectID": "week8-slides.html#binary-outcomes-and-the-latent-variable",
+    "href": "week8-slides.html#binary-outcomes-and-the-latent-variable",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Binary outcomes and the latent variable",
+    "text": "Binary outcomes and the latent variable"
+  },
+  {
+    "objectID": "week8-slides.html#whats-different-about-a-01-y",
+    "href": "week8-slides.html#whats-different-about-a-01-y",
+    "title": "GLMs — Binary Outcomes",
+    "section": "What’s different about a 0/1 y",
+    "text": "What’s different about a 0/1 y\n\nThe expected value of a binary variable is a probability: \\(E[y] = P[y=1]\\)\nFrequency and probability become the same idea: 25% of cases having \\(y=1\\) is the same statement as a 25% chance of the event\nSo “modelling y” here really means modelling a probability"
+  },
+  {
+    "objectID": "week8-slides.html#where-does-the-01-actually-come-from",
+    "href": "week8-slides.html#where-does-the-01-actually-come-from",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Where does the 0/1 actually come from?",
+    "text": "Where does the 0/1 actually come from?\nThink about what “staying healthy” really is — it isn’t binary at all. Health is a continuum: some people are robustly healthy, some are fragile but not yet ill, some are already declining.\n\nThere’s an unobserved, continuous latent variable — call it \\(y^*\\) — representing that underlying health trajectory. We don’t observe \\(y^*\\) directly. We only observe whether it crossed a threshold:\n\\[y = \\begin{cases} 1 & \\text{if } y^* &gt; 0 \\\\ 0 & \\text{if } y^* \\le 0 \\end{cases}\\]"
+  },
+  {
+    "objectID": "week8-slides.html#why-the-latent-variable-matters",
+    "href": "week8-slides.html#why-the-latent-variable-matters",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Why the latent variable matters",
+    "text": "Why the latent variable matters\n\nIf \\(y^*\\) is linear in \\(x\\) plus some random error — \\(y^* = \\beta_0 + \\beta_1 x_1 + \\dots + e\\) — then:\n\\[P[y=1|x] = P[y^*&gt;0|x] = P[e &gt; -(\\beta_0+\\beta_1 x_1+\\dots)]\\]\n\n\nThis is a probability, so it has to come from the distribution of that error term \\(e\\) — specifically, its cumulative distribution function (CDF): the chance that \\(e\\) falls below a given value. A CDF always runs from 0 to 1, which is exactly what we want for a probability.\n\nAssume \\(e\\) is logistic → you get the logit model\nAssume \\(e\\) is normal → you get the probit model\nIgnore this altogether and model \\(y\\) directly with a straight line → you get the linear probability model"
+  },
+  {
+    "objectID": "week8-slides.html#one-family-the-generalized-linear-model",
+    "href": "week8-slides.html#one-family-the-generalized-linear-model",
+    "title": "GLMs — Binary Outcomes",
+    "section": "One family: the Generalized Linear Model",
+    "text": "One family: the Generalized Linear Model\nEvery model in this session shares the same three-part structure:\n\nA linear predictor: \\(\\eta = \\beta_0 + \\beta_1 x_1 + \\dots\\)\nA link function connecting \\(\\eta\\) to \\(E[y|x]\\)\nA distributional assumption for \\(y\\)\n\n\nThis is the Generalized Linear Model (GLM). Logit and probit aren’t a separate technique from what you already know — and neither, in a moment, will Poisson be."
+  },
+  {
+    "objectID": "week8-slides.html#the-family-laid-out",
+    "href": "week8-slides.html#the-family-laid-out",
+    "title": "GLMs — Binary Outcomes",
+    "section": "The family, laid out",
+    "text": "The family, laid out\n\n\n\nModel\nLink function\nDistributional assumption\n\n\n\n\nOLS\nIdentity\nGaussian (normal errors)\n\n\nLPM\nIdentity\nNone — plain OLS applied to a 0/1 y\n\n\nLogit\nLogistic\nBinomial\n\n\nProbit\nNormal CDF\nBinomial\n\n\nPoisson (online session)\nLog\nPoisson\n\n\nNegative binomial (online session)\nLog\nPoisson + dispersion\n\n\n\n\nOLS is the special case where the link function does nothing at all."
+  },
+  {
+    "objectID": "week8-slides.html#the-linear-probability-model",
+    "href": "week8-slides.html#the-linear-probability-model",
+    "title": "GLMs — Binary Outcomes",
+    "section": "The linear probability model",
+    "text": "The linear probability model"
+  },
+  {
+    "objectID": "week8-slides.html#lpm-the-simplest-option",
+    "href": "week8-slides.html#lpm-the-simplest-option",
+    "title": "GLMs — Binary Outcomes",
+    "section": "LPM — the simplest option",
+    "text": "LPM — the simplest option\n\\[y^P = \\beta_0 + \\beta_1 x_1 + \\beta_2 x_2 + \\dots\\]\n\n\\(y^P\\) denotes \\(P[y=1|x_1,x_2,\\dots]\\)\nJust OLS, with a binary y — everything from Weeks 4–6 still applies: logs, splines, interactions, robust SEs\nHeteroskedasticity-robust SEs are essential — LPM residuals are mechanically heteroskedastic\n\n\ny is either 0 or 1, so \\(Var[y\\mid x] = y^P(1-y^P)\\). The spread of the residuals depends on the predicted probability, and that changes with x. So the residuals can’t have a constant spread: a 0/1 outcome is always heteroskedastic."
+  },
+  {
+    "objectID": "week8-slides.html#why-the-spread-cant-be-constant",
+    "href": "week8-slides.html#why-the-spread-cant-be-constant",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Why the spread can’t be constant",
+    "text": "Why the spread can’t be constant\nA made-up LPM, \\(\\hat y^P = 0.1 + 0.08x\\). At any \\(x\\), \\(y\\) is 0 or 1, so the residual can only take two values: \\(1-\\hat y^P\\) or \\(-\\hat y^P\\). Move \\(x\\) and watch the spread change.\n\nviewof hx = Inputs.range([0, 10], {step: 0.5, value: 1, label: \"x\"})\n\n\n\n\n\n\n\nhsim = {\n  const rnd = d3.randomLcg(8), pts = [];\n  for (let i = 0; i &lt; 220; i++) {\n    const x = rnd() * 10, p = 0.1 + 0.08 * x, y = rnd() &lt; p ? 1 : 0;\n    pts.push({x, y, resid: y - p, lab: y === 1 ? \"y = 1\" : \"y = 0\"});\n  }\n  return pts;\n}\n\n\n\n\n\n\n\n{\n  const p = 0.1 + 0.08 * hx, v = p * (1 - p);\n  const left = Plot.plot({\n    width: 560, height: 330, marginLeft: 50,\n    x: {label: \"x\", domain: [0, 10]}, y: {label: \"Residual\", domain: [-1, 1]},\n    color: {domain: [\"y = 1\", \"y = 0\"], range: [\"#2d6a4f\", \"#c8373f\"], legend: true},\n    marks: [\n      Plot.ruleY([0], {stroke: \"#bbb\"}),\n      Plot.dot(hsim, {x: \"x\", y: \"resid\", fill: \"lab\", r: 2.5, fillOpacity: 0.45}),\n      Plot.ruleX([hx], {stroke: \"#1a1a2e\", strokeDasharray: \"4,3\"}),\n      Plot.dot([{x: hx, r: 1 - p}, {x: hx, r: -p}], {x: \"x\", y: \"r\", r: 7, stroke: \"#1a1a2e\", strokeWidth: 2.5, fill: \"white\"})\n    ]\n  });\n  const curve = d3.range(0, 10.01, 0.1).map(x =&gt; { const q = 0.1 + 0.08 * x; return {x, v: q * (1 - q)}; });\n  const right = Plot.plot({\n    width: 420, height: 330, marginLeft: 50,\n    x: {label: \"x\", domain: [0, 10]}, y: {label: \"Variance of the residual\", domain: [0, 0.27]},\n    marks: [\n      Plot.line(curve, {x: \"x\", y: \"v\", stroke: \"#2f6690\", strokeWidth: 2.5}),\n      Plot.dot([{x: hx, v}], {x: \"x\", y: \"v\", r: 7, fill: \"#1a1a2e\"})\n    ]\n  });\n  return html`&lt;div style=\"display:flex;gap:24px;justify-content:center;align-items:flex-end;\"&gt;${left}${right}&lt;/div&gt;\n  &lt;p style=\"text-align:center;font-size:0.95em;margin-top:6px;\"&gt;At &lt;i&gt;x&lt;/i&gt; = ${hx}, &lt;i&gt;ŷ&lt;sup&gt;P&lt;/sup&gt;&lt;/i&gt; = ${p.toFixed(2)}: the residual is &lt;b&gt;+${(1 - p).toFixed(2)}&lt;/b&gt; (${(100 * p).toFixed(0)}% of the time) or &lt;b&gt;−${p.toFixed(2)}&lt;/b&gt; (${(100 * (1 - p)).toFixed(0)}%). Variance = ${p.toFixed(2)} × ${(1 - p).toFixed(2)} = &lt;b&gt;${v.toFixed(3)}&lt;/b&gt;.&lt;/p&gt;`\n}"
+  },
+  {
+    "objectID": "week8-slides.html#task-fit-the-lpm-yourself",
+    "href": "week8-slides.html#task-fit-the-lpm-yourself",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Task — fit the LPM yourself",
+    "text": "Task — fit the LPM yourself\n\nBusiness question: how big is the raw gap between smokers and non-smokers, before any controls?\nOpen the Colab notebook — data_path is already defined for you. Load the data and fit stayshealthy ~ smoking with smf.ols and cov_type='HC1'. What’s the coefficient, and how would you phrase it as a sentence a health policy team could use? No further syntax hints."
+  },
+  {
+    "objectID": "week8-slides.html#lpm-on-real-data-one-variable-first",
+    "href": "week8-slides.html#lpm-on-real-data-one-variable-first",
+    "title": "GLMs — Binary Outcomes",
+    "section": "LPM on real data — one variable first",
+    "text": "LPM on real data — one variable first\n\nmodel = smf.ols(\"stayshealthy ~ smoking\", data=df).fit(cov_type=\"HC1\")\n\n\nhtml`&lt;pre style=\"font-family:'SF Mono','Menlo',monospace;font-size:0.55em;line-height:1.35;\n                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;\n                  padding:8px 14px;overflow-x:auto;white-space:pre;\"&gt;${uni_summary_text}&lt;/pre&gt;`"
+  },
+  {
+    "objectID": "week8-slides.html#what-you-should-have-found",
+    "href": "week8-slides.html#what-you-should-have-found",
+    "title": "GLMs — Binary Outcomes",
+    "section": "What you should have found",
+    "text": "What you should have found\n\nhtml`&lt;p&gt;Current smokers are about &lt;strong&gt;${key.uni_pp.toFixed(1)} percentage points less likely&lt;/strong&gt; to stay healthy than non-smokers over four years.&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;Robust SE: ${key.uni_se_pp.toFixed(1)} percentage points&lt;/li&gt;\n&lt;li&gt;95% confidence interval: ${key.uni_lo_pp.toFixed(1)} to ${key.uni_hi_pp.toFixed(1)} points lower&lt;/li&gt;\n&lt;li&gt;&lt;i&gt;p&lt;/i&gt; = ${key.uni_p.toFixed(3)}, so we reject a zero gap at the 5% level (and at 1%)&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;A real gap, if a modest one. The interval is wide, though: anything from a small to a sizeable effect fits the data.&lt;/p&gt;`\n\n\n\n\n\n\n\nTask: Does that survive adding controls for age, exercise, income, education?"
+  },
+  {
+    "objectID": "week8-slides.html#lpm-with-controls",
+    "href": "week8-slides.html#lpm-with-controls",
+    "title": "GLMs — Binary Outcomes",
+    "section": "LPM with controls",
+    "text": "LPM with controls\n\ndf[\"country\"] = df[\"country\"].astype(str).astype(\"category\")   # one dummy per country\nmodel = smf.ols(\"stayshealthy ~ smoking + ever_smoked + female + age + eduyears\"\n                \" + income10 + bmi + exerc + country\", data=df).fit(cov_type=\"HC1\")\n\n\n{\n  const cols = [[\"variable\",\"Variable\"],[\"lpm\",\"LPM\"]];\n  return html`&lt;table style=\"margin:16px auto 0;font-family:sans-serif;font-size:1em;border-collapse:collapse;\"&gt;\n    &lt;tr style=\"border-bottom:2px solid #1a1a2e;\"&gt;${cols.map(c=&gt;`&lt;th style=\"padding:6px 22px;\"&gt;${c[1]}&lt;/th&gt;`).join('')}&lt;/tr&gt;\n    ${results_rows.map(d =&gt; `&lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;${cols.map(c=&gt;`&lt;td style=\"padding:5px 22px;text-align:${c[0]==='variable'?'left':'center'};\"&gt;${d[c[0]]}&lt;/td&gt;`).join('')}&lt;/tr&gt;`).join('')}\n    &lt;tr&gt;&lt;td style=\"padding:5px 22px;\"&gt;&lt;i&gt;N&lt;/i&gt;&lt;/td&gt;&lt;td style=\"padding:5px 22px;text-align:center;\"&gt;${results_n}&lt;/td&gt;&lt;/tr&gt;\n  &lt;/table&gt;`\n}\n\n\n\n\n\n\n\nRobust SEs. Country fixed effects included but not shown. Source: Békés & Kézdi (2021), Ch. 11, share-health dataset"
+  },
+  {
+    "objectID": "week8-slides.html#is-this-a-kitchen-sink",
+    "href": "week8-slides.html#is-this-a-kitchen-sink",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Is this a kitchen sink?",
+    "text": "Is this a kitchen sink?\nFair question: we’ve added every control the dataset offers. Each one should earn its place.\n\n\nAge, education, income, gender, country come before smoking or alongside it. They could drive both smoking and health — likely confounders, so control for them.\nBMI and exercise are less clear. Smoking may itself change weight and how much people exercise. If so, they’re partly bad controls (Week 6): holding them fixed soaks up part of smoking’s own effect.\n\n\n\nWe follow Békés & Kézdi’s specification here. In your own work, justify each control rather than adding everything — and check whether the result moves when the doubtful ones come out."
+  },
+  {
+    "objectID": "week8-slides.html#the-bigger-problem-with-lpm",
+    "href": "week8-slides.html#the-bigger-problem-with-lpm",
+    "title": "GLMs — Binary Outcomes",
+    "section": "The bigger problem with LPM",
+    "text": "The bigger problem with LPM\nWe often want to use our model to predict outcomes. Let’s do that here.\nPredicted values - \\(\\hat{y}^P\\) - may cause problems.\nlpm_pred = model.predict(df)\nlpm_pred.min(), lpm_pred.max(), (lpm_pred &gt; 1).sum()\n\nhtml`&lt;div style=\"font-family:sans-serif;\"&gt;\n  &lt;p&gt;Predicted probabilities in this model range from &lt;b&gt;${lpm_pred_min.toFixed(3)}&lt;/b&gt; to &lt;b&gt;${lpm_pred_max.toFixed(4)}&lt;/b&gt;, across &lt;b&gt;${results_n}&lt;/b&gt; observations.&lt;/p&gt;\n&lt;/div&gt;`\n\n\n\n\n\n\n\n\nhtml`&lt;p&gt;${n_above_1 === 1 ? 'One observation gets' : n_above_1 + ' observations get'} a predicted probability &lt;em&gt;above 1&lt;/em&gt;. That's meaningless for a probability, and nothing in the LPM stops it happening.&lt;/p&gt;`\n\n\n\n\n\n\n\n\nFor inference — uncovering patterns of association — this is rarely a big problem. For prediction, it’s a real one: you can’t tell a client their chance of an outcome is 104%."
+  },
+  {
+    "objectID": "week8-slides.html#logit-and-probit",
+    "href": "week8-slides.html#logit-and-probit",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Logit and probit",
+    "text": "Logit and probit"
+  },
+  {
+    "objectID": "week8-slides.html#fixing-the-range-problem",
+    "href": "week8-slides.html#fixing-the-range-problem",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Fixing the range problem",
+    "text": "Fixing the range problem\nRecall the latent-variable story: \\(P[y=1|x]\\) has to come from a genuine probability distribution’s CDF — which is bounded between 0 and 1 by construction.\n\nLogit: assumes \\(e\\) is logistic → link function is the logistic function \\(\\Lambda(z) = \\dfrac{\\exp(z)}{1+\\exp(z)}\\)\nProbit: assumes \\(e\\) is normal → link function is \\(\\Phi(z)\\), the standard normal CDF\nBoth are increasing, S-shaped, and strictly between 0 and 1"
+  },
+  {
+    "objectID": "week8-slides.html#same-data-three-link-functions",
+    "href": "week8-slides.html#same-data-three-link-functions",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Same data, three link functions",
+    "text": "Same data, three link functions\n\nPlot.plot({\n  width: 640, height: 560,\n  x: {label: \"Linear index (z)\"}, y: {label: \"P(y=1)\"},\n  marks: [\n    Plot.line(d3.range(-6,6.1,0.2).map(z =&gt; ({z, p: Math.max(0,Math.min(1,0.5+z/8)), series:\"LPM\"})), {x:\"z\",y:\"p\",stroke:\"series\"}),\n    Plot.line(d3.range(-6,6.1,0.2).map(z =&gt; ({z, p: 1/(1+Math.exp(-z)), series:\"Logit\"})), {x:\"z\",y:\"p\",stroke:\"series\"}),\n    Plot.line(d3.range(-6,6.1,0.2).map(z =&gt; ({z, p: jStat_norm_cdf(z), series:\"Probit\"})), {x:\"z\",y:\"p\",stroke:\"series\"})\n  ],\n  color: {legend: true}\n})\n\n\n\n\n\n\n\nfunction jStat_norm_cdf(z) {\n  return 0.5 * (1 + erf(z / Math.sqrt(2)));\n}\nfunction erf(x) {\n  const sign = x &lt; 0 ? -1 : 1;\n  x = Math.abs(x);\n  const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;\n  const t = 1/(1+p*x);\n  const y = 1-((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);\n  return sign*y;\n}"
+  },
+  {
+    "objectID": "week8-slides.html#task-fit-all-three-yourself",
+    "href": "week8-slides.html#task-fit-all-three-yourself",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Task — fit all three yourself",
+    "text": "Task — fit all three yourself\n\nBusiness question: does the smoking coefficient tell the same story whichever model you use?\nUsing the full model with controls (age, income, education, exercise, country), fit all three: smf.ols, smf.logit, smf.probit — same formula each time. For country, the notebook has already turned it into a category, so just add country to the formula: each country gets its own dummy, rather than being read as one continuous number.\nCompare the three outputs in one table.\nNo further syntax hints."
+  },
+  {
+    "objectID": "week8-slides.html#what-you-should-have-found-1",
+    "href": "week8-slides.html#what-you-should-have-found-1",
+    "title": "GLMs — Binary Outcomes",
+    "section": "What you should have found",
+    "text": "What you should have found\n\n{\n  const cols = [[\"variable\",\"Variable\"],[\"lpm\",\"LPM\"],[\"logit\",\"Logit\"],[\"probit\",\"Probit\"]];\n  return html`&lt;table style=\"margin:16px auto 0;font-family:sans-serif;font-size:0.95em;border-collapse:collapse;\"&gt;\n    &lt;tr style=\"border-bottom:2px solid #1a1a2e;\"&gt;${cols.map(c=&gt;`&lt;th style=\"padding:6px 18px;\"&gt;${c[1]}&lt;/th&gt;`).join('')}&lt;/tr&gt;\n    ${results_rows.map(d =&gt; `&lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;${cols.map(c=&gt;`&lt;td style=\"padding:5px 18px;text-align:${c[0]==='variable'?'left':'center'};\"&gt;${d[c[0]]}&lt;/td&gt;`).join('')}&lt;/tr&gt;`).join('')}\n    &lt;tr style=\"border-top:2px solid #1a1a2e;\"&gt;&lt;td style=\"padding:5px 18px;\"&gt;&lt;i&gt;N&lt;/i&gt;&lt;/td&gt;${[\"lpm\",\"logit\",\"probit\"].map(k=&gt;`&lt;td style=\"padding:5px 18px;text-align:center;\"&gt;${results_ns[k]}&lt;/td&gt;`).join('')}&lt;/tr&gt;\n  &lt;/table&gt;`\n}\n\n\n\n\n\n\n\n\nhtml`&lt;p&gt;Look at the &lt;strong&gt;Current smoker&lt;/strong&gt; row: ${key.lpm} in the LPM, ${key.logit} in the logit, ${key.probit} in the probit. Same data, same controls, same direction, but the raw numbers can't be compared across models. That isn't a mistake in any of them.&lt;/p&gt;`\n\n\n\n\n\n\n\n\nRobust SEs in all three. Country fixed effects included but not shown. Source: Békés & Kézdi (2021), Ch. 11, share-health dataset"
+  },
+  {
+    "objectID": "week8-slides.html#why-raw-coefficients-stop-working",
+    "href": "week8-slides.html#why-raw-coefficients-stop-working",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Why raw coefficients stop working",
+    "text": "Why raw coefficients stop working\n\nLPM’s slope is constant — a one-unit change in \\(x\\) shifts \\(y^P\\) by the same amount everywhere\nLogit and probit’s slope changes depending on where you are on the S-curve — steepest at \\(y^P=0.5\\), flattest near 0 or 1\nDirect consequence: you cannot read raw logit/probit coefficients the way you read an LPM or OLS coefficient"
+  },
+  {
+    "objectID": "week8-slides.html#marginal-effects-the-fix",
+    "href": "week8-slides.html#marginal-effects-the-fix",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Marginal effects — the fix",
+    "text": "Marginal effects — the fix\nThe average marginal effect (AME) is the average, across everyone in the data, of how much \\(y^P\\) changes for a one-unit change in \\(x\\).\n\n\nComputed via numerical derivatives, not by hand — that’s what the marginaleffects package is for\nHas the exact same interpretation as an LPM coefficient\n\n\n\nimport marginaleffects as me\n\nlogit_model = smf.logit(\"stayshealthy ~ smoking + ever_smoked + female + age + eduyears\"\n                        \" + income10 + bmi + exerc + country\", data=df).fit(cov_type=\"HC1\")\name = me.avg_slopes(logit_model)"
+  },
+  {
+    "objectID": "week8-slides.html#real-marginal-effects-on-real-data",
+    "href": "week8-slides.html#real-marginal-effects-on-real-data",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Real marginal effects, on real data",
+    "text": "Real marginal effects, on real data\n\n{\n  return html`&lt;table style=\"margin:16px auto 0;font-family:sans-serif;font-size:0.95em;border-collapse:collapse;\"&gt;\n    &lt;tr style=\"border-bottom:2px solid #1a1a2e;\"&gt;&lt;th style=\"padding:6px 22px;\"&gt;Variable&lt;/th&gt;&lt;th style=\"padding:6px 22px;\"&gt;AME&lt;/th&gt;&lt;th style=\"padding:6px 22px;\"&gt;SE&lt;/th&gt;&lt;/tr&gt;\n    ${ame_rows.map(d =&gt; `&lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;&lt;td style=\"padding:5px 22px;\"&gt;${d.variable}&lt;/td&gt;&lt;td style=\"padding:5px 22px;text-align:center;\"&gt;${d.ame}&lt;/td&gt;&lt;td style=\"padding:5px 22px;text-align:center;color:#555;\"&gt;${d.se}&lt;/td&gt;&lt;/tr&gt;`).join('')}\n  &lt;/table&gt;`\n}\n\n\n\n\n\n\n\n\nhtml`&lt;p&gt;Smoking's AME is ${key.ame_pp.toFixed(1)} percentage points, against ${key.lpm_pp.toFixed(1)} in the LPM. This happens often. When they agree, the LPM was already good enough for interpretation.&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week8-slides.html#task-compute-an-ame-yourself",
+    "href": "week8-slides.html#task-compute-an-ame-yourself",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Task — compute an AME yourself",
+    "text": "Task — compute an AME yourself\n\nBusiness question: does exercising regularly matter as much as not smoking?\nFit the full logit model (country included) and use marginaleffects.avg_slopes() to get the AME for exerc. Compare its size to smoking’s AME above. No further syntax hints."
+  },
+  {
+    "objectID": "week8-slides.html#reading-the-real-logit-output",
+    "href": "week8-slides.html#reading-the-real-logit-output",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Reading the real logit output",
+    "text": "Reading the real logit output\n\nhtml`&lt;pre style=\"font-family:'SF Mono','Menlo',monospace;font-size:0.6em;line-height:1.3;\n                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;\n                  padding:8px 14px;overflow-x:auto;white-space:pre;\"&gt;${logit_summary_text}&lt;/pre&gt;`\n\n\n\n\n\n\n\nCountry dummies left out of the printout. Raw coefficients can’t be read as changes in probability, which is why we use the AMEs on the next slide."
+  },
+  {
+    "objectID": "week8-slides.html#reading-the-real-ame-output",
+    "href": "week8-slides.html#reading-the-real-ame-output",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Reading the real AME output",
+    "text": "Reading the real AME output\n\name = me.avg_slopes(logit_model).to_pandas()\name[ame.term != \"country\"][[\"term\", \"contrast\", \"estimate\", \"std_error\",\n                            \"p_value\", \"conf_low\", \"conf_high\"]]\n\n\nhtml`&lt;pre style=\"font-family:'SF Mono','Menlo',monospace;font-size:0.6em;line-height:1.35;\n                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;\n                  padding:8px 14px;overflow-x:auto;white-space:pre;\"&gt;${ame_print_text}&lt;/pre&gt;`\n\n\n\n\n\n\n\n\nestimate is the AME: the change in the probability of staying healthy, so −0.06 for smoking means 6 percentage points lower\ncontrast says how: 1 - 0 compares the two values of a dummy, dY/dX is the slope of a continuous variable\nstd_error, p_value, conf_low, conf_high read exactly as in any regression output"
+  },
+  {
+    "objectID": "week8-slides.html#task-does-probit-agree-with-logit",
+    "href": "week8-slides.html#task-does-probit-agree-with-logit",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Task — does probit agree with logit?",
+    "text": "Task — does probit agree with logit?\n\nBusiness question: we’ve been treating logit and probit as interchangeable. Are they, really?\nFit both smf.logit and smf.probit on the full model. Pick one hypothetical person — a 55-year-old female smoker, sample-average on everything else — and use .predict() on a one-row dataframe to get each model’s predicted probability for that person. How close are they? No further syntax hints."
+  },
+  {
+    "objectID": "week8-slides.html#what-you-should-have-found-2",
+    "href": "week8-slides.html#what-you-should-have-found-2",
+    "title": "GLMs — Binary Outcomes",
+    "section": "What you should have found",
+    "text": "What you should have found\n\nhtml`&lt;pre style=\"font-family:'SF Mono','Menlo',monospace;font-size:0.6em;line-height:1.4;\n                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;\n                  padding:8px 14px;overflow-x:auto;white-space:pre;\"&gt;${task3_output_text}&lt;/pre&gt;`\n\n\n\n\n\n\n\nLogit and probit differ by only  for this person. This is exactly the pattern from the S-curve chart: different distributional assumptions, practically the same answer."
+  },
+  {
+    "objectID": "week8-slides.html#is-the-model-any-good",
+    "href": "week8-slides.html#is-the-model-any-good",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Is the model any good?",
+    "text": "Is the model any good?"
+  },
+  {
+    "objectID": "week8-slides.html#why-r²-doesnt-quite-work-here",
+    "href": "week8-slides.html#why-r²-doesnt-quite-work-here",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Why R² doesn’t quite work here",
+    "text": "Why R² doesn’t quite work here\n\nA probability model will never predict exactly 0 or exactly 1 — so it can never “perfectly” fit a 0/1 outcome the way OLS can fit a continuous one\n\\(R^2\\) can still be computed, but it no longer carries the same “share of variance explained” meaning\nWe need measures built for probability outcomes"
+  },
+  {
+    "objectID": "week8-slides.html#three-purpose-built-measures",
+    "href": "week8-slides.html#three-purpose-built-measures",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Three purpose-built measures",
+    "text": "Three purpose-built measures\n\nBrier score — mean squared distance between predicted probability and actual outcome. Smaller is better.\nPseudo R² (McFadden’s) — ratio of the model’s log-likelihood to an intercept-only model’s. Works for logit/probit, not LPM (no likelihood function there).\nLog-loss — a negative number; closer to zero is better."
+  },
+  {
+    "objectID": "week8-slides.html#goodness-of-fit-on-real-data",
+    "href": "week8-slides.html#goodness-of-fit-on-real-data",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Goodness of fit, on real data",
+    "text": "Goodness of fit, on real data\n\n{\n  const cols = [[\"model\",\"Model\"],[\"r2\",\"R²\"],[\"brier\",\"Brier\"],[\"pseudo_r2\",\"Pseudo R²\"],[\"logloss\",\"Log-loss\"]];\n  return html`&lt;table style=\"margin:16px auto 0;font-family:sans-serif;font-size:1em;border-collapse:collapse;\"&gt;\n    &lt;tr style=\"border-bottom:2px solid #1a1a2e;\"&gt;${cols.map(c=&gt;`&lt;th style=\"padding:6px 20px;\"&gt;${c[1]}&lt;/th&gt;`).join('')}&lt;/tr&gt;\n    ${gof_rows.map(d =&gt; `&lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;${cols.map(c=&gt;`&lt;td style=\"padding:5px 20px;text-align:${c[0]==='model'?'left':'center'};\"&gt;${d[c[0]]}&lt;/td&gt;`).join('')}&lt;/tr&gt;`).join('')}\n  &lt;/table&gt;`\n}\n\n\n\n\n\n\n\nLogit and probit edge out LPM on every measure, but the differences are small — consistent with what the marginal effects already told us."
+  },
+  {
+    "objectID": "week8-slides.html#task-compute-the-brier-score-yourself",
+    "href": "week8-slides.html#task-compute-the-brier-score-yourself",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Task — compute the Brier score yourself",
+    "text": "Task — compute the Brier score yourself\n\nBusiness question: how would you check the table above wasn’t just typed in?\nThe Brier score is nothing more than the same squared-error idea behind \\(R^2\\) back in Week 4 — just applied to a probability instead of a price. Get logit’s predicted probabilities with .predict(), then compute np.mean((pred - y) ** 2) by hand. Does it match the table? No further syntax hints."
+  },
+  {
+    "objectID": "week8-slides.html#what-you-should-have-found-3",
+    "href": "week8-slides.html#what-you-should-have-found-3",
+    "title": "GLMs — Binary Outcomes",
+    "section": "What you should have found",
+    "text": "What you should have found\n\nhtml`&lt;pre style=\"font-family:'SF Mono','Menlo',monospace;font-size:0.62em;line-height:1.4;\n                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;\n                  padding:8px 14px;overflow-x:auto;white-space:pre;\"&gt;${task4_output_text}&lt;/pre&gt;`\n\n\n\n\n\n\n\nSame number as the table — . Goodness of fit for a probability model is MSE wearing a different name."
+  },
+  {
+    "objectID": "week8-slides.html#calibration-a-sharper-question",
+    "href": "week8-slides.html#calibration-a-sharper-question",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Calibration — a sharper question",
+    "text": "Calibration — a sharper question\nUnbiasedness asks: is the model right on average? Calibration asks something stricter: is it right at every predicted probability level?\n\nTake everyone predicted around a 30% chance of staying healthy. If roughly 30% of them actually did, the model is well calibrated there. Do this across the whole range of predictions — that’s a calibration curve."
+  },
+  {
+    "objectID": "week8-slides.html#real-calibration-curve",
+    "href": "week8-slides.html#real-calibration-curve",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Real calibration curve",
+    "text": "Real calibration curve\ndf[\"pred_logit\"] = logit_model.predict(df)\ndf[\"decile\"] = pd.qcut(df[\"pred_logit\"], 10, labels=False)\n\ncalib = (df.groupby(\"decile\")\n           .agg(pred=(\"pred_logit\", \"mean\"), actual=(\"stayshealthy\", \"mean\"))\n           .reset_index())\n\n\n\nPlot.plot({\n  width: 500, height: 500,\n  x: {label: \"Predicted probability\", domain: [0,1]},\n  y: {label: \"Actual outcome rate\", domain: [0,1]},\n  marks: [\n    Plot.line([{x:0,y:0},{x:1,y:1}], {x:\"x\", y:\"y\", stroke:\"#ccc\", strokeDasharray:\"4,4\"}),\n    Plot.line(calibration_data, {x:\"pred\", y:\"actual\", stroke:\"#2d6a4f\", strokeWidth:2}),\n    Plot.dot(calibration_data, {x:\"pred\", y:\"actual\", fill:\"#2d6a4f\", r:4})\n  ]\n})\n\n\n\n\n\n\n\n\n\nDeciles of predicted probability from the logit model, against the actual fraction who stayed healthy in each decile. Close to the diagonal — well calibrated, not just unbiased on average."
+  },
+  {
+    "objectID": "week8-slides.html#back-to-the-question",
+    "href": "week8-slides.html#back-to-the-question",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Back to the question",
+    "text": "Back to the question"
+  },
+  {
+    "objectID": "week8-slides.html#so-does-smoking-matter",
+    "href": "week8-slides.html#so-does-smoking-matter",
+    "title": "GLMs — Binary Outcomes",
+    "section": "So, does smoking matter?",
+    "text": "So, does smoking matter?\n\nhtml`&lt;ul&gt;\n&lt;li&gt;Smokers are less likely to stay healthy: about &lt;strong&gt;${key.lpm_pp.toFixed(1)} percentage points&lt;/strong&gt; in the LPM and ${key.ame_pp.toFixed(1)} as a logit AME, after controlling for age, income, education, exercise and country (${key.uni_pp.toFixed(1)} with no controls)&lt;/li&gt;\n&lt;li&gt;The model is well calibrated: its predicted probabilities can be trusted across the range, not just on average&lt;/li&gt;\n&lt;li&gt;LPM, logit and probit tell the same story here. The fancier model doesn't always change the answer&lt;/li&gt;\n&lt;/ul&gt;`"
+  },
+  {
+    "objectID": "week8-slides.html#summary",
+    "href": "week8-slides.html#summary",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Summary",
+    "text": "Summary\n\nA binary y is really a probability to be modelled; the latent-variable story explains why link functions are needed\nLPM is OLS with a 0/1 y — simple, but predicted probabilities can fall outside [0,1]\nLogit and probit fix the range problem, at the cost of needing marginal effects to interpret coefficients\nGoodness of fit for probability models means Brier score, pseudo-R², log-loss, and calibration — not \\(R^2\\) alone"
+  },
+  {
+    "objectID": "week8-slides.html#online-session",
+    "href": "week8-slides.html#online-session",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Online session",
+    "text": "Online session\nWhat happens when y is a count rather than a 0/1: Poisson regression, incidence rate ratios, and what to do when the data are more spread out than Poisson allows."
+  },
+  {
+    "objectID": "week8-slides.html#coming-up",
+    "href": "week8-slides.html#coming-up",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Coming up",
+    "text": "Coming up\n\nWeek 9: Causal Analysis and Experiments\n\nWe’ve been careful all module to describe association, not effect. Next week: a formal framework for when you’re allowed to make that claim — and experiments, the most direct way to earn it."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#section",
+    "href": "week8-slides-no-answers.html#section",
+    "title": "GLMs — Binary Outcomes",
+    "section": "",
+    "text": "Binary outcomes\nEvery model so far has had a continuous y. What changes when the outcome is just yes or no?"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#does-smoking-pose-a-health-risk",
+    "href": "week8-slides-no-answers.html#does-smoking-pose-a-health-risk",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Does smoking pose a health risk?",
+    "text": "Does smoking pose a health risk?\n\n\nBusiness question: among people who are currently healthy, does smoking meaningfully raise the chance their health declines over the next few years — once other differences between smokers and non-smokers are accounted for?\n\n\nWe have real data: 3,112 people aged 50–60, healthy at the start, tracked four years later. stayshealthy is 1 if still healthy, 0 if not."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#the-naive-answer",
+    "href": "week8-slides-no-answers.html#the-naive-answer",
+    "title": "GLMs — Binary Outcomes",
+    "section": "The naive answer",
+    "text": "The naive answer\nNaive answer: compare the fraction of smokers who stayed healthy to the fraction of non-smokers who did. Done.\n\nWhy it’s not that simple: smokers and non-smokers differ in plenty of other ways — age, exercise, income, education — exactly the confounding problem from Week 6. And the outcome itself is different from anything we’ve modelled so far: it only ever takes the value 0 or 1."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#what-we-need",
+    "href": "week8-slides-no-answers.html#what-we-need",
+    "title": "GLMs — Binary Outcomes",
+    "section": "What we need",
+    "text": "What we need\n\nA regression framework built for a 0/1 outcome, not just a workaround bolted onto OLS\nA way to interpret coefficients when the outcome is a probability, not a quantity\nA sense of whether the model is actually any good, when it can never predict a 0 or a 1 exactly"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#binary-outcomes-and-the-latent-variable",
+    "href": "week8-slides-no-answers.html#binary-outcomes-and-the-latent-variable",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Binary outcomes and the latent variable",
+    "text": "Binary outcomes and the latent variable"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#whats-different-about-a-01-y",
+    "href": "week8-slides-no-answers.html#whats-different-about-a-01-y",
+    "title": "GLMs — Binary Outcomes",
+    "section": "What’s different about a 0/1 y",
+    "text": "What’s different about a 0/1 y\n\nThe expected value of a binary variable is a probability: \\(E[y] = P[y=1]\\)\nFrequency and probability become the same idea: 25% of cases having \\(y=1\\) is the same statement as a 25% chance of the event\nSo “modelling y” here really means modelling a probability"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#where-does-the-01-actually-come-from",
+    "href": "week8-slides-no-answers.html#where-does-the-01-actually-come-from",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Where does the 0/1 actually come from?",
+    "text": "Where does the 0/1 actually come from?\nThink about what “staying healthy” really is — it isn’t binary at all. Health is a continuum: some people are robustly healthy, some are fragile but not yet ill, some are already declining.\n\nThere’s an unobserved, continuous latent variable — call it \\(y^*\\) — representing that underlying health trajectory. We don’t observe \\(y^*\\) directly. We only observe whether it crossed a threshold:\n\\[y = \\begin{cases} 1 & \\text{if } y^* &gt; 0 \\\\ 0 & \\text{if } y^* \\le 0 \\end{cases}\\]"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#why-the-latent-variable-matters",
+    "href": "week8-slides-no-answers.html#why-the-latent-variable-matters",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Why the latent variable matters",
+    "text": "Why the latent variable matters\n\nIf \\(y^*\\) is linear in \\(x\\) plus some random error — \\(y^* = \\beta_0 + \\beta_1 x_1 + \\dots + e\\) — then:\n\\[P[y=1|x] = P[y^*&gt;0|x] = P[e &gt; -(\\beta_0+\\beta_1 x_1+\\dots)]\\]\n\n\nThis is a probability, so it has to come from the distribution of that error term \\(e\\) — specifically, its cumulative distribution function (CDF): the chance that \\(e\\) falls below a given value. A CDF always runs from 0 to 1, which is exactly what we want for a probability.\n\nAssume \\(e\\) is logistic → you get the logit model\nAssume \\(e\\) is normal → you get the probit model\nIgnore this altogether and model \\(y\\) directly with a straight line → you get the linear probability model"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#one-family-the-generalized-linear-model",
+    "href": "week8-slides-no-answers.html#one-family-the-generalized-linear-model",
+    "title": "GLMs — Binary Outcomes",
+    "section": "One family: the Generalized Linear Model",
+    "text": "One family: the Generalized Linear Model\nEvery model in this session shares the same three-part structure:\n\nA linear predictor: \\(\\eta = \\beta_0 + \\beta_1 x_1 + \\dots\\)\nA link function connecting \\(\\eta\\) to \\(E[y|x]\\)\nA distributional assumption for \\(y\\)\n\n\nThis is the Generalized Linear Model (GLM). Logit and probit aren’t a separate technique from what you already know — and neither, in a moment, will Poisson be."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#the-family-laid-out",
+    "href": "week8-slides-no-answers.html#the-family-laid-out",
+    "title": "GLMs — Binary Outcomes",
+    "section": "The family, laid out",
+    "text": "The family, laid out\n\n\n\nModel\nLink function\nDistributional assumption\n\n\n\n\nOLS\nIdentity\nGaussian (normal errors)\n\n\nLPM\nIdentity\nNone — plain OLS applied to a 0/1 y\n\n\nLogit\nLogistic\nBinomial\n\n\nProbit\nNormal CDF\nBinomial\n\n\nPoisson (online session)\nLog\nPoisson\n\n\nNegative binomial (online session)\nLog\nPoisson + dispersion\n\n\n\n\nOLS is the special case where the link function does nothing at all."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#the-linear-probability-model",
+    "href": "week8-slides-no-answers.html#the-linear-probability-model",
+    "title": "GLMs — Binary Outcomes",
+    "section": "The linear probability model",
+    "text": "The linear probability model"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#lpm-the-simplest-option",
+    "href": "week8-slides-no-answers.html#lpm-the-simplest-option",
+    "title": "GLMs — Binary Outcomes",
+    "section": "LPM — the simplest option",
+    "text": "LPM — the simplest option\n\\[y^P = \\beta_0 + \\beta_1 x_1 + \\beta_2 x_2 + \\dots\\]\n\n\\(y^P\\) denotes \\(P[y=1|x_1,x_2,\\dots]\\)\nJust OLS, with a binary y — everything from Weeks 4–6 still applies: logs, splines, interactions, robust SEs\nHeteroskedasticity-robust SEs are essential — LPM residuals are mechanically heteroskedastic\n\n\ny is either 0 or 1, so \\(Var[y\\mid x] = y^P(1-y^P)\\). The spread of the residuals depends on the predicted probability, and that changes with x. So the residuals can’t have a constant spread: a 0/1 outcome is always heteroskedastic."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#why-the-spread-cant-be-constant",
+    "href": "week8-slides-no-answers.html#why-the-spread-cant-be-constant",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Why the spread can’t be constant",
+    "text": "Why the spread can’t be constant\nA made-up LPM, \\(\\hat y^P = 0.1 + 0.08x\\). At any \\(x\\), \\(y\\) is 0 or 1, so the residual can only take two values: \\(1-\\hat y^P\\) or \\(-\\hat y^P\\). Move \\(x\\) and watch the spread change.\n\nviewof hx = Inputs.range([0, 10], {step: 0.5, value: 1, label: \"x\"})\n\n\n\n\n\n\n\nhsim = {\n  const rnd = d3.randomLcg(8), pts = [];\n  for (let i = 0; i &lt; 220; i++) {\n    const x = rnd() * 10, p = 0.1 + 0.08 * x, y = rnd() &lt; p ? 1 : 0;\n    pts.push({x, y, resid: y - p, lab: y === 1 ? \"y = 1\" : \"y = 0\"});\n  }\n  return pts;\n}\n\n\n\n\n\n\n\n{\n  const p = 0.1 + 0.08 * hx, v = p * (1 - p);\n  const left = Plot.plot({\n    width: 560, height: 330, marginLeft: 50,\n    x: {label: \"x\", domain: [0, 10]}, y: {label: \"Residual\", domain: [-1, 1]},\n    color: {domain: [\"y = 1\", \"y = 0\"], range: [\"#2d6a4f\", \"#c8373f\"], legend: true},\n    marks: [\n      Plot.ruleY([0], {stroke: \"#bbb\"}),\n      Plot.dot(hsim, {x: \"x\", y: \"resid\", fill: \"lab\", r: 2.5, fillOpacity: 0.45}),\n      Plot.ruleX([hx], {stroke: \"#1a1a2e\", strokeDasharray: \"4,3\"}),\n      Plot.dot([{x: hx, r: 1 - p}, {x: hx, r: -p}], {x: \"x\", y: \"r\", r: 7, stroke: \"#1a1a2e\", strokeWidth: 2.5, fill: \"white\"})\n    ]\n  });\n  const curve = d3.range(0, 10.01, 0.1).map(x =&gt; { const q = 0.1 + 0.08 * x; return {x, v: q * (1 - q)}; });\n  const right = Plot.plot({\n    width: 420, height: 330, marginLeft: 50,\n    x: {label: \"x\", domain: [0, 10]}, y: {label: \"Variance of the residual\", domain: [0, 0.27]},\n    marks: [\n      Plot.line(curve, {x: \"x\", y: \"v\", stroke: \"#2f6690\", strokeWidth: 2.5}),\n      Plot.dot([{x: hx, v}], {x: \"x\", y: \"v\", r: 7, fill: \"#1a1a2e\"})\n    ]\n  });\n  return html`&lt;div style=\"display:flex;gap:24px;justify-content:center;align-items:flex-end;\"&gt;${left}${right}&lt;/div&gt;\n  &lt;p style=\"text-align:center;font-size:0.95em;margin-top:6px;\"&gt;At &lt;i&gt;x&lt;/i&gt; = ${hx}, &lt;i&gt;ŷ&lt;sup&gt;P&lt;/sup&gt;&lt;/i&gt; = ${p.toFixed(2)}: the residual is &lt;b&gt;+${(1 - p).toFixed(2)}&lt;/b&gt; (${(100 * p).toFixed(0)}% of the time) or &lt;b&gt;−${p.toFixed(2)}&lt;/b&gt; (${(100 * (1 - p)).toFixed(0)}%). Variance = ${p.toFixed(2)} × ${(1 - p).toFixed(2)} = &lt;b&gt;${v.toFixed(3)}&lt;/b&gt;.&lt;/p&gt;`\n}"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#task-fit-the-lpm-yourself",
+    "href": "week8-slides-no-answers.html#task-fit-the-lpm-yourself",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Task — fit the LPM yourself",
+    "text": "Task — fit the LPM yourself\n\nBusiness question: how big is the raw gap between smokers and non-smokers, before any controls?\nOpen the Colab notebook — data_path is already defined for you. Load the data and fit stayshealthy ~ smoking with smf.ols and cov_type='HC1'. What’s the coefficient, and how would you phrase it as a sentence a health policy team could use? No further syntax hints."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#lpm-on-real-data-one-variable-first",
+    "href": "week8-slides-no-answers.html#lpm-on-real-data-one-variable-first",
+    "title": "GLMs — Binary Outcomes",
+    "section": "LPM on real data — one variable first",
+    "text": "LPM on real data — one variable first\n\nmodel = smf.ols(\"stayshealthy ~ smoking\", data=df).fit(cov_type=\"HC1\")\n\n\nThe regression output appears here in the workshop – run the code above in the notebook to see it."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#what-you-should-have-found",
+    "href": "week8-slides-no-answers.html#what-you-should-have-found",
+    "title": "GLMs — Binary Outcomes",
+    "section": "What you should have found",
+    "text": "What you should have found\n\nAnswer revealed in the workshop.\n\n\nTask: Does that survive adding controls for age, exercise, income, education?"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#lpm-with-controls",
+    "href": "week8-slides-no-answers.html#lpm-with-controls",
+    "title": "GLMs — Binary Outcomes",
+    "section": "LPM with controls",
+    "text": "LPM with controls\n\ndf[\"country\"] = df[\"country\"].astype(str).astype(\"category\")   # one dummy per country\nmodel = smf.ols(\"stayshealthy ~ smoking + ever_smoked + female + age + eduyears\"\n                \" + income10 + bmi + exerc + country\", data=df).fit(cov_type=\"HC1\")\n\n\nThe coefficient table appears here in the workshop – it’s part of the next task’s answer.\n\n\nRobust SEs. Country fixed effects included but not shown. Source: Békés & Kézdi (2021), Ch. 11, share-health dataset"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#is-this-a-kitchen-sink",
+    "href": "week8-slides-no-answers.html#is-this-a-kitchen-sink",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Is this a kitchen sink?",
+    "text": "Is this a kitchen sink?\nFair question: we’ve added every control the dataset offers. Each one should earn its place.\n\n\nAge, education, income, gender, country come before smoking or alongside it. They could drive both smoking and health — likely confounders, so control for them.\nBMI and exercise are less clear. Smoking may itself change weight and how much people exercise. If so, they’re partly bad controls (Week 6): holding them fixed soaks up part of smoking’s own effect.\n\n\n\nWe follow Békés & Kézdi’s specification here. In your own work, justify each control rather than adding everything — and check whether the result moves when the doubtful ones come out."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#the-bigger-problem-with-lpm",
+    "href": "week8-slides-no-answers.html#the-bigger-problem-with-lpm",
+    "title": "GLMs — Binary Outcomes",
+    "section": "The bigger problem with LPM",
+    "text": "The bigger problem with LPM\nWe often want to use our model to predict outcomes. Let’s do that here.\nPredicted values - \\(\\hat{y}^P\\) - may cause problems.\nlpm_pred = model.predict(df)\nlpm_pred.min(), lpm_pred.max(), (lpm_pred &gt; 1).sum()\n\nhtml`&lt;div style=\"font-family:sans-serif;\"&gt;\n  &lt;p&gt;Predicted probabilities in this model range from &lt;b&gt;${lpm_pred_min.toFixed(3)}&lt;/b&gt; to &lt;b&gt;${lpm_pred_max.toFixed(4)}&lt;/b&gt;, across &lt;b&gt;${results_n}&lt;/b&gt; observations.&lt;/p&gt;\n&lt;/div&gt;`\n\n\n\n\n\n\n\n\nhtml`&lt;p&gt;${n_above_1 === 1 ? 'One observation gets' : n_above_1 + ' observations get'} a predicted probability &lt;em&gt;above 1&lt;/em&gt;. That's meaningless for a probability, and nothing in the LPM stops it happening.&lt;/p&gt;`\n\n\n\n\n\n\n\n\nFor inference — uncovering patterns of association — this is rarely a big problem. For prediction, it’s a real one: you can’t tell a client their chance of an outcome is 104%."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#logit-and-probit",
+    "href": "week8-slides-no-answers.html#logit-and-probit",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Logit and probit",
+    "text": "Logit and probit"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#fixing-the-range-problem",
+    "href": "week8-slides-no-answers.html#fixing-the-range-problem",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Fixing the range problem",
+    "text": "Fixing the range problem\nRecall the latent-variable story: \\(P[y=1|x]\\) has to come from a genuine probability distribution’s CDF — which is bounded between 0 and 1 by construction.\n\nLogit: assumes \\(e\\) is logistic → link function is the logistic function \\(\\Lambda(z) = \\dfrac{\\exp(z)}{1+\\exp(z)}\\)\nProbit: assumes \\(e\\) is normal → link function is \\(\\Phi(z)\\), the standard normal CDF\nBoth are increasing, S-shaped, and strictly between 0 and 1"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#same-data-three-link-functions",
+    "href": "week8-slides-no-answers.html#same-data-three-link-functions",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Same data, three link functions",
+    "text": "Same data, three link functions\n\nPlot.plot({\n  width: 640, height: 560,\n  x: {label: \"Linear index (z)\"}, y: {label: \"P(y=1)\"},\n  marks: [\n    Plot.line(d3.range(-6,6.1,0.2).map(z =&gt; ({z, p: Math.max(0,Math.min(1,0.5+z/8)), series:\"LPM\"})), {x:\"z\",y:\"p\",stroke:\"series\"}),\n    Plot.line(d3.range(-6,6.1,0.2).map(z =&gt; ({z, p: 1/(1+Math.exp(-z)), series:\"Logit\"})), {x:\"z\",y:\"p\",stroke:\"series\"}),\n    Plot.line(d3.range(-6,6.1,0.2).map(z =&gt; ({z, p: jStat_norm_cdf(z), series:\"Probit\"})), {x:\"z\",y:\"p\",stroke:\"series\"})\n  ],\n  color: {legend: true}\n})\n\n\n\n\n\n\n\nfunction jStat_norm_cdf(z) {\n  return 0.5 * (1 + erf(z / Math.sqrt(2)));\n}\nfunction erf(x) {\n  const sign = x &lt; 0 ? -1 : 1;\n  x = Math.abs(x);\n  const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;\n  const t = 1/(1+p*x);\n  const y = 1-((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);\n  return sign*y;\n}"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#task-fit-all-three-yourself",
+    "href": "week8-slides-no-answers.html#task-fit-all-three-yourself",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Task — fit all three yourself",
+    "text": "Task — fit all three yourself\n\nBusiness question: does the smoking coefficient tell the same story whichever model you use?\nUsing the full model with controls (age, income, education, exercise, country), fit all three: smf.ols, smf.logit, smf.probit — same formula each time. For country, the notebook has already turned it into a category, so just add country to the formula: each country gets its own dummy, rather than being read as one continuous number.\nCompare the three outputs in one table.\nNo further syntax hints."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#what-you-should-have-found-1",
+    "href": "week8-slides-no-answers.html#what-you-should-have-found-1",
+    "title": "GLMs — Binary Outcomes",
+    "section": "What you should have found",
+    "text": "What you should have found\n\nAnswer revealed in the workshop."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#why-raw-coefficients-stop-working",
+    "href": "week8-slides-no-answers.html#why-raw-coefficients-stop-working",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Why raw coefficients stop working",
+    "text": "Why raw coefficients stop working\n\nLPM’s slope is constant — a one-unit change in \\(x\\) shifts \\(y^P\\) by the same amount everywhere\nLogit and probit’s slope changes depending on where you are on the S-curve — steepest at \\(y^P=0.5\\), flattest near 0 or 1\nDirect consequence: you cannot read raw logit/probit coefficients the way you read an LPM or OLS coefficient"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#marginal-effects-the-fix",
+    "href": "week8-slides-no-answers.html#marginal-effects-the-fix",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Marginal effects — the fix",
+    "text": "Marginal effects — the fix\nThe average marginal effect (AME) is the average, across everyone in the data, of how much \\(y^P\\) changes for a one-unit change in \\(x\\).\n\n\nComputed via numerical derivatives, not by hand — that’s what the marginaleffects package is for\nHas the exact same interpretation as an LPM coefficient\n\n\n\nimport marginaleffects as me\n\nlogit_model = smf.logit(\"stayshealthy ~ smoking + ever_smoked + female + age + eduyears\"\n                        \" + income10 + bmi + exerc + country\", data=df).fit(cov_type=\"HC1\")\name = me.avg_slopes(logit_model)"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#real-marginal-effects-on-real-data",
+    "href": "week8-slides-no-answers.html#real-marginal-effects-on-real-data",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Real marginal effects, on real data",
+    "text": "Real marginal effects, on real data\n\nThe AME table appears here in the workshop – the next task asks you to produce it yourself."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#task-compute-an-ame-yourself",
+    "href": "week8-slides-no-answers.html#task-compute-an-ame-yourself",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Task — compute an AME yourself",
+    "text": "Task — compute an AME yourself\n\nBusiness question: does exercising regularly matter as much as not smoking?\nFit the full logit model (country included) and use marginaleffects.avg_slopes() to get the AME for exerc. Compare its size to smoking’s AME. No further syntax hints."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#reading-the-real-logit-output",
+    "href": "week8-slides-no-answers.html#reading-the-real-logit-output",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Reading the real logit output",
+    "text": "Reading the real logit output\n\nThe logit output appears here in the workshop – run the full logit model in the notebook to see it.\n\n\nCountry dummies left out of the printout. Raw coefficients can’t be read as changes in probability, which is why we use the AMEs on the next slide."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#reading-the-real-ame-output",
+    "href": "week8-slides-no-answers.html#reading-the-real-ame-output",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Reading the real AME output",
+    "text": "Reading the real AME output\n\name = me.avg_slopes(logit_model).to_pandas()\name[ame.term != \"country\"][[\"term\", \"contrast\", \"estimate\", \"std_error\",\n                            \"p_value\", \"conf_low\", \"conf_high\"]]\n\n\nThe AME output appears here in the workshop – run the code above in the notebook to see it.\n\n\n\nestimate is the AME: the change in the probability of staying healthy, so an estimate of −0.05 would mean 5 percentage points lower\ncontrast says how: 1 - 0 compares the two values of a dummy, dY/dX is the slope of a continuous variable\nstd_error, p_value, conf_low, conf_high read exactly as in any regression output"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#task-does-probit-agree-with-logit",
+    "href": "week8-slides-no-answers.html#task-does-probit-agree-with-logit",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Task — does probit agree with logit?",
+    "text": "Task — does probit agree with logit?\n\nBusiness question: we’ve been treating logit and probit as interchangeable. Are they, really?\nFit both smf.logit and smf.probit on the full model. Pick one hypothetical person — a 55-year-old female smoker, sample-average on everything else — and use .predict() on a one-row dataframe to get each model’s predicted probability for that person. How close are they? No further syntax hints."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#what-you-should-have-found-2",
+    "href": "week8-slides-no-answers.html#what-you-should-have-found-2",
+    "title": "GLMs — Binary Outcomes",
+    "section": "What you should have found",
+    "text": "What you should have found\n\nAnswer revealed in the workshop."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#is-the-model-any-good",
+    "href": "week8-slides-no-answers.html#is-the-model-any-good",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Is the model any good?",
+    "text": "Is the model any good?"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#why-r²-doesnt-quite-work-here",
+    "href": "week8-slides-no-answers.html#why-r²-doesnt-quite-work-here",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Why R² doesn’t quite work here",
+    "text": "Why R² doesn’t quite work here\n\nA probability model will never predict exactly 0 or exactly 1 — so it can never “perfectly” fit a 0/1 outcome the way OLS can fit a continuous one\n\\(R^2\\) can still be computed, but it no longer carries the same “share of variance explained” meaning\nWe need measures built for probability outcomes"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#three-purpose-built-measures",
+    "href": "week8-slides-no-answers.html#three-purpose-built-measures",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Three purpose-built measures",
+    "text": "Three purpose-built measures\n\nBrier score — mean squared distance between predicted probability and actual outcome. Smaller is better.\nPseudo R² (McFadden’s) — ratio of the model’s log-likelihood to an intercept-only model’s. Works for logit/probit, not LPM (no likelihood function there).\nLog-loss — a negative number; closer to zero is better."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#goodness-of-fit-on-real-data",
+    "href": "week8-slides-no-answers.html#goodness-of-fit-on-real-data",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Goodness of fit, on real data",
+    "text": "Goodness of fit, on real data\n\n{\n  const cols = [[\"model\",\"Model\"],[\"r2\",\"R²\"],[\"brier\",\"Brier\"],[\"pseudo_r2\",\"Pseudo R²\"],[\"logloss\",\"Log-loss\"]];\n  return html`&lt;table style=\"margin:16px auto 0;font-family:sans-serif;font-size:1em;border-collapse:collapse;\"&gt;\n    &lt;tr style=\"border-bottom:2px solid #1a1a2e;\"&gt;${cols.map(c=&gt;`&lt;th style=\"padding:6px 20px;\"&gt;${c[1]}&lt;/th&gt;`).join('')}&lt;/tr&gt;\n    ${gof_rows.map(d =&gt; `&lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;${cols.map(c=&gt;`&lt;td style=\"padding:5px 20px;text-align:${c[0]==='model'?'left':'center'};\"&gt;${d[c[0]]}&lt;/td&gt;`).join('')}&lt;/tr&gt;`).join('')}\n  &lt;/table&gt;`\n}\n\n\n\n\n\n\n\nLogit and probit edge out LPM on every measure, but the differences are small — consistent with what the marginal effects already told us."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#task-compute-the-brier-score-yourself",
+    "href": "week8-slides-no-answers.html#task-compute-the-brier-score-yourself",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Task — compute the Brier score yourself",
+    "text": "Task — compute the Brier score yourself\n\nBusiness question: how would you check the table above wasn’t just typed in?\nThe Brier score is nothing more than the same squared-error idea behind \\(R^2\\) back in Week 4 — just applied to a probability instead of a price. Get logit’s predicted probabilities with .predict(), then compute np.mean((pred - y) ** 2) by hand. Does it match the table? No further syntax hints."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#what-you-should-have-found-3",
+    "href": "week8-slides-no-answers.html#what-you-should-have-found-3",
+    "title": "GLMs — Binary Outcomes",
+    "section": "What you should have found",
+    "text": "What you should have found\n\nAnswer revealed in the workshop."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#calibration-a-sharper-question",
+    "href": "week8-slides-no-answers.html#calibration-a-sharper-question",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Calibration — a sharper question",
+    "text": "Calibration — a sharper question\nUnbiasedness asks: is the model right on average? Calibration asks something stricter: is it right at every predicted probability level?\n\nTake everyone predicted around a 30% chance of staying healthy. If roughly 30% of them actually did, the model is well calibrated there. Do this across the whole range of predictions — that’s a calibration curve."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#real-calibration-curve",
+    "href": "week8-slides-no-answers.html#real-calibration-curve",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Real calibration curve",
+    "text": "Real calibration curve\ndf[\"pred_logit\"] = logit_model.predict(df)\ndf[\"decile\"] = pd.qcut(df[\"pred_logit\"], 10, labels=False)\n\ncalib = (df.groupby(\"decile\")\n           .agg(pred=(\"pred_logit\", \"mean\"), actual=(\"stayshealthy\", \"mean\"))\n           .reset_index())\n\n\n\nPlot.plot({\n  width: 500, height: 500,\n  x: {label: \"Predicted probability\", domain: [0,1]},\n  y: {label: \"Actual outcome rate\", domain: [0,1]},\n  marks: [\n    Plot.line([{x:0,y:0},{x:1,y:1}], {x:\"x\", y:\"y\", stroke:\"#ccc\", strokeDasharray:\"4,4\"}),\n    Plot.line(calibration_data, {x:\"pred\", y:\"actual\", stroke:\"#2d6a4f\", strokeWidth:2}),\n    Plot.dot(calibration_data, {x:\"pred\", y:\"actual\", fill:\"#2d6a4f\", r:4})\n  ]\n})\n\n\n\n\n\n\n\n\n\nDeciles of predicted probability from the logit model, against the actual fraction who stayed healthy in each decile. Close to the diagonal — well calibrated, not just unbiased on average."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#back-to-the-question",
+    "href": "week8-slides-no-answers.html#back-to-the-question",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Back to the question",
+    "text": "Back to the question"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#so-does-smoking-matter",
+    "href": "week8-slides-no-answers.html#so-does-smoking-matter",
+    "title": "GLMs — Binary Outcomes",
+    "section": "So, does smoking matter?",
+    "text": "So, does smoking matter?\n\nSmokers are less likely to stay healthy, even after controlling for age, income, education, exercise and country. The tasks give you the size of the gap.\nThe model is well calibrated: its predicted probabilities can be trusted across the range, not just on average\nLPM, logit and probit tell the same story here. The fancier model doesn’t always change the answer"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#summary",
+    "href": "week8-slides-no-answers.html#summary",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Summary",
+    "text": "Summary\n\nA binary y is really a probability to be modelled; the latent-variable story explains why link functions are needed\nLPM is OLS with a 0/1 y — simple, but predicted probabilities can fall outside [0,1]\nLogit and probit fix the range problem, at the cost of needing marginal effects to interpret coefficients\nGoodness of fit for probability models means Brier score, pseudo-R², log-loss, and calibration — not \\(R^2\\) alone"
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#online-session",
+    "href": "week8-slides-no-answers.html#online-session",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Online session",
+    "text": "Online session\nWhat happens when y is a count rather than a 0/1: Poisson regression, incidence rate ratios, and what to do when the data are more spread out than Poisson allows."
+  },
+  {
+    "objectID": "week8-slides-no-answers.html#coming-up",
+    "href": "week8-slides-no-answers.html#coming-up",
+    "title": "GLMs — Binary Outcomes",
+    "section": "Coming up",
+    "text": "Coming up\n\nWeek 9: Causal Analysis and Experiments\n\nWe’ve been careful all module to describe association, not effect. Next week: a formal framework for when you’re allowed to make that claim — and experiments, the most direct way to earn it."
   }
 ]
