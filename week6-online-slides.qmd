@@ -1,7 +1,6 @@
 ---
-title: "Multiple Regression, Worked Through"
+title: "Multiple Regression Case Studies"
 subtitle: "7002LBSAI Research Methods in Analytics — Week 6 Online Session"
-search: false
 format:
   revealjs:
     theme: simple
@@ -68,7 +67,7 @@ hotel_deals = hotels.nsmallest(5, 'resid')[['hotel_id', 'price', 'resid', 'dista
 
 
 ::: {style="text-align: center; padding-top: 180px;"}
-[**Multiple regression, worked through**]{style="font-size: 2.2em; color: white;"}
+[**Multiple regression case studies**]{style="font-size: 2.2em; color: white;"}
 
 
 :::
