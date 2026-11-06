@@ -24,82 +24,95 @@ execute:
 ---
 
 ```{python}
-import pandas as pd
+import warnings
+warnings.filterwarnings("ignore")
 import numpy as np
+import pandas as pd
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
+from scipy import stats
 
-# UCI Bike Sharing dataset (Fanaee-T & Gama, 2013), daily aggregation, 731 days
-# Source: archive.ics.uci.edu/dataset/275/bike+sharing+dataset (CC BY 4.0)
-# GitHub raw URL (once pushed to the student data repo):
-# bike_df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/bike_sharing_day.csv")
-bike_df = pd.read_csv("data/bike_sharing_day.csv")
-bike_df["temp_c"] = bike_df["temp"] * 41
-bike_df["season_name"] = bike_df["season"].map({1: "Spring", 2: "Summer", 3: "Fall", 4: "Winter"})
+# Simulated for this module (wk8/online-build/generate_support_tickets.py, seed 1).
+# One row per customer account of a software company, over the last six months.
+# GitHub raw URL:
+# df = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/support_tickets.csv")
+df = pd.read_csv("data/support_tickets.csv")
 
-f_bike = "cnt ~ temp_c + workingday + C(season_name) + windspeed + hum"
+f = "tickets ~ users + trained + plan"
+pois = smf.glm(f, data=df, family=sm.families.Poisson(), exposure=df["months_active"]).fit()
+pois_noexp = smf.glm(f, data=df, family=sm.families.Poisson()).fit()
+nb = smf.negativebinomial(f, data=df, exposure=df["months_active"]).fit(disp=0)
+ols = smf.ols(f, data=df).fit()
 
-poisson = smf.glm(f_bike, data=bike_df, family=sm.families.Poisson()).fit()
-nb = smf.negativebinomial(f_bike, data=bike_df).fit(disp=0)
+terms = ["users", "trained", "plan[T.Pro]", "plan[T.Enterprise]"]
+labels = {"users": "users", "trained": "trained", "plan[T.Pro]": "plan: Pro", "plan[T.Enterprise]": "plan: Enterprise"}
 
-_labels = {"temp_c": "Temperature (°C)", "workingday": "Working day",
-           "C(season_name)[T.Spring]": "Spring (vs. Fall)", "C(season_name)[T.Summer]": "Summer (vs. Fall)",
-           "C(season_name)[T.Winter]": "Winter (vs. Fall)", "windspeed": "Windspeed", "hum": "Humidity",
-           "Intercept": "Constant"}
-_order = ["temp_c", "workingday", "C(season_name)[T.Spring]", "C(season_name)[T.Summer]",
-          "C(season_name)[T.Winter]", "windspeed", "hum"]
+def pre(text, size="0.6em"):
+    return (f'<pre style="font-family:\'SF Mono\',\'Menlo\',monospace;font-size:{size};line-height:1.35;'
+            f'background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;padding:8px 14px;'
+            f'overflow-x:auto;white-space:pre;">{text}</pre>')
 
-def _stars(p):
-    return "***" if p < 0.01 else "**" if p < 0.05 else "*" if p < 0.1 else ""
+def top_two(model):
+    lines = model.summary().as_text().splitlines()
+    return "\n".join(lines).rstrip()
 
-irr_rows = [
-    {"variable": _labels[v], "irr": f"{np.exp(poisson.params[v]):.3f}{_stars(poisson.pvalues[v])}"}
-    for v in _order
-]
+def table(header, rows, size="0.95em"):
+    th = "".join(f'<th style="padding:6px 20px;">{h}</th>' for h in header)
+    body = "".join("<tr style='border-bottom:1px solid #ddd;'>" +
+                   "".join(f'<td style="padding:5px 20px;text-align:{"left" if i == 0 else "center"};">{c}</td>' for i, c in enumerate(r)) +
+                   "</tr>" for r in rows)
+    return (f'<table style="margin:12px auto 0;font-family:sans-serif;font-size:{size};border-collapse:collapse;">'
+            f'<tr style="border-bottom:2px solid #1a1a2e;">{th}</tr>{body}</table>')
 
-temp_irr = float(np.exp(poisson.params["temp_c"]))
-temp_irr_10c = float(np.exp(poisson.params["temp_c"] * 10))
-temp_pct_10c = round((temp_irr_10c - 1) * 100, 1)
+# Numbers quoted on the slides
+n = len(df)
+mean_t = df["tickets"].mean()
+var_t = df["tickets"].var()
+zero_share = (df["tickets"] == 0).mean()
+n_new = int((df["months_active"] < 6).sum())
+ols_neg = int((ols.fittedvalues < 0).sum())
+ols_min = ols.fittedvalues.min()
+irr = np.exp(pois.params)
+ci = np.exp(pois.conf_int())
+irr_users_10 = np.exp(10 * pois.params["users"])
+disp = pois.pearson_chi2 / pois.df_resid
+trained_new = df.loc[df["months_active"] < 6, "trained"].mean()
+trained_old = df.loc[df["months_active"] == 6, "trained"].mean()
+mean_tpm_new = (df["tickets"] / df["months_active"])[df["months_active"] < 6].mean()
 
-# Real captured statsmodels-style output for the fitted Poisson model
-_poisson_lines = poisson.summary().as_text().splitlines()
-poisson_summary_text = "\n".join(_poisson_lines).rstrip()
+example = pd.DataFrame({"users": [50], "trained": [0], "plan": ["Pro"]})
+pred6 = float(pois.predict(example, exposure=[6]).iloc[0])
+pred1 = float(pois.predict(example, exposure=[1]).iloc[0])
+pred6_trained = float(pois.predict(example.assign(trained=1), exposure=[6]).iloc[0])
 
-# Overdispersion — the real numbers
-cnt_mean = float(bike_df["cnt"].mean())
-cnt_var = float(bike_df["cnt"].var())
-overdispersion_ratio = round(cnt_var / cnt_mean, 1)
+# Observed vs fitted share of accounts at each count
+mu_p = pois.predict(df, exposure=df["months_active"])
+alpha = nb.params["alpha"]
+mu_nb = nb.predict(df, exposure=df["months_active"])
+freq_rows = []
+for k in range(0, 11):
+    freq_rows += [{"k": k, "model": "Observed", "share": float((df["tickets"] == k).mean())},
+                  {"k": k, "model": "Poisson", "share": float(stats.poisson.pmf(k, mu_p).mean())},
+                  {"k": k, "model": "Negative binomial", "share": float(stats.nbinom.pmf(k, 1 / alpha, 1 / (1 + alpha * mu_nb)).mean())}]
+zero_pois = stats.poisson.pmf(0, mu_p).mean()
+zero_nb = stats.nbinom.pmf(0, 1 / alpha, 1 / (1 + alpha * mu_nb)).mean()
 
-# Real Poisson vs Negative Binomial comparison
-nb_alpha = round(nb.params["alpha"], 3)
-overdispersion_rows = [
-    {"variable": _labels[v],
-     "poisson_se": f"{poisson.bse[v]:.4f}",
-     "nb_se": f"{nb.bse[v]:.4f}",
-     "ratio": f"{nb.bse[v]/poisson.bse[v]:.1f}x"}
-    for v in _order
-]
-temp_irr_nb = float(np.exp(nb.params["temp_c"]))
-temp_irr_nb_10c = float(np.exp(nb.params["temp_c"] * 10))
-temp_pct_nb_10c = round((temp_irr_nb_10c - 1) * 100, 1)
+ticket_counts = df["tickets"].value_counts().sort_index().reset_index()
+ticket_counts.columns = ["tickets", "accounts"]
 
-ojs_define(
-    irr_rows              = irr_rows,
-    temp_irr               = round(temp_irr, 3),
-    temp_irr_10c            = round(temp_irr_10c, 3),
-    temp_pct_10c            = temp_pct_10c,
-    poisson_summary_text   = poisson_summary_text,
-    cnt_mean               = round(cnt_mean, 0),
-    cnt_var                = round(cnt_var, 0),
-    overdispersion_ratio   = overdispersion_ratio,
-    nb_alpha                = nb_alpha,
-    overdispersion_rows    = overdispersion_rows,
-    temp_irr_nb             = round(temp_irr_nb, 3),
-    temp_pct_nb_10c          = temp_pct_nb_10c,
-)
+ojs_define(ticket_counts=ticket_counts.to_dict(orient="records"), freq_rows=freq_rows)
 ```
 
 ## {background-color="#1a1a2e"}
+
+```{=html}
+<style>
+.reveal .big-code div.sourceCode { font-size: 1.15em !important; }
+.reveal .mid-code div.sourceCode { font-size: 0.8em !important; }
+.reveal .small-code div.sourceCode { font-size: 0.62em !important; }
+.reveal .big-code div.sourceCode pre.sourceCode, .reveal .small-code div.sourceCode pre.sourceCode, .reveal .mid-code div.sourceCode pre.sourceCode { font-size: 1em !important; }
+</style>
+```
 
 ::: {style="text-align: center; padding-top: 180px;"}
 [**Count outcomes**]{style="font-size: 2.2em; color: white;"}
@@ -107,99 +120,226 @@ ojs_define(
 [The workshop covered a 0/1 outcome. What about an outcome that can be 0, 1, 2, 3... with no natural ceiling?]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
 :::
 
-## How many bikes today?
+## How many support tickets?
 
 ::: {.instructions-box}
-**Business question**: a bike-share operator needs to plan how many bikes to have available each day. Rentals range from 22 on the worst day to 8,714 on the best — driven by weather, season, and whether it's a working day.
+**Business question**: a software company wants to plan its support team. Which customer accounts raise the most support tickets, and does onboarding training cut them?
 :::
 
-::: {.fragment}
-This is real UCI data: 731 days, daily rental counts (`cnt`), temperature, humidity, windspeed, season, and working-day status.
+```{python}
+#| output: asis
+print(f"""
+- Data on **{n} customer accounts** over the last six months (generated for this module)
+- `tickets`: support tickets the account raised over the period
+- `users`: seats on the account (5 to 150)
+- `plan`: Basic, Pro or Enterprise
+- `trained`: 1 if the account had onboarding training
+- `months_active`: how many of the six months the account was active. {n_new} accounts joined partway through
+""")
+```
+
+## A first look at the counts
+
+```{ojs}
+Plot.plot({
+  width: 900, height: 330, marginLeft: 55,
+  x: {label: "Tickets raised over six months", tickFormat: d => d},
+  y: {label: "Accounts", grid: true},
+  marks: [Plot.barY(ticket_counts, {x: "tickets", y: "accounts", fill: "#2f6690"}), Plot.ruleY([0])]
+})
+```
+
+```{python}
+#| output: asis
+print(f"""
+- Mean **{mean_t:.2f}** tickets. **{zero_share:.0%}** of accounts raised none at all; a handful raised more than 10
+- Whole numbers, piled up near zero, with a long right tail. That's what count data usually looks like
+""")
+```
+
+## Why not just use OLS?
+
+::: {.big-code}
+```{.python}
+ols_model = smf.ols("tickets ~ users + trained + plan", data=df).fit()
+(ols_model.fittedvalues < 0).sum()
+```
 :::
+
+```{python}
+#| output: asis
+print(f"""
+- OLS predicts a **negative** number of tickets for **{ols_neg} accounts** (the lowest is {ols_min:.2f}). No account can raise fewer than zero tickets
+- OLS also assumes each extra seat adds the same number of tickets, whatever the account. With counts, effects are usually proportional: training cuts tickets by a share, not by a fixed number
+- The same two problems as the LPM in the workshop: predictions outside the possible range, and a straight line where the real relationship isn't one
+""")
+```
 
 ## Same logic, new distribution
 
-Everything from the workshop still applies — a link function connects a linear index to the outcome, and raw coefficients aren't directly interpretable.
+Everything from the workshop still applies: a link function connects a linear index to the outcome, and raw coefficients aren't read directly.
 
 ::: {.fragment}
-- Binary y: link function keeps predictions between 0 and 1 (logistic or normal CDF)
-- **Count y**: link function needs to keep predictions **non-negative** — no upper bound needed, but never below zero
-- The natural choice: $E[y|x] = \exp(\beta_0 + \beta_1 x_1 + \dots)$ — the **log link**
+- Binary y: the link keeps predictions between 0 and 1 (logistic or normal CDF)
+- **Count y**: the link needs to keep predictions **non-negative**. No upper bound is needed, but never below zero
+- The natural choice: $E[y|x] = \exp(\beta_0 + \beta_1 x_1 + \dots)$, the **log link**
 :::
 
 ## Poisson regression
 
 $$\ln(E[y|x]) = \beta_0 + \beta_1 x_1 + \dots$$
 
-- The **Poisson** distribution is the standard choice for count data — same role here as the logistic/normal assumption played for binary y
-- Fit by maximum likelihood, same idea as logit and probit
-- Because of the log link, coefficients are **additive on the log scale, multiplicative on the count scale**
-
-## Interpreting via the incidence rate ratio
-
-Exponentiating a coefficient converts it into an **incidence rate ratio (IRR)**:
-
-$$IRR = \exp(\beta_1)$$
-
-::: {.fragment}
-A one-unit increase in $x_1$ **multiplies** the expected count by $IRR$ — not adds to it. Same underlying logic as an odds ratio from logit, just for counts instead of binary outcomes.
-:::
-
-::: {.fragment}
-- $IRR > 1$: expected count goes up
-- $IRR < 1$: expected count goes down
-- $IRR = 1$: no effect
-:::
+- The **Poisson** distribution is the standard choice for count data. It plays the same role the logistic or normal assumption played for binary y
+- Fit by maximum likelihood, like logit and probit
+- Because of the log link, coefficients are **additive on the log scale and multiplicative on the count scale**. The same idea as a log–level model from Week 5
 
 ## Fitting it, in code
 
+::: {.big-code}
 ```{.python}
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 
-poisson_model = smf.glm(
-    "cnt ~ temp_c + workingday + C(season_name) + windspeed + hum",
-    data=df,
-    family=sm.families.Poisson()
-).fit()
-
-irr = np.exp(poisson_model.params)
+poisson_model = smf.glm("tickets ~ users + trained + plan", data=df,
+                        family=sm.families.Poisson(),
+                        exposure=df["months_active"]).fit()
 ```
-
-## Real IRRs, on real data
-
-```{ojs}
-{
-  return html`<table style="margin:16px auto 0;font-family:sans-serif;font-size:1em;border-collapse:collapse;">
-    <tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:6px 24px;">Variable</th><th style="padding:6px 24px;">IRR</th></tr>
-    ${irr_rows.map(d => `<tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 24px;">${d.variable}</td><td style="padding:5px 24px;text-align:center;">${d.irr}</td></tr>`).join('')}
-  </table>`
-}
-```
-
-::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
-Reference category for season: Fall. Source: UCI Bike Sharing dataset
 :::
 
-## The temperature story
+- `smf.glm` fits any GLM; `family=` says which one
+- `plan` is text, so Basic (first alphabetically) is the reference category
+- `exposure=` tells the model how long each account was observed. More on that in a moment
 
-```{ojs}
-html`<p>Each 1°C warmer day multiplies expected rentals by <b>${temp_irr}</b>.</p>`
+## The output
+
+```{python}
+#| output: asis
+print(pre(top_two(pois), "0.52em"))
 ```
+
+## Why the exposure?
+
+Some accounts were only active for part of the six months. An account that joined last month has had one month to raise tickets, not six.
 
 ::: {.fragment}
-```{ojs}
-html`<p>Over a 10°C swing: an IRR of <b>${temp_irr_10c}</b> — that's <b>${temp_pct_10c}% more rentals expected</b> on a day 10°C warmer, holding season, humidity, windspeed, and working-day status fixed.</p>`
+So the thing we really want to model is the **rate**: tickets per month. With the log link that's easy:
+
+$$\ln(E[\text{tickets}]) = \ln(\text{months}) + \beta_0 + \beta_1 \text{users} + \dots$$
+
+$\ln(\text{months})$ goes in with its coefficient fixed at 1. That term is called an **offset**. `exposure=df["months_active"]` adds it for you.
+:::
+
+::: {.fragment}
+Every coefficient is now about tickets **per month**, whatever length of time each account was observed.
+:::
+
+## What if we left it out?
+
+```{python}
+#| output: asis
+print(table(["", "Exposure included", "Exposure left out"],
+            [["trained (IRR)", f"{irr['trained']:.3f}", f"{np.exp(pois_noexp.params['trained']):.3f}"]]))
+print(f"""
+
+- Training was introduced recently, so newer accounts are much more likely to have had it: **{trained_new:.0%}** of the {n_new} newer accounts against **{trained_old:.0%}** of the rest
+- Newer accounts have had fewer months to raise tickets. Leave the exposure out and training takes the credit for that
+- This is omitted variable bias again (Week 6). Time observed is the omitted variable
+""")
+```
+
+## From coefficients to incidence rate ratios
+
+Exponentiating a coefficient gives an **incidence rate ratio (IRR)**:
+
+$$IRR = \exp(\beta_1)$$
+
+::: {.fragment}
+A one-unit increase in $x_1$ **multiplies** the expected count by the IRR. It doesn't add to it.
+:::
+
+::: {.fragment}
+- $IRR > 1$: the expected count goes up. 1.25 means 25% more
+- $IRR < 1$: the expected count goes down. 0.80 means 20% fewer
+- $IRR = 1$: no difference
+:::
+
+## The IRRs
+
+::: {.big-code}
+```{.python}
+np.exp(poisson_model.params)
+np.exp(poisson_model.conf_int())
 ```
 :::
 
-## Task — read one IRR yourself
+```{python}
+#| output: asis
+rows = [[labels[t], f"{irr[t]:.3f}", f"{ci.loc[t, 0]:.3f} to {ci.loc[t, 1]:.3f}"] for t in terms]
+print(table(["", "IRR", "95% CI"], rows))
+print(f'\n\n<p style="font-size:0.75em;color:#999;margin-top:12px;">Baseline rate (the exponentiated intercept): {irr["Intercept"]:.3f} tickets a month for a Basic, untrained account with zero seats.</p>')
+```
 
-::: {.instructions-box}
-**Business question**: how much does a working day actually change expected demand, compared to a weekend or holiday?
+## Reading a continuous IRR: seats
 
-Using the table above, convert the `workingday` IRR into a plain-English sentence a scheduling manager could act on. What does an IRR just above 1 actually mean here, in percentage terms?
+```{python}
+#| output: asis
+print(f"""
+- The IRR on `users` is **{irr['users']:.4f}**: each extra seat multiplies expected tickets by {irr['users']:.4f}, so about **{(irr['users']-1)*100:.1f}% more** per seat
+
+::: {{.fragment}}
+- For 10 more seats, raise the IRR to the power 10: {irr['users']:.4f}<sup>10</sup> = **{irr_users_10:.3f}**, about **{(irr_users_10-1)*100:.1f}% more** tickets
+- Not quite 10 × {(irr['users']-1)*100:.2f}%, because the increases compound. In code: `np.exp(10 * poisson_model.params["users"])`
 :::
+""")
+```
+
+## Reading a dummy IRR: training
+
+```{python}
+#| output: asis
+print(f"""
+- The IRR on `trained` is **{irr['trained']:.3f}**
+- Trained accounts raise **{(1-irr['trained'])*100:.0f}% fewer** tickets a month than untrained accounts on the same plan with the same number of seats
+
+::: {{.fragment}}
+- The 95% CI runs from {ci.loc['trained', 0]:.3f} to {ci.loc['trained', 1]:.3f}: somewhere between {(1-ci.loc['trained', 1])*100:.0f}% and {(1-ci.loc['trained', 0])*100:.0f}% fewer
+- Is it causal? Only if nothing else differs between trained and untrained accounts. The firm chose who got training, so be careful (Week 9 takes this on properly)
+:::
+""")
+```
+
+## Reading a categorical IRR: the plan
+
+```{python}
+#| output: asis
+print(f"""
+- Basic is the reference category. Each plan IRR compares that plan with Basic
+- **Pro: {irr['plan[T.Pro]']:.3f}**. Pro accounts raise about {(irr['plan[T.Pro]']-1)*100:.0f}% more tickets a month than Basic accounts with the same seats and training
+- **Enterprise: {irr['plan[T.Enterprise]']:.3f}**. About {(irr['plan[T.Enterprise]']-1)*100:.0f}% more than Basic
+
+::: {{.fragment}}
+- Enterprise against Pro? Divide the two IRRs: {irr['plan[T.Enterprise]']:.3f} / {irr['plan[T.Pro]']:.3f} = **{irr['plan[T.Enterprise]']/irr['plan[T.Pro]']:.2f}**, about {(irr['plan[T.Enterprise]']/irr['plan[T.Pro]']-1)*100:.0f}% more
+:::
+""")
+```
+
+## A predicted count for one account
+
+::: {.mid-code}
+```{.python}
+account = pd.DataFrame({"users": [50], "trained": [0], "plan": ["Pro"]})
+poisson_model.predict(account, exposure=[6])
+```
+:::
+
+```{python}
+#| output: asis
+print(f"""
+- A Pro account with 50 seats and no training, active for all six months: **{pred6:.2f} tickets** expected, about {pred1:.2f} a month
+- The same account with training: {pred6:.2f} × {irr['trained']:.3f} = **{pred6_trained:.2f}**
+- Predictions are never negative, whatever values we plug in
+""")
+```
 
 ---
 
@@ -210,86 +350,122 @@ Using the table above, convert the `workingday` IRR into a plain-English sentenc
 
 ## Poisson's hidden assumption
 
-Poisson regression assumes **equidispersion**: the variance of $y$ equals its mean, $Var(y|x) = E(y|x)$.
+Poisson assumes **equidispersion**: the variance of $y$ equals its mean, given the x's. $Var(y|x) = E(y|x)$.
 
-::: {.fragment}
-On this data:
-
-- Mean daily rentals: **${cnt_mean}**
-- Variance: **${cnt_var}**
-- Ratio: **${overdispersion_ratio}×**
+:::: {.fragment}
+::: {.big-code}
+```{.python}
+poisson_model.pearson_chi2 / poisson_model.df_resid
+```
 :::
 
-::: {.fragment}
-The variance is nowhere close to the mean — this is **severe overdispersion**. Daily rental counts are the sum of thousands of individual decisions, which naturally vary far more than a simple Poisson process would predict.
-:::
+```{python}
+#| output: asis
+print(f"""
+- This **dispersion statistic** should be close to 1 if Poisson's assumption holds. Here it's **{disp:.2f}**
+- The variance is about twice what Poisson allows, after the x's have done their work. That's **overdispersion**
+- Don't just compare the raw mean and variance ({mean_t:.2f} and {var_t:.2f}). Some of that spread is explained by the x's
+""")
+```
+::::
+
+## You can see it in the zeros
+
+```{ojs}
+Plot.plot({
+  width: 900, height: 330, marginLeft: 55,
+  x: {label: "Tickets", tickFormat: d => d},
+  y: {label: "Share of accounts", grid: true, tickFormat: "%"},
+  color: {domain: ["Observed", "Poisson", "Negative binomial"], range: ["#2f6690", "#c8373f", "#2d6a4f"], legend: true},
+  marks: [
+    Plot.barY(freq_rows.filter(d => d.model === "Observed"), {x: "k", y: "share", fill: "#2f6690", fillOpacity: 0.6}),
+    Plot.line(freq_rows.filter(d => d.model !== "Observed"), {x: "k", y: "share", stroke: "model", strokeWidth: 2.5}),
+    Plot.dot(freq_rows.filter(d => d.model !== "Observed"), {x: "k", y: "share", fill: "model", r: 3.5})
+  ]
+})
+```
+
+```{python}
+#| output: asis
+print(f"""
+Bars: the real data. The red line is what the Poisson model predicts: **{zero_pois:.0%}** of accounts with no tickets, against **{zero_share:.0%}** in the data. Too few zeros and too few large counts.
+""")
+```
 
 ## Why this matters
 
-Fitting a plain Poisson model when the data is this overdispersed doesn't just look untidy — it makes every standard error too small, which makes every result look more certain than it actually is.
+Overdispersion doesn't usually bias the IRRs much. It makes the **standard errors too small**, so every result looks more certain than it is.
 
 ::: {.fragment}
-We need a model that keeps the same log link and the same IRR interpretation, but doesn't force variance to equal the mean.
+We want a model with the same log link and the same IRRs, that lets the variance be bigger than the mean.
 :::
 
 ## Negative binomial — the fix
 
-- Same log link, same IRR interpretation — nothing about *reading* the model changes
-- Adds one extra parameter, **α**, that lets the variance exceed the mean instead of forcing them to be equal
-- The practical rule: **when the data is this overdispersed, reach for negative binomial, not plain Poisson** — you don't need to derive why, just recognise the symptom (variance ≫ mean) and know the fix exists
+- Same log link, same IRRs, same exposure. Reading the model doesn't change
+- Adds one extra parameter, **α**, that lets the variance exceed the mean: $Var(y|x) = \mu + \alpha\mu^2$
+- α = 0 takes you back to Poisson
+- The practical rule: **check the dispersion statistic; if it's well above 1, use negative binomial**
 
 ## Fitting it, in code
 
+::: {.big-code}
 ```{.python}
-nb_model = smf.negativebinomial(
-    "cnt ~ temp_c + workingday + C(season_name) + windspeed + hum",
-    data=df
-).fit()
+nb_model = smf.negativebinomial("tickets ~ users + trained + plan", data=df,
+                                exposure=df["months_active"]).fit()
 ```
-
-α comes out estimated by maximum likelihood, not assumed — here, **${nb_alpha}**.
-
-## The real consequence
-
-```{ojs}
-{
-  return html`<table style="margin:16px auto 0;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;">
-    <tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:5px 16px;">Variable</th><th style="padding:5px 16px;">Poisson SE</th><th style="padding:5px 16px;">NegBin SE</th><th style="padding:5px 16px;">Ratio</th></tr>
-    ${overdispersion_rows.map(d => `<tr style="border-bottom:1px solid #ddd;"><td style="padding:4px 16px;">${d.variable}</td><td style="padding:4px 16px;text-align:center;">${d.poisson_se}</td><td style="padding:4px 16px;text-align:center;">${d.nb_se}</td><td style="padding:4px 16px;text-align:center;font-weight:700;">${d.ratio}</td></tr>`).join('')}
-  </table>`
-}
-```
-
-::: {.fragment}
-Standard errors from the plain Poisson model are roughly **24 times too small**, across every coefficient — not a rounding issue, a fundamentally overconfident model.
 :::
 
-## The estimate itself shifts too
-
-```{ojs}
-html`<ul>
-  <li>Temperature IRR under Poisson: ${temp_irr} (the +10°C story: ${temp_pct_10c}% more rentals)</li>
-  <li>Temperature IRR under Negative Binomial: <b>${temp_irr_nb}</b> (the +10°C story: <b>${temp_pct_nb_10c}% more rentals</b>)</li>
-</ul>`
+```{python}
+#| output: asis
+print(f"""
+- α is estimated from the data: **{alpha:.3f}** (SE {nb.bse['alpha']:.3f}), clearly above zero
+- The red-versus-green lines on the zeros chart: negative binomial predicts **{zero_nb:.0%}** zeros, against {zero_share:.0%} in the data
+""")
 ```
 
-::: {.fragment}
-Overdispersion here isn't just a false-confidence problem — the point estimate itself moves once the model properly accounts for how much more variable the data really is.
+## The real consequence: standard errors
+
+```{python}
+#| output: asis
+rows = [[labels[t], f"{pois.bse[t]:.4f}", f"{nb.bse[t]:.4f}", f"<b>{nb.bse[t]/pois.bse[t]:.1f}×</b>"] for t in terms]
+print(table(["", "Poisson SE", "Neg. binomial SE", "Ratio"], rows))
+ratios = [nb.bse[t]/pois.bse[t] for t in terms]
+print(f"""
+
+::: {{.fragment}}
+Negative binomial standard errors are {min(ratios):.1f} to {max(ratios):.1f} times larger. The Poisson model was overconfident about every coefficient. Every effect here is still clearly significant, but on other data a "significant" Poisson result can disappear.
 :::
+""")
+```
+
+## And the IRRs?
+
+```{python}
+#| output: asis
+rows = [[labels[t], f"{irr[t]:.3f}", f"{np.exp(nb.params[t]):.3f}"] for t in terms]
+print(table(["", "Poisson IRR", "Neg. binomial IRR"], rows))
+print("""
+
+::: {.fragment}
+They barely move. Here negative binomial changes how sure we are, not the answer. With other data the estimates can shift too, so it's worth comparing.
+:::
+""")
+```
 
 ---
 
 ## Other kinds of y, briefly
 
-- **Ordinal/nominal outcomes** (e.g. satisfaction ratings, product categories) can sometimes be recast as binary — "top box vs. not" — trading some information for a model you already know how to run
-- **Duration variables** (time until an event) are often censored — you don't observe the full duration for everyone. Running OLS on censored durations gets the *direction* right but not the *magnitude*. Converting to a binary "did the event happen by time T" is often the pragmatic choice
+- **Ordinal or nominal outcomes** (satisfaction ratings, product categories) can often be recast as binary, such as "top box or not". You lose some information but get a model you already know how to run
+- **Durations** (time until an event) are often censored: you don't see the full duration for everyone. OLS on censored durations gets the direction right but not the size. Converting to a binary "did the event happen by time T" is often the practical choice
 
 ## Summary
 
-- A count outcome needs a link function that keeps predictions non-negative — the log link, giving Poisson regression
-- Coefficients are read via the **incidence rate ratio**, $\exp(\beta)$ — the same logic as an odds ratio, just multiplicative on counts
-- Poisson assumes variance equals the mean — check this before trusting the standard errors, since real data is often far more dispersed than that
-- Negative binomial is the standard fix, and it can move both the standard errors and the estimates themselves
+- A count outcome needs predictions that are never negative: the log link, giving **Poisson regression**
+- When units are observed for different lengths of time, add the **exposure** (an offset) so you model the rate. Leaving it out can bias the estimates
+- Read coefficients as **incidence rate ratios**, exp(β): they multiply the expected count
+- Poisson assumes the variance equals the mean. Check the **dispersion statistic**; if it's well above 1, use **negative binomial**, which mainly widens the standard errors
 
 ## Coming up
 
@@ -297,6 +473,6 @@ Overdispersion here isn't just a false-confidence problem — the point estimate
 [**Week 9: Causal Analysis and Experiments**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
 
 ::: {.fragment style="padding-top:40px;"}
-*Every model these last two weeks assumed the controls were the right ones. Next week: a formal framework for causal claims, and experiments — the most direct way to get them right.*
+*Was it the training that cut the tickets, or the kind of account that got trained? Next week: a framework for causal claims, and experiments, the most direct way to answer that.*
 :::
 :::

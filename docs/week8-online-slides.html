@@ -208,36 +208,79 @@
 </section>
 <section class="slide level2">
 
-<div id="acf3aaa5" class="cell" data-execution_count="1">
+<div id="feeebb9d" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-display">
-<script type="ojs-define">{"contents": [{"name": "irr_rows", "value": [{"variable": "Temperature (\u00b0C)", "irr": "1.036***"}, {"variable": "Working day", "irr": "1.032***"}, {"variable": "Spring (vs. Fall)", "irr": "0.836***"}, {"variable": "Summer (vs. Fall)", "irr": "1.138***"}, {"variable": "Winter (vs. Fall)", "irr": "1.308***"}, {"variable": "Windspeed", "irr": "0.391***"}, {"variable": "Humidity", "irr": "0.428***"}]}, {"name": "temp_irr", "value": 1.036}, {"name": "temp_irr_10c", "value": 1.427}, {"name": "temp_pct_10c", "value": 42.7}, {"name": "poisson_summary_text", "value": "                 Generalized Linear Model Regression Results                  \n==============================================================================\nDep. Variable:                    cnt   No. Observations:                  731\nModel:                            GLM   Df Residuals:                      723\nModel Family:                 Poisson   Df Model:                            7\nLink Function:                    Log   Scale:                          1.0000\nMethod:                          IRLS   Log-Likelihood:            -1.6405e+05\nDate:                Tue, 29 Sep 2026   Deviance:                   3.2070e+05\nTime:                        13:21:08   Pearson chi2:                 3.10e+05\nNo. Iterations:                     5   Pseudo R-squ. (CS):              1.000\nCovariance Type:            nonrobust                                         \n============================================================================================\n                               coef    std err          z      P>|z|      [0.025      0.975]\n--------------------------------------------------------------------------------------------\nIntercept                    8.2690      0.005   1624.352      0.000       8.259       8.279\nC(season_name)[T.Spring]    -0.1795      0.003    -63.626      0.000      -0.185      -0.174\nC(season_name)[T.Summer]     0.1293      0.002     78.097      0.000       0.126       0.133\nC(season_name)[T.Winter]     0.2687      0.002    125.381      0.000       0.265       0.273\ntemp_c                       0.0356      0.000    264.935      0.000       0.035       0.036\nworkingday                   0.0311      0.001     25.948      0.000       0.029       0.033\nwindspeed                   -0.9382      0.008   -118.067      0.000      -0.954      -0.923\nhum                         -0.8480      0.004   -200.154      0.000      -0.856      -0.840\n============================================================================================"}, {"name": "cnt_mean", "value": 4504.0}, {"name": "cnt_var", "value": 3752788.0}, {"name": "overdispersion_ratio", "value": 833.1}, {"name": "nb_alpha", "value": 0.125}, {"name": "overdispersion_rows", "value": [{"variable": "Temperature (\u00b0C)", "poisson_se": "0.0001", "nb_se": "0.0032", "ratio": "24.2x"}, {"variable": "Working day", "poisson_se": "0.0012", "nb_se": "0.0282", "ratio": "23.5x"}, {"variable": "Spring (vs. Fall)", "poisson_se": "0.0028", "nb_se": "0.0622", "ratio": "22.0x"}, {"variable": "Summer (vs. Fall)", "poisson_se": "0.0017", "nb_se": "0.0421", "ratio": "25.4x"}, {"variable": "Winter (vs. Fall)", "poisson_se": "0.0021", "nb_se": "0.0522", "ratio": "24.3x"}, {"variable": "Windspeed", "poisson_se": "0.0079", "nb_se": "0.1821", "ratio": "22.9x"}, {"variable": "Humidity", "poisson_se": "0.0042", "nb_se": "0.1024", "ratio": "24.2x"}]}, {"name": "temp_irr_nb", "value": 1.047}, {"name": "temp_pct_nb_10c", "value": 59.0}]}</script>
+<script type="ojs-define">{"contents": [{"name": "ticket_counts", "value": [{"tickets": 0, "accounts": 183}, {"tickets": 1, "accounts": 126}, {"tickets": 2, "accounts": 93}, {"tickets": 3, "accounts": 57}, {"tickets": 4, "accounts": 46}, {"tickets": 5, "accounts": 25}, {"tickets": 6, "accounts": 21}, {"tickets": 7, "accounts": 16}, {"tickets": 8, "accounts": 13}, {"tickets": 9, "accounts": 5}, {"tickets": 10, "accounts": 3}, {"tickets": 11, "accounts": 2}, {"tickets": 12, "accounts": 1}, {"tickets": 14, "accounts": 3}, {"tickets": 15, "accounts": 1}, {"tickets": 16, "accounts": 3}, {"tickets": 17, "accounts": 2}]}, {"name": "freq_rows", "value": [{"k": 0, "model": "Observed", "share": 0.305}, {"k": 0, "model": "Poisson", "share": 0.1963701046513436}, {"k": 0, "model": "Negative binomial", "share": 0.29446638275242343}, {"k": 1, "model": "Observed", "share": 0.21}, {"k": 1, "model": "Poisson", "share": 0.23002895797512157}, {"k": 1, "model": "Negative binomial", "share": 0.22435375177977004}, {"k": 2, "model": "Observed", "share": 0.155}, {"k": 2, "model": "Poisson", "share": 0.19650263861118422}, {"k": 2, "model": "Negative binomial", "share": 0.15334671642558814}, {"k": 3, "model": "Observed", "share": 0.095}, {"k": 3, "model": "Poisson", "share": 0.14320723512881492}, {"k": 3, "model": "Negative binomial", "share": 0.10296034371783025}, {"k": 4, "model": "Observed", "share": 0.07666666666666666}, {"k": 4, "model": "Poisson", "share": 0.09475614474158477}, {"k": 4, "model": "Negative binomial", "share": 0.06916353242106774}, {"k": 5, "model": "Observed", "share": 0.041666666666666664}, {"k": 5, "model": "Poisson", "share": 0.058988519591785624}, {"k": 5, "model": "Negative binomial", "share": 0.04678009689637196}, {"k": 6, "model": "Observed", "share": 0.035}, {"k": 6, "model": "Poisson", "share": 0.03522264466427209}, {"k": 6, "model": "Negative binomial", "share": 0.031942434735947586}, {"k": 7, "model": "Observed", "share": 0.02666666666666667}, {"k": 7, "model": "Poisson", "share": 0.020372043976133347}, {"k": 7, "model": "Negative binomial", "share": 0.022040196514061538}, {"k": 8, "model": "Observed", "share": 0.021666666666666667}, {"k": 8, "model": "Poisson", "share": 0.011468724301752026}, {"k": 8, "model": "Negative binomial", "share": 0.015369005626370141}, {"k": 9, "model": "Observed", "share": 0.008333333333333333}, {"k": 9, "model": "Poisson", "share": 0.006295946967464467}, {"k": 9, "model": "Negative binomial", "share": 0.01082694817649747}, {"k": 10, "model": "Observed", "share": 0.005}, {"k": 10, "model": "Poisson", "share": 0.0033683385888523027}, {"k": 10, "model": "Negative binomial", "share": 0.007701037762399741}]}]}</script>
 </div>
 </div>
 </section>
 <section id="section" class="slide level2" data-background-color="#1a1a2e">
 <h2></h2>
+<style>
+.reveal .big-code div.sourceCode { font-size: 1.15em !important; }
+.reveal .mid-code div.sourceCode { font-size: 0.8em !important; }
+.reveal .small-code div.sourceCode { font-size: 0.62em !important; }
+.reveal .big-code div.sourceCode pre.sourceCode, .reveal .small-code div.sourceCode pre.sourceCode, .reveal .mid-code div.sourceCode pre.sourceCode { font-size: 1em !important; }
+</style>
 <div style="text-align: center; padding-top: 180px;">
 <p><span style="font-size: 2.2em; color: white;"><strong>Count outcomes</strong></span></p>
 <p><span style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;">The workshop covered a 0/1 outcome. What about an outcome that can be 0, 1, 2, 3… with no natural ceiling?</span></p>
 </div>
 </section>
-<section id="how-many-bikes-today" class="slide level2">
-<h2>How many bikes today?</h2>
+<section id="how-many-support-tickets" class="slide level2">
+<h2>How many support tickets?</h2>
 <div class="instructions-box">
-<p><strong>Business question</strong>: a bike-share operator needs to plan how many bikes to have available each day. Rentals range from 22 on the worst day to 8,714 on the best — driven by weather, season, and whether it’s a working day.</p>
+<p><strong>Business question</strong>: a software company wants to plan its support team. Which customer accounts raise the most support tickets, and does onboarding training cut them?</p>
 </div>
-<div class="fragment">
-<p>This is real UCI data: 731 days, daily rental counts (<code>cnt</code>), temperature, humidity, windspeed, season, and working-day status.</p>
+<ul>
+<li>Data on <strong>600 customer accounts</strong> over the last six months (generated for this module)</li>
+<li><code>tickets</code>: support tickets the account raised over the period</li>
+<li><code>users</code>: seats on the account (5 to 150)</li>
+<li><code>plan</code>: Basic, Pro or Enterprise</li>
+<li><code>trained</code>: 1 if the account had onboarding training</li>
+<li><code>months_active</code>: how many of the six months the account was active. 182 accounts joined partway through</li>
+</ul>
+</section>
+<section id="a-first-look-at-the-counts" class="slide level2">
+<h2>A first look at the counts</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb1" data-startfrom="143" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 142;"><span id="cb1-143"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb1-144"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">900</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">330</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">55</span><span class="op">,</span></span>
+<span id="cb1-145"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Tickets raised over six months"</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> d <span class="kw">=&gt;</span> d}<span class="op">,</span></span>
+<span id="cb1-146"><a></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Accounts"</span><span class="op">,</span> <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span>}<span class="op">,</span></span>
+<span id="cb1-147"><a></a>  <span class="dt">marks</span><span class="op">:</span> [Plot<span class="op">.</span><span class="fu">barY</span>(ticket_counts<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"tickets"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"accounts"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#2f6690"</span>})<span class="op">,</span> Plot<span class="op">.</span><span class="fu">ruleY</span>([<span class="dv">0</span>])]</span>
+<span id="cb1-148"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-1" data-nodetype="expression">
+
 </div>
+</div>
+</div>
+<ul>
+<li>Mean <strong>2.30</strong> tickets. <strong>30%</strong> of accounts raised none at all; a handful raised more than 10</li>
+<li>Whole numbers, piled up near zero, with a long right tail. That’s what count data usually looks like</li>
+</ul>
+</section>
+<section id="why-not-just-use-ols" class="slide level2">
+<h2>Why not just use OLS?</h2>
+<div class="big-code">
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a></a>ols_model <span class="op">=</span> smf.ols(<span class="st">"tickets ~ users + trained + plan"</span>, data<span class="op">=</span>df).fit()</span>
+<span id="cb2-2"><a></a>(ols_model.fittedvalues <span class="op">&lt;</span> <span class="dv">0</span>).<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>OLS predicts a <strong>negative</strong> number of tickets for <strong>12 accounts</strong> (the lowest is -0.38). No account can raise fewer than zero tickets</li>
+<li>OLS also assumes each extra seat adds the same number of tickets, whatever the account. With counts, effects are usually proportional: training cuts tickets by a share, not by a fixed number</li>
+<li>The same two problems as the LPM in the workshop: predictions outside the possible range, and a straight line where the real relationship isn’t one</li>
+</ul>
 </section>
 <section id="same-logic-new-distribution" class="slide level2">
 <h2>Same logic, new distribution</h2>
-<p>Everything from the workshop still applies — a link function connects a linear index to the outcome, and raw coefficients aren’t directly interpretable.</p>
+<p>Everything from the workshop still applies: a link function connects a linear index to the outcome, and raw coefficients aren’t read directly.</p>
 <div class="fragment">
 <ul>
-<li>Binary y: link function keeps predictions between 0 and 1 (logistic or normal CDF)</li>
-<li><strong>Count y</strong>: link function needs to keep predictions <strong>non-negative</strong> — no upper bound needed, but never below zero</li>
-<li>The natural choice: <span class="math inline">\(E[y|x] = \exp(\beta_0 + \beta_1 x_1 + \dots)\)</span> — the <strong>log link</strong></li>
+<li>Binary y: the link keeps predictions between 0 and 1 (logistic or normal CDF)</li>
+<li><strong>Count y</strong>: the link needs to keep predictions <strong>non-negative</strong>. No upper bound is needed, but never below zero</li>
+<li>The natural choice: <span class="math inline">\(E[y|x] = \exp(\beta_0 + \beta_1 x_1 + \dots)\)</span>, the <strong>log link</strong></li>
 </ul>
 </div>
 </section>
@@ -245,85 +288,223 @@
 <h2>Poisson regression</h2>
 <p><span class="math display">\[\ln(E[y|x]) = \beta_0 + \beta_1 x_1 + \dots\]</span></p>
 <ul>
-<li>The <strong>Poisson</strong> distribution is the standard choice for count data — same role here as the logistic/normal assumption played for binary y</li>
-<li>Fit by maximum likelihood, same idea as logit and probit</li>
-<li>Because of the log link, coefficients are <strong>additive on the log scale, multiplicative on the count scale</strong></li>
+<li>The <strong>Poisson</strong> distribution is the standard choice for count data. It plays the same role the logistic or normal assumption played for binary y</li>
+<li>Fit by maximum likelihood, like logit and probit</li>
+<li>Because of the log link, coefficients are <strong>additive on the log scale and multiplicative on the count scale</strong>. The same idea as a log–level model from Week 5</li>
 </ul>
-</section>
-<section id="interpreting-via-the-incidence-rate-ratio" class="slide level2">
-<h2>Interpreting via the incidence rate ratio</h2>
-<p>Exponentiating a coefficient converts it into an <strong>incidence rate ratio (IRR)</strong>:</p>
-<p><span class="math display">\[IRR = \exp(\beta_1)\]</span></p>
-<div class="fragment">
-<p>A one-unit increase in <span class="math inline">\(x_1\)</span> <strong>multiplies</strong> the expected count by <span class="math inline">\(IRR\)</span> — not adds to it. Same underlying logic as an odds ratio from logit, just for counts instead of binary outcomes.</p>
-</div>
-<div class="fragment">
-<ul>
-<li><span class="math inline">\(IRR &gt; 1\)</span>: expected count goes up</li>
-<li><span class="math inline">\(IRR &lt; 1\)</span>: expected count goes down</li>
-<li><span class="math inline">\(IRR = 1\)</span>: no effect</li>
-</ul>
-</div>
 </section>
 <section id="fitting-it-in-code" class="slide level2">
 <h2>Fitting it, in code</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
-<span id="cb1-2"><a></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
-<span id="cb1-3"><a></a></span>
-<span id="cb1-4"><a></a>poisson_model <span class="op">=</span> smf.glm(</span>
-<span id="cb1-5"><a></a>    <span class="st">"cnt ~ temp_c + workingday + C(season_name) + windspeed + hum"</span>,</span>
-<span id="cb1-6"><a></a>    data<span class="op">=</span>df,</span>
-<span id="cb1-7"><a></a>    family<span class="op">=</span>sm.families.Poisson()</span>
-<span id="cb1-8"><a></a>).fit()</span>
-<span id="cb1-9"><a></a></span>
-<span id="cb1-10"><a></a>irr <span class="op">=</span> np.exp(poisson_model.params)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="big-code">
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb3-2"><a></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb3-3"><a></a></span>
+<span id="cb3-4"><a></a>poisson_model <span class="op">=</span> smf.glm(<span class="st">"tickets ~ users + trained + plan"</span>, data<span class="op">=</span>df,</span>
+<span id="cb3-5"><a></a>                        family<span class="op">=</span>sm.families.Poisson(),</span>
+<span id="cb3-6"><a></a>                        exposure<span class="op">=</span>df[<span class="st">"months_active"</span>]).fit()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li><code>smf.glm</code> fits any GLM; <code>family=</code> says which one</li>
+<li><code>plan</code> is text, so Basic (first alphabetically) is the reference category</li>
+<li><code>exposure=</code> tells the model how long each account was observed. More on that in a moment</li>
+</ul>
 </section>
-<section id="real-irrs-on-real-data" class="slide level2">
-<h2>Real IRRs, on real data</h2>
-<div class="cell">
-<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="171" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 170;"><span id="cb2-171"><a></a>{</span>
-<span id="cb2-172"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:16px auto 0;font-family:sans-serif;font-size:1em;border-collapse:collapse;"&gt;</span></span>
-<span id="cb2-173"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;&lt;th style="padding:6px 24px;"&gt;Variable&lt;/th&gt;&lt;th style="padding:6px 24px;"&gt;IRR&lt;/th&gt;&lt;/tr&gt;</span></span>
-<span id="cb2-174"><a></a><span class="vs">    </span><span class="sc">${</span>irr_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="border-bottom:1px solid #ddd;"&gt;&lt;td style="padding:5px 24px;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">variable</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:5px 24px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">irr</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
-<span id="cb2-175"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
-<span id="cb2-176"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div id="ojs-cell-1" data-nodetype="expression">
-
-</div>
-</div>
-</div>
-<div style="font-size:0.75em;color:#999;margin-top:12px;">
-<p>Reference category for season: Fall. Source: UCI Bike Sharing dataset</p>
-</div>
+<section id="the-output" class="slide level2">
+<h2>The output</h2>
+<pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.52em;line-height:1.35;background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;padding:8px 14px;overflow-x:auto;white-space:pre;">                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                tickets   No. Observations:                  600
+Model:                            GLM   Df Residuals:                      595
+Model Family:                 Poisson   Df Model:                            4
+Link Function:                    Log   Scale:                          1.0000
+Method:                          IRLS   Log-Likelihood:                -1237.9
+Date:                Fri, 06 Nov 2026   Deviance:                       1297.2
+Time:                        15:20:09   Pearson chi2:                 1.36e+03
+No. Iterations:                     5   Pseudo R-squ. (CS):             0.3986
+Covariance Type:            nonrobust                                         
+======================================================================================
+                         coef    std err          z      P&gt;|z|      [0.025      0.975]
+--------------------------------------------------------------------------------------
+Intercept             -1.6570      0.079    -20.925      0.000      -1.812      -1.502
+plan[T.Enterprise]     0.5336      0.072      7.447      0.000       0.393       0.674
+plan[T.Pro]            0.2782      0.061      4.558      0.000       0.159       0.398
+users                  0.0092      0.001     13.541      0.000       0.008       0.011
+trained               -0.4425      0.061     -7.222      0.000      -0.563      -0.322
+======================================================================================</pre>
 </section>
-<section id="the-temperature-story" class="slide level2">
-<h2>The temperature story</h2>
-<div class="cell">
-<div class="sourceCode cell-code hidden" id="cb3" data-startfrom="186" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 185;"><span id="cb3-186"><a></a><span class="fu">html</span><span class="vs">`&lt;p&gt;Each 1°C warmer day multiplies expected rentals by &lt;b&gt;</span><span class="sc">${</span>temp_irr<span class="sc">}</span><span class="vs">&lt;/b&gt;.&lt;/p&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div id="ojs-cell-2" data-nodetype="expression">
-
-</div>
-</div>
+<section id="why-the-exposure" class="slide level2">
+<h2>Why the exposure?</h2>
+<p>Some accounts were only active for part of the six months. An account that joined last month has had one month to raise tickets, not six.</p>
+<div class="fragment">
+<p>So the thing we really want to model is the <strong>rate</strong>: tickets per month. With the log link that’s easy:</p>
+<p><span class="math display">\[\ln(E[\text{tickets}]) = \ln(\text{months}) + \beta_0 + \beta_1 \text{users} + \dots\]</span></p>
+<p><span class="math inline">\(\ln(\text{months})\)</span> goes in with its coefficient fixed at 1. That term is called an <strong>offset</strong>. <code>exposure=df["months_active"]</code> adds it for you.</p>
 </div>
 <div class="fragment">
-<div class="cell">
-<div class="sourceCode cell-code hidden" id="cb4" data-startfrom="191" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 190;"><span id="cb4-191"><a></a><span class="fu">html</span><span class="vs">`&lt;p&gt;Over a 10°C swing: an IRR of &lt;b&gt;</span><span class="sc">${</span>temp_irr_10c<span class="sc">}</span><span class="vs">&lt;/b&gt; — that's &lt;b&gt;</span><span class="sc">${</span>temp_pct_10c<span class="sc">}</span><span class="vs">% more rentals expected&lt;/b&gt; on a day 10°C warmer, holding season, humidity, windspeed, and working-day status fixed.&lt;/p&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div id="ojs-cell-3" data-nodetype="expression">
-
-</div>
-</div>
-</div>
+<p>Every coefficient is now about tickets <strong>per month</strong>, whatever length of time each account was observed.</p>
 </div>
 </section>
-<section id="task-read-one-irr-yourself" class="slide level2">
-<h2>Task — read one IRR yourself</h2>
-<div class="instructions-box">
-<p><strong>Business question</strong>: how much does a working day actually change expected demand, compared to a weekend or holiday?</p>
-<p>Using the table above, convert the <code>workingday</code> IRR into a plain-English sentence a scheduling manager could act on. What does an IRR just above 1 actually mean here, in percentage terms?</p>
+<section id="what-if-we-left-it-out" class="slide level2">
+<h2>What if we left it out?</h2>
+<table style="margin:12px auto 0;font-family:sans-serif;font-size:0.95em;border-collapse:collapse;">
+<tbody><tr style="border-bottom:2px solid #1a1a2e;">
+<th style="padding:6px 20px;">
+</th>
+<th style="padding:6px 20px;">
+Exposure included
+</th>
+<th style="padding:6px 20px;">
+Exposure left out
+</th>
+</tr>
+<tr style="border-bottom:1px solid #ddd;">
+<td style="padding:5px 20px;text-align:left;">
+trained (IRR)
+</td>
+<td style="padding:5px 20px;text-align:center;">
+0.642
+</td>
+<td style="padding:5px 20px;text-align:center;">
+0.507
+</td>
+</tr>
+</tbody></table>
+<ul>
+<li>Training was introduced recently, so newer accounts are much more likely to have had it: <strong>72%</strong> of the 182 newer accounts against <strong>28%</strong> of the rest</li>
+<li>Newer accounts have had fewer months to raise tickets. Leave the exposure out and training takes the credit for that</li>
+<li>This is omitted variable bias again (Week 6). Time observed is the omitted variable</li>
+</ul>
+</section>
+<section id="from-coefficients-to-incidence-rate-ratios" class="slide level2">
+<h2>From coefficients to incidence rate ratios</h2>
+<p>Exponentiating a coefficient gives an <strong>incidence rate ratio (IRR)</strong>:</p>
+<p><span class="math display">\[IRR = \exp(\beta_1)\]</span></p>
+<div class="fragment">
+<p>A one-unit increase in <span class="math inline">\(x_1\)</span> <strong>multiplies</strong> the expected count by the IRR. It doesn’t add to it.</p>
 </div>
+<div class="fragment">
+<ul>
+<li><span class="math inline">\(IRR &gt; 1\)</span>: the expected count goes up. 1.25 means 25% more</li>
+<li><span class="math inline">\(IRR &lt; 1\)</span>: the expected count goes down. 0.80 means 20% fewer</li>
+<li><span class="math inline">\(IRR = 1\)</span>: no difference</li>
+</ul>
+</div>
+</section>
+<section id="the-irrs" class="slide level2">
+<h2>The IRRs</h2>
+<div class="big-code">
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a></a>np.exp(poisson_model.params)</span>
+<span id="cb4-2"><a></a>np.exp(poisson_model.conf_int())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<table style="margin:12px auto 0;font-family:sans-serif;font-size:0.95em;border-collapse:collapse;">
+<tbody><tr style="border-bottom:2px solid #1a1a2e;">
+<th style="padding:6px 20px;">
+</th>
+<th style="padding:6px 20px;">
+IRR
+</th>
+<th style="padding:6px 20px;">
+95% CI
+</th>
+</tr>
+<tr style="border-bottom:1px solid #ddd;">
+<td style="padding:5px 20px;text-align:left;">
+users
+</td>
+<td style="padding:5px 20px;text-align:center;">
+1.009
+</td>
+<td style="padding:5px 20px;text-align:center;">
+1.008 to 1.011
+</td>
+</tr>
+<tr style="border-bottom:1px solid #ddd;">
+<td style="padding:5px 20px;text-align:left;">
+trained
+</td>
+<td style="padding:5px 20px;text-align:center;">
+0.642
+</td>
+<td style="padding:5px 20px;text-align:center;">
+0.570 to 0.724
+</td>
+</tr>
+<tr style="border-bottom:1px solid #ddd;">
+<td style="padding:5px 20px;text-align:left;">
+plan: Pro
+</td>
+<td style="padding:5px 20px;text-align:center;">
+1.321
+</td>
+<td style="padding:5px 20px;text-align:center;">
+1.172 to 1.489
+</td>
+</tr>
+<tr style="border-bottom:1px solid #ddd;">
+<td style="padding:5px 20px;text-align:left;">
+plan: Enterprise
+</td>
+<td style="padding:5px 20px;text-align:center;">
+1.705
+</td>
+<td style="padding:5px 20px;text-align:center;">
+1.482 to 1.962
+</td>
+</tr>
+</tbody></table>
+<p style="font-size:0.75em;color:#999;margin-top:12px;">
+Baseline rate (the exponentiated intercept): 0.191 tickets a month for a Basic, untrained account with zero seats.
+</p>
+</section>
+<section id="reading-a-continuous-irr-seats" class="slide level2">
+<h2>Reading a continuous IRR: seats</h2>
+<ul>
+<li>The IRR on <code>users</code> is <strong>1.0093</strong>: each extra seat multiplies expected tickets by 1.0093, so about <strong>0.9% more</strong> per seat</li>
+</ul>
+<div class="fragment">
+<ul>
+<li>For 10 more seats, raise the IRR to the power 10: 1.0093<sup>10</sup> = <strong>1.097</strong>, about <strong>9.7% more</strong> tickets</li>
+<li>Not quite 10 × 0.93%, because the increases compound. In code: <code>np.exp(10 * poisson_model.params["users"])</code></li>
+</ul>
+</div>
+</section>
+<section id="reading-a-dummy-irr-training" class="slide level2">
+<h2>Reading a dummy IRR: training</h2>
+<ul>
+<li>The IRR on <code>trained</code> is <strong>0.642</strong></li>
+<li>Trained accounts raise <strong>36% fewer</strong> tickets a month than untrained accounts on the same plan with the same number of seats</li>
+</ul>
+<div class="fragment">
+<ul>
+<li>The 95% CI runs from 0.570 to 0.724: somewhere between 28% and 43% fewer</li>
+<li>Is it causal? Only if nothing else differs between trained and untrained accounts. The firm chose who got training, so be careful (Week 9 takes this on properly)</li>
+</ul>
+</div>
+</section>
+<section id="reading-a-categorical-irr-the-plan" class="slide level2">
+<h2>Reading a categorical IRR: the plan</h2>
+<ul>
+<li>Basic is the reference category. Each plan IRR compares that plan with Basic</li>
+<li><strong>Pro: 1.321</strong>. Pro accounts raise about 32% more tickets a month than Basic accounts with the same seats and training</li>
+<li><strong>Enterprise: 1.705</strong>. About 71% more than Basic</li>
+</ul>
+<div class="fragment">
+<ul>
+<li>Enterprise against Pro? Divide the two IRRs: 1.705 / 1.321 = <strong>1.29</strong>, about 29% more</li>
+</ul>
+</div>
+</section>
+<section id="a-predicted-count-for-one-account" class="slide level2">
+<h2>A predicted count for one account</h2>
+<div class="mid-code">
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a></a>account <span class="op">=</span> pd.DataFrame({<span class="st">"users"</span>: [<span class="dv">50</span>], <span class="st">"trained"</span>: [<span class="dv">0</span>], <span class="st">"plan"</span>: [<span class="st">"Pro"</span>]})</span>
+<span id="cb5-2"><a></a>poisson_model.predict(account, exposure<span class="op">=</span>[<span class="dv">6</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>A Pro account with 50 seats and no training, active for all six months: <strong>2.40 tickets</strong> expected, about 0.40 a month</li>
+<li>The same account with training: 2.40 × 0.642 = <strong>1.54</strong></li>
+<li>Predictions are never negative, whatever values we plug in</li>
+</ul>
 </section>
 <section class="slide level2">
 
@@ -338,92 +519,220 @@
 </section>
 <section id="poissons-hidden-assumption" class="slide level2">
 <h2>Poisson’s hidden assumption</h2>
-<p>Poisson regression assumes <strong>equidispersion</strong>: the variance of <span class="math inline">\(y\)</span> equals its mean, <span class="math inline">\(Var(y|x) = E(y|x)\)</span>.</p>
+<p>Poisson assumes <strong>equidispersion</strong>: the variance of <span class="math inline">\(y\)</span> equals its mean, given the x’s. <span class="math inline">\(Var(y|x) = E(y|x)\)</span>.</p>
 <div class="fragment">
-<p>On this data:</p>
+<div class="big-code">
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a></a>poisson_model.pearson_chi2 <span class="op">/</span> poisson_model.df_resid</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <ul>
-<li>Mean daily rentals: <strong><span><span id="ojs-element-id-1"></span></span></strong></li>
-<li>Variance: <strong><span><span id="ojs-element-id-2"></span></span></strong></li>
-<li>Ratio: <strong><span><span id="ojs-element-id-3"></span>×</span></strong></li>
+<li>This <strong>dispersion statistic</strong> should be close to 1 if Poisson’s assumption holds. Here it’s <strong>2.29</strong></li>
+<li>The variance is about twice what Poisson allows, after the x’s have done their work. That’s <strong>overdispersion</strong></li>
+<li>Don’t just compare the raw mean and variance (2.30 and 8.03). Some of that spread is explained by the x’s</li>
 </ul>
 </div>
-<div class="fragment">
-<p>The variance is nowhere close to the mean — this is <strong>severe overdispersion</strong>. Daily rental counts are the sum of thousands of individual decisions, which naturally vary far more than a simple Poisson process would predict.</p>
+</section>
+<section id="you-can-see-it-in-the-zeros" class="slide level2">
+<h2>You can see it in the zeros</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="374" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 373;"><span id="cb7-374"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb7-375"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">900</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">330</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">55</span><span class="op">,</span></span>
+<span id="cb7-376"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Tickets"</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> d <span class="kw">=&gt;</span> d}<span class="op">,</span></span>
+<span id="cb7-377"><a></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Share of accounts"</span><span class="op">,</span> <span class="dt">grid</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">tickFormat</span><span class="op">:</span> <span class="st">"%"</span>}<span class="op">,</span></span>
+<span id="cb7-378"><a></a>  <span class="dt">color</span><span class="op">:</span> {<span class="dt">domain</span><span class="op">:</span> [<span class="st">"Observed"</span><span class="op">,</span> <span class="st">"Poisson"</span><span class="op">,</span> <span class="st">"Negative binomial"</span>]<span class="op">,</span> <span class="dt">range</span><span class="op">:</span> [<span class="st">"#2f6690"</span><span class="op">,</span> <span class="st">"#c8373f"</span><span class="op">,</span> <span class="st">"#2d6a4f"</span>]<span class="op">,</span> <span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}<span class="op">,</span></span>
+<span id="cb7-379"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb7-380"><a></a>    Plot<span class="op">.</span><span class="fu">barY</span>(freq_rows<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">model</span> <span class="op">===</span> <span class="st">"Observed"</span>)<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"k"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"share"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#2f6690"</span><span class="op">,</span> <span class="dt">fillOpacity</span><span class="op">:</span> <span class="fl">0.6</span>})<span class="op">,</span></span>
+<span id="cb7-381"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(freq_rows<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">model</span> <span class="op">!==</span> <span class="st">"Observed"</span>)<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"k"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"share"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"model"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">2.5</span>})<span class="op">,</span></span>
+<span id="cb7-382"><a></a>    Plot<span class="op">.</span><span class="fu">dot</span>(freq_rows<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">model</span> <span class="op">!==</span> <span class="st">"Observed"</span>)<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"k"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"share"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"model"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="fl">3.5</span>})</span>
+<span id="cb7-383"><a></a>  ]</span>
+<span id="cb7-384"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-2" data-nodetype="expression">
+
 </div>
+</div>
+</div>
+<p>Bars: the real data. The red line is what the Poisson model predicts: <strong>20%</strong> of accounts with no tickets, against <strong>30%</strong> in the data. Too few zeros and too few large counts.</p>
 </section>
 <section id="why-this-matters" class="slide level2">
 <h2>Why this matters</h2>
-<p>Fitting a plain Poisson model when the data is this overdispersed doesn’t just look untidy — it makes every standard error too small, which makes every result look more certain than it actually is.</p>
+<p>Overdispersion doesn’t usually bias the IRRs much. It makes the <strong>standard errors too small</strong>, so every result looks more certain than it is.</p>
 <div class="fragment">
-<p>We need a model that keeps the same log link and the same IRR interpretation, but doesn’t force variance to equal the mean.</p>
+<p>We want a model with the same log link and the same IRRs, that lets the variance be bigger than the mean.</p>
 </div>
 </section>
 <section id="negative-binomial-the-fix" class="slide level2">
 <h2>Negative binomial — the fix</h2>
 <ul>
-<li>Same log link, same IRR interpretation — nothing about <em>reading</em> the model changes</li>
-<li>Adds one extra parameter, <strong>α</strong>, that lets the variance exceed the mean instead of forcing them to be equal</li>
-<li>The practical rule: <strong>when the data is this overdispersed, reach for negative binomial, not plain Poisson</strong> — you don’t need to derive why, just recognise the symptom (variance ≫ mean) and know the fix exists</li>
+<li>Same log link, same IRRs, same exposure. Reading the model doesn’t change</li>
+<li>Adds one extra parameter, <strong>α</strong>, that lets the variance exceed the mean: <span class="math inline">\(Var(y|x) = \mu + \alpha\mu^2\)</span></li>
+<li>α = 0 takes you back to Poisson</li>
+<li>The practical rule: <strong>check the dispersion statistic; if it’s well above 1, use negative binomial</strong></li>
 </ul>
 </section>
 <section id="fitting-it-in-code-1" class="slide level2">
 <h2>Fitting it, in code</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a></a>nb_model <span class="op">=</span> smf.negativebinomial(</span>
-<span id="cb5-2"><a></a>    <span class="st">"cnt ~ temp_c + workingday + C(season_name) + windspeed + hum"</span>,</span>
-<span id="cb5-3"><a></a>    data<span class="op">=</span>df</span>
-<span id="cb5-4"><a></a>).fit()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>α comes out estimated by maximum likelihood, not assumed — here, <strong><span><span id="ojs-element-id-4"></span></span></strong>.</p>
+<div class="big-code">
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a></a>nb_model <span class="op">=</span> smf.negativebinomial(<span class="st">"tickets ~ users + trained + plan"</span>, data<span class="op">=</span>df,</span>
+<span id="cb8-2"><a></a>                                exposure<span class="op">=</span>df[<span class="st">"months_active"</span>]).fit()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>α is estimated from the data: <strong>0.543</strong> (SE 0.066), clearly above zero</li>
+<li>The red-versus-green lines on the zeros chart: negative binomial predicts <strong>29%</strong> zeros, against 30% in the data</li>
+</ul>
 </section>
-<section id="the-real-consequence" class="slide level2">
-<h2>The real consequence</h2>
-<div class="cell">
-<div class="sourceCode cell-code hidden" id="cb6" data-startfrom="254" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 253;"><span id="cb6-254"><a></a>{</span>
-<span id="cb6-255"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:16px auto 0;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;"&gt;</span></span>
-<span id="cb6-256"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;&lt;th style="padding:5px 16px;"&gt;Variable&lt;/th&gt;&lt;th style="padding:5px 16px;"&gt;Poisson SE&lt;/th&gt;&lt;th style="padding:5px 16px;"&gt;NegBin SE&lt;/th&gt;&lt;th style="padding:5px 16px;"&gt;Ratio&lt;/th&gt;&lt;/tr&gt;</span></span>
-<span id="cb6-257"><a></a><span class="vs">    </span><span class="sc">${</span>overdispersion_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="border-bottom:1px solid #ddd;"&gt;&lt;td style="padding:4px 16px;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">variable</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:4px 16px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">poisson_se</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:4px 16px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">nb_se</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:4px 16px;text-align:center;font-weight:700;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">ratio</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
-<span id="cb6-258"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
-<span id="cb6-259"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div id="ojs-cell-4" data-nodetype="expression">
-
-</div>
-</div>
-</div>
+<section id="the-real-consequence-standard-errors" class="slide level2">
+<h2>The real consequence: standard errors</h2>
+<table style="margin:12px auto 0;font-family:sans-serif;font-size:0.95em;border-collapse:collapse;">
+<tbody><tr style="border-bottom:2px solid #1a1a2e;">
+<th style="padding:6px 20px;">
+</th>
+<th style="padding:6px 20px;">
+Poisson SE
+</th>
+<th style="padding:6px 20px;">
+Neg. binomial SE
+</th>
+<th style="padding:6px 20px;">
+Ratio
+</th>
+</tr>
+<tr style="border-bottom:1px solid #ddd;">
+<td style="padding:5px 20px;text-align:left;">
+users
+</td>
+<td style="padding:5px 20px;text-align:center;">
+0.0007
+</td>
+<td style="padding:5px 20px;text-align:center;">
+0.0010
+</td>
+<td style="padding:5px 20px;text-align:center;">
+<b>1.5×</b>
+</td>
+</tr>
+<tr style="border-bottom:1px solid #ddd;">
+<td style="padding:5px 20px;text-align:left;">
+trained
+</td>
+<td style="padding:5px 20px;text-align:center;">
+0.0613
+</td>
+<td style="padding:5px 20px;text-align:center;">
+0.0901
+</td>
+<td style="padding:5px 20px;text-align:center;">
+<b>1.5×</b>
+</td>
+</tr>
+<tr style="border-bottom:1px solid #ddd;">
+<td style="padding:5px 20px;text-align:left;">
+plan: Pro
+</td>
+<td style="padding:5px 20px;text-align:center;">
+0.0610
+</td>
+<td style="padding:5px 20px;text-align:center;">
+0.0939
+</td>
+<td style="padding:5px 20px;text-align:center;">
+<b>1.5×</b>
+</td>
+</tr>
+<tr style="border-bottom:1px solid #ddd;">
+<td style="padding:5px 20px;text-align:left;">
+plan: Enterprise
+</td>
+<td style="padding:5px 20px;text-align:center;">
+0.0717
+</td>
+<td style="padding:5px 20px;text-align:center;">
+0.1207
+</td>
+<td style="padding:5px 20px;text-align:center;">
+<b>1.7×</b>
+</td>
+</tr>
+</tbody></table>
 <div class="fragment">
-<p>Standard errors from the plain Poisson model are roughly <strong>24 times too small</strong>, across every coefficient — not a rounding issue, a fundamentally overconfident model.</p>
+<p>Negative binomial standard errors are 1.5 to 1.7 times larger. The Poisson model was overconfident about every coefficient. Every effect here is still clearly significant, but on other data a “significant” Poisson result can disappear.</p>
 </div>
 </section>
-<section id="the-estimate-itself-shifts-too" class="slide level2">
-<h2>The estimate itself shifts too</h2>
-<div class="cell">
-<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="269" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 268;"><span id="cb7-269"><a></a><span class="fu">html</span><span class="vs">`&lt;ul&gt;</span></span>
-<span id="cb7-270"><a></a><span class="vs">  &lt;li&gt;Temperature IRR under Poisson: </span><span class="sc">${</span>temp_irr<span class="sc">}</span><span class="vs"> (the +10°C story: </span><span class="sc">${</span>temp_pct_10c<span class="sc">}</span><span class="vs">% more rentals)&lt;/li&gt;</span></span>
-<span id="cb7-271"><a></a><span class="vs">  &lt;li&gt;Temperature IRR under Negative Binomial: &lt;b&gt;</span><span class="sc">${</span>temp_irr_nb<span class="sc">}</span><span class="vs">&lt;/b&gt; (the +10°C story: &lt;b&gt;</span><span class="sc">${</span>temp_pct_nb_10c<span class="sc">}</span><span class="vs">% more rentals&lt;/b&gt;)&lt;/li&gt;</span></span>
-<span id="cb7-272"><a></a><span class="vs">&lt;/ul&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div id="ojs-cell-5" data-nodetype="expression">
-
-</div>
-</div>
-</div>
+<section id="and-the-irrs" class="slide level2">
+<h2>And the IRRs?</h2>
+<table style="margin:12px auto 0;font-family:sans-serif;font-size:0.95em;border-collapse:collapse;">
+<tbody><tr style="border-bottom:2px solid #1a1a2e;">
+<th style="padding:6px 20px;">
+</th>
+<th style="padding:6px 20px;">
+Poisson IRR
+</th>
+<th style="padding:6px 20px;">
+Neg. binomial IRR
+</th>
+</tr>
+<tr style="border-bottom:1px solid #ddd;">
+<td style="padding:5px 20px;text-align:left;">
+users
+</td>
+<td style="padding:5px 20px;text-align:center;">
+1.009
+</td>
+<td style="padding:5px 20px;text-align:center;">
+1.009
+</td>
+</tr>
+<tr style="border-bottom:1px solid #ddd;">
+<td style="padding:5px 20px;text-align:left;">
+trained
+</td>
+<td style="padding:5px 20px;text-align:center;">
+0.642
+</td>
+<td style="padding:5px 20px;text-align:center;">
+0.641
+</td>
+</tr>
+<tr style="border-bottom:1px solid #ddd;">
+<td style="padding:5px 20px;text-align:left;">
+plan: Pro
+</td>
+<td style="padding:5px 20px;text-align:center;">
+1.321
+</td>
+<td style="padding:5px 20px;text-align:center;">
+1.281
+</td>
+</tr>
+<tr style="border-bottom:1px solid #ddd;">
+<td style="padding:5px 20px;text-align:left;">
+plan: Enterprise
+</td>
+<td style="padding:5px 20px;text-align:center;">
+1.705
+</td>
+<td style="padding:5px 20px;text-align:center;">
+1.698
+</td>
+</tr>
+</tbody></table>
 <div class="fragment">
-<p>Overdispersion here isn’t just a false-confidence problem — the point estimate itself moves once the model properly accounts for how much more variable the data really is.</p>
+<p>They barely move. Here negative binomial changes how sure we are, not the answer. With other data the estimates can shift too, so it’s worth comparing.</p>
 </div>
 </section>
 <section id="other-kinds-of-y-briefly" class="slide level2">
 <h2>Other kinds of y, briefly</h2>
 <ul>
-<li><strong>Ordinal/nominal outcomes</strong> (e.g.&nbsp;satisfaction ratings, product categories) can sometimes be recast as binary — “top box vs.&nbsp;not” — trading some information for a model you already know how to run</li>
-<li><strong>Duration variables</strong> (time until an event) are often censored — you don’t observe the full duration for everyone. Running OLS on censored durations gets the <em>direction</em> right but not the <em>magnitude</em>. Converting to a binary “did the event happen by time T” is often the pragmatic choice</li>
+<li><strong>Ordinal or nominal outcomes</strong> (satisfaction ratings, product categories) can often be recast as binary, such as “top box or not”. You lose some information but get a model you already know how to run</li>
+<li><strong>Durations</strong> (time until an event) are often censored: you don’t see the full duration for everyone. OLS on censored durations gets the direction right but not the size. Converting to a binary “did the event happen by time T” is often the practical choice</li>
 </ul>
 </section>
 <section id="summary" class="slide level2">
 <h2>Summary</h2>
 <ul>
-<li>A count outcome needs a link function that keeps predictions non-negative — the log link, giving Poisson regression</li>
-<li>Coefficients are read via the <strong>incidence rate ratio</strong>, <span class="math inline">\(\exp(\beta)\)</span> — the same logic as an odds ratio, just multiplicative on counts</li>
-<li>Poisson assumes variance equals the mean — check this before trusting the standard errors, since real data is often far more dispersed than that</li>
-<li>Negative binomial is the standard fix, and it can move both the standard errors and the estimates themselves</li>
+<li>A count outcome needs predictions that are never negative: the log link, giving <strong>Poisson regression</strong></li>
+<li>When units are observed for different lengths of time, add the <strong>exposure</strong> (an offset) so you model the rate. Leaving it out can bias the estimates</li>
+<li>Read coefficients as <strong>incidence rate ratios</strong>, exp(β): they multiply the expected count</li>
+<li>Poisson assumes the variance equals the mean. Check the <strong>dispersion statistic</strong>; if it’s well above 1, use <strong>negative binomial</strong>, which mainly widens the standard errors</li>
 </ul>
 </section>
 <section id="coming-up" class="slide level2">
@@ -431,16 +740,11 @@
 <div style="text-align: center; padding-top: 60px;">
 <p><span style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"><strong>Week 9: Causal Analysis and Experiments</strong></span></p>
 <div class="fragment" style="padding-top:40px;">
-<p><em>Every model these last two weeks assumed the controls were the right ones. Next week: a formal framework for causal claims, and experiments — the most direct way to get them right.</em></p>
+<p><em>Was it the training that cut the tickets, or the kind of account that got trained? Next week: a framework for causal claims, and experiments, the most direct way to answer that.</em></p>
 </div>
 </div>
 
 
-<div class="ojs-auto-generated hidden">
-<script type="ojs-module-contents">
-eyJjb250ZW50cyI6WyAgeyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiaW5saW5lIjoidHJ1ZSIsInNvdXJjZSI6Imh0bC5odG1sYDxzcGFuPiR7Y250X21lYW59PC9zcGFuPmAiLCAiY2VsbE5hbWUiOiJvanMtZWxlbWVudC1pZC0xIn0sICB7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJpbmxpbmUiOiJ0cnVlIiwic291cmNlIjoiaHRsLmh0bWxgPHNwYW4+JHtjbnRfdmFyfTwvc3Bhbj5gIiwgImNlbGxOYW1lIjoib2pzLWVsZW1lbnQtaWQtMiJ9LCAgeyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiaW5saW5lIjoidHJ1ZSIsInNvdXJjZSI6Imh0bC5odG1sYDxzcGFuPiR7b3ZlcmRpc3BlcnNpb25fcmF0aW99PC9zcGFuPmAiLCAiY2VsbE5hbWUiOiJvanMtZWxlbWVudC1pZC0zIn0sICB7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJpbmxpbmUiOiJ0cnVlIiwic291cmNlIjoiaHRsLmh0bWxgPHNwYW4+JHtuYl9hbHBoYX08L3NwYW4+YCIsICJjZWxsTmFtZSI6Im9qcy1lbGVtZW50LWlkLTQifV19
-</script>
-</div>
 </section></section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
@@ -658,7 +962,7 @@ eyJjb250ZW50cyI6WyAgeyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiaW5saW5lIjoidHJ1ZSIsInNv
       });
     </script>
     <script type="ojs-module-contents">
-    eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgcmV0dXJuIGh0bWxgPHRhYmxlIHN0eWxlPVwibWFyZ2luOjE2cHggYXV0byAwO2ZvbnQtZmFtaWx5OnNhbnMtc2VyaWY7Zm9udC1zaXplOjFlbTtib3JkZXItY29sbGFwc2U6Y29sbGFwc2U7XCI+XG4gICAgPHRyIHN0eWxlPVwiYm9yZGVyLWJvdHRvbToycHggc29saWQgIzFhMWEyZTtcIj48dGggc3R5bGU9XCJwYWRkaW5nOjZweCAyNHB4O1wiPlZhcmlhYmxlPC90aD48dGggc3R5bGU9XCJwYWRkaW5nOjZweCAyNHB4O1wiPklSUjwvdGg+PC90cj5cbiAgICAke2lycl9yb3dzLm1hcChkID0+IGA8dHIgc3R5bGU9XCJib3JkZXItYm90dG9tOjFweCBzb2xpZCAjZGRkO1wiPjx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDI0cHg7XCI+JHtkLnZhcmlhYmxlfTwvdGQ+PHRkIHN0eWxlPVwicGFkZGluZzo1cHggMjRweDt0ZXh0LWFsaWduOmNlbnRlcjtcIj4ke2QuaXJyfTwvdGQ+PC90cj5gKS5qb2luKCcnKX1cbiAgPC90YWJsZT5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJodG1sYDxwPkVhY2ggMcKwQyB3YXJtZXIgZGF5IG11bHRpcGxpZXMgZXhwZWN0ZWQgcmVudGFscyBieSA8Yj4ke3RlbXBfaXJyfTwvYj4uPC9wPmBcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMyIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPHA+T3ZlciBhIDEwwrBDIHN3aW5nOiBhbiBJUlIgb2YgPGI+JHt0ZW1wX2lycl8xMGN9PC9iPiDigJQgdGhhdCdzIDxiPiR7dGVtcF9wY3RfMTBjfSUgbW9yZSByZW50YWxzIGV4cGVjdGVkPC9iPiBvbiBhIGRheSAxMMKwQyB3YXJtZXIsIGhvbGRpbmcgc2Vhc29uLCBodW1pZGl0eSwgd2luZHNwZWVkLCBhbmQgd29ya2luZy1kYXkgc3RhdHVzIGZpeGVkLjwvcD5gXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTQiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIHJldHVybiBodG1sYDx0YWJsZSBzdHlsZT1cIm1hcmdpbjoxNnB4IGF1dG8gMDtmb250LWZhbWlseTpzYW5zLXNlcmlmO2ZvbnQtc2l6ZTowLjg1ZW07Ym9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlO1wiPlxuICAgIDx0ciBzdHlsZT1cImJvcmRlci1ib3R0b206MnB4IHNvbGlkICMxYTFhMmU7XCI+PHRoIHN0eWxlPVwicGFkZGluZzo1cHggMTZweDtcIj5WYXJpYWJsZTwvdGg+PHRoIHN0eWxlPVwicGFkZGluZzo1cHggMTZweDtcIj5Qb2lzc29uIFNFPC90aD48dGggc3R5bGU9XCJwYWRkaW5nOjVweCAxNnB4O1wiPk5lZ0JpbiBTRTwvdGg+PHRoIHN0eWxlPVwicGFkZGluZzo1cHggMTZweDtcIj5SYXRpbzwvdGg+PC90cj5cbiAgICAke292ZXJkaXNwZXJzaW9uX3Jvd3MubWFwKGQgPT4gYDx0ciBzdHlsZT1cImJvcmRlci1ib3R0b206MXB4IHNvbGlkICNkZGQ7XCI+PHRkIHN0eWxlPVwicGFkZGluZzo0cHggMTZweDtcIj4ke2QudmFyaWFibGV9PC90ZD48dGQgc3R5bGU9XCJwYWRkaW5nOjRweCAxNnB4O3RleHQtYWxpZ246Y2VudGVyO1wiPiR7ZC5wb2lzc29uX3NlfTwvdGQ+PHRkIHN0eWxlPVwicGFkZGluZzo0cHggMTZweDt0ZXh0LWFsaWduOmNlbnRlcjtcIj4ke2QubmJfc2V9PC90ZD48dGQgc3R5bGU9XCJwYWRkaW5nOjRweCAxNnB4O3RleHQtYWxpZ246Y2VudGVyO2ZvbnQtd2VpZ2h0OjcwMDtcIj4ke2QucmF0aW99PC90ZD48L3RyPmApLmpvaW4oJycpfVxuICA8L3RhYmxlPmBcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPHVsPlxuICA8bGk+VGVtcGVyYXR1cmUgSVJSIHVuZGVyIFBvaXNzb246ICR7dGVtcF9pcnJ9ICh0aGUgKzEwwrBDIHN0b3J5OiAke3RlbXBfcGN0XzEwY30lIG1vcmUgcmVudGFscyk8L2xpPlxuICA8bGk+VGVtcGVyYXR1cmUgSVJSIHVuZGVyIE5lZ2F0aXZlIEJpbm9taWFsOiA8Yj4ke3RlbXBfaXJyX25ifTwvYj4gKHRoZSArMTDCsEMgc3Rvcnk6IDxiPiR7dGVtcF9wY3RfbmJfMTBjfSUgbW9yZSByZW50YWxzPC9iPik8L2xpPlxuPC91bD5gXG4ifV19
+    eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IlBsb3QucGxvdCh7XG4gIHdpZHRoOiA5MDAsIGhlaWdodDogMzMwLCBtYXJnaW5MZWZ0OiA1NSxcbiAgeDoge2xhYmVsOiBcIlRpY2tldHMgcmFpc2VkIG92ZXIgc2l4IG1vbnRoc1wiLCB0aWNrRm9ybWF0OiBkID0+IGR9LFxuICB5OiB7bGFiZWw6IFwiQWNjb3VudHNcIiwgZ3JpZDogdHJ1ZX0sXG4gIG1hcmtzOiBbUGxvdC5iYXJZKHRpY2tldF9jb3VudHMsIHt4OiBcInRpY2tldHNcIiwgeTogXCJhY2NvdW50c1wiLCBmaWxsOiBcIiMyZjY2OTBcIn0pLCBQbG90LnJ1bGVZKFswXSldXG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC0yIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiUGxvdC5wbG90KHtcbiAgd2lkdGg6IDkwMCwgaGVpZ2h0OiAzMzAsIG1hcmdpbkxlZnQ6IDU1LFxuICB4OiB7bGFiZWw6IFwiVGlja2V0c1wiLCB0aWNrRm9ybWF0OiBkID0+IGR9LFxuICB5OiB7bGFiZWw6IFwiU2hhcmUgb2YgYWNjb3VudHNcIiwgZ3JpZDogdHJ1ZSwgdGlja0Zvcm1hdDogXCIlXCJ9LFxuICBjb2xvcjoge2RvbWFpbjogW1wiT2JzZXJ2ZWRcIiwgXCJQb2lzc29uXCIsIFwiTmVnYXRpdmUgYmlub21pYWxcIl0sIHJhbmdlOiBbXCIjMmY2NjkwXCIsIFwiI2M4MzczZlwiLCBcIiMyZDZhNGZcIl0sIGxlZ2VuZDogdHJ1ZX0sXG4gIG1hcmtzOiBbXG4gICAgUGxvdC5iYXJZKGZyZXFfcm93cy5maWx0ZXIoZCA9PiBkLm1vZGVsID09PSBcIk9ic2VydmVkXCIpLCB7eDogXCJrXCIsIHk6IFwic2hhcmVcIiwgZmlsbDogXCIjMmY2NjkwXCIsIGZpbGxPcGFjaXR5OiAwLjZ9KSxcbiAgICBQbG90LmxpbmUoZnJlcV9yb3dzLmZpbHRlcihkID0+IGQubW9kZWwgIT09IFwiT2JzZXJ2ZWRcIiksIHt4OiBcImtcIiwgeTogXCJzaGFyZVwiLCBzdHJva2U6IFwibW9kZWxcIiwgc3Ryb2tlV2lkdGg6IDIuNX0pLFxuICAgIFBsb3QuZG90KGZyZXFfcm93cy5maWx0ZXIoZCA9PiBkLm1vZGVsICE9PSBcIk9ic2VydmVkXCIpLCB7eDogXCJrXCIsIHk6IFwic2hhcmVcIiwgZmlsbDogXCJtb2RlbFwiLCByOiAzLjV9KVxuICBdXG59KVxuIn1dfQ==
     </script>
     <script type="module">
     if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
