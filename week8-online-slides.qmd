@@ -76,6 +76,8 @@ irr = np.exp(pois.params)
 ci = np.exp(pois.conf_int())
 irr_users_10 = np.exp(10 * pois.params["users"])
 disp = pois.pearson_chi2 / pois.df_resid
+mu_fit = pois.fittedvalues
+disp_manual = float(((df['tickets'] - mu_fit) ** 2 / mu_fit).mean())
 trained_new = df.loc[df["months_active"] < 6, "trained"].mean()
 trained_old = df.loc[df["months_active"] == 6, "trained"].mean()
 mean_tpm_new = (df["tickets"] / df["months_active"])[df["months_active"] < 6].mean()
@@ -267,8 +269,8 @@ A one-unit increase in $x_1$ **multiplies** the expected count by the IRR. It do
 
 ::: {.mid-code}
 ```{.python}
-np.exp(poisson_model.params)
-np.exp(poisson_model.conf_int())
+irr = np.exp(pd.concat([poisson_model.params, poisson_model.conf_int()], axis=1))
+irr.columns = ["IRR", "2.5%", "97.5%"]
 ```
 :::
 
@@ -355,15 +357,17 @@ Poisson assumes **equidispersion**: the variance of $y$ equals its mean, given t
 :::: {.fragment}
 ::: {.mid-code}
 ```{.python}
-poisson_model.pearson_chi2 / poisson_model.df_resid
+mu = poisson_model.fittedvalues            # predicted tickets per account
+((df["tickets"] - mu) ** 2 / mu).mean()    # about 1 if Poisson is right
 ```
 :::
 
 ```{python}
 #| output: asis
 print(f"""
-- This **dispersion statistic** should be close to 1 if Poisson's assumption holds. Here it's **{disp:.2f}**
-- The variance is about twice what Poisson allows, after the x's have done their work. That's **overdispersion**
+- If Poisson is right, an account predicted to raise μ̂ tickets misses by about √μ̂. So each squared miss divided by μ̂ should average about **1**
+- Here it averages **{disp_manual:.2f}**: the misses are more than twice as variable as Poisson allows. That's **overdispersion**
+- statsmodels has a shortcut for the same number: `poisson_model.pearson_chi2 / poisson_model.df_resid` gives {disp:.2f} (it divides by {int(pois.df_resid)} rather than {n})
 - Don't just compare the raw mean and variance ({mean_t:.2f} and {var_t:.2f}). Some of that spread is explained by the x's
 """)
 ```
