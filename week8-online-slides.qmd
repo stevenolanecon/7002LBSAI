@@ -108,7 +108,7 @@ ojs_define(ticket_counts=ticket_counts.to_dict(orient="records"), freq_rows=freq
 ```{=html}
 <style>
 .reveal .big-code div.sourceCode { font-size: 1.15em !important; }
-.reveal .mid-code div.sourceCode { font-size: 0.8em !important; }
+.reveal .mid-code div.sourceCode { font-size: 0.7em !important; }
 .reveal .small-code div.sourceCode { font-size: 0.62em !important; }
 .reveal .big-code div.sourceCode pre.sourceCode, .reveal .small-code div.sourceCode pre.sourceCode, .reveal .mid-code div.sourceCode pre.sourceCode { font-size: 1em !important; }
 </style>
@@ -159,7 +159,7 @@ print(f"""
 
 ## Why not just use OLS?
 
-::: {.big-code}
+::: {.mid-code}
 ```{.python}
 ols_model = smf.ols("tickets ~ users + trained + plan", data=df).fit()
 (ols_model.fittedvalues < 0).sum()
@@ -195,7 +195,7 @@ $$\ln(E[y|x]) = \beta_0 + \beta_1 x_1 + \dots$$
 
 ## Fitting it, in code
 
-::: {.big-code}
+::: {.mid-code}
 ```{.python}
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
@@ -265,7 +265,7 @@ A one-unit increase in $x_1$ **multiplies** the expected count by the IRR. It do
 
 ## The IRRs
 
-::: {.big-code}
+::: {.mid-code}
 ```{.python}
 np.exp(poisson_model.params)
 np.exp(poisson_model.conf_int())
@@ -353,7 +353,7 @@ print(f"""
 Poisson assumes **equidispersion**: the variance of $y$ equals its mean, given the x's. $Var(y|x) = E(y|x)$.
 
 :::: {.fragment}
-::: {.big-code}
+::: {.mid-code}
 ```{.python}
 poisson_model.pearson_chi2 / poisson_model.df_resid
 ```
@@ -409,7 +409,7 @@ We want a model with the same log link and the same IRRs, that lets the variance
 
 ## Fitting it, in code
 
-::: {.big-code}
+::: {.mid-code}
 ```{.python}
 nb_model = smf.negativebinomial("tickets ~ users + trained + plan", data=df,
                                 exposure=df["months_active"]).fit()
