@@ -709,6 +709,22 @@ Logit and probit differ by only **${profile_diff}** for this person. This is exa
 }
 ```
 
+::: {.small-code}
+```{.python}
+pred = logit_model.predict(df)       # predicted probabilities
+y = df["stayshealthy"]
+
+1 - np.sum((y - pred) ** 2) / np.sum((y - y.mean()) ** 2)   # R²
+np.mean((pred - y) ** 2)                                    # Brier
+logit_model.prsquared                                       # Pseudo R² (also in .summary())
+logit_model.llf / logit_model.nobs                          # Log-loss
+```
+:::
+
+::: {style="font-size:0.6em;color:#555;"}
+Swap in the probit or LPM model for the other rows. The LPM has no likelihood, so no pseudo R². For its log-loss, use `np.mean(y * np.log(p) + (1 - y) * np.log(1 - p))` with `p = pred.clip(1e-6, 1 - 1e-6)`: one LPM prediction is above 1.
+:::
+
 ::: {.fragment}
 Logit and probit edge out LPM on every measure, but the differences are small — consistent with what the marginal effects already told us.
 :::
@@ -743,20 +759,36 @@ Take everyone predicted around a 30% chance of staying healthy. If roughly 30% o
 
 ## Real calibration curve
 
+::::: {.columns}
+:::: {.column width="48%"}
+::: {.small-code}
 ```{.python}
+import matplotlib.pyplot as plt
+
 df["pred_logit"] = logit_model.predict(df)
-df["decile"] = pd.qcut(df["pred_logit"], 10, labels=False)
+df["decile"] = pd.qcut(df["pred_logit"], 10,
+                       labels=False)
 
 calib = (df.groupby("decile")
-           .agg(pred=("pred_logit", "mean"), actual=("stayshealthy", "mean"))
+           .agg(pred=("pred_logit", "mean"),
+                actual=("stayshealthy", "mean"))
            .reset_index())
-```
 
-:::: {.shrink-on-reveal data-frag="wk8-calib-frag" style="--large-height:500px;--small-height:420px;--shrink-scale:0.84;"}
+# dashed line = perfect calibration
+plt.plot([0, 1], [0, 1], "--", color="grey")
+plt.plot(calib["pred"], calib["actual"], "o-")
+plt.xlabel("Predicted probability")
+plt.ylabel("Actual outcome rate")
+plt.show()
+```
+:::
+::::
+:::: {.column width="52%"}
+:::: {.shrink-on-reveal data-frag="wk8-calib-frag" style="--large-height:480px;--small-height:420px;--shrink-scale:0.875;"}
 ::: {.shrink-on-reveal-inner}
 ```{ojs}
 Plot.plot({
-  width: 500, height: 500,
+  width: 480, height: 480,
   x: {label: "Predicted probability", domain: [0,1]},
   y: {label: "Actual outcome rate", domain: [0,1]},
   marks: [
@@ -768,6 +800,8 @@ Plot.plot({
 ```
 :::
 ::::
+::::
+:::::
 
 ::: {.fragment #wk8-calib-frag}
 Deciles of predicted probability from the logit model, against the actual fraction who stayed healthy in each decile. Close to the diagonal — well calibrated, not just unbiased on average.
