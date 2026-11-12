@@ -591,6 +591,7 @@ The **average marginal effect (AME)** is the average, across everyone in the dat
 
 ::: {.mid-code}
 ```{.python}
+!pip install -q marginaleffects==0.6.1 polars==1.44.2   # not in Colab: run once per session
 import marginaleffects as me
 
 logit_model = smf.logit("stayshealthy ~ smoking + ever_smoked + female + age + eduyears"
