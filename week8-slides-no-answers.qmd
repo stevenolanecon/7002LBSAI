@@ -270,22 +270,65 @@ There's an unobserved, continuous **latent variable** — call it $y^*$ — repr
 $$y = \begin{cases} 1 & \text{if } y^* > 0 \\ 0 & \text{if } y^* \le 0 \end{cases}$$
 :::
 
-## Why the latent variable matters
+## Why the latent variable matters {.smaller}
 
-::: {.fragment}
-If $y^*$ is linear in $x$ plus some random error — $y^* = \beta_0 + \beta_1 x_1 + \dots + e$ — then:
+Suppose $y^* = \beta_0 + \beta_1 x_1 + \dots + e$. Call $\beta_0 + \beta_1 x_1 + \dots$ the person's **predicted health score** (score, for short). They stay healthy ($y=1$) when score $+\ e > 0$, so when $e$ lands above $-$score. $P[y=1|x]$ is the share of the error curve above that line.
 
-$$P[y=1|x] = P[y^*>0|x] = P[e > -(\beta_0+\beta_1 x_1+\dots)]$$
+::: {style="display:flex;gap:40px;align-items:center;"}
+```{ojs}
+viewof latScore = Inputs.range([-2.5, 2.5], {step: 0.1, value: 0.5, label: "Predicted health score"})
+```
+
+```{ojs}
+viewof latShowLogit = Inputs.toggle({label: "Show the logistic curve too"})
+```
 :::
 
-::: {.fragment}
-This is a **probability**, so it has to come from the distribution of that error term $e$ — specifically, its **cumulative distribution function (CDF)**: the chance that $e$ falls below a given value. A CDF always runs from 0 to 1, which is exactly what we want for a probability.
-
-- Assume $e$ is **logistic** → you get the **logit** model
-- Assume $e$ is **normal** → you get the **probit** model
-- Ignore this altogether and model $y$ directly with a straight line → you get the **linear probability model**
+:::: {.shrink-on-reveal data-frag="wk8-latent-frag" style="--large-height:360px;--small-height:200px;--shrink-scale:0.556;"}
+::: {.shrink-on-reveal-inner}
+```{ojs}
+{
+  const s = 1 / 1.6;   // logistic drawn as Λ(1.6z), matching the usual logit-probit scaling
+  const npdf = e => Math.exp(-e * e / 2) / Math.sqrt(2 * Math.PI);
+  const lpdf = e => { const u = Math.exp(-e / s); return u / (s * (1 + u) ** 2); };
+  const grid = d3.range(-4, 4.001, 0.02).map(e => ({e, n: npdf(e), l: lpdf(e)}));
+  const cut = -latScore;
+  const above = grid.filter(d => d.e >= cut);
+  const marks = [
+    Plot.areaY(above, {x: "e", y: "n", fill: "#2f6690", fillOpacity: 0.3}),
+    Plot.line(grid, {x: "e", y: "n", stroke: "#2f6690", strokeWidth: 2.5}),
+    Plot.ruleX([cut], {stroke: "#c8373f", strokeWidth: 2, strokeDasharray: "5,3"}),
+    Plot.text([{e: cut, y: 0.47}], {x: "e", y: "y", text: () => "bad luck needed to fall ill", fill: "#c8373f", dx: cut < -1 ? 6 : -6, textAnchor: cut < -1 ? "start" : "end", fontSize: 16}),
+    Plot.ruleY([0])
+  ];
+  if (latShowLogit) marks.splice(2, 0, Plot.line(grid, {x: "e", y: "l", stroke: "#c97f31", strokeWidth: 2.5, strokeDasharray: "6,4"}));
+  return Plot.plot({
+    width: 760, height: 360, marginLeft: 55, marginTop: 30, marginBottom: 42, style: {fontSize: "15px"},
+    x: {label: "Error term e", domain: [-4, 4]},
+    y: {label: "Density", domain: [0, 0.5]},
+    marks
+  });
+}
+```
 :::
+::::
 
+```{ojs}
+{
+  const s = 1 / 1.6;
+  const pn = jStat_norm_cdf(latScore), pl = 1 / (1 + Math.exp(-latScore / s));
+  return html`<p style="text-align:center;font-size:0.95em;margin:0;">Predicted health score = ${latScore.toFixed(1)}. Shaded area under the <span style="color:#2f6690;font-weight:600;">normal</span> curve: <b>P(healthy) = ${pn.toFixed(2)}</b>${latShowLogit ? html` &nbsp;&middot;&nbsp; under the <span style="color:#c97f31;font-weight:600;">logistic</span> curve: <b>${pl.toFixed(2)}</b>` : ""}</p>`;
+}
+```
+
+::: {.fragment #wk8-latent-frag}
+The area to the left of a point is the **cumulative distribution function (CDF)**. We need the area to the right, which is 1 minus the CDF at $-$score. It's a share of the curve, so it can't go below 0 or above 1.
+
+- Assume $e$ is **normal** → the **probit** model.
+- There's no simple formula for an area under the normal curve. Before fast computers it came from printed tables. The **logistic** curve has almost the same shape and a simple formula, so researchers used it instead → the **logit** model.
+- Today both are instant and give almost the same probabilities. The logistic curve here is stretched to match the normal; unstretched it's wider, so logit coefficients come out about 1.6 times probit's.
+- Ignore $e$ and fit a straight line to $y$ → the **linear probability model**.
+:::
 
 
 ## One family: the Generalized Linear Model
@@ -332,53 +375,6 @@ $$y^P = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots$$
 ::: {.fragment}
 y is either 0 or 1, so $Var[y\mid x] = y^P(1-y^P)$. The spread of the residuals depends on the predicted probability, and that changes with x. So the residuals can't have a constant spread: a 0/1 outcome is always heteroskedastic.
 :::
-
-## Why the spread can't be constant {.smaller}
-
-A made-up LPM, $\hat y^P = 0.1 + 0.08x$. At any $x$, $y$ is 0 or 1, so the residual can only take **two** values: $1-\hat y^P$ or $-\hat y^P$. Move $x$ and watch the spread change.
-
-```{ojs}
-viewof hx = Inputs.range([0, 10], {step: 0.5, value: 1, label: "x"})
-```
-
-```{ojs}
-hsim = {
-  const rnd = d3.randomLcg(8), pts = [];
-  for (let i = 0; i < 220; i++) {
-    const x = rnd() * 10, p = 0.1 + 0.08 * x, y = rnd() < p ? 1 : 0;
-    pts.push({x, y, resid: y - p, lab: y === 1 ? "y = 1" : "y = 0"});
-  }
-  return pts;
-}
-```
-
-```{ojs}
-{
-  const p = 0.1 + 0.08 * hx, v = p * (1 - p);
-  const left = Plot.plot({
-    width: 560, height: 330, marginLeft: 50,
-    x: {label: "x", domain: [0, 10]}, y: {label: "Residual", domain: [-1, 1]},
-    color: {domain: ["y = 1", "y = 0"], range: ["#2d6a4f", "#c8373f"], legend: true},
-    marks: [
-      Plot.ruleY([0], {stroke: "#bbb"}),
-      Plot.dot(hsim, {x: "x", y: "resid", fill: "lab", r: 2.5, fillOpacity: 0.45}),
-      Plot.ruleX([hx], {stroke: "#1a1a2e", strokeDasharray: "4,3"}),
-      Plot.dot([{x: hx, r: 1 - p}, {x: hx, r: -p}], {x: "x", y: "r", r: 7, stroke: "#1a1a2e", strokeWidth: 2.5, fill: "white"})
-    ]
-  });
-  const curve = d3.range(0, 10.01, 0.1).map(x => { const q = 0.1 + 0.08 * x; return {x, v: q * (1 - q)}; });
-  const right = Plot.plot({
-    width: 420, height: 330, marginLeft: 50,
-    x: {label: "x", domain: [0, 10]}, y: {label: "Variance of the residual", domain: [0, 0.27]},
-    marks: [
-      Plot.line(curve, {x: "x", y: "v", stroke: "#2f6690", strokeWidth: 2.5}),
-      Plot.dot([{x: hx, v}], {x: "x", y: "v", r: 7, fill: "#1a1a2e"})
-    ]
-  });
-  return html`<div style="display:flex;gap:24px;justify-content:center;align-items:flex-end;">${left}${right}</div>
-  <p style="text-align:center;font-size:0.95em;margin-top:6px;">At <i>x</i> = ${hx}, <i>ŷ<sup>P</sup></i> = ${p.toFixed(2)}: the residual is <b>+${(1 - p).toFixed(2)}</b> (${(100 * p).toFixed(0)}% of the time) or <b>−${p.toFixed(2)}</b> (${(100 * (1 - p)).toFixed(0)}%). Variance = ${p.toFixed(2)} × ${(1 - p).toFixed(2)} = <b>${v.toFixed(3)}</b>.</p>`
-}
-```
 
 ## Task — fit the LPM yourself
 
@@ -477,26 +473,42 @@ For **inference** — uncovering patterns of association — this is rarely a bi
 
 ## Fixing the range problem
 
-Recall the latent-variable story: $P[y=1|x]$ has to come from a genuine probability distribution's CDF — which is bounded between 0 and 1 by construction.
+Back to the latent-variable picture: $P[y=1|x]$ is an area under the error curve, so it always lies between 0 and 1.
 
-- **Logit**: assumes $e$ is logistic → link function is the logistic function $\Lambda(z) = \dfrac{\exp(z)}{1+\exp(z)}$
-- **Probit**: assumes $e$ is normal → link function is $\Phi(z)$, the standard normal CDF
+- **Probit**: errors are normal. $P[y=1|x] = \Phi(z)$, where $z = \beta_0 + \beta_1 x_1 + \dots$ and $\Phi$ is the normal CDF. There's no simple formula for it.
+- **Logit**: errors are logistic. $P[y=1|x] = \Lambda(z) = \dfrac{\exp(z)}{1+\exp(z)}$: almost the same curve, with a formula you can write down.
 - Both are increasing, S-shaped, and strictly between 0 and 1
 
-## Same data, three link functions
+## Same data, three link functions {.smaller}
 
+:::: {.columns}
+::: {.column width="55%"}
 ```{ojs}
 Plot.plot({
-  width: 640, height: 560,
-  x: {label: "Linear index (z)"}, y: {label: "P(y=1)"},
+  width: 600, height: 500, marginLeft: 50, marginBottom: 50,
+  style: {fontSize: "15px"},
+  x: {label: "z = β₀ + β₁x₁ + …", domain: [-3, 3], labelAnchor: "center", labelOffset: 42}, y: {label: "P(y=1)", domain: [-0.05, 1.05]},
   marks: [
-    Plot.line(d3.range(-6,6.1,0.2).map(z => ({z, p: Math.max(0,Math.min(1,0.5+z/8)), series:"LPM"})), {x:"z",y:"p",stroke:"series"}),
-    Plot.line(d3.range(-6,6.1,0.2).map(z => ({z, p: 1/(1+Math.exp(-z)), series:"Logit"})), {x:"z",y:"p",stroke:"series"}),
-    Plot.line(d3.range(-6,6.1,0.2).map(z => ({z, p: jStat_norm_cdf(z), series:"Probit"})), {x:"z",y:"p",stroke:"series"})
+    Plot.ruleY([0, 1], {stroke: "#ccc"}),
+    Plot.line(d3.range(-3,3.01,0.05).map(z => ({z, p: 0.5+z/4, series:"LPM"})), {x:"z",y:"p",stroke:"series",strokeWidth:2.5,clip:true}),
+    Plot.line(d3.range(-3,3.01,0.05).map(z => ({z, p: 1/(1+Math.exp(-1.6*z)), series:"Logit"})), {x:"z",y:"p",stroke:"series",strokeWidth:2.5}),
+    Plot.line(d3.range(-3,3.01,0.05).map(z => ({z, p: jStat_norm_cdf(z), series:"Probit"})), {x:"z",y:"p",stroke:"series",strokeWidth:2.5})
   ],
-  color: {legend: true}
+  color: {legend: true, domain: ["LPM", "Logit", "Probit"], range: ["#888", "#c97f31", "#2f6690"]}
 })
 ```
+:::
+::: {.column width="45%"}
+- Both $\Lambda(z)$ and $\Phi(z)$ are increasing S-shaped curves, bounded between 0 and 1.
+- Drawn on the same scale, they're almost indistinguishable. The logit is a little less steep near 0 and 1: it has slightly thicker tails.
+- The raw logit curve $\Lambda(z)$ is much flatter, so to give the same probabilities its $\beta$s have to be bigger: about 1.6 times probit's. Here the logit is drawn as $\Lambda(1.6z)$.
+- The LPM is a straight line, so nothing stops it going below 0 or above 1.
+:::
+::::
+
+::: {style="font-size:0.75em;color:#999;"}
+Source: Békés & Kézdi (2021), Ch. 11
+:::
 
 ```{ojs}
 function jStat_norm_cdf(z) {
@@ -530,15 +542,55 @@ No further syntax hints.
 Answer revealed in the workshop.
 :::
 
-## Why raw coefficients stop working
+## Logit and probit interpretation {.smaller}
 
-- LPM's slope is constant — a one-unit change in $x$ shifts $y^P$ by the same amount everywhere
-- Logit and probit's slope **changes** depending on where you are on the S-curve — steepest at $y^P=0.5$, flattest near 0 or 1
-- Direct consequence: **you cannot read raw logit/probit coefficients the way you read an LPM or OLS coefficient**
+Both models put $\beta_0 + \beta_1 x_1 + \dots$ through an S-curve, and the slope of that curve keeps changing. Here's a made-up logit with $\beta_1 = 0.5$. Move the starting point and add one unit of $x$.
 
-## Marginal effects — the fix
+```{ojs}
+viewof slopeZ = Inputs.range([-3.5, 3], {step: 0.1, value: 0, label: "Where the person starts (z)"})
+```
 
-The **average marginal effect (AME)** is the average, across everyone in the data, of how much $y^P$ changes for a one-unit change in $x$.
+:::: {.shrink-on-reveal data-frag="wk8-slope-frag" style="--large-height:340px;--small-height:290px;--shrink-scale:0.853;"}
+::: {.shrink-on-reveal-inner}
+```{ojs}
+{
+  const L = z => 1 / (1 + Math.exp(-z)), b = 0.5;
+  const z0 = slopeZ, z1 = slopeZ + b, p0 = L(z0), p1 = L(z1);
+  return Plot.plot({
+    width: 760, height: 340, marginLeft: 55, marginTop: 30, marginBottom: 50,
+    style: {fontSize: "15px"},
+    x: {label: "z = β₀ + β₁x₁ + …", domain: [-4, 4], labelAnchor: "center", labelOffset: 42}, y: {label: "P(y=1)", domain: [0, 1]},
+    marks: [
+      Plot.line(d3.range(-4, 4.01, 0.05).map(z => ({z, p: L(z)})), {x: "z", y: "p", stroke: "#c97f31", strokeWidth: 2.5}),
+      Plot.link([{x1: z0, y1: p0, x2: z1, y2: p0}], {x1: "x1", y1: "y1", x2: "x2", y2: "y2", stroke: "#1a1a2e", strokeWidth: 2}),
+      Plot.link([{x1: z1, y1: p0, x2: z1, y2: p1}], {x1: "x1", y1: "y1", x2: "x2", y2: "y2", stroke: "#c8373f", strokeWidth: 3}),
+      Plot.dot([{z: z0, p: p0}, {z: z1, p: p1}], {x: "z", y: "p", r: 6, fill: "#1a1a2e"})
+    ]
+  });
+}
+```
+:::
+::::
+
+```{ojs}
+{
+  const L = z => 1 / (1 + Math.exp(-z));
+  const p0 = L(slopeZ), p1 = L(slopeZ + 0.5);
+  return html`<p style="text-align:center;font-size:0.95em;margin:0;">Starting at P = ${p0.toFixed(2)}, one more unit of <i>x</i> raises P to ${p1.toFixed(2)}: <b style="color:#c8373f;">+${(100 * (p1 - p0)).toFixed(1)} percentage points</b>.</p>`;
+}
+```
+
+::: {.fragment #wk8-slope-frag}
+- The slope is steepest at $y^P = 0.5$, flatter further away, and very flat near 0 or 1.
+- So a one-unit difference in $x$ goes with a different difference in $y^P$ depending on where you start. In the LPM it's the same everywhere.
+- Consequence: the raw logit or probit coefficient has **no direct reading as a change in probability**.
+:::
+
+## Marginal effects — the fix {.smaller}
+
+We turn the coefficients into **marginal differences**. The **average marginal difference** for $x$ is the average, across everyone in the data, of how much $y^P$ changes for a one-unit difference in $x$. Each person sits at a different point on the S-curve, so we work out each person's change and then average.
+
+Software calls the same thing the **average marginal effect (AME)** or the **average partial effect**.
 
 ::: {.fragment}
 - Computed via numerical derivatives, not by hand — that's what the `marginaleffects` package is for
