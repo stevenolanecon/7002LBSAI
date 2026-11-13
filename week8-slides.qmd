@@ -338,7 +338,7 @@ viewof latShowLogit = Inputs.toggle({label: "Show the logistic curve too"})
 The area to the left of a point is the **cumulative distribution function (CDF)**. We need the area to the right, which is 1 minus the CDF at $-$score. It's a share of the curve, so it can't go below 0 or above 1.
 
 - Assume $e$ is **normal** → the **probit** model.
-- There's no simple formula for an area under the normal curve. Before fast computers it came from printed tables. The **logistic** curve has almost the same shape and a simple formula, so researchers used it instead → the **logit** model.
+- There's no simple formula for an area under the normal curve. Before fast computers it came from printed tables and took a lot of work. The **logistic** curve has almost the same shape and a simple formula, so researchers used it instead → the **logit** model.
 - Today both are instant and give almost the same probabilities. The logistic curve here is stretched to match the normal; unstretched it's wider, so logit coefficients come out about 1.6 times probit's.
 - Ignore $e$ and fit a straight line to $y$ → the **linear probability model**.
 :::
@@ -353,7 +353,7 @@ Every model in this session shares the same three-part structure:
 3. A distributional assumption for $y$
 
 ::: {.fragment}
-This is the **Generalized Linear Model (GLM)**. Logit and probit aren't a separate technique from what you already know — and neither, in a moment, will Poisson be.
+This is the **Generalized Linear Model (GLM)**. Logit and probit aren't a separate technique from what you already know — the same goes for Poisson.
 :::
 
 ## The family, laid out
@@ -420,11 +420,11 @@ html`<p>Current smokers are about <strong>${key.uni_pp.toFixed(1)} percentage po
 <li>95% confidence interval: ${key.uni_lo_pp.toFixed(1)} to ${key.uni_hi_pp.toFixed(1)} points lower</li>
 <li><i>p</i> = ${key.uni_p.toFixed(3)}, so we reject a zero gap at the 5% level (and at 1%)</li>
 </ul>
-<p>A real gap, if a modest one. The interval is wide, though: anything from a small to a sizeable effect fits the data.</p>`
+<p>A real gap but the interval is wide, though: anything from a small to a sizeable effect fits the data.</p>`
 ```
 
 ::: {.fragment}
-**Task**: Does that survive adding controls for age, exercise, income, education?
+**Task**: Does that survive adding controls? Let's have a look on the notebook. 
 :::
 
 ## LPM with controls {.smaller}
@@ -528,8 +528,7 @@ Plot.plot({
 ::: {.column width="45%"}
 - Both $\Lambda(z)$ and $\Phi(z)$ are increasing S-shaped curves, bounded between 0 and 1.
 - Drawn on the same scale, they're almost indistinguishable. The logit is a little less steep near 0 and 1: it has slightly thicker tails.
-- The raw logit curve $\Lambda(z)$ is much flatter, so to give the same probabilities its $\beta$s have to be bigger: about 1.6 times probit's. Here the logit is drawn as $\Lambda(1.6z)$.
-- The LPM is a straight line, so nothing stops it going below 0 or above 1.
+- The raw logit curve $\Lambda(z)$ is much flatter, so to give the same probabilities its $\beta$s have to be bigger.
 :::
 ::::
 
