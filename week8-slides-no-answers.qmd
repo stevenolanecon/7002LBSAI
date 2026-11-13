@@ -435,7 +435,7 @@ Fair question: we've added every control the dataset offers. Each one should ear
 :::
 
 ::: {.fragment}
-We follow Békés & Kézdi's specification here. In your own work, justify each control rather than adding everything — and check whether the result moves when the doubtful ones come out.
+We use Békés & Kézdi's controls, though they enter education and BMI as splines, so our numbers are close to theirs rather than identical. In your own work, justify each control rather than adding everything — and check whether the result moves when the doubtful ones come out.
 :::
 
 ## The bigger problem with LPM
