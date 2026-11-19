@@ -676,7 +676,7 @@
     "href": "index.html#weeks",
     "title": "Research Methods in Analytics",
     "section": "Weeks",
-    "text": "Weeks\nWorkshop and online-session slides, published as each week runs.\n\n\n\n\nWeek 01Distributions and Summarising Data\n\nLive\n\n\nWorkshop slidesOnline sessionOutliers addendumReaction-time toolPooled histogram toolDownload the data\n\n\n\n\n\nWeek 02Inference\n\nLive\n\n\nWorkshop slidesOnline sessionBootstrap toolDownload the data\n\n\n\n\n\nWeek 03Relationships Between Variables\n\nLive\n\n\nWorkshop slidesOnline sessionDownload the data\n\n\n\n\n\nWeek 04Regression I — Fitting the Line\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 05Regression I — Model Problems & Inference\n\nLive\n\n\nWorkshop slidesOnline sessionQuadratic tool\n\n\n\n\n\nWeek 06Regression II — Multiple Regression\n\nLive\n\n\nWorkshop slidesWorkshop slides (no answers)Online session\n\n\n\nWeek 07\n\nCurriculum Enrichment Week — no session\n\n\n\n\n\nWeek 08Other Models (GLMs)\n\nLive\n\n\nWorkshop slidesWorkshop slides (no answers)\n\n\n\n\n\nWeek 09Causal Analysis and Experiments\n\nComing soon\n\n\nWorkshop slidesWorkshop slides (no answers)Online session\n\n\n\n\n\nWeek 10Prediction\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 11Time Series\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 12Portfolio Presentations\n\nLive\n\n\nPortfolio walkthrough"
+    "text": "Weeks\nWorkshop and online-session slides, published as each week runs.\n\n\n\n\nWeek 01Distributions and Summarising Data\n\nLive\n\n\nWorkshop slidesOnline sessionOutliers addendumReaction-time toolPooled histogram toolDownload the data\n\n\n\n\n\nWeek 02Inference\n\nLive\n\n\nWorkshop slidesOnline sessionBootstrap toolDownload the data\n\n\n\n\n\nWeek 03Relationships Between Variables\n\nLive\n\n\nWorkshop slidesOnline sessionDownload the data\n\n\n\n\n\nWeek 04Regression I — Fitting the Line\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 05Regression I — Model Problems & Inference\n\nLive\n\n\nWorkshop slidesOnline sessionQuadratic tool\n\n\n\n\n\nWeek 06Regression II — Multiple Regression\n\nLive\n\n\nWorkshop slidesWorkshop slides (no answers)Online session\n\n\n\nWeek 07\n\nCurriculum Enrichment Week — no session\n\n\n\n\n\nWeek 08Other Models (GLMs)\n\nLive\n\n\nWorkshop slidesWorkshop slides (no answers)\n\n\n\n\n\nWeek 09Causal Analysis and Experiments\n\nLive\n\n\nWorkshop slidesWorkshop slides (no answers)\n\n\n\n\n\nWeek 10Prediction\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 11Time Series\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 12Portfolio Presentations\n\nLive\n\n\nPortfolio walkthrough"
   },
   {
     "objectID": "data.html",
@@ -4786,5 +4786,733 @@
     "title": "GLMs — Binary Outcomes",
     "section": "Logit and probit interpretation",
     "text": "Logit and probit interpretation\nBoth models put \\(\\beta_0 + \\beta_1 x_1 + \\dots\\) through an S-curve, and the slope of that curve keeps changing. Here’s a made-up logit with \\(\\beta_1 = 0.5\\). Move the starting point and add one unit of \\(x\\).\n\nviewof slopeZ = Inputs.range([-3.5, 3], {step: 0.1, value: 0, label: \"Where the person starts (z)\"})\n\n\n\n\n\n\n\n\n\n{\n  const L = z =&gt; 1 / (1 + Math.exp(-z)), b = 0.5;\n  const z0 = slopeZ, z1 = slopeZ + b, p0 = L(z0), p1 = L(z1);\n  return Plot.plot({\n    width: 760, height: 340, marginLeft: 55, marginTop: 30, marginBottom: 50,\n    style: {fontSize: \"15px\"},\n    x: {label: \"z = β₀ + β₁x₁ + …\", domain: [-4, 4], labelAnchor: \"center\", labelOffset: 42}, y: {label: \"P(y=1)\", domain: [0, 1]},\n    marks: [\n      Plot.line(d3.range(-4, 4.01, 0.05).map(z =&gt; ({z, p: L(z)})), {x: \"z\", y: \"p\", stroke: \"#c97f31\", strokeWidth: 2.5}),\n      Plot.link([{x1: z0, y1: p0, x2: z1, y2: p0}], {x1: \"x1\", y1: \"y1\", x2: \"x2\", y2: \"y2\", stroke: \"#1a1a2e\", strokeWidth: 2}),\n      Plot.link([{x1: z1, y1: p0, x2: z1, y2: p1}], {x1: \"x1\", y1: \"y1\", x2: \"x2\", y2: \"y2\", stroke: \"#c8373f\", strokeWidth: 3}),\n      Plot.dot([{z: z0, p: p0}, {z: z1, p: p1}], {x: \"z\", y: \"p\", r: 6, fill: \"#1a1a2e\"})\n    ]\n  });\n}\n\n\n\n\n\n\n\n\n\n{\n  const L = z =&gt; 1 / (1 + Math.exp(-z));\n  const p0 = L(slopeZ), p1 = L(slopeZ + 0.5);\n  return html`&lt;p style=\"text-align:center;font-size:0.95em;margin:0;\"&gt;Starting at P = ${p0.toFixed(2)}, one more unit of &lt;i&gt;x&lt;/i&gt; raises P to ${p1.toFixed(2)}: &lt;b style=\"color:#c8373f;\"&gt;+${(100 * (p1 - p0)).toFixed(1)} percentage points&lt;/b&gt;.&lt;/p&gt;`;\n}\n\n\n\n\n\n\n\n\nThe slope is steepest at \\(y^P = 0.5\\), flatter further away, and very flat near 0 or 1.\nSo a one-unit difference in \\(x\\) goes with a different difference in \\(y^P\\) depending on where you start. In the LPM it’s the same everywhere.\nConsequence: the raw logit or probit coefficient has no direct reading as a change in probability."
+  },
+  {
+    "objectID": "week9-slides.html#section",
+    "href": "week9-slides.html#section",
+    "title": "Causal Analysis and Experiments",
+    "section": "",
+    "text": "Causal analysis and experiments\nSo far we’ve described associations and stopped short of calling them effects. This week: when we’re allowed to make that claim."
+  },
+  {
+    "objectID": "week9-slides.html#does-working-from-home-change-who-quits",
+    "href": "week9-slides.html#does-working-from-home-change-who-quits",
+    "title": "Causal Analysis and Experiments",
+    "section": "Does working from home change who quits?",
+    "text": "Does working from home change who quits?\n\n\nBusiness question: you’re deciding whether to let staff work from home. Would it actually change how many people quit — or is it just a perk that changes nothing?\n\n\nWe have real data: a company that ran this as an actual experiment on 249 of its own employees."
+  },
+  {
+    "objectID": "week9-slides.html#the-naive-answer",
+    "href": "week9-slides.html#the-naive-answer",
+    "title": "Causal Analysis and Experiments",
+    "section": "The naive answer",
+    "text": "The naive answer\nNaive answer: compare the quit rate of employees who already work from home to those who don’t.\n\nWhy it’s not that simple: people who already work from home chose to. They might have longer commutes, different family situations or longer tenure, and any of these could explain a lower quit rate on its own. It’s the same problem as omitted variable bias in Week 6."
+  },
+  {
+    "objectID": "week9-slides.html#what-we-need",
+    "href": "week9-slides.html#what-we-need",
+    "title": "Causal Analysis and Experiments",
+    "section": "What we need",
+    "text": "What we need\n\nA formal definition of what “the effect of X” actually means\nA way to know, not just hope, that two groups are comparable\nA way to collect data where that comparison works: an experiment"
+  },
+  {
+    "objectID": "week9-slides.html#the-potential-outcomes-framework",
+    "href": "week9-slides.html#the-potential-outcomes-framework",
+    "title": "Causal Analysis and Experiments",
+    "section": "The potential outcomes framework",
+    "text": "The potential outcomes framework"
+  },
+  {
+    "objectID": "week9-slides.html#a-causal-question",
+    "href": "week9-slides.html#a-causal-question",
+    "title": "Causal Analysis and Experiments",
+    "section": "A causal question",
+    "text": "A causal question\n\nA causal question needs an intervention we can at least imagine, and variation in it across subjects. “Does training managers raise revenue?” works; without an intervention we can only describe the data\nThe treatment: the causal variable, usually an intervention – a price change, an ad, a policy\nThe subjects: who receives it. Some are treated, some untreated; both groups matter equally\nThe outcome: what might be affected. A precise causal question names both \\(x\\) and \\(y\\)\n\n\nSource: Békés & Kézdi (2021), Ch. 19"
+  },
+  {
+    "objectID": "week9-slides.html#two-states-of-the-world",
+    "href": "week9-slides.html#two-states-of-the-world",
+    "title": "Causal Analysis and Experiments",
+    "section": "Two states of the world",
+    "text": "Two states of the world\nEvery subject has two potential outcomes:\n\\[y_i^1 \\text{ — what happens if treated} \\qquad y_i^0 \\text{ — what happens if not}\\]\n\nBefore the intervention, both exist in principle for every subject, whether or not they end up treated."
+  },
+  {
+    "objectID": "week9-slides.html#what-assignment-reveals",
+    "href": "week9-slides.html#what-assignment-reveals",
+    "title": "Causal Analysis and Experiments",
+    "section": "What assignment reveals",
+    "text": "What assignment reveals\n\nOnce a subject is assigned — treated or not — one potential outcome becomes real and observable\nThe other one never happens, so it can’t be in any dataset\nTreated subject: observed outcome = their treated outcome \\(y_i^1\\)\nUntreated subject: observed outcome = their untreated outcome \\(y_i^0\\)\n\n\nThe outcome we don’t see is the counterfactual: what would have happened if this subject’s treatment had been the other way round."
+  },
+  {
+    "objectID": "week9-slides.html#the-individual-treatment-effect",
+    "href": "week9-slides.html#the-individual-treatment-effect",
+    "title": "Causal Analysis and Experiments",
+    "section": "The individual treatment effect",
+    "text": "The individual treatment effect\n\\[te_i = y_i^1 - y_i^0\\]\n\nWe can never measure this. We only ever see one of the two potential outcomes for each subject, so the other half of the difference is always missing."
+  },
+  {
+    "objectID": "week9-slides.html#a-worked-example",
+    "href": "week9-slides.html#a-worked-example",
+    "title": "Causal Analysis and Experiments",
+    "section": "A worked example",
+    "text": "A worked example\nA shop emails some customers a discount code. The outcome: did the customer buy something that week (1) or not (0)? Suppose, just for once, we could see both potential outcomes for four customers.\n\n\n\nCustomer\nBuys if emailed (y1)\nBuys if not (y0)\nte\nWhat the email did\n\n\nAsha\n1\n0\n+1\npersuaded her to buy\n\n\nBen\n1\n1\n0\nnothing: he'd have bought anyway\n\n\nChloe\n0\n1\n−1\nput her off: she unsubscribed instead\n\n\nDev\n0\n0\n0\nnothing: he doesn't buy either way\n\n\n\n\nIn real data each customer is either emailed or not, so one of the two middle columns is always missing. If Asha was emailed, we see her 1 but never her 0, so we can’t tell whether she’s an Asha or a Ben."
+  },
+  {
+    "objectID": "week9-slides.html#what-wed-actually-have",
+    "href": "week9-slides.html#what-wed-actually-have",
+    "title": "Causal Analysis and Experiments",
+    "section": "What we’d actually have",
+    "text": "What we’d actually have\nA real dataset never has the y¹/y⁰ columns above — only one outcome per customer, plus whether they were emailed:\n\n\n\nCustomer\nEmailed?\nBought\n\n\nAsha\nYes\n1\n\n\nBen\nYes\n1\n\n\nChloe\nNo\n1\n\n\nDev\nNo\n0\n\n\n\n\nThree columns, not five. No te, no counterfactual, nothing marked “missing” — just who got the email and what happened. This is the table a shop would actually have, and every causal question in this session starts from something that looks like it."
+  },
+  {
+    "objectID": "week9-slides.html#heterogeneous-treatment-effects",
+    "href": "week9-slides.html#heterogeneous-treatment-effects",
+    "title": "Causal Analysis and Experiments",
+    "section": "Heterogeneous treatment effects",
+    "text": "Heterogeneous treatment effects\n\nIndividual effects vary: by subgroup, by circumstance, by person\nMen and women, small markets and large ones, new employees and long-serving ones\nEffects that differ across subjects are the normal case\n\n\nWe can’t recover the full distribution of \\(te_i\\). But we can recover its average."
+  },
+  {
+    "objectID": "week9-slides.html#the-average-treatment-effect",
+    "href": "week9-slides.html#the-average-treatment-effect",
+    "title": "Causal Analysis and Experiments",
+    "section": "The average treatment effect",
+    "text": "The average treatment effect\n\\[ATE = E[y_i^1] - E[y_i^0]\\]\n\nThe average, across everyone, of the individual effects — even though we can’t see any individual one\nMultiply by population size to get the total effect of rolling something out"
+  },
+  {
+    "objectID": "week9-slides.html#averages-of-differences-differences-of-averages",
+    "href": "week9-slides.html#averages-of-differences-differences-of-averages",
+    "title": "Causal Analysis and Experiments",
+    "section": "Averages of differences = differences of averages",
+    "text": "Averages of differences = differences of averages\n\\[ATE = E[te_i] = E[y_i^1 - y_i^0] = E[y_i^1] - E[y_i^0]\\]\n\nWe can’t average \\(te_i\\), because we never see it. The identity says we don’t have to: if we could average \\(y_i^1\\) over everyone and \\(y_i^0\\) over everyone, the difference would give us the same answer. But real data only ever gives us one group’s \\(y^1\\) and the other’s \\(y^0\\) — and those group averages only equal the population ones if assignment doesn’t depend on the potential outcomes themselves."
+  },
+  {
+    "objectID": "week9-slides.html#what-does-that-independence-actually-mean",
+    "href": "week9-slides.html#what-does-that-independence-actually-mean",
+    "title": "Causal Analysis and Experiments",
+    "section": "What does that independence actually mean?",
+    "text": "What does that independence actually mean?\nTake an online ad. Assignment is independent of the potential outcomes if whether someone is shown the ad has nothing to do with what they’d do if shown it, or what they’d do if not.\n\nIf that holds, the people who were shown the ad would have bought at much the same rate as the people who weren’t, had they not seen it either. And the people who weren’t shown it would have bought at much the same rate as the people who were, had they seen it too.\n\n\nNeither group is systematically more or less likely to buy, ad or no ad. That’s what makes the two groups a fair comparison — not that the people in them are identical.\n\n\nSource: Békés & Kézdi (2021), Ch. 20"
+  },
+  {
+    "objectID": "week9-slides.html#ate-can-hide-heterogeneity",
+    "href": "week9-slides.html#ate-can-hide-heterogeneity",
+    "title": "Causal Analysis and Experiments",
+    "section": "ATE can hide heterogeneity",
+    "text": "ATE can hide heterogeneity\n\nIf \\(ATE = 0\\), did the intervention genuinely do nothing?\n\n\nNot necessarily. Two versions of the discount email, six customers each:\n\n\n\n\nIndividual effect te\nATE\n\n\nEmail A\n0\n0\n0\n0\n0\n0\n0\n\n\nEmail B\n+1\n+1\n+1\n−1\n−1\n−1\n0\n\n\n\nEmail A does nothing to anyone. Email B wins over three bargain hunters and puts off three customers who now think the brand is cheap. Both have an ATE of zero. The average can’t tell them apart, but the business would want to know: send Email B to the bargain hunters only."
+  },
+  {
+    "objectID": "week9-slides.html#ceteris-paribus-formalised",
+    "href": "week9-slides.html#ceteris-paribus-formalised",
+    "title": "Causal Analysis and Experiments",
+    "section": "Ceteris paribus, formalised",
+    "text": "Ceteris paribus, formalised\n\n“All else equal” has been our working principle since Week 4. Potential outcomes make it precise: the only difference between \\(y_i^1\\) and \\(y_i^0\\) is the intervention\nWeek 6’s regression \\(y^E = \\beta_0 + \\beta_1 x + \\beta_2 z\\) conditions on \\(z\\): it compares observations with the same \\(z\\) but different \\(x\\). That’s ceteris paribus for the variables we include\n\n\nSource: Békés & Kézdi (2021), Ch. 19"
+  },
+  {
+    "objectID": "week9-slides.html#can-regression-actually-deliver-it",
+    "href": "week9-slides.html#can-regression-actually-deliver-it",
+    "title": "Causal Analysis and Experiments",
+    "section": "Can regression actually deliver it?",
+    "text": "Can regression actually deliver it?\n\nCan we condition on every potential confounder in a regression?\n\n\nProbably not. We can only include what’s in the data, and ceteris paribus means holding everything fixed, measured or not. However many controls we add, that gap stays. So the real problem is how to get a good estimate of the ATE, and that’s the rest of today."
+  },
+  {
+    "objectID": "week9-slides.html#checking-the-identity-against-real-data",
+    "href": "week9-slides.html#checking-the-identity-against-real-data",
+    "title": "Causal Analysis and Experiments",
+    "section": "Checking the identity against real data",
+    "text": "Checking the identity against real data\nBack to our four customers. Using the full table — both potential outcomes, for everyone — the identity gives:\n\\[ATE = E[y_i^1] - E[y_i^0] = 0.5 - 0.5 = \\mathbf{0}\\]\n\nBut real data never gives us that table. It gives us the one we’d actually have: emailed customers (Asha, Ben) averaged 1.0 bought; unemailed customers (Chloe, Dev) averaged 0.5. The difference between those two groups is \\(\\mathbf{0.5}\\).\n\n\nThe true effect is zero. The comparison we can actually run says 0.5. Why are these different?\n\n\nSomething about who got emailed must be related to whether they’d have bought anyway. Averaging the two groups doesn’t fix that on its own — we need a way to reason about which comparisons are safe, and which aren’t."
+  },
+  {
+    "objectID": "week9-slides.html#mapping-it-with-dags",
+    "href": "week9-slides.html#mapping-it-with-dags",
+    "title": "Causal Analysis and Experiments",
+    "section": "Mapping it with DAGs",
+    "text": "Mapping it with DAGs"
+  },
+  {
+    "objectID": "week9-slides.html#causal-maps",
+    "href": "week9-slides.html#causal-maps",
+    "title": "Causal Analysis and Experiments",
+    "section": "Causal maps",
+    "text": "Causal maps\nA DAG (directed acyclic graph) is a diagram of assumptions: nodes are variables, arrows are effects.\n\nhtml`&lt;div style=\"text-align:center;padding-top:20px;\"&gt;\n  &lt;svg width=\"420\" height=\"120\"&gt;\n    &lt;text x=\"60\" y=\"65\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;X&lt;/text&gt;\n    &lt;text x=\"360\" y=\"65\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;Y&lt;/text&gt;\n    &lt;line x1=\"80\" y1=\"60\" x2=\"335\" y2=\"60\" stroke=\"#2d6a4f\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/&gt;\n    &lt;text x=\"200\" y=\"45\" font-size=\"20\" text-anchor=\"middle\" fill=\"#c0392b\" font-family=\"sans-serif\"&gt;?&lt;/text&gt;\n    &lt;defs&gt;&lt;marker id=\"arrow\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\"&gt;&lt;path d=\"M0,0 L0,6 L9,3 z\" fill=\"#2d6a4f\"/&gt;&lt;/marker&gt;&lt;/defs&gt;\n  &lt;/svg&gt;\n&lt;/div&gt;`\n\n\n\n\n\n\nThe simplest causal question: does \\(X\\) affect \\(Y\\)? The map summarises the assumptions you make anyway every time you choose what goes into a regression. Once it’s drawn, deciding what to control for stops being guesswork."
+  },
+  {
+    "objectID": "week9-slides.html#case-one-a-confounder",
+    "href": "week9-slides.html#case-one-a-confounder",
+    "title": "Causal Analysis and Experiments",
+    "section": "Case one: a confounder",
+    "text": "Case one: a confounder\n\nhtml`&lt;div style=\"text-align:center;padding-top:10px;\"&gt;\n  &lt;svg width=\"460\" height=\"180\"&gt;\n    &lt;text x=\"80\" y=\"150\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;X&lt;/text&gt;\n    &lt;text x=\"380\" y=\"150\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;Y&lt;/text&gt;\n    &lt;text x=\"230\" y=\"35\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;Z&lt;/text&gt;\n    &lt;line x1=\"95\" y1=\"140\" x2=\"365\" y2=\"140\" stroke=\"#c0392b\" stroke-width=\"2\" marker-end=\"url(#a5)\"/&gt;\n    &lt;line x1=\"215\" y1=\"45\" x2=\"100\" y2=\"130\" stroke=\"#2d6a4f\" stroke-width=\"2\" marker-end=\"url(#a5)\"/&gt;\n    &lt;line x1=\"245\" y1=\"45\" x2=\"365\" y2=\"130\" stroke=\"#2d6a4f\" stroke-width=\"2\" marker-end=\"url(#a5)\"/&gt;\n    &lt;defs&gt;&lt;marker id=\"a5\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\"&gt;&lt;path d=\"M0,0 L0,6 L9,3 z\" fill=\"#2d6a4f\"/&gt;&lt;/marker&gt;&lt;/defs&gt;\n  &lt;/svg&gt;\n&lt;/div&gt;`\n\n\n\n\n\n\n\\(Z\\) sits upstream of \\(X\\) — it causes both \\(X\\) and \\(Y\\). Leave it out, and part of \\(Z\\)’s effect on \\(Y\\) gets misread as \\(X\\)’s.\n\nThe rule: control for it. This is Week 6’s omitted variable bias, drawn as a picture instead of a formula."
+  },
+  {
+    "objectID": "week9-slides.html#case-two-a-mediator",
+    "href": "week9-slides.html#case-two-a-mediator",
+    "title": "Causal Analysis and Experiments",
+    "section": "Case two: a mediator",
+    "text": "Case two: a mediator\n\nhtml`&lt;div style=\"text-align:center;padding-top:20px;\"&gt;\n  &lt;svg width=\"480\" height=\"140\"&gt;\n    &lt;text x=\"50\" y=\"75\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;X&lt;/text&gt;\n    &lt;text x=\"240\" y=\"35\" font-size=\"16\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;M&lt;/text&gt;\n    &lt;text x=\"430\" y=\"75\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;Y&lt;/text&gt;\n    &lt;line x1=\"65\" y1=\"65\" x2=\"225\" y2=\"40\" stroke=\"#2d6a4f\" stroke-width=\"2\" marker-end=\"url(#arrow2)\"/&gt;\n    &lt;line x1=\"255\" y1=\"40\" x2=\"415\" y2=\"65\" stroke=\"#2d6a4f\" stroke-width=\"2\" marker-end=\"url(#arrow2)\"/&gt;\n    &lt;line x1=\"70\" y1=\"75\" x2=\"410\" y2=\"75\" stroke=\"#999\" stroke-width=\"1.5\" stroke-dasharray=\"4,3\" marker-end=\"url(#arrow3)\"/&gt;\n    &lt;defs&gt;\n      &lt;marker id=\"arrow2\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\"&gt;&lt;path d=\"M0,0 L0,6 L9,3 z\" fill=\"#2d6a4f\"/&gt;&lt;/marker&gt;\n      &lt;marker id=\"arrow3\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\"&gt;&lt;path d=\"M0,0 L0,6 L9,3 z\" fill=\"#999\"/&gt;&lt;/marker&gt;\n    &lt;/defs&gt;\n  &lt;/svg&gt;\n&lt;/div&gt;`\n\n\n\n\n\n\n\\(M\\) sits downstream of \\(X\\), on the path to \\(Y\\) — the mechanism through which the effect happens, not a separate cause of it.\n\nThe rule: don’t control for it. Controlling for \\(M\\) removes part of the effect you’re trying to measure. It’s a bad control. \\(M\\) could be the outcome in its own right, if we wanted the causal effect of \\(X\\) on \\(M\\)."
+  },
+  {
+    "objectID": "week9-slides.html#task-confounder-or-mediator",
+    "href": "week9-slides.html#task-confounder-or-mediator",
+    "title": "Causal Analysis and Experiments",
+    "section": "Task — confounder or mediator?",
+    "text": "Task — confounder or mediator?\n\nBack to working from home. Suppose it reduces commute stress, and commute stress affects whether someone quits. Discuss with your neighbour and draw it as a DAG: is commute stress a confounder of the WFH → quit relationship, or a mediator?\n\n\n\nhtml`&lt;div style=\"text-align:center;padding-top:10px;\"&gt;\n  &lt;svg width=\"480\" height=\"140\"&gt;\n    &lt;text x=\"50\" y=\"75\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;WFH&lt;/text&gt;\n    &lt;text x=\"240\" y=\"35\" font-size=\"16\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;Commute stress&lt;/text&gt;\n    &lt;text x=\"440\" y=\"75\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;Quit&lt;/text&gt;\n    &lt;line x1=\"80\" y1=\"65\" x2=\"200\" y2=\"40\" stroke=\"#2d6a4f\" stroke-width=\"2\" marker-end=\"url(#a9)\"/&gt;\n    &lt;line x1=\"275\" y1=\"40\" x2=\"420\" y2=\"65\" stroke=\"#2d6a4f\" stroke-width=\"2\" marker-end=\"url(#a9)\"/&gt;\n    &lt;line x1=\"80\" y1=\"75\" x2=\"415\" y2=\"75\" stroke=\"#999\" stroke-width=\"1.5\" stroke-dasharray=\"4,3\" marker-end=\"url(#a10)\"/&gt;\n    &lt;defs&gt;\n      &lt;marker id=\"a9\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\"&gt;&lt;path d=\"M0,0 L0,6 L9,3 z\" fill=\"#2d6a4f\"/&gt;&lt;/marker&gt;\n      &lt;marker id=\"a10\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\"&gt;&lt;path d=\"M0,0 L0,6 L9,3 z\" fill=\"#999\"/&gt;&lt;/marker&gt;\n    &lt;/defs&gt;\n  &lt;/svg&gt;\n&lt;/div&gt;`\n\n\n\n\n\n\nA mediator. It comes after the treatment and is part of how working from home works, not a difference that existed beforehand. So we shouldn’t control for it. The regression we’ll run compares quit rates by assignment alone: random assignment deals with the confounders, and leaving out commute stress keeps the whole effect in."
+  },
+  {
+    "objectID": "week9-slides.html#case-three-a-collider",
+    "href": "week9-slides.html#case-three-a-collider",
+    "title": "Causal Analysis and Experiments",
+    "section": "Case three: a collider",
+    "text": "Case three: a collider\n\nhtml`&lt;div style=\"text-align:center;padding-top:10px;\"&gt;\n  &lt;svg width=\"460\" height=\"180\"&gt;\n    &lt;text x=\"80\" y=\"45\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;X&lt;/text&gt;\n    &lt;text x=\"380\" y=\"45\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;Y&lt;/text&gt;\n    &lt;text x=\"230\" y=\"160\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;C&lt;/text&gt;\n    &lt;line x1=\"95\" y1=\"52\" x2=\"215\" y2=\"140\" stroke=\"#2d6a4f\" stroke-width=\"2\" marker-end=\"url(#a6)\"/&gt;\n    &lt;line x1=\"365\" y1=\"52\" x2=\"245\" y2=\"140\" stroke=\"#2d6a4f\" stroke-width=\"2\" marker-end=\"url(#a6)\"/&gt;\n    &lt;text x=\"230\" y=\"40\" font-size=\"16\" text-anchor=\"middle\" fill=\"#999\" font-family=\"sans-serif\"&gt;no arrow&lt;/text&gt;\n    &lt;defs&gt;&lt;marker id=\"a6\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\"&gt;&lt;path d=\"M0,0 L0,6 L9,3 z\" fill=\"#2d6a4f\"/&gt;&lt;/marker&gt;&lt;/defs&gt;\n  &lt;/svg&gt;\n&lt;/div&gt;`\n\n\n\n\n\n\n\\(C\\) sits downstream of both: \\(X\\) causes it and \\(Y\\) causes it. Two arrowheads meet at \\(C\\), which is why it’s called a collider.\n\nThe rule: don’t control for it, and don’t pick your sample using it. Even if \\(X\\) and \\(Y\\) are completely unrelated, holding \\(C\\) fixed makes them look related."
+  },
+  {
+    "objectID": "week9-slides.html#seeing-a-collider-at-work",
+    "href": "week9-slides.html#seeing-a-collider-at-work",
+    "title": "Causal Analysis and Experiments",
+    "section": "Seeing a collider at work",
+    "text": "Seeing a collider at work\nWhy do so many good-looking film stars seem to be poor actors? Let’s build the answer one step at a time.\nStep 1. 1,000 made-up actors, each with a talent score and a looks score. We made the two unrelated: knowing someone’s looks tells you nothing about their talent.\n\nactorDomX = d3.extent(actor_rows, d =&gt; d.looks)\nactorDomY = d3.extent(actor_rows, d =&gt; d.talent)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPlot.plot({\n  width: 1000, height: 330, marginLeft: 55,\n  x: {label: \"Looks (score)\", domain: actorDomX}, y: {label: \"Acting talent (score)\", domain: actorDomY},\n  marks: [\n    Plot.dot(actor_rows, {x: \"looks\", y: \"talent\", r: 2.5, fill: \"#9a9aa8\"}),\n    Plot.linearRegressionY(actor_rows, {x: \"looks\", y: \"talent\", stroke: \"#1a1a2e\", ci: 0, strokeWidth: 2})\n  ]\n})\n\n\n\n\n\n\n\nThe line through all 1,000 is flat. No relationship, as we built it."
+  },
+  {
+    "objectID": "week9-slides.html#step-2-who-becomes-a-star",
+    "href": "week9-slides.html#step-2-who-becomes-a-star",
+    "title": "Causal Analysis and Experiments",
+    "section": "Step 2: who becomes a star?",
+    "text": "Step 2: who becomes a star?\nAn actor becomes a star if talent and looks together are high enough (plus a bit of luck): talent + looks + luck above 110.\n\nPlot.plot({\n  width: 1000, height: 330, marginLeft: 55,\n  x: {label: \"Looks (score)\", domain: actorDomX}, y: {label: \"Acting talent (score)\", domain: actorDomY},\n  color: {domain: [\"Not a star\", \"Movie star\"], range: [\"#cfcfd6\", \"#c0392b\"], legend: true},\n  marks: [\n    Plot.dot(actor_rows, {x: \"looks\", y: \"talent\", r: 2.5,\n      fill: d =&gt; d.star ? \"Movie star\" : \"Not a star\"}),\n    Plot.line([{looks: actorDomX[0], talent: 110 - actorDomX[0]}, {looks: actorDomX[1], talent: 110 - actorDomX[1]}]\n      .map(d =&gt; ({looks: d.looks, talent: Math.max(actorDomY[0], Math.min(actorDomY[1], d.talent))})),\n      {x: \"looks\", y: \"talent\", stroke: \"#1a1a2e\", strokeDasharray: \"5,4\"})\n  ]\n})\n\n\n\n\n\n\n\n\nhtml`&lt;p&gt;${collider.n_star} actors make it. They sit above the dashed line, where talent + looks = 110. That line slopes down: the less good-looking you are, the more talent you need to get over it.&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week9-slides.html#step-3-look-only-at-the-stars",
+    "href": "week9-slides.html#step-3-look-only-at-the-stars",
+    "title": "Causal Analysis and Experiments",
+    "section": "Step 3: look only at the stars",
+    "text": "Step 3: look only at the stars\n\nPlot.plot({\n  width: 1000, height: 330, marginLeft: 55,\n  x: {label: \"Looks (score)\", domain: actorDomX}, y: {label: \"Acting talent (score)\", domain: actorDomY},\n  marks: [\n    Plot.dot(actor_rows.filter(d =&gt; !d.star), {x: \"looks\", y: \"talent\", r: 2.5, fill: \"#ececf1\"}),\n    Plot.dot(actor_rows.filter(d =&gt; d.star), {x: \"looks\", y: \"talent\", r: 2.5, fill: \"#c0392b\"}),\n    Plot.linearRegressionY(actor_rows, {x: \"looks\", y: \"talent\", stroke: \"#1a1a2e\", ci: 0, strokeWidth: 1.5, strokeOpacity: 0.5}),\n    Plot.linearRegressionY(actor_rows.filter(d =&gt; d.star), {x: \"looks\", y: \"talent\", stroke: \"#c0392b\", ci: 0, strokeWidth: 2.5})\n  ]\n})\n\n\n\n\n\n\n\nAmong the stars, the better-looking ones seem less talented (red line). Nothing about acting changed: we only changed who we look at. Being a star is caused by both talent and looks, so it’s a collider, and selecting on it creates a relationship that isn’t there."
+  },
+  {
+    "objectID": "week9-slides.html#two-ways-to-fall-into-it",
+    "href": "week9-slides.html#two-ways-to-fall-into-it",
+    "title": "Causal Analysis and Experiments",
+    "section": "Two ways to fall into it",
+    "text": "Two ways to fall into it\n\nsmf.ols(\"talent ~ looks\", data=actors).fit(cov_type=\"HC1\")\nsmf.ols(\"talent ~ looks\", data=actors[actors.star == 1]).fit(cov_type=\"HC1\")\nsmf.ols(\"talent ~ looks + star\", data=actors).fit(cov_type=\"HC1\")\n\n\nhtml`&lt;table style=\"margin:14px auto 0;font-family:sans-serif;font-size:0.95em;border-collapse:collapse;\"&gt;\n  &lt;tr style=\"border-bottom:2px solid #1a1a2e;\"&gt;&lt;th style=\"padding:6px 22px;text-align:left;\"&gt;Model&lt;/th&gt;&lt;th style=\"padding:6px 22px;\"&gt;Coefficient on looks&lt;/th&gt;&lt;/tr&gt;\n  &lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;&lt;td style=\"padding:5px 22px;\"&gt;All actors&lt;/td&gt;&lt;td style=\"padding:5px 22px;text-align:center;\"&gt;${collider.b_all} (p = ${collider.p_all})&lt;/td&gt;&lt;/tr&gt;\n  &lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;&lt;td style=\"padding:5px 22px;\"&gt;Stars only&lt;/td&gt;&lt;td style=\"padding:5px 22px;text-align:center;\"&gt;${collider.b_star}&lt;/td&gt;&lt;/tr&gt;\n  &lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;&lt;td style=\"padding:5px 22px;\"&gt;All actors, controlling for being a star&lt;/td&gt;&lt;td style=\"padding:5px 22px;text-align:center;\"&gt;${collider.b_ctrl}&lt;/td&gt;&lt;/tr&gt;\n&lt;/table&gt;`\n\n\n\n\n\n\n\n\nPicking the sample on \\(C\\) and adding \\(C\\) as a control both create a relationship that isn’t there\nThis is the opposite of omitted variable bias: the bias comes from putting a variable in, not from leaving one out\nIt happens in business data all the time: studying only customers who complained, only firms that survived, only staff who were promoted\n\n\n\nThe full simulation is in a Colab notebook: change the cut-off or the amount of luck and see what happens to the bias."
+  },
+  {
+    "objectID": "week9-slides.html#task-confounder-mediator-or-collider",
+    "href": "week9-slides.html#task-confounder-mediator-or-collider",
+    "title": "Causal Analysis and Experiments",
+    "section": "Task — confounder, mediator or collider?",
+    "text": "Task — confounder, mediator or collider?\n\nA firm wants to know whether its sales training course raises staff sales. Draw a DAG for each variable before you decide: confounder, mediator or collider? Should it go in the regression?\n\nYears of sales experience (managers send experienced staff on the course)\nProduct knowledge (the course teaches it, and knowing the products helps you sell)\nBeing featured in the staff newsletter (it lists everyone who did the course, and the month’s top sellers)\n\n\n\n\nConfounder: it affects who gets trained and how much they sell. Control for it\nMediator: it’s how the course works. Don’t control for it\nCollider: both training and sales cause it. Don’t control for it, and don’t analyse only the staff who were featured"
+  },
+  {
+    "objectID": "week9-slides.html#task-draw-your-own",
+    "href": "week9-slides.html#task-draw-your-own",
+    "title": "Causal Analysis and Experiments",
+    "section": "Task — draw your own",
+    "text": "Task — draw your own\n\nBusiness question: in the used-cars data, does a car’s mileage affect its price?\nIn Week 6 you ran this regression and found that controlling for the car’s age roughly halves the mileage effect. Draw it as a DAG: where does age sit — confounder, mediator or collider? Then pick one more variable from that dataset (dealer, condition, make) and decide where it belongs, and whether you’d control for it."
+  },
+  {
+    "objectID": "week9-slides.html#where-does-the-variation-in-x-come-from",
+    "href": "week9-slides.html#where-does-the-variation-in-x-come-from",
+    "title": "Causal Analysis and Experiments",
+    "section": "Where does the variation in x come from?",
+    "text": "Where does the variation in x come from?\nWhatever we’re measuring, x varies across observations for some reason. That reason matters as much as the relationship itself.\n\nAn endogenous source of variation: whatever makes x vary is also related to y, directly\nAn exogenous source of variation: whatever makes x vary is independent of y\n\n\nSome of the variation in x is useless to us — it’s really a confounder in disguise. Some is exactly what we need. The rest of this session is about telling them apart, and about one way to guarantee we only get the second kind.\n\n\nThis isn’t something a dataset can tell you on its own. It takes knowing how the data was actually generated, and domain knowledge about what else could be moving x — the same thinking a DAG forces you to make explicit.\n\n\nSource: Békés & Kézdi (2021), Ch. 19"
+  },
+  {
+    "objectID": "week9-slides.html#an-exogenous-and-an-endogenous-source",
+    "href": "week9-slides.html#an-exogenous-and-an-endogenous-source",
+    "title": "Causal Analysis and Experiments",
+    "section": "An exogenous and an endogenous source",
+    "text": "An exogenous and an endogenous source\nTwo things could be driving the variation in x. \\(Z_1\\) only affects x. \\(Z_2\\) affects x and y directly.\n\nhtml`&lt;div style=\"text-align:center;padding-top:10px;\"&gt;\n  &lt;svg width=\"520\" height=\"220\"&gt;\n    &lt;text x=\"60\" y=\"38\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;Z&#8321;&lt;/text&gt;\n    &lt;text x=\"190\" y=\"92\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;x&lt;/text&gt;\n    &lt;text x=\"450\" y=\"58\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;Z&#8322;&lt;/text&gt;\n    &lt;text x=\"330\" y=\"195\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;y&lt;/text&gt;\n    &lt;line x1=\"78\" y1=\"45\" x2=\"172\" y2=\"82\" stroke=\"#2d6a4f\" stroke-width=\"2\" marker-end=\"url(#a11)\"/&gt;\n    &lt;line x1=\"420\" y1=\"62\" x2=\"212\" y2=\"88\" stroke=\"#c0392b\" stroke-width=\"2\" marker-end=\"url(#a12)\"/&gt;\n    &lt;line x1=\"438\" y1=\"72\" x2=\"348\" y2=\"178\" stroke=\"#c0392b\" stroke-width=\"2\" marker-end=\"url(#a12)\"/&gt;\n    &lt;line x1=\"208\" y1=\"102\" x2=\"310\" y2=\"180\" stroke=\"#1a1a2e\" stroke-width=\"2\" marker-end=\"url(#a13)\"/&gt;\n    &lt;text x=\"280\" y=\"128\" font-size=\"18\" text-anchor=\"middle\" fill=\"#1a1a2e\" font-family=\"sans-serif\"&gt;?&lt;/text&gt;\n    &lt;defs&gt;\n      &lt;marker id=\"a11\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\"&gt;&lt;path d=\"M0,0 L0,6 L9,3 z\" fill=\"#2d6a4f\"/&gt;&lt;/marker&gt;\n      &lt;marker id=\"a12\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\"&gt;&lt;path d=\"M0,0 L0,6 L9,3 z\" fill=\"#c0392b\"/&gt;&lt;/marker&gt;\n      &lt;marker id=\"a13\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\"&gt;&lt;path d=\"M0,0 L0,6 L9,3 z\" fill=\"#1a1a2e\"/&gt;&lt;/marker&gt;\n    &lt;/defs&gt;\n  &lt;/svg&gt;\n&lt;/div&gt;`\n\n\n\n\n\n\n\n\\(Z_1\\) (green) is exogenous: a clean source of variation in x, unrelated to y except through x. \\(Z_2\\) (red) is endogenous: it’s a confounder in disguise, and any variation in x that comes from it will bias our estimate of x’s effect on y.\n\n\nRandom assignment is a way of guaranteeing only \\(Z_1\\)-type sources exist. When we assign x ourselves, nothing about the subject — their own characteristics, their own choices — can be the reason x varies, so every remaining source of variation in x is exogenous by construction. Without it, \\(Z_2\\)-type sources are possible, not guaranteed — there can still be some exogenous variation mixed in, which is exactly what this module’s other observational methods (Week 6’s conditioning, this week’s online-session mention of natural experiments) try to isolate."
+  },
+  {
+    "objectID": "week9-slides.html#a-concrete-example-prices-and-sales",
+    "href": "week9-slides.html#a-concrete-example-prices-and-sales",
+    "title": "Causal Analysis and Experiments",
+    "section": "A concrete example: prices and sales",
+    "text": "A concrete example: prices and sales\nx = price, y = sales. Two sources of variation in price:\n\n\\(Z_1\\): an autonomous pricing decision by the company’s own managers — exogenous. It has nothing to do with the market beyond its effect on price\n\\(Z_2\\): the strength of competition — endogenous. Stronger competition pushes the company to cut its price and reduces its sales directly, for reasons that have nothing to do with the price cut itself\n\n\nUse only variation from \\(Z_1\\), and the price–sales relationship it traces out genuinely reflects how customers respond to price. Mix in variation from \\(Z_2\\), and part of what you’re seeing is something competition did to both sides at once — the two effects are tangled together, and no amount of averaging pulls them back apart.\n\n\nEvery source of variation in x sorts into one of two piles: good (exogenous) or bad (endogenous). The task is always the same — keep the good ones, get rid of the bad ones. A DAG is how you sort them; random assignment is one way to guarantee the pile of bad ones is empty.\n\n\nSource: Békés & Kézdi (2021), Ch. 19"
+  },
+  {
+    "objectID": "week9-slides.html#random-assignment-the-solution",
+    "href": "week9-slides.html#random-assignment-the-solution",
+    "title": "Causal Analysis and Experiments",
+    "section": "Random assignment — the solution",
+    "text": "Random assignment — the solution"
+  },
+  {
+    "objectID": "week9-slides.html#controlled-assignment",
+    "href": "week9-slides.html#controlled-assignment",
+    "title": "Causal Analysis and Experiments",
+    "section": "Controlled assignment",
+    "text": "Controlled assignment\n\nIn a controlled experiment, the value of x isn’t something subjects choose — the experimenter assigns it\nThat rules out self-selection: the people who end up working from home aren’t the ones who’d have quit anyway, or stayed anyway, for reasons related to their own circumstances\nIt also rules out reverse causality: y (whether someone later quits) can’t have caused x (their assignment), since assignment happened first\n\n\nSource: Békés & Kézdi (2021), Ch. 20"
+  },
+  {
+    "objectID": "week9-slides.html#why-random-assignment-works",
+    "href": "week9-slides.html#why-random-assignment-works",
+    "title": "Causal Analysis and Experiments",
+    "section": "Why random assignment works",
+    "text": "Why random assignment works\n\nRandomisation is one particular assignment rule, and it’s independent of every potential confounder by design\nThat’s what the DAG a moment ago was really saying: randomise, and only exogenous variation in x is left. The treated and untreated groups are, on average, identical except for treatment\nUnder random assignment, the simple difference in observed averages is a good estimate of the ATE\nNo test can prove assignment was random. We believe it because of how the assignment was done, and we can check that the groups look alike on what we measured"
+  },
+  {
+    "objectID": "week9-slides.html#ate-and-atet",
+    "href": "week9-slides.html#ate-and-atet",
+    "title": "Causal Analysis and Experiments",
+    "section": "ATE and ATET",
+    "text": "ATE and ATET\n\nThe group-average difference we can actually compute only ever uses the people who were treated — it’s really an estimate of ATET, the average effect among those who happened to end up treated\nRandom assignment guarantees the treated group isn’t special: in terms of potential outcomes, it’s no different from the population as a whole\nSo under random assignment, ATET = ATE — the simple comparison estimates both at once\n\n\nThat’s the precise answer to the puzzle a few slides back. Without random assignment, who ends up treated can depend on their own potential outcomes — the treated group stops being representative, ATET and ATE pull apart, and the simple comparison stops estimating either one reliably.\n\n\nSource: Békés & Kézdi (2021), Ch. 20"
+  },
+  {
+    "objectID": "week9-slides.html#designing-and-running-the-experiment",
+    "href": "week9-slides.html#designing-and-running-the-experiment",
+    "title": "Causal Analysis and Experiments",
+    "section": "Designing and running the experiment",
+    "text": "Designing and running the experiment"
+  },
+  {
+    "objectID": "week9-slides.html#task-working-from-home",
+    "href": "week9-slides.html#task-working-from-home",
+    "title": "Causal Analysis and Experiments",
+    "section": "Task — working from home",
+    "text": "Task — working from home\n\nA field experiment: a real firm and its own employees. Working from home four days a week — does it change whether staff quit?\n503 employees volunteered; 249 qualified (over six months’ tenure, broadband at home) and were randomly assigned to work from home or stay in the office. Two outcomes were tracked: whether they quit, and phone-call volume for staff whose job is order-taking.\nOpen the Colab notebook, load wfh_person.csv, and inspect it:\n\nHow many employees are in the treatment group, and how many in the control group?\nFit a linear probability model of quitjob on treatment. What’s the estimated treatment effect, and is it significant?\n\nNo further syntax hints — you’ve written this exact regression many times by now.\n\n\nSource: Békés & Kézdi (2021), Ch. 20, working-from-home dataset (Bloom et al.’s Ctrip field experiment)"
+  },
+  {
+    "objectID": "week9-slides.html#what-you-should-have-found",
+    "href": "week9-slides.html#what-you-should-have-found",
+    "title": "Causal Analysis and Experiments",
+    "section": "What you should have found",
+    "text": "What you should have found\n\n131 employees assigned to work from home, 118 to stay in the office\n\n\nimport statsmodels.formula.api as smf\n\nquit_model = smf.ols(\"quitjob ~ treatment\", data=wfh).fit(cov_type=\"HC1\")\n\n\nhtml`&lt;pre style=\"font-family:'SF Mono','Menlo',monospace;font-size:0.52em;line-height:1.35;\n                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;\n                  padding:8px 14px;overflow-x:auto;white-space:pre;\"&gt;${quit_summary_text}&lt;/pre&gt;`\n\n\n\n\n\n\n\n\nhtml`&lt;p&gt;Control group quits at &lt;strong&gt;${control_quit_rate}%&lt;/strong&gt;, treatment group at &lt;strong&gt;${treatment_quit_rate}%&lt;/strong&gt; — working from home cuts the quit rate by &lt;strong&gt;${Math.abs(quit_effect)} percentage points&lt;/strong&gt; (p = ${quit_p}).&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week9-slides.html#a-second-outcome-performance",
+    "href": "week9-slides.html#a-second-outcome-performance",
+    "title": "Causal Analysis and Experiments",
+    "section": "A second outcome: performance",
+    "text": "A second outcome: performance\nFor staff whose job is taking calls, performance can be measured directly: the number of calls they handle.\n\nordertakers = wfh[wfh[\"ordertaker\"] == True]\nphone_model = smf.ols(\"phonecalls1 ~ treatment\", data=ordertakers).fit(cov_type=\"HC1\")\n\n\n\nhtml`&lt;p&gt;Among these ${phone_n} order-takers, working from home &lt;strong&gt;raises&lt;/strong&gt; the number of calls by &lt;strong&gt;${phone_effect} thousand&lt;/strong&gt; per employee over the period (p ${phone_p}). Fewer people leave, and those who stay do more work.&lt;/p&gt;`\n\n\n\n\n\n\n\n\nSource: Békés & Kézdi (2021), Ch. 20 — matches the book’s own published Table, reproduced here from the raw data"
+  },
+  {
+    "objectID": "week9-slides.html#making-it-rigorous",
+    "href": "week9-slides.html#making-it-rigorous",
+    "title": "Causal Analysis and Experiments",
+    "section": "Making it rigorous",
+    "text": "Making it rigorous"
+  },
+  {
+    "objectID": "week9-slides.html#covariate-balance",
+    "href": "week9-slides.html#covariate-balance",
+    "title": "Causal Analysis and Experiments",
+    "section": "Covariate balance",
+    "text": "Covariate balance\nBack to working from home: random assignment should mean the two groups look alike on everything measured before treatment. A quick check: regress each one on treatment.\n\nfor col in [\"age\", \"married\", \"children\", \"tenure\", \"internet\"]:\n    m = smf.ols(f\"{col} ~ treatment\", data=wfh).fit(cov_type=\"HC1\")\n    print(col, m.pvalues[\"treatment\"])\n\n\nhtml`&lt;table style=\"margin:10px auto 0;font-family:sans-serif;font-size:0.9em;border-collapse:collapse;\"&gt;\n  &lt;tr style=\"border-bottom:2px solid #1a1a2e;\"&gt;&lt;th style=\"padding:5px 22px;\"&gt;Covariate&lt;/th&gt;&lt;th style=\"padding:5px 22px;\"&gt;Treatment&lt;/th&gt;&lt;th style=\"padding:5px 22px;\"&gt;Control&lt;/th&gt;&lt;th style=\"padding:5px 22px;\"&gt;p-value&lt;/th&gt;&lt;/tr&gt;\n  ${balance_rows.map(d =&gt; `&lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;&lt;td style=\"padding:4px 22px;\"&gt;${d.covariate}&lt;/td&gt;&lt;td style=\"padding:4px 22px;text-align:center;\"&gt;${d.treat}&lt;/td&gt;&lt;td style=\"padding:4px 22px;text-align:center;\"&gt;${d.control}&lt;/td&gt;&lt;td style=\"padding:4px 22px;text-align:center;\"&gt;${d.p}&lt;/td&gt;&lt;/tr&gt;`).join('')}\n&lt;/table&gt;`\n\n\n\n\n\n\n\n\nhtml`&lt;p&gt;Mostly balanced. One covariate, ${low_bal.covariate.toLowerCase()}, has a low p-value (${low_bal.p}). Check five covariates and one coming up below 0.05 by chance is not surprising. Worth noting, not worth worrying about.&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week9-slides.html#complications",
+    "href": "week9-slides.html#complications",
+    "title": "Causal Analysis and Experiments",
+    "section": "Complications",
+    "text": "Complications"
+  },
+  {
+    "objectID": "week9-slides.html#imperfect-compliance",
+    "href": "week9-slides.html#imperfect-compliance",
+    "title": "Causal Analysis and Experiments",
+    "section": "Imperfect compliance",
+    "text": "Imperfect compliance\n\nIn this experiment, fewer than 20% of the treatment group had to go back to the office because their personal circumstances changed.\n\n\nAssignment (what a subject is told to do) and treatment (what they actually do) don’t always match\nComparing people by assignment, whatever they actually did, gives the intent-to-treat (ITT) effect: “if we rolled this out with this level of compliance, what would happen?” Often the number a manager needs\nWith small non-compliance, ITT is a good stand-in for the effect of the treatment itself, just a bit smaller. With substantial non-compliance it isn’t, and the effect on those who comply (the LATE) is what we’d need instead"
+  },
+  {
+    "objectID": "week9-slides.html#being-observed-changes-behaviour",
+    "href": "week9-slides.html#being-observed-changes-behaviour",
+    "title": "Causal Analysis and Experiments",
+    "section": "Being observed changes behaviour",
+    "text": "Being observed changes behaviour\n\nHawthorne effect: both treated and untreated subjects change their behaviour simply because they know they’re being watched — not because of the treatment itself\nJohn Henry effect: the control group works harder than usual, specifically because they know they’re the comparison — the opposite problem, and just as real\nSpillovers: one subject’s treatment affects another’s outcome, which spoils the comparison. Good design keeps treatment and control apart where possible\n\n\nSource: Békés & Kézdi (2021), Ch. 20"
+  },
+  {
+    "objectID": "week9-slides.html#internal-and-external-validity",
+    "href": "week9-slides.html#internal-and-external-validity",
+    "title": "Causal Analysis and Experiments",
+    "section": "Internal and external validity",
+    "text": "Internal and external validity\n\nInternal validity here: assignment was random, and non-compliance was small and concentrated in the treatment group only — Gabor judges internal validity as strong for this study\nExternal validity: the firm changed its policy because of this result. Would the same effect hold at another firm, in another job or another country? That’s a judgement call; the data can’t answer it"
+  },
+  {
+    "objectID": "week9-slides.html#so-does-working-from-home-change-who-quits",
+    "href": "week9-slides.html#so-does-working-from-home-change-who-quits",
+    "title": "Causal Analysis and Experiments",
+    "section": "So, does working from home change who quits?",
+    "text": "So, does working from home change who quits?\n\nhtml`&lt;p&gt;With &lt;strong&gt;${wfh_n}&lt;/strong&gt; employees, randomly assigned and reasonably balanced, the answer is &lt;strong&gt;yes&lt;/strong&gt;: quit rates fall by about &lt;strong&gt;${Math.abs(quit_effect)} percentage points&lt;/strong&gt;, and those who stay handle more calls.&lt;/p&gt;`\n\n\n\n\n\n\n\nThis is what a causal claim we can trust looks like: a real intervention, random assignment, and a design that would have been just as believable if the result had been zero"
+  },
+  {
+    "objectID": "week9-slides.html#summary",
+    "href": "week9-slides.html#summary",
+    "title": "Causal Analysis and Experiments",
+    "section": "Summary",
+    "text": "Summary\n\nPotential outcomes define what “an effect” means. We never see the individual effect, but we can estimate the average\nDAGs make our assumptions explicit: control for confounders, not for mediators or colliders\nRandom assignment makes the simple group comparison trustworthy. With observational data we can only try to get close\nExperiments still need care: enough subjects, checked balance, and a clear account of non-compliance"
+  },
+  {
+    "objectID": "week9-slides.html#online-session",
+    "href": "week9-slides.html#online-session",
+    "title": "Causal Analysis and Experiments",
+    "section": "Online session",
+    "text": "Online session\nWhat to do when you can’t randomise: the types of confounder, latent variables and bad controls, worked through on a food-and-health case study."
+  },
+  {
+    "objectID": "week9-slides.html#coming-up",
+    "href": "week9-slides.html#coming-up",
+    "title": "Causal Analysis and Experiments",
+    "section": "Coming up",
+    "text": "Coming up\n\nWeek 10: Prediction\n\nA different goal entirely — not “what caused this,” but “what comes next”"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#section",
+    "href": "week9-slides-no-answers.html#section",
+    "title": "Causal Analysis and Experiments",
+    "section": "",
+    "text": "Causal analysis and experiments\nSo far we’ve described associations and stopped short of calling them effects. This week: when we’re allowed to make that claim."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#does-working-from-home-change-who-quits",
+    "href": "week9-slides-no-answers.html#does-working-from-home-change-who-quits",
+    "title": "Causal Analysis and Experiments",
+    "section": "Does working from home change who quits?",
+    "text": "Does working from home change who quits?\n\n\nBusiness question: you’re deciding whether to let staff work from home. Would it actually change how many people quit — or is it just a perk that changes nothing?\n\n\nWe have real data: a company that ran this as an actual experiment on 249 of its own employees."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#the-naive-answer",
+    "href": "week9-slides-no-answers.html#the-naive-answer",
+    "title": "Causal Analysis and Experiments",
+    "section": "The naive answer",
+    "text": "The naive answer\nNaive answer: compare the quit rate of employees who already work from home to those who don’t.\n\nWhy it’s not that simple: people who already work from home chose to. They might have longer commutes, different family situations or longer tenure, and any of these could explain a lower quit rate on its own. It’s the same problem as omitted variable bias in Week 6."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#what-we-need",
+    "href": "week9-slides-no-answers.html#what-we-need",
+    "title": "Causal Analysis and Experiments",
+    "section": "What we need",
+    "text": "What we need\n\nA formal definition of what “the effect of X” actually means\nA way to know, not just hope, that two groups are comparable\nA way to collect data where that comparison works: an experiment"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#the-potential-outcomes-framework",
+    "href": "week9-slides-no-answers.html#the-potential-outcomes-framework",
+    "title": "Causal Analysis and Experiments",
+    "section": "The potential outcomes framework",
+    "text": "The potential outcomes framework"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#a-causal-question",
+    "href": "week9-slides-no-answers.html#a-causal-question",
+    "title": "Causal Analysis and Experiments",
+    "section": "A causal question",
+    "text": "A causal question\n\nA causal question needs an intervention we can at least imagine, and variation in it across subjects. “Does training managers raise revenue?” works; without an intervention we can only describe the data\nThe treatment: the causal variable, usually an intervention – a price change, an ad, a policy\nThe subjects: who receives it. Some are treated, some untreated; both groups matter equally\nThe outcome: what might be affected. A precise causal question names both \\(x\\) and \\(y\\)\n\n\nSource: Békés & Kézdi (2021), Ch. 19"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#two-states-of-the-world",
+    "href": "week9-slides-no-answers.html#two-states-of-the-world",
+    "title": "Causal Analysis and Experiments",
+    "section": "Two states of the world",
+    "text": "Two states of the world\nEvery subject has two potential outcomes:\n\\[y_i^1 \\text{ — what happens if treated} \\qquad y_i^0 \\text{ — what happens if not}\\]\n\nBefore the intervention, both exist in principle for every subject, whether or not they end up treated."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#what-assignment-reveals",
+    "href": "week9-slides-no-answers.html#what-assignment-reveals",
+    "title": "Causal Analysis and Experiments",
+    "section": "What assignment reveals",
+    "text": "What assignment reveals\n\nOnce a subject is assigned — treated or not — one potential outcome becomes real and observable\nThe other one never happens, so it can’t be in any dataset\nTreated subject: observed outcome = their treated outcome \\(y_i^1\\)\nUntreated subject: observed outcome = their untreated outcome \\(y_i^0\\)\n\n\nThe outcome we don’t see is the counterfactual: what would have happened if this subject’s treatment had been the other way round."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#the-individual-treatment-effect",
+    "href": "week9-slides-no-answers.html#the-individual-treatment-effect",
+    "title": "Causal Analysis and Experiments",
+    "section": "The individual treatment effect",
+    "text": "The individual treatment effect\n\\[te_i = y_i^1 - y_i^0\\]\n\nWe can never measure this. We only ever see one of the two potential outcomes for each subject, so the other half of the difference is always missing."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#a-worked-example",
+    "href": "week9-slides-no-answers.html#a-worked-example",
+    "title": "Causal Analysis and Experiments",
+    "section": "A worked example",
+    "text": "A worked example\nA shop emails some customers a discount code. The outcome: did the customer buy something that week (1) or not (0)? Suppose, just for once, we could see both potential outcomes for four customers.\n\n\n\nCustomer\nBuys if emailed (y1)\nBuys if not (y0)\nte\nWhat the email did\n\n\nAsha\n1\n0\n+1\npersuaded her to buy\n\n\nBen\n1\n1\n0\nnothing: he'd have bought anyway\n\n\nChloe\n0\n1\n−1\nput her off: she unsubscribed instead\n\n\nDev\n0\n0\n0\nnothing: he doesn't buy either way\n\n\n\n\nIn real data each customer is either emailed or not, so one of the two middle columns is always missing. If Asha was emailed, we see her 1 but never her 0, so we can’t tell whether she’s an Asha or a Ben."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#what-wed-actually-have",
+    "href": "week9-slides-no-answers.html#what-wed-actually-have",
+    "title": "Causal Analysis and Experiments",
+    "section": "What we’d actually have",
+    "text": "What we’d actually have\nA real dataset never has the y¹/y⁰ columns above — only one outcome per customer, plus whether they were emailed:\n\n\n\nCustomer\nEmailed?\nBought\n\n\nAsha\nYes\n1\n\n\nBen\nYes\n1\n\n\nChloe\nNo\n1\n\n\nDev\nNo\n0\n\n\n\n\nThree columns, not five. No te, no counterfactual, nothing marked “missing” — just who got the email and what happened. This is the table a shop would actually have, and every causal question in this session starts from something that looks like it."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#heterogeneous-treatment-effects",
+    "href": "week9-slides-no-answers.html#heterogeneous-treatment-effects",
+    "title": "Causal Analysis and Experiments",
+    "section": "Heterogeneous treatment effects",
+    "text": "Heterogeneous treatment effects\n\nIndividual effects vary: by subgroup, by circumstance, by person\nMen and women, small markets and large ones, new employees and long-serving ones\nEffects that differ across subjects are the normal case\n\n\nWe can’t recover the full distribution of \\(te_i\\). But we can recover its average."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#the-average-treatment-effect",
+    "href": "week9-slides-no-answers.html#the-average-treatment-effect",
+    "title": "Causal Analysis and Experiments",
+    "section": "The average treatment effect",
+    "text": "The average treatment effect\n\\[ATE = E[y_i^1] - E[y_i^0]\\]\n\nThe average, across everyone, of the individual effects — even though we can’t see any individual one\nMultiply by population size to get the total effect of rolling something out"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#averages-of-differences-differences-of-averages",
+    "href": "week9-slides-no-answers.html#averages-of-differences-differences-of-averages",
+    "title": "Causal Analysis and Experiments",
+    "section": "Averages of differences = differences of averages",
+    "text": "Averages of differences = differences of averages\n\\[ATE = E[te_i] = E[y_i^1 - y_i^0] = E[y_i^1] - E[y_i^0]\\]\n\nWe can’t average \\(te_i\\), because we never see it. The identity says we don’t have to: if we could average \\(y_i^1\\) over everyone and \\(y_i^0\\) over everyone, the difference would give us the same answer. But real data only ever gives us one group’s \\(y^1\\) and the other’s \\(y^0\\) — and those group averages only equal the population ones if assignment doesn’t depend on the potential outcomes themselves."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#what-does-that-independence-actually-mean",
+    "href": "week9-slides-no-answers.html#what-does-that-independence-actually-mean",
+    "title": "Causal Analysis and Experiments",
+    "section": "What does that independence actually mean?",
+    "text": "What does that independence actually mean?\nTake an online ad. Assignment is independent of the potential outcomes if whether someone is shown the ad has nothing to do with what they’d do if shown it, or what they’d do if not.\n\nIf that holds, the people who were shown the ad would have bought at much the same rate as the people who weren’t, had they not seen it either. And the people who weren’t shown it would have bought at much the same rate as the people who were, had they seen it too.\n\n\nNeither group is systematically more or less likely to buy, ad or no ad. That’s what makes the two groups a fair comparison — not that the people in them are identical.\n\n\nSource: Békés & Kézdi (2021), Ch. 20"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#ate-can-hide-heterogeneity",
+    "href": "week9-slides-no-answers.html#ate-can-hide-heterogeneity",
+    "title": "Causal Analysis and Experiments",
+    "section": "ATE can hide heterogeneity",
+    "text": "ATE can hide heterogeneity\n\nIf \\(ATE = 0\\), did the intervention genuinely do nothing?\n\n\nNot necessarily. Two versions of the discount email, six customers each:\n\n\n\n\nIndividual effect te\nATE\n\n\nEmail A\n0\n0\n0\n0\n0\n0\n0\n\n\nEmail B\n+1\n+1\n+1\n−1\n−1\n−1\n0\n\n\n\nEmail A does nothing to anyone. Email B wins over three bargain hunters and puts off three customers who now think the brand is cheap. Both have an ATE of zero. The average can’t tell them apart, but the business would want to know: send Email B to the bargain hunters only."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#ceteris-paribus-formalised",
+    "href": "week9-slides-no-answers.html#ceteris-paribus-formalised",
+    "title": "Causal Analysis and Experiments",
+    "section": "Ceteris paribus, formalised",
+    "text": "Ceteris paribus, formalised\n\n“All else equal” has been our working principle since Week 4. Potential outcomes make it precise: the only difference between \\(y_i^1\\) and \\(y_i^0\\) is the intervention\nWeek 6’s regression \\(y^E = \\beta_0 + \\beta_1 x + \\beta_2 z\\) conditions on \\(z\\): it compares observations with the same \\(z\\) but different \\(x\\). That’s ceteris paribus for the variables we include\n\n\nSource: Békés & Kézdi (2021), Ch. 19"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#can-regression-actually-deliver-it",
+    "href": "week9-slides-no-answers.html#can-regression-actually-deliver-it",
+    "title": "Causal Analysis and Experiments",
+    "section": "Can regression actually deliver it?",
+    "text": "Can regression actually deliver it?\n\nCan we condition on every potential confounder in a regression?\n\n\nProbably not. We can only include what’s in the data, and ceteris paribus means holding everything fixed, measured or not. However many controls we add, that gap stays. So the real problem is how to get a good estimate of the ATE, and that’s the rest of today."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#checking-the-identity-against-real-data",
+    "href": "week9-slides-no-answers.html#checking-the-identity-against-real-data",
+    "title": "Causal Analysis and Experiments",
+    "section": "Checking the identity against real data",
+    "text": "Checking the identity against real data\nBack to our four customers. Using the full table — both potential outcomes, for everyone — the identity gives:\n\\[ATE = E[y_i^1] - E[y_i^0] = 0.5 - 0.5 = \\mathbf{0}\\]\n\nBut real data never gives us that table. It gives us the one we’d actually have: emailed customers (Asha, Ben) averaged 1.0 bought; unemailed customers (Chloe, Dev) averaged 0.5. The difference between those two groups is \\(\\mathbf{0.5}\\).\n\n\nThe true effect is zero. The comparison we can actually run says 0.5. Why are these different?\n\n\nSomething about who got emailed must be related to whether they’d have bought anyway. Averaging the two groups doesn’t fix that on its own — we need a way to reason about which comparisons are safe, and which aren’t."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#mapping-it-with-dags",
+    "href": "week9-slides-no-answers.html#mapping-it-with-dags",
+    "title": "Causal Analysis and Experiments",
+    "section": "Mapping it with DAGs",
+    "text": "Mapping it with DAGs"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#causal-maps",
+    "href": "week9-slides-no-answers.html#causal-maps",
+    "title": "Causal Analysis and Experiments",
+    "section": "Causal maps",
+    "text": "Causal maps\nA DAG (directed acyclic graph) is a diagram of assumptions: nodes are variables, arrows are effects.\n\nhtml`&lt;div style=\"text-align:center;padding-top:20px;\"&gt;\n  &lt;svg width=\"420\" height=\"120\"&gt;\n    &lt;text x=\"60\" y=\"65\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;X&lt;/text&gt;\n    &lt;text x=\"360\" y=\"65\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;Y&lt;/text&gt;\n    &lt;line x1=\"80\" y1=\"60\" x2=\"335\" y2=\"60\" stroke=\"#2d6a4f\" stroke-width=\"2\" marker-end=\"url(#arrow)\"/&gt;\n    &lt;text x=\"200\" y=\"45\" font-size=\"20\" text-anchor=\"middle\" fill=\"#c0392b\" font-family=\"sans-serif\"&gt;?&lt;/text&gt;\n    &lt;defs&gt;&lt;marker id=\"arrow\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\"&gt;&lt;path d=\"M0,0 L0,6 L9,3 z\" fill=\"#2d6a4f\"/&gt;&lt;/marker&gt;&lt;/defs&gt;\n  &lt;/svg&gt;\n&lt;/div&gt;`\n\n\n\n\n\n\nThe simplest causal question: does \\(X\\) affect \\(Y\\)? The map summarises the assumptions you make anyway every time you choose what goes into a regression. Once it’s drawn, deciding what to control for stops being guesswork."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#case-one-a-confounder",
+    "href": "week9-slides-no-answers.html#case-one-a-confounder",
+    "title": "Causal Analysis and Experiments",
+    "section": "Case one: a confounder",
+    "text": "Case one: a confounder\n\nhtml`&lt;div style=\"text-align:center;padding-top:10px;\"&gt;\n  &lt;svg width=\"460\" height=\"180\"&gt;\n    &lt;text x=\"80\" y=\"150\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;X&lt;/text&gt;\n    &lt;text x=\"380\" y=\"150\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;Y&lt;/text&gt;\n    &lt;text x=\"230\" y=\"35\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;Z&lt;/text&gt;\n    &lt;line x1=\"95\" y1=\"140\" x2=\"365\" y2=\"140\" stroke=\"#c0392b\" stroke-width=\"2\" marker-end=\"url(#a5)\"/&gt;\n    &lt;line x1=\"215\" y1=\"45\" x2=\"100\" y2=\"130\" stroke=\"#2d6a4f\" stroke-width=\"2\" marker-end=\"url(#a5)\"/&gt;\n    &lt;line x1=\"245\" y1=\"45\" x2=\"365\" y2=\"130\" stroke=\"#2d6a4f\" stroke-width=\"2\" marker-end=\"url(#a5)\"/&gt;\n    &lt;defs&gt;&lt;marker id=\"a5\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\"&gt;&lt;path d=\"M0,0 L0,6 L9,3 z\" fill=\"#2d6a4f\"/&gt;&lt;/marker&gt;&lt;/defs&gt;\n  &lt;/svg&gt;\n&lt;/div&gt;`\n\n\n\n\n\n\n\\(Z\\) sits upstream of \\(X\\) — it causes both \\(X\\) and \\(Y\\). Leave it out, and part of \\(Z\\)’s effect on \\(Y\\) gets misread as \\(X\\)’s.\n\nThe rule: control for it. This is Week 6’s omitted variable bias, drawn as a picture instead of a formula."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#case-two-a-mediator",
+    "href": "week9-slides-no-answers.html#case-two-a-mediator",
+    "title": "Causal Analysis and Experiments",
+    "section": "Case two: a mediator",
+    "text": "Case two: a mediator\n\nhtml`&lt;div style=\"text-align:center;padding-top:20px;\"&gt;\n  &lt;svg width=\"480\" height=\"140\"&gt;\n    &lt;text x=\"50\" y=\"75\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;X&lt;/text&gt;\n    &lt;text x=\"240\" y=\"35\" font-size=\"16\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;M&lt;/text&gt;\n    &lt;text x=\"430\" y=\"75\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;Y&lt;/text&gt;\n    &lt;line x1=\"65\" y1=\"65\" x2=\"225\" y2=\"40\" stroke=\"#2d6a4f\" stroke-width=\"2\" marker-end=\"url(#arrow2)\"/&gt;\n    &lt;line x1=\"255\" y1=\"40\" x2=\"415\" y2=\"65\" stroke=\"#2d6a4f\" stroke-width=\"2\" marker-end=\"url(#arrow2)\"/&gt;\n    &lt;line x1=\"70\" y1=\"75\" x2=\"410\" y2=\"75\" stroke=\"#999\" stroke-width=\"1.5\" stroke-dasharray=\"4,3\" marker-end=\"url(#arrow3)\"/&gt;\n    &lt;defs&gt;\n      &lt;marker id=\"arrow2\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\"&gt;&lt;path d=\"M0,0 L0,6 L9,3 z\" fill=\"#2d6a4f\"/&gt;&lt;/marker&gt;\n      &lt;marker id=\"arrow3\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\"&gt;&lt;path d=\"M0,0 L0,6 L9,3 z\" fill=\"#999\"/&gt;&lt;/marker&gt;\n    &lt;/defs&gt;\n  &lt;/svg&gt;\n&lt;/div&gt;`\n\n\n\n\n\n\n\\(M\\) sits downstream of \\(X\\), on the path to \\(Y\\) — the mechanism through which the effect happens, not a separate cause of it.\n\nThe rule: don’t control for it. Controlling for \\(M\\) removes part of the effect you’re trying to measure. It’s a bad control. \\(M\\) could be the outcome in its own right, if we wanted the causal effect of \\(X\\) on \\(M\\)."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#task-confounder-or-mediator",
+    "href": "week9-slides-no-answers.html#task-confounder-or-mediator",
+    "title": "Causal Analysis and Experiments",
+    "section": "Task — confounder or mediator?",
+    "text": "Task — confounder or mediator?\n\nBack to working from home. Suppose it reduces commute stress, and commute stress affects whether someone quits. Discuss with your neighbour and draw it as a DAG: is commute stress a confounder of the WFH → quit relationship, or a mediator?\n\n\nThe DAG and the answer appear here in the workshop."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#case-three-a-collider",
+    "href": "week9-slides-no-answers.html#case-three-a-collider",
+    "title": "Causal Analysis and Experiments",
+    "section": "Case three: a collider",
+    "text": "Case three: a collider\n\nhtml`&lt;div style=\"text-align:center;padding-top:10px;\"&gt;\n  &lt;svg width=\"460\" height=\"180\"&gt;\n    &lt;text x=\"80\" y=\"45\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;X&lt;/text&gt;\n    &lt;text x=\"380\" y=\"45\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;Y&lt;/text&gt;\n    &lt;text x=\"230\" y=\"160\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;C&lt;/text&gt;\n    &lt;line x1=\"95\" y1=\"52\" x2=\"215\" y2=\"140\" stroke=\"#2d6a4f\" stroke-width=\"2\" marker-end=\"url(#a6)\"/&gt;\n    &lt;line x1=\"365\" y1=\"52\" x2=\"245\" y2=\"140\" stroke=\"#2d6a4f\" stroke-width=\"2\" marker-end=\"url(#a6)\"/&gt;\n    &lt;text x=\"230\" y=\"40\" font-size=\"16\" text-anchor=\"middle\" fill=\"#999\" font-family=\"sans-serif\"&gt;no arrow&lt;/text&gt;\n    &lt;defs&gt;&lt;marker id=\"a6\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\"&gt;&lt;path d=\"M0,0 L0,6 L9,3 z\" fill=\"#2d6a4f\"/&gt;&lt;/marker&gt;&lt;/defs&gt;\n  &lt;/svg&gt;\n&lt;/div&gt;`\n\n\n\n\n\n\n\\(C\\) sits downstream of both: \\(X\\) causes it and \\(Y\\) causes it. Two arrowheads meet at \\(C\\), which is why it’s called a collider.\n\nThe rule: don’t control for it, and don’t pick your sample using it. Even if \\(X\\) and \\(Y\\) are completely unrelated, holding \\(C\\) fixed makes them look related."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#seeing-a-collider-at-work",
+    "href": "week9-slides-no-answers.html#seeing-a-collider-at-work",
+    "title": "Causal Analysis and Experiments",
+    "section": "Seeing a collider at work",
+    "text": "Seeing a collider at work\nWhy do so many good-looking film stars seem to be poor actors? Let’s build the answer one step at a time.\nStep 1. 1,000 made-up actors, each with a talent score and a looks score. We made the two unrelated: knowing someone’s looks tells you nothing about their talent.\n\nactorDomX = d3.extent(actor_rows, d =&gt; d.looks)\nactorDomY = d3.extent(actor_rows, d =&gt; d.talent)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPlot.plot({\n  width: 1000, height: 330, marginLeft: 55,\n  x: {label: \"Looks (score)\", domain: actorDomX}, y: {label: \"Acting talent (score)\", domain: actorDomY},\n  marks: [\n    Plot.dot(actor_rows, {x: \"looks\", y: \"talent\", r: 2.5, fill: \"#9a9aa8\"}),\n    Plot.linearRegressionY(actor_rows, {x: \"looks\", y: \"talent\", stroke: \"#1a1a2e\", ci: 0, strokeWidth: 2})\n  ]\n})\n\n\n\n\n\n\n\nThe line through all 1,000 is flat. No relationship, as we built it."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#step-2-who-becomes-a-star",
+    "href": "week9-slides-no-answers.html#step-2-who-becomes-a-star",
+    "title": "Causal Analysis and Experiments",
+    "section": "Step 2: who becomes a star?",
+    "text": "Step 2: who becomes a star?\nAn actor becomes a star if talent and looks together are high enough (plus a bit of luck): talent + looks + luck above 110.\n\nPlot.plot({\n  width: 1000, height: 330, marginLeft: 55,\n  x: {label: \"Looks (score)\", domain: actorDomX}, y: {label: \"Acting talent (score)\", domain: actorDomY},\n  color: {domain: [\"Not a star\", \"Movie star\"], range: [\"#cfcfd6\", \"#c0392b\"], legend: true},\n  marks: [\n    Plot.dot(actor_rows, {x: \"looks\", y: \"talent\", r: 2.5,\n      fill: d =&gt; d.star ? \"Movie star\" : \"Not a star\"}),\n    Plot.line([{looks: actorDomX[0], talent: 110 - actorDomX[0]}, {looks: actorDomX[1], talent: 110 - actorDomX[1]}]\n      .map(d =&gt; ({looks: d.looks, talent: Math.max(actorDomY[0], Math.min(actorDomY[1], d.talent))})),\n      {x: \"looks\", y: \"talent\", stroke: \"#1a1a2e\", strokeDasharray: \"5,4\"})\n  ]\n})\n\n\n\n\n\n\n\n\nhtml`&lt;p&gt;${collider.n_star} actors make it. They sit above the dashed line, where talent + looks = 110. That line slopes down: the less good-looking you are, the more talent you need to get over it.&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#step-3-look-only-at-the-stars",
+    "href": "week9-slides-no-answers.html#step-3-look-only-at-the-stars",
+    "title": "Causal Analysis and Experiments",
+    "section": "Step 3: look only at the stars",
+    "text": "Step 3: look only at the stars\n\nPlot.plot({\n  width: 1000, height: 330, marginLeft: 55,\n  x: {label: \"Looks (score)\", domain: actorDomX}, y: {label: \"Acting talent (score)\", domain: actorDomY},\n  marks: [\n    Plot.dot(actor_rows.filter(d =&gt; !d.star), {x: \"looks\", y: \"talent\", r: 2.5, fill: \"#ececf1\"}),\n    Plot.dot(actor_rows.filter(d =&gt; d.star), {x: \"looks\", y: \"talent\", r: 2.5, fill: \"#c0392b\"}),\n    Plot.linearRegressionY(actor_rows, {x: \"looks\", y: \"talent\", stroke: \"#1a1a2e\", ci: 0, strokeWidth: 1.5, strokeOpacity: 0.5}),\n    Plot.linearRegressionY(actor_rows.filter(d =&gt; d.star), {x: \"looks\", y: \"talent\", stroke: \"#c0392b\", ci: 0, strokeWidth: 2.5})\n  ]\n})\n\n\n\n\n\n\n\nAmong the stars, the better-looking ones seem less talented (red line). Nothing about acting changed: we only changed who we look at. Being a star is caused by both talent and looks, so it’s a collider, and selecting on it creates a relationship that isn’t there."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#two-ways-to-fall-into-it",
+    "href": "week9-slides-no-answers.html#two-ways-to-fall-into-it",
+    "title": "Causal Analysis and Experiments",
+    "section": "Two ways to fall into it",
+    "text": "Two ways to fall into it\n\nsmf.ols(\"talent ~ looks\", data=actors).fit(cov_type=\"HC1\")\nsmf.ols(\"talent ~ looks\", data=actors[actors.star == 1]).fit(cov_type=\"HC1\")\nsmf.ols(\"talent ~ looks + star\", data=actors).fit(cov_type=\"HC1\")\n\n\nhtml`&lt;table style=\"margin:14px auto 0;font-family:sans-serif;font-size:0.95em;border-collapse:collapse;\"&gt;\n  &lt;tr style=\"border-bottom:2px solid #1a1a2e;\"&gt;&lt;th style=\"padding:6px 22px;text-align:left;\"&gt;Model&lt;/th&gt;&lt;th style=\"padding:6px 22px;\"&gt;Coefficient on looks&lt;/th&gt;&lt;/tr&gt;\n  &lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;&lt;td style=\"padding:5px 22px;\"&gt;All actors&lt;/td&gt;&lt;td style=\"padding:5px 22px;text-align:center;\"&gt;${collider.b_all} (p = ${collider.p_all})&lt;/td&gt;&lt;/tr&gt;\n  &lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;&lt;td style=\"padding:5px 22px;\"&gt;Stars only&lt;/td&gt;&lt;td style=\"padding:5px 22px;text-align:center;\"&gt;${collider.b_star}&lt;/td&gt;&lt;/tr&gt;\n  &lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;&lt;td style=\"padding:5px 22px;\"&gt;All actors, controlling for being a star&lt;/td&gt;&lt;td style=\"padding:5px 22px;text-align:center;\"&gt;${collider.b_ctrl}&lt;/td&gt;&lt;/tr&gt;\n&lt;/table&gt;`\n\n\n\n\n\n\n\n\nPicking the sample on \\(C\\) and adding \\(C\\) as a control both create a relationship that isn’t there\nThis is the opposite of omitted variable bias: the bias comes from putting a variable in, not from leaving one out\nIt happens in business data all the time: studying only customers who complained, only firms that survived, only staff who were promoted\n\n\n\nThe full simulation is in a Colab notebook: change the cut-off or the amount of luck and see what happens to the bias."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#task-confounder-mediator-or-collider",
+    "href": "week9-slides-no-answers.html#task-confounder-mediator-or-collider",
+    "title": "Causal Analysis and Experiments",
+    "section": "Task — confounder, mediator or collider?",
+    "text": "Task — confounder, mediator or collider?\n\nA firm wants to know whether its sales training course raises staff sales. Draw a DAG for each variable before you decide: confounder, mediator or collider? Should it go in the regression?\n\nYears of sales experience (managers send experienced staff on the course)\nProduct knowledge (the course teaches it, and knowing the products helps you sell)\nBeing featured in the staff newsletter (it lists everyone who did the course, and the month’s top sellers)\n\n\n\nAnswer revealed in the workshop."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#task-draw-your-own",
+    "href": "week9-slides-no-answers.html#task-draw-your-own",
+    "title": "Causal Analysis and Experiments",
+    "section": "Task — draw your own",
+    "text": "Task — draw your own\n\nBusiness question: in the used-cars data, does a car’s mileage affect its price?\nIn Week 6 you ran this regression and found that controlling for the car’s age roughly halves the mileage effect. Draw it as a DAG: where does age sit — confounder, mediator or collider? Then pick one more variable from that dataset (dealer, condition, make) and decide where it belongs, and whether you’d control for it."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#where-does-the-variation-in-x-come-from",
+    "href": "week9-slides-no-answers.html#where-does-the-variation-in-x-come-from",
+    "title": "Causal Analysis and Experiments",
+    "section": "Where does the variation in x come from?",
+    "text": "Where does the variation in x come from?\nWhatever we’re measuring, x varies across observations for some reason. That reason matters as much as the relationship itself.\n\nAn endogenous source of variation: whatever makes x vary is also related to y, directly\nAn exogenous source of variation: whatever makes x vary is independent of y\n\n\nSome of the variation in x is useless to us — it’s really a confounder in disguise. Some is exactly what we need. The rest of this session is about telling them apart, and about one way to guarantee we only get the second kind.\n\n\nThis isn’t something a dataset can tell you on its own. It takes knowing how the data was actually generated, and domain knowledge about what else could be moving x — the same thinking a DAG forces you to make explicit.\n\n\nSource: Békés & Kézdi (2021), Ch. 19"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#an-exogenous-and-an-endogenous-source",
+    "href": "week9-slides-no-answers.html#an-exogenous-and-an-endogenous-source",
+    "title": "Causal Analysis and Experiments",
+    "section": "An exogenous and an endogenous source",
+    "text": "An exogenous and an endogenous source\nTwo things could be driving the variation in x. \\(Z_1\\) only affects x. \\(Z_2\\) affects x and y directly.\n\nhtml`&lt;div style=\"text-align:center;padding-top:10px;\"&gt;\n  &lt;svg width=\"520\" height=\"220\"&gt;\n    &lt;text x=\"60\" y=\"38\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;Z&#8321;&lt;/text&gt;\n    &lt;text x=\"190\" y=\"92\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;x&lt;/text&gt;\n    &lt;text x=\"450\" y=\"58\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;Z&#8322;&lt;/text&gt;\n    &lt;text x=\"330\" y=\"195\" font-size=\"18\" text-anchor=\"middle\" font-family=\"sans-serif\"&gt;y&lt;/text&gt;\n    &lt;line x1=\"78\" y1=\"45\" x2=\"172\" y2=\"82\" stroke=\"#2d6a4f\" stroke-width=\"2\" marker-end=\"url(#a11)\"/&gt;\n    &lt;line x1=\"420\" y1=\"62\" x2=\"212\" y2=\"88\" stroke=\"#c0392b\" stroke-width=\"2\" marker-end=\"url(#a12)\"/&gt;\n    &lt;line x1=\"438\" y1=\"72\" x2=\"348\" y2=\"178\" stroke=\"#c0392b\" stroke-width=\"2\" marker-end=\"url(#a12)\"/&gt;\n    &lt;line x1=\"208\" y1=\"102\" x2=\"310\" y2=\"180\" stroke=\"#1a1a2e\" stroke-width=\"2\" marker-end=\"url(#a13)\"/&gt;\n    &lt;text x=\"280\" y=\"128\" font-size=\"18\" text-anchor=\"middle\" fill=\"#1a1a2e\" font-family=\"sans-serif\"&gt;?&lt;/text&gt;\n    &lt;defs&gt;\n      &lt;marker id=\"a11\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\"&gt;&lt;path d=\"M0,0 L0,6 L9,3 z\" fill=\"#2d6a4f\"/&gt;&lt;/marker&gt;\n      &lt;marker id=\"a12\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\"&gt;&lt;path d=\"M0,0 L0,6 L9,3 z\" fill=\"#c0392b\"/&gt;&lt;/marker&gt;\n      &lt;marker id=\"a13\" markerWidth=\"10\" markerHeight=\"10\" refX=\"8\" refY=\"3\" orient=\"auto\"&gt;&lt;path d=\"M0,0 L0,6 L9,3 z\" fill=\"#1a1a2e\"/&gt;&lt;/marker&gt;\n    &lt;/defs&gt;\n  &lt;/svg&gt;\n&lt;/div&gt;`\n\n\n\n\n\n\n\n\\(Z_1\\) (green) is exogenous: a clean source of variation in x, unrelated to y except through x. \\(Z_2\\) (red) is endogenous: it’s a confounder in disguise, and any variation in x that comes from it will bias our estimate of x’s effect on y.\n\n\nRandom assignment is a way of guaranteeing only \\(Z_1\\)-type sources exist. When we assign x ourselves, nothing about the subject — their own characteristics, their own choices — can be the reason x varies, so every remaining source of variation in x is exogenous by construction. Without it, \\(Z_2\\)-type sources are possible, not guaranteed — there can still be some exogenous variation mixed in, which is exactly what this module’s other observational methods (Week 6’s conditioning, this week’s online-session mention of natural experiments) try to isolate."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#a-concrete-example-prices-and-sales",
+    "href": "week9-slides-no-answers.html#a-concrete-example-prices-and-sales",
+    "title": "Causal Analysis and Experiments",
+    "section": "A concrete example: prices and sales",
+    "text": "A concrete example: prices and sales\nx = price, y = sales. Two sources of variation in price:\n\n\\(Z_1\\): an autonomous pricing decision by the company’s own managers — exogenous. It has nothing to do with the market beyond its effect on price\n\\(Z_2\\): the strength of competition — endogenous. Stronger competition pushes the company to cut its price and reduces its sales directly, for reasons that have nothing to do with the price cut itself\n\n\nUse only variation from \\(Z_1\\), and the price–sales relationship it traces out genuinely reflects how customers respond to price. Mix in variation from \\(Z_2\\), and part of what you’re seeing is something competition did to both sides at once — the two effects are tangled together, and no amount of averaging pulls them back apart.\n\n\nEvery source of variation in x sorts into one of two piles: good (exogenous) or bad (endogenous). The task is always the same — keep the good ones, get rid of the bad ones. A DAG is how you sort them; random assignment is one way to guarantee the pile of bad ones is empty.\n\n\nSource: Békés & Kézdi (2021), Ch. 19"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#random-assignment-the-solution",
+    "href": "week9-slides-no-answers.html#random-assignment-the-solution",
+    "title": "Causal Analysis and Experiments",
+    "section": "Random assignment — the solution",
+    "text": "Random assignment — the solution"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#controlled-assignment",
+    "href": "week9-slides-no-answers.html#controlled-assignment",
+    "title": "Causal Analysis and Experiments",
+    "section": "Controlled assignment",
+    "text": "Controlled assignment\n\nIn a controlled experiment, the value of x isn’t something subjects choose — the experimenter assigns it\nThat rules out self-selection: the people who end up working from home aren’t the ones who’d have quit anyway, or stayed anyway, for reasons related to their own circumstances\nIt also rules out reverse causality: y (whether someone later quits) can’t have caused x (their assignment), since assignment happened first\n\n\nSource: Békés & Kézdi (2021), Ch. 20"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#why-random-assignment-works",
+    "href": "week9-slides-no-answers.html#why-random-assignment-works",
+    "title": "Causal Analysis and Experiments",
+    "section": "Why random assignment works",
+    "text": "Why random assignment works\n\nRandomisation is one particular assignment rule, and it’s independent of every potential confounder by design\nThat’s what the DAG a moment ago was really saying: randomise, and only exogenous variation in x is left. The treated and untreated groups are, on average, identical except for treatment\nUnder random assignment, the simple difference in observed averages is a good estimate of the ATE\nNo test can prove assignment was random. We believe it because of how the assignment was done, and we can check that the groups look alike on what we measured"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#ate-and-atet",
+    "href": "week9-slides-no-answers.html#ate-and-atet",
+    "title": "Causal Analysis and Experiments",
+    "section": "ATE and ATET",
+    "text": "ATE and ATET\n\nThe group-average difference we can actually compute only ever uses the people who were treated — it’s really an estimate of ATET, the average effect among those who happened to end up treated\nRandom assignment guarantees the treated group isn’t special: in terms of potential outcomes, it’s no different from the population as a whole\nSo under random assignment, ATET = ATE — the simple comparison estimates both at once\n\n\nThat’s the precise answer to the puzzle a few slides back. Without random assignment, who ends up treated can depend on their own potential outcomes — the treated group stops being representative, ATET and ATE pull apart, and the simple comparison stops estimating either one reliably.\n\n\nSource: Békés & Kézdi (2021), Ch. 20"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#designing-and-running-the-experiment",
+    "href": "week9-slides-no-answers.html#designing-and-running-the-experiment",
+    "title": "Causal Analysis and Experiments",
+    "section": "Designing and running the experiment",
+    "text": "Designing and running the experiment"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#task-working-from-home",
+    "href": "week9-slides-no-answers.html#task-working-from-home",
+    "title": "Causal Analysis and Experiments",
+    "section": "Task — working from home",
+    "text": "Task — working from home\n\nA field experiment: a real firm and its own employees. Working from home four days a week — does it change whether staff quit?\n503 employees volunteered; 249 qualified (over six months’ tenure, broadband at home) and were randomly assigned to work from home or stay in the office. Two outcomes were tracked: whether they quit, and phone-call volume for staff whose job is order-taking.\nOpen the Colab notebook, load wfh_person.csv, and inspect it:\n\nHow many employees are in the treatment group, and how many in the control group?\nFit a linear probability model of quitjob on treatment. What’s the estimated treatment effect, and is it significant?\n\nNo further syntax hints — you’ve written this exact regression many times by now.\n\n\nSource: Békés & Kézdi (2021), Ch. 20, working-from-home dataset (Bloom et al.’s Ctrip field experiment)"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#what-you-should-have-found",
+    "href": "week9-slides-no-answers.html#what-you-should-have-found",
+    "title": "Causal Analysis and Experiments",
+    "section": "What you should have found",
+    "text": "What you should have found\n\nimport statsmodels.formula.api as smf\n\nquit_model = smf.ols(\"quitjob ~ treatment\", data=wfh).fit(cov_type=\"HC1\")\n\n\nThe treatment/control split and the regression output appear here in the workshop – run the code above in the notebook to see them."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#a-second-outcome-performance",
+    "href": "week9-slides-no-answers.html#a-second-outcome-performance",
+    "title": "Causal Analysis and Experiments",
+    "section": "A second outcome: performance",
+    "text": "A second outcome: performance\nFor staff whose job is taking calls, performance can be measured directly: the number of calls they handle.\n\nordertakers = wfh[wfh[\"ordertaker\"] == True]\nphone_model = smf.ols(\"phonecalls1 ~ treatment\", data=ordertakers).fit(cov_type=\"HC1\")\n\n\n\nhtml`&lt;p&gt;Among these ${phone_n} order-takers, working from home &lt;strong&gt;raises&lt;/strong&gt; the number of calls by &lt;strong&gt;${phone_effect} thousand&lt;/strong&gt; per employee over the period (p ${phone_p}). Fewer people leave, and those who stay do more work.&lt;/p&gt;`\n\n\n\n\n\n\n\n\nSource: Békés & Kézdi (2021), Ch. 20 — matches the book’s own published Table, reproduced here from the raw data"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#making-it-rigorous",
+    "href": "week9-slides-no-answers.html#making-it-rigorous",
+    "title": "Causal Analysis and Experiments",
+    "section": "Making it rigorous",
+    "text": "Making it rigorous"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#covariate-balance",
+    "href": "week9-slides-no-answers.html#covariate-balance",
+    "title": "Causal Analysis and Experiments",
+    "section": "Covariate balance",
+    "text": "Covariate balance\nBack to working from home: random assignment should mean the two groups look alike on everything measured before treatment. A quick check: regress each one on treatment.\n\nfor col in [\"age\", \"married\", \"children\", \"tenure\", \"internet\"]:\n    m = smf.ols(f\"{col} ~ treatment\", data=wfh).fit(cov_type=\"HC1\")\n    print(col, m.pvalues[\"treatment\"])\n\n\nhtml`&lt;table style=\"margin:10px auto 0;font-family:sans-serif;font-size:0.9em;border-collapse:collapse;\"&gt;\n  &lt;tr style=\"border-bottom:2px solid #1a1a2e;\"&gt;&lt;th style=\"padding:5px 22px;\"&gt;Covariate&lt;/th&gt;&lt;th style=\"padding:5px 22px;\"&gt;Treatment&lt;/th&gt;&lt;th style=\"padding:5px 22px;\"&gt;Control&lt;/th&gt;&lt;th style=\"padding:5px 22px;\"&gt;p-value&lt;/th&gt;&lt;/tr&gt;\n  ${balance_rows.map(d =&gt; `&lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;&lt;td style=\"padding:4px 22px;\"&gt;${d.covariate}&lt;/td&gt;&lt;td style=\"padding:4px 22px;text-align:center;\"&gt;${d.treat}&lt;/td&gt;&lt;td style=\"padding:4px 22px;text-align:center;\"&gt;${d.control}&lt;/td&gt;&lt;td style=\"padding:4px 22px;text-align:center;\"&gt;${d.p}&lt;/td&gt;&lt;/tr&gt;`).join('')}\n&lt;/table&gt;`\n\n\n\n\n\n\n\n\nhtml`&lt;p&gt;Mostly balanced. One covariate, ${low_bal.covariate.toLowerCase()}, has a low p-value (${low_bal.p}). Check five covariates and one coming up below 0.05 by chance is not surprising. Worth noting, not worth worrying about.&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#complications",
+    "href": "week9-slides-no-answers.html#complications",
+    "title": "Causal Analysis and Experiments",
+    "section": "Complications",
+    "text": "Complications"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#imperfect-compliance",
+    "href": "week9-slides-no-answers.html#imperfect-compliance",
+    "title": "Causal Analysis and Experiments",
+    "section": "Imperfect compliance",
+    "text": "Imperfect compliance\n\nIn this experiment, fewer than 20% of the treatment group had to go back to the office because their personal circumstances changed.\n\n\nAssignment (what a subject is told to do) and treatment (what they actually do) don’t always match\nComparing people by assignment, whatever they actually did, gives the intent-to-treat (ITT) effect: “if we rolled this out with this level of compliance, what would happen?” Often the number a manager needs\nWith small non-compliance, ITT is a good stand-in for the effect of the treatment itself, just a bit smaller. With substantial non-compliance it isn’t, and the effect on those who comply (the LATE) is what we’d need instead"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#being-observed-changes-behaviour",
+    "href": "week9-slides-no-answers.html#being-observed-changes-behaviour",
+    "title": "Causal Analysis and Experiments",
+    "section": "Being observed changes behaviour",
+    "text": "Being observed changes behaviour\n\nHawthorne effect: both treated and untreated subjects change their behaviour simply because they know they’re being watched — not because of the treatment itself\nJohn Henry effect: the control group works harder than usual, specifically because they know they’re the comparison — the opposite problem, and just as real\nSpillovers: one subject’s treatment affects another’s outcome, which spoils the comparison. Good design keeps treatment and control apart where possible\n\n\nSource: Békés & Kézdi (2021), Ch. 20"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#internal-and-external-validity",
+    "href": "week9-slides-no-answers.html#internal-and-external-validity",
+    "title": "Causal Analysis and Experiments",
+    "section": "Internal and external validity",
+    "text": "Internal and external validity\n\nInternal validity here: assignment was random, and non-compliance was small and concentrated in the treatment group only — Gabor judges internal validity as strong for this study\nExternal validity: the firm changed its policy because of this result. Would the same effect hold at another firm, in another job or another country? That’s a judgement call; the data can’t answer it"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#so-does-working-from-home-change-who-quits",
+    "href": "week9-slides-no-answers.html#so-does-working-from-home-change-who-quits",
+    "title": "Causal Analysis and Experiments",
+    "section": "So, does working from home change who quits?",
+    "text": "So, does working from home change who quits?\n\nhtml`&lt;p&gt;With &lt;strong&gt;${wfh_n}&lt;/strong&gt; employees, randomly assigned and reasonably balanced, the task above gives the answer – and those who stay handle more calls too.&lt;/p&gt;`\n\n\n\n\n\n\n\nThis is what a causal claim we can trust looks like: a real intervention, random assignment, and a design that would have been just as believable if the result had been zero"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#summary",
+    "href": "week9-slides-no-answers.html#summary",
+    "title": "Causal Analysis and Experiments",
+    "section": "Summary",
+    "text": "Summary\n\nPotential outcomes define what “an effect” means. We never see the individual effect, but we can estimate the average\nDAGs make our assumptions explicit: control for confounders, not for mediators or colliders\nRandom assignment makes the simple group comparison trustworthy. With observational data we can only try to get close\nExperiments still need care: enough subjects, checked balance, and a clear account of non-compliance"
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#online-session",
+    "href": "week9-slides-no-answers.html#online-session",
+    "title": "Causal Analysis and Experiments",
+    "section": "Online session",
+    "text": "Online session\nWhat to do when you can’t randomise: the types of confounder, latent variables and bad controls, worked through on a food-and-health case study."
+  },
+  {
+    "objectID": "week9-slides-no-answers.html#coming-up",
+    "href": "week9-slides-no-answers.html#coming-up",
+    "title": "Causal Analysis and Experiments",
+    "section": "Coming up",
+    "text": "Coming up\n\nWeek 10: Prediction\n\nA different goal entirely — not “what caused this,” but “what comes next”"
   }
 ]

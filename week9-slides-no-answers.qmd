@@ -1,7 +1,6 @@
 ---
 title: "Causal Analysis and Experiments"
 subtitle: "7002LBSAI Research Methods in Analytics — Week 9"
-search: false
 format:
   revealjs:
     theme: simple
@@ -267,7 +266,23 @@ $$ATE = E[y_i^1] - E[y_i^0]$$
 $$ATE = E[te_i] = E[y_i^1 - y_i^0] = E[y_i^1] - E[y_i^0]$$
 
 ::: {.fragment}
-We can't average $te_i$, because we never see it. But we can average the treated group's outcomes and the untreated group's outcomes separately, and the difference between those two averages is the same thing.
+We can't average $te_i$, because we never see it. The identity says we don't have to: if we could average $y_i^1$ over everyone and $y_i^0$ over everyone, the difference would give us the same answer. But real data only ever gives us one group's $y^1$ and the other's $y^0$ — and those group averages only equal the population ones if assignment doesn't depend on the potential outcomes themselves.
+:::
+
+## What does that independence actually mean?
+
+Take an online ad. Assignment is independent of the potential outcomes if whether someone is shown the ad has nothing to do with what they'd do **if** shown it, or what they'd do **if not**.
+
+::: {.fragment}
+If that holds, the people who *were* shown the ad would have bought at much the same rate as the people who *weren't*, had they not seen it either. And the people who weren't shown it would have bought at much the same rate as the people who were, had they seen it too.
+:::
+
+::: {.fragment}
+Neither group is systematically more or less likely to buy, ad or no ad. That's what makes the two groups a fair comparison — not that the people in them are identical.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 20
 :::
 
 ## ATE can hide heterogeneity
@@ -562,11 +577,15 @@ Whatever we're measuring, x varies across observations for some reason. That rea
 Some of the variation in x is useless to us — it's really a confounder in disguise. Some is exactly what we need. The rest of this session is about telling them apart, and about one way to guarantee we only get the second kind.
 :::
 
+::: {.fragment}
+This isn't something a dataset can tell you on its own. It takes knowing how the data was actually generated, and domain knowledge about what else could be moving x — the same thinking a DAG forces you to make explicit.
+:::
+
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
 Source: Békés & Kézdi (2021), Ch. 19
 :::
 
-## An exogenous and an endogenous source
+## An exogenous and an endogenous source {.smaller}
 
 Two things could be driving the variation in x. $Z_1$ only affects x. $Z_2$ affects x **and** y directly.
 
@@ -596,7 +615,26 @@ $Z_1$ (green) is exogenous: a clean source of variation in x, unrelated to y exc
 :::
 
 ::: {.fragment}
-**Random assignment is a way of guaranteeing only $Z_1$-type sources exist.** When we assign x ourselves, nothing about the subject — their own characteristics, their own choices — can be the reason x varies, so every remaining source of variation in x is exogenous by construction.
+**Random assignment is a way of guaranteeing only $Z_1$-type sources exist.** When we assign x ourselves, nothing about the subject — their own characteristics, their own choices — can be the reason x varies, so every remaining source of variation in x is exogenous by construction. Without it, $Z_2$-type sources are *possible*, not guaranteed — there can still be some exogenous variation mixed in, which is exactly what this module's other observational methods (Week 6's conditioning, this week's online-session mention of natural experiments) try to isolate.
+:::
+
+## A concrete example: prices and sales {.smaller}
+
+x = price, y = sales. Two sources of variation in price:
+
+- $Z_1$: an autonomous pricing decision by the company's own managers — exogenous. It has nothing to do with the market beyond its effect on price
+- $Z_2$: the strength of competition — endogenous. Stronger competition pushes the company to cut its price **and** reduces its sales directly, for reasons that have nothing to do with the price cut itself
+
+::: {.fragment}
+Use only variation from $Z_1$, and the price–sales relationship it traces out genuinely reflects how customers respond to price. Mix in variation from $Z_2$, and part of what you're seeing is something competition did to both sides at once — the two effects are tangled together, and no amount of averaging pulls them back apart.
+:::
+
+::: {.fragment}
+Every source of variation in x sorts into one of two piles: good (exogenous) or bad (endogenous). The task is always the same — keep the good ones, get rid of the bad ones. A DAG is how you sort them; random assignment is one way to guarantee the pile of bad ones is empty.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 19
 :::
 
 ---
@@ -621,6 +659,20 @@ Source: Békés & Kézdi (2021), Ch. 20
 - That's what the DAG a moment ago was really saying: randomise, and only exogenous variation in x is left. The treated and untreated groups are, on average, identical except for treatment
 - Under random assignment, the simple difference in observed averages **is** a good estimate of the ATE
 - No test can prove assignment was random. We believe it because of how the assignment was done, and we can check that the groups look alike on what we measured
+
+## ATE and ATET
+
+- The group-average difference we can actually compute only ever uses the people who *were* treated — it's really an estimate of **ATET**, the average effect among those who happened to end up treated
+- Random assignment guarantees the treated group isn't special: in terms of potential outcomes, it's no different from the population as a whole
+- So under random assignment, **ATET = ATE** — the simple comparison estimates both at once
+
+::: {.fragment}
+That's the precise answer to the puzzle a few slides back. Without random assignment, who ends up treated can depend on their own potential outcomes — the treated group stops being representative, ATET and ATE pull apart, and the simple comparison stops estimating either one reliably.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 20
+:::
 
 ---
 
