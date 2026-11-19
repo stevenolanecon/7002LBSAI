@@ -79,6 +79,7 @@ weeks = [
     {"n": 9, "topic": "Causal Analysis and Experiments", "status": "pending",
      "links": [
          ("Workshop slides", "week9-slides.html", False),
+         ("Workshop slides (no answers)", "week9-slides-no-answers.html", False),
          ("Online session", "week9-online-slides.html", False),
      ]},
     {"n": 10, "topic": "Prediction", "status": "pending",
@@ -113,8 +114,9 @@ def week_card(w):
         )
     else:
         chip = '<span class="status-chip pending"><span class="dot"></span>Coming soon</span>'
-        pills = ('<span class="pill disabled">Workshop slides</span>'
-                 '<span class="pill disabled">Online session</span>')
+        pills = "".join(
+            f'<span class="pill disabled">{label}</span>' for label, href, tool in w["links"]
+        )
 
     return (f'<div class="week-card">'
              f'<div class="week-card-head">'

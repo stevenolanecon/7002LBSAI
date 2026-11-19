@@ -208,9 +208,9 @@
 </section>
 <section class="slide level2">
 
-<div id="c3c85a52" class="cell" data-execution_count="1">
+<div id="aaf6c8c5" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-display">
-<script type="ojs-define">{"contents": [{"name": "wfh_n", "value": 249}, {"name": "wfh_treat_n", "value": 131}, {"name": "wfh_control_n", "value": 118}, {"name": "control_quit_rate", "value": 34.7}, {"name": "treatment_quit_rate", "value": 16.0}, {"name": "quit_effect", "value": -18.7}, {"name": "quit_p", "value": 0.0006}, {"name": "quit_summary_text", "value": "                            OLS Regression Results                            \n==============================================================================\nDep. Variable:                quitjob   R-squared:                       0.047\nModel:                            OLS   Adj. R-squared:                  0.043\nMethod:                 Least Squares   F-statistic:                     11.78\nDate:                Tue, 29 Sep 2026   Prob (F-statistic):           0.000701\nTime:                        13:21:24   Log-Likelihood:                -138.62\nNo. Observations:                 249   AIC:                             281.2\nDf Residuals:                     247   BIC:                             288.3\nDf Model:                           1                                         \nCovariance Type:                  HC1                                         \n==============================================================================\n                 coef    std err          z      P>|z|      [0.025      0.975]\n------------------------------------------------------------------------------\nIntercept      0.3475      0.044      7.895      0.000       0.261       0.434\ntreatment     -0.1872      0.055     -3.432      0.001      -0.294      -0.080\n=============================================================================="}, {"name": "phone_effect", "value": 4.04}, {"name": "phone_p", "value": "<0.001"}, {"name": "phone_n", "value": 134}, {"name": "balance_rows", "value": [{"covariate": "Age", "treat": 24.44, "control": 24.35, "p": 0.846}, {"covariate": "Married", "treat": 0.22, "control": 0.32, "p": 0.075}, {"covariate": "Has children", "treat": 0.11, "control": 0.24, "p": 0.011}, {"covariate": "Tenure (months)", "treat": 26.14, "control": 28.25, "p": 0.447}, {"covariate": "Home internet", "treat": 0.99, "control": 1.0, "p": 0.317}]}, {"name": "social_rows", "value": [{"action_type": "Action A", "show": 1000000, "clicks": 3323, "action": 32, "rate": 0.0032}, {"action_type": "Action B", "show": 1000000, "clicks": 3128, "action": 21, "rate": 0.0021}]}, {"name": "social_total_shows", "value": 2000000}, {"name": "social_total_clicks", "value": 6451}, {"name": "social_total_actions", "value": 53}, {"name": "planning_ctr", "value": 1.0}, {"name": "n_needed", "value": 2254}, {"name": "task_power_output_text", "value": ">>> from statsmodels.stats.proportion import proportion_effectsize\n>>> from statsmodels.stats.power import NormalIndPower\n>>> effect_size = proportion_effectsize(0.01, 0.015)  # a 50% relative lift\n>>> NormalIndPower().solve_power(effect_size=abs(effect_size), alpha=0.05, power=0.8, ratio=1)\n7674"}]}</script>
+<script type="ojs-define">{"contents": [{"name": "wfh_n", "value": 249}, {"name": "wfh_treat_n", "value": 131}, {"name": "wfh_control_n", "value": 118}, {"name": "control_quit_rate", "value": 34.7}, {"name": "treatment_quit_rate", "value": 16.0}, {"name": "quit_effect", "value": -18.7}, {"name": "quit_p", "value": 0.0006}, {"name": "quit_summary_text", "value": "                            OLS Regression Results                            \n==============================================================================\nDep. Variable:                quitjob   R-squared:                       0.047\nModel:                            OLS   Adj. R-squared:                  0.043\nMethod:                 Least Squares   F-statistic:                     11.78\nDate:                Thu, 19 Nov 2026   Prob (F-statistic):           0.000701\nTime:                        12:56:35   Log-Likelihood:                -138.62\nNo. Observations:                 249   AIC:                             281.2\nDf Residuals:                     247   BIC:                             288.3\nDf Model:                           1                                         \nCovariance Type:                  HC1                                         \n==============================================================================\n                 coef    std err          z      P>|z|      [0.025      0.975]\n------------------------------------------------------------------------------\nIntercept      0.3475      0.044      7.895      0.000       0.261       0.434\ntreatment     -0.1872      0.055     -3.432      0.001      -0.294      -0.080\n=============================================================================="}, {"name": "phone_effect", "value": 4.04}, {"name": "phone_p", "value": "<0.001"}, {"name": "phone_n", "value": 134}, {"name": "balance_rows", "value": [{"covariate": "Age", "treat": 24.44, "control": 24.35, "p": 0.846}, {"covariate": "Married", "treat": 0.22, "control": 0.32, "p": 0.075}, {"covariate": "Has children", "treat": 0.11, "control": 0.24, "p": 0.011}, {"covariate": "Tenure (months)", "treat": 26.14, "control": 28.25, "p": 0.447}, {"covariate": "Home internet", "treat": 0.99, "control": 1.0, "p": 0.317}]}, {"name": "low_bal", "value": {"covariate": "Has children", "treat": 0.11, "control": 0.24, "p": 0.011}}, {"name": "plan_good", "value": 400000.0}, {"name": "plan_bad", "value": 1720000.0}, {"name": "social_rows", "value": [{"action_type": "Action A", "show": 1000000, "clicks": 3323, "action": 32, "click_rate": 0.3323, "action_rate": 0.0031999999999999997}, {"action_type": "Action B", "show": 1000000, "clicks": 3128, "action": 21, "click_rate": 0.3128, "action_rate": 0.0021}]}, {"name": "p_clicks", "value": 0.015}, {"name": "p_actions", "value": 0.131}, {"name": "action_rate_all", "value": 0.00265}, {"name": "n_real", "value": 6900000.0}, {"name": "r0_wfh", "value": 0.35}, {"name": "r1_wfh", "value": 0.16}, {"name": "n_wfh", "value": 165}, {"name": "n_wfh_10", "value": 659}, {"name": "collider", "value": {"n_star": 236, "b_all": 0.02, "p_all": 0.58, "b_star": -0.55, "b_ctrl": -0.27}}, {"name": "actor_rows", "value": [{"talent": 51.89, "looks": 46.2, "star": 0}, {"talent": 44.77, "looks": 25.49, "star": 0}, {"talent": 45.87, "looks": 45.31, "star": 0}, {"talent": 25.59, "looks": 60.02, "star": 0}, {"talent": 68.0, "looks": 52.3, "star": 1}, {"talent": 61.44, "looks": 40.99, "star": 0}, {"talent": 46.75, "looks": 56.9, "star": 1}, {"talent": 57.74, "looks": 55.17, "star": 1}, {"talent": 52.81, "looks": 70.24, "star": 1}, {"talent": 44.46, "looks": 42.58, "star": 0}, {"talent": 59.78, "looks": 46.11, "star": 0}, {"talent": 46.89, "looks": 50.41, "star": 0}, {"talent": 46.71, "looks": 48.61, "star": 0}, {"talent": 42.08, "looks": 50.86, "star": 0}, {"talent": 54.55, "looks": 48.93, "star": 0}, {"talent": 49.01, "looks": 43.05, "star": 0}, {"talent": 55.45, "looks": 33.96, "star": 0}, {"talent": 43.93, "looks": 44.39, "star": 0}, {"talent": 51.27, "looks": 36.07, "star": 0}, {"talent": 41.08, "looks": 39.48, "star": 0}, {"talent": 58.41, "looks": 44.52, "star": 1}, {"talent": 51.88, "looks": 55.03, "star": 0}, {"talent": 53.31, "looks": 58.48, "star": 0}, {"talent": 54.11, "looks": 39.56, "star": 0}, {"talent": 39.89, "looks": 52.97, "star": 0}, {"talent": 57.83, "looks": 57.92, "star": 1}, {"talent": 70.57, "looks": 49.42, "star": 1}, {"talent": 33.62, "looks": 33.45, "star": 0}, {"talent": 32.71, "looks": 28.28, "star": 0}, {"talent": 34.95, "looks": 57.77, "star": 0}, {"talent": 58.41, "looks": 58.97, "star": 1}, {"talent": 51.29, "looks": 52.57, "star": 0}, {"talent": 60.78, "looks": 39.26, "star": 0}, {"talent": 57.22, "looks": 64.31, "star": 1}, {"talent": 52.11, "looks": 61.92, "star": 0}, {"talent": 52.84, "looks": 49.31, "star": 0}, {"talent": 48.3, "looks": 47.53, "star": 0}, {"talent": 58.68, "looks": 30.18, "star": 0}, {"talent": 38.7, "looks": 57.27, "star": 0}, {"talent": 45.78, "looks": 33.61, "star": 0}, {"talent": 52.43, "looks": 56.55, "star": 1}, {"talent": 68.01, "looks": 57.04, "star": 1}, {"talent": 42.36, "looks": 50.68, "star": 0}, {"talent": 39.21, "looks": 65.54, "star": 0}, {"talent": 44.37, "looks": 46.52, "star": 0}, {"talent": 59.69, "looks": 55.64, "star": 1}, {"talent": 47.65, "looks": 57.71, "star": 0}, {"talent": 63.24, "looks": 52.23, "star": 1}, {"talent": 31.27, "looks": 45.56, "star": 0}, {"talent": 61.29, "looks": 62.05, "star": 1}, {"talent": 60.35, "looks": 53.98, "star": 1}, {"talent": 35.81, "looks": 47.82, "star": 0}, {"talent": 51.54, "looks": 48.09, "star": 0}, {"talent": 62.16, "looks": 51.05, "star": 1}, {"talent": 50.88, "looks": 72.56, "star": 1}, {"talent": 60.0, "looks": 50.81, "star": 0}, {"talent": 73.75, "looks": 47.36, "star": 1}, {"talent": 52.74, "looks": 39.1, "star": 0}, {"talent": 47.2, "looks": 37.55, "star": 0}, {"talent": 42.29, "looks": 30.77, "star": 0}, {"talent": 56.48, "looks": 52.09, "star": 0}, {"talent": 48.03, "looks": 50.03, "star": 0}, {"talent": 48.21, "looks": 39.46, "star": 0}, {"talent": 48.95, "looks": 34.87, "star": 0}, {"talent": 56.5, "looks": 46.47, "star": 0}, {"talent": 39.34, "looks": 44.49, "star": 0}, {"talent": 34.7, "looks": 36.37, "star": 0}, {"talent": 25.66, "looks": 52.74, "star": 0}, {"talent": 61.99, "looks": 51.15, "star": 1}, {"talent": 50.74, "looks": 49.21, "star": 0}, {"talent": 65.1, "looks": 57.43, "star": 1}, {"talent": 49.91, "looks": 43.18, "star": 0}, {"talent": 42.58, "looks": 63.31, "star": 0}, {"talent": 54.78, "looks": 39.56, "star": 0}, {"talent": 49.23, "looks": 54.85, "star": 0}, {"talent": 37.46, "looks": 56.05, "star": 0}, {"talent": 41.15, "looks": 47.09, "star": 0}, {"talent": 67.67, "looks": 53.21, "star": 1}, {"talent": 53.54, "looks": 36.85, "star": 0}, {"talent": 54.16, "looks": 34.66, "star": 0}, {"talent": 47.23, "looks": 47.68, "star": 0}, {"talent": 43.1, "looks": 42.39, "star": 0}, {"talent": 58.92, "looks": 55.6, "star": 0}, {"talent": 48.95, "looks": 49.99, "star": 0}, {"talent": 42.41, "looks": 55.86, "star": 0}, {"talent": 48.66, "looks": 52.87, "star": 0}, {"talent": 40.94, "looks": 51.72, "star": 0}, {"talent": 51.9, "looks": 50.61, "star": 0}, {"talent": 61.29, "looks": 45.95, "star": 1}, {"talent": 41.64, "looks": 45.03, "star": 0}, {"talent": 64.29, "looks": 70.03, "star": 1}, {"talent": 43.32, "looks": 32.07, "star": 0}, {"talent": 51.53, "looks": 47.81, "star": 0}, {"talent": 41.64, "looks": 59.71, "star": 0}, {"talent": 47.78, "looks": 53.87, "star": 1}, {"talent": 50.47, "looks": 63.76, "star": 0}, {"talent": 45.65, "looks": 55.16, "star": 0}, {"talent": 42.97, "looks": 37.04, "star": 0}, {"talent": 43.22, "looks": 46.37, "star": 0}, {"talent": 41.79, "looks": 35.61, "star": 0}, {"talent": 34.3, "looks": 59.51, "star": 0}, {"talent": 47.37, "looks": 64.08, "star": 0}, {"talent": 54.01, "looks": 45.23, "star": 0}, {"talent": 59.08, "looks": 55.07, "star": 0}, {"talent": 56.47, "looks": 45.52, "star": 1}, {"talent": 74.57, "looks": 35.23, "star": 1}, {"talent": 53.19, "looks": 45.14, "star": 0}, {"talent": 45.44, "looks": 33.77, "star": 0}, {"talent": 68.72, "looks": 43.91, "star": 1}, {"talent": 39.53, "looks": 51.7, "star": 0}, {"talent": 59.68, "looks": 56.85, "star": 1}, {"talent": 40.45, "looks": 62.53, "star": 0}, {"talent": 53.54, "looks": 46.24, "star": 0}, {"talent": 30.32, "looks": 51.92, "star": 0}, {"talent": 58.99, "looks": 53.77, "star": 1}, {"talent": 48.42, "looks": 55.11, "star": 0}, {"talent": 40.32, "looks": 21.04, "star": 0}, {"talent": 66.78, "looks": 41.76, "star": 1}, {"talent": 57.65, "looks": 57.5, "star": 1}, {"talent": 50.46, "looks": 38.33, "star": 0}, {"talent": 42.55, "looks": 51.99, "star": 0}, {"talent": 49.57, "looks": 57.85, "star": 0}, {"talent": 48.36, "looks": 30.54, "star": 0}, {"talent": 57.25, "looks": 47.59, "star": 0}, {"talent": 57.98, "looks": 51.86, "star": 0}, {"talent": 43.32, "looks": 49.59, "star": 0}, {"talent": 44.51, "looks": 34.17, "star": 0}, {"talent": 44.68, "looks": 52.93, "star": 0}, {"talent": 36.51, "looks": 43.85, "star": 0}, {"talent": 44.08, "looks": 57.68, "star": 0}, {"talent": 49.08, "looks": 53.74, "star": 0}, {"talent": 56.91, "looks": 43.93, "star": 0}, {"talent": 63.2, "looks": 51.17, "star": 1}, {"talent": 41.92, "looks": 42.5, "star": 0}, {"talent": 55.51, "looks": 42.38, "star": 0}, {"talent": 45.56, "looks": 33.57, "star": 0}, {"talent": 70.75, "looks": 46.97, "star": 1}, {"talent": 49.51, "looks": 57.38, "star": 0}, {"talent": 55.02, "looks": 50.45, "star": 1}, {"talent": 40.64, "looks": 49.06, "star": 0}, {"talent": 41.89, "looks": 42.94, "star": 0}, {"talent": 52.02, "looks": 43.96, "star": 0}, {"talent": 46.16, "looks": 56.63, "star": 0}, {"talent": 53.53, "looks": 34.22, "star": 0}, {"talent": 34.38, "looks": 69.78, "star": 0}, {"talent": 56.62, "looks": 48.49, "star": 1}, {"talent": 41.01, "looks": 70.84, "star": 0}, {"talent": 67.22, "looks": 60.85, "star": 1}, {"talent": 47.12, "looks": 44.9, "star": 0}, {"talent": 60.97, "looks": 56.41, "star": 1}, {"talent": 36.05, "looks": 51.61, "star": 0}, {"talent": 54.29, "looks": 53.65, "star": 0}, {"talent": 41.12, "looks": 56.94, "star": 0}, {"talent": 45.13, "looks": 43.51, "star": 0}, {"talent": 50.25, "looks": 42.78, "star": 0}, {"talent": 46.83, "looks": 44.76, "star": 0}, {"talent": 52.64, "looks": 35.26, "star": 0}, {"talent": 57.48, "looks": 46.29, "star": 0}, {"talent": 56.53, "looks": 51.19, "star": 1}, {"talent": 49.13, "looks": 51.39, "star": 0}, {"talent": 36.37, "looks": 50.8, "star": 0}, {"talent": 41.95, "looks": 44.9, "star": 0}, {"talent": 48.04, "looks": 56.71, "star": 0}, {"talent": 28.78, "looks": 28.3, "star": 0}, {"talent": 57.52, "looks": 44.82, "star": 0}, {"talent": 47.6, "looks": 45.48, "star": 0}, {"talent": 47.49, "looks": 57.71, "star": 0}, {"talent": 59.48, "looks": 55.37, "star": 1}, {"talent": 56.68, "looks": 56.71, "star": 1}, {"talent": 52.21, "looks": 48.83, "star": 0}, {"talent": 39.99, "looks": 58.15, "star": 0}, {"talent": 53.1, "looks": 38.6, "star": 0}, {"talent": 53.46, "looks": 49.32, "star": 0}, {"talent": 41.15, "looks": 27.46, "star": 0}, {"talent": 60.43, "looks": 65.69, "star": 1}, {"talent": 55.08, "looks": 64.46, "star": 1}, {"talent": 30.3, "looks": 42.54, "star": 0}, {"talent": 51.22, "looks": 40.03, "star": 0}, {"talent": 37.35, "looks": 27.53, "star": 0}, {"talent": 61.36, "looks": 33.18, "star": 0}, {"talent": 58.07, "looks": 49.71, "star": 0}, {"talent": 38.96, "looks": 46.92, "star": 0}, {"talent": 41.15, "looks": 33.74, "star": 0}, {"talent": 51.02, "looks": 43.5, "star": 0}, {"talent": 47.61, "looks": 41.85, "star": 0}, {"talent": 65.25, "looks": 53.19, "star": 1}, {"talent": 57.41, "looks": 55.6, "star": 1}, {"talent": 47.18, "looks": 46.32, "star": 0}, {"talent": 55.77, "looks": 49.67, "star": 0}, {"talent": 29.68, "looks": 48.47, "star": 0}, {"talent": 53.1, "looks": 27.63, "star": 0}, {"talent": 58.66, "looks": 50.32, "star": 0}, {"talent": 48.21, "looks": 47.89, "star": 0}, {"talent": 42.9, "looks": 56.04, "star": 0}, {"talent": 55.66, "looks": 30.18, "star": 0}, {"talent": 69.59, "looks": 56.19, "star": 1}, {"talent": 52.05, "looks": 42.16, "star": 0}, {"talent": 38.79, "looks": 51.22, "star": 0}, {"talent": 64.46, "looks": 60.67, "star": 1}, {"talent": 31.21, "looks": 33.8, "star": 0}, {"talent": 55.03, "looks": 35.45, "star": 0}, {"talent": 44.18, "looks": 58.52, "star": 0}, {"talent": 59.31, "looks": 37.17, "star": 0}, {"talent": 41.51, "looks": 38.98, "star": 0}, {"talent": 63.24, "looks": 54.61, "star": 1}, {"talent": 53.0, "looks": 46.55, "star": 0}, {"talent": 32.73, "looks": 56.37, "star": 0}, {"talent": 30.26, "looks": 51.59, "star": 0}, {"talent": 46.84, "looks": 48.34, "star": 0}, {"talent": 62.94, "looks": 58.45, "star": 1}, {"talent": 51.27, "looks": 70.49, "star": 1}, {"talent": 50.67, "looks": 47.61, "star": 0}, {"talent": 47.64, "looks": 63.41, "star": 0}, {"talent": 57.38, "looks": 59.96, "star": 1}, {"talent": 53.77, "looks": 49.72, "star": 0}, {"talent": 52.8, "looks": 53.2, "star": 0}, {"talent": 40.15, "looks": 39.25, "star": 0}, {"talent": 61.88, "looks": 42.46, "star": 1}, {"talent": 63.63, "looks": 51.4, "star": 1}, {"talent": 36.99, "looks": 48.16, "star": 0}, {"talent": 73.01, "looks": 61.65, "star": 1}, {"talent": 57.23, "looks": 35.64, "star": 0}, {"talent": 45.12, "looks": 45.7, "star": 0}, {"talent": 30.96, "looks": 42.26, "star": 0}, {"talent": 56.57, "looks": 47.12, "star": 0}, {"talent": 55.58, "looks": 60.29, "star": 1}, {"talent": 44.04, "looks": 36.58, "star": 0}, {"talent": 32.09, "looks": 57.15, "star": 0}, {"talent": 61.24, "looks": 42.75, "star": 0}, {"talent": 44.12, "looks": 45.41, "star": 0}, {"talent": 45.28, "looks": 58.65, "star": 0}, {"talent": 78.46, "looks": 45.83, "star": 1}, {"talent": 71.28, "looks": 55.35, "star": 1}, {"talent": 59.54, "looks": 49.82, "star": 1}, {"talent": 45.45, "looks": 46.95, "star": 0}, {"talent": 56.49, "looks": 45.08, "star": 0}, {"talent": 27.19, "looks": 31.37, "star": 0}, {"talent": 51.07, "looks": 41.23, "star": 0}, {"talent": 42.4, "looks": 50.37, "star": 0}, {"talent": 37.14, "looks": 50.74, "star": 0}, {"talent": 34.17, "looks": 33.8, "star": 0}, {"talent": 55.25, "looks": 58.76, "star": 1}, {"talent": 50.89, "looks": 54.48, "star": 0}, {"talent": 51.6, "looks": 35.73, "star": 0}, {"talent": 58.42, "looks": 38.32, "star": 0}, {"talent": 41.54, "looks": 53.84, "star": 0}, {"talent": 37.64, "looks": 31.17, "star": 0}, {"talent": 32.24, "looks": 41.35, "star": 0}, {"talent": 46.65, "looks": 48.25, "star": 0}, {"talent": 57.6, "looks": 47.53, "star": 1}, {"talent": 48.51, "looks": 48.24, "star": 0}, {"talent": 56.41, "looks": 52.73, "star": 0}, {"talent": 38.19, "looks": 40.84, "star": 0}, {"talent": 45.31, "looks": 43.97, "star": 0}, {"talent": 42.34, "looks": 69.39, "star": 0}, {"talent": 37.52, "looks": 34.82, "star": 0}, {"talent": 68.59, "looks": 44.37, "star": 1}, {"talent": 58.52, "looks": 49.98, "star": 0}, {"talent": 42.38, "looks": 42.41, "star": 0}, {"talent": 42.34, "looks": 61.12, "star": 0}, {"talent": 49.43, "looks": 49.63, "star": 0}, {"talent": 35.58, "looks": 56.49, "star": 0}, {"talent": 54.36, "looks": 22.75, "star": 0}, {"talent": 37.06, "looks": 60.81, "star": 0}, {"talent": 46.3, "looks": 60.43, "star": 0}, {"talent": 39.75, "looks": 41.37, "star": 0}, {"talent": 45.2, "looks": 62.02, "star": 1}, {"talent": 36.69, "looks": 51.62, "star": 0}, {"talent": 34.27, "looks": 58.26, "star": 0}, {"talent": 40.34, "looks": 67.12, "star": 0}, {"talent": 43.2, "looks": 50.0, "star": 0}, {"talent": 47.05, "looks": 38.87, "star": 0}, {"talent": 50.69, "looks": 48.91, "star": 0}, {"talent": 65.27, "looks": 36.26, "star": 0}, {"talent": 58.12, "looks": 41.01, "star": 0}, {"talent": 47.47, "looks": 41.4, "star": 0}, {"talent": 57.26, "looks": 41.94, "star": 0}, {"talent": 43.11, "looks": 60.74, "star": 0}, {"talent": 64.48, "looks": 57.45, "star": 1}, {"talent": 55.49, "looks": 40.12, "star": 0}, {"talent": 36.44, "looks": 60.43, "star": 0}, {"talent": 57.55, "looks": 32.31, "star": 0}, {"talent": 58.16, "looks": 42.56, "star": 0}, {"talent": 23.14, "looks": 47.75, "star": 0}, {"talent": 42.52, "looks": 61.06, "star": 0}, {"talent": 45.26, "looks": 56.46, "star": 0}, {"talent": 30.71, "looks": 53.75, "star": 0}, {"talent": 39.33, "looks": 62.25, "star": 0}, {"talent": 40.52, "looks": 56.4, "star": 0}, {"talent": 55.07, "looks": 62.92, "star": 1}, {"talent": 53.0, "looks": 41.39, "star": 0}, {"talent": 76.26, "looks": 32.36, "star": 0}, {"talent": 46.06, "looks": 45.1, "star": 0}, {"talent": 61.53, "looks": 57.6, "star": 1}, {"talent": 50.79, "looks": 51.91, "star": 0}, {"talent": 52.71, "looks": 58.21, "star": 1}, {"talent": 38.4, "looks": 56.43, "star": 0}, {"talent": 30.89, "looks": 54.49, "star": 0}, {"talent": 42.33, "looks": 57.52, "star": 0}, {"talent": 57.62, "looks": 42.17, "star": 0}, {"talent": 65.83, "looks": 60.28, "star": 1}, {"talent": 56.04, "looks": 39.27, "star": 0}, {"talent": 54.98, "looks": 48.2, "star": 0}, {"talent": 41.61, "looks": 35.18, "star": 0}, {"talent": 65.34, "looks": 54.41, "star": 1}, {"talent": 63.44, "looks": 33.82, "star": 0}, {"talent": 44.69, "looks": 63.42, "star": 0}, {"talent": 49.54, "looks": 35.9, "star": 0}, {"talent": 40.04, "looks": 51.95, "star": 0}, {"talent": 64.67, "looks": 47.96, "star": 1}, {"talent": 54.06, "looks": 40.58, "star": 0}, {"talent": 49.05, "looks": 61.86, "star": 1}, {"talent": 54.07, "looks": 45.07, "star": 0}, {"talent": 54.41, "looks": 64.04, "star": 1}, {"talent": 45.89, "looks": 39.09, "star": 0}, {"talent": 37.58, "looks": 41.33, "star": 0}, {"talent": 37.16, "looks": 29.34, "star": 0}, {"talent": 32.62, "looks": 54.9, "star": 0}, {"talent": 54.61, "looks": 58.54, "star": 1}, {"talent": 72.19, "looks": 51.62, "star": 1}, {"talent": 33.01, "looks": 47.75, "star": 0}, {"talent": 51.38, "looks": 40.15, "star": 0}, {"talent": 54.11, "looks": 72.9, "star": 1}, {"talent": 40.15, "looks": 56.81, "star": 0}, {"talent": 52.04, "looks": 30.92, "star": 0}, {"talent": 39.03, "looks": 46.28, "star": 0}, {"talent": 62.0, "looks": 23.26, "star": 0}, {"talent": 44.06, "looks": 65.2, "star": 0}, {"talent": 51.01, "looks": 69.19, "star": 1}, {"talent": 56.84, "looks": 64.03, "star": 1}, {"talent": 45.7, "looks": 48.86, "star": 0}, {"talent": 32.09, "looks": 43.47, "star": 0}, {"talent": 44.69, "looks": 35.35, "star": 0}, {"talent": 57.63, "looks": 54.74, "star": 1}, {"talent": 49.15, "looks": 41.94, "star": 0}, {"talent": 52.3, "looks": 45.64, "star": 0}, {"talent": 39.2, "looks": 43.01, "star": 0}, {"talent": 51.43, "looks": 46.32, "star": 0}, {"talent": 57.28, "looks": 58.42, "star": 1}, {"talent": 50.36, "looks": 66.35, "star": 1}, {"talent": 69.08, "looks": 50.94, "star": 1}, {"talent": 47.92, "looks": 49.63, "star": 0}, {"talent": 39.59, "looks": 38.28, "star": 0}, {"talent": 33.82, "looks": 37.12, "star": 0}, {"talent": 61.52, "looks": 38.79, "star": 0}, {"talent": 49.41, "looks": 58.32, "star": 0}, {"talent": 60.12, "looks": 51.94, "star": 0}, {"talent": 54.58, "looks": 59.18, "star": 1}, {"talent": 66.25, "looks": 53.72, "star": 1}, {"talent": 62.66, "looks": 45.44, "star": 0}, {"talent": 46.22, "looks": 37.01, "star": 0}, {"talent": 52.74, "looks": 45.79, "star": 0}, {"talent": 60.85, "looks": 35.15, "star": 0}, {"talent": 37.64, "looks": 69.58, "star": 0}, {"talent": 64.51, "looks": 52.2, "star": 1}, {"talent": 62.12, "looks": 45.82, "star": 0}, {"talent": 59.83, "looks": 69.53, "star": 1}, {"talent": 47.99, "looks": 45.65, "star": 0}, {"talent": 53.02, "looks": 55.11, "star": 1}, {"talent": 38.83, "looks": 47.87, "star": 0}, {"talent": 50.58, "looks": 53.11, "star": 0}, {"talent": 44.13, "looks": 45.82, "star": 0}, {"talent": 50.87, "looks": 54.48, "star": 0}, {"talent": 45.05, "looks": 63.87, "star": 0}, {"talent": 52.84, "looks": 36.83, "star": 0}, {"talent": 61.79, "looks": 27.17, "star": 0}, {"talent": 36.9, "looks": 63.14, "star": 0}, {"talent": 59.25, "looks": 51.23, "star": 0}, {"talent": 30.08, "looks": 58.34, "star": 0}, {"talent": 28.39, "looks": 46.63, "star": 0}, {"talent": 48.81, "looks": 65.11, "star": 1}, {"talent": 50.07, "looks": 67.91, "star": 1}, {"talent": 54.43, "looks": 37.75, "star": 0}, {"talent": 33.53, "looks": 56.32, "star": 0}, {"talent": 49.4, "looks": 43.38, "star": 0}, {"talent": 51.27, "looks": 33.27, "star": 0}, {"talent": 62.55, "looks": 46.46, "star": 0}, {"talent": 48.96, "looks": 55.23, "star": 0}, {"talent": 55.29, "looks": 35.65, "star": 0}, {"talent": 40.23, "looks": 36.48, "star": 0}, {"talent": 48.12, "looks": 61.88, "star": 0}, {"talent": 45.54, "looks": 49.74, "star": 0}, {"talent": 57.03, "looks": 53.46, "star": 0}, {"talent": 40.11, "looks": 37.83, "star": 0}, {"talent": 41.66, "looks": 42.74, "star": 0}, {"talent": 55.76, "looks": 50.55, "star": 1}, {"talent": 67.89, "looks": 51.19, "star": 1}, {"talent": 53.83, "looks": 50.73, "star": 0}, {"talent": 53.04, "looks": 65.3, "star": 1}, {"talent": 46.54, "looks": 50.87, "star": 0}, {"talent": 60.88, "looks": 33.69, "star": 0}, {"talent": 55.4, "looks": 40.3, "star": 0}, {"talent": 67.33, "looks": 48.51, "star": 1}, {"talent": 53.31, "looks": 61.97, "star": 1}, {"talent": 40.51, "looks": 42.09, "star": 0}, {"talent": 44.3, "looks": 45.05, "star": 0}, {"talent": 40.13, "looks": 48.71, "star": 0}, {"talent": 37.49, "looks": 41.8, "star": 0}, {"talent": 62.64, "looks": 40.59, "star": 1}, {"talent": 58.07, "looks": 46.51, "star": 0}, {"talent": 37.61, "looks": 58.91, "star": 0}, {"talent": 67.81, "looks": 53.73, "star": 1}, {"talent": 52.45, "looks": 45.92, "star": 0}, {"talent": 40.43, "looks": 52.87, "star": 0}, {"talent": 53.86, "looks": 35.82, "star": 0}, {"talent": 49.31, "looks": 58.86, "star": 1}, {"talent": 42.27, "looks": 56.25, "star": 0}, {"talent": 30.57, "looks": 51.77, "star": 0}, {"talent": 50.37, "looks": 32.26, "star": 0}, {"talent": 52.92, "looks": 69.3, "star": 1}, {"talent": 24.21, "looks": 19.17, "star": 0}, {"talent": 55.55, "looks": 38.64, "star": 0}, {"talent": 56.18, "looks": 39.43, "star": 0}, {"talent": 45.3, "looks": 55.76, "star": 0}, {"talent": 51.12, "looks": 33.58, "star": 0}, {"talent": 47.19, "looks": 51.11, "star": 0}, {"talent": 41.63, "looks": 47.18, "star": 0}, {"talent": 46.4, "looks": 45.78, "star": 0}, {"talent": 63.52, "looks": 57.38, "star": 1}, {"talent": 35.49, "looks": 63.13, "star": 0}, {"talent": 52.37, "looks": 52.75, "star": 0}, {"talent": 51.84, "looks": 45.96, "star": 0}, {"talent": 42.92, "looks": 25.69, "star": 0}, {"talent": 45.6, "looks": 63.61, "star": 0}, {"talent": 36.0, "looks": 45.71, "star": 0}, {"talent": 41.48, "looks": 30.02, "star": 0}, {"talent": 50.15, "looks": 50.37, "star": 0}, {"talent": 53.27, "looks": 63.42, "star": 1}, {"talent": 41.02, "looks": 47.35, "star": 0}, {"talent": 80.56, "looks": 36.96, "star": 0}, {"talent": 44.3, "looks": 71.61, "star": 1}, {"talent": 51.27, "looks": 55.02, "star": 0}, {"talent": 47.69, "looks": 52.32, "star": 0}, {"talent": 46.0, "looks": 59.13, "star": 0}, {"talent": 63.01, "looks": 26.91, "star": 0}, {"talent": 45.21, "looks": 48.17, "star": 0}, {"talent": 63.34, "looks": 47.22, "star": 1}, {"talent": 61.42, "looks": 71.84, "star": 1}, {"talent": 39.54, "looks": 43.21, "star": 0}, {"talent": 60.35, "looks": 43.33, "star": 0}, {"talent": 43.5, "looks": 34.86, "star": 0}, {"talent": 77.36, "looks": 40.62, "star": 1}, {"talent": 46.14, "looks": 46.87, "star": 0}, {"talent": 40.59, "looks": 51.62, "star": 0}, {"talent": 30.89, "looks": 46.96, "star": 0}, {"talent": 37.07, "looks": 69.29, "star": 0}, {"talent": 44.19, "looks": 53.97, "star": 0}, {"talent": 40.02, "looks": 55.46, "star": 0}, {"talent": 37.71, "looks": 62.86, "star": 0}, {"talent": 43.05, "looks": 55.42, "star": 0}, {"talent": 47.93, "looks": 43.72, "star": 0}, {"talent": 64.49, "looks": 33.36, "star": 0}, {"talent": 32.97, "looks": 52.65, "star": 0}, {"talent": 44.48, "looks": 40.61, "star": 0}, {"talent": 40.46, "looks": 62.38, "star": 0}, {"talent": 34.85, "looks": 41.25, "star": 0}, {"talent": 37.34, "looks": 26.45, "star": 0}, {"talent": 40.94, "looks": 49.45, "star": 0}, {"talent": 57.17, "looks": 59.91, "star": 1}, {"talent": 48.06, "looks": 46.93, "star": 0}, {"talent": 44.62, "looks": 50.88, "star": 0}, {"talent": 56.11, "looks": 50.6, "star": 0}, {"talent": 52.81, "looks": 66.5, "star": 1}, {"talent": 47.77, "looks": 52.09, "star": 0}, {"talent": 53.84, "looks": 48.61, "star": 0}, {"talent": 41.72, "looks": 42.77, "star": 0}, {"talent": 56.27, "looks": 32.36, "star": 0}, {"talent": 54.67, "looks": 63.3, "star": 1}, {"talent": 45.88, "looks": 60.67, "star": 1}, {"talent": 37.81, "looks": 39.33, "star": 0}, {"talent": 65.2, "looks": 55.19, "star": 1}, {"talent": 50.94, "looks": 52.32, "star": 0}, {"talent": 80.51, "looks": 45.13, "star": 1}, {"talent": 43.47, "looks": 45.82, "star": 0}, {"talent": 58.53, "looks": 56.64, "star": 0}, {"talent": 45.66, "looks": 36.75, "star": 0}, {"talent": 52.54, "looks": 43.7, "star": 0}, {"talent": 58.33, "looks": 48.2, "star": 0}, {"talent": 42.01, "looks": 48.91, "star": 0}, {"talent": 49.0, "looks": 46.85, "star": 0}, {"talent": 51.61, "looks": 51.2, "star": 0}, {"talent": 51.13, "looks": 54.37, "star": 0}, {"talent": 55.96, "looks": 39.91, "star": 0}, {"talent": 60.26, "looks": 49.85, "star": 0}, {"talent": 58.34, "looks": 43.63, "star": 0}, {"talent": 52.63, "looks": 64.29, "star": 1}, {"talent": 46.53, "looks": 34.71, "star": 0}, {"talent": 38.7, "looks": 46.6, "star": 0}, {"talent": 42.65, "looks": 56.09, "star": 0}, {"talent": 44.71, "looks": 46.1, "star": 0}, {"talent": 56.83, "looks": 45.62, "star": 0}, {"talent": 46.36, "looks": 43.54, "star": 0}, {"talent": 37.58, "looks": 52.19, "star": 0}, {"talent": 56.26, "looks": 37.21, "star": 0}, {"talent": 41.97, "looks": 48.21, "star": 0}, {"talent": 42.34, "looks": 48.01, "star": 0}, {"talent": 47.74, "looks": 34.2, "star": 0}, {"talent": 54.73, "looks": 51.85, "star": 0}, {"talent": 25.87, "looks": 44.36, "star": 0}, {"talent": 38.79, "looks": 52.24, "star": 0}, {"talent": 51.76, "looks": 57.85, "star": 0}, {"talent": 46.36, "looks": 52.63, "star": 0}, {"talent": 41.35, "looks": 37.17, "star": 0}, {"talent": 44.59, "looks": 52.44, "star": 0}, {"talent": 63.85, "looks": 32.96, "star": 0}, {"talent": 45.44, "looks": 41.44, "star": 0}, {"talent": 57.13, "looks": 66.16, "star": 1}, {"talent": 57.92, "looks": 49.29, "star": 0}, {"talent": 45.5, "looks": 65.05, "star": 1}, {"talent": 54.43, "looks": 47.43, "star": 0}, {"talent": 45.5, "looks": 49.38, "star": 0}, {"talent": 43.9, "looks": 37.98, "star": 0}, {"talent": 38.74, "looks": 58.87, "star": 0}, {"talent": 58.75, "looks": 47.31, "star": 0}, {"talent": 46.02, "looks": 55.68, "star": 0}, {"talent": 44.48, "looks": 53.78, "star": 0}, {"talent": 38.73, "looks": 54.81, "star": 0}, {"talent": 68.09, "looks": 52.72, "star": 1}, {"talent": 57.42, "looks": 49.05, "star": 1}, {"talent": 48.67, "looks": 49.46, "star": 0}, {"talent": 43.05, "looks": 42.47, "star": 0}, {"talent": 34.7, "looks": 27.97, "star": 0}, {"talent": 52.92, "looks": 54.49, "star": 1}, {"talent": 52.88, "looks": 70.65, "star": 1}, {"talent": 35.92, "looks": 60.53, "star": 1}, {"talent": 61.62, "looks": 73.29, "star": 1}, {"talent": 57.76, "looks": 54.58, "star": 1}, {"talent": 40.38, "looks": 39.96, "star": 0}, {"talent": 44.44, "looks": 39.74, "star": 0}, {"talent": 45.73, "looks": 57.31, "star": 0}, {"talent": 51.61, "looks": 53.25, "star": 0}, {"talent": 48.54, "looks": 48.14, "star": 0}, {"talent": 33.61, "looks": 57.35, "star": 0}, {"talent": 64.74, "looks": 40.99, "star": 0}, {"talent": 53.16, "looks": 55.17, "star": 1}, {"talent": 62.61, "looks": 47.04, "star": 1}, {"talent": 62.55, "looks": 51.5, "star": 0}, {"talent": 47.92, "looks": 61.94, "star": 1}, {"talent": 53.42, "looks": 48.54, "star": 0}, {"talent": 57.37, "looks": 63.89, "star": 1}, {"talent": 57.7, "looks": 63.42, "star": 1}, {"talent": 48.36, "looks": 42.3, "star": 0}, {"talent": 43.82, "looks": 73.53, "star": 1}, {"talent": 50.35, "looks": 37.47, "star": 0}, {"talent": 41.98, "looks": 49.02, "star": 0}, {"talent": 44.44, "looks": 57.5, "star": 0}, {"talent": 29.7, "looks": 26.96, "star": 0}, {"talent": 50.84, "looks": 60.52, "star": 0}, {"talent": 39.73, "looks": 61.6, "star": 0}, {"talent": 44.44, "looks": 48.94, "star": 0}, {"talent": 49.47, "looks": 52.85, "star": 0}, {"talent": 53.14, "looks": 52.28, "star": 0}, {"talent": 68.89, "looks": 47.99, "star": 1}, {"talent": 52.04, "looks": 60.96, "star": 0}, {"talent": 35.87, "looks": 46.33, "star": 0}, {"talent": 51.31, "looks": 49.66, "star": 0}, {"talent": 44.04, "looks": 53.81, "star": 0}, {"talent": 53.99, "looks": 58.73, "star": 0}, {"talent": 43.14, "looks": 61.29, "star": 0}, {"talent": 42.92, "looks": 35.13, "star": 0}, {"talent": 44.89, "looks": 29.51, "star": 0}, {"talent": 43.72, "looks": 48.71, "star": 0}, {"talent": 31.75, "looks": 49.56, "star": 0}, {"talent": 43.32, "looks": 39.13, "star": 0}, {"talent": 49.86, "looks": 53.2, "star": 0}, {"talent": 62.0, "looks": 56.48, "star": 1}, {"talent": 47.07, "looks": 53.97, "star": 0}, {"talent": 46.28, "looks": 66.82, "star": 1}, {"talent": 55.8, "looks": 39.59, "star": 0}, {"talent": 55.39, "looks": 50.32, "star": 1}, {"talent": 66.0, "looks": 69.65, "star": 1}, {"talent": 55.85, "looks": 56.97, "star": 0}, {"talent": 49.81, "looks": 38.75, "star": 0}, {"talent": 63.38, "looks": 52.13, "star": 1}, {"talent": 65.29, "looks": 62.04, "star": 1}, {"talent": 45.25, "looks": 71.2, "star": 1}, {"talent": 51.58, "looks": 56.79, "star": 0}, {"talent": 33.19, "looks": 61.91, "star": 0}, {"talent": 46.36, "looks": 38.8, "star": 0}, {"talent": 41.16, "looks": 47.53, "star": 0}, {"talent": 47.86, "looks": 62.17, "star": 1}, {"talent": 45.18, "looks": 40.31, "star": 0}, {"talent": 48.34, "looks": 49.41, "star": 0}, {"talent": 48.97, "looks": 31.09, "star": 0}, {"talent": 54.93, "looks": 65.04, "star": 1}, {"talent": 52.31, "looks": 48.69, "star": 0}, {"talent": 44.38, "looks": 55.76, "star": 0}, {"talent": 37.11, "looks": 34.76, "star": 0}, {"talent": 62.35, "looks": 36.69, "star": 0}, {"talent": 64.17, "looks": 68.43, "star": 1}, {"talent": 45.46, "looks": 46.53, "star": 0}, {"talent": 55.61, "looks": 44.48, "star": 0}, {"talent": 34.74, "looks": 55.19, "star": 0}, {"talent": 34.38, "looks": 55.63, "star": 0}, {"talent": 47.3, "looks": 30.1, "star": 0}, {"talent": 64.72, "looks": 40.1, "star": 0}, {"talent": 39.53, "looks": 50.51, "star": 0}, {"talent": 41.66, "looks": 50.05, "star": 0}, {"talent": 66.08, "looks": 53.57, "star": 1}, {"talent": 31.07, "looks": 45.64, "star": 0}, {"talent": 56.46, "looks": 47.16, "star": 0}, {"talent": 54.88, "looks": 52.18, "star": 0}, {"talent": 47.94, "looks": 43.01, "star": 0}, {"talent": 51.89, "looks": 41.53, "star": 0}, {"talent": 76.22, "looks": 44.43, "star": 1}, {"talent": 38.73, "looks": 50.06, "star": 0}, {"talent": 46.86, "looks": 48.47, "star": 0}, {"talent": 47.62, "looks": 45.13, "star": 0}, {"talent": 43.1, "looks": 47.43, "star": 0}, {"talent": 36.58, "looks": 49.47, "star": 0}, {"talent": 65.93, "looks": 53.22, "star": 1}, {"talent": 52.2, "looks": 53.64, "star": 1}, {"talent": 32.42, "looks": 36.92, "star": 0}, {"talent": 42.97, "looks": 59.82, "star": 0}, {"talent": 54.05, "looks": 33.74, "star": 0}, {"talent": 54.03, "looks": 55.48, "star": 0}, {"talent": 35.6, "looks": 42.79, "star": 0}, {"talent": 49.09, "looks": 55.8, "star": 0}, {"talent": 52.61, "looks": 60.65, "star": 1}, {"talent": 53.93, "looks": 30.88, "star": 0}, {"talent": 53.95, "looks": 56.0, "star": 1}, {"talent": 31.77, "looks": 52.67, "star": 0}, {"talent": 68.47, "looks": 45.2, "star": 1}, {"talent": 52.11, "looks": 53.77, "star": 0}, {"talent": 68.06, "looks": 44.88, "star": 1}, {"talent": 78.63, "looks": 51.08, "star": 1}, {"talent": 48.39, "looks": 39.26, "star": 0}, {"talent": 37.66, "looks": 57.79, "star": 0}, {"talent": 58.64, "looks": 55.82, "star": 1}, {"talent": 48.19, "looks": 57.36, "star": 0}, {"talent": 45.49, "looks": 43.25, "star": 0}, {"talent": 39.67, "looks": 68.42, "star": 0}, {"talent": 66.88, "looks": 69.8, "star": 1}, {"talent": 45.57, "looks": 48.98, "star": 0}, {"talent": 36.0, "looks": 45.65, "star": 0}, {"talent": 45.52, "looks": 45.74, "star": 0}, {"talent": 38.43, "looks": 56.78, "star": 0}, {"talent": 51.58, "looks": 60.23, "star": 0}, {"talent": 45.81, "looks": 42.32, "star": 0}, {"talent": 39.43, "looks": 29.4, "star": 0}, {"talent": 56.02, "looks": 54.43, "star": 1}, {"talent": 43.57, "looks": 49.43, "star": 0}, {"talent": 57.24, "looks": 51.58, "star": 0}, {"talent": 62.61, "looks": 55.06, "star": 1}, {"talent": 46.38, "looks": 38.63, "star": 0}, {"talent": 43.53, "looks": 50.48, "star": 0}, {"talent": 51.99, "looks": 46.82, "star": 0}, {"talent": 58.91, "looks": 53.6, "star": 1}, {"talent": 49.97, "looks": 62.1, "star": 1}, {"talent": 51.4, "looks": 49.8, "star": 0}, {"talent": 49.73, "looks": 41.13, "star": 0}, {"talent": 53.11, "looks": 62.32, "star": 1}, {"talent": 56.29, "looks": 56.89, "star": 1}, {"talent": 42.94, "looks": 47.68, "star": 0}, {"talent": 45.17, "looks": 31.54, "star": 0}, {"talent": 50.44, "looks": 40.87, "star": 0}, {"talent": 43.34, "looks": 51.13, "star": 0}, {"talent": 51.36, "looks": 55.19, "star": 0}, {"talent": 55.36, "looks": 44.33, "star": 0}, {"talent": 49.78, "looks": 54.03, "star": 0}, {"talent": 43.96, "looks": 43.23, "star": 0}, {"talent": 42.23, "looks": 45.35, "star": 0}, {"talent": 67.51, "looks": 54.96, "star": 1}, {"talent": 58.79, "looks": 46.86, "star": 0}, {"talent": 38.8, "looks": 50.99, "star": 0}, {"talent": 41.59, "looks": 58.38, "star": 0}, {"talent": 68.74, "looks": 60.94, "star": 1}, {"talent": 65.11, "looks": 43.62, "star": 1}, {"talent": 51.28, "looks": 47.0, "star": 0}, {"talent": 61.58, "looks": 36.2, "star": 0}, {"talent": 35.13, "looks": 36.39, "star": 0}, {"talent": 50.01, "looks": 52.51, "star": 1}, {"talent": 57.41, "looks": 44.26, "star": 0}, {"talent": 31.4, "looks": 30.85, "star": 0}, {"talent": 42.17, "looks": 54.81, "star": 0}, {"talent": 57.83, "looks": 41.04, "star": 0}, {"talent": 61.32, "looks": 46.33, "star": 0}, {"talent": 44.07, "looks": 53.66, "star": 0}, {"talent": 52.9, "looks": 53.46, "star": 0}, {"talent": 66.01, "looks": 48.89, "star": 1}, {"talent": 46.18, "looks": 29.45, "star": 0}, {"talent": 36.67, "looks": 55.14, "star": 0}, {"talent": 49.39, "looks": 43.48, "star": 0}, {"talent": 46.07, "looks": 35.23, "star": 0}, {"talent": 63.01, "looks": 27.29, "star": 0}, {"talent": 51.6, "looks": 62.71, "star": 1}, {"talent": 41.98, "looks": 50.88, "star": 0}, {"talent": 74.01, "looks": 50.58, "star": 1}, {"talent": 45.0, "looks": 55.58, "star": 0}, {"talent": 54.72, "looks": 48.68, "star": 0}, {"talent": 56.76, "looks": 34.64, "star": 0}, {"talent": 57.84, "looks": 56.29, "star": 1}, {"talent": 51.73, "looks": 59.52, "star": 1}, {"talent": 55.87, "looks": 54.66, "star": 0}, {"talent": 49.32, "looks": 64.9, "star": 1}, {"talent": 35.81, "looks": 68.6, "star": 0}, {"talent": 47.8, "looks": 41.49, "star": 0}, {"talent": 48.02, "looks": 45.05, "star": 0}, {"talent": 48.22, "looks": 58.39, "star": 1}, {"talent": 51.36, "looks": 51.28, "star": 0}, {"talent": 43.75, "looks": 51.63, "star": 0}, {"talent": 63.23, "looks": 58.88, "star": 1}, {"talent": 65.67, "looks": 56.94, "star": 1}, {"talent": 28.0, "looks": 45.1, "star": 0}, {"talent": 50.09, "looks": 50.78, "star": 0}, {"talent": 42.89, "looks": 42.4, "star": 0}, {"talent": 23.94, "looks": 47.58, "star": 0}, {"talent": 54.1, "looks": 38.41, "star": 0}, {"talent": 43.81, "looks": 29.87, "star": 0}, {"talent": 46.24, "looks": 44.57, "star": 0}, {"talent": 43.48, "looks": 43.63, "star": 0}, {"talent": 60.87, "looks": 58.51, "star": 1}, {"talent": 62.39, "looks": 65.32, "star": 1}, {"talent": 52.77, "looks": 49.83, "star": 0}, {"talent": 56.93, "looks": 54.31, "star": 1}, {"talent": 48.88, "looks": 43.23, "star": 0}, {"talent": 51.4, "looks": 40.33, "star": 0}, {"talent": 42.58, "looks": 46.76, "star": 0}, {"talent": 50.35, "looks": 46.76, "star": 0}, {"talent": 42.86, "looks": 52.59, "star": 0}, {"talent": 53.73, "looks": 50.77, "star": 1}, {"talent": 58.27, "looks": 66.23, "star": 1}, {"talent": 53.11, "looks": 47.49, "star": 0}, {"talent": 61.84, "looks": 33.15, "star": 0}, {"talent": 76.9, "looks": 50.87, "star": 1}, {"talent": 28.93, "looks": 43.07, "star": 0}, {"talent": 50.14, "looks": 51.72, "star": 0}, {"talent": 44.31, "looks": 60.94, "star": 1}, {"talent": 45.43, "looks": 43.27, "star": 0}, {"talent": 36.42, "looks": 48.94, "star": 0}, {"talent": 50.53, "looks": 54.87, "star": 0}, {"talent": 47.42, "looks": 40.25, "star": 0}, {"talent": 43.67, "looks": 51.87, "star": 0}, {"talent": 47.46, "looks": 55.17, "star": 0}, {"talent": 44.07, "looks": 57.85, "star": 0}, {"talent": 26.57, "looks": 60.7, "star": 0}, {"talent": 60.77, "looks": 55.28, "star": 1}, {"talent": 46.97, "looks": 53.66, "star": 0}, {"talent": 40.5, "looks": 35.84, "star": 0}, {"talent": 53.06, "looks": 22.97, "star": 0}, {"talent": 43.38, "looks": 40.12, "star": 0}, {"talent": 28.26, "looks": 63.99, "star": 0}, {"talent": 58.87, "looks": 50.95, "star": 1}, {"talent": 33.23, "looks": 27.26, "star": 0}, {"talent": 47.82, "looks": 45.58, "star": 0}, {"talent": 51.2, "looks": 53.41, "star": 0}, {"talent": 63.5, "looks": 31.3, "star": 0}, {"talent": 61.9, "looks": 55.54, "star": 1}, {"talent": 51.66, "looks": 38.36, "star": 0}, {"talent": 42.37, "looks": 60.23, "star": 0}, {"talent": 45.84, "looks": 50.13, "star": 0}, {"talent": 60.88, "looks": 80.78, "star": 1}, {"talent": 67.86, "looks": 36.54, "star": 0}, {"talent": 55.44, "looks": 52.68, "star": 1}, {"talent": 43.55, "looks": 35.13, "star": 0}, {"talent": 60.29, "looks": 61.36, "star": 1}, {"talent": 46.25, "looks": 51.13, "star": 0}, {"talent": 45.92, "looks": 59.1, "star": 1}, {"talent": 47.21, "looks": 50.93, "star": 0}, {"talent": 55.9, "looks": 38.21, "star": 0}, {"talent": 52.75, "looks": 43.41, "star": 0}, {"talent": 59.93, "looks": 37.56, "star": 0}, {"talent": 62.96, "looks": 39.48, "star": 0}, {"talent": 55.13, "looks": 51.37, "star": 0}, {"talent": 26.68, "looks": 60.62, "star": 0}, {"talent": 33.03, "looks": 58.51, "star": 0}, {"talent": 51.59, "looks": 55.07, "star": 1}, {"talent": 49.35, "looks": 44.3, "star": 0}, {"talent": 71.59, "looks": 55.03, "star": 1}, {"talent": 49.7, "looks": 41.4, "star": 0}, {"talent": 48.47, "looks": 52.0, "star": 0}, {"talent": 59.44, "looks": 58.3, "star": 1}, {"talent": 60.64, "looks": 48.08, "star": 0}, {"talent": 47.65, "looks": 45.26, "star": 0}, {"talent": 54.73, "looks": 45.63, "star": 0}, {"talent": 38.66, "looks": 56.07, "star": 0}, {"talent": 40.57, "looks": 46.85, "star": 0}, {"talent": 62.33, "looks": 35.76, "star": 0}, {"talent": 35.93, "looks": 45.81, "star": 0}, {"talent": 59.22, "looks": 39.33, "star": 0}, {"talent": 56.78, "looks": 64.91, "star": 1}, {"talent": 57.7, "looks": 50.07, "star": 0}, {"talent": 59.13, "looks": 35.26, "star": 0}, {"talent": 55.64, "looks": 52.59, "star": 0}, {"talent": 28.59, "looks": 57.12, "star": 0}, {"talent": 39.96, "looks": 53.73, "star": 0}, {"talent": 43.99, "looks": 46.36, "star": 0}, {"talent": 59.15, "looks": 51.43, "star": 1}, {"talent": 38.72, "looks": 52.73, "star": 0}, {"talent": 42.95, "looks": 59.95, "star": 0}, {"talent": 46.37, "looks": 53.57, "star": 0}, {"talent": 63.16, "looks": 72.55, "star": 1}, {"talent": 35.59, "looks": 47.81, "star": 0}, {"talent": 36.46, "looks": 65.19, "star": 0}, {"talent": 56.27, "looks": 50.13, "star": 0}, {"talent": 28.74, "looks": 32.97, "star": 0}, {"talent": 53.32, "looks": 38.26, "star": 0}, {"talent": 45.46, "looks": 31.84, "star": 0}, {"talent": 34.23, "looks": 32.84, "star": 0}, {"talent": 45.8, "looks": 61.93, "star": 0}, {"talent": 39.98, "looks": 43.4, "star": 0}, {"talent": 51.68, "looks": 55.96, "star": 1}, {"talent": 53.64, "looks": 41.09, "star": 0}, {"talent": 64.89, "looks": 49.84, "star": 1}, {"talent": 49.87, "looks": 39.47, "star": 0}, {"talent": 51.01, "looks": 58.58, "star": 0}, {"talent": 44.23, "looks": 47.43, "star": 0}, {"talent": 49.76, "looks": 45.46, "star": 0}, {"talent": 60.5, "looks": 48.34, "star": 1}, {"talent": 30.74, "looks": 71.63, "star": 0}, {"talent": 56.59, "looks": 54.42, "star": 0}, {"talent": 44.65, "looks": 58.29, "star": 0}, {"talent": 50.74, "looks": 37.6, "star": 0}, {"talent": 53.25, "looks": 43.5, "star": 0}, {"talent": 58.51, "looks": 52.9, "star": 1}, {"talent": 52.38, "looks": 31.47, "star": 0}, {"talent": 46.07, "looks": 63.27, "star": 1}, {"talent": 53.12, "looks": 52.66, "star": 0}, {"talent": 50.12, "looks": 49.79, "star": 1}, {"talent": 47.96, "looks": 47.99, "star": 0}, {"talent": 52.05, "looks": 47.63, "star": 0}, {"talent": 58.74, "looks": 44.93, "star": 0}, {"talent": 51.38, "looks": 63.82, "star": 1}, {"talent": 51.55, "looks": 56.81, "star": 0}, {"talent": 37.12, "looks": 62.34, "star": 0}, {"talent": 48.73, "looks": 46.94, "star": 0}, {"talent": 31.42, "looks": 41.2, "star": 0}, {"talent": 57.2, "looks": 63.48, "star": 1}, {"talent": 40.61, "looks": 37.84, "star": 0}, {"talent": 62.95, "looks": 43.89, "star": 0}, {"talent": 79.93, "looks": 57.04, "star": 1}, {"talent": 46.03, "looks": 60.76, "star": 1}, {"talent": 63.3, "looks": 36.86, "star": 0}, {"talent": 54.04, "looks": 47.23, "star": 0}, {"talent": 44.43, "looks": 50.23, "star": 0}, {"talent": 41.59, "looks": 48.63, "star": 0}, {"talent": 55.62, "looks": 41.4, "star": 0}, {"talent": 63.95, "looks": 56.68, "star": 1}, {"talent": 53.54, "looks": 44.72, "star": 0}, {"talent": 34.88, "looks": 47.56, "star": 0}, {"talent": 39.58, "looks": 27.55, "star": 0}, {"talent": 47.72, "looks": 48.86, "star": 0}, {"talent": 63.57, "looks": 30.63, "star": 0}, {"talent": 52.83, "looks": 56.98, "star": 0}, {"talent": 53.27, "looks": 54.85, "star": 0}, {"talent": 62.11, "looks": 44.88, "star": 0}, {"talent": 47.95, "looks": 51.56, "star": 0}, {"talent": 49.11, "looks": 51.03, "star": 0}, {"talent": 48.18, "looks": 48.48, "star": 0}, {"talent": 32.22, "looks": 53.54, "star": 0}, {"talent": 54.67, "looks": 48.71, "star": 0}, {"talent": 54.11, "looks": 45.2, "star": 0}, {"talent": 59.75, "looks": 42.04, "star": 0}, {"talent": 38.11, "looks": 66.61, "star": 0}, {"talent": 41.84, "looks": 51.87, "star": 0}, {"talent": 59.34, "looks": 49.74, "star": 0}, {"talent": 53.23, "looks": 57.13, "star": 1}, {"talent": 63.75, "looks": 46.08, "star": 0}, {"talent": 41.37, "looks": 46.14, "star": 0}, {"talent": 52.01, "looks": 56.56, "star": 0}, {"talent": 43.24, "looks": 60.17, "star": 0}, {"talent": 53.1, "looks": 56.61, "star": 1}, {"talent": 45.15, "looks": 35.21, "star": 0}, {"talent": 55.36, "looks": 50.51, "star": 0}, {"talent": 60.81, "looks": 49.71, "star": 0}, {"talent": 56.75, "looks": 54.45, "star": 1}, {"talent": 31.92, "looks": 41.15, "star": 0}, {"talent": 59.4, "looks": 39.51, "star": 0}, {"talent": 54.48, "looks": 48.78, "star": 0}, {"talent": 39.57, "looks": 41.11, "star": 0}, {"talent": 41.14, "looks": 39.35, "star": 0}, {"talent": 50.08, "looks": 49.24, "star": 0}, {"talent": 55.74, "looks": 59.12, "star": 1}, {"talent": 45.49, "looks": 51.27, "star": 0}, {"talent": 33.77, "looks": 61.0, "star": 0}, {"talent": 52.82, "looks": 40.04, "star": 0}, {"talent": 51.7, "looks": 56.93, "star": 1}, {"talent": 74.41, "looks": 49.8, "star": 1}, {"talent": 37.11, "looks": 41.21, "star": 0}, {"talent": 75.24, "looks": 45.76, "star": 1}, {"talent": 67.45, "looks": 41.4, "star": 1}, {"talent": 53.03, "looks": 47.77, "star": 0}, {"talent": 66.59, "looks": 42.51, "star": 0}, {"talent": 50.97, "looks": 62.37, "star": 1}, {"talent": 59.78, "looks": 46.35, "star": 0}, {"talent": 42.66, "looks": 35.83, "star": 0}, {"talent": 50.8, "looks": 47.97, "star": 0}, {"talent": 39.85, "looks": 53.72, "star": 0}, {"talent": 34.25, "looks": 46.76, "star": 0}, {"talent": 47.28, "looks": 58.41, "star": 0}, {"talent": 43.41, "looks": 40.9, "star": 0}, {"talent": 55.73, "looks": 41.45, "star": 0}, {"talent": 62.71, "looks": 65.96, "star": 1}, {"talent": 48.31, "looks": 49.95, "star": 0}, {"talent": 50.59, "looks": 55.26, "star": 0}, {"talent": 51.88, "looks": 54.8, "star": 1}, {"talent": 33.22, "looks": 55.6, "star": 0}, {"talent": 52.69, "looks": 50.33, "star": 0}, {"talent": 50.11, "looks": 48.03, "star": 0}, {"talent": 49.54, "looks": 60.6, "star": 1}, {"talent": 39.0, "looks": 45.07, "star": 0}, {"talent": 30.18, "looks": 51.05, "star": 0}, {"talent": 47.5, "looks": 56.67, "star": 0}, {"talent": 53.16, "looks": 46.02, "star": 0}, {"talent": 63.41, "looks": 34.8, "star": 0}, {"talent": 61.31, "looks": 54.45, "star": 1}, {"talent": 64.55, "looks": 60.56, "star": 1}, {"talent": 53.7, "looks": 52.44, "star": 1}, {"talent": 61.56, "looks": 33.42, "star": 0}, {"talent": 47.94, "looks": 56.24, "star": 1}, {"talent": 56.28, "looks": 69.3, "star": 1}, {"talent": 59.32, "looks": 34.73, "star": 0}, {"talent": 76.89, "looks": 23.27, "star": 0}, {"talent": 52.43, "looks": 47.53, "star": 0}, {"talent": 37.27, "looks": 50.7, "star": 0}, {"talent": 63.78, "looks": 57.64, "star": 1}, {"talent": 42.09, "looks": 58.0, "star": 0}, {"talent": 49.39, "looks": 50.88, "star": 0}, {"talent": 47.06, "looks": 55.29, "star": 0}, {"talent": 40.92, "looks": 53.27, "star": 0}, {"talent": 63.35, "looks": 51.2, "star": 1}, {"talent": 55.96, "looks": 49.42, "star": 0}, {"talent": 43.88, "looks": 48.48, "star": 0}, {"talent": 50.69, "looks": 56.88, "star": 1}, {"talent": 45.67, "looks": 53.96, "star": 0}, {"talent": 56.15, "looks": 45.8, "star": 0}, {"talent": 46.21, "looks": 60.71, "star": 0}, {"talent": 42.34, "looks": 42.88, "star": 0}, {"talent": 43.56, "looks": 47.73, "star": 0}, {"talent": 45.63, "looks": 51.31, "star": 0}, {"talent": 52.89, "looks": 31.38, "star": 0}, {"talent": 40.81, "looks": 46.3, "star": 0}, {"talent": 49.11, "looks": 58.36, "star": 1}, {"talent": 54.44, "looks": 57.96, "star": 0}, {"talent": 73.37, "looks": 38.33, "star": 1}, {"talent": 58.56, "looks": 41.89, "star": 0}, {"talent": 20.16, "looks": 39.48, "star": 0}, {"talent": 44.89, "looks": 47.7, "star": 0}, {"talent": 46.03, "looks": 49.37, "star": 0}, {"talent": 53.2, "looks": 34.43, "star": 0}, {"talent": 65.69, "looks": 53.1, "star": 1}, {"talent": 57.42, "looks": 50.7, "star": 0}, {"talent": 26.97, "looks": 49.29, "star": 0}, {"talent": 53.07, "looks": 43.43, "star": 0}, {"talent": 51.08, "looks": 48.21, "star": 0}, {"talent": 54.13, "looks": 32.64, "star": 0}, {"talent": 63.59, "looks": 52.26, "star": 1}, {"talent": 39.09, "looks": 52.06, "star": 0}, {"talent": 61.03, "looks": 48.97, "star": 0}, {"talent": 33.46, "looks": 38.49, "star": 0}, {"talent": 50.51, "looks": 62.43, "star": 1}, {"talent": 53.81, "looks": 61.03, "star": 1}, {"talent": 72.85, "looks": 31.73, "star": 1}, {"talent": 42.98, "looks": 54.04, "star": 0}, {"talent": 33.06, "looks": 51.49, "star": 0}, {"talent": 56.87, "looks": 24.96, "star": 0}, {"talent": 43.39, "looks": 55.05, "star": 0}, {"talent": 65.64, "looks": 56.35, "star": 1}, {"talent": 42.92, "looks": 57.03, "star": 0}, {"talent": 41.23, "looks": 51.58, "star": 0}, {"talent": 62.44, "looks": 43.65, "star": 1}, {"talent": 50.85, "looks": 45.02, "star": 0}, {"talent": 60.01, "looks": 55.0, "star": 1}, {"talent": 35.7, "looks": 61.43, "star": 0}, {"talent": 66.51, "looks": 45.25, "star": 1}, {"talent": 44.11, "looks": 47.31, "star": 0}, {"talent": 58.19, "looks": 56.81, "star": 1}, {"talent": 39.95, "looks": 29.05, "star": 0}, {"talent": 34.49, "looks": 54.38, "star": 0}, {"talent": 47.43, "looks": 47.78, "star": 0}, {"talent": 51.74, "looks": 28.67, "star": 0}, {"talent": 65.77, "looks": 57.54, "star": 1}, {"talent": 53.5, "looks": 41.13, "star": 0}, {"talent": 57.16, "looks": 57.75, "star": 1}, {"talent": 56.59, "looks": 63.44, "star": 0}, {"talent": 81.1, "looks": 37.92, "star": 1}, {"talent": 41.82, "looks": 38.38, "star": 0}, {"talent": 62.55, "looks": 49.94, "star": 0}, {"talent": 48.51, "looks": 33.02, "star": 0}, {"talent": 52.61, "looks": 57.16, "star": 0}, {"talent": 44.53, "looks": 51.89, "star": 0}, {"talent": 61.62, "looks": 59.63, "star": 1}, {"talent": 37.45, "looks": 32.25, "star": 0}, {"talent": 36.78, "looks": 52.05, "star": 0}, {"talent": 47.92, "looks": 54.61, "star": 0}, {"talent": 38.42, "looks": 32.6, "star": 0}, {"talent": 57.03, "looks": 58.8, "star": 1}, {"talent": 59.22, "looks": 36.7, "star": 0}, {"talent": 42.47, "looks": 51.89, "star": 0}, {"talent": 57.84, "looks": 37.32, "star": 0}, {"talent": 43.38, "looks": 57.81, "star": 0}, {"talent": 49.56, "looks": 66.76, "star": 0}, {"talent": 50.07, "looks": 50.77, "star": 0}, {"talent": 68.76, "looks": 50.5, "star": 1}, {"talent": 50.0, "looks": 62.88, "star": 1}, {"talent": 40.88, "looks": 45.87, "star": 0}, {"talent": 40.82, "looks": 50.74, "star": 0}, {"talent": 62.0, "looks": 58.26, "star": 1}, {"talent": 33.31, "looks": 54.42, "star": 0}, {"talent": 45.3, "looks": 65.67, "star": 1}]}]}</script>
 </div>
 </div>
 </section>
@@ -218,11 +218,15 @@
 <h2></h2>
 <div style="text-align: center; padding-top: 180px;">
 <p><span style="font-size: 2.2em; color: white;"><strong>Causal analysis and experiments</strong></span></p>
-<p><span style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;">Every regression this module has described association carefully, and stopped short of claiming an effect. This week: a formal framework for when you’re allowed to make that claim.</span></p>
+<p><span style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;">So far we’ve described associations and stopped short of calling them effects. This week: when we’re allowed to make that claim.</span></p>
 </div>
 </section>
 <section id="does-working-from-home-change-who-quits" class="slide level2">
 <h2>Does working from home change who quits?</h2>
+<style>
+.reveal .mid-code div.sourceCode { font-size: 0.7em !important; }
+.reveal .mid-code div.sourceCode pre.sourceCode { font-size: 1em !important; }
+</style>
 <div class="instructions-box">
 <p><strong>Business question</strong>: you’re deciding whether to let staff work from home. Would it actually change how many people quit — or is it just a perk that changes nothing?</p>
 </div>
@@ -234,7 +238,7 @@
 <h2>The naive answer</h2>
 <p><strong>Naive answer:</strong> compare the quit rate of employees who already work from home to those who don’t.</p>
 <div class="fragment">
-<p><strong>Why it’s not that simple:</strong> people who already work from home chose to. They might have longer commutes, different family situations, different tenure — any of which could explain a lower quit rate on its own. This is exactly the naive comparison Week 6 taught us to distrust.</p>
+<p><strong>Why it’s not that simple:</strong> people who already work from home chose to. They might have longer commutes, different family situations or longer tenure, and any of these could explain a lower quit rate on its own. It’s the same problem as omitted variable bias in Week 6.</p>
 </div>
 </section>
 <section id="what-we-need" class="slide level2">
@@ -242,75 +246,139 @@
 <ul>
 <li>A formal definition of what “the effect of X” actually means</li>
 <li>A way to know, not just hope, that two groups are comparable</li>
-<li>The tools to work with data collected this way — an experiment — properly</li>
+<li>A way to collect data where that comparison works: an experiment</li>
 </ul>
 </section>
 <section id="the-potential-outcomes-framework" class="slide level2">
 <h2>The potential outcomes framework</h2>
 </section>
-<section id="what-makes-a-question-causal" class="slide level2">
-<h2>What makes a question causal</h2>
+<section id="a-causal-question" class="slide level2">
+<h2>A causal question</h2>
 <ul>
-<li>Causality requires two things: an <strong>intervention</strong> that’s at least conceptually possible, and <strong>variation</strong> in it across subjects</li>
-<li>“Do vitamins have a beneficial health effect?” — intervention: taking vitamins or not</li>
-<li>“Does better management yield greater revenue?” — intervention: replacing or training managers</li>
-<li>“Does a major industrial investment affect nearby house prices?” — intervention: the investment itself</li>
-<li>If neither an intervention nor variation is conceivable, the question isn’t answerable causally — it might still be worth describing, just not with this toolkit</li>
+<li>A causal question needs an <strong>intervention</strong> we can at least imagine, and <strong>variation</strong> in it across subjects. “Does training managers raise revenue?” works; without an intervention we can only describe the data</li>
+<li>The <strong>treatment</strong>: the causal variable, usually an intervention – a price change, an ad, a policy</li>
+<li>The <strong>subjects</strong>: who receives it. Some are <strong>treated</strong>, some <strong>untreated</strong>; both groups matter equally</li>
+<li>The <strong>outcome</strong>: what might be affected. A precise causal question names both <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span></li>
 </ul>
 <div style="font-size:0.75em;color:#999;margin-top:12px;">
 <p>Source: Békés &amp; Kézdi (2021), Ch. 19</p>
 </div>
-</section>
-<section id="treatment-subjects-outcome" class="slide level2">
-<h2>Treatment, subjects, outcome</h2>
-<ul>
-<li>The <strong>causal variable</strong> — usually an intervention: a price change, an ad, a policy change. Also called the <strong>treatment</strong></li>
-<li>The <strong>subjects</strong> — who or what receives it. Some are <strong>treated</strong>, some are <strong>untreated</strong>; both groups matter equally</li>
-<li>The <strong>outcome</strong> — what might be affected</li>
-<li>A precise causal question names both: what’s <span class="math inline">\(Y\)</span>? What’s <span class="math inline">\(X\)</span>?</li>
-</ul>
 </section>
 <section id="two-states-of-the-world" class="slide level2">
 <h2>Two states of the world</h2>
 <p>Every subject has <strong>two potential outcomes</strong>:</p>
 <p><span class="math display">\[y_i^1 \text{ — what happens if treated} \qquad y_i^0 \text{ — what happens if not}\]</span></p>
 <div class="fragment">
-<p>Before the intervention happens, both exist — hypothetically, for every subject, whether or not they’ll actually end up treated.</p>
+<p>Before the intervention, both exist in principle for every subject, whether or not they end up treated.</p>
 </div>
 </section>
 <section id="what-assignment-reveals" class="slide level2">
 <h2>What assignment reveals</h2>
 <ul>
 <li>Once a subject is <strong>assigned</strong> — treated or not — one potential outcome becomes real and observable</li>
-<li>The other stops being knowable. It isn’t hidden somewhere in the data; it never gets realised at all</li>
+<li>The other one never happens, so it can’t be in any dataset</li>
 <li><strong>Treated subject</strong>: observed outcome = their treated outcome <span class="math inline">\(y_i^1\)</span></li>
 <li><strong>Untreated subject</strong>: observed outcome = their untreated outcome <span class="math inline">\(y_i^0\)</span></li>
 </ul>
 <div class="fragment">
-<p>The unobserved one is the <strong>counterfactual</strong> — what would have happened in the universe where this subject’s treatment status was flipped. It never exists in any dataset, no matter how good.</p>
+<p>The outcome we don’t see is the <strong>counterfactual</strong>: what would have happened if this subject’s treatment had been the other way round.</p>
 </div>
 </section>
 <section id="the-individual-treatment-effect" class="slide level2">
 <h2>The individual treatment effect</h2>
 <p><span class="math display">\[te_i = y_i^1 - y_i^0\]</span></p>
 <div class="fragment">
-<p><strong>This can never be measured.</strong> Not “hard to measure” — impossible, for anyone, ever, from data alone. We only ever see one of the two potential outcomes per subject. This is a missing-data problem with no fix.</p>
+<p><strong>We can never measure this.</strong> We only ever see one of the two potential outcomes for each subject, so the other half of the difference is always missing.</p>
 </div>
 </section>
 <section id="a-worked-example" class="slide level2">
 <h2>A worked example</h2>
-<ul>
-<li>Outcome: did the subject convert (1) or not (0)?</li>
-<li><span class="math inline">\(te_i\)</span> can only take three values: <span class="math inline">\(+1\)</span> (converted <em>because</em> of treatment), <span class="math inline">\(-1\)</span> (converted <em>despite not being</em> treated — treatment would have stopped it), or <span class="math inline">\(0\)</span> (same outcome either way)</li>
-<li>For any specific person, we will never know which of the three is true — only ever one of <span class="math inline">\(y_i^1, y_i^0\)</span> is observed for them</li>
-</ul>
+<p>A shop emails some customers a discount code. The outcome: did the customer <strong>buy something that week</strong> (1) or not (0)? Suppose, just for once, we could see both potential outcomes for four customers.</p>
+<table class="caption-top" data-quarto-postprocess="true" style="margin:10px auto 0;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;">
+<tbody>
+<tr class="odd" style="border-bottom:2px solid #1a1a2e;">
+<td data-quarto-table-cell-role="th" style="text-align: left; padding: 5px 18px;">Customer</td>
+<td data-quarto-table-cell-role="th" style="padding: 5px 18px">Buys if emailed (<em>y</em><sup>1</sup>)</td>
+<td data-quarto-table-cell-role="th" style="padding: 5px 18px">Buys if not (<em>y</em><sup>0</sup>)</td>
+<td data-quarto-table-cell-role="th" style="padding: 5px 18px"><em>te</em></td>
+<td data-quarto-table-cell-role="th" style="text-align: left; padding: 5px 18px;">What the email did</td>
+</tr>
+<tr class="even" style="border-bottom:1px solid #ddd;">
+<td style="text-align: left; padding: 4px 18px;">Asha</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center; color: #2d6a4f;"><span class="fragment" data-fragment-index="1"><strong>+1</strong></span></td>
+<td style="text-align: left; padding: 4px 18px;"><span class="fragment" data-fragment-index="1">persuaded her to buy</span></td>
+</tr>
+<tr class="odd" style="border-bottom:1px solid #ddd;">
+<td style="text-align: left; padding: 4px 18px;">Ben</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;"><span class="fragment" data-fragment-index="1"><strong>0</strong></span></td>
+<td style="text-align: left; padding: 4px 18px;"><span class="fragment" data-fragment-index="1">nothing: he'd have bought anyway</span></td>
+</tr>
+<tr class="even" style="border-bottom:1px solid #ddd;">
+<td style="text-align: left; padding: 4px 18px;">Chloe</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center; color: #c0392b;"><span class="fragment" data-fragment-index="1"><strong>−1</strong></span></td>
+<td style="text-align: left; padding: 4px 18px;"><span class="fragment" data-fragment-index="1">put her off: she unsubscribed instead</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 4px 18px;">Dev</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;"><span class="fragment" data-fragment-index="1"><strong>0</strong></span></td>
+<td style="text-align: left; padding: 4px 18px;"><span class="fragment" data-fragment-index="1">nothing: he doesn't buy either way</span></td>
+</tr>
+</tbody>
+</table>
+<div class="fragment" data-fragment-index="2">
+<p>In real data each customer is either emailed or not, so one of the two middle columns is always missing. If Asha was emailed, we see her 1 but never her 0, so we can’t tell whether she’s an Asha or a Ben.</p>
+</div>
+</section>
+<section id="what-wed-actually-have" class="slide level2">
+<h2>What we’d actually have</h2>
+<p>A real dataset never has the <em>y</em>¹/<em>y</em>⁰ columns above — only one outcome per customer, plus whether they were emailed:</p>
+<table class="caption-top" data-quarto-postprocess="true" style="margin:10px auto 0;font-family:sans-serif;font-size:0.95em;border-collapse:collapse;">
+<tbody>
+<tr class="odd" style="border-bottom:2px solid #1a1a2e;">
+<td data-quarto-table-cell-role="th" style="text-align: left; padding: 5px 22px;">Customer</td>
+<td data-quarto-table-cell-role="th" style="padding: 5px 22px">Emailed?</td>
+<td data-quarto-table-cell-role="th" style="padding: 5px 22px">Bought</td>
+</tr>
+<tr class="even" style="border-bottom:1px solid #ddd;">
+<td style="text-align: left; padding: 5px 22px;">Asha</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;"><strong>1</strong></td>
+</tr>
+<tr class="odd" style="border-bottom:1px solid #ddd;">
+<td style="text-align: left; padding: 5px 22px;">Ben</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;"><strong>1</strong></td>
+</tr>
+<tr class="even" style="border-bottom:1px solid #ddd;">
+<td style="text-align: left; padding: 5px 22px;">Chloe</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;"><strong>1</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 5px 22px;">Dev</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;"><strong>0</strong></td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<p>Three columns, not five. No <em>te</em>, no counterfactual, nothing marked “missing” — just who got the email and what happened. This is the table a shop would actually have, and every causal question in this session starts from something that looks like it.</p>
+</div>
 </section>
 <section id="heterogeneous-treatment-effects" class="slide level2">
 <h2>Heterogeneous treatment effects</h2>
 <ul>
-<li>Individual effects vary, of course — by subgroup, by circumstance, by person</li>
-<li>Men vs.&nbsp;women, small markets vs.&nbsp;large ones, new employees vs.&nbsp;long-tenured ones</li>
-<li>The possibility that effects differ across subjects is the <strong>normal case</strong>, not an edge case worth ignoring</li>
+<li>Individual effects vary: by subgroup, by circumstance, by person</li>
+<li>Men and women, small markets and large ones, new employees and long-serving ones</li>
+<li>Effects that differ across subjects are the <strong>normal case</strong></li>
 </ul>
 <div class="fragment">
 <p>We can’t recover the full distribution of <span class="math inline">\(te_i\)</span>. But we can recover its average.</p>
@@ -328,7 +396,7 @@
 <h2>Averages of differences = differences of averages</h2>
 <p><span class="math display">\[ATE = E[te_i] = E[y_i^1 - y_i^0] = E[y_i^1] - E[y_i^0]\]</span></p>
 <div class="fragment">
-<p>This identity is what rescues the whole framework. We can’t average something we can’t observe (<span class="math inline">\(te_i\)</span>, person by person). But we <em>can</em> separately average the treated group’s outcomes and the untreated group’s outcomes — and their difference equals the same thing.</p>
+<p>We can’t average <span class="math inline">\(te_i\)</span>, because we never see it. But we can average the treated group’s outcomes and the untreated group’s outcomes separately, and the difference between those two averages is the same thing.</p>
 </div>
 </section>
 <section id="ate-can-hide-heterogeneity" class="slide level2">
@@ -337,52 +405,44 @@
 <p>If <span class="math inline">\(ATE = 0\)</span>, did the intervention genuinely do nothing?</p>
 </div>
 <div class="fragment">
-<p>Not necessarily. <span class="math inline">\(ATE = 0\)</span> is consistent with <em>every</em> individual effect being exactly zero — or with the intervention helping half the subjects and hurting the other half by equal amounts. The average alone can’t tell these apart.</p>
-</div>
-</section>
-<section id="subgroups-and-atet" class="slide level2">
-<h2>Subgroups and ATET</h2>
-<ul>
-<li>ATE can be calculated for any subgroup, not just the whole population</li>
-<li>One especially useful subgroup: <strong>the treated group itself</strong></li>
-<li><span class="math inline">\(ATET\)</span> — average treatment effect <strong>on the treated</strong> — answers “was this decision worth it, for the people it was actually applied to?” rather than “what would it do to a randomly chosen person?”</li>
-</ul>
-<div class="fragment">
-<p>Under random assignment, <span class="math inline">\(ATE = ATET\)</span> — Section C explains why.</p>
-</div>
-</section>
-<section id="when-x-isnt-just-on-or-off" class="slide level2">
-<h2>When X isn’t just on or off</h2>
-<ul>
-<li>Not every intervention is binary. Examples: <strong>prices</strong>, <strong>advertising budgets</strong>, <strong>dosages</strong>, <strong>days per week working from home</strong></li>
-<li>These are <strong>quantitative causal variables</strong> — the intervention doesn’t just happen or not, its <em>size</em> varies too</li>
-</ul>
-</section>
-<section id="a-series-of-individual-effects-not-one" class="slide level2">
-<h2>A series of individual effects, not one</h2>
-<ul>
-<li>With a quantitative <span class="math inline">\(x\)</span>, there’s no single <span class="math inline">\(te_i\)</span> — the effect depends on <em>how much</em> <span class="math inline">\(x\)</span> changes, and where you start from</li>
-<li>Before we can even average, we need an extra step: define the effect <strong>per unit change</strong> in <span class="math inline">\(x\)</span>, for each subject</li>
-<li>Everything else — heterogeneity, ATE, the same “average of differences = difference of averages” identity — carries over once that per-unit effect is defined</li>
-</ul>
-<div class="fragment">
-<p>Our case study today is binary (WFH: yes or no) precisely because it keeps this first pass simple. The same logic extends to “how many days” — just with one extra step.</p>
+<p>Not necessarily. Two versions of the discount email, six customers each:</p>
+<table class="caption-top" data-quarto-postprocess="true" style="margin:10px auto 0;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;">
+<tbody>
+<tr class="odd" style="border-bottom:2px solid #1a1a2e;">
+<td data-quarto-table-cell-role="th" style="text-align: left; padding: 5px 16px;"></td>
+<td colspan="6" data-quarto-table-cell-role="th" style="padding: 5px 16px">Individual effect <em>te</em></td>
+<td data-quarto-table-cell-role="th" style="padding: 5px 16px">ATE</td>
+</tr>
+<tr class="even" style="border-bottom:1px solid #ddd;">
+<td style="text-align: left; padding: 6px 16px;">Email A</td>
+<td style="text-align: center; padding: 6px 12px;">0</td>
+<td style="text-align: center; padding: 6px 12px;">0</td>
+<td style="text-align: center; padding: 6px 12px;">0</td>
+<td style="text-align: center; padding: 6px 12px;">0</td>
+<td style="text-align: center; padding: 6px 12px;">0</td>
+<td style="text-align: center; padding: 6px 12px;">0</td>
+<td style="text-align: center; padding: 6px 16px;"><strong>0</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 6px 16px;">Email B</td>
+<td style="text-align: center; padding: 6px 12px; background: #d8efe2; color: #2d6a4f;"><strong>+1</strong></td>
+<td style="text-align: center; padding: 6px 12px; background: #d8efe2; color: #2d6a4f;"><strong>+1</strong></td>
+<td style="text-align: center; padding: 6px 12px; background: #d8efe2; color: #2d6a4f;"><strong>+1</strong></td>
+<td style="text-align: center; padding: 6px 12px; background: #f6d9d6; color: #c0392b;"><strong>−1</strong></td>
+<td style="text-align: center; padding: 6px 12px; background: #f6d9d6; color: #c0392b;"><strong>−1</strong></td>
+<td style="text-align: center; padding: 6px 12px; background: #f6d9d6; color: #c0392b;"><strong>−1</strong></td>
+<td style="text-align: center; padding: 6px 16px;"><strong>0</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Email A does nothing to anyone. Email B wins over three bargain hunters and puts off three customers who now think the brand is cheap. Both have an ATE of zero. The average can’t tell them apart, but the business would want to know: send Email B to the bargain hunters only.</p>
 </div>
 </section>
 <section id="ceteris-paribus-formalised" class="slide level2">
 <h2>Ceteris paribus, formalised</h2>
 <ul>
-<li>“All else equal” has been this module’s working principle since Week 4. Potential outcomes is the same idea, made precise: the difference between <span class="math inline">\(y_i^1\)</span> and <span class="math inline">\(y_i^0\)</span> is the intervention <strong>and only the intervention</strong> — nothing else about the subject is allowed to differ</li>
-<li>The question of <em>what needs to stay fixed and what’s allowed to vary</em> is exactly the causal question — there’s no way to answer it from the data alone</li>
-</ul>
-</section>
-<section id="ceteris-paribus-vs.-multivariate-regression" class="slide level2">
-<h2>Ceteris paribus vs.&nbsp;multivariate regression</h2>
-<p>Recall Week 6’s regression:</p>
-<p><span class="math display">\[y^E = \beta_0 + \beta_1 x + \beta_2 z\]</span></p>
-<ul>
-<li>In regression, we <strong>condition on</strong> <span class="math inline">\(z\)</span>: compare two observations with the same <span class="math inline">\(z\)</span> but different <span class="math inline">\(x\)</span></li>
-<li>That comparison is exactly what ceteris paribus means — holding <span class="math inline">\(z\)</span> fixed, letting only <span class="math inline">\(x\)</span> vary</li>
+<li>“All else equal” has been our working principle since Week 4. Potential outcomes make it precise: the only difference between <span class="math inline">\(y_i^1\)</span> and <span class="math inline">\(y_i^0\)</span> is the intervention</li>
+<li>Week 6’s regression <span class="math inline">\(y^E = \beta_0 + \beta_1 x + \beta_2 z\)</span> <strong>conditions on</strong> <span class="math inline">\(z\)</span>: it compares observations with the same <span class="math inline">\(z\)</span> but different <span class="math inline">\(x\)</span>. That’s ceteris paribus for the variables we include</li>
 </ul>
 <div style="font-size:0.75em;color:#999;margin-top:12px;">
 <p>Source: Békés &amp; Kézdi (2021), Ch. 19</p>
@@ -394,15 +454,22 @@
 <p>Can we condition on <em>every</em> potential confounder in a regression?</p>
 </div>
 <div class="fragment">
-<p>Probably not. We can only include what we actually observed in the data — and ceteris paribus, strictly, means holding <em>everything</em> fixed, measured or not. This is the honest gap between the theoretical ideal and any real regression, no matter how many controls it has.</p>
+<p>Probably not. We can only include what’s in the data, and ceteris paribus means holding <em>everything</em> fixed, measured or not. However many controls we add, that gap stays. So the real problem is how to get a good estimate of the ATE, and that’s the rest of today.</p>
 </div>
 </section>
-<section id="what-to-do" class="slide level2">
-<h2>What to do?</h2>
-<ul>
-<li><span class="math inline">\(te_i\)</span> can never be calculated or averaged directly, and true ceteris paribus is a theoretical concept we can only approximate — <strong>how to get a good estimate of ATE is the central technical problem this module keeps returning to</strong></li>
-<li>Everything from here is about closing that gap as much as the data allows</li>
-</ul>
+<section id="checking-the-identity-against-real-data" class="slide level2">
+<h2>Checking the identity against real data</h2>
+<p>Back to our four customers. Using the full table — both potential outcomes, for everyone — the identity gives:</p>
+<p><span class="math display">\[ATE = E[y_i^1] - E[y_i^0] = 0.5 - 0.5 = \mathbf{0}\]</span></p>
+<div class="fragment">
+<p>But real data never gives us that table. It gives us the one we’d actually have: emailed customers (Asha, Ben) averaged 1.0 bought; unemailed customers (Chloe, Dev) averaged 0.5. The difference between those two groups is <span class="math inline">\(\mathbf{0.5}\)</span>.</p>
+</div>
+<div class="fragment">
+<p>The true effect is zero. The comparison we can actually run says 0.5. <strong>Why are these different?</strong></p>
+</div>
+<div class="fragment">
+<p>Something about <em>who got emailed</em> must be related to whether they’d have bought anyway. Averaging the two groups doesn’t fix that on its own — we need a way to reason about which comparisons are safe, and which aren’t.</p>
+</div>
 </section>
 <section id="mapping-it-with-dags" class="slide level2">
 <h2>Mapping it with DAGs</h2>
@@ -411,48 +478,37 @@
 <h2>Causal maps</h2>
 <p>A <strong>DAG</strong> (directed acyclic graph) is a diagram of assumptions: nodes are variables, arrows are effects.</p>
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb1" data-startfrom="318" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 317;"><span id="cb1-318"><a></a><span class="fu">html</span><span class="vs">`&lt;div style="text-align:center;padding-top:20px;"&gt;</span></span>
-<span id="cb1-319"><a></a><span class="vs">  &lt;svg width="420" height="120"&gt;</span></span>
-<span id="cb1-320"><a></a><span class="vs">    &lt;text x="60" y="65" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;X&lt;/text&gt;</span></span>
-<span id="cb1-321"><a></a><span class="vs">    &lt;text x="360" y="65" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;Y&lt;/text&gt;</span></span>
-<span id="cb1-322"><a></a><span class="vs">    &lt;line x1="80" y1="60" x2="335" y2="60" stroke="#2d6a4f" stroke-width="2" marker-end="url(#arrow)"/&gt;</span></span>
-<span id="cb1-323"><a></a><span class="vs">    &lt;text x="200" y="45" font-size="20" text-anchor="middle" fill="#c0392b" font-family="sans-serif"&gt;?&lt;/text&gt;</span></span>
-<span id="cb1-324"><a></a><span class="vs">    &lt;defs&gt;&lt;marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"&gt;&lt;path d="M0,0 L0,6 L9,3 z" fill="#2d6a4f"/&gt;&lt;/marker&gt;&lt;/defs&gt;</span></span>
-<span id="cb1-325"><a></a><span class="vs">  &lt;/svg&gt;</span></span>
-<span id="cb1-326"><a></a><span class="vs">&lt;/div&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb1" data-startfrom="358" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 357;"><span id="cb1-358"><a></a><span class="fu">html</span><span class="vs">`&lt;div style="text-align:center;padding-top:20px;"&gt;</span></span>
+<span id="cb1-359"><a></a><span class="vs">  &lt;svg width="420" height="120"&gt;</span></span>
+<span id="cb1-360"><a></a><span class="vs">    &lt;text x="60" y="65" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;X&lt;/text&gt;</span></span>
+<span id="cb1-361"><a></a><span class="vs">    &lt;text x="360" y="65" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;Y&lt;/text&gt;</span></span>
+<span id="cb1-362"><a></a><span class="vs">    &lt;line x1="80" y1="60" x2="335" y2="60" stroke="#2d6a4f" stroke-width="2" marker-end="url(#arrow)"/&gt;</span></span>
+<span id="cb1-363"><a></a><span class="vs">    &lt;text x="200" y="45" font-size="20" text-anchor="middle" fill="#c0392b" font-family="sans-serif"&gt;?&lt;/text&gt;</span></span>
+<span id="cb1-364"><a></a><span class="vs">    &lt;defs&gt;&lt;marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"&gt;&lt;path d="M0,0 L0,6 L9,3 z" fill="#2d6a4f"/&gt;&lt;/marker&gt;&lt;/defs&gt;</span></span>
+<span id="cb1-365"><a></a><span class="vs">  &lt;/svg&gt;</span></span>
+<span id="cb1-366"><a></a><span class="vs">&lt;/div&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="ojs-cell-1" data-nodetype="expression">
 
 </div>
 </div>
 </div>
-<p>The causal question, drawn as simply as possible: does <span class="math inline">\(X\)</span> affect <span class="math inline">\(Y\)</span>? The arrow with a question mark is what the rest of this week tries to resolve.</p>
-</section>
-<section id="why-draw-the-map-at-all" class="slide level2">
-<h2>Why draw the map at all?</h2>
-<ul>
-<li>A causal map’s job is to <strong>summarise your assumptions</strong> about how variables affect each other — assumptions you’re making anyway, every time you choose what goes into a regression</li>
-<li>Once the map is drawn, deciding what belongs in the model <strong>stops being guesswork</strong></li>
-<li>Every “control for X” decision this module has made since Week 6 was implicitly assuming a DAG. This section makes that assumption explicit — and gives you a rule, not a gut feeling</li>
-</ul>
-<div style="font-size:0.75em;color:#999;margin-top:12px;">
-<p>Source: Békés &amp; Kézdi (2021), Ch. 19</p>
-</div>
+<p>The simplest causal question: does <span class="math inline">\(X\)</span> affect <span class="math inline">\(Y\)</span>? The map summarises the assumptions you make anyway every time you choose what goes into a regression. Once it’s drawn, deciding what to control for stops being guesswork.</p>
 </section>
 <section id="case-one-a-confounder" class="slide level2">
 <h2>Case one: a confounder</h2>
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="344" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 343;"><span id="cb2-344"><a></a><span class="fu">html</span><span class="vs">`&lt;div style="text-align:center;padding-top:10px;"&gt;</span></span>
-<span id="cb2-345"><a></a><span class="vs">  &lt;svg width="460" height="180"&gt;</span></span>
-<span id="cb2-346"><a></a><span class="vs">    &lt;text x="80" y="150" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;X&lt;/text&gt;</span></span>
-<span id="cb2-347"><a></a><span class="vs">    &lt;text x="380" y="150" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;Y&lt;/text&gt;</span></span>
-<span id="cb2-348"><a></a><span class="vs">    &lt;text x="230" y="35" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;Z&lt;/text&gt;</span></span>
-<span id="cb2-349"><a></a><span class="vs">    &lt;line x1="95" y1="140" x2="365" y2="140" stroke="#c0392b" stroke-width="2" marker-end="url(#a5)"/&gt;</span></span>
-<span id="cb2-350"><a></a><span class="vs">    &lt;line x1="215" y1="45" x2="100" y2="130" stroke="#2d6a4f" stroke-width="2" marker-end="url(#a5)"/&gt;</span></span>
-<span id="cb2-351"><a></a><span class="vs">    &lt;line x1="245" y1="45" x2="365" y2="130" stroke="#2d6a4f" stroke-width="2" marker-end="url(#a5)"/&gt;</span></span>
-<span id="cb2-352"><a></a><span class="vs">    &lt;defs&gt;&lt;marker id="a5" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"&gt;&lt;path d="M0,0 L0,6 L9,3 z" fill="#2d6a4f"/&gt;&lt;/marker&gt;&lt;/defs&gt;</span></span>
-<span id="cb2-353"><a></a><span class="vs">  &lt;/svg&gt;</span></span>
-<span id="cb2-354"><a></a><span class="vs">&lt;/div&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="374" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 373;"><span id="cb2-374"><a></a><span class="fu">html</span><span class="vs">`&lt;div style="text-align:center;padding-top:10px;"&gt;</span></span>
+<span id="cb2-375"><a></a><span class="vs">  &lt;svg width="460" height="180"&gt;</span></span>
+<span id="cb2-376"><a></a><span class="vs">    &lt;text x="80" y="150" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;X&lt;/text&gt;</span></span>
+<span id="cb2-377"><a></a><span class="vs">    &lt;text x="380" y="150" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;Y&lt;/text&gt;</span></span>
+<span id="cb2-378"><a></a><span class="vs">    &lt;text x="230" y="35" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;Z&lt;/text&gt;</span></span>
+<span id="cb2-379"><a></a><span class="vs">    &lt;line x1="95" y1="140" x2="365" y2="140" stroke="#c0392b" stroke-width="2" marker-end="url(#a5)"/&gt;</span></span>
+<span id="cb2-380"><a></a><span class="vs">    &lt;line x1="215" y1="45" x2="100" y2="130" stroke="#2d6a4f" stroke-width="2" marker-end="url(#a5)"/&gt;</span></span>
+<span id="cb2-381"><a></a><span class="vs">    &lt;line x1="245" y1="45" x2="365" y2="130" stroke="#2d6a4f" stroke-width="2" marker-end="url(#a5)"/&gt;</span></span>
+<span id="cb2-382"><a></a><span class="vs">    &lt;defs&gt;&lt;marker id="a5" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"&gt;&lt;path d="M0,0 L0,6 L9,3 z" fill="#2d6a4f"/&gt;&lt;/marker&gt;&lt;/defs&gt;</span></span>
+<span id="cb2-383"><a></a><span class="vs">  &lt;/svg&gt;</span></span>
+<span id="cb2-384"><a></a><span class="vs">&lt;/div&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="ojs-cell-2" data-nodetype="expression">
 
@@ -467,20 +523,20 @@
 <section id="case-two-a-mediator" class="slide level2">
 <h2>Case two: a mediator</h2>
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb3" data-startfrom="366" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 365;"><span id="cb3-366"><a></a><span class="fu">html</span><span class="vs">`&lt;div style="text-align:center;padding-top:20px;"&gt;</span></span>
-<span id="cb3-367"><a></a><span class="vs">  &lt;svg width="480" height="140"&gt;</span></span>
-<span id="cb3-368"><a></a><span class="vs">    &lt;text x="50" y="75" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;X&lt;/text&gt;</span></span>
-<span id="cb3-369"><a></a><span class="vs">    &lt;text x="240" y="35" font-size="16" text-anchor="middle" font-family="sans-serif"&gt;M&lt;/text&gt;</span></span>
-<span id="cb3-370"><a></a><span class="vs">    &lt;text x="430" y="75" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;Y&lt;/text&gt;</span></span>
-<span id="cb3-371"><a></a><span class="vs">    &lt;line x1="65" y1="65" x2="225" y2="40" stroke="#2d6a4f" stroke-width="2" marker-end="url(#arrow2)"/&gt;</span></span>
-<span id="cb3-372"><a></a><span class="vs">    &lt;line x1="255" y1="40" x2="415" y2="65" stroke="#2d6a4f" stroke-width="2" marker-end="url(#arrow2)"/&gt;</span></span>
-<span id="cb3-373"><a></a><span class="vs">    &lt;line x1="70" y1="75" x2="410" y2="75" stroke="#999" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow3)"/&gt;</span></span>
-<span id="cb3-374"><a></a><span class="vs">    &lt;defs&gt;</span></span>
-<span id="cb3-375"><a></a><span class="vs">      &lt;marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"&gt;&lt;path d="M0,0 L0,6 L9,3 z" fill="#2d6a4f"/&gt;&lt;/marker&gt;</span></span>
-<span id="cb3-376"><a></a><span class="vs">      &lt;marker id="arrow3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"&gt;&lt;path d="M0,0 L0,6 L9,3 z" fill="#999"/&gt;&lt;/marker&gt;</span></span>
-<span id="cb3-377"><a></a><span class="vs">    &lt;/defs&gt;</span></span>
-<span id="cb3-378"><a></a><span class="vs">  &lt;/svg&gt;</span></span>
-<span id="cb3-379"><a></a><span class="vs">&lt;/div&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb3" data-startfrom="396" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 395;"><span id="cb3-396"><a></a><span class="fu">html</span><span class="vs">`&lt;div style="text-align:center;padding-top:20px;"&gt;</span></span>
+<span id="cb3-397"><a></a><span class="vs">  &lt;svg width="480" height="140"&gt;</span></span>
+<span id="cb3-398"><a></a><span class="vs">    &lt;text x="50" y="75" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;X&lt;/text&gt;</span></span>
+<span id="cb3-399"><a></a><span class="vs">    &lt;text x="240" y="35" font-size="16" text-anchor="middle" font-family="sans-serif"&gt;M&lt;/text&gt;</span></span>
+<span id="cb3-400"><a></a><span class="vs">    &lt;text x="430" y="75" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;Y&lt;/text&gt;</span></span>
+<span id="cb3-401"><a></a><span class="vs">    &lt;line x1="65" y1="65" x2="225" y2="40" stroke="#2d6a4f" stroke-width="2" marker-end="url(#arrow2)"/&gt;</span></span>
+<span id="cb3-402"><a></a><span class="vs">    &lt;line x1="255" y1="40" x2="415" y2="65" stroke="#2d6a4f" stroke-width="2" marker-end="url(#arrow2)"/&gt;</span></span>
+<span id="cb3-403"><a></a><span class="vs">    &lt;line x1="70" y1="75" x2="410" y2="75" stroke="#999" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow3)"/&gt;</span></span>
+<span id="cb3-404"><a></a><span class="vs">    &lt;defs&gt;</span></span>
+<span id="cb3-405"><a></a><span class="vs">      &lt;marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"&gt;&lt;path d="M0,0 L0,6 L9,3 z" fill="#2d6a4f"/&gt;&lt;/marker&gt;</span></span>
+<span id="cb3-406"><a></a><span class="vs">      &lt;marker id="arrow3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"&gt;&lt;path d="M0,0 L0,6 L9,3 z" fill="#999"/&gt;&lt;/marker&gt;</span></span>
+<span id="cb3-407"><a></a><span class="vs">    &lt;/defs&gt;</span></span>
+<span id="cb3-408"><a></a><span class="vs">  &lt;/svg&gt;</span></span>
+<span id="cb3-409"><a></a><span class="vs">&lt;/div&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="ojs-cell-3" data-nodetype="expression">
 
@@ -489,105 +545,333 @@
 </div>
 <p><span class="math inline">\(M\)</span> sits <strong>downstream</strong> of <span class="math inline">\(X\)</span>, on the path to <span class="math inline">\(Y\)</span> — the mechanism through which the effect happens, not a separate cause of it.</p>
 <div class="fragment">
-<p><strong>The rule: do not control for it.</strong> Controlling for <span class="math inline">\(M\)</span> removes part of the very effect you’re trying to measure — this is a <strong>bad control</strong>: <span class="math inline">\(M\)</span> itself could be the dependent variable were we interested in the casual impact of <span class="math inline">\(X\)</span> on <span class="math inline">\(M\)</span>.</p>
+<p><strong>The rule: don’t control for it.</strong> Controlling for <span class="math inline">\(M\)</span> removes part of the effect you’re trying to measure. It’s a <strong>bad control</strong>. <span class="math inline">\(M\)</span> could be the outcome in its own right, if we wanted the causal effect of <span class="math inline">\(X\)</span> on <span class="math inline">\(M\)</span>.</p>
 </div>
 </section>
-<section id="confounder-or-mediator-which-is-it-here" class="slide level2">
-<h2>Confounder or mediator — which is it here?</h2>
+<section id="task-confounder-or-mediator" class="slide level2">
+<h2>Task — confounder or mediator?</h2>
 <div class="instructions-box">
-<p>Back to working from home. Suppose it reduces commute stress, and commute stress affects whether someone quits. Is commute stress a <strong>confounder</strong> of the WFH → quit relationship, or a <strong>mediator</strong>?</p>
+<p>Back to working from home. Suppose it reduces commute stress, and commute stress affects whether someone quits. Discuss with your neighbour and draw it as a DAG: is commute stress a <strong>confounder</strong> of the WFH → quit relationship, or a <strong>mediator</strong>?</p>
 </div>
 <div class="fragment">
-<p>A mediator — it sits downstream of the treatment, part of <em>how</em> WFH works, not a pre-existing difference between the groups. This is exactly why Section D’s regression compared quit rates by <strong>assignment alone</strong>, with no other controls: random assignment already handles the confounders, and there’s no mediator sitting between assignment and outcome to accidentally control away.</p>
-</div>
-</section>
-<section id="task-draw-your-own" class="slide level2">
-<h2>Task — draw your own</h2>
-<div class="instructions-box">
-<p><strong>Business question</strong>: what does your own causal question actually look like, drawn out?</p>
-<p>Take a model you’ve already built this module (the HR attrition data, or our own class data). Sketch — on paper or in the notebook as a comment — the DAG for one variable’s effect on another. Find at least one plausible <strong>confounder</strong> (control for it) and one plausible <strong>mediator</strong> (don’t). No further syntax hints, this one’s conceptual.</p>
-</div>
-</section>
-<section id="random-assignment-the-solution" class="slide level2">
-<h2>Random assignment — the solution</h2>
-</section>
-<section id="why-random-assignment-works" class="slide level2">
-<h2>Why random assignment works</h2>
-<ul>
-<li>If treatment is assigned <strong>independently of potential outcomes</strong> — for a reason that has nothing to do with what would have happened either way — then the treated and untreated groups are, on average, identical except for treatment</li>
-<li>Under random assignment, the simple difference in observed averages <strong>is</strong> a good estimate of the ATE</li>
-<li>This is a theoretical guarantee, not something you can verify directly in any one dataset — there’s no test that proves assignment was random, only reasons to believe it</li>
-</ul>
-</section>
-<section id="experimenting-versus-conditioning" class="slide level2">
-<h2>Experimenting versus conditioning</h2>
-<ul>
-<li><strong>Experimental data</strong>: variation in <span class="math inline">\(x\)</span> is controlled by the experimenter — deliberately made exogenous</li>
-<li><strong>Observational data</strong>: variation in <span class="math inline">\(x\)</span> comes from wherever it comes from — some of it exogenous, some of it tangled up with <span class="math inline">\(y\)</span> itself. The best we can do is <em>condition</em> on what we can measure, exactly as Weeks 4–8 have been doing</li>
-<li>A controlled experiment is the most direct way to get exogenous variation in <span class="math inline">\(x\)</span>. Everything else is a second-best attempt at the same goal</li>
-</ul>
-<div class="fragment">
-<p>This is why the rest of this session focuses on running experiments well — and why the online session comes back to what’s left when you can’t.</p>
-</div>
-</section>
-<section id="designing-and-running-the-experiment" class="slide level2">
-<h2>Designing and running the experiment</h2>
-</section>
-<section id="the-experiment-family" class="slide level2">
-<h2>The experiment family</h2>
-<ul>
-<li><strong>Field experiments</strong> — as close to the real decision environment as possible. Our case study today: a real firm, its own employees</li>
-<li><strong>Lab experiments</strong> — controlled but artificial; higher control, lower realism</li>
-<li><strong>A/B tests</strong> — a specific kind of field experiment, comparing versions of the same product (a page, an ad, an email). Easy to scale, large N</li>
-</ul>
-<div class="fragment">
-<p>Most firms still don’t experiment, even though the potential is huge — internet firms are the biggest exception, running randomised tests on their own customers constantly.</p>
-</div>
-</section>
-<section id="case-study-working-from-home" class="slide level2">
-<h2>Case study: working from home</h2>
-<div class="instructions-box">
-<p>Real firm, real employees. Working from home four days a week — does it change whether staff quit, and how they perform?</p>
-</div>
-<ul>
-<li>503 employees volunteered; <strong>249 qualified</strong> (over six months’ tenure, broadband at home)</li>
-<li>Randomly assigned to work from home or stay in the office:</li>
-</ul>
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb4" data-startfrom="454" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 453;"><span id="cb4-454"><a></a><span class="fu">html</span><span class="vs">`&lt;p style="margin-left:1.2em;"&gt;&lt;strong&gt;</span><span class="sc">${</span>wfh_treat_n<span class="sc">}</span><span class="vs">&lt;/strong&gt; to work from home, &lt;strong&gt;</span><span class="sc">${</span>wfh_control_n<span class="sc">}</span><span class="vs">&lt;/strong&gt; to stay in the office&lt;/p&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb4" data-startfrom="426" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 425;"><span id="cb4-426"><a></a><span class="fu">html</span><span class="vs">`&lt;div style="text-align:center;padding-top:10px;"&gt;</span></span>
+<span id="cb4-427"><a></a><span class="vs">  &lt;svg width="480" height="140"&gt;</span></span>
+<span id="cb4-428"><a></a><span class="vs">    &lt;text x="50" y="75" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;WFH&lt;/text&gt;</span></span>
+<span id="cb4-429"><a></a><span class="vs">    &lt;text x="240" y="35" font-size="16" text-anchor="middle" font-family="sans-serif"&gt;Commute stress&lt;/text&gt;</span></span>
+<span id="cb4-430"><a></a><span class="vs">    &lt;text x="440" y="75" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;Quit&lt;/text&gt;</span></span>
+<span id="cb4-431"><a></a><span class="vs">    &lt;line x1="80" y1="65" x2="200" y2="40" stroke="#2d6a4f" stroke-width="2" marker-end="url(#a9)"/&gt;</span></span>
+<span id="cb4-432"><a></a><span class="vs">    &lt;line x1="275" y1="40" x2="420" y2="65" stroke="#2d6a4f" stroke-width="2" marker-end="url(#a9)"/&gt;</span></span>
+<span id="cb4-433"><a></a><span class="vs">    &lt;line x1="80" y1="75" x2="415" y2="75" stroke="#999" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#a10)"/&gt;</span></span>
+<span id="cb4-434"><a></a><span class="vs">    &lt;defs&gt;</span></span>
+<span id="cb4-435"><a></a><span class="vs">      &lt;marker id="a9" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"&gt;&lt;path d="M0,0 L0,6 L9,3 z" fill="#2d6a4f"/&gt;&lt;/marker&gt;</span></span>
+<span id="cb4-436"><a></a><span class="vs">      &lt;marker id="a10" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"&gt;&lt;path d="M0,0 L0,6 L9,3 z" fill="#999"/&gt;&lt;/marker&gt;</span></span>
+<span id="cb4-437"><a></a><span class="vs">    &lt;/defs&gt;</span></span>
+<span id="cb4-438"><a></a><span class="vs">  &lt;/svg&gt;</span></span>
+<span id="cb4-439"><a></a><span class="vs">&lt;/div&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="ojs-cell-4" data-nodetype="expression">
 
 </div>
 </div>
 </div>
-<ul>
-<li>Two outcomes tracked: whether they quit, and phone-call volume (for the subset whose job is order-taking)</li>
-</ul>
-<div style="font-size:0.75em;color:#999;margin-top:12px;">
-<p>Source: Békés &amp; Kézdi (2021), Ch. 20, working-from-home dataset (Bloom et al.’s Ctrip field experiment)</p>
+<p><strong>A mediator.</strong> It comes after the treatment and is part of <em>how</em> working from home works, not a difference that existed beforehand. So we shouldn’t control for it. The regression we’ll run compares quit rates by <strong>assignment alone</strong>: random assignment deals with the confounders, and leaving out commute stress keeps the whole effect in.</p>
 </div>
 </section>
-<section id="reading-the-real-output" class="slide level2">
-<h2>Reading the real output</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
-<span id="cb5-2"><a></a></span>
-<span id="cb5-3"><a></a>quit_model <span class="op">=</span> smf.ols(<span class="st">"quitjob ~ treatment"</span>, data<span class="op">=</span>wfh).fit(cov_type<span class="op">=</span><span class="st">"HC1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="case-three-a-collider" class="slide level2">
+<h2>Case three: a collider</h2>
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb6" data-startfrom="472" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 471;"><span id="cb6-472"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.52em;line-height:1.35;</span></span>
-<span id="cb6-473"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
-<span id="cb6-474"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>quit_summary_text<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb5" data-startfrom="448" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 447;"><span id="cb5-448"><a></a><span class="fu">html</span><span class="vs">`&lt;div style="text-align:center;padding-top:10px;"&gt;</span></span>
+<span id="cb5-449"><a></a><span class="vs">  &lt;svg width="460" height="180"&gt;</span></span>
+<span id="cb5-450"><a></a><span class="vs">    &lt;text x="80" y="45" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;X&lt;/text&gt;</span></span>
+<span id="cb5-451"><a></a><span class="vs">    &lt;text x="380" y="45" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;Y&lt;/text&gt;</span></span>
+<span id="cb5-452"><a></a><span class="vs">    &lt;text x="230" y="160" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;C&lt;/text&gt;</span></span>
+<span id="cb5-453"><a></a><span class="vs">    &lt;line x1="95" y1="52" x2="215" y2="140" stroke="#2d6a4f" stroke-width="2" marker-end="url(#a6)"/&gt;</span></span>
+<span id="cb5-454"><a></a><span class="vs">    &lt;line x1="365" y1="52" x2="245" y2="140" stroke="#2d6a4f" stroke-width="2" marker-end="url(#a6)"/&gt;</span></span>
+<span id="cb5-455"><a></a><span class="vs">    &lt;text x="230" y="40" font-size="16" text-anchor="middle" fill="#999" font-family="sans-serif"&gt;no arrow&lt;/text&gt;</span></span>
+<span id="cb5-456"><a></a><span class="vs">    &lt;defs&gt;&lt;marker id="a6" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"&gt;&lt;path d="M0,0 L0,6 L9,3 z" fill="#2d6a4f"/&gt;&lt;/marker&gt;&lt;/defs&gt;</span></span>
+<span id="cb5-457"><a></a><span class="vs">  &lt;/svg&gt;</span></span>
+<span id="cb5-458"><a></a><span class="vs">&lt;/div&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="ojs-cell-5" data-nodetype="expression">
 
 </div>
 </div>
 </div>
+<p><span class="math inline">\(C\)</span> sits <strong>downstream of both</strong>: <span class="math inline">\(X\)</span> causes it and <span class="math inline">\(Y\)</span> causes it. Two arrowheads meet at <span class="math inline">\(C\)</span>, which is why it’s called a collider.</p>
+<div class="fragment">
+<p><strong>The rule: don’t control for it, and don’t pick your sample using it.</strong> Even if <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are completely unrelated, holding <span class="math inline">\(C\)</span> fixed makes them look related.</p>
+</div>
+</section>
+<section id="seeing-a-collider-at-work" class="slide level2">
+<h2>Seeing a collider at work</h2>
+<p>Why do so many good-looking film stars seem to be poor actors? Let’s build the answer one step at a time.</p>
+<p><strong>Step 1.</strong> 1,000 made-up actors, each with a talent score and a looks score. We made the two <strong>unrelated</strong>: knowing someone’s looks tells you nothing about their talent.</p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb6" data-startfrom="475" data-source-offset="-0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 474;"><span id="cb6-475"><a></a>actorDomX <span class="op">=</span> d3<span class="op">.</span><span class="fu">extent</span>(actor_rows<span class="op">,</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">looks</span>)</span>
+<span id="cb6-476"><a></a>actorDomY <span class="op">=</span> d3<span class="op">.</span><span class="fu">extent</span>(actor_rows<span class="op">,</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">talent</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-6-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<div id="ojs-cell-6-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="479" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 478;"><span id="cb7-479"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb7-480"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">1000</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">330</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">55</span><span class="op">,</span></span>
+<span id="cb7-481"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Looks (score)"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> actorDomX}<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Acting talent (score)"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> actorDomY}<span class="op">,</span></span>
+<span id="cb7-482"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb7-483"><a></a>    Plot<span class="op">.</span><span class="fu">dot</span>(actor_rows<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"looks"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"talent"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="fl">2.5</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#9a9aa8"</span>})<span class="op">,</span></span>
+<span id="cb7-484"><a></a>    Plot<span class="op">.</span><span class="fu">linearRegressionY</span>(actor_rows<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"looks"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"talent"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#1a1a2e"</span><span class="op">,</span> <span class="dt">ci</span><span class="op">:</span> <span class="dv">0</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="dv">2</span>})</span>
+<span id="cb7-485"><a></a>  ]</span>
+<span id="cb7-486"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-7" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>The line through all 1,000 is flat. No relationship, as we built it.</p>
+</div>
+</section>
+<section id="step-2-who-becomes-a-star" class="slide level2">
+<h2>Step 2: who becomes a star?</h2>
+<p>An actor becomes a star if talent and looks <strong>together</strong> are high enough (plus a bit of luck): talent + looks + luck above 110.</p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb8" data-startfrom="498" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 497;"><span id="cb8-498"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb8-499"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">1000</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">330</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">55</span><span class="op">,</span></span>
+<span id="cb8-500"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Looks (score)"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> actorDomX}<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Acting talent (score)"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> actorDomY}<span class="op">,</span></span>
+<span id="cb8-501"><a></a>  <span class="dt">color</span><span class="op">:</span> {<span class="dt">domain</span><span class="op">:</span> [<span class="st">"Not a star"</span><span class="op">,</span> <span class="st">"Movie star"</span>]<span class="op">,</span> <span class="dt">range</span><span class="op">:</span> [<span class="st">"#cfcfd6"</span><span class="op">,</span> <span class="st">"#c0392b"</span>]<span class="op">,</span> <span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}<span class="op">,</span></span>
+<span id="cb8-502"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb8-503"><a></a>    Plot<span class="op">.</span><span class="fu">dot</span>(actor_rows<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"looks"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"talent"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="fl">2.5</span><span class="op">,</span></span>
+<span id="cb8-504"><a></a>      <span class="dt">fill</span><span class="op">:</span> d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">star</span> <span class="op">?</span> <span class="st">"Movie star"</span> <span class="op">:</span> <span class="st">"Not a star"</span>})<span class="op">,</span></span>
+<span id="cb8-505"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>([{<span class="dt">looks</span><span class="op">:</span> actorDomX[<span class="dv">0</span>]<span class="op">,</span> <span class="dt">talent</span><span class="op">:</span> <span class="dv">110</span> <span class="op">-</span> actorDomX[<span class="dv">0</span>]}<span class="op">,</span> {<span class="dt">looks</span><span class="op">:</span> actorDomX[<span class="dv">1</span>]<span class="op">,</span> <span class="dt">talent</span><span class="op">:</span> <span class="dv">110</span> <span class="op">-</span> actorDomX[<span class="dv">1</span>]}]</span>
+<span id="cb8-506"><a></a>      <span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> ({<span class="dt">looks</span><span class="op">:</span> d<span class="op">.</span><span class="at">looks</span><span class="op">,</span> <span class="dt">talent</span><span class="op">:</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">max</span>(actorDomY[<span class="dv">0</span>]<span class="op">,</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">min</span>(actorDomY[<span class="dv">1</span>]<span class="op">,</span> d<span class="op">.</span><span class="at">talent</span>))}))<span class="op">,</span></span>
+<span id="cb8-507"><a></a>      {<span class="dt">x</span><span class="op">:</span> <span class="st">"looks"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"talent"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#1a1a2e"</span><span class="op">,</span> <span class="dt">strokeDasharray</span><span class="op">:</span> <span class="st">"5,4"</span>})</span>
+<span id="cb8-508"><a></a>  ]</span>
+<span id="cb8-509"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-8" data-nodetype="expression">
+
+</div>
+</div>
+</div>
 <div class="fragment">
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="479" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 478;"><span id="cb7-479"><a></a><span class="fu">html</span><span class="vs">`&lt;p&gt;Control group quits at &lt;strong&gt;</span><span class="sc">${</span>control_quit_rate<span class="sc">}</span><span class="vs">%&lt;/strong&gt;, treatment group at &lt;strong&gt;</span><span class="sc">${</span>treatment_quit_rate<span class="sc">}</span><span class="vs">%&lt;/strong&gt; — working from home cuts the quit rate by &lt;strong&gt;</span><span class="sc">${</span><span class="bu">Math</span><span class="op">.</span><span class="fu">abs</span>(quit_effect)<span class="sc">}</span><span class="vs"> percentage points&lt;/strong&gt; (p = </span><span class="sc">${</span>quit_p<span class="sc">}</span><span class="vs">). A real, significant effect.&lt;/p&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb9" data-startfrom="514" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 513;"><span id="cb9-514"><a></a><span class="fu">html</span><span class="vs">`&lt;p&gt;</span><span class="sc">${</span>collider<span class="op">.</span><span class="at">n_star</span><span class="sc">}</span><span class="vs"> actors make it. They sit above the dashed line, where talent + looks = 110. That line slopes down: the less good-looking you are, the more talent you need to get over it.&lt;/p&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<div id="ojs-cell-6" data-nodetype="expression">
+<div id="ojs-cell-9" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="step-3-look-only-at-the-stars" class="slide level2">
+<h2>Step 3: look only at the stars</h2>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb10" data-startfrom="521" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 520;"><span id="cb10-521"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb10-522"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">1000</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">330</span><span class="op">,</span> <span class="dt">marginLeft</span><span class="op">:</span> <span class="dv">55</span><span class="op">,</span></span>
+<span id="cb10-523"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Looks (score)"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> actorDomX}<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Acting talent (score)"</span><span class="op">,</span> <span class="dt">domain</span><span class="op">:</span> actorDomY}<span class="op">,</span></span>
+<span id="cb10-524"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb10-525"><a></a>    Plot<span class="op">.</span><span class="fu">dot</span>(actor_rows<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> <span class="op">!</span>d<span class="op">.</span><span class="at">star</span>)<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"looks"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"talent"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="fl">2.5</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#ececf1"</span>})<span class="op">,</span></span>
+<span id="cb10-526"><a></a>    Plot<span class="op">.</span><span class="fu">dot</span>(actor_rows<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">star</span>)<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"looks"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"talent"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="fl">2.5</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"#c0392b"</span>})<span class="op">,</span></span>
+<span id="cb10-527"><a></a>    Plot<span class="op">.</span><span class="fu">linearRegressionY</span>(actor_rows<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"looks"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"talent"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#1a1a2e"</span><span class="op">,</span> <span class="dt">ci</span><span class="op">:</span> <span class="dv">0</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">1.5</span><span class="op">,</span> <span class="dt">strokeOpacity</span><span class="op">:</span> <span class="fl">0.5</span>})<span class="op">,</span></span>
+<span id="cb10-528"><a></a>    Plot<span class="op">.</span><span class="fu">linearRegressionY</span>(actor_rows<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">star</span>)<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"looks"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"talent"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"#c0392b"</span><span class="op">,</span> <span class="dt">ci</span><span class="op">:</span> <span class="dv">0</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">2.5</span>})</span>
+<span id="cb10-529"><a></a>  ]</span>
+<span id="cb10-530"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-10" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Among the stars, the better-looking ones seem <strong>less</strong> talented (red line). Nothing about acting changed: we only changed who we look at. Being a star is caused by both talent and looks, so it’s a collider, and selecting on it creates a relationship that isn’t there.</p>
+</div>
+</section>
+<section id="two-ways-to-fall-into-it" class="slide level2 smaller">
+<h2>Two ways to fall into it</h2>
+<div class="mid-code">
+<div class="sourceCode" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a></a>smf.ols(<span class="st">"talent ~ looks"</span>, data<span class="op">=</span>actors).fit(cov_type<span class="op">=</span><span class="st">"HC1"</span>)</span>
+<span id="cb11-2"><a></a>smf.ols(<span class="st">"talent ~ looks"</span>, data<span class="op">=</span>actors[actors.star <span class="op">==</span> <span class="dv">1</span>]).fit(cov_type<span class="op">=</span><span class="st">"HC1"</span>)</span>
+<span id="cb11-3"><a></a>smf.ols(<span class="st">"talent ~ looks + star"</span>, data<span class="op">=</span>actors).fit(cov_type<span class="op">=</span><span class="st">"HC1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb12" data-startfrom="548" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 547;"><span id="cb12-548"><a></a><span class="fu">html</span><span class="vs">`&lt;table style="margin:14px auto 0;font-family:sans-serif;font-size:0.95em;border-collapse:collapse;"&gt;</span></span>
+<span id="cb12-549"><a></a><span class="vs">  &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;&lt;th style="padding:6px 22px;text-align:left;"&gt;Model&lt;/th&gt;&lt;th style="padding:6px 22px;"&gt;Coefficient on looks&lt;/th&gt;&lt;/tr&gt;</span></span>
+<span id="cb12-550"><a></a><span class="vs">  &lt;tr style="border-bottom:1px solid #ddd;"&gt;&lt;td style="padding:5px 22px;"&gt;All actors&lt;/td&gt;&lt;td style="padding:5px 22px;text-align:center;"&gt;</span><span class="sc">${</span>collider<span class="op">.</span><span class="at">b_all</span><span class="sc">}</span><span class="vs"> (p = </span><span class="sc">${</span>collider<span class="op">.</span><span class="at">p_all</span><span class="sc">}</span><span class="vs">)&lt;/td&gt;&lt;/tr&gt;</span></span>
+<span id="cb12-551"><a></a><span class="vs">  &lt;tr style="border-bottom:1px solid #ddd;"&gt;&lt;td style="padding:5px 22px;"&gt;Stars only&lt;/td&gt;&lt;td style="padding:5px 22px;text-align:center;"&gt;</span><span class="sc">${</span>collider<span class="op">.</span><span class="at">b_star</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;/tr&gt;</span></span>
+<span id="cb12-552"><a></a><span class="vs">  &lt;tr style="border-bottom:1px solid #ddd;"&gt;&lt;td style="padding:5px 22px;"&gt;All actors, controlling for being a star&lt;/td&gt;&lt;td style="padding:5px 22px;text-align:center;"&gt;</span><span class="sc">${</span>collider<span class="op">.</span><span class="at">b_ctrl</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;/tr&gt;</span></span>
+<span id="cb12-553"><a></a><span class="vs">&lt;/table&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-11" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<ul>
+<li>Picking the sample on <span class="math inline">\(C\)</span> and adding <span class="math inline">\(C\)</span> as a control both create a relationship that isn’t there</li>
+<li>This is the opposite of omitted variable bias: the bias comes from <strong>putting a variable in</strong>, not from leaving one out</li>
+<li>It happens in business data all the time: studying only customers who complained, only firms that survived, only staff who were promoted</li>
+</ul>
+</div>
+<div style="font-size:0.8em;margin-top:10px;">
+<p>The full simulation is in a <a href="https://colab.research.google.com/github/stevenolanecon/7002LBSAI/blob/main/notebooks/week9_collider_simulation.ipynb">Colab notebook</a>: change the cut-off or the amount of luck and see what happens to the bias.</p>
+</div>
+</section>
+<section id="task-confounder-mediator-or-collider" class="slide level2">
+<h2>Task — confounder, mediator or collider?</h2>
+<div class="instructions-box">
+<p>A firm wants to know whether its sales training course raises staff sales. <strong>Draw a DAG for each variable</strong> before you decide: confounder, mediator or collider? Should it go in the regression?</p>
+<ol type="1">
+<li>Years of sales experience (managers send experienced staff on the course)</li>
+<li>Product knowledge (the course teaches it, and knowing the products helps you sell)</li>
+<li>Being featured in the staff newsletter (it lists everyone who did the course, and the month’s top sellers)</li>
+</ol>
+</div>
+<div class="fragment">
+<ol type="1">
+<li><strong>Confounder</strong>: it affects who gets trained and how much they sell. Control for it</li>
+<li><strong>Mediator</strong>: it’s how the course works. Don’t control for it</li>
+<li><strong>Collider</strong>: both training and sales cause it. Don’t control for it, and don’t analyse only the staff who were featured</li>
+</ol>
+</div>
+</section>
+<section id="task-draw-your-own" class="slide level2">
+<h2>Task — draw your own</h2>
+<div class="instructions-box">
+<p><strong>Business question</strong>: in the used-cars data, does a car’s mileage affect its price?</p>
+<p>In Week 6 you ran this regression and found that controlling for the car’s age roughly halves the mileage effect. Draw it as a DAG: where does age sit — confounder, mediator or collider? Then pick one more variable from that dataset (dealer, condition, make) and decide where it belongs, and whether you’d control for it.</p>
+</div>
+</section>
+<section id="where-does-the-variation-in-x-come-from" class="slide level2">
+<h2>Where does the variation in x come from?</h2>
+<p>Whatever we’re measuring, x varies across observations for some reason. That reason matters as much as the relationship itself.</p>
+<ul>
+<li>An <strong>endogenous</strong> source of variation: whatever makes x vary is <em>also</em> related to y, directly</li>
+<li>An <strong>exogenous</strong> source of variation: whatever makes x vary is independent of y</li>
+</ul>
+<div class="fragment">
+<p>Some of the variation in x is useless to us — it’s really a confounder in disguise. Some is exactly what we need. The rest of this session is about telling them apart, and about one way to guarantee we only get the second kind.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 19</p>
+</div>
+</section>
+<section id="an-exogenous-and-an-endogenous-source" class="slide level2">
+<h2>An exogenous and an endogenous source</h2>
+<p>Two things could be driving the variation in x. <span class="math inline">\(Z_1\)</span> only affects x. <span class="math inline">\(Z_2\)</span> affects x <strong>and</strong> y directly.</p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb13" data-startfrom="610" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 609;"><span id="cb13-610"><a></a><span class="fu">html</span><span class="vs">`&lt;div style="text-align:center;padding-top:10px;"&gt;</span></span>
+<span id="cb13-611"><a></a><span class="vs">  &lt;svg width="520" height="220"&gt;</span></span>
+<span id="cb13-612"><a></a><span class="vs">    &lt;text x="60" y="38" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;Z&amp;#8321;&lt;/text&gt;</span></span>
+<span id="cb13-613"><a></a><span class="vs">    &lt;text x="190" y="92" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;x&lt;/text&gt;</span></span>
+<span id="cb13-614"><a></a><span class="vs">    &lt;text x="450" y="58" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;Z&amp;#8322;&lt;/text&gt;</span></span>
+<span id="cb13-615"><a></a><span class="vs">    &lt;text x="330" y="195" font-size="18" text-anchor="middle" font-family="sans-serif"&gt;y&lt;/text&gt;</span></span>
+<span id="cb13-616"><a></a><span class="vs">    &lt;line x1="78" y1="45" x2="172" y2="82" stroke="#2d6a4f" stroke-width="2" marker-end="url(#a11)"/&gt;</span></span>
+<span id="cb13-617"><a></a><span class="vs">    &lt;line x1="420" y1="62" x2="212" y2="88" stroke="#c0392b" stroke-width="2" marker-end="url(#a12)"/&gt;</span></span>
+<span id="cb13-618"><a></a><span class="vs">    &lt;line x1="438" y1="72" x2="348" y2="178" stroke="#c0392b" stroke-width="2" marker-end="url(#a12)"/&gt;</span></span>
+<span id="cb13-619"><a></a><span class="vs">    &lt;line x1="208" y1="102" x2="310" y2="180" stroke="#1a1a2e" stroke-width="2" marker-end="url(#a13)"/&gt;</span></span>
+<span id="cb13-620"><a></a><span class="vs">    &lt;text x="280" y="128" font-size="18" text-anchor="middle" fill="#1a1a2e" font-family="sans-serif"&gt;?&lt;/text&gt;</span></span>
+<span id="cb13-621"><a></a><span class="vs">    &lt;defs&gt;</span></span>
+<span id="cb13-622"><a></a><span class="vs">      &lt;marker id="a11" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"&gt;&lt;path d="M0,0 L0,6 L9,3 z" fill="#2d6a4f"/&gt;&lt;/marker&gt;</span></span>
+<span id="cb13-623"><a></a><span class="vs">      &lt;marker id="a12" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"&gt;&lt;path d="M0,0 L0,6 L9,3 z" fill="#c0392b"/&gt;&lt;/marker&gt;</span></span>
+<span id="cb13-624"><a></a><span class="vs">      &lt;marker id="a13" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"&gt;&lt;path d="M0,0 L0,6 L9,3 z" fill="#1a1a2e"/&gt;&lt;/marker&gt;</span></span>
+<span id="cb13-625"><a></a><span class="vs">    &lt;/defs&gt;</span></span>
+<span id="cb13-626"><a></a><span class="vs">  &lt;/svg&gt;</span></span>
+<span id="cb13-627"><a></a><span class="vs">&lt;/div&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-12" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p><span class="math inline">\(Z_1\)</span> (green) is exogenous: a clean source of variation in x, unrelated to y except through x. <span class="math inline">\(Z_2\)</span> (red) is endogenous: it’s a confounder in disguise, and any variation in x that comes from it will bias our estimate of x’s effect on y.</p>
+</div>
+<div class="fragment">
+<p><strong>Random assignment is a way of guaranteeing only <span class="math inline">\(Z_1\)</span>-type sources exist.</strong> When we assign x ourselves, nothing about the subject — their own characteristics, their own choices — can be the reason x varies, so every remaining source of variation in x is exogenous by construction.</p>
+</div>
+</section>
+<section id="random-assignment-the-solution" class="slide level2">
+<h2>Random assignment — the solution</h2>
+</section>
+<section id="controlled-assignment" class="slide level2">
+<h2>Controlled assignment</h2>
+<ul>
+<li>In a controlled experiment, the value of x isn’t something subjects choose — the experimenter assigns it</li>
+<li>That rules out <strong>self-selection</strong>: the people who end up working from home aren’t the ones who’d have quit anyway, or stayed anyway, for reasons related to their own circumstances</li>
+<li>It also rules out <strong>reverse causality</strong>: y (whether someone later quits) can’t have caused x (their assignment), since assignment happened first</li>
+</ul>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 20</p>
+</div>
+</section>
+<section id="why-random-assignment-works" class="slide level2">
+<h2>Why random assignment works</h2>
+<ul>
+<li>Randomisation is one particular assignment rule, and it’s independent of every potential confounder <strong>by design</strong></li>
+<li>That’s what the DAG a moment ago was really saying: randomise, and only exogenous variation in x is left. The treated and untreated groups are, on average, identical except for treatment</li>
+<li>Under random assignment, the simple difference in observed averages <strong>is</strong> a good estimate of the ATE</li>
+<li>No test can prove assignment was random. We believe it because of how the assignment was done, and we can check that the groups look alike on what we measured</li>
+</ul>
+</section>
+<section id="designing-and-running-the-experiment" class="slide level2">
+<h2>Designing and running the experiment</h2>
+</section>
+<section id="task-working-from-home" class="slide level2">
+<h2>Task — working from home</h2>
+<div class="instructions-box">
+<p>A field experiment: a real firm and its own employees. Working from home four days a week — does it change whether staff quit?</p>
+<p>503 employees volunteered; <strong>249 qualified</strong> (over six months’ tenure, broadband at home) and were randomly assigned to work from home or stay in the office. Two outcomes were tracked: whether they quit, and phone-call volume for staff whose job is order-taking.</p>
+<p>Open the Colab notebook, load <code>wfh_person.csv</code>, and inspect it:</p>
+<ol type="1">
+<li>How many employees are in the treatment group, and how many in the control group?</li>
+<li>Fit a linear probability model of <code>quitjob</code> on <code>treatment</code>. What’s the estimated treatment effect, and is it significant?</li>
+</ol>
+<p>No further syntax hints — you’ve written this exact regression many times by now.</p>
+</div>
+<div style="font-size:0.75em;color:#999;margin-top:12px;">
+<p>Source: Békés &amp; Kézdi (2021), Ch. 20, working-from-home dataset (Bloom et al.’s Ctrip field experiment)</p>
+</div>
+</section>
+<section id="what-you-should-have-found" class="slide level2 smaller">
+<h2>What you should have found</h2>
+<ul>
+<li><strong>131</strong> employees assigned to work from home, <strong>118</strong> to stay in the office</li>
+</ul>
+<div class="mid-code">
+<div class="sourceCode" id="cb14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb14-2"><a></a></span>
+<span id="cb14-3"><a></a>quit_model <span class="op">=</span> smf.ols(<span class="st">"quitjob ~ treatment"</span>, data<span class="op">=</span>wfh).fit(cov_type<span class="op">=</span><span class="st">"HC1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb15" data-startfrom="699" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 698;"><span id="cb15-699"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.52em;line-height:1.35;</span></span>
+<span id="cb15-700"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
+<span id="cb15-701"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>quit_summary_text<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-13" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb16" data-startfrom="706" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 705;"><span id="cb16-706"><a></a><span class="fu">html</span><span class="vs">`&lt;p&gt;Control group quits at &lt;strong&gt;</span><span class="sc">${</span>control_quit_rate<span class="sc">}</span><span class="vs">%&lt;/strong&gt;, treatment group at &lt;strong&gt;</span><span class="sc">${</span>treatment_quit_rate<span class="sc">}</span><span class="vs">%&lt;/strong&gt; — working from home cuts the quit rate by &lt;strong&gt;</span><span class="sc">${</span><span class="bu">Math</span><span class="op">.</span><span class="fu">abs</span>(quit_effect)<span class="sc">}</span><span class="vs"> percentage points&lt;/strong&gt; (p = </span><span class="sc">${</span>quit_p<span class="sc">}</span><span class="vs">).&lt;/p&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-14" data-nodetype="expression">
 
 </div>
 </div>
@@ -596,12 +880,18 @@
 </section>
 <section id="a-second-outcome-performance" class="slide level2">
 <h2>A second outcome: performance</h2>
-<p>Among staff whose job is answering calls <span>(N=<span id="ojs-element-id-1"></span>),</span> performance is measured directly:</p>
+<p>For staff whose job is taking calls, performance can be measured directly: the number of calls they handle.</p>
+<div class="mid-code">
+<div class="sourceCode" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a></a>ordertakers <span class="op">=</span> wfh[wfh[<span class="st">"ordertaker"</span>] <span class="op">==</span> <span class="va">True</span>]</span>
+<span id="cb17-2"><a></a>phone_model <span class="op">=</span> smf.ols(<span class="st">"phonecalls1 ~ treatment"</span>, data<span class="op">=</span>ordertakers).fit(cov_type<span class="op">=</span><span class="st">"HC1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="fragment">
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb8" data-startfrom="488" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 487;"><span id="cb8-488"><a></a><span class="fu">html</span><span class="vs">`&lt;p&gt;Working from home also &lt;strong&gt;increases&lt;/strong&gt; phone-call volume by &lt;strong&gt;</span><span class="sc">${</span>phone_effect<span class="sc">}</span><span class="vs"> thousand calls&lt;/strong&gt; per employee (p = </span><span class="sc">${</span>phone_p<span class="sc">}</span><span class="vs">) — the effect isn't just fewer people leaving, it's better performance from those who stay.&lt;/p&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb18" data-startfrom="723" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 722;"><span id="cb18-723"><a></a><span class="fu">html</span><span class="vs">`&lt;p&gt;Among these </span><span class="sc">${</span>phone_n<span class="sc">}</span><span class="vs"> order-takers, working from home &lt;strong&gt;raises&lt;/strong&gt; the number of calls by &lt;strong&gt;</span><span class="sc">${</span>phone_effect<span class="sc">}</span><span class="vs"> thousand&lt;/strong&gt; per employee over the period (p </span><span class="sc">${</span>phone_p<span class="sc">}</span><span class="vs">). Fewer people leave, and those who stay do more work.&lt;/p&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<div id="ojs-cell-7" data-nodetype="expression">
+<div id="ojs-cell-15" data-nodetype="expression">
 
+</div>
 </div>
 </div>
 </div>
@@ -612,102 +902,34 @@
 <section id="making-it-rigorous" class="slide level2">
 <h2>Making it rigorous</h2>
 </section>
-<section id="how-many-subjects-do-you-need" class="slide level2">
-<h2>How many subjects do you need?</h2>
-<ul>
-<li>Sample size depends on: significance level, the <strong>power</strong> you want (chance of detecting a real effect if it exists), and the <strong>minimum effect size</strong> worth detecting</li>
-<li>Smaller effects need bigger samples — precision doesn’t come free</li>
-<li>Gabor’s own worked example for this: <strong>fine-tuning social media advertising</strong> — a CEU business school choosing between two versions of an ad</li>
-</ul>
-<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a></a><span class="im">from</span> statsmodels.stats.proportion <span class="im">import</span> proportion_effectsize</span>
-<span id="cb9-2"><a></a><span class="im">from</span> statsmodels.stats.power <span class="im">import</span> NormalIndPower</span>
-<span id="cb9-3"><a></a></span>
-<span id="cb9-4"><a></a>effect_size <span class="op">=</span> proportion_effectsize(<span class="fl">0.01</span>, <span class="fl">0.02</span>)  <span class="co"># planning assumption: 1% CTR, want to detect a doubling</span></span>
-<span id="cb9-5"><a></a>n_needed <span class="op">=</span> NormalIndPower().solve_power(effect_size<span class="op">=</span><span class="bu">abs</span>(effect_size), alpha<span class="op">=</span><span class="fl">0.05</span>, power<span class="op">=</span><span class="fl">0.8</span>, ratio<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="fragment">
-<div class="cell">
-<div class="sourceCode cell-code hidden" id="cb10" data-startfrom="517" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 516;"><span id="cb10-517"><a></a><span class="fu">html</span><span class="vs">`&lt;p&gt;Planning assumption: a &lt;strong&gt;</span><span class="sc">${</span>planning_ctr<span class="sc">}</span><span class="vs">%&lt;/strong&gt; click-through rate. To detect a doubling of that rate at 80% power: &lt;strong&gt;</span><span class="sc">${</span>n_needed<span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs">&lt;/strong&gt; visitors per arm.&lt;/p&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div id="ojs-cell-8" data-nodetype="expression">
-
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="what-actually-happened" class="slide level2">
-<h2>What actually happened</h2>
-<div class="cell">
-<div class="sourceCode cell-code hidden" id="cb11" data-startfrom="524" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 523;"><span id="cb11-524"><a></a>{</span>
-<span id="cb11-525"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:16px auto 0;font-family:sans-serif;font-size:1.05em;border-collapse:collapse;"&gt;</span></span>
-<span id="cb11-526"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;&lt;th style="padding:6px 22px;"&gt;Version&lt;/th&gt;&lt;th style="padding:6px 22px;"&gt;Shown&lt;/th&gt;&lt;th style="padding:6px 22px;"&gt;Clicked&lt;/th&gt;&lt;th style="padding:6px 22px;"&gt;Converted&lt;/th&gt;&lt;th style="padding:6px 22px;"&gt;Rate&lt;/th&gt;&lt;/tr&gt;</span></span>
-<span id="cb11-527"><a></a><span class="vs">    </span><span class="sc">${</span>social_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="border-bottom:1px solid #ddd;"&gt;&lt;td style="padding:5px 22px;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">action_type</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:5px 22px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">show</span><span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:5px 22px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">clicks</span><span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:5px 22px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">action</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:5px 22px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">rate</span><span class="op">.</span><span class="fu">toFixed</span>(<span class="dv">4</span>)<span class="sc">}</span><span class="vs">%&lt;/td&gt;&lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
-<span id="cb11-528"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
-<span id="cb11-529"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div id="ojs-cell-9" data-nodetype="expression">
-
-</div>
-</div>
-</div>
-<div class="fragment">
-<div class="cell">
-<div class="sourceCode cell-code hidden" id="cb12" data-startfrom="534" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 533;"><span id="cb12-534"><a></a><span class="fu">html</span><span class="vs">`&lt;p&gt;</span><span class="sc">${</span>social_total_shows<span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs"> impressions, </span><span class="sc">${</span>social_total_clicks<span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs"> clicks, </span><span class="sc">${</span>social_total_actions<span class="sc">}</span><span class="vs"> actual conversions — a small difference between the two ads. Take-home message: pick "A," but the test itself was too small to be sure of much more than that.&lt;/p&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div id="ojs-cell-10" data-nodetype="expression">
-
-</div>
-</div>
-</div>
-</div>
-<div style="font-size:0.75em;color:#999;margin-top:12px;">
-<p>Source: Békés &amp; Kézdi (2021), Ch. 20, “Fine-Tuning Social Media Advertising” case study</p>
-</div>
-</section>
-<section id="task-what-if-the-effect-is-smaller" class="slide level2">
-<h2>Task — what if the effect is smaller?</h2>
-<div class="instructions-box">
-<p><strong>Business question</strong>: what if you only care about detecting a more modest 50% relative lift (1% → 1.5%) rather than a doubling — how much more data would that take?</p>
-<p>Rerun the power calculation with a 1.5% target instead of 2%. How much does the required sample size change? No further syntax hints.</p>
-</div>
-</section>
-<section id="what-you-should-have-found" class="slide level2">
-<h2>What you should have found</h2>
-<div class="cell">
-<div class="sourceCode cell-code hidden" id="cb13" data-startfrom="553" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 552;"><span id="cb13-553"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.62em;line-height:1.4;</span></span>
-<span id="cb13-554"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
-<span id="cb13-555"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>task_power_output_text<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div id="ojs-cell-11" data-nodetype="expression">
-
-</div>
-</div>
-</div>
-<div class="instructions-box">
-<p>Roughly three and a half times the sample size for a smaller lift — detecting smaller effects gets expensive fast, not linearly.</p>
-</div>
-</section>
-<section id="covariate-balance" class="slide level2">
+<section id="covariate-balance" class="slide level2 smaller">
 <h2>Covariate balance</h2>
-<p>Back to working from home: random assignment should mean the two groups look alike on everything measured <strong>before</strong> treatment.</p>
+<p>Back to working from home: random assignment should mean the two groups look alike on everything measured <strong>before</strong> treatment. A quick check: regress each one on treatment.</p>
+<div class="mid-code">
+<div class="sourceCode" id="cb19"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a></a><span class="cf">for</span> col <span class="kw">in</span> [<span class="st">"age"</span>, <span class="st">"married"</span>, <span class="st">"children"</span>, <span class="st">"tenure"</span>, <span class="st">"internet"</span>]:</span>
+<span id="cb19-2"><a></a>    m <span class="op">=</span> smf.ols(<span class="ss">f"</span><span class="sc">{</span>col<span class="sc">}</span><span class="ss"> ~ treatment"</span>, data<span class="op">=</span>wfh).fit(cov_type<span class="op">=</span><span class="st">"HC1"</span>)</span>
+<span id="cb19-3"><a></a>    <span class="bu">print</span>(col, m.pvalues[<span class="st">"treatment"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb14" data-startfrom="567" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 566;"><span id="cb14-567"><a></a>{</span>
-<span id="cb14-568"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:16px auto 0;font-family:sans-serif;font-size:1em;border-collapse:collapse;"&gt;</span></span>
-<span id="cb14-569"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;&lt;th style="padding:6px 22px;"&gt;Covariate&lt;/th&gt;&lt;th style="padding:6px 22px;"&gt;Treatment&lt;/th&gt;&lt;th style="padding:6px 22px;"&gt;Control&lt;/th&gt;&lt;th style="padding:6px 22px;"&gt;p-value&lt;/th&gt;&lt;/tr&gt;</span></span>
-<span id="cb14-570"><a></a><span class="vs">    </span><span class="sc">${</span>balance_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="border-bottom:1px solid #ddd;"&gt;&lt;td style="padding:5px 22px;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">covariate</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:5px 22px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">treat</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:5px 22px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">control</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:5px 22px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">p</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
-<span id="cb14-571"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
-<span id="cb14-572"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb20" data-startfrom="750" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 749;"><span id="cb20-750"><a></a><span class="fu">html</span><span class="vs">`&lt;table style="margin:10px auto 0;font-family:sans-serif;font-size:0.9em;border-collapse:collapse;"&gt;</span></span>
+<span id="cb20-751"><a></a><span class="vs">  &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;&lt;th style="padding:5px 22px;"&gt;Covariate&lt;/th&gt;&lt;th style="padding:5px 22px;"&gt;Treatment&lt;/th&gt;&lt;th style="padding:5px 22px;"&gt;Control&lt;/th&gt;&lt;th style="padding:5px 22px;"&gt;p-value&lt;/th&gt;&lt;/tr&gt;</span></span>
+<span id="cb20-752"><a></a><span class="vs">  </span><span class="sc">${</span>balance_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="border-bottom:1px solid #ddd;"&gt;&lt;td style="padding:4px 22px;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">covariate</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:4px 22px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">treat</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:4px 22px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">control</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:4px 22px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">p</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb20-753"><a></a><span class="vs">&lt;/table&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<div id="ojs-cell-12" data-nodetype="expression">
+<div id="ojs-cell-16" data-nodetype="expression">
 
 </div>
 </div>
 </div>
 <div class="fragment">
-<p>Mostly balanced — one covariate (“has children”) comes out with a low p-value. With five covariates checked, one false positive at conventional significance is exactly what chance predicts. Worth noting, not worth panicking over.</p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb21" data-startfrom="758" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 757;"><span id="cb21-758"><a></a><span class="fu">html</span><span class="vs">`&lt;p&gt;Mostly balanced. One covariate, </span><span class="sc">${</span>low_bal<span class="op">.</span><span class="at">covariate</span><span class="op">.</span><span class="fu">toLowerCase</span>()<span class="sc">}</span><span class="vs">, has a low p-value (</span><span class="sc">${</span>low_bal<span class="op">.</span><span class="at">p</span><span class="sc">}</span><span class="vs">). Check five covariates and one coming up below 0.05 by chance is not surprising. Worth noting, not worth worrying about.&lt;/p&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-17" data-nodetype="expression">
+
 </div>
-<div style="font-size:0.75em;color:#999;margin-top:12px;">
-<p>Source: Békés &amp; Kézdi (2021), Ch. 20 — real balance check, reproduced from the raw data</p>
+</div>
+</div>
 </div>
 </section>
 <section id="complications" class="slide level2">
@@ -716,20 +938,12 @@
 <section id="imperfect-compliance" class="slide level2">
 <h2>Imperfect compliance</h2>
 <div class="instructions-box">
-<p>Gabor’s own account of this experiment: fewer than 20% of the treatment group had to be reassigned back to the office, because of changes in their personal circumstances.</p>
+<p>In this experiment, fewer than 20% of the treatment group had to go back to the office because their personal circumstances changed.</p>
 </div>
 <ul>
 <li><strong>Assignment</strong> (what a subject is told to do) and <strong>treatment</strong> (what they actually do) don’t always match</li>
-<li>With small non-compliance like this, the effect we measured — comparing by <em>assignment</em> — is a reasonable stand-in for the effect of <em>actual</em> treatment</li>
-<li>With <strong>substantial</strong> non-compliance, that stops being true, and the honest move is to say so rather than report a number that’s no longer trustworthy</li>
-</ul>
-</section>
-<section id="itt-versus-the-treatment-effect" class="slide level2">
-<h2>ITT versus the treatment effect</h2>
-<ul>
-<li>What we measured above compares people <strong>by assignment</strong>, regardless of what they actually did — this is the <strong>intent-to-treat (ITT)</strong> effect</li>
-<li>ITT answers a genuinely useful question on its own: “if we rolled this out and got this level of compliance, what would happen?” — often the more <em>decision-relevant</em> number anyway</li>
-<li>The <strong>LATE</strong> (local average treatment effect) — the effect specifically on those who comply with their assignment — is what you’d need instead if non-compliance were large</li>
+<li>Comparing people <strong>by assignment</strong>, whatever they actually did, gives the <strong>intent-to-treat (ITT)</strong> effect: “if we rolled this out with this level of compliance, what would happen?” Often the number a manager needs</li>
+<li>With small non-compliance, ITT is a good stand-in for the effect of the treatment itself, just a bit smaller. With <strong>substantial</strong> non-compliance it isn’t, and the effect on those who comply (the <strong>LATE</strong>) is what we’d need instead</li>
 </ul>
 </section>
 <section id="being-observed-changes-behaviour" class="slide level2">
@@ -737,7 +951,7 @@
 <ul>
 <li><strong>Hawthorne effect</strong>: both treated and untreated subjects change their behaviour simply because they know they’re being watched — not because of the treatment itself</li>
 <li><strong>John Henry effect</strong>: the <em>control</em> group works harder than usual, specifically because they know they’re the comparison — the opposite problem, and just as real</li>
-<li><strong>Spillovers</strong>: one subject’s treatment can affect another’s outcome directly — breaks the clean comparison entirely. Good design keeps treatment and control apart where possible</li>
+<li><strong>Spillovers</strong>: one subject’s treatment affects another’s outcome, which spoils the comparison. Good design keeps treatment and control apart where possible</li>
 </ul>
 <div style="font-size:0.75em;color:#999;margin-top:12px;">
 <p>Source: Békés &amp; Kézdi (2021), Ch. 20</p>
@@ -747,38 +961,35 @@
 <h2>Internal and external validity</h2>
 <ul>
 <li><strong>Internal validity here</strong>: assignment was random, and non-compliance was small and concentrated in the treatment group only — Gabor judges internal validity as strong for this study</li>
-<li><strong>External validity</strong>: this firm changed its actual management practice off the back of this result — real impact. But would the same effect hold at a different firm, a different job type, a different country? That’s a judgement call, not something the data itself can answer</li>
+<li><strong>External validity</strong>: the firm changed its policy because of this result. Would the same effect hold at another firm, in another job or another country? That’s a judgement call; the data can’t answer it</li>
 </ul>
-</section>
-<section id="back-to-the-question" class="slide level2">
-<h2>Back to the question</h2>
 </section>
 <section id="so-does-working-from-home-change-who-quits" class="slide level2">
 <h2>So, does working from home change who quits?</h2>
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb15" data-startfrom="629" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 628;"><span id="cb15-629"><a></a><span class="fu">html</span><span class="vs">`&lt;p&gt;With &lt;strong&gt;</span><span class="sc">${</span>wfh_n<span class="sc">}</span><span class="vs">&lt;/strong&gt; employees, randomly assigned, and reasonably balanced — the honest answer is &lt;strong&gt;yes&lt;/strong&gt;: quit rates fall by roughly &lt;strong&gt;</span><span class="sc">${</span><span class="bu">Math</span><span class="op">.</span><span class="fu">abs</span>(quit_effect)<span class="sc">}</span><span class="vs"> percentage points&lt;/strong&gt;, and performance among those who stay improves too.&lt;/p&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb22" data-startfrom="798" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 797;"><span id="cb22-798"><a></a><span class="fu">html</span><span class="vs">`&lt;p&gt;With &lt;strong&gt;</span><span class="sc">${</span>wfh_n<span class="sc">}</span><span class="vs">&lt;/strong&gt; employees, randomly assigned and reasonably balanced, the answer is &lt;strong&gt;yes&lt;/strong&gt;: quit rates fall by about &lt;strong&gt;</span><span class="sc">${</span><span class="bu">Math</span><span class="op">.</span><span class="fu">abs</span>(quit_effect)<span class="sc">}</span><span class="vs"> percentage points&lt;/strong&gt;, and those who stay handle more calls.&lt;/p&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<div id="ojs-cell-13" data-nodetype="expression">
+<div id="ojs-cell-18" data-nodetype="expression">
 
 </div>
 </div>
 </div>
 <ul>
-<li>This is what a trustworthy causal claim looks like: a real intervention, real random assignment, and a result that would have been just as credible if it had come out null</li>
+<li>This is what a causal claim we can trust looks like: a real intervention, random assignment, and a design that would have been just as believable if the result had been zero</li>
 </ul>
 </section>
 <section id="summary" class="slide level2">
 <h2>Summary</h2>
 <ul>
-<li>Potential outcomes formalise what “an effect” even means — and confirm the individual effect is permanently unobservable, only the average is reachable</li>
-<li>DAGs make the causal question, and the assumptions behind it, explicit</li>
-<li>Random assignment is what makes the simple group comparison trustworthy — everything else this module has done with observational data is a second-best attempt at the same goal</li>
-<li>Real experiments still need care: enough power, checked balance, and an honest reckoning with imperfect compliance</li>
+<li>Potential outcomes define what “an effect” means. We never see the individual effect, but we can estimate the average</li>
+<li>DAGs make our assumptions explicit: control for confounders, not for mediators or colliders</li>
+<li>Random assignment makes the simple group comparison trustworthy. With observational data we can only try to get close</li>
+<li>Experiments still need care: enough subjects, checked balance, and a clear account of non-compliance</li>
 </ul>
 </section>
 <section id="online-session" class="slide level2">
 <h2>Online session</h2>
-<p>See <strong>week9-online.html</strong> — what to do when you can’t randomise: confounders, latent variables, and bad controls.</p>
+<p>What to do when you can’t randomise: the types of confounder, latent variables and bad controls, worked through on a food-and-health case study.</p>
 </section>
 <section id="coming-up" class="slide level2">
 <h2>Coming up</h2>
@@ -790,11 +1001,6 @@
 </div>
 
 
-<div class="ojs-auto-generated hidden">
-<script type="ojs-module-contents">
-eyJjb250ZW50cyI6WyAgeyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiaW5saW5lIjoidHJ1ZSIsInNvdXJjZSI6Imh0bC5odG1sYDxzcGFuPiR7cGhvbmVfbn08L3NwYW4+YCIsICJjZWxsTmFtZSI6Im9qcy1lbGVtZW50LWlkLTEifV19
-</script>
-</div>
 </section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
@@ -1012,7 +1218,7 @@ eyJjb250ZW50cyI6WyAgeyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiaW5saW5lIjoidHJ1ZSIsInNv
       });
     </script>
     <script type="ojs-module-contents">
-    eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPGRpdiBzdHlsZT1cInRleHQtYWxpZ246Y2VudGVyO3BhZGRpbmctdG9wOjIwcHg7XCI+XG4gIDxzdmcgd2lkdGg9XCI0MjBcIiBoZWlnaHQ9XCIxMjBcIj5cbiAgICA8dGV4dCB4PVwiNjBcIiB5PVwiNjVcIiBmb250LXNpemU9XCIxOFwiIHRleHQtYW5jaG9yPVwibWlkZGxlXCIgZm9udC1mYW1pbHk9XCJzYW5zLXNlcmlmXCI+WDwvdGV4dD5cbiAgICA8dGV4dCB4PVwiMzYwXCIgeT1cIjY1XCIgZm9udC1zaXplPVwiMThcIiB0ZXh0LWFuY2hvcj1cIm1pZGRsZVwiIGZvbnQtZmFtaWx5PVwic2Fucy1zZXJpZlwiPlk8L3RleHQ+XG4gICAgPGxpbmUgeDE9XCI4MFwiIHkxPVwiNjBcIiB4Mj1cIjMzNVwiIHkyPVwiNjBcIiBzdHJva2U9XCIjMmQ2YTRmXCIgc3Ryb2tlLXdpZHRoPVwiMlwiIG1hcmtlci1lbmQ9XCJ1cmwoI2Fycm93KVwiLz5cbiAgICA8dGV4dCB4PVwiMjAwXCIgeT1cIjQ1XCIgZm9udC1zaXplPVwiMjBcIiB0ZXh0LWFuY2hvcj1cIm1pZGRsZVwiIGZpbGw9XCIjYzAzOTJiXCIgZm9udC1mYW1pbHk9XCJzYW5zLXNlcmlmXCI+PzwvdGV4dD5cbiAgICA8ZGVmcz48bWFya2VyIGlkPVwiYXJyb3dcIiBtYXJrZXJXaWR0aD1cIjEwXCIgbWFya2VySGVpZ2h0PVwiMTBcIiByZWZYPVwiOFwiIHJlZlk9XCIzXCIgb3JpZW50PVwiYXV0b1wiPjxwYXRoIGQ9XCJNMCwwIEwwLDYgTDksMyB6XCIgZmlsbD1cIiMyZDZhNGZcIi8+PC9tYXJrZXI+PC9kZWZzPlxuICA8L3N2Zz5cbjwvZGl2PmBcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMiIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPGRpdiBzdHlsZT1cInRleHQtYWxpZ246Y2VudGVyO3BhZGRpbmctdG9wOjEwcHg7XCI+XG4gIDxzdmcgd2lkdGg9XCI0NjBcIiBoZWlnaHQ9XCIxODBcIj5cbiAgICA8dGV4dCB4PVwiODBcIiB5PVwiMTUwXCIgZm9udC1zaXplPVwiMThcIiB0ZXh0LWFuY2hvcj1cIm1pZGRsZVwiIGZvbnQtZmFtaWx5PVwic2Fucy1zZXJpZlwiPlg8L3RleHQ+XG4gICAgPHRleHQgeD1cIjM4MFwiIHk9XCIxNTBcIiBmb250LXNpemU9XCIxOFwiIHRleHQtYW5jaG9yPVwibWlkZGxlXCIgZm9udC1mYW1pbHk9XCJzYW5zLXNlcmlmXCI+WTwvdGV4dD5cbiAgICA8dGV4dCB4PVwiMjMwXCIgeT1cIjM1XCIgZm9udC1zaXplPVwiMThcIiB0ZXh0LWFuY2hvcj1cIm1pZGRsZVwiIGZvbnQtZmFtaWx5PVwic2Fucy1zZXJpZlwiPlo8L3RleHQ+XG4gICAgPGxpbmUgeDE9XCI5NVwiIHkxPVwiMTQwXCIgeDI9XCIzNjVcIiB5Mj1cIjE0MFwiIHN0cm9rZT1cIiNjMDM5MmJcIiBzdHJva2Utd2lkdGg9XCIyXCIgbWFya2VyLWVuZD1cInVybCgjYTUpXCIvPlxuICAgIDxsaW5lIHgxPVwiMjE1XCIgeTE9XCI0NVwiIHgyPVwiMTAwXCIgeTI9XCIxMzBcIiBzdHJva2U9XCIjMmQ2YTRmXCIgc3Ryb2tlLXdpZHRoPVwiMlwiIG1hcmtlci1lbmQ9XCJ1cmwoI2E1KVwiLz5cbiAgICA8bGluZSB4MT1cIjI0NVwiIHkxPVwiNDVcIiB4Mj1cIjM2NVwiIHkyPVwiMTMwXCIgc3Ryb2tlPVwiIzJkNmE0ZlwiIHN0cm9rZS13aWR0aD1cIjJcIiBtYXJrZXItZW5kPVwidXJsKCNhNSlcIi8+XG4gICAgPGRlZnM+PG1hcmtlciBpZD1cImE1XCIgbWFya2VyV2lkdGg9XCIxMFwiIG1hcmtlckhlaWdodD1cIjEwXCIgcmVmWD1cIjhcIiByZWZZPVwiM1wiIG9yaWVudD1cImF1dG9cIj48cGF0aCBkPVwiTTAsMCBMMCw2IEw5LDMgelwiIGZpbGw9XCIjMmQ2YTRmXCIvPjwvbWFya2VyPjwvZGVmcz5cbiAgPC9zdmc+XG48L2Rpdj5gXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTMiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJodG1sYDxkaXYgc3R5bGU9XCJ0ZXh0LWFsaWduOmNlbnRlcjtwYWRkaW5nLXRvcDoyMHB4O1wiPlxuICA8c3ZnIHdpZHRoPVwiNDgwXCIgaGVpZ2h0PVwiMTQwXCI+XG4gICAgPHRleHQgeD1cIjUwXCIgeT1cIjc1XCIgZm9udC1zaXplPVwiMThcIiB0ZXh0LWFuY2hvcj1cIm1pZGRsZVwiIGZvbnQtZmFtaWx5PVwic2Fucy1zZXJpZlwiPlg8L3RleHQ+XG4gICAgPHRleHQgeD1cIjI0MFwiIHk9XCIzNVwiIGZvbnQtc2l6ZT1cIjE2XCIgdGV4dC1hbmNob3I9XCJtaWRkbGVcIiBmb250LWZhbWlseT1cInNhbnMtc2VyaWZcIj5NPC90ZXh0PlxuICAgIDx0ZXh0IHg9XCI0MzBcIiB5PVwiNzVcIiBmb250LXNpemU9XCIxOFwiIHRleHQtYW5jaG9yPVwibWlkZGxlXCIgZm9udC1mYW1pbHk9XCJzYW5zLXNlcmlmXCI+WTwvdGV4dD5cbiAgICA8bGluZSB4MT1cIjY1XCIgeTE9XCI2NVwiIHgyPVwiMjI1XCIgeTI9XCI0MFwiIHN0cm9rZT1cIiMyZDZhNGZcIiBzdHJva2Utd2lkdGg9XCIyXCIgbWFya2VyLWVuZD1cInVybCgjYXJyb3cyKVwiLz5cbiAgICA8bGluZSB4MT1cIjI1NVwiIHkxPVwiNDBcIiB4Mj1cIjQxNVwiIHkyPVwiNjVcIiBzdHJva2U9XCIjMmQ2YTRmXCIgc3Ryb2tlLXdpZHRoPVwiMlwiIG1hcmtlci1lbmQ9XCJ1cmwoI2Fycm93MilcIi8+XG4gICAgPGxpbmUgeDE9XCI3MFwiIHkxPVwiNzVcIiB4Mj1cIjQxMFwiIHkyPVwiNzVcIiBzdHJva2U9XCIjOTk5XCIgc3Ryb2tlLXdpZHRoPVwiMS41XCIgc3Ryb2tlLWRhc2hhcnJheT1cIjQsM1wiIG1hcmtlci1lbmQ9XCJ1cmwoI2Fycm93MylcIi8+XG4gICAgPGRlZnM+XG4gICAgICA8bWFya2VyIGlkPVwiYXJyb3cyXCIgbWFya2VyV2lkdGg9XCIxMFwiIG1hcmtlckhlaWdodD1cIjEwXCIgcmVmWD1cIjhcIiByZWZZPVwiM1wiIG9yaWVudD1cImF1dG9cIj48cGF0aCBkPVwiTTAsMCBMMCw2IEw5LDMgelwiIGZpbGw9XCIjMmQ2YTRmXCIvPjwvbWFya2VyPlxuICAgICAgPG1hcmtlciBpZD1cImFycm93M1wiIG1hcmtlcldpZHRoPVwiMTBcIiBtYXJrZXJIZWlnaHQ9XCIxMFwiIHJlZlg9XCI4XCIgcmVmWT1cIjNcIiBvcmllbnQ9XCJhdXRvXCI+PHBhdGggZD1cIk0wLDAgTDAsNiBMOSwzIHpcIiBmaWxsPVwiIzk5OVwiLz48L21hcmtlcj5cbiAgICA8L2RlZnM+XG4gIDwvc3ZnPlxuPC9kaXY+YFxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC00IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8cCBzdHlsZT1cIm1hcmdpbi1sZWZ0OjEuMmVtO1wiPjxzdHJvbmc+JHt3ZmhfdHJlYXRfbn08L3N0cm9uZz4gdG8gd29yayBmcm9tIGhvbWUsIDxzdHJvbmc+JHt3ZmhfY29udHJvbF9ufTwvc3Ryb25nPiB0byBzdGF5IGluIHRoZSBvZmZpY2U8L3A+YFxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC01IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8cHJlIHN0eWxlPVwiZm9udC1mYW1pbHk6J1NGIE1vbm8nLCdNZW5sbycsbW9ub3NwYWNlO2ZvbnQtc2l6ZTowLjUyZW07bGluZS1oZWlnaHQ6MS4zNTtcbiAgICAgICAgICAgICAgICAgIGJhY2tncm91bmQ6I2Y2ZjZmODtib3JkZXI6MXB4IHNvbGlkICNlMGUwZTY7Ym9yZGVyLXJhZGl1czo2cHg7XG4gICAgICAgICAgICAgICAgICBwYWRkaW5nOjhweCAxNHB4O292ZXJmbG93LXg6YXV0bzt3aGl0ZS1zcGFjZTpwcmU7XCI+JHtxdWl0X3N1bW1hcnlfdGV4dH08L3ByZT5gXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTYiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJodG1sYDxwPkNvbnRyb2wgZ3JvdXAgcXVpdHMgYXQgPHN0cm9uZz4ke2NvbnRyb2xfcXVpdF9yYXRlfSU8L3N0cm9uZz4sIHRyZWF0bWVudCBncm91cCBhdCA8c3Ryb25nPiR7dHJlYXRtZW50X3F1aXRfcmF0ZX0lPC9zdHJvbmc+IOKAlCB3b3JraW5nIGZyb20gaG9tZSBjdXRzIHRoZSBxdWl0IHJhdGUgYnkgPHN0cm9uZz4ke01hdGguYWJzKHF1aXRfZWZmZWN0KX0gcGVyY2VudGFnZSBwb2ludHM8L3N0cm9uZz4gKHAgPSAke3F1aXRfcH0pLiBBIHJlYWwsIHNpZ25pZmljYW50IGVmZmVjdC48L3A+YFxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC03IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8cD5Xb3JraW5nIGZyb20gaG9tZSBhbHNvIDxzdHJvbmc+aW5jcmVhc2VzPC9zdHJvbmc+IHBob25lLWNhbGwgdm9sdW1lIGJ5IDxzdHJvbmc+JHtwaG9uZV9lZmZlY3R9IHRob3VzYW5kIGNhbGxzPC9zdHJvbmc+IHBlciBlbXBsb3llZSAocCA9ICR7cGhvbmVfcH0pIOKAlCB0aGUgZWZmZWN0IGlzbid0IGp1c3QgZmV3ZXIgcGVvcGxlIGxlYXZpbmcsIGl0J3MgYmV0dGVyIHBlcmZvcm1hbmNlIGZyb20gdGhvc2Ugd2hvIHN0YXkuPC9wPmBcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtOCIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPHA+UGxhbm5pbmcgYXNzdW1wdGlvbjogYSA8c3Ryb25nPiR7cGxhbm5pbmdfY3RyfSU8L3N0cm9uZz4gY2xpY2stdGhyb3VnaCByYXRlLiBUbyBkZXRlY3QgYSBkb3VibGluZyBvZiB0aGF0IHJhdGUgYXQgODAlIHBvd2VyOiA8c3Ryb25nPiR7bl9uZWVkZWQudG9Mb2NhbGVTdHJpbmcoKX08L3N0cm9uZz4gdmlzaXRvcnMgcGVyIGFybS48L3A+YFxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC05IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICByZXR1cm4gaHRtbGA8dGFibGUgc3R5bGU9XCJtYXJnaW46MTZweCBhdXRvIDA7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MS4wNWVtO2JvcmRlci1jb2xsYXBzZTpjb2xsYXBzZTtcIj5cbiAgICA8dHIgc3R5bGU9XCJib3JkZXItYm90dG9tOjJweCBzb2xpZCAjMWExYTJlO1wiPjx0aCBzdHlsZT1cInBhZGRpbmc6NnB4IDIycHg7XCI+VmVyc2lvbjwvdGg+PHRoIHN0eWxlPVwicGFkZGluZzo2cHggMjJweDtcIj5TaG93bjwvdGg+PHRoIHN0eWxlPVwicGFkZGluZzo2cHggMjJweDtcIj5DbGlja2VkPC90aD48dGggc3R5bGU9XCJwYWRkaW5nOjZweCAyMnB4O1wiPkNvbnZlcnRlZDwvdGg+PHRoIHN0eWxlPVwicGFkZGluZzo2cHggMjJweDtcIj5SYXRlPC90aD48L3RyPlxuICAgICR7c29jaWFsX3Jvd3MubWFwKGQgPT4gYDx0ciBzdHlsZT1cImJvcmRlci1ib3R0b206MXB4IHNvbGlkICNkZGQ7XCI+PHRkIHN0eWxlPVwicGFkZGluZzo1cHggMjJweDtcIj4ke2QuYWN0aW9uX3R5cGV9PC90ZD48dGQgc3R5bGU9XCJwYWRkaW5nOjVweCAyMnB4O3RleHQtYWxpZ246Y2VudGVyO1wiPiR7ZC5zaG93LnRvTG9jYWxlU3RyaW5nKCl9PC90ZD48dGQgc3R5bGU9XCJwYWRkaW5nOjVweCAyMnB4O3RleHQtYWxpZ246Y2VudGVyO1wiPiR7ZC5jbGlja3MudG9Mb2NhbGVTdHJpbmcoKX08L3RkPjx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDIycHg7dGV4dC1hbGlnbjpjZW50ZXI7XCI+JHtkLmFjdGlvbn08L3RkPjx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDIycHg7dGV4dC1hbGlnbjpjZW50ZXI7XCI+JHtkLnJhdGUudG9GaXhlZCg0KX0lPC90ZD48L3RyPmApLmpvaW4oJycpfVxuICA8L3RhYmxlPmBcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMTAiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJodG1sYDxwPiR7c29jaWFsX3RvdGFsX3Nob3dzLnRvTG9jYWxlU3RyaW5nKCl9IGltcHJlc3Npb25zLCAke3NvY2lhbF90b3RhbF9jbGlja3MudG9Mb2NhbGVTdHJpbmcoKX0gY2xpY2tzLCAke3NvY2lhbF90b3RhbF9hY3Rpb25zfSBhY3R1YWwgY29udmVyc2lvbnMg4oCUIGEgc21hbGwgZGlmZmVyZW5jZSBiZXR3ZWVuIHRoZSB0d28gYWRzLiBUYWtlLWhvbWUgbWVzc2FnZTogcGljayBcIkEsXCIgYnV0IHRoZSB0ZXN0IGl0c2VsZiB3YXMgdG9vIHNtYWxsIHRvIGJlIHN1cmUgb2YgbXVjaCBtb3JlIHRoYW4gdGhhdC48L3A+YFxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC0xMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPHByZSBzdHlsZT1cImZvbnQtZmFtaWx5OidTRiBNb25vJywnTWVubG8nLG1vbm9zcGFjZTtmb250LXNpemU6MC42MmVtO2xpbmUtaGVpZ2h0OjEuNDtcbiAgICAgICAgICAgICAgICAgIGJhY2tncm91bmQ6I2Y2ZjZmODtib3JkZXI6MXB4IHNvbGlkICNlMGUwZTY7Ym9yZGVyLXJhZGl1czo2cHg7XG4gICAgICAgICAgICAgICAgICBwYWRkaW5nOjhweCAxNHB4O292ZXJmbG93LXg6YXV0bzt3aGl0ZS1zcGFjZTpwcmU7XCI+JHt0YXNrX3Bvd2VyX291dHB1dF90ZXh0fTwvcHJlPmBcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIHJldHVybiBodG1sYDx0YWJsZSBzdHlsZT1cIm1hcmdpbjoxNnB4IGF1dG8gMDtmb250LWZhbWlseTpzYW5zLXNlcmlmO2ZvbnQtc2l6ZToxZW07Ym9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlO1wiPlxuICAgIDx0ciBzdHlsZT1cImJvcmRlci1ib3R0b206MnB4IHNvbGlkICMxYTFhMmU7XCI+PHRoIHN0eWxlPVwicGFkZGluZzo2cHggMjJweDtcIj5Db3ZhcmlhdGU8L3RoPjx0aCBzdHlsZT1cInBhZGRpbmc6NnB4IDIycHg7XCI+VHJlYXRtZW50PC90aD48dGggc3R5bGU9XCJwYWRkaW5nOjZweCAyMnB4O1wiPkNvbnRyb2w8L3RoPjx0aCBzdHlsZT1cInBhZGRpbmc6NnB4IDIycHg7XCI+cC12YWx1ZTwvdGg+PC90cj5cbiAgICAke2JhbGFuY2Vfcm93cy5tYXAoZCA9PiBgPHRyIHN0eWxlPVwiYm9yZGVyLWJvdHRvbToxcHggc29saWQgI2RkZDtcIj48dGQgc3R5bGU9XCJwYWRkaW5nOjVweCAyMnB4O1wiPiR7ZC5jb3ZhcmlhdGV9PC90ZD48dGQgc3R5bGU9XCJwYWRkaW5nOjVweCAyMnB4O3RleHQtYWxpZ246Y2VudGVyO1wiPiR7ZC50cmVhdH08L3RkPjx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDIycHg7dGV4dC1hbGlnbjpjZW50ZXI7XCI+JHtkLmNvbnRyb2x9PC90ZD48dGQgc3R5bGU9XCJwYWRkaW5nOjVweCAyMnB4O3RleHQtYWxpZ246Y2VudGVyO1wiPiR7ZC5wfTwvdGQ+PC90cj5gKS5qb2luKCcnKX1cbiAgPC90YWJsZT5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTEzIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8cD5XaXRoIDxzdHJvbmc+JHt3Zmhfbn08L3N0cm9uZz4gZW1wbG95ZWVzLCByYW5kb21seSBhc3NpZ25lZCwgYW5kIHJlYXNvbmFibHkgYmFsYW5jZWQg4oCUIHRoZSBob25lc3QgYW5zd2VyIGlzIDxzdHJvbmc+eWVzPC9zdHJvbmc+OiBxdWl0IHJhdGVzIGZhbGwgYnkgcm91Z2hseSA8c3Ryb25nPiR7TWF0aC5hYnMocXVpdF9lZmZlY3QpfSBwZXJjZW50YWdlIHBvaW50czwvc3Ryb25nPiwgYW5kIHBlcmZvcm1hbmNlIGFtb25nIHRob3NlIHdobyBzdGF5IGltcHJvdmVzIHRvby48L3A+YFxuIn1dfQ==
+    eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPGRpdiBzdHlsZT1cInRleHQtYWxpZ246Y2VudGVyO3BhZGRpbmctdG9wOjIwcHg7XCI+XG4gIDxzdmcgd2lkdGg9XCI0MjBcIiBoZWlnaHQ9XCIxMjBcIj5cbiAgICA8dGV4dCB4PVwiNjBcIiB5PVwiNjVcIiBmb250LXNpemU9XCIxOFwiIHRleHQtYW5jaG9yPVwibWlkZGxlXCIgZm9udC1mYW1pbHk9XCJzYW5zLXNlcmlmXCI+WDwvdGV4dD5cbiAgICA8dGV4dCB4PVwiMzYwXCIgeT1cIjY1XCIgZm9udC1zaXplPVwiMThcIiB0ZXh0LWFuY2hvcj1cIm1pZGRsZVwiIGZvbnQtZmFtaWx5PVwic2Fucy1zZXJpZlwiPlk8L3RleHQ+XG4gICAgPGxpbmUgeDE9XCI4MFwiIHkxPVwiNjBcIiB4Mj1cIjMzNVwiIHkyPVwiNjBcIiBzdHJva2U9XCIjMmQ2YTRmXCIgc3Ryb2tlLXdpZHRoPVwiMlwiIG1hcmtlci1lbmQ9XCJ1cmwoI2Fycm93KVwiLz5cbiAgICA8dGV4dCB4PVwiMjAwXCIgeT1cIjQ1XCIgZm9udC1zaXplPVwiMjBcIiB0ZXh0LWFuY2hvcj1cIm1pZGRsZVwiIGZpbGw9XCIjYzAzOTJiXCIgZm9udC1mYW1pbHk9XCJzYW5zLXNlcmlmXCI+PzwvdGV4dD5cbiAgICA8ZGVmcz48bWFya2VyIGlkPVwiYXJyb3dcIiBtYXJrZXJXaWR0aD1cIjEwXCIgbWFya2VySGVpZ2h0PVwiMTBcIiByZWZYPVwiOFwiIHJlZlk9XCIzXCIgb3JpZW50PVwiYXV0b1wiPjxwYXRoIGQ9XCJNMCwwIEwwLDYgTDksMyB6XCIgZmlsbD1cIiMyZDZhNGZcIi8+PC9tYXJrZXI+PC9kZWZzPlxuICA8L3N2Zz5cbjwvZGl2PmBcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMiIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPGRpdiBzdHlsZT1cInRleHQtYWxpZ246Y2VudGVyO3BhZGRpbmctdG9wOjEwcHg7XCI+XG4gIDxzdmcgd2lkdGg9XCI0NjBcIiBoZWlnaHQ9XCIxODBcIj5cbiAgICA8dGV4dCB4PVwiODBcIiB5PVwiMTUwXCIgZm9udC1zaXplPVwiMThcIiB0ZXh0LWFuY2hvcj1cIm1pZGRsZVwiIGZvbnQtZmFtaWx5PVwic2Fucy1zZXJpZlwiPlg8L3RleHQ+XG4gICAgPHRleHQgeD1cIjM4MFwiIHk9XCIxNTBcIiBmb250LXNpemU9XCIxOFwiIHRleHQtYW5jaG9yPVwibWlkZGxlXCIgZm9udC1mYW1pbHk9XCJzYW5zLXNlcmlmXCI+WTwvdGV4dD5cbiAgICA8dGV4dCB4PVwiMjMwXCIgeT1cIjM1XCIgZm9udC1zaXplPVwiMThcIiB0ZXh0LWFuY2hvcj1cIm1pZGRsZVwiIGZvbnQtZmFtaWx5PVwic2Fucy1zZXJpZlwiPlo8L3RleHQ+XG4gICAgPGxpbmUgeDE9XCI5NVwiIHkxPVwiMTQwXCIgeDI9XCIzNjVcIiB5Mj1cIjE0MFwiIHN0cm9rZT1cIiNjMDM5MmJcIiBzdHJva2Utd2lkdGg9XCIyXCIgbWFya2VyLWVuZD1cInVybCgjYTUpXCIvPlxuICAgIDxsaW5lIHgxPVwiMjE1XCIgeTE9XCI0NVwiIHgyPVwiMTAwXCIgeTI9XCIxMzBcIiBzdHJva2U9XCIjMmQ2YTRmXCIgc3Ryb2tlLXdpZHRoPVwiMlwiIG1hcmtlci1lbmQ9XCJ1cmwoI2E1KVwiLz5cbiAgICA8bGluZSB4MT1cIjI0NVwiIHkxPVwiNDVcIiB4Mj1cIjM2NVwiIHkyPVwiMTMwXCIgc3Ryb2tlPVwiIzJkNmE0ZlwiIHN0cm9rZS13aWR0aD1cIjJcIiBtYXJrZXItZW5kPVwidXJsKCNhNSlcIi8+XG4gICAgPGRlZnM+PG1hcmtlciBpZD1cImE1XCIgbWFya2VyV2lkdGg9XCIxMFwiIG1hcmtlckhlaWdodD1cIjEwXCIgcmVmWD1cIjhcIiByZWZZPVwiM1wiIG9yaWVudD1cImF1dG9cIj48cGF0aCBkPVwiTTAsMCBMMCw2IEw5LDMgelwiIGZpbGw9XCIjMmQ2YTRmXCIvPjwvbWFya2VyPjwvZGVmcz5cbiAgPC9zdmc+XG48L2Rpdj5gXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTMiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJodG1sYDxkaXYgc3R5bGU9XCJ0ZXh0LWFsaWduOmNlbnRlcjtwYWRkaW5nLXRvcDoyMHB4O1wiPlxuICA8c3ZnIHdpZHRoPVwiNDgwXCIgaGVpZ2h0PVwiMTQwXCI+XG4gICAgPHRleHQgeD1cIjUwXCIgeT1cIjc1XCIgZm9udC1zaXplPVwiMThcIiB0ZXh0LWFuY2hvcj1cIm1pZGRsZVwiIGZvbnQtZmFtaWx5PVwic2Fucy1zZXJpZlwiPlg8L3RleHQ+XG4gICAgPHRleHQgeD1cIjI0MFwiIHk9XCIzNVwiIGZvbnQtc2l6ZT1cIjE2XCIgdGV4dC1hbmNob3I9XCJtaWRkbGVcIiBmb250LWZhbWlseT1cInNhbnMtc2VyaWZcIj5NPC90ZXh0PlxuICAgIDx0ZXh0IHg9XCI0MzBcIiB5PVwiNzVcIiBmb250LXNpemU9XCIxOFwiIHRleHQtYW5jaG9yPVwibWlkZGxlXCIgZm9udC1mYW1pbHk9XCJzYW5zLXNlcmlmXCI+WTwvdGV4dD5cbiAgICA8bGluZSB4MT1cIjY1XCIgeTE9XCI2NVwiIHgyPVwiMjI1XCIgeTI9XCI0MFwiIHN0cm9rZT1cIiMyZDZhNGZcIiBzdHJva2Utd2lkdGg9XCIyXCIgbWFya2VyLWVuZD1cInVybCgjYXJyb3cyKVwiLz5cbiAgICA8bGluZSB4MT1cIjI1NVwiIHkxPVwiNDBcIiB4Mj1cIjQxNVwiIHkyPVwiNjVcIiBzdHJva2U9XCIjMmQ2YTRmXCIgc3Ryb2tlLXdpZHRoPVwiMlwiIG1hcmtlci1lbmQ9XCJ1cmwoI2Fycm93MilcIi8+XG4gICAgPGxpbmUgeDE9XCI3MFwiIHkxPVwiNzVcIiB4Mj1cIjQxMFwiIHkyPVwiNzVcIiBzdHJva2U9XCIjOTk5XCIgc3Ryb2tlLXdpZHRoPVwiMS41XCIgc3Ryb2tlLWRhc2hhcnJheT1cIjQsM1wiIG1hcmtlci1lbmQ9XCJ1cmwoI2Fycm93MylcIi8+XG4gICAgPGRlZnM+XG4gICAgICA8bWFya2VyIGlkPVwiYXJyb3cyXCIgbWFya2VyV2lkdGg9XCIxMFwiIG1hcmtlckhlaWdodD1cIjEwXCIgcmVmWD1cIjhcIiByZWZZPVwiM1wiIG9yaWVudD1cImF1dG9cIj48cGF0aCBkPVwiTTAsMCBMMCw2IEw5LDMgelwiIGZpbGw9XCIjMmQ2YTRmXCIvPjwvbWFya2VyPlxuICAgICAgPG1hcmtlciBpZD1cImFycm93M1wiIG1hcmtlcldpZHRoPVwiMTBcIiBtYXJrZXJIZWlnaHQ9XCIxMFwiIHJlZlg9XCI4XCIgcmVmWT1cIjNcIiBvcmllbnQ9XCJhdXRvXCI+PHBhdGggZD1cIk0wLDAgTDAsNiBMOSwzIHpcIiBmaWxsPVwiIzk5OVwiLz48L21hcmtlcj5cbiAgICA8L2RlZnM+XG4gIDwvc3ZnPlxuPC9kaXY+YFxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC00IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8ZGl2IHN0eWxlPVwidGV4dC1hbGlnbjpjZW50ZXI7cGFkZGluZy10b3A6MTBweDtcIj5cbiAgPHN2ZyB3aWR0aD1cIjQ4MFwiIGhlaWdodD1cIjE0MFwiPlxuICAgIDx0ZXh0IHg9XCI1MFwiIHk9XCI3NVwiIGZvbnQtc2l6ZT1cIjE4XCIgdGV4dC1hbmNob3I9XCJtaWRkbGVcIiBmb250LWZhbWlseT1cInNhbnMtc2VyaWZcIj5XRkg8L3RleHQ+XG4gICAgPHRleHQgeD1cIjI0MFwiIHk9XCIzNVwiIGZvbnQtc2l6ZT1cIjE2XCIgdGV4dC1hbmNob3I9XCJtaWRkbGVcIiBmb250LWZhbWlseT1cInNhbnMtc2VyaWZcIj5Db21tdXRlIHN0cmVzczwvdGV4dD5cbiAgICA8dGV4dCB4PVwiNDQwXCIgeT1cIjc1XCIgZm9udC1zaXplPVwiMThcIiB0ZXh0LWFuY2hvcj1cIm1pZGRsZVwiIGZvbnQtZmFtaWx5PVwic2Fucy1zZXJpZlwiPlF1aXQ8L3RleHQ+XG4gICAgPGxpbmUgeDE9XCI4MFwiIHkxPVwiNjVcIiB4Mj1cIjIwMFwiIHkyPVwiNDBcIiBzdHJva2U9XCIjMmQ2YTRmXCIgc3Ryb2tlLXdpZHRoPVwiMlwiIG1hcmtlci1lbmQ9XCJ1cmwoI2E5KVwiLz5cbiAgICA8bGluZSB4MT1cIjI3NVwiIHkxPVwiNDBcIiB4Mj1cIjQyMFwiIHkyPVwiNjVcIiBzdHJva2U9XCIjMmQ2YTRmXCIgc3Ryb2tlLXdpZHRoPVwiMlwiIG1hcmtlci1lbmQ9XCJ1cmwoI2E5KVwiLz5cbiAgICA8bGluZSB4MT1cIjgwXCIgeTE9XCI3NVwiIHgyPVwiNDE1XCIgeTI9XCI3NVwiIHN0cm9rZT1cIiM5OTlcIiBzdHJva2Utd2lkdGg9XCIxLjVcIiBzdHJva2UtZGFzaGFycmF5PVwiNCwzXCIgbWFya2VyLWVuZD1cInVybCgjYTEwKVwiLz5cbiAgICA8ZGVmcz5cbiAgICAgIDxtYXJrZXIgaWQ9XCJhOVwiIG1hcmtlcldpZHRoPVwiMTBcIiBtYXJrZXJIZWlnaHQ9XCIxMFwiIHJlZlg9XCI4XCIgcmVmWT1cIjNcIiBvcmllbnQ9XCJhdXRvXCI+PHBhdGggZD1cIk0wLDAgTDAsNiBMOSwzIHpcIiBmaWxsPVwiIzJkNmE0ZlwiLz48L21hcmtlcj5cbiAgICAgIDxtYXJrZXIgaWQ9XCJhMTBcIiBtYXJrZXJXaWR0aD1cIjEwXCIgbWFya2VySGVpZ2h0PVwiMTBcIiByZWZYPVwiOFwiIHJlZlk9XCIzXCIgb3JpZW50PVwiYXV0b1wiPjxwYXRoIGQ9XCJNMCwwIEwwLDYgTDksMyB6XCIgZmlsbD1cIiM5OTlcIi8+PC9tYXJrZXI+XG4gICAgPC9kZWZzPlxuICA8L3N2Zz5cbjwvZGl2PmBcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPGRpdiBzdHlsZT1cInRleHQtYWxpZ246Y2VudGVyO3BhZGRpbmctdG9wOjEwcHg7XCI+XG4gIDxzdmcgd2lkdGg9XCI0NjBcIiBoZWlnaHQ9XCIxODBcIj5cbiAgICA8dGV4dCB4PVwiODBcIiB5PVwiNDVcIiBmb250LXNpemU9XCIxOFwiIHRleHQtYW5jaG9yPVwibWlkZGxlXCIgZm9udC1mYW1pbHk9XCJzYW5zLXNlcmlmXCI+WDwvdGV4dD5cbiAgICA8dGV4dCB4PVwiMzgwXCIgeT1cIjQ1XCIgZm9udC1zaXplPVwiMThcIiB0ZXh0LWFuY2hvcj1cIm1pZGRsZVwiIGZvbnQtZmFtaWx5PVwic2Fucy1zZXJpZlwiPlk8L3RleHQ+XG4gICAgPHRleHQgeD1cIjIzMFwiIHk9XCIxNjBcIiBmb250LXNpemU9XCIxOFwiIHRleHQtYW5jaG9yPVwibWlkZGxlXCIgZm9udC1mYW1pbHk9XCJzYW5zLXNlcmlmXCI+QzwvdGV4dD5cbiAgICA8bGluZSB4MT1cIjk1XCIgeTE9XCI1MlwiIHgyPVwiMjE1XCIgeTI9XCIxNDBcIiBzdHJva2U9XCIjMmQ2YTRmXCIgc3Ryb2tlLXdpZHRoPVwiMlwiIG1hcmtlci1lbmQ9XCJ1cmwoI2E2KVwiLz5cbiAgICA8bGluZSB4MT1cIjM2NVwiIHkxPVwiNTJcIiB4Mj1cIjI0NVwiIHkyPVwiMTQwXCIgc3Ryb2tlPVwiIzJkNmE0ZlwiIHN0cm9rZS13aWR0aD1cIjJcIiBtYXJrZXItZW5kPVwidXJsKCNhNilcIi8+XG4gICAgPHRleHQgeD1cIjIzMFwiIHk9XCI0MFwiIGZvbnQtc2l6ZT1cIjE2XCIgdGV4dC1hbmNob3I9XCJtaWRkbGVcIiBmaWxsPVwiIzk5OVwiIGZvbnQtZmFtaWx5PVwic2Fucy1zZXJpZlwiPm5vIGFycm93PC90ZXh0PlxuICAgIDxkZWZzPjxtYXJrZXIgaWQ9XCJhNlwiIG1hcmtlcldpZHRoPVwiMTBcIiBtYXJrZXJIZWlnaHQ9XCIxMFwiIHJlZlg9XCI4XCIgcmVmWT1cIjNcIiBvcmllbnQ9XCJhdXRvXCI+PHBhdGggZD1cIk0wLDAgTDAsNiBMOSwzIHpcIiBmaWxsPVwiIzJkNmE0ZlwiLz48L21hcmtlcj48L2RlZnM+XG4gIDwvc3ZnPlxuPC9kaXY+YFxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC02IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiYWN0b3JEb21YID0gZDMuZXh0ZW50KGFjdG9yX3Jvd3MsIGQgPT4gZC5sb29rcylcbmFjdG9yRG9tWSA9IGQzLmV4dGVudChhY3Rvcl9yb3dzLCBkID0+IGQudGFsZW50KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC03IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiUGxvdC5wbG90KHtcbiAgd2lkdGg6IDEwMDAsIGhlaWdodDogMzMwLCBtYXJnaW5MZWZ0OiA1NSxcbiAgeDoge2xhYmVsOiBcIkxvb2tzIChzY29yZSlcIiwgZG9tYWluOiBhY3RvckRvbVh9LCB5OiB7bGFiZWw6IFwiQWN0aW5nIHRhbGVudCAoc2NvcmUpXCIsIGRvbWFpbjogYWN0b3JEb21ZfSxcbiAgbWFya3M6IFtcbiAgICBQbG90LmRvdChhY3Rvcl9yb3dzLCB7eDogXCJsb29rc1wiLCB5OiBcInRhbGVudFwiLCByOiAyLjUsIGZpbGw6IFwiIzlhOWFhOFwifSksXG4gICAgUGxvdC5saW5lYXJSZWdyZXNzaW9uWShhY3Rvcl9yb3dzLCB7eDogXCJsb29rc1wiLCB5OiBcInRhbGVudFwiLCBzdHJva2U6IFwiIzFhMWEyZVwiLCBjaTogMCwgc3Ryb2tlV2lkdGg6IDJ9KVxuICBdXG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC04IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiUGxvdC5wbG90KHtcbiAgd2lkdGg6IDEwMDAsIGhlaWdodDogMzMwLCBtYXJnaW5MZWZ0OiA1NSxcbiAgeDoge2xhYmVsOiBcIkxvb2tzIChzY29yZSlcIiwgZG9tYWluOiBhY3RvckRvbVh9LCB5OiB7bGFiZWw6IFwiQWN0aW5nIHRhbGVudCAoc2NvcmUpXCIsIGRvbWFpbjogYWN0b3JEb21ZfSxcbiAgY29sb3I6IHtkb21haW46IFtcIk5vdCBhIHN0YXJcIiwgXCJNb3ZpZSBzdGFyXCJdLCByYW5nZTogW1wiI2NmY2ZkNlwiLCBcIiNjMDM5MmJcIl0sIGxlZ2VuZDogdHJ1ZX0sXG4gIG1hcmtzOiBbXG4gICAgUGxvdC5kb3QoYWN0b3Jfcm93cywge3g6IFwibG9va3NcIiwgeTogXCJ0YWxlbnRcIiwgcjogMi41LFxuICAgICAgZmlsbDogZCA9PiBkLnN0YXIgPyBcIk1vdmllIHN0YXJcIiA6IFwiTm90IGEgc3RhclwifSksXG4gICAgUGxvdC5saW5lKFt7bG9va3M6IGFjdG9yRG9tWFswXSwgdGFsZW50OiAxMTAgLSBhY3RvckRvbVhbMF19LCB7bG9va3M6IGFjdG9yRG9tWFsxXSwgdGFsZW50OiAxMTAgLSBhY3RvckRvbVhbMV19XVxuICAgICAgLm1hcChkID0+ICh7bG9va3M6IGQubG9va3MsIHRhbGVudDogTWF0aC5tYXgoYWN0b3JEb21ZWzBdLCBNYXRoLm1pbihhY3RvckRvbVlbMV0sIGQudGFsZW50KSl9KSksXG4gICAgICB7eDogXCJsb29rc1wiLCB5OiBcInRhbGVudFwiLCBzdHJva2U6IFwiIzFhMWEyZVwiLCBzdHJva2VEYXNoYXJyYXk6IFwiNSw0XCJ9KVxuICBdXG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC05IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8cD4ke2NvbGxpZGVyLm5fc3Rhcn0gYWN0b3JzIG1ha2UgaXQuIFRoZXkgc2l0IGFib3ZlIHRoZSBkYXNoZWQgbGluZSwgd2hlcmUgdGFsZW50ICsgbG9va3MgPSAxMTAuIFRoYXQgbGluZSBzbG9wZXMgZG93bjogdGhlIGxlc3MgZ29vZC1sb29raW5nIHlvdSBhcmUsIHRoZSBtb3JlIHRhbGVudCB5b3UgbmVlZCB0byBnZXQgb3ZlciBpdC48L3A+YFxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC0xMCIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IlBsb3QucGxvdCh7XG4gIHdpZHRoOiAxMDAwLCBoZWlnaHQ6IDMzMCwgbWFyZ2luTGVmdDogNTUsXG4gIHg6IHtsYWJlbDogXCJMb29rcyAoc2NvcmUpXCIsIGRvbWFpbjogYWN0b3JEb21YfSwgeToge2xhYmVsOiBcIkFjdGluZyB0YWxlbnQgKHNjb3JlKVwiLCBkb21haW46IGFjdG9yRG9tWX0sXG4gIG1hcmtzOiBbXG4gICAgUGxvdC5kb3QoYWN0b3Jfcm93cy5maWx0ZXIoZCA9PiAhZC5zdGFyKSwge3g6IFwibG9va3NcIiwgeTogXCJ0YWxlbnRcIiwgcjogMi41LCBmaWxsOiBcIiNlY2VjZjFcIn0pLFxuICAgIFBsb3QuZG90KGFjdG9yX3Jvd3MuZmlsdGVyKGQgPT4gZC5zdGFyKSwge3g6IFwibG9va3NcIiwgeTogXCJ0YWxlbnRcIiwgcjogMi41LCBmaWxsOiBcIiNjMDM5MmJcIn0pLFxuICAgIFBsb3QubGluZWFyUmVncmVzc2lvblkoYWN0b3Jfcm93cywge3g6IFwibG9va3NcIiwgeTogXCJ0YWxlbnRcIiwgc3Ryb2tlOiBcIiMxYTFhMmVcIiwgY2k6IDAsIHN0cm9rZVdpZHRoOiAxLjUsIHN0cm9rZU9wYWNpdHk6IDAuNX0pLFxuICAgIFBsb3QubGluZWFyUmVncmVzc2lvblkoYWN0b3Jfcm93cy5maWx0ZXIoZCA9PiBkLnN0YXIpLCB7eDogXCJsb29rc1wiLCB5OiBcInRhbGVudFwiLCBzdHJva2U6IFwiI2MwMzkyYlwiLCBjaTogMCwgc3Ryb2tlV2lkdGg6IDIuNX0pXG4gIF1cbn0pXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTExIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8dGFibGUgc3R5bGU9XCJtYXJnaW46MTRweCBhdXRvIDA7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MC45NWVtO2JvcmRlci1jb2xsYXBzZTpjb2xsYXBzZTtcIj5cbiAgPHRyIHN0eWxlPVwiYm9yZGVyLWJvdHRvbToycHggc29saWQgIzFhMWEyZTtcIj48dGggc3R5bGU9XCJwYWRkaW5nOjZweCAyMnB4O3RleHQtYWxpZ246bGVmdDtcIj5Nb2RlbDwvdGg+PHRoIHN0eWxlPVwicGFkZGluZzo2cHggMjJweDtcIj5Db2VmZmljaWVudCBvbiBsb29rczwvdGg+PC90cj5cbiAgPHRyIHN0eWxlPVwiYm9yZGVyLWJvdHRvbToxcHggc29saWQgI2RkZDtcIj48dGQgc3R5bGU9XCJwYWRkaW5nOjVweCAyMnB4O1wiPkFsbCBhY3RvcnM8L3RkPjx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDIycHg7dGV4dC1hbGlnbjpjZW50ZXI7XCI+JHtjb2xsaWRlci5iX2FsbH0gKHAgPSAke2NvbGxpZGVyLnBfYWxsfSk8L3RkPjwvdHI+XG4gIDx0ciBzdHlsZT1cImJvcmRlci1ib3R0b206MXB4IHNvbGlkICNkZGQ7XCI+PHRkIHN0eWxlPVwicGFkZGluZzo1cHggMjJweDtcIj5TdGFycyBvbmx5PC90ZD48dGQgc3R5bGU9XCJwYWRkaW5nOjVweCAyMnB4O3RleHQtYWxpZ246Y2VudGVyO1wiPiR7Y29sbGlkZXIuYl9zdGFyfTwvdGQ+PC90cj5cbiAgPHRyIHN0eWxlPVwiYm9yZGVyLWJvdHRvbToxcHggc29saWQgI2RkZDtcIj48dGQgc3R5bGU9XCJwYWRkaW5nOjVweCAyMnB4O1wiPkFsbCBhY3RvcnMsIGNvbnRyb2xsaW5nIGZvciBiZWluZyBhIHN0YXI8L3RkPjx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDIycHg7dGV4dC1hbGlnbjpjZW50ZXI7XCI+JHtjb2xsaWRlci5iX2N0cmx9PC90ZD48L3RyPlxuPC90YWJsZT5gXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTEyIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8ZGl2IHN0eWxlPVwidGV4dC1hbGlnbjpjZW50ZXI7cGFkZGluZy10b3A6MTBweDtcIj5cbiAgPHN2ZyB3aWR0aD1cIjUyMFwiIGhlaWdodD1cIjIyMFwiPlxuICAgIDx0ZXh0IHg9XCI2MFwiIHk9XCIzOFwiIGZvbnQtc2l6ZT1cIjE4XCIgdGV4dC1hbmNob3I9XCJtaWRkbGVcIiBmb250LWZhbWlseT1cInNhbnMtc2VyaWZcIj5aJiM4MzIxOzwvdGV4dD5cbiAgICA8dGV4dCB4PVwiMTkwXCIgeT1cIjkyXCIgZm9udC1zaXplPVwiMThcIiB0ZXh0LWFuY2hvcj1cIm1pZGRsZVwiIGZvbnQtZmFtaWx5PVwic2Fucy1zZXJpZlwiPng8L3RleHQ+XG4gICAgPHRleHQgeD1cIjQ1MFwiIHk9XCI1OFwiIGZvbnQtc2l6ZT1cIjE4XCIgdGV4dC1hbmNob3I9XCJtaWRkbGVcIiBmb250LWZhbWlseT1cInNhbnMtc2VyaWZcIj5aJiM4MzIyOzwvdGV4dD5cbiAgICA8dGV4dCB4PVwiMzMwXCIgeT1cIjE5NVwiIGZvbnQtc2l6ZT1cIjE4XCIgdGV4dC1hbmNob3I9XCJtaWRkbGVcIiBmb250LWZhbWlseT1cInNhbnMtc2VyaWZcIj55PC90ZXh0PlxuICAgIDxsaW5lIHgxPVwiNzhcIiB5MT1cIjQ1XCIgeDI9XCIxNzJcIiB5Mj1cIjgyXCIgc3Ryb2tlPVwiIzJkNmE0ZlwiIHN0cm9rZS13aWR0aD1cIjJcIiBtYXJrZXItZW5kPVwidXJsKCNhMTEpXCIvPlxuICAgIDxsaW5lIHgxPVwiNDIwXCIgeTE9XCI2MlwiIHgyPVwiMjEyXCIgeTI9XCI4OFwiIHN0cm9rZT1cIiNjMDM5MmJcIiBzdHJva2Utd2lkdGg9XCIyXCIgbWFya2VyLWVuZD1cInVybCgjYTEyKVwiLz5cbiAgICA8bGluZSB4MT1cIjQzOFwiIHkxPVwiNzJcIiB4Mj1cIjM0OFwiIHkyPVwiMTc4XCIgc3Ryb2tlPVwiI2MwMzkyYlwiIHN0cm9rZS13aWR0aD1cIjJcIiBtYXJrZXItZW5kPVwidXJsKCNhMTIpXCIvPlxuICAgIDxsaW5lIHgxPVwiMjA4XCIgeTE9XCIxMDJcIiB4Mj1cIjMxMFwiIHkyPVwiMTgwXCIgc3Ryb2tlPVwiIzFhMWEyZVwiIHN0cm9rZS13aWR0aD1cIjJcIiBtYXJrZXItZW5kPVwidXJsKCNhMTMpXCIvPlxuICAgIDx0ZXh0IHg9XCIyODBcIiB5PVwiMTI4XCIgZm9udC1zaXplPVwiMThcIiB0ZXh0LWFuY2hvcj1cIm1pZGRsZVwiIGZpbGw9XCIjMWExYTJlXCIgZm9udC1mYW1pbHk9XCJzYW5zLXNlcmlmXCI+PzwvdGV4dD5cbiAgICA8ZGVmcz5cbiAgICAgIDxtYXJrZXIgaWQ9XCJhMTFcIiBtYXJrZXJXaWR0aD1cIjEwXCIgbWFya2VySGVpZ2h0PVwiMTBcIiByZWZYPVwiOFwiIHJlZlk9XCIzXCIgb3JpZW50PVwiYXV0b1wiPjxwYXRoIGQ9XCJNMCwwIEwwLDYgTDksMyB6XCIgZmlsbD1cIiMyZDZhNGZcIi8+PC9tYXJrZXI+XG4gICAgICA8bWFya2VyIGlkPVwiYTEyXCIgbWFya2VyV2lkdGg9XCIxMFwiIG1hcmtlckhlaWdodD1cIjEwXCIgcmVmWD1cIjhcIiByZWZZPVwiM1wiIG9yaWVudD1cImF1dG9cIj48cGF0aCBkPVwiTTAsMCBMMCw2IEw5LDMgelwiIGZpbGw9XCIjYzAzOTJiXCIvPjwvbWFya2VyPlxuICAgICAgPG1hcmtlciBpZD1cImExM1wiIG1hcmtlcldpZHRoPVwiMTBcIiBtYXJrZXJIZWlnaHQ9XCIxMFwiIHJlZlg9XCI4XCIgcmVmWT1cIjNcIiBvcmllbnQ9XCJhdXRvXCI+PHBhdGggZD1cIk0wLDAgTDAsNiBMOSwzIHpcIiBmaWxsPVwiIzFhMWEyZVwiLz48L21hcmtlcj5cbiAgICA8L2RlZnM+XG4gIDwvc3ZnPlxuPC9kaXY+YFxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC0xMyIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPHByZSBzdHlsZT1cImZvbnQtZmFtaWx5OidTRiBNb25vJywnTWVubG8nLG1vbm9zcGFjZTtmb250LXNpemU6MC41MmVtO2xpbmUtaGVpZ2h0OjEuMzU7XG4gICAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kOiNmNmY2Zjg7Ym9yZGVyOjFweCBzb2xpZCAjZTBlMGU2O2JvcmRlci1yYWRpdXM6NnB4O1xuICAgICAgICAgICAgICAgICAgcGFkZGluZzo4cHggMTRweDtvdmVyZmxvdy14OmF1dG87d2hpdGUtc3BhY2U6cHJlO1wiPiR7cXVpdF9zdW1tYXJ5X3RleHR9PC9wcmU+YFxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC0xNCIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPHA+Q29udHJvbCBncm91cCBxdWl0cyBhdCA8c3Ryb25nPiR7Y29udHJvbF9xdWl0X3JhdGV9JTwvc3Ryb25nPiwgdHJlYXRtZW50IGdyb3VwIGF0IDxzdHJvbmc+JHt0cmVhdG1lbnRfcXVpdF9yYXRlfSU8L3N0cm9uZz4g4oCUIHdvcmtpbmcgZnJvbSBob21lIGN1dHMgdGhlIHF1aXQgcmF0ZSBieSA8c3Ryb25nPiR7TWF0aC5hYnMocXVpdF9lZmZlY3QpfSBwZXJjZW50YWdlIHBvaW50czwvc3Ryb25nPiAocCA9ICR7cXVpdF9wfSkuPC9wPmBcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMTUiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJodG1sYDxwPkFtb25nIHRoZXNlICR7cGhvbmVfbn0gb3JkZXItdGFrZXJzLCB3b3JraW5nIGZyb20gaG9tZSA8c3Ryb25nPnJhaXNlczwvc3Ryb25nPiB0aGUgbnVtYmVyIG9mIGNhbGxzIGJ5IDxzdHJvbmc+JHtwaG9uZV9lZmZlY3R9IHRob3VzYW5kPC9zdHJvbmc+IHBlciBlbXBsb3llZSBvdmVyIHRoZSBwZXJpb2QgKHAgJHtwaG9uZV9wfSkuIEZld2VyIHBlb3BsZSBsZWF2ZSwgYW5kIHRob3NlIHdobyBzdGF5IGRvIG1vcmUgd29yay48L3A+YFxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC0xNiIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPHRhYmxlIHN0eWxlPVwibWFyZ2luOjEwcHggYXV0byAwO2ZvbnQtZmFtaWx5OnNhbnMtc2VyaWY7Zm9udC1zaXplOjAuOWVtO2JvcmRlci1jb2xsYXBzZTpjb2xsYXBzZTtcIj5cbiAgPHRyIHN0eWxlPVwiYm9yZGVyLWJvdHRvbToycHggc29saWQgIzFhMWEyZTtcIj48dGggc3R5bGU9XCJwYWRkaW5nOjVweCAyMnB4O1wiPkNvdmFyaWF0ZTwvdGg+PHRoIHN0eWxlPVwicGFkZGluZzo1cHggMjJweDtcIj5UcmVhdG1lbnQ8L3RoPjx0aCBzdHlsZT1cInBhZGRpbmc6NXB4IDIycHg7XCI+Q29udHJvbDwvdGg+PHRoIHN0eWxlPVwicGFkZGluZzo1cHggMjJweDtcIj5wLXZhbHVlPC90aD48L3RyPlxuICAke2JhbGFuY2Vfcm93cy5tYXAoZCA9PiBgPHRyIHN0eWxlPVwiYm9yZGVyLWJvdHRvbToxcHggc29saWQgI2RkZDtcIj48dGQgc3R5bGU9XCJwYWRkaW5nOjRweCAyMnB4O1wiPiR7ZC5jb3ZhcmlhdGV9PC90ZD48dGQgc3R5bGU9XCJwYWRkaW5nOjRweCAyMnB4O3RleHQtYWxpZ246Y2VudGVyO1wiPiR7ZC50cmVhdH08L3RkPjx0ZCBzdHlsZT1cInBhZGRpbmc6NHB4IDIycHg7dGV4dC1hbGlnbjpjZW50ZXI7XCI+JHtkLmNvbnRyb2x9PC90ZD48dGQgc3R5bGU9XCJwYWRkaW5nOjRweCAyMnB4O3RleHQtYWxpZ246Y2VudGVyO1wiPiR7ZC5wfTwvdGQ+PC90cj5gKS5qb2luKCcnKX1cbjwvdGFibGU+YFxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC0xNyIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPHA+TW9zdGx5IGJhbGFuY2VkLiBPbmUgY292YXJpYXRlLCAke2xvd19iYWwuY292YXJpYXRlLnRvTG93ZXJDYXNlKCl9LCBoYXMgYSBsb3cgcC12YWx1ZSAoJHtsb3dfYmFsLnB9KS4gQ2hlY2sgZml2ZSBjb3ZhcmlhdGVzIGFuZCBvbmUgY29taW5nIHVwIGJlbG93IDAuMDUgYnkgY2hhbmNlIGlzIG5vdCBzdXJwcmlzaW5nLiBXb3J0aCBub3RpbmcsIG5vdCB3b3J0aCB3b3JyeWluZyBhYm91dC48L3A+YFxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC0xOCIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPHA+V2l0aCA8c3Ryb25nPiR7d2ZoX259PC9zdHJvbmc+IGVtcGxveWVlcywgcmFuZG9tbHkgYXNzaWduZWQgYW5kIHJlYXNvbmFibHkgYmFsYW5jZWQsIHRoZSBhbnN3ZXIgaXMgPHN0cm9uZz55ZXM8L3N0cm9uZz46IHF1aXQgcmF0ZXMgZmFsbCBieSBhYm91dCA8c3Ryb25nPiR7TWF0aC5hYnMocXVpdF9lZmZlY3QpfSBwZXJjZW50YWdlIHBvaW50czwvc3Ryb25nPiwgYW5kIHRob3NlIHdobyBzdGF5IGhhbmRsZSBtb3JlIGNhbGxzLjwvcD5gXG4ifV19
     </script>
     <script type="module">
     if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }

@@ -1,0 +1,776 @@
+---
+title: "Causal Analysis and Experiments"
+subtitle: "7002LBSAI Research Methods in Analytics — Week 9"
+search: false
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="stylesheet" href="styles-slides.css?v=20260914-2">
+    menu:
+      useTextContentForMissingTitles: false
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{python}
+import pandas as pd
+import numpy as np
+import statsmodels.formula.api as smf
+from statsmodels.stats.proportion import proportions_ztest
+
+# Main case study: Bekes & Kezdi Ch.20's own worked example — the "Working from
+# Home" field experiment (Bloom et al.'s Ctrip RCT, 249 qualified employees)
+# GitHub raw URL (once pushed to the student data repo):
+# wfh = pd.read_csv("https://raw.githubusercontent.com/stevenolanecon/7002LBSAI/main/data/wfh_person.csv")
+wfh = pd.read_csv("data/wfh_person.csv")
+wfh_n = len(wfh)
+wfh_treat_n = int((wfh["treatment"] == 1).sum())
+wfh_control_n = int((wfh["treatment"] == 0).sum())
+
+quit_means = (wfh.groupby("treatment")["quitjob"].mean() * 100).round(1)
+control_quit_rate = quit_means[0]
+treatment_quit_rate = quit_means[1]
+
+quit_model = smf.ols("quitjob ~ treatment", data=wfh).fit(cov_type="HC1")
+quit_effect = round(quit_model.params["treatment"] * 100, 1)
+quit_p = round(quit_model.pvalues["treatment"], 4)
+
+_quit_lines = quit_model.summary().as_text().splitlines()
+_quit_cut = next(i for i, l in enumerate(_quit_lines) if l.startswith("Omnibus"))
+quit_summary_text = "\n".join(_quit_lines[:_quit_cut]).rstrip()
+
+ordertakers = wfh[wfh["ordertaker"] == True]
+phone_model = smf.ols("phonecalls1 ~ treatment", data=ordertakers).fit(cov_type="HC1")
+phone_effect = round(phone_model.params["treatment"], 2)
+phone_p = "<0.001" if phone_model.pvalues["treatment"] < 0.001 else str(round(phone_model.pvalues["treatment"], 4))
+phone_n = int(phone_model.nobs)
+
+# Covariate balance on real pre-treatment characteristics
+_bal_vars = [("age", "Age"), ("married", "Married"), ("children", "Has children"),
+             ("tenure", "Tenure (months)"), ("internet", "Home internet")]
+balance_rows = []
+for col, label in _bal_vars:
+    b = smf.ols(f"{col} ~ treatment", data=wfh).fit(cov_type="HC1")
+    balance_rows.append({
+        "covariate": label,
+        "treat": round(wfh.loc[wfh.treatment == 1, col].mean(), 2),
+        "control": round(wfh.loc[wfh.treatment == 0, col].mean(), 2),
+        "p": round(b.pvalues["treatment"], 3),
+    })
+low_bal = min(balance_rows, key=lambda d: d["p"])
+
+# Sample size: Bekes & Kezdi Ch.20 eq. (8), binary outcome.
+# n is the TOTAL number of subjects, split equally between the two groups.
+def n_total(r0, r1):
+    r = (r0 + r1) / 2
+    return 4 * r * (1 - r) * ((1.96 + 0.84) / (r1 - r0)) ** 2
+
+# The book's planning cases for the social media ad (action = click and then sign up)
+plan_good = round(n_total(0.001, 0.0013), -3)      # 1% CTR x 10% conversion, 30% lift
+plan_bad = round(n_total(0.0005, 0.0006), -4)      # 1 action per 2,000 impressions, 20% lift
+
+# Case study B: the "Fine-Tuning Social Media Advertising" A/B test (Ch.20)
+social_df = pd.read_csv("data/ab_test_social_media.csv")
+social_df["click_rate"] = social_df["clicks"] / social_df["show"] * 100
+social_df["action_rate"] = social_df["action"] / social_df["show"] * 100
+social_rows = social_df.to_dict(orient="records")
+p_clicks = round(proportions_ztest(social_df["clicks"], social_df["show"])[1], 3)
+p_actions = round(proportions_ztest(social_df["action"], social_df["show"])[1], 3)
+action_rate_all = social_df["action"].sum() / social_df["show"].sum() * 100
+_ar = social_df.set_index("action_type")["action_rate"] / 100
+n_real = round(n_total(_ar["Action B"], _ar["Action A"]), -5)
+
+# Task: was the WFH experiment big enough?
+r0_wfh, r1_wfh = round(control_quit_rate / 100, 2), round(treatment_quit_rate / 100, 2)
+n_wfh = int(round(n_total(r0_wfh, r1_wfh)))
+n_wfh_10 = int(round(n_total(r0_wfh, r0_wfh - 0.10)))
+
+# Collider: the Hollywood example, simulated (1,000 actors).
+# Talent and looks are independent; an actor becomes a star if the two together are high enough.
+rng = np.random.default_rng(2)
+_t = rng.normal(50, 10, 1000)
+_l = rng.normal(50, 10, 1000)
+actors = pd.DataFrame({"talent": _t, "looks": _l,
+                       "star": ((_t + _l + rng.normal(0, 5, 1000)) > 110).astype(int)})
+col_all = smf.ols("talent ~ looks", data=actors).fit(cov_type="HC1")
+col_star = smf.ols("talent ~ looks", data=actors[actors.star == 1]).fit(cov_type="HC1")
+col_ctrl = smf.ols("talent ~ looks + star", data=actors).fit(cov_type="HC1")
+collider = {
+    "n_star": int(actors.star.sum()),
+    "b_all": round(col_all.params["looks"], 2), "p_all": round(col_all.pvalues["looks"], 2),
+    "b_star": round(col_star.params["looks"], 2),
+    "b_ctrl": round(col_ctrl.params["looks"], 2),
+}
+actor_rows = actors.round(2).to_dict(orient="records")
+
+ojs_define(
+    wfh_n               = wfh_n,
+    phone_effect        = phone_effect,
+    phone_p             = phone_p,
+    phone_n             = phone_n,
+    balance_rows        = balance_rows,
+    low_bal             = low_bal,
+    collider            = collider,
+    actor_rows          = actor_rows,
+)
+```
+
+## {background-color="#1a1a2e"}
+
+::: {style="text-align: center; padding-top: 180px;"}
+[**Causal analysis and experiments**]{style="font-size: 2.2em; color: white;"}
+
+[So far we've described associations and stopped short of calling them effects. This week: when we're allowed to make that claim.]{style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;"}
+:::
+
+## Does working from home change who quits?
+
+<style>
+.reveal .mid-code div.sourceCode { font-size: 0.7em !important; }
+.reveal .mid-code div.sourceCode pre.sourceCode { font-size: 1em !important; }
+</style>
+
+::: {.instructions-box}
+**Business question**: you're deciding whether to let staff work from home. Would it actually change how many people quit — or is it just a perk that changes nothing?
+:::
+
+::: {.fragment}
+We have real data: a company that ran this as an actual experiment on 249 of its own employees.
+:::
+
+## The naive answer
+
+**Naive answer:** compare the quit rate of employees who already work from home to those who don't.
+
+::: {.fragment}
+**Why it's not that simple:** people who already work from home chose to. They might have longer commutes, different family situations or longer tenure, and any of these could explain a lower quit rate on its own. It's the same problem as omitted variable bias in Week 6.
+:::
+
+## What we need
+
+- A formal definition of what "the effect of X" actually means
+- A way to know, not just hope, that two groups are comparable
+- A way to collect data where that comparison works: an experiment
+
+---
+
+## The potential outcomes framework
+
+---
+
+## A causal question
+
+- A causal question needs an **intervention** we can at least imagine, and **variation** in it across subjects. "Does training managers raise revenue?" works; without an intervention we can only describe the data
+- The **treatment**: the causal variable, usually an intervention – a price change, an ad, a policy
+- The **subjects**: who receives it. Some are **treated**, some **untreated**; both groups matter equally
+- The **outcome**: what might be affected. A precise causal question names both $x$ and $y$
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 19
+:::
+
+## Two states of the world
+
+Every subject has **two potential outcomes**:
+
+$$y_i^1 \text{ — what happens if treated} \qquad y_i^0 \text{ — what happens if not}$$
+
+::: {.fragment}
+Before the intervention, both exist in principle for every subject, whether or not they end up treated.
+:::
+
+## What assignment reveals
+
+- Once a subject is **assigned** — treated or not — one potential outcome becomes real and observable
+- The other one never happens, so it can't be in any dataset
+- **Treated subject**: observed outcome = their treated outcome $y_i^1$
+- **Untreated subject**: observed outcome = their untreated outcome $y_i^0$
+
+::: {.fragment}
+The outcome we don't see is the **counterfactual**: what would have happened if this subject's treatment had been the other way round.
+:::
+
+## The individual treatment effect
+
+$$te_i = y_i^1 - y_i^0$$
+
+::: {.fragment}
+**We can never measure this.** We only ever see one of the two potential outcomes for each subject, so the other half of the difference is always missing.
+:::
+
+## A worked example
+
+A shop emails some customers a discount code. The outcome: did the customer **buy something that week** (1) or not (0)? Suppose, just for once, we could see both potential outcomes for four customers. 
+
+```{=html}
+<table style="margin:10px auto 0;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;">
+<tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:5px 18px;text-align:left;">Customer</th><th style="padding:5px 18px;">Buys if emailed (<i>y</i><sup>1</sup>)</th><th style="padding:5px 18px;">Buys if not (<i>y</i><sup>0</sup>)</th><th style="padding:5px 18px;"><i>te</i></th><th style="padding:5px 18px;text-align:left;">What the email did</th></tr>
+<tr style="border-bottom:1px solid #ddd;"><td style="padding:4px 18px;">Asha</td><td style="text-align:center;">1</td><td style="text-align:center;">0</td><td style="text-align:center;color:#2d6a4f;"><span class="fragment" data-fragment-index="1"><b>+1</b></span></td><td style="padding:4px 18px;"><span class="fragment" data-fragment-index="1">persuaded her to buy</span></td></tr>
+<tr style="border-bottom:1px solid #ddd;"><td style="padding:4px 18px;">Ben</td><td style="text-align:center;">1</td><td style="text-align:center;">1</td><td style="text-align:center;"><span class="fragment" data-fragment-index="1"><b>0</b></span></td><td style="padding:4px 18px;"><span class="fragment" data-fragment-index="1">nothing: he'd have bought anyway</span></td></tr>
+<tr style="border-bottom:1px solid #ddd;"><td style="padding:4px 18px;">Chloe</td><td style="text-align:center;">0</td><td style="text-align:center;">1</td><td style="text-align:center;color:#c0392b;"><span class="fragment" data-fragment-index="1"><b>&minus;1</b></span></td><td style="padding:4px 18px;"><span class="fragment" data-fragment-index="1">put her off: she unsubscribed instead</span></td></tr>
+<tr><td style="padding:4px 18px;">Dev</td><td style="text-align:center;">0</td><td style="text-align:center;">0</td><td style="text-align:center;"><span class="fragment" data-fragment-index="1"><b>0</b></span></td><td style="padding:4px 18px;"><span class="fragment" data-fragment-index="1">nothing: he doesn't buy either way</span></td></tr>
+</table>
+```
+
+::: {.fragment data-fragment-index="2"}
+In real data each customer is either emailed or not, so one of the two middle columns is always missing. If Asha was emailed, we see her 1 but never her 0, so we can't tell whether she's an Asha or a Ben.
+:::
+
+## What we'd actually have
+
+A real dataset never has the *y*¹/*y*⁰ columns above — only one outcome per customer, plus whether they were emailed:
+
+```{=html}
+<table style="margin:10px auto 0;font-family:sans-serif;font-size:0.95em;border-collapse:collapse;">
+<tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:5px 22px;text-align:left;">Customer</th><th style="padding:5px 22px;">Emailed?</th><th style="padding:5px 22px;">Bought</th></tr>
+<tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 22px;">Asha</td><td style="text-align:center;">Yes</td><td style="text-align:center;"><b>1</b></td></tr>
+<tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 22px;">Ben</td><td style="text-align:center;">Yes</td><td style="text-align:center;"><b>1</b></td></tr>
+<tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 22px;">Chloe</td><td style="text-align:center;">No</td><td style="text-align:center;"><b>1</b></td></tr>
+<tr><td style="padding:5px 22px;">Dev</td><td style="text-align:center;">No</td><td style="text-align:center;"><b>0</b></td></tr>
+</table>
+```
+
+::: {.fragment}
+Three columns, not five. No *te*, no counterfactual, nothing marked "missing" — just who got the email and what happened. This is the table a shop would actually have, and every causal question in this session starts from something that looks like it.
+:::
+
+## Heterogeneous treatment effects
+
+- Individual effects vary: by subgroup, by circumstance, by person
+- Men and women, small markets and large ones, new employees and long-serving ones
+- Effects that differ across subjects are the **normal case**
+
+::: {.fragment}
+We can't recover the full distribution of $te_i$. But we can recover its average.
+:::
+
+## The average treatment effect
+
+$$ATE = E[y_i^1] - E[y_i^0]$$
+
+- The average, across everyone, of the individual effects — even though we can't see any individual one
+- Multiply by population size to get the total effect of rolling something out
+
+## Averages of differences = differences of averages
+
+$$ATE = E[te_i] = E[y_i^1 - y_i^0] = E[y_i^1] - E[y_i^0]$$
+
+::: {.fragment}
+We can't average $te_i$, because we never see it. But we can average the treated group's outcomes and the untreated group's outcomes separately, and the difference between those two averages is the same thing.
+:::
+
+## ATE can hide heterogeneity
+
+::: {.instructions-box}
+If $ATE = 0$, did the intervention genuinely do nothing?
+:::
+
+::: {.fragment}
+Not necessarily. Two versions of the discount email, six customers each:
+
+```{=html}
+<table style="margin:10px auto 0;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;">
+<tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:5px 16px;text-align:left;"></th><th colspan="6" style="padding:5px 16px;">Individual effect <i>te</i></th><th style="padding:5px 16px;">ATE</th></tr>
+<tr style="border-bottom:1px solid #ddd;"><td style="padding:6px 16px;">Email A</td><td style="padding:6px 12px;text-align:center;">0</td><td style="padding:6px 12px;text-align:center;">0</td><td style="padding:6px 12px;text-align:center;">0</td><td style="padding:6px 12px;text-align:center;">0</td><td style="padding:6px 12px;text-align:center;">0</td><td style="padding:6px 12px;text-align:center;">0</td><td style="padding:6px 16px;text-align:center;"><b>0</b></td></tr>
+<tr><td style="padding:6px 16px;">Email B</td><td style="padding:6px 12px;text-align:center;background:#d8efe2;color:#2d6a4f;"><b>+1</b></td><td style="padding:6px 12px;text-align:center;background:#d8efe2;color:#2d6a4f;"><b>+1</b></td><td style="padding:6px 12px;text-align:center;background:#d8efe2;color:#2d6a4f;"><b>+1</b></td><td style="padding:6px 12px;text-align:center;background:#f6d9d6;color:#c0392b;"><b>&minus;1</b></td><td style="padding:6px 12px;text-align:center;background:#f6d9d6;color:#c0392b;"><b>&minus;1</b></td><td style="padding:6px 12px;text-align:center;background:#f6d9d6;color:#c0392b;"><b>&minus;1</b></td><td style="padding:6px 16px;text-align:center;"><b>0</b></td></tr>
+</table>
+```
+
+Email A does nothing to anyone. Email B wins over three bargain hunters and puts off three customers who now think the brand is cheap. Both have an ATE of zero. The average can't tell them apart, but the business would want to know: send Email B to the bargain hunters only.
+:::
+
+## Ceteris paribus, formalised
+
+- "All else equal" has been our working principle since Week 4. Potential outcomes make it precise: the only difference between $y_i^1$ and $y_i^0$ is the intervention
+- Week 6's regression $y^E = \beta_0 + \beta_1 x + \beta_2 z$ **conditions on** $z$: it compares observations with the same $z$ but different $x$. That's ceteris paribus for the variables we include
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 19
+:::
+
+## Can regression actually deliver it?
+
+::: {.instructions-box}
+Can we condition on *every* potential confounder in a regression?
+:::
+
+::: {.fragment}
+Probably not. We can only include what's in the data, and ceteris paribus means holding *everything* fixed, measured or not. However many controls we add, that gap stays. So the real problem is how to get a good estimate of the ATE, and that's the rest of today.
+:::
+
+## Checking the identity against real data
+
+Back to our four customers. Using the full table — both potential outcomes, for everyone — the identity gives:
+
+$$ATE = E[y_i^1] - E[y_i^0] = 0.5 - 0.5 = \mathbf{0}$$
+
+::: {.fragment}
+But real data never gives us that table. It gives us the one we'd actually have: emailed customers (Asha, Ben) averaged 1.0 bought; unemailed customers (Chloe, Dev) averaged 0.5. The difference between those two groups is $\mathbf{0.5}$.
+:::
+
+::: {.fragment}
+The true effect is zero. The comparison we can actually run says 0.5. **Why are these different?**
+:::
+
+::: {.fragment}
+Something about *who got emailed* must be related to whether they'd have bought anyway. Averaging the two groups doesn't fix that on its own — we need a way to reason about which comparisons are safe, and which aren't.
+:::
+
+---
+
+## Mapping it with DAGs
+
+---
+
+## Causal maps
+
+A **DAG** (directed acyclic graph) is a diagram of assumptions: nodes are variables, arrows are effects.
+
+```{ojs}
+html`<div style="text-align:center;padding-top:20px;">
+  <svg width="420" height="120">
+    <text x="60" y="65" font-size="18" text-anchor="middle" font-family="sans-serif">X</text>
+    <text x="360" y="65" font-size="18" text-anchor="middle" font-family="sans-serif">Y</text>
+    <line x1="80" y1="60" x2="335" y2="60" stroke="#2d6a4f" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="200" y="45" font-size="20" text-anchor="middle" fill="#c0392b" font-family="sans-serif">?</text>
+    <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2d6a4f"/></marker></defs>
+  </svg>
+</div>`
+```
+
+The simplest causal question: does $X$ affect $Y$? The map summarises the assumptions you make anyway every time you choose what goes into a regression. Once it's drawn, deciding what to control for stops being guesswork.
+
+## Case one: a confounder
+
+```{ojs}
+html`<div style="text-align:center;padding-top:10px;">
+  <svg width="460" height="180">
+    <text x="80" y="150" font-size="18" text-anchor="middle" font-family="sans-serif">X</text>
+    <text x="380" y="150" font-size="18" text-anchor="middle" font-family="sans-serif">Y</text>
+    <text x="230" y="35" font-size="18" text-anchor="middle" font-family="sans-serif">Z</text>
+    <line x1="95" y1="140" x2="365" y2="140" stroke="#c0392b" stroke-width="2" marker-end="url(#a5)"/>
+    <line x1="215" y1="45" x2="100" y2="130" stroke="#2d6a4f" stroke-width="2" marker-end="url(#a5)"/>
+    <line x1="245" y1="45" x2="365" y2="130" stroke="#2d6a4f" stroke-width="2" marker-end="url(#a5)"/>
+    <defs><marker id="a5" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2d6a4f"/></marker></defs>
+  </svg>
+</div>`
+```
+
+$Z$ sits **upstream** of $X$ — it causes both $X$ and $Y$. Leave it out, and part of $Z$'s effect on $Y$ gets misread as $X$'s.
+
+::: {.fragment}
+**The rule: control for it.** This is Week 6's omitted variable bias, drawn as a picture instead of a formula.
+:::
+
+## Case two: a mediator
+
+```{ojs}
+html`<div style="text-align:center;padding-top:20px;">
+  <svg width="480" height="140">
+    <text x="50" y="75" font-size="18" text-anchor="middle" font-family="sans-serif">X</text>
+    <text x="240" y="35" font-size="16" text-anchor="middle" font-family="sans-serif">M</text>
+    <text x="430" y="75" font-size="18" text-anchor="middle" font-family="sans-serif">Y</text>
+    <line x1="65" y1="65" x2="225" y2="40" stroke="#2d6a4f" stroke-width="2" marker-end="url(#arrow2)"/>
+    <line x1="255" y1="40" x2="415" y2="65" stroke="#2d6a4f" stroke-width="2" marker-end="url(#arrow2)"/>
+    <line x1="70" y1="75" x2="410" y2="75" stroke="#999" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow3)"/>
+    <defs>
+      <marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2d6a4f"/></marker>
+      <marker id="arrow3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#999"/></marker>
+    </defs>
+  </svg>
+</div>`
+```
+
+$M$ sits **downstream** of $X$, on the path to $Y$ — the mechanism through which the effect happens, not a separate cause of it.
+
+::: {.fragment}
+**The rule: don't control for it.** Controlling for $M$ removes part of the effect you're trying to measure. It's a **bad control**. $M$ could be the outcome in its own right, if we wanted the causal effect of $X$ on $M$.
+:::
+
+## Task — confounder or mediator?
+
+::: {.instructions-box}
+Back to working from home. Suppose it reduces commute stress, and commute stress affects whether someone quits. Discuss with your neighbour and draw it as a DAG: is commute stress a **confounder** of the WFH → quit relationship, or a **mediator**?
+:::
+
+::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
+The DAG and the answer appear here in the workshop.
+:::
+
+## Case three: a collider
+
+```{ojs}
+html`<div style="text-align:center;padding-top:10px;">
+  <svg width="460" height="180">
+    <text x="80" y="45" font-size="18" text-anchor="middle" font-family="sans-serif">X</text>
+    <text x="380" y="45" font-size="18" text-anchor="middle" font-family="sans-serif">Y</text>
+    <text x="230" y="160" font-size="18" text-anchor="middle" font-family="sans-serif">C</text>
+    <line x1="95" y1="52" x2="215" y2="140" stroke="#2d6a4f" stroke-width="2" marker-end="url(#a6)"/>
+    <line x1="365" y1="52" x2="245" y2="140" stroke="#2d6a4f" stroke-width="2" marker-end="url(#a6)"/>
+    <text x="230" y="40" font-size="16" text-anchor="middle" fill="#999" font-family="sans-serif">no arrow</text>
+    <defs><marker id="a6" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2d6a4f"/></marker></defs>
+  </svg>
+</div>`
+```
+
+$C$ sits **downstream of both**: $X$ causes it and $Y$ causes it. Two arrowheads meet at $C$, which is why it's called a collider.
+
+::: {.fragment}
+**The rule: don't control for it, and don't pick your sample using it.** Even if $X$ and $Y$ are completely unrelated, holding $C$ fixed makes them look related.
+:::
+
+## Seeing a collider at work
+
+Why do so many good-looking film stars seem to be poor actors? Let's build the answer one step at a time.
+
+**Step 1.** 1,000 made-up actors, each with a talent score and a looks score. We made the two **unrelated**: knowing someone's looks tells you nothing about their talent.
+
+```{ojs}
+actorDomX = d3.extent(actor_rows, d => d.looks)
+actorDomY = d3.extent(actor_rows, d => d.talent)
+```
+
+```{ojs}
+Plot.plot({
+  width: 1000, height: 330, marginLeft: 55,
+  x: {label: "Looks (score)", domain: actorDomX}, y: {label: "Acting talent (score)", domain: actorDomY},
+  marks: [
+    Plot.dot(actor_rows, {x: "looks", y: "talent", r: 2.5, fill: "#9a9aa8"}),
+    Plot.linearRegressionY(actor_rows, {x: "looks", y: "talent", stroke: "#1a1a2e", ci: 0, strokeWidth: 2})
+  ]
+})
+```
+
+::: {.fragment}
+The line through all 1,000 is flat. No relationship, as we built it.
+:::
+
+## Step 2: who becomes a star?
+
+An actor becomes a star if talent and looks **together** are high enough (plus a bit of luck): talent + looks + luck above 110.
+
+```{ojs}
+Plot.plot({
+  width: 1000, height: 330, marginLeft: 55,
+  x: {label: "Looks (score)", domain: actorDomX}, y: {label: "Acting talent (score)", domain: actorDomY},
+  color: {domain: ["Not a star", "Movie star"], range: ["#cfcfd6", "#c0392b"], legend: true},
+  marks: [
+    Plot.dot(actor_rows, {x: "looks", y: "talent", r: 2.5,
+      fill: d => d.star ? "Movie star" : "Not a star"}),
+    Plot.line([{looks: actorDomX[0], talent: 110 - actorDomX[0]}, {looks: actorDomX[1], talent: 110 - actorDomX[1]}]
+      .map(d => ({looks: d.looks, talent: Math.max(actorDomY[0], Math.min(actorDomY[1], d.talent))})),
+      {x: "looks", y: "talent", stroke: "#1a1a2e", strokeDasharray: "5,4"})
+  ]
+})
+```
+
+::: {.fragment}
+```{ojs}
+html`<p>${collider.n_star} actors make it. They sit above the dashed line, where talent + looks = 110. That line slopes down: the less good-looking you are, the more talent you need to get over it.</p>`
+```
+:::
+
+## Step 3: look only at the stars
+
+```{ojs}
+Plot.plot({
+  width: 1000, height: 330, marginLeft: 55,
+  x: {label: "Looks (score)", domain: actorDomX}, y: {label: "Acting talent (score)", domain: actorDomY},
+  marks: [
+    Plot.dot(actor_rows.filter(d => !d.star), {x: "looks", y: "talent", r: 2.5, fill: "#ececf1"}),
+    Plot.dot(actor_rows.filter(d => d.star), {x: "looks", y: "talent", r: 2.5, fill: "#c0392b"}),
+    Plot.linearRegressionY(actor_rows, {x: "looks", y: "talent", stroke: "#1a1a2e", ci: 0, strokeWidth: 1.5, strokeOpacity: 0.5}),
+    Plot.linearRegressionY(actor_rows.filter(d => d.star), {x: "looks", y: "talent", stroke: "#c0392b", ci: 0, strokeWidth: 2.5})
+  ]
+})
+```
+
+::: {.fragment}
+Among the stars, the better-looking ones seem **less** talented (red line). Nothing about acting changed: we only changed who we look at. Being a star is caused by both talent and looks, so it's a collider, and selecting on it creates a relationship that isn't there.
+:::
+
+## Two ways to fall into it {.smaller}
+
+::: {.mid-code}
+```{.python}
+smf.ols("talent ~ looks", data=actors).fit(cov_type="HC1")
+smf.ols("talent ~ looks", data=actors[actors.star == 1]).fit(cov_type="HC1")
+smf.ols("talent ~ looks + star", data=actors).fit(cov_type="HC1")
+```
+:::
+
+```{ojs}
+html`<table style="margin:14px auto 0;font-family:sans-serif;font-size:0.95em;border-collapse:collapse;">
+  <tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:6px 22px;text-align:left;">Model</th><th style="padding:6px 22px;">Coefficient on looks</th></tr>
+  <tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 22px;">All actors</td><td style="padding:5px 22px;text-align:center;">${collider.b_all} (p = ${collider.p_all})</td></tr>
+  <tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 22px;">Stars only</td><td style="padding:5px 22px;text-align:center;">${collider.b_star}</td></tr>
+  <tr style="border-bottom:1px solid #ddd;"><td style="padding:5px 22px;">All actors, controlling for being a star</td><td style="padding:5px 22px;text-align:center;">${collider.b_ctrl}</td></tr>
+</table>`
+```
+
+::: {.fragment}
+- Picking the sample on $C$ and adding $C$ as a control both create a relationship that isn't there
+- This is the opposite of omitted variable bias: the bias comes from **putting a variable in**, not from leaving one out
+- It happens in business data all the time: studying only customers who complained, only firms that survived, only staff who were promoted
+:::
+
+::: {style="font-size:0.8em;margin-top:10px;"}
+The full simulation is in a [Colab notebook](https://colab.research.google.com/github/stevenolanecon/7002LBSAI/blob/main/notebooks/week9_collider_simulation.ipynb): change the cut-off or the amount of luck and see what happens to the bias.
+:::
+
+## Task — confounder, mediator or collider?
+
+::: {.instructions-box}
+A firm wants to know whether its sales training course raises staff sales. **Draw a DAG for each variable** before you decide: confounder, mediator or collider? Should it go in the regression?
+
+1. Years of sales experience (managers send experienced staff on the course)
+2. Product knowledge (the course teaches it, and knowing the products helps you sell)
+3. Being featured in the staff newsletter (it lists everyone who did the course, and the month's top sellers)
+:::
+
+::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
+Answer revealed in the workshop.
+:::
+
+## Task — draw your own
+
+::: {.instructions-box}
+**Business question**: in the used-cars data, does a car's mileage affect its price?
+
+In Week 6 you ran this regression and found that controlling for the car's age roughly halves the mileage effect. Draw it as a DAG: where does age sit — confounder, mediator or collider? Then pick one more variable from that dataset (dealer, condition, make) and decide where it belongs, and whether you'd control for it.
+:::
+
+## Where does the variation in x come from?
+
+Whatever we're measuring, x varies across observations for some reason. That reason matters as much as the relationship itself.
+
+- An **endogenous** source of variation: whatever makes x vary is *also* related to y, directly
+- An **exogenous** source of variation: whatever makes x vary is independent of y
+
+::: {.fragment}
+Some of the variation in x is useless to us — it's really a confounder in disguise. Some is exactly what we need. The rest of this session is about telling them apart, and about one way to guarantee we only get the second kind.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 19
+:::
+
+## An exogenous and an endogenous source
+
+Two things could be driving the variation in x. $Z_1$ only affects x. $Z_2$ affects x **and** y directly.
+
+```{ojs}
+html`<div style="text-align:center;padding-top:10px;">
+  <svg width="520" height="220">
+    <text x="60" y="38" font-size="18" text-anchor="middle" font-family="sans-serif">Z&#8321;</text>
+    <text x="190" y="92" font-size="18" text-anchor="middle" font-family="sans-serif">x</text>
+    <text x="450" y="58" font-size="18" text-anchor="middle" font-family="sans-serif">Z&#8322;</text>
+    <text x="330" y="195" font-size="18" text-anchor="middle" font-family="sans-serif">y</text>
+    <line x1="78" y1="45" x2="172" y2="82" stroke="#2d6a4f" stroke-width="2" marker-end="url(#a11)"/>
+    <line x1="420" y1="62" x2="212" y2="88" stroke="#c0392b" stroke-width="2" marker-end="url(#a12)"/>
+    <line x1="438" y1="72" x2="348" y2="178" stroke="#c0392b" stroke-width="2" marker-end="url(#a12)"/>
+    <line x1="208" y1="102" x2="310" y2="180" stroke="#1a1a2e" stroke-width="2" marker-end="url(#a13)"/>
+    <text x="280" y="128" font-size="18" text-anchor="middle" fill="#1a1a2e" font-family="sans-serif">?</text>
+    <defs>
+      <marker id="a11" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2d6a4f"/></marker>
+      <marker id="a12" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#c0392b"/></marker>
+      <marker id="a13" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#1a1a2e"/></marker>
+    </defs>
+  </svg>
+</div>`
+```
+
+::: {.fragment}
+$Z_1$ (green) is exogenous: a clean source of variation in x, unrelated to y except through x. $Z_2$ (red) is endogenous: it's a confounder in disguise, and any variation in x that comes from it will bias our estimate of x's effect on y.
+:::
+
+::: {.fragment}
+**Random assignment is a way of guaranteeing only $Z_1$-type sources exist.** When we assign x ourselves, nothing about the subject — their own characteristics, their own choices — can be the reason x varies, so every remaining source of variation in x is exogenous by construction.
+:::
+
+---
+
+## Random assignment — the solution
+
+---
+
+## Controlled assignment
+
+- In a controlled experiment, the value of x isn't something subjects choose — the experimenter assigns it
+- That rules out **self-selection**: the people who end up working from home aren't the ones who'd have quit anyway, or stayed anyway, for reasons related to their own circumstances
+- It also rules out **reverse causality**: y (whether someone later quits) can't have caused x (their assignment), since assignment happened first
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 20
+:::
+
+## Why random assignment works
+
+- Randomisation is one particular assignment rule, and it's independent of every potential confounder **by design**
+- That's what the DAG a moment ago was really saying: randomise, and only exogenous variation in x is left. The treated and untreated groups are, on average, identical except for treatment
+- Under random assignment, the simple difference in observed averages **is** a good estimate of the ATE
+- No test can prove assignment was random. We believe it because of how the assignment was done, and we can check that the groups look alike on what we measured
+
+---
+
+## Designing and running the experiment
+
+---
+
+## Task — working from home
+
+::: {.instructions-box}
+A field experiment: a real firm and its own employees. Working from home four days a week — does it change whether staff quit?
+
+503 employees volunteered; **249 qualified** (over six months' tenure, broadband at home) and were randomly assigned to work from home or stay in the office. Two outcomes were tracked: whether they quit, and phone-call volume for staff whose job is order-taking.
+
+Open the Colab notebook, load `wfh_person.csv`, and inspect it:
+
+1. How many employees are in the treatment group, and how many in the control group?
+2. Fit a linear probability model of `quitjob` on `treatment`. What's the estimated treatment effect, and is it significant?
+
+No further syntax hints — you've written this exact regression many times by now.
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 20, working-from-home dataset (Bloom et al.'s Ctrip field experiment)
+:::
+
+## What you should have found {.smaller}
+
+::: {.mid-code}
+```{.python}
+import statsmodels.formula.api as smf
+
+quit_model = smf.ols("quitjob ~ treatment", data=wfh).fit(cov_type="HC1")
+```
+:::
+
+::: {style="margin-top:18px;padding:14px 18px;border:2px dashed #bbb;border-radius:8px;color:#777;font-style:italic;"}
+The treatment/control split and the regression output appear here in the workshop – run the code above in the notebook to see them.
+:::
+
+## A second outcome: performance
+
+For staff whose job is taking calls, performance can be measured directly: the number of calls they handle.
+
+::: {.mid-code}
+```{.python}
+ordertakers = wfh[wfh["ordertaker"] == True]
+phone_model = smf.ols("phonecalls1 ~ treatment", data=ordertakers).fit(cov_type="HC1")
+```
+:::
+
+::: {.fragment}
+```{ojs}
+html`<p>Among these ${phone_n} order-takers, working from home <strong>raises</strong> the number of calls by <strong>${phone_effect} thousand</strong> per employee over the period (p ${phone_p}). Fewer people leave, and those who stay do more work.</p>`
+```
+:::
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 20 — matches the book's own published Table, reproduced here from the raw data
+:::
+
+---
+
+## Making it rigorous
+
+---
+
+## Covariate balance {.smaller}
+
+Back to working from home: random assignment should mean the two groups look alike on everything measured **before** treatment. A quick check: regress each one on treatment.
+
+::: {.mid-code}
+```{.python}
+for col in ["age", "married", "children", "tenure", "internet"]:
+    m = smf.ols(f"{col} ~ treatment", data=wfh).fit(cov_type="HC1")
+    print(col, m.pvalues["treatment"])
+```
+:::
+
+```{ojs}
+html`<table style="margin:10px auto 0;font-family:sans-serif;font-size:0.9em;border-collapse:collapse;">
+  <tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:5px 22px;">Covariate</th><th style="padding:5px 22px;">Treatment</th><th style="padding:5px 22px;">Control</th><th style="padding:5px 22px;">p-value</th></tr>
+  ${balance_rows.map(d => `<tr style="border-bottom:1px solid #ddd;"><td style="padding:4px 22px;">${d.covariate}</td><td style="padding:4px 22px;text-align:center;">${d.treat}</td><td style="padding:4px 22px;text-align:center;">${d.control}</td><td style="padding:4px 22px;text-align:center;">${d.p}</td></tr>`).join('')}
+</table>`
+```
+
+::: {.fragment}
+```{ojs}
+html`<p>Mostly balanced. One covariate, ${low_bal.covariate.toLowerCase()}, has a low p-value (${low_bal.p}). Check five covariates and one coming up below 0.05 by chance is not surprising. Worth noting, not worth worrying about.</p>`
+```
+:::
+
+---
+
+## Complications
+
+---
+
+## Imperfect compliance
+
+::: {.instructions-box}
+In this experiment, fewer than 20% of the treatment group had to go back to the office because their personal circumstances changed.
+:::
+
+- **Assignment** (what a subject is told to do) and **treatment** (what they actually do) don't always match
+- Comparing people **by assignment**, whatever they actually did, gives the **intent-to-treat (ITT)** effect: "if we rolled this out with this level of compliance, what would happen?" Often the number a manager needs
+- With small non-compliance, ITT is a good stand-in for the effect of the treatment itself, just a bit smaller. With **substantial** non-compliance it isn't, and the effect on those who comply (the **LATE**) is what we'd need instead
+
+## Being observed changes behaviour
+
+- **Hawthorne effect**: both treated and untreated subjects change their behaviour simply because they know they're being watched — not because of the treatment itself
+- **John Henry effect**: the *control* group works harder than usual, specifically because they know they're the comparison — the opposite problem, and just as real
+- **Spillovers**: one subject's treatment affects another's outcome, which spoils the comparison. Good design keeps treatment and control apart where possible
+
+::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
+Source: Békés & Kézdi (2021), Ch. 20
+:::
+
+## Internal and external validity
+
+- **Internal validity here**: assignment was random, and non-compliance was small and concentrated in the treatment group only — Gabor judges internal validity as strong for this study
+- **External validity**: the firm changed its policy because of this result. Would the same effect hold at another firm, in another job or another country? That's a judgement call; the data can't answer it
+
+---
+
+## So, does working from home change who quits?
+
+```{ojs}
+html`<p>With <strong>${wfh_n}</strong> employees, randomly assigned and reasonably balanced, the task above gives the answer – and those who stay handle more calls too.</p>`
+```
+
+- This is what a causal claim we can trust looks like: a real intervention, random assignment, and a design that would have been just as believable if the result had been zero
+
+## Summary
+
+- Potential outcomes define what "an effect" means. We never see the individual effect, but we can estimate the average
+- DAGs make our assumptions explicit: control for confounders, not for mediators or colliders
+- Random assignment makes the simple group comparison trustworthy. With observational data we can only try to get close
+- Experiments still need care: enough subjects, checked balance, and a clear account of non-compliance
+
+## Online session
+
+What to do when you can't randomise: the types of confounder, latent variables and bad controls, worked through on a food-and-health case study.
+
+## Coming up
+
+::: {style="text-align: center; padding-top: 60px;"}
+[**Week 10: Prediction**]{style="font-size: 1.4em; color: #2d6a4f; padding-top: 20px; display:block;"}
+
+::: {.fragment style="padding-top:40px;"}
+*A different goal entirely — not "what caused this," but "what comes next"*
+:::
+:::
