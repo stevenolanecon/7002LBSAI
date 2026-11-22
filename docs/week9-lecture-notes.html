@@ -1,0 +1,1374 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Causal Analysis &amp; Experiments</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.17/dist/plot.umd.min.js"></script>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['$$', '$$']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #fdfbf6;
+    --paper-raised: #ffffff;
+    --paper-sunk: #f6f1e7;
+    --ink: #1a1a2e;
+    --ink-soft: #4a4d63;
+    --ink-faint: #86869c;
+    --rule: #e6ddc9;
+    --accent: #1f7a79;
+    --accent-soft: #f3fbfb;
+    --warm: #c8373f;
+    --warm-soft: #fbeceb;
+    --gold: #c97f31;
+    --green: #2d6a4f;
+    --green-soft: #eaf5ef;
+    --quote-bg: #eef7f7;
+    --quote-border: #bfe0df;
+    --quote-ink: #1e4a49;
+    --chip-bg: #f1ece0;
+    --code-bg: #f4f0e6;
+    --shadow: 0 1px 2px rgba(26,26,46,0.06), 0 8px 24px -12px rgba(26,26,46,0.18);
+    --serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    --sans: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #14151f;
+      --paper-raised: #1c1e2b;
+      --paper-sunk: #10111a;
+      --ink: #eef0f6;
+      --ink-soft: #b7bbcf;
+      --ink-faint: #7c8098;
+      --rule: #303350;
+      --accent: #5ecbc8;
+      --accent-soft: #15302f;
+      --warm: #ff8a86;
+      --warm-soft: #2e1c1d;
+      --gold: #f2b872;
+      --green: #6fbb95;
+      --green-soft: #14261f;
+      --quote-bg: #142726;
+      --quote-border: #29504c;
+      --quote-ink: #bfe7e2;
+      --chip-bg: #23253a;
+      --code-bg: #191b2a;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #14151f;
+    --paper-raised: #1c1e2b;
+    --paper-sunk: #10111a;
+    --ink: #eef0f6;
+    --ink-soft: #b7bbcf;
+    --ink-faint: #7c8098;
+    --rule: #303350;
+    --accent: #5ecbc8;
+    --accent-soft: #15302f;
+    --warm: #ff8a86;
+    --warm-soft: #2e1c1d;
+    --gold: #f2b872;
+    --green: #6fbb95;
+    --green-soft: #14261f;
+    --quote-bg: #142726;
+    --quote-border: #29504c;
+    --quote-ink: #bfe7e2;
+    --chip-bg: #23253a;
+    --code-bg: #191b2a;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--accent-soft); color: var(--ink); }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  h1, h2, h3, h4 { font-family: var(--serif); color: var(--ink); text-wrap: balance; line-height: 1.18; font-weight: 600; }
+  p { line-height: 1.68; color: var(--ink-soft); }
+  strong { color: var(--ink); font-weight: 600; }
+
+  /* ---------- shell layout ---------- */
+  .shell {
+    display: grid;
+    grid-template-columns: 240px minmax(0,1fr);
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  @media (max-width: 880px) {
+    .shell { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    padding: 56px 16px 38px;
+    border-bottom: 1px solid var(--rule);
+    background:
+      radial-gradient(ellipse 900px 320px at 15% -10%, var(--accent-soft), transparent 60%),
+      var(--paper);
+  }
+  .hero-inner { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; display:flex; align-items:center; gap: 10px; flex-wrap: wrap;
+  }
+  .eyebrow .dot { width:5px; height:5px; border-radius:50%; background: var(--warm); display:inline-block; }
+  .hero h1 { font-size: clamp(2.1rem, 4.6vw, 3.1rem); margin: 14px 0 10px; max-width: 16ch; }
+  .hero .dek { font-size: 1.15rem; color: var(--ink-soft); max-width: 62ch; line-height: 1.55; margin: 0 0 26px; }
+  .hero .dek em { color: var(--ink); font-style: normal; border-bottom: 2px solid var(--gold); }
+
+  .headline-strip {
+    display: flex; gap: 0; flex-wrap: wrap;
+    border: 1px solid var(--rule); border-radius: 14px; overflow: hidden;
+    background: var(--paper-raised); box-shadow: var(--shadow);
+    max-width: 780px;
+  }
+  .headline-strip .stat {
+    flex: 1 1 150px; padding: 16px 20px; border-right: 1px solid var(--rule);
+  }
+  .headline-strip .stat:last-child { border-right: none; }
+  .headline-strip .stat .n {
+    font-family: var(--serif); font-size: 1.7rem; font-weight: 700; color: var(--accent);
+    font-variant-numeric: tabular-nums; display:block;
+  }
+  .headline-strip .stat .n.warm { color: var(--warm); }
+  .headline-strip .stat .l { font-size: 12.5px; color: var(--ink-faint); margin-top: 2px; }
+
+  /* ---------- TOC ---------- */
+  nav.toc {
+    padding: 34px 20px 40px 24px;
+    font-family: var(--sans);
+  }
+  nav.toc .toc-label { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 10px; display:block; }
+  .toc-block.chapter-nav { padding-bottom: 18px; margin-bottom: 18px; border-bottom: 1px solid var(--rule); }
+  nav.toc ol.chapter-list { list-style: none; margin: 0; padding: 0; columns: 1; }
+  nav.toc ol.chapter-list li { margin-bottom: 2px; }
+  nav.toc .chapter-link { display: block; padding: 8px 10px; border-radius: 8px; text-decoration: none; }
+  nav.toc .chapter-link strong { display: block; font-family: var(--serif); font-size: 13.5px; color: var(--ink); font-weight: 600; }
+  nav.toc .chapter-link .chapter-sub { display: block; font-size: 11px; color: var(--ink-faint); margin-top: 1px; line-height: 1.3; }
+  nav.toc a.chapter-link:hover { background: var(--paper-sunk); }
+  nav.toc .chapter-link.current { background: var(--accent-soft); cursor: default; }
+  nav.toc .chapter-link.current strong { color: var(--accent); }
+  nav.toc .chapter-link:before { content: none; }
+  nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: sec; }
+  nav.toc li { counter-increment: sec; margin-bottom: 2px; }
+  nav.toc a {
+    display: flex; gap: 9px; padding: 6px 8px; border-radius: 7px;
+    color: var(--ink-soft); text-decoration: none; font-size: 13.5px; line-height: 1.35;
+  }
+  nav.toc a:before {
+    content: counter(sec, decimal-leading-zero); font-family: var(--mono); font-size: 11px;
+    color: var(--ink-faint); padding-top: 1px; flex-shrink: 0;
+  }
+  nav.toc a:hover { background: var(--paper-sunk); color: var(--ink); }
+  nav.toc a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  nav.toc a.active:before { color: var(--accent); }
+  @media (max-width: 880px) {
+    nav.toc { position: static; border-bottom: 1px solid var(--rule); padding: 18px 20px; }
+    nav.toc ol { columns: 2; column-gap: 20px; }
+    nav.toc.desktop-sticky { display: none; }
+  }
+  @media (min-width: 881px) {
+    nav.toc.desktop-sticky { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; }
+    .mobile-toc { display: none; }
+  }
+
+  /* ---------- main column ---------- */
+  main { padding: 8px 24px 100px; min-width: 0; }
+  .col { max-width: 700px; margin: 0 auto; }
+
+  section.chapter { padding-top: 54px; scroll-margin-top: 14px; }
+  section.chapter:first-of-type { padding-top: 40px; }
+  .chapter-kicker {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 6px;
+  }
+  section.chapter h2 { font-size: clamp(1.5rem, 3vw, 1.95rem); margin: 0 0 18px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  section.chapter h3 { font-size: 1.18rem; margin: 34px 0 12px; }
+  section.chapter > p { margin: 0 0 16px; font-size: 1.02rem; }
+  section.chapter ul, section.chapter ol { color: var(--ink-soft); line-height: 1.68; padding-left: 22px; }
+  section.chapter li { margin-bottom: 6px; }
+  section.chapter li strong { color: var(--ink); }
+
+  /* first-paragraph drop treatment on the very first section only */
+  #naive-answer > p:first-of-type::first-letter {
+    font-family: var(--serif); font-size: 3.6em; float: left; line-height: 0.85; padding: 6px 8px 0 0;
+    color: var(--warm); font-weight: 700;
+  }
+
+  /* ---------- inline components ---------- */
+  .lede-figure {
+    display: flex; gap: 20px; align-items: flex-start; margin: 0 0 20px; padding-bottom: 4px;
+  }
+  .lede-figure .art {
+    flex: 0 0 168px; width: 168px; height: 168px; border-radius: 12px; overflow: hidden;
+    background: linear-gradient(150deg, var(--accent-soft), var(--paper-sunk));
+    display:flex; align-items:center; justify-content:center; box-shadow: var(--shadow);
+  }
+  @media (max-width: 560px) { .lede-figure { flex-direction: column; } .lede-figure .art { width: 100%; height: 150px; } }
+
+  blockquote.field-note {
+    margin: 24px 0; padding: 16px 20px 16px 18px;
+    background: var(--quote-bg); border-left: 3px solid var(--quote-border); border-radius: 4px 10px 10px 4px;
+  }
+  blockquote.field-note .tag {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--quote-ink); opacity: 0.85; display: block; margin-bottom: 6px;
+  }
+  blockquote.field-note p { margin: 0; color: var(--quote-ink); font-size: 0.98rem; font-style: italic; line-height: 1.6; }
+  blockquote.field-note p + p { margin-top: 8px; }
+
+  .callout {
+    margin: 22px 0; padding: 16px 20px; border-radius: 10px; border: 1px solid var(--rule);
+    background: var(--paper-sunk); font-size: 0.96rem; color: var(--ink-soft); line-height: 1.6;
+  }
+  .callout strong { color: var(--ink); }
+  .callout.gold { border-color: color-mix(in srgb, var(--gold) 40%, var(--rule)); background: color-mix(in srgb, var(--gold) 10%, var(--paper-sunk)); }
+
+  .formula-block {
+    margin: 20px 0; padding: 18px 22px; background: var(--code-bg); border-radius: 10px;
+    border: 1px solid var(--rule); overflow-x: auto; text-align: center; font-size: 1.05rem;
+  }
+  .formula-caption { text-align: center; font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin-top: -12px; margin-bottom: 20px; }
+
+  code, .inline-code { font-family: var(--mono); font-size: 0.86em; background: var(--code-bg); padding: 2px 6px; border-radius: 4px; color: var(--ink); }
+  pre.code-block {
+    font-family: var(--mono); font-size: 0.82rem; background: var(--code-bg); border: 1px solid var(--rule);
+    border-radius: 10px; padding: 16px 18px; overflow-x: auto; line-height: 1.55; color: var(--ink);
+    margin: 16px 0;
+  }
+  pre.code-block .c { color: var(--ink-faint); }
+  pre.code-block .k { color: var(--accent); }
+
+  table.data-table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 0.92rem; overflow-x: auto; display: block; }
+  table.data-table thead, table.data-table tbody { display: table; width: 100%; table-layout: fixed; }
+  table.data-table th { text-align: left; font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 600; padding: 8px 12px; border-bottom: 2px solid var(--ink); }
+  table.data-table td { padding: 9px 12px; border-bottom: 1px solid var(--rule); color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data-table tr:last-child td { border-bottom: none; }
+  table.data-table td:first-child, table.data-table th:first-child { color: var(--ink); font-weight: 500; }
+
+  .term-list { list-style: none; padding: 0; margin: 18px 0; }
+  .term-list li { display: grid; grid-template-columns: 170px 1fr; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .term-list li:last-child { border-bottom: none; }
+  .term-list dt, .term-list .term { font-weight: 600; color: var(--ink); font-family: var(--serif); }
+  @media (max-width: 560px) { .term-list li { grid-template-columns: 1fr; gap: 3px; } }
+
+  /* ---------- interactive figure shell ---------- */
+  .figure {
+    margin: 26px 0; background: var(--paper-raised); border: 1px solid var(--rule); border-radius: 14px;
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .figure-head { padding: 16px 20px 12px; border-bottom: 1px solid var(--rule); }
+  .figure-head .flabel { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .figure-head h4 { margin: 4px 0 0; font-size: 1.05rem; }
+  .figure-body { padding: 16px 20px; }
+  .figure-caption { padding: 0 20px 18px; font-size: 0.86rem; color: var(--ink-faint); line-height: 1.5; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 16px 22px; align-items: center; padding: 12px 4px 18px; font-size: 13px; }
+  .ctl { display: flex; align-items: center; gap: 8px; }
+  .ctl .lbl { color: var(--ink-soft); white-space: nowrap; }
+  .ctl input[type=range] { accent-color: var(--accent); cursor: pointer; width: 110px; }
+  .ctl .val { font-family: var(--mono); font-weight: 600; min-width: 46px; color: var(--accent); font-size: 12.5px; }
+
+  .chart-wrap { overflow-x: auto; }
+  .chart-wrap svg { display: block; margin: 0 auto; }
+  .chart-row { display: flex; gap: 20px; flex-wrap: wrap; }
+  .chart-row > div { flex: 1 1 200px; min-width: 0; }
+
+  .mini-table-wrap { overflow-x: auto; }
+
+  /* ---------- collapsible code box ---------- */
+  details.code-reveal {
+    margin: 20px 0; border: 1px solid var(--rule); border-radius: 10px; overflow: hidden;
+    background: var(--paper-raised);
+  }
+  details.code-reveal summary {
+    cursor: pointer; padding: 12px 18px; font-family: var(--mono); font-size: 0.82rem; font-weight: 600;
+    color: var(--accent); list-style: none; display: flex; align-items: center; gap: 9px;
+    background: var(--paper-sunk); user-select: none;
+  }
+  details.code-reveal summary::-webkit-details-marker { display: none; }
+  details.code-reveal summary::before { content: '\25B8'; font-size: 0.85em; transition: transform 0.15s ease; display: inline-block; }
+  details.code-reveal[open] summary::before { transform: rotate(90deg); }
+  details.code-reveal .code-reveal-body { padding: 2px 18px 16px; }
+  details.code-reveal .code-reveal-body p { font-size: 0.9rem; margin: 12px 0 0; }
+
+  /* ---------- divider ---------- */
+  .divider {
+    margin: 60px 0 0; padding: 46px 24px; background: var(--ink); border-radius: 16px; text-align: center;
+    color: #f2f2f6;
+  }
+  .divider .k { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: #8fb4cc; }
+  .divider h3 { color: #fff; font-size: 1.5rem; margin: 10px 0 0; }
+  .divider p { color: #c3c4d6; max-width: 46ch; margin: 10px auto 0; }
+
+  /* ---------- footnotes ---------- */
+  .footnote-ref { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .footnote-ref:hover { text-decoration: underline; }
+  .footnotes {
+    max-width: 700px; margin: 46px auto 0; padding: 18px 0 0; border-top: 1px solid var(--rule);
+    font-size: 0.86rem; color: var(--ink-soft); line-height: 1.6;
+  }
+  .footnotes ol { padding-left: 20px; margin: 0; }
+  .footnotes li { margin-bottom: 6px; }
+  .footnotes a.footnote-back { color: var(--ink-faint); text-decoration: none; margin-left: 4px; }
+  .footnotes a.footnote-back:hover { color: var(--accent); }
+
+  /* ---------- footer ---------- */
+  footer.colophon {
+    max-width: 700px; margin: 70px auto 0; padding: 26px 0 0; border-top: 1px solid var(--rule);
+    font-size: 0.86rem; color: var(--ink-faint); line-height: 1.6;
+  }
+  footer.colophon strong { color: var(--ink-soft); }
+
+  @media (max-width: 400px) {
+    .hero { padding: 40px 12px 30px; }
+    main { padding: 8px 14px 80px; }
+  }
+  /* ---------- week 3 additions: checkbox labels and a plain button in .controls ---------- */
+  .controls label.chk { display:flex; align-items:center; gap:6px; cursor:pointer; color: var(--ink-soft); }
+  .controls input[type=checkbox] { accent-color: var(--accent); cursor: pointer; }
+  select.picker {
+    font-family: var(--sans); font-size: 13.5px; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--rule);
+    background: var(--paper-sunk); color: var(--ink); cursor: pointer;
+  }
+  button.btn {
+    font-family: var(--sans); font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 8px;
+    border: 1px solid var(--accent); background: var(--accent-soft); color: var(--accent); cursor: pointer;
+  }
+  .visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  button.btn:hover { background: var(--accent); color: var(--paper); }
+  .extension { background: var(--green-soft); border-left: 4px solid var(--green); border-radius: 6px; padding: 12px 18px; margin: 18px 0; }
+  .extension p { margin: 0; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="toc desktop-sticky" id="toc"></nav>
+
+  <main>
+    <div class="hero" style="margin: -8px -24px 30px; border-radius: 0;">
+      <div class="hero-inner" style="padding:0;">
+        <div class="eyebrow"><span class="dot"></span>7002LBSAI &middot; Research Methods in Analytics &middot; Chapter Nine</div>
+        <h1>Causal Analysis and Experiments</h1>
+      </div>
+    </div>
+
+    <nav class="toc mobile-toc" id="toc-mobile"></nav>
+
+    <div class="col">
+
+<section class="chapter" id="naive-answer">
+<div class="chapter-kicker">Part One</div>
+<h2>The Question We've Been Avoiding</h2>
+
+<div class="lede-figure">
+  <p>Eight weeks in, there's a sentence this module has trained you never to finish. You've described a relationship between finger length and reaction time. You've found that two devices differ. Last week you found a gender pay gap, and the whole point of that session was to stop short of saying what caused it: only that it was there, on average, between two groups. Every one of those was an <strong>association</strong>. This week asks the question those slides kept deflecting. When, if ever, are you allowed to say one thing actually <em>causes</em> another?</p>
+</div>
+
+<p>Here's a real business version of this question, and the honest answer isn't obvious. Letting staff work from home: does it change anything real, like how many of them quit, or is it just a perk that makes people feel nice and changes nothing underneath? A manager who can't answer that is flying blind on a decision firms make all the time. "Does it change productivity, does it change who quits" is a lever a business can actually pull. Someone could switch the policy tomorrow. That's what makes it a <strong>causal</strong> question rather than a merely descriptive one. There's an intervention here, something you could imagine doing or not doing, and real variation in it across people.</p>
+
+<p>The lazy answer is to just look: compare the quit rate of staff who already work from home against everyone else. It's the kind of thing you could compute in Excel in thirty seconds. It's also almost worthless, for a reason you've already met.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;People who already work from home chose to. They might have longer commutes, different family situations, longer tenure &ndash; any of these could explain a lower quit rate on its own. It's the same problem as omitted variable bias back in Week 6.&rdquo;</p>
+</blockquote>
+
+<p>Whoever already works from home isn't a random slice of the workforce. They self-selected into it, for reasons that plausibly affect whether they quit all by themselves: a long commute, young kids, a manager who trusts them. Working-from-home status just comes along for the ride. Compare that group to everyone else and you aren't isolating the effect of the policy. You're measuring the policy tangled up with every reason someone ended up choosing it in the first place.</p>
+
+<p>So what would it actually take to answer this properly? Three things, and none of them is a statistical technique yet. They're all about <em>design</em>, decided before a single row of data gets collected.</p>
+
+<ul>
+  <li>A formal definition of what "the effect of X" even means, precise enough to compute</li>
+  <li>A way to <em>know</em>, not just hope, that the group that got the treatment and the group that didn't are comparable</li>
+  <li>A way of collecting data where that comparison actually holds up: an experiment</li>
+</ul>
+
+<p>The rest of this chapter builds exactly that, piece by piece. A precise vocabulary for what an effect is. A way of drawing your assumptions so they can't hide. And a plan for a real experiment, one we can actually run and watch pay off, on 249 real employees at a real company.</p>
+
+</section>
+
+<section class="chapter" id="potential-outcomes">
+<div class="chapter-kicker">Part Two</div>
+<h2>Two Universes for Every Person</h2>
+
+<p>Here's the framework that makes "the effect of X" precise. It comes from medicine before it came to business: the vocabulary of treatment and control, drugs and placebos, maps directly onto training courses and discount emails. A new drug isn't tested by giving it to everyone and admiring the outcome. Some patients get it and some don't, specifically so the two groups can be compared. Business experiments borrow that whole apparatus.</p>
+
+<div class="term-list">
+  <li><span class="term">Treatment</span><span>The causal variable, usually some intervention: a price change, an ad, a training course, a policy</span></li>
+  <li><span class="term">Subjects</span><span>Whoever receives it or doesn't. Some are <strong>treated</strong>, some <strong>untreated</strong>, and both groups matter equally</span></li>
+  <li><span class="term">Outcome</span><span>What might be affected. A precise causal question names both the treatment and the outcome</span></li>
+</div>
+
+<p>A causal question needs two ingredients: an <strong>intervention</strong> you can at least imagine happening, and real <strong>variation</strong> in it across subjects. "Does training managers raise revenue?" clears that bar easily, since you can imagine training some managers and not others. "Did the refugee crisis affect house prices?" clears it too, even though nobody deliberately assigned it, because it happened to some regions of Europe and not others, essentially by accident. Without an intervention of some kind, however it arose, you're stuck describing the data, which is still useful, just not this.</p>
+
+<p>Now make it precise. Every subject, before anything happens to them, has <strong>two potential outcomes</strong> sitting in principle, waiting:</p>
+
+<div class="formula-block">
+  \( y_i^1 \) &ndash; what happens if treated &nbsp;&nbsp;&nbsp; \( y_i^0 \) &ndash; what happens if not
+</div>
+<p class="formula-caption">B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 19</p>
+
+<p>Before any assignment happens, both of these exist for every subject, whether or not they ever end up treated. Once assignment happens, once a manager decides who gets the training, who gets the email, who gets to work from home, one of the two becomes real and observable. The other one doesn't just become hard to find. It stops existing in any dataset you'll ever have, because the event that would have produced it never happened. That missing half has its own name: the <strong>counterfactual</strong>, what would have happened to this exact person had their treatment gone the other way.</p>
+
+<p>Put the two together and you get the thing this whole framework exists to define: a single person's true, individual effect of the treatment.</p>
+
+<div class="formula-block">
+  \( te_i = y_i^1 - y_i^0 \)
+</div>
+<p class="formula-caption">the individual treatment effect</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Can I get this effect for one specific person &ndash; let's call her Maya? Her revenue if she got the training, minus her revenue if she hadn't. Why can I not calculate this? Both of them are theoretically measurable &ndash; I could steal her phone and look at her bank app. But can I do both at the same time? No. I have to find a way to travel to a different universe, or go back in time and decide not to give Maya the training. I have to be Doctor Strange.&rdquo;</p>
+</blockquote>
+
+<p>That's the whole problem in one sentence. This isn't a modelling limitation that a cleverer regression fixes. It's a hard, structural fact about data. You can only ever watch one version of any one person's life. The other version simply never happens.</p>
+
+<h3>A worked example, with god's-eye privileges</h3>
+
+<p>To actually feel this, it helps to cheat, just once, just on a toy example, by giving ourselves exactly the superpower the last paragraph said was impossible. A shop emails some customers a discount code. The question: did sending it cause the customer to buy that week? Suppose, purely as a thought experiment, we could see <em>both</em> potential outcomes for four customers.</p>
+
+<p>Here's what the email actually did to each of them: the column no real dataset will ever contain.</p>
+
+<div class="figure" id="fig-four-customers">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>Four customers, both universes</h4></div>
+  <div class="figure-body">
+    <div class="mini-table-wrap" id="four-customers-table"></div>
+  </div>
+  <p class="figure-caption">\(y^1\): would this customer buy if emailed? \(y^0\): would they buy if not? \(te\): the individual treatment effect, \(y^1 - y^0\), visible here only because we've rigged the example to show both columns at once.</p>
+</div>
+
+<p>Asha is persuaded. She buys because of the email, and wouldn't have otherwise. Ben buys either way; the email did nothing for him. Chloe is the awkward one: she buys if left alone, but the discount code actively puts her off (she decides the brand must be cheap now) and she unsubscribes instead. Dev never buys, email or not. Four customers, four completely different reactions to the identical intervention, and that spread is the actual point of this made-up example.</p>
+
+<p>Now take away the god's-eye view, because in reality you never had it. A real dataset never carries the \(y^1\)/\(y^0\) columns side by side. It only ever carries whichever outcome actually happened, plus whether the customer got the email.</p>
+
+<div class="mini-table-wrap">
+<table class="data-table">
+<thead><tr><th>Customer</th><th>Emailed?</th><th>Bought</th></tr></thead>
+<tbody>
+<tr><td>Asha</td><td>Yes</td><td>1</td></tr>
+<tr><td>Ben</td><td>Yes</td><td>1</td></tr>
+<tr><td>Chloe</td><td>No</td><td>1</td></tr>
+<tr><td>Dev</td><td>No</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>Three columns, not five. No \(te\), no counterfactual, nothing flagged "missing", just who got the email and what happened next. If Asha and Ben were both emailed, this table alone can never tell you that Asha's purchase was caused by the email and Ben's wasn't. They look identical: emailed, bought. This is the table a real shop would actually have, and every causal question for the rest of this chapter starts from something that looks exactly like it.</p>
+
+</section>
+
+<section class="chapter" id="average-effect">
+<div class="chapter-kicker">Part Three</div>
+<h2>Giving Up On the Individual, Gaining the Average</h2>
+
+<p>Asha, Ben, Chloe and Dev didn't just differ by chance. Different people react differently to the same treatment, and that's the normal case. Men and women, new staff and long-serving ones, small markets and large ones: individual effects vary by subgroup, by circumstance, by person. You can never recover the full distribution of everyone's \(te_i\), because you never see the counterfactual half of it for anyone. What you <em>can</em> recover is its average.</p>
+
+<div class="formula-block">
+  \( ATE = E[y_i^1] - E[y_i^0] \)
+</div>
+<p class="formula-caption">the average treatment effect</p>
+
+<p>This is the average, across everyone, of all those individual effects, computed without ever seeing a single one of them directly. Multiply it by the size of the population you'd roll a policy out to, and you get the total effect of actually doing it.</p>
+
+<p>There's a reassuring piece of algebra underneath that definition, and it's the only reason an ATE is ever computable at all.</p>
+
+<div class="formula-block">
+  \( ATE = E[te_i] = E[y_i^1 - y_i^0] = E[y_i^1] - E[y_i^0] \)
+</div>
+
+<p>We can't average \(te_i\) directly. We never observe it for anyone. But the identity says we don't have to. If we could average \(y_i^1\) over everyone and \(y_i^0\) over everyone separately, the difference between those two averages would give the identical answer. And unlike individual \(te_i\)'s, group averages of \(y^1\) and \(y^0\) are things real data can actually supply. One group gives you an average \(y^1\), the other an average \(y^0\).</p>
+
+<p>There's a catch, and it's the catch the rest of this chapter exists to solve. That identity only reduces to something you can estimate from real data if the group that happened to get treated and the group that didn't are themselves representative of the whole population's \(y^1\)'s and \(y^0\)'s. If assignment is tangled up with who the people <em>are</em>, if the kind of customer who gets emailed is systematically different from the kind who doesn't, the group averages you actually observe can disagree with the true population averages, sometimes by a lot.</p>
+
+<h3>What "independent of the potential outcomes" actually means</h3>
+
+<p>Take an online ad. Assignment is independent of the potential outcomes if whether someone was shown the ad has nothing to do with what they'd buy <em>if</em> shown it, or what they'd buy <em>if not</em>. If that holds, the people who were shown the ad would have bought at much the same rate as the people who weren't, had the roles been reversed, and vice versa. Neither group is systematically more or less inclined to buy, ad or no ad. That's what makes the comparison fair. Not that the individual people in the two groups are identical; they obviously aren't. It's that, as groups, neither one is quietly tilted toward buying more or less for reasons that have nothing to do with the ad itself.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;This is our first introduction to this, and in a lot of ways it can sound a bit like word salad &ndash; I definitely made it sound like word salad when I explained it. So: assignment, whether they view the ad or not, is independent of the potential outcomes. It's saying their decision is based only on whether they've seen the ad, not by any other characteristic.&rdquo;</p>
+</blockquote>
+
+<h3>Why the average doesn't fully let you off the hook</h3>
+
+<p>It's tempting to think a zero ATE settles the question, that the intervention did nothing. It doesn't settle anything of the sort. Imagine two versions of that discount email, sent to six customers each.</p>
+
+<div class="mini-table-wrap">
+<table class="data-table">
+<thead><tr><th>Email</th><th colspan="6" style="text-align:center;">Individual effect \(te\)</th><th>ATE</th></tr></thead>
+<tbody>
+<tr><td>A</td><td style="text-align:center;">0</td><td style="text-align:center;">0</td><td style="text-align:center;">0</td><td style="text-align:center;">0</td><td style="text-align:center;">0</td><td style="text-align:center;">0</td><td style="text-align:center;"><strong>0</strong></td></tr>
+<tr><td>B</td><td style="text-align:center;color:var(--green);">+1</td><td style="text-align:center;color:var(--green);">+1</td><td style="text-align:center;color:var(--green);">+1</td><td style="text-align:center;color:var(--warm);">&minus;1</td><td style="text-align:center;color:var(--warm);">&minus;1</td><td style="text-align:center;color:var(--warm);">&minus;1</td><td style="text-align:center;"><strong>0</strong></td></tr>
+</tbody>
+</table>
+</div>
+
+<p>Email A does nothing to anyone. Perfectly homogeneous, zero effect across the board, and the average captures that perfectly. Email B does something very different. It wins over three bargain hunters and alienates three customers who now think the brand looks cheap. Both land on an ATE of exactly zero, and the average can't tell them apart. But a business absolutely wants to know which story it's looking at, because the sensible next move (send Email B only to the bargain hunters) is invisible from the average alone.</p>
+
+<div class="callout">
+  <strong>A useful subgroup: ATET.</strong> The ATE can be calculated for any subgroup you like, not just the whole population, and one particular subgroup has its own name. The <strong>average treatment effect on the treated</strong> (ATET) answers a subtly different question from the ATE: not "what would this do to a randomly chosen person," but "was it worth it, for the people who actually got it?" Under random assignment, which is where this chapter is heading, the treated group turns out to be a random draw from everyone, so \(ATE = ATET\). Without random assignment, the two can pull apart, and which one you actually have on your hands starts to matter.
+</div>
+
+<div class="callout gold extension">
+  <p><strong>When X isn't just on or off.</strong> Not every intervention is binary. Prices, advertising budgets, dosages, days per week working from home: these are <strong>quantitative causal variables</strong>, where the intervention's <em>size</em> varies as well as whether it happens at all. There's no longer a single \(te_i\) for a subject, because the effect depends on how much \(x\) changes and where it started from. The fix is one extra step before anything else can happen: define the effect <em>per unit change</em> in \(x\), for each subject. Once that's done, every idea in this chapter (heterogeneity, the ATE, the averages-of-differences identity) carries over unchanged. Today's case study is binary, work from home or not, precisely to keep the machinery visible without this extra layer on top.</p>
+</div>
+
+<p>Since Week 4, "all else equal" has been a working assumption running quietly under everything you've computed. Potential outcomes make it exact: the only difference between \(y_i^1\) and \(y_i^0\), by definition, is the intervention itself. Everything else about the subject is held fixed. Week 6's multiple regression, \(y^E = \beta_0 + \beta_1 x + \beta_2 z\), tries to approximate this by <em>conditioning on</em> \(z\): comparing observations that share the same \(z\) but differ in \(x\). That's ceteris paribus for whatever you've chosen to include.</p>
+
+<p>Can a regression conditioning on enough controls actually deliver the real thing? Probably not, and here's why. You can only condition on what's in your data, and ceteris paribus means holding <em>everything</em> fixed, measured or not. However many controls you add, that gap between "what I controlled for" and "literally everything else" never fully closes. So the question this chapter is building toward isn't "how do I control for more stuff." It's "how do I get a good estimate of the ATE in the first place." That's design, not modelling, and it's the rest of this chapter.</p>
+
+<h3>Checking the identity against real numbers</h3>
+
+<p>Go back to Asha, Ben, Chloe and Dev, with their god's-eye table restored. The true identity gives:</p>
+
+<div class="formula-block">
+  \( ATE = E[y_i^1] - E[y_i^0] = 0.5 - 0.5 = \mathbf{0} \)
+</div>
+
+<p>But real data never hands you that table. It hands you the one you'd actually have: emailed customers (Asha, Ben) averaged <strong>1.0</strong> bought; unemailed customers (Chloe, Dev) averaged <strong>0.5</strong>. The difference between those two real, observable groups is <strong>0.5</strong>.</p>
+
+<p>The true effect is zero. The comparison you can actually run says 0.5. Why are these different?</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;One reason they're different is our averages are based on very small samples &ndash; two in each. You'd hope that with a couple of thousand, that bias would smooth out. But it might still persist, because maybe the two groups are systematically different &ndash; one more likely to react in a certain way to purchasing than the other. Something about who got emailed must be related to whether they'd have bought anyway, and averaging the two groups doesn't fix that on its own.&rdquo;</p>
+</blockquote>
+
+<p>That's the puzzle this chapter is building toward solving, and it needs more than arithmetic. It needs a way to reason, before any data is collected, about which comparisons are safe and which aren't. The tool for that is a picture, not a formula.</p>
+
+</section>
+<section class="chapter" id="dags">
+<div class="chapter-kicker">Part Four</div>
+<h2>Drawing the Assumptions: DAGs</h2>
+
+<p>Here's the tool for reasoning about which comparisons are safe before any data gets collected: a <strong>DAG</strong>, a directed acyclic graph, which sounds forbidding and is really just a diagram of your assumptions. Nodes are variables. Arrows are effects. That's the whole vocabulary.</p>
+
+<div class="chart-wrap" style="padding:20px 0;">
+<svg width="420" height="110" viewBox="0 0 420 110">
+  <text x="60" y="60" font-size="18" text-anchor="middle" fill="var(--ink)">X</text>
+  <text x="360" y="60" font-size="18" text-anchor="middle" fill="var(--ink)">Y</text>
+  <line x1="80" y1="55" x2="335" y2="55" stroke="var(--green)" stroke-width="2" marker-end="url(#dagA1)"/>
+  <text x="200" y="40" font-size="20" text-anchor="middle" fill="var(--warm)">?</text>
+  <defs><marker id="dagA1" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="var(--green)"/></marker></defs>
+</svg>
+</div>
+
+<p>The simplest causal question, drawn: does \(X\) affect \(Y\)? A DAG summarises assumptions you were making anyway, every single time you decided what to put into a regression. It just forces them into the open, where you can argue about them, rather than letting them hide inside a model specification nobody thought to question.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Every 'control for this' decision since Week 6 assumed a map like this without ever drawing it. Drawing it gives us rules.&rdquo;</p>
+</blockquote>
+
+<h3>Case one: the confounder</h3>
+
+<div class="chart-wrap" style="padding:10px 0;">
+<svg width="460" height="170" viewBox="0 0 460 170">
+  <text x="80" y="140" font-size="18" text-anchor="middle" fill="var(--ink)">X</text>
+  <text x="380" y="140" font-size="18" text-anchor="middle" fill="var(--ink)">Y</text>
+  <text x="230" y="30" font-size="18" text-anchor="middle" fill="var(--ink)">Z</text>
+  <line x1="95" y1="130" x2="365" y2="130" stroke="var(--warm)" stroke-width="2" marker-end="url(#dagA2)"/>
+  <line x1="215" y1="40" x2="100" y2="120" stroke="var(--green)" stroke-width="2" marker-end="url(#dagA2)"/>
+  <line x1="245" y1="40" x2="365" y2="120" stroke="var(--green)" stroke-width="2" marker-end="url(#dagA2)"/>
+  <defs><marker id="dagA2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="var(--green)"/></marker></defs>
+</svg>
+</div>
+
+<p>\(Z\) sits <strong>upstream</strong> of \(X\): it causes both \(X\) and \(Y\). Leave it out, and part of \(Z\)'s effect on \(Y\) gets misread as \(X\)'s. This is exactly Week 6's omitted variable bias, drawn as a picture instead of a formula. More experienced managers are more likely to get sent on a training course, <em>and</em> more experienced managers earn more revenue regardless. Leave experience out, and some of its effect gets wrongly credited to the training. <strong>The rule: control for it.</strong></p>
+
+<h3>Case two: the mediator</h3>
+
+<div class="chart-wrap" style="padding:20px 0;">
+<svg width="480" height="130" viewBox="0 0 480 130">
+  <text x="50" y="68" font-size="18" text-anchor="middle" fill="var(--ink)">X</text>
+  <text x="240" y="28" font-size="16" text-anchor="middle" fill="var(--ink)">M</text>
+  <text x="430" y="68" font-size="18" text-anchor="middle" fill="var(--ink)">Y</text>
+  <line x1="65" y1="58" x2="225" y2="33" stroke="var(--green)" stroke-width="2" marker-end="url(#dagA3)"/>
+  <line x1="255" y1="33" x2="415" y2="58" stroke="var(--green)" stroke-width="2" marker-end="url(#dagA3)"/>
+  <line x1="70" y1="68" x2="410" y2="68" stroke="var(--ink-faint)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#dagA4)"/>
+  <defs>
+    <marker id="dagA3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="var(--green)"/></marker>
+    <marker id="dagA4" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="var(--ink-faint)"/></marker>
+  </defs>
+</svg>
+</div>
+
+<p>\(M\) sits <strong>downstream</strong> of \(X\), on the path to \(Y\): it's the mechanism through which the effect happens, not a separate cause competing with it. Controlling for a mediator doesn't fix anything. It <em>removes part of the effect you're trying to measure</em>. It's a <strong>bad control</strong>. One twist: a mediator could be the outcome in its own right, if that's the question. The effect of a generic training course is one thing; the effect of <em>which company ran it</em> is a different question entirely, and the right thing to control for depends on which one you're asking.</p>
+
+<p>Back to working from home. Suppose it reduces commute stress, and commute stress affects whether someone quits. Is commute stress a confounder of the working-from-home&ndash;quit relationship, or a mediator? Drawn as a DAG, it's a <strong>mediator</strong>. It comes <em>after</em> the treatment and is part of <em>how</em> working from home works, not a pre-existing difference between people who end up in each group. So it shouldn't be controlled for. The regression later in this chapter compares quit rates by assignment alone. Random assignment deals with the confounders on its own, and leaving commute stress out keeps the whole channel, working from home reducing stress reducing quitting, inside the estimate, rather than stripping part of it back out.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>A student guessed confounder first, and the room talked through why it isn't one: &ldquo;For it to be a confounder, commute stress would have to cause working-from-home status too &ndash; and in this experiment it can't, because the rule is that the company decides who works from home, not the employee. It's a mediator here: it's going X to Y via commute stress, not the other way round. If you control for it, you're stripping out the effect you're trying to measure &ndash; you'd get a biased estimate.&rdquo;</p>
+</blockquote>
+
+<h3>Case three: the collider</h3>
+
+<div class="chart-wrap" style="padding:10px 0;">
+<svg width="460" height="170" viewBox="0 0 460 170">
+  <text x="80" y="40" font-size="18" text-anchor="middle" fill="var(--ink)">X</text>
+  <text x="380" y="40" font-size="18" text-anchor="middle" fill="var(--ink)">Y</text>
+  <text x="230" y="155" font-size="18" text-anchor="middle" fill="var(--ink)">C</text>
+  <line x1="95" y1="47" x2="215" y2="135" stroke="var(--green)" stroke-width="2" marker-end="url(#dagA5)"/>
+  <line x1="365" y1="47" x2="245" y2="135" stroke="var(--green)" stroke-width="2" marker-end="url(#dagA5)"/>
+  <text x="230" y="95" font-size="13" text-anchor="middle" fill="var(--ink-faint)">(no arrow here)</text>
+  <defs><marker id="dagA5" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="var(--green)"/></marker></defs>
+</svg>
+</div>
+
+<p>\(C\) sits <strong>downstream of both</strong>: \(X\) causes it, and \(Y\) causes it too. Two arrowheads meeting at \(C\) is why it's called a collider. <strong>The rule here inverts entirely: don't control for it, and don't even pick your sample using it.</strong> Even when \(X\) and \(Y\) are completely unrelated, holding \(C\) fixed can conjure up a relationship that isn't there in the population at all.</p>
+
+<p>The standard illustration of this, and the one the workshop built from scratch, is an old joke about Hollywood. Why do so many good-looking film stars seem to be mediocre actors?</p>
+
+<div class="figure" id="fig-collider">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>1,000 simulated actors</h4></div>
+  <div class="figure-body">
+    <p style="margin-top:0;font-size:0.95rem;color:var(--ink-soft);">Talent and looks were generated completely independently. By construction, knowing one tells you nothing about the other. An actor becomes a star if talent + looks + a bit of luck clears a cutoff. Drag the cutoff and watch what happens to the fitted line among stars only, even though nothing about acting or looks has changed.</p>
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Star cutoff</span><input type="range" id="collider-cutoff" min="90" max="135" step="1" value="110"><span class="val" id="collider-cutoff-val">110</span></div>
+      <label class="chk"><input type="checkbox" id="collider-dim" checked> Fade out non-stars</label>
+    </div>
+    <div class="chart-wrap" id="collider-chart"></div>
+  </div>
+  <p class="figure-caption" id="collider-caption"></p>
+</div>
+
+<p>Regress talent on looks across <em>all</em> 1,000 actors and the coefficient is tiny and statistically insignificant, exactly as built. Restrict to stars only, and a clear negative relationship appears: among the famous, the better-looking ones seem <em>less</em> talented. Nothing about acting changed. The only thing that changed is which 236 people the chart is looking at.</p>
+
+<div class="mini-table-wrap">
+<table class="data-table" id="collider-table"></table>
+</div>
+
+<p>Picking the sample on \(C\) and adding \(C\) as a control variable are <strong>the same mistake</strong> wearing two different outfits. Both create a relationship that isn't there. It's the mirror image of omitted variable bias: that bias comes from leaving a variable <em>out</em>; this one comes from putting a variable <em>in</em>. It shows up constantly in real business data, any time a sample is built from "customers who complained," "firms that survived," or "staff who got promoted". Each of those is itself a variable caused by more than one thing you care about.</p>
+
+<p class="figure-caption" style="padding:0;margin-top:-6px;">The full version of this simulation, where you can change the cutoff and the amount of luck and watch the bias move, is in a <a href="https://colab.research.google.com/github/stevenolanecon/7002LBSAI/blob/main/notebooks/week9_collider_simulation.ipynb" target="_blank" rel="noopener">Colab notebook</a>.</p>
+
+<p>A firm wants to know whether its sales training course raises staff sales. Three candidate variables illustrate all three cases at once:</p>
+
+<div class="term-list">
+  <li><span class="term">Sales experience</span><span><strong>Confounder.</strong> Managers send experienced staff on the course, and experience affects sales regardless of training. Leave it out and some of its effect gets wrongly credited to the course &ndash; control for it</span></li>
+  <li><span class="term">Product knowledge</span><span><strong>Mediator.</strong> The course teaches it, and knowing the products is part of <em>how</em> the course raises sales. Control for it and you strip out the effect you're trying to measure &ndash; leave it out</span></li>
+  <li><span class="term">Staff newsletter</span><span><strong>Collider.</strong> It lists everyone who did the course <em>and</em> the month's top sellers, so both training and sales cause someone to be featured. Including it, or restricting to only the staff who were featured, would create a relationship between training and sales that isn't really there &ndash; leave it out, and don't select on it either</span></li>
+</div>
+
+<p>The same reasoning extends to any variable in any dataset. Back in Week 6, controlling for a used car's age roughly halved the estimated effect of mileage on price. Age is a textbook confounder there: cars accumulate mileage as they age, and age affects price on its own through wear and depreciation, independent of the specific mileage reading. A dealer or condition variable in that same dataset would need the same question asked of it &ndash; did it happen before the price was set and independently of mileage, or is it downstream of something that actually matters here?</p>
+
+</section>
+
+<section class="chapter" id="variation">
+<div class="chapter-kicker">Part Five</div>
+<h2>Where Does the Variation in X Come From?</h2>
+
+<p>Whatever you're measuring, \(x\) varies across your observations for <em>some</em> reason, and that reason matters exactly as much as the relationship you're trying to estimate. Not every reason is equally trustworthy.</p>
+
+<div class="term-list">
+  <li><span class="term">Exogenous</span><span>Whatever makes \(x\) vary is independent of \(y\): a clean source of variation, unrelated to the outcome except through \(x\) itself</span></li>
+  <li><span class="term">Endogenous</span><span>Whatever makes \(x\) vary is <em>also</em> related to \(y\) directly: a confounder in disguise</span></li>
+</div>
+
+<p>This isn't something a dataset can tell you on its own, no matter how hard you stare at it. It takes knowing how the data was generated, and domain knowledge about what else might be moving \(x\): the exact same thinking a DAG forces you to make explicit, applied one level upstream of the variable you actually care about.</p>
+
+<div class="chart-wrap" style="padding:10px 0;">
+<svg width="520" height="210" viewBox="0 0 520 210">
+  <text x="60" y="35" font-size="18" text-anchor="middle" fill="var(--ink)">Z&#8321;</text>
+  <text x="190" y="88" font-size="18" text-anchor="middle" fill="var(--ink)">x</text>
+  <text x="450" y="55" font-size="18" text-anchor="middle" fill="var(--ink)">Z&#8322;</text>
+  <text x="330" y="188" font-size="18" text-anchor="middle" fill="var(--ink)">y</text>
+  <line x1="78" y1="42" x2="172" y2="78" stroke="var(--green)" stroke-width="2" marker-end="url(#dagZ1)"/>
+  <line x1="420" y1="58" x2="212" y2="84" stroke="var(--warm)" stroke-width="2" marker-end="url(#dagZ2)"/>
+  <line x1="438" y1="68" x2="348" y2="172" stroke="var(--warm)" stroke-width="2" marker-end="url(#dagZ2)"/>
+  <line x1="208" y1="98" x2="310" y2="174" stroke="var(--ink)" stroke-width="2" marker-end="url(#dagZ3)"/>
+  <text x="280" y="124" font-size="18" text-anchor="middle" fill="var(--ink)">?</text>
+  <defs>
+    <marker id="dagZ1" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="var(--green)"/></marker>
+    <marker id="dagZ2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="var(--warm)"/></marker>
+    <marker id="dagZ3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="var(--ink)"/></marker>
+  </defs>
+</svg>
+</div>
+
+<p>Two things could be driving the variation in \(x\) here. \(Z_1\) (green) only ever affects \(x\): it's exogenous, a clean source of variation unrelated to \(y\) except through \(x\). \(Z_2\) (red) affects \(x\) <em>and</em> \(y\) directly: it's endogenous, a confounder in disguise, and any variation in \(x\) that traces back to it will bias your estimate of \(x\)'s effect on \(y\).</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;You can almost think of this as a more realistic model of the working-from-home, commute-stress situation. Commute stress can influence someone's decision to work from home &ndash; but we also have a manager coming in and deciding to assign people, regardless of that. To capture only the managerial, experimental effect, we need to control for the endogenous variation coming from commute stress. It can be Kryptonite for your causal effect if you let it in unchecked.&rdquo;</p>
+</blockquote>
+
+<h3>A concrete business version: price and sales</h3>
+
+<p>Let \(x\) be price and \(y\) be sales. There are, again, two plausible sources of variation in price. \(Z_1\): an autonomous pricing decision made by the firm's own managers. It's exogenous, since it has nothing to do with the market beyond its effect on price. \(Z_2\): the strength of competition. It's endogenous, since stronger competition both pushes the firm to cut its price <em>and</em> reduces its sales directly, for reasons that have nothing to do with the price cut itself.</p>
+
+<p>Use only variation from \(Z_1\), and the price&ndash;sales relationship you trace out reflects how customers respond to price. Mix in variation from \(Z_2\), and part of what you're seeing is something competition did to both sides of the relationship at once. The two effects tangle together, and no amount of averaging pulls them back apart afterwards. Every source of variation in \(x\) sorts into one of exactly two piles: good (exogenous) or bad (endogenous). The task is always the same: keep the good, discard the bad. A DAG is how you sort them. Random assignment, which is where this chapter finally arrives, is one way to guarantee the bad pile stays empty.</p>
+
+<div class="callout gold extension">
+  <p><strong>Random assignment is the clean solution. It isn't the only one.</strong> Without it, \(Z_2\)-type sources are <em>possible</em>, not guaranteed. There can still be some exogenous variation mixed in, and the module's other observational tools try to isolate exactly that. Week 6's conditioning adds \(Z_2\) itself as a control, soaking up its confounding effect even without an experiment; natural experiments (briefly mentioned in this week's online session) look for real-world events that behave, by luck, as if \(x\) had been randomly assigned. Neither is as clean as the real thing, which is exactly why this chapter spends so long building toward it.</p>
+</div>
+
+</section>
+
+<section class="chapter" id="random-assignment">
+<div class="chapter-kicker">Part Six</div>
+<h2>Random Assignment &ndash; The Solution</h2>
+
+<p>Two kinds of data embody these ideas very differently. In <strong>experimental data</strong>, variation in \(x\) is controlled by the experimenter, deliberately engineered to be exogenous. In <strong>observational data</strong>, variation in \(x\) comes from wherever it happens to come from: some of it exogenous, some tangled up with \(y\). The best available move is to <em>condition</em> on whatever confounders you can actually measure, exactly as Weeks 4&ndash;8 have been doing all along. A controlled experiment is the single most direct route to exogenous variation. Everything else in this module's toolkit is an attempt to get close to it by other means.</p>
+
+<div class="callout">
+  <p><strong>Three kinds of experiment, roughly in order of realism.</strong> <strong>Field experiments</strong> run as close to the real decision environment as possible. Today's case study is one: a real firm, its own employees, a real policy. <strong>Lab experiments</strong> trade realism for control, running in an artificial setting built to isolate one thing precisely. <strong>A/B tests</strong> are a specific, highly scalable kind of field experiment, comparing versions of the same product (a page, an ad, an email) shown to different slices of the same audience, usually at enormous sample sizes. Most firms still don't experiment at all. Internet firms are the big exception. They run randomised tests on their own customers constantly, because it's cheap and fast for them to do so.</p>
+</div>
+
+<h3>Controlled assignment</h3>
+
+<p>In a controlled experiment, the value of \(x\) isn't something a subject gets to choose. The experimenter assigns it. That single design decision does two jobs at once. It rules out <strong>self-selection</strong>: the people who end up working from home aren't the ones who'd have quit anyway (or stayed anyway) for reasons tied to their own circumstances, because they never got to pick. And it rules out <strong>reverse causality</strong>: the outcome (whether someone later quits) can't have caused \(x\) (their assignment), since the assignment happened first, by design, before the outcome was even possible.</p>
+
+<h3>Why it actually works</h3>
+
+<p>Randomisation is one particular assignment rule, and it has a property no other rule gets for free: it's independent of every potential confounder, <em>by design</em>. That's exactly what the DAG from the previous section was saying, that randomising leaves only exogenous variation in \(x\). The treated and untreated groups end up, on average, identical except for whether they were treated. No test can prove an assignment was random after the fact. You believe it because of how the assignment was actually carried out, and the most you can do afterwards is check that the two groups do, in fact, look alike on everything you happened to measure.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Statistically, what we're arguing is a little bit depressing: people are basic enough that when you aggregate them into groups distributed the same way across age, gender, income &ndash; a handful of characteristics &ndash; it's shocking how quickly all the other characteristics fall into the same pattern too. We're not as complex as we like to think. That's genuinely useful for us as analysts.&rdquo;</p>
+</blockquote>
+
+<p>Put together, under random assignment the simple difference in observed group averages <strong>is</strong> a good estimate of the ATE. No caveats, no asterisk: the thing you can compute in one line of code is finally the thing you actually wanted. And it resolves the puzzle from two sections ago. The group comparison you can compute only ever uses people who happened to end up treated, so it's really always an estimate of the ATET. Without random assignment, who ends up treated can depend on their own potential outcomes. The treated group stops being representative, ATET and ATE quietly pull apart, and the simple comparison stops reliably estimating either one. Random assignment guarantees the treated group isn't special in exactly this sense: in terms of potential outcomes, it's no different from the population as a whole, so \(ATET = ATE\), and one comparison estimates both at the same time.</p>
+
+</section>
+<section class="chapter" id="wfh-experiment">
+<div class="chapter-kicker">Part Seven</div>
+<h2>Designing and Running the Real Experiment</h2>
+
+<div class="callout">
+  <strong>The case study.</strong> A real firm, its own employees, B&eacute;k&eacute;s &amp; K&eacute;zdi's own worked example from Ch. 20, based on a genuine field experiment run by Bloom and colleagues inside a real company (sometimes known by the name of the Chinese travel agency that ran it, Ctrip). Working from home four days a week: does it change whether staff quit? 503 employees volunteered; 249 qualified (over six months' tenure, broadband at home) and were randomly assigned to work from home or stay in the office. Two outcomes were tracked: whether each employee quit, and, for staff whose job is order-taking, how many calls they handled.
+</div>
+
+<p>Before looking at the effect, check the randomisation itself: did it land somewhere sensible? It did, roughly. <strong>131</strong> employees ended up assigned to work from home, <strong>118</strong> to stay in the office. Not a perfect 50/50 split, which real randomisation rarely produces, but close enough that nothing about the design itself looks broken.</p>
+
+<div class="figure" id="fig-wfh-bar">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>Quit rate, by assignment</h4></div>
+  <div class="figure-body">
+    <div class="chart-wrap" id="wfh-bar-chart"></div>
+  </div>
+  <p class="figure-caption">Bars show the real quit rate in each group, computed directly from <code>wfh_person.csv</code>. The full regression output, including the robust 95% confidence interval on the gap between them, is below.</p>
+</div>
+
+<pre class="code-block">import statsmodels.formula.api as smf
+
+quit_model = smf.ols("quitjob ~ treatment", data=wfh).fit(cov_type="HC1")</pre>
+
+<div class="mini-table-wrap" id="wfh-summary-wrap"></div>
+
+<p>Control group employees quit at <strong>34.7%</strong> over the study period; treatment group employees quit at <strong>16.0%</strong>. Working from home cuts the quit rate by <strong>18.7 percentage points</strong> (robust SE 5.45, p = 0.0006, 95% CI [&minus;29.4, &minus;8.0]). Because of everything the last five sections of this chapter just spent establishing, genuine random assignment, groups that are on average identical except for treatment, this is a sentence you get to say with causal language, not hedged association talk.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Is that effect statistically significant? &hellip; Statistical significance isn't just about your coefficient &ndash; it's the ratio of that and your standard error. Our z-stat, using heteroscedasticity-robust errors (which we have to use by default for a linear probability model), is well over 99% confidence. So, statistically significant negative treatment effect: working from home reduces quit rates by about 18.7 percentage points. Causal, no klaxon. I can say that because of all the work that's been done before touching the data &ndash; it was a properly randomised experiment.&rdquo;</p>
+</blockquote>
+
+<p>Notice, too, what the R&sup2; is doing here, or rather what it's <em>not</em> doing. It comes out at a tiny 0.047: assignment barely explains any of the overall variation in who quits, because people quit for all sorts of reasons that have nothing to do with where they work. That's completely fine, and it cuts against instinct. R&sup2; measures how much of the outcome's variation a causal model explains, not how confident you should be in the one coefficient you actually care about. Randomisation has done its job not by explaining everything, but by making sure that whatever it <em>doesn't</em> explain is balanced evenly between the two groups. The one thing that does differ systematically, the treatment itself, is the one thing left standing in the gap.</p>
+
+<h3>A second outcome: performance, not just quitting</h3>
+
+<p>For staff whose job is answering calls, performance can be measured directly: the raw volume of calls handled, no proxy required.</p>
+
+<pre class="code-block">ordertakers = wfh[wfh["ordertaker"] == True]
+phone_model = smf.ols("phonecalls1 ~ treatment", data=ordertakers).fit(cov_type="HC1")</pre>
+
+<p>Among these <strong>134</strong> order-takers, working from home <strong>raises</strong> the number of calls handled by <strong>4.04 thousand</strong> per employee over the period (p &lt; 0.001). Put the two results together and the story for a manager is unambiguous: fewer people leave, and the ones who stay do more work, not less.</p>
+
+<h3>Checking the balance</h3>
+
+<p>Random assignment should mean the two groups look alike on everything measured <em>before</em> treatment began, and that's checkable, not just assumed. Regress each pre-treatment characteristic on the treatment indicator and look at whether treatment comes out significant.</p>
+
+<pre class="code-block">for col in ["age", "married", "children", "tenure", "internet"]:
+    m = smf.ols(f"{col} ~ treatment", data=wfh).fit(cov_type="HC1")
+    print(col, m.pvalues["treatment"])</pre>
+
+<div class="figure" id="fig-balance">
+  <div class="figure-head"><span class="flabel">Figure</span><h4>Covariate balance, treatment vs. control</h4></div>
+  <div class="figure-body">
+    <div class="chart-wrap" id="balance-chart"></div>
+  </div>
+  <p class="figure-caption">Each row: the treatment-group mean and the control-group mean for that characteristic, with the p-value from regressing it on treatment. High p-values here are the good outcome. They say the two groups don't differ by more than chance.</p>
+</div>
+
+<p>Four of the five come back comfortably unremarkable. Age, tenure and home internet show no hint of a real difference, and marriage sits at a p-value of 0.075, borderline but not alarming. One stands out: whether an employee has children differs between groups at p = 0.011, the kind of gap you'd worry about if you saw it in observational data. Check five covariates and one coming up under 0.05 by chance alone isn't shocking (roughly what you'd expect from noise with this many tests), but keep it in mind, and look twice if the eventual effect ever looks implausibly driven by family circumstances rather than the policy itself.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;Usually you're looking for <em>high</em> p-values when you're doing a balance test &ndash; the opposite of what you want everywhere else. A low p-value is normally good evidence you've found a real effect; here, a high one is good evidence your two groups are the same. You want these close to one, because you want your two groups to look alike, not different.&rdquo;</p>
+</blockquote>
+
+</section>
+
+<section class="chapter" id="power">
+<div class="chapter-kicker">Part Eight</div>
+<h2>How Big Does an Experiment Need to Be?</h2>
+
+<p>249 employees sounds like a reasonable sample size for a field experiment, and it found a clear, significant effect, so it clearly was big enough in the end. But "it worked out" isn't the same as "it was well planned," and there's a real formula, straight from B&eacute;k&eacute;s &amp; K&eacute;zdi's Ch. 20, for working out in advance how many subjects a binary-outcome experiment like this one actually needs.</p>
+
+<div class="formula-block">
+  \( n = 4\,\bar{r}(1-\bar{r})\left(\dfrac{1.96 + 0.84}{r_1 - r_0}\right)^2 \)
+</div>
+<p class="formula-caption">\(n\) is the <em>total</em> number of subjects, split equally between the two arms; \(\bar{r}\) is the average of the two groups' expected rates; \(r_0\), \(r_1\) are the baseline and treatment rates you're trying to tell apart. B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 20, eq. (8).</p>
+
+<p>The two numbers that go into this formula, how common the outcome is to start with, and how big a difference you're trying to detect, matter enormously, and in a way that doesn't scale the way intuition suggests. Play with both below.</p>
+
+<div class="figure" id="fig-power">
+  <div class="figure-head"><span class="flabel">Figure &middot; interactive</span><h4>Required sample size</h4></div>
+  <div class="figure-body">
+    <div class="controls">
+      <div class="ctl"><span class="lbl">Baseline rate \(r_0\)</span><input type="range" id="power-r0" min="0.01" max="1" step="0.01" value="0.35"><span class="val" id="power-r0-val">35%</span></div>
+      <div class="ctl"><span class="lbl">Effect to detect</span><input type="range" id="power-delta" min="0.1" max="2" step="0.01" value="0.54"><span class="val" id="power-delta-val">&minus;54%</span></div>
+    </div>
+    <div class="chart-wrap" id="power-chart"></div>
+  </div>
+  <p class="figure-caption" id="power-caption"></p>
+</div>
+
+<h3>The book's own case: fine-tuning a social-media advert</h3>
+
+<p>B&eacute;k&eacute;s &amp; K&eacute;zdi's own worked planning example is a business school comparing two versions of a social-media advert, where the outcome is a two-step "action": click, then sign up.</p>
+
+<ul>
+  <li><strong>Optimistic plan</strong>: 1% click through, 10% of those sign up, so 1 action per 1,000 impressions (0.10%). Looking for a 30% relative difference between adverts (0.10% vs. 0.13%) &rarr; the formula asks for about <strong>400,000</strong> impressions in total.</li>
+  <li><strong>Cautious plan</strong>: 1 action per 2,000 impressions, a smaller 20% difference (0.05% vs. 0.06%) &rarr; about <strong>1.7 million</strong> impressions.</li>
+</ul>
+
+<p>Small rates and small differences need enormous samples. That's the whole lesson of this formula, compressed into two bullet points. The school bought 2 million impressions: enough for the cautious plan, with some margin.</p>
+
+<h3>What actually happened</h3>
+
+<div class="mini-table-wrap" id="social-table"></div>
+
+<p>Advert A gets more clicks, and that difference is statistically significant (p = 0.015). A also gets roughly 50% more actions, 32 against 21, but that difference <em>isn't</em> significant (p = 0.131). Why the mismatch, when A so clearly wins on both measures? Because actions came in at only about 0.0027% of impressions, far rarer than even the cautious plan's 0.05% floor. At that real rate, detecting a difference the size of A's actual lead would need around <strong>6.9 million</strong> impressions, not the 2 million actually bought. The book's own advice, and a useful rule of thumb beyond this one example: if you're starting fresh, pick A on the click evidence. If you're already running B, there isn't strong enough evidence here to justify switching.</p>
+
+<h3>Was the working-from-home experiment itself big enough?</h3>
+
+<p>Run the same formula on the WFH study's own numbers, a 35% control-group quit rate, a 16% treatment-group rate, the actual effect size it found, and the rule of thumb asks for about <strong>165</strong> subjects in total. The study used <strong>249</strong>. By this measure it was comfortably powered for the effect it actually turned out to have.</p>
+
+<p>But that's a slightly circular comfort. Of course the sample looks big enough for an effect you already know was found and was large. Ask a harder planning question instead: if the real effect had been smaller, say a 10 percentage-point drop rather than 19, would 249 people have been enough to detect it reliably? Plugging in a 10-point gap against the same 35% baseline, the formula asks for about <strong>659</strong> subjects, nearly three times what was actually used. There's a real tension here. This particular study was arguably underpowered by its own book's rule of thumb, and it still found a clean, significant result only because the true effect happened to be unusually large. A smaller, equally real effect could easily have come back statistically insignificant from this same sample size, not because nothing was happening, but because the experiment was never built to see it.</p>
+
+</section>
+
+<section class="chapter" id="complications">
+<div class="chapter-kicker">Part Nine</div>
+<h2>Complications</h2>
+
+<p>Everything so far describes the clean version of an experiment. Real ones, run on real humans, pick up a handful of wrinkles worth knowing by name, not because they undo the design, but because spotting them (or their absence) is part of judging whether a given experiment's result deserves your trust.</p>
+
+<h3>Imperfect compliance</h3>
+
+<div class="callout">
+  In this experiment, fewer than 20% of the treatment group had to go back to the office because their personal circumstances changed.
+</div>
+
+<p>Assignment (what a subject is told to do) and treatment (what they actually do) don't always match, and that's entirely normal. It happens in medical trials just as readily as in business ones. Comparing people <em>by assignment</em>, regardless of what they actually ended up doing, gives what's called the <strong>intent-to-treat</strong> (ITT) effect: "if we rolled this out with this level of real-world compliance, what would actually happen?" That's frequently the number a manager needs, since real policies always come with some amount of non-compliance baked in. With small non-compliance, like the under-20% seen here, ITT is a good stand-in for the effect of the treatment itself, just nudged a little toward zero. With <strong>substantial</strong> non-compliance it stops being a good stand-in, and the effect specifically among those who complied, the <strong>local average treatment effect</strong>, or LATE, becomes the number you'd actually need instead.</p>
+
+<h3>Being watched changes behaviour</h3>
+
+<p>Two related, opposite distortions to watch for:</p>
+
+<div class="term-list">
+  <li><span class="term">Hawthorne effect</span><span>Both treated <em>and</em> untreated subjects change their behaviour simply because they know they're being observed, not because of the treatment itself</span></li>
+  <li><span class="term">John Henry effect</span><span>The <em>control</em> group works harder than usual, specifically because its members know they're the comparison. The opposite failure mode, and just as real</span></li>
+</div>
+
+<p>A third, related risk: <strong>spillovers</strong>, where one subject's treatment affects another's outcome and quietly spoils the comparison (a treated employee's lighter workload, say, landing extra calls on an untreated colleague). Good design keeps treatment and control groups apart wherever that's practically possible, precisely to head this off.</p>
+
+<h3>Internal and external validity</h3>
+
+<p>Two different questions, and they shouldn't blur into one. <strong>Internal validity</strong> asks whether, within this one study, the comparison itself is trustworthy: was assignment random, was non-compliance small and contained. Almost the entirety of this chapter has been concerned with internal validity, and B&eacute;k&eacute;s &amp; K&eacute;zdi judge it strong for this particular study. <strong>External validity</strong> asks a completely different question: would the same effect hold at another firm, in another job, another country? That's a judgement call domain knowledge has to make, not something the data in front of you can ever answer on its own. Taking one experiment's result and applying it everywhere is a real risk, even when the internal evidence for that one result is airtight.</p>
+
+</section>
+
+<section class="chapter" id="wrap-up">
+<div class="chapter-kicker">Part Ten</div>
+<h2>So, Does Working From Home Change Who Quits?</h2>
+
+<p>With 249 employees, randomly assigned and reasonably balanced, the answer is <strong>yes</strong>: quit rates fall by about 18.7 percentage points, and the people who stay handle more work, not less. This is what a causal claim you can actually trust looks like: a real intervention, genuine random assignment, and a design that would have been exactly as believable if the result had come back at zero.</p>
+
+<blockquote class="field-note">
+  <span class="tag">From the workshop</span>
+  <p>&ldquo;That was a whistle-stop tour through the start zone of causal inference. There will be questions on this in the exam &ndash; it's important to understand some of these things, especially, I don't know, for instance, colliders. But understanding the potential outcomes framework is really useful, because it helps define what an effect even means. DAGs, I think, should just become part of your workflow &ndash; for me, they really help understand the model. Have a look at the textbook where it gets into much more complex DAGs, with lots of variables and arrows going everywhere &ndash; it can really, really help.&rdquo;</p>
+</blockquote>
+
+<ul>
+  <li>Potential outcomes define precisely what "an effect" means. You never see the individual effect, but you can estimate its average</li>
+  <li>DAGs make your assumptions explicit: control for confounders, never for mediators or colliders</li>
+  <li>Random assignment is what makes a simple group comparison trustworthy. With observational data, the best you can do is try to get close</li>
+  <li>Even a well-designed experiment needs enough subjects, a checked balance table, and an honest account of non-compliance</li>
+</ul>
+
+<div class="callout gold extension">
+  <p>Most business questions can't be answered with an experiment. It's too slow, too expensive, unethical, or the decision has simply already been made. That's the normal situation, not the exception, and it's exactly why the regression toolkit from Weeks 4&ndash;8 exists at all. The online session works through a real case study, does eating more fruit and vegetables lower blood pressure, and names three distinct ways a variable can confound an observational comparison (a common cause, reverse causality, an unwanted mechanism), the idea of a latent variable you can't measure but can sometimes proxy for, and a worked audit that adds controls to a regression one at a time to see which ones actually move the estimate and which don't. It will be added here as its own section once it's recorded.</p>
+</div>
+
+<p>Next week: a different kind of question entirely. Not "what caused this," but "what comes next": prediction.</p>
+
+</section>
+
+    </div>
+
+    <footer class="colophon">
+  <p><strong>A note on this page.</strong> The "From the workshop" quotations are taken from the real session recording, lightly cleaned for grammar (the transcript is an auto-generated caption export) but not invented or smoothed into something blander than what was actually said. All figures and numbers in this chapter are computed directly from the real datasets this module uses, <code>wfh_person.csv</code> (B&eacute;k&eacute;s &amp; K&eacute;zdi's own working-from-home case study, built from Bloom et al.'s Ctrip field experiment) and <code>ab_test_social_media.csv</code>, using exactly the same model specifications as the live workshop deck, so they match it number for number. The collider simulation uses the same generating process as the deck's own 1,000-actor example (seed fixed for reproducibility). Drag its cutoff slider to see the bias strengthen and weaken live, or open the linked Colab notebook to experiment further.</p>
+    </footer>
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+const W9 = {"wfh_n": 249, "wfh_treat_n": 131, "wfh_control_n": 118, "control_quit_rate": 34.7, "treatment_quit_rate": 16.0, "quit_effect": -18.7, "quit_se": 5.45, "quit_p": 0.0006, "quit_ci_lo": -29.4, "quit_ci_hi": -8.0, "quit_r2": 0.0467, "quit_summary_text": "                            OLS Regression Results                            \n==============================================================================\nDep. Variable:                quitjob   R-squared:                       0.047\nModel:                            OLS   Adj. R-squared:                  0.043\nMethod:                 Least Squares   F-statistic:                     11.78\nDate:                Fri, 20 Nov 2026   Prob (F-statistic):           0.000701\nTime:                        17:49:53   Log-Likelihood:                -138.62\nNo. Observations:                 249   AIC:                             281.2\nDf Residuals:                     247   BIC:                             288.3\nDf Model:                           1                                         \nCovariance Type:                  HC1                                         \n==============================================================================\n                 coef    std err          z      P>|z|      [0.025      0.975]\n------------------------------------------------------------------------------\nIntercept      0.3475      0.044      7.895      0.000       0.261       0.434\ntreatment     -0.1872      0.055     -3.432      0.001      -0.294      -0.080\n==============================================================================", "phone_effect": 4.04, "phone_p": "<0.001", "phone_n": 134, "balance_rows": [{"covariate": "Age", "treat": 24.44, "control": 24.35, "p": 0.846}, {"covariate": "Married", "treat": 0.22, "control": 0.32, "p": 0.075}, {"covariate": "Has children", "treat": 0.11, "control": 0.24, "p": 0.011}, {"covariate": "Tenure (months)", "treat": 26.14, "control": 28.25, "p": 0.447}, {"covariate": "Home internet", "treat": 0.99, "control": 1.0, "p": 0.317}], "low_bal": {"covariate": "Has children", "treat": 0.11, "control": 0.24, "p": 0.011}, "plan_good": 400000.0, "plan_bad": 1720000.0, "social_rows": [{"action_type": "Action A", "show": 1000000, "clicks": 3323, "action": 32, "click_rate": 0.3323, "action_rate": 0.0031999999999999997}, {"action_type": "Action B", "show": 1000000, "clicks": 3128, "action": 21, "click_rate": 0.3128, "action_rate": 0.0021}], "p_clicks": 0.015, "p_actions": 0.131, "action_rate_all": 0.00265, "n_real": 6900000.0, "r0_wfh": 0.35, "r1_wfh": 0.16, "n_wfh": 165, "n_wfh_10": 659, "collider": {"n_star": 236, "b_all": 0.02, "p_all": 0.58, "b_star": -0.55, "p_star": 0.0, "b_ctrl": -0.27}, "actor_rows": [{"talent": 51.891, "looks": 46.198, "luck": 6.024}, {"talent": 44.773, "looks": 25.495, "luck": 9.585}, {"talent": 45.869, "looks": 45.307, "luck": 0.153}, {"talent": 25.585, "looks": 60.022, "luck": 5.728}, {"talent": 67.997, "looks": 52.303, "luck": -3.692}, {"talent": 61.442, "looks": 40.992, "luck": 4.733}, {"talent": 46.746, "looks": 56.903, "luck": 8.901}, {"talent": 57.738, "looks": 55.165, "luck": 11.829}, {"talent": 52.812, "looks": 70.245, "luck": -5.719}, {"talent": 44.462, "looks": 42.577, "luck": -0.437}, {"talent": 59.776, "looks": 46.113, "luck": 3.892}, {"talent": 46.894, "looks": 50.411, "luck": -3.859}, {"talent": 46.712, "looks": 48.613, "luck": 3.112}, {"talent": 42.079, "looks": 50.864, "luck": 3.077}, {"talent": 54.55, "looks": 48.926, "luck": -1.923}, {"talent": 49.008, "looks": 43.051, "luck": -2.168}, {"talent": 55.453, "looks": 33.956, "luck": -4.048}, {"talent": 43.928, "looks": 44.39, "luck": 1.949}, {"talent": 51.268, "looks": 36.074, "luck": 6.649}, {"talent": 41.077, "looks": 39.48, "luck": 1.882}, {"talent": 58.415, "looks": 44.518, "luck": 14.013}, {"talent": 51.88, "looks": 55.028, "luck": -6.77}, {"talent": 53.306, "looks": 58.478, "luck": -2.367}, {"talent": 54.105, "looks": 39.556, "luck": 3.755}, {"talent": 39.892, "looks": 52.974, "luck": -5.115}, {"talent": 57.832, "looks": 57.919, "luck": 2.17}, {"talent": 70.567, "looks": 49.423, "luck": 4.452}, {"talent": 33.616, "looks": 33.448, "luck": 1.344}, {"talent": 32.706, "looks": 28.285, "luck": -0.63}, {"talent": 34.952, "looks": 57.768, "luck": 5.07}, {"talent": 58.415, "looks": 58.975, "luck": 2.513}, {"talent": 51.287, "looks": 52.573, "luck": 4.016}, {"talent": 60.783, "looks": 39.257, "luck": 3.144}, {"talent": 57.224, "looks": 64.314, "luck": -2.817}, {"talent": 52.106, "looks": 61.917, "luck": -4.92}, {"talent": 52.84, "looks": 49.311, "luck": -1.39}, {"talent": 48.302, "looks": 47.533, "luck": 1.339}, {"talent": 58.685, "looks": 30.18, "luck": -0.468}, {"talent": 38.703, "looks": 57.267, "luck": 5.097}, {"talent": 45.781, "looks": 33.61, "luck": 1.708}, {"talent": 52.429, "looks": 56.551, "luck": 5.206}, {"talent": 68.014, "looks": 57.036, "luck": 1.026}, {"talent": 42.355, "looks": 50.679, "luck": -3.079}, {"talent": 39.209, "looks": 65.537, "luck": 4.577}, {"talent": 44.367, "looks": 46.517, "luck": 2.88}, {"talent": 59.693, "looks": 55.64, "luck": -3.695}, {"talent": 47.65, "looks": 57.713, "luck": -1.585}, {"talent": 63.243, "looks": 52.232, "luck": 14.116}, {"talent": 31.275, "looks": 45.56, "luck": -16.191}, {"talent": 61.285, "looks": 62.051, "luck": 5.941}, {"talent": 60.349, "looks": 53.976, "luck": 0.672}, {"talent": 35.813, "looks": 47.822, "luck": 0.039}, {"talent": 51.536, "looks": 48.09, "luck": -1.099}, {"talent": 62.158, "looks": 51.052, "luck": -2.163}, {"talent": 50.879, "looks": 72.56, "luck": 11.971}, {"talent": 59.997, "looks": 50.813, "luck": -1.85}, {"talent": 73.749, "looks": 47.359, "luck": -1.18}, {"talent": 52.739, "looks": 39.103, "luck": 4.25}, {"talent": 47.196, "looks": 37.553, "luck": 2.182}, {"talent": 42.289, "looks": 30.773, "luck": -0.597}, {"talent": 56.481, "looks": 52.093, "luck": -1.131}, {"talent": 48.033, "looks": 50.03, "luck": -6.293}, {"talent": 48.213, "looks": 39.458, "luck": 5.589}, {"talent": 48.947, "looks": 34.871, "luck": -4.965}, {"talent": 56.499, "looks": 46.471, "luck": -11.72}, {"talent": 39.337, "looks": 44.488, "luck": 5.4}, {"talent": 34.701, "looks": 36.365, "luck": 3.924}, {"talent": 25.661, "looks": 52.74, "luck": 1.894}, {"talent": 61.987, "looks": 51.147, "luck": -2.368}, {"talent": 50.738, "looks": 49.21, "luck": 6.075}, {"talent": 65.101, "looks": 57.43, "luck": -5.162}, {"talent": 49.91, "looks": 43.184, "luck": -10.644}, {"talent": 42.578, "looks": 63.308, "luck": 0.969}, {"talent": 54.779, "looks": 39.559, "luck": 4.148}, {"talent": 49.234, "looks": 54.848, "luck": 3.229}, {"talent": 37.458, "looks": 56.055, "luck": 10.433}, {"talent": 41.149, "looks": 47.095, "luck": 4.272}, {"talent": 67.668, "looks": 53.21, "luck": -0.982}, {"talent": 53.544, "looks": 36.852, "luck": -0.813}, {"talent": 54.164, "looks": 34.657, "luck": 4.554}, {"talent": 47.234, "looks": 47.675, "luck": -0.171}, {"talent": 43.103, "looks": 42.386, "luck": -0.533}, {"talent": 58.917, "looks": 55.603, "luck": -8.615}, {"talent": 48.954, "looks": 49.987, "luck": -1.414}, {"talent": 42.409, "looks": 55.855, "luck": -6.311}, {"talent": 48.659, "looks": 52.874, "luck": 1.282}, {"talent": 40.944, "looks": 51.723, "luck": 0.782}, {"talent": 51.9, "looks": 50.615, "luck": 3.649}, {"talent": 61.292, "looks": 45.954, "luck": 8.992}, {"talent": 41.639, "looks": 45.034, "luck": -0.78}, {"talent": 64.285, "looks": 70.033, "luck": 7.279}, {"talent": 43.324, "looks": 32.068, "luck": -5.508}, {"talent": 51.534, "looks": 47.81, "luck": 0.889}, {"talent": 41.636, "looks": 59.714, "luck": 4.85}, {"talent": 47.778, "looks": 53.867, "luck": 9.83}, {"talent": 50.474, "looks": 63.762, "luck": -5.375}, {"talent": 45.653, "looks": 55.163, "luck": -1.17}, {"talent": 42.971, "looks": 37.035, "luck": 0.809}, {"talent": 43.221, "looks": 46.367, "luck": -0.397}, {"talent": 41.788, "looks": 35.613, "luck": -4.647}, {"talent": 34.299, "looks": 59.508, "luck": -8.032}, {"talent": 47.37, "looks": 64.085, "luck": -6.004}, {"talent": 54.012, "looks": 45.23, "luck": -0.305}, {"talent": 59.084, "looks": 55.067, "luck": -6.586}, {"talent": 56.471, "looks": 45.518, "luck": 8.939}, {"talent": 74.573, "looks": 35.231, "luck": 6.22}, {"talent": 53.187, "looks": 45.141, "luck": -9.399}, {"talent": 45.437, "looks": 33.774, "luck": -2.363}, {"talent": 68.716, "looks": 43.908, "luck": 6.7}, {"talent": 39.528, "looks": 51.703, "luck": 7.319}, {"talent": 59.685, "looks": 56.846, "luck": 5.662}, {"talent": 40.449, "looks": 62.533, "luck": -7.042}, {"talent": 53.541, "looks": 46.239, "luck": -1.739}, {"talent": 30.316, "looks": 51.923, "luck": 6.467}, {"talent": 58.993, "looks": 53.773, "luck": 0.604}, {"talent": 48.418, "looks": 55.113, "luck": -2.186}, {"talent": 40.323, "looks": 21.037, "luck": 2.603}, {"talent": 66.784, "looks": 41.76, "luck": 5.001}, {"talent": 57.654, "looks": 57.497, "luck": 0.78}, {"talent": 50.458, "looks": 38.33, "luck": 1.311}, {"talent": 42.546, "looks": 51.995, "luck": 5.443}, {"talent": 49.566, "looks": 57.851, "luck": -2.725}, {"talent": 48.361, "looks": 30.538, "luck": -4.475}, {"talent": 57.248, "looks": 47.591, "luck": 3.902}, {"talent": 57.981, "looks": 51.862, "luck": -5.9}, {"talent": 43.322, "looks": 49.592, "luck": 2.559}, {"talent": 44.506, "looks": 34.174, "luck": -3.565}, {"talent": 44.679, "looks": 52.935, "luck": 4.269}, {"talent": 36.507, "looks": 43.848, "luck": -5.863}, {"talent": 44.084, "looks": 57.676, "luck": 5.742}, {"talent": 49.076, "looks": 53.743, "luck": 1.494}, {"talent": 56.91, "looks": 43.928, "luck": -1.448}, {"talent": 63.204, "looks": 51.174, "luck": -4.233}, {"talent": 41.917, "looks": 42.496, "luck": -0.707}, {"talent": 55.51, "looks": 42.385, "luck": -4.552}, {"talent": 45.555, "looks": 33.573, "luck": -5.925}, {"talent": 70.752, "looks": 46.971, "luck": 5.429}, {"talent": 49.513, "looks": 57.385, "luck": 3.037}, {"talent": 55.021, "looks": 50.452, "luck": 6.209}, {"talent": 40.638, "looks": 49.059, "luck": -6.702}, {"talent": 41.893, "looks": 42.943, "luck": -9.676}, {"talent": 52.017, "looks": 43.963, "luck": -7.866}, {"talent": 46.159, "looks": 56.626, "luck": 3.299}, {"talent": 53.533, "looks": 34.225, "luck": 4.074}, {"talent": 34.382, "looks": 69.78, "luck": -9.222}, {"talent": 56.62, "looks": 48.494, "luck": 5.151}, {"talent": 41.005, "looks": 70.844, "luck": -2.146}, {"talent": 67.224, "looks": 60.848, "luck": -5.948}, {"talent": 47.115, "looks": 44.901, "luck": -0.367}, {"talent": 60.973, "looks": 56.408, "luck": 2.866}, {"talent": 36.05, "looks": 51.609, "luck": -1.052}, {"talent": 54.289, "looks": 53.646, "luck": -0.861}, {"talent": 41.12, "looks": 56.943, "luck": -4.195}, {"talent": 45.131, "looks": 43.509, "luck": -7.092}, {"talent": 50.246, "looks": 42.779, "luck": -1.873}, {"talent": 46.829, "looks": 44.761, "luck": -8.124}, {"talent": 52.643, "looks": 35.258, "luck": 3.007}, {"talent": 57.477, "looks": 46.288, "luck": -4.269}, {"talent": 56.528, "looks": 51.193, "luck": 6.555}, {"talent": 49.125, "looks": 51.386, "luck": -7.949}, {"talent": 36.366, "looks": 50.799, "luck": 7.028}, {"talent": 41.954, "looks": 44.897, "luck": -4.425}, {"talent": 48.042, "looks": 56.712, "luck": -4.469}, {"talent": 28.782, "looks": 28.299, "luck": 1.462}, {"talent": 57.521, "looks": 44.821, "luck": 4.498}, {"talent": 47.604, "looks": 45.482, "luck": -0.215}, {"talent": 47.487, "looks": 57.712, "luck": -1.802}, {"talent": 59.484, "looks": 55.372, "luck": 9.975}, {"talent": 56.679, "looks": 56.712, "luck": 2.534}, {"talent": 52.21, "looks": 48.825, "luck": -6.03}, {"talent": 39.987, "looks": 58.149, "luck": -1.329}, {"talent": 53.104, "looks": 38.598, "luck": 8.463}, {"talent": 53.462, "looks": 49.319, "luck": 1.64}, {"talent": 41.152, "looks": 27.456, "luck": 4.123}, {"talent": 60.433, "looks": 65.694, "luck": 10.17}, {"talent": 55.079, "looks": 64.462, "luck": -2.987}, {"talent": 30.304, "looks": 42.545, "luck": 1.864}, {"talent": 51.219, "looks": 40.033, "luck": -3.351}, {"talent": 37.353, "looks": 27.526, "luck": -0.04}, {"talent": 61.363, "looks": 33.181, "luck": 2.681}, {"talent": 58.07, "looks": 49.713, "luck": -6.69}, {"talent": 38.964, "looks": 46.919, "luck": 0.719}, {"talent": 41.151, "looks": 33.736, "luck": 0.701}, {"talent": 51.019, "looks": 43.495, "luck": 5.268}, {"talent": 47.612, "looks": 41.845, "luck": -2.984}, {"talent": 65.252, "looks": 53.193, "luck": -6.39}, {"talent": 57.41, "looks": 55.603, "luck": 1.964}, {"talent": 47.176, "looks": 46.316, "luck": -5.648}, {"talent": 55.774, "looks": 49.668, "luck": 0.897}, {"talent": 29.677, "looks": 48.469, "luck": 2.825}, {"talent": 53.099, "looks": 27.633, "luck": -4.417}, {"talent": 58.664, "looks": 50.324, "luck": -0.636}, {"talent": 48.21, "looks": 47.887, "luck": -5.227}, {"talent": 42.898, "looks": 56.041, "luck": -14.258}, {"talent": 55.658, "looks": 30.179, "luck": -7.334}, {"talent": 69.586, "looks": 56.191, "luck": -10.514}, {"talent": 52.049, "looks": 42.162, "luck": 0.03}, {"talent": 38.793, "looks": 51.225, "luck": -5.419}, {"talent": 64.458, "looks": 60.673, "luck": -0.784}, {"talent": 31.215, "looks": 33.804, "luck": -0.312}, {"talent": 55.032, "looks": 35.45, "luck": 5.258}, {"talent": 44.18, "looks": 58.518, "luck": -1.813}, {"talent": 59.306, "looks": 37.167, "luck": -2.088}, {"talent": 41.505, "looks": 38.984, "luck": 2.458}, {"talent": 63.238, "looks": 54.606, "luck": 8.021}, {"talent": 53.003, "looks": 46.552, "luck": -0.458}, {"talent": 32.732, "looks": 56.372, "luck": 1.639}, {"talent": 30.262, "looks": 51.593, "luck": -1.035}, {"talent": 46.839, "looks": 48.34, "luck": -3.583}, {"talent": 62.942, "looks": 58.452, "luck": -7.804}, {"talent": 51.27, "looks": 70.494, "luck": -0.472}, {"talent": 50.671, "looks": 47.615, "luck": -1.414}, {"talent": 47.641, "looks": 63.415, "luck": -1.314}, {"talent": 57.379, "looks": 59.956, "luck": 9.877}, {"talent": 53.773, "looks": 49.723, "luck": -1.751}, {"talent": 52.803, "looks": 53.195, "luck": 1.593}, {"talent": 40.153, "looks": 39.248, "luck": -1.81}, {"talent": 61.879, "looks": 42.461, "luck": 5.856}, {"talent": 63.631, "looks": 51.404, "luck": -1.511}, {"talent": 36.986, "looks": 48.159, "luck": 9.271}, {"talent": 73.015, "looks": 61.647, "luck": -1.37}, {"talent": 57.225, "looks": 35.635, "luck": 3.842}, {"talent": 45.12, "looks": 45.703, "luck": 5.057}, {"talent": 30.956, "looks": 42.26, "luck": -1.235}, {"talent": 56.568, "looks": 47.12, "luck": 4.239}, {"talent": 55.575, "looks": 60.287, "luck": 0.276}, {"talent": 44.044, "looks": 36.578, "luck": -3.847}, {"talent": 32.094, "looks": 57.154, "luck": -3.409}, {"talent": 61.245, "looks": 42.752, "luck": 1.627}, {"talent": 44.117, "looks": 45.415, "luck": 8.91}, {"talent": 45.283, "looks": 58.651, "luck": -2.502}, {"talent": 78.456, "looks": 45.833, "luck": 2.691}, {"talent": 71.28, "looks": 55.347, "luck": -4.082}, {"talent": 59.537, "looks": 49.819, "luck": 1.245}, {"talent": 45.446, "looks": 46.951, "luck": -6.579}, {"talent": 56.495, "looks": 45.082, "luck": -3.991}, {"talent": 27.185, "looks": 31.373, "luck": -0.076}, {"talent": 51.065, "looks": 41.231, "luck": -3.793}, {"talent": 42.402, "looks": 50.374, "luck": -1.397}, {"talent": 37.144, "looks": 50.739, "luck": 5.018}, {"talent": 34.172, "looks": 33.805, "luck": -0.667}, {"talent": 55.251, "looks": 58.762, "luck": -3.637}, {"talent": 50.893, "looks": 54.477, "luck": -6.224}, {"talent": 51.597, "looks": 35.726, "luck": -2.704}, {"talent": 58.424, "looks": 38.322, "luck": 5.735}, {"talent": 41.539, "looks": 53.84, "luck": -0.439}, {"talent": 37.644, "looks": 31.169, "luck": -0.764}, {"talent": 32.236, "looks": 41.349, "luck": 3.585}, {"talent": 46.648, "looks": 48.255, "luck": 4.165}, {"talent": 57.602, "looks": 47.53, "luck": 5.0}, {"talent": 48.506, "looks": 48.239, "luck": -1.827}, {"talent": 56.411, "looks": 52.731, "luck": -4.619}, {"talent": 38.189, "looks": 40.842, "luck": -8.391}, {"talent": 45.309, "looks": 43.966, "luck": -3.467}, {"talent": 42.341, "looks": 69.392, "luck": -1.895}, {"talent": 37.516, "looks": 34.824, "luck": 3.619}, {"talent": 68.595, "looks": 44.368, "luck": 1.567}, {"talent": 58.521, "looks": 49.983, "luck": -2.873}, {"talent": 42.382, "looks": 42.41, "luck": 4.391}, {"talent": 42.34, "looks": 61.117, "luck": -6.336}, {"talent": 49.428, "looks": 49.628, "luck": -5.305}, {"talent": 35.579, "looks": 56.493, "luck": -5.931}, {"talent": 54.358, "looks": 22.747, "luck": -5.51}, {"talent": 37.058, "looks": 60.812, "luck": -1.318}, {"talent": 46.296, "looks": 60.429, "luck": -4.283}, {"talent": 39.752, "looks": 41.373, "luck": -3.857}, {"talent": 45.202, "looks": 62.022, "luck": 6.649}, {"talent": 36.688, "looks": 51.617, "luck": -7.387}, {"talent": 34.272, "looks": 58.256, "luck": -5.221}, {"talent": 40.339, "looks": 67.12, "luck": -1.248}, {"talent": 43.2, "looks": 50.002, "luck": 2.165}, {"talent": 47.051, "looks": 38.869, "luck": 2.38}, {"talent": 50.69, "looks": 48.905, "luck": -1.383}, {"talent": 65.269, "looks": 36.258, "luck": -1.893}, {"talent": 58.123, "looks": 41.011, "luck": -1.39}, {"talent": 47.471, "looks": 41.401, "luck": 3.665}, {"talent": 57.259, "looks": 41.939, "luck": -4.667}, {"talent": 43.111, "looks": 60.74, "luck": -11.822}, {"talent": 64.485, "looks": 57.45, "luck": 0.87}, {"talent": 55.495, "looks": 40.118, "luck": -5.908}, {"talent": 36.442, "looks": 60.429, "luck": -0.353}, {"talent": 57.554, "looks": 32.311, "luck": 6.895}, {"talent": 58.161, "looks": 42.561, "luck": 0.435}, {"talent": 23.144, "looks": 47.755, "luck": 9.131}, {"talent": 42.519, "looks": 61.061, "luck": -8.013}, {"talent": 45.262, "looks": 56.459, "luck": 1.14}, {"talent": 30.715, "looks": 53.749, "luck": 1.897}, {"talent": 39.328, "looks": 62.253, "luck": 4.099}, {"talent": 40.516, "looks": 56.401, "luck": -3.699}, {"talent": 55.071, "looks": 62.918, "luck": 0.754}, {"talent": 53.005, "looks": 41.387, "luck": 0.563}, {"talent": 76.262, "looks": 32.355, "luck": 0.407}, {"talent": 46.057, "looks": 45.104, "luck": -6.908}, {"talent": 61.532, "looks": 57.604, "luck": -8.667}, {"talent": 50.788, "looks": 51.906, "luck": 2.671}, {"talent": 52.709, "looks": 58.212, "luck": 1.707}, {"talent": 38.404, "looks": 56.43, "luck": 0.162}, {"talent": 30.891, "looks": 54.487, "luck": 3.169}, {"talent": 42.329, "looks": 57.522, "luck": 5.39}, {"talent": 57.622, "looks": 42.171, "luck": -5.824}, {"talent": 65.828, "looks": 60.28, "luck": 3.906}, {"talent": 56.04, "looks": 39.274, "luck": 7.46}, {"talent": 54.983, "looks": 48.201, "luck": 5.128}, {"talent": 41.612, "looks": 35.184, "luck": 2.981}, {"talent": 65.343, "looks": 54.41, "luck": 3.563}, {"talent": 63.438, "looks": 33.816, "luck": -7.167}, {"talent": 44.692, "looks": 63.423, "luck": -2.42}, {"talent": 49.536, "looks": 35.895, "luck": 5.194}, {"talent": 40.039, "looks": 51.95, "luck": 7.49}, {"talent": 64.672, "looks": 47.956, "luck": 2.394}, {"talent": 54.064, "looks": 40.578, "luck": -2.176}, {"talent": 49.049, "looks": 61.864, "luck": -0.58}, {"talent": 54.069, "looks": 45.069, "luck": 4.388}, {"talent": 54.406, "looks": 64.038, "luck": 10.233}, {"talent": 45.885, "looks": 39.091, "luck": 4.099}, {"talent": 37.584, "looks": 41.331, "luck": -2.45}, {"talent": 37.163, "looks": 29.344, "luck": 3.292}, {"talent": 32.616, "looks": 54.9, "luck": 2.35}, {"talent": 54.613, "looks": 58.545, "luck": 12.187}, {"talent": 72.185, "looks": 51.618, "luck": 3.175}, {"talent": 33.009, "looks": 47.751, "luck": 0.38}, {"talent": 51.383, "looks": 40.152, "luck": -0.175}, {"talent": 54.11, "looks": 72.905, "luck": -5.941}, {"talent": 40.154, "looks": 56.815, "luck": -5.059}, {"talent": 52.044, "looks": 30.915, "luck": -2.175}, {"talent": 39.031, "looks": 46.275, "luck": -3.84}, {"talent": 62.004, "looks": 23.261, "luck": 1.173}, {"talent": 44.058, "looks": 65.196, "luck": 0.719}, {"talent": 51.006, "looks": 69.189, "luck": 4.928}, {"talent": 56.842, "looks": 64.034, "luck": 7.807}, {"talent": 45.702, "looks": 48.859, "luck": 1.001}, {"talent": 32.088, "looks": 43.47, "luck": -0.748}, {"talent": 44.687, "looks": 35.346, "luck": -9.062}, {"talent": 57.63, "looks": 54.737, "luck": 2.134}, {"talent": 49.155, "looks": 41.941, "luck": 3.537}, {"talent": 52.298, "looks": 45.645, "luck": -3.618}, {"talent": 39.196, "looks": 43.007, "luck": -1.726}, {"talent": 51.432, "looks": 46.324, "luck": -3.265}, {"talent": 57.282, "looks": 58.415, "luck": 5.528}, {"talent": 50.364, "looks": 66.35, "luck": 3.333}, {"talent": 69.08, "looks": 50.944, "luck": 6.315}, {"talent": 47.922, "looks": 49.632, "luck": -5.801}, {"talent": 39.586, "looks": 38.282, "luck": 13.529}, {"talent": 33.823, "looks": 37.122, "luck": -4.052}, {"talent": 61.52, "looks": 38.787, "luck": -4.902}, {"talent": 49.41, "looks": 58.324, "luck": 1.162}, {"talent": 60.116, "looks": 51.94, "luck": -2.565}, {"talent": 54.577, "looks": 59.175, "luck": 9.29}, {"talent": 66.251, "looks": 53.722, "luck": -1.865}, {"talent": 62.661, "looks": 45.444, "luck": -3.236}, {"talent": 46.224, "looks": 37.011, "luck": 5.067}, {"talent": 52.739, "looks": 45.789, "luck": 6.293}, {"talent": 60.854, "looks": 35.152, "luck": -4.017}, {"talent": 37.639, "looks": 69.583, "luck": -2.219}, {"talent": 64.509, "looks": 52.204, "luck": -1.634}, {"talent": 62.12, "looks": 45.815, "luck": -0.644}, {"talent": 59.829, "looks": 69.531, "luck": 8.713}, {"talent": 47.991, "looks": 45.654, "luck": 6.443}, {"talent": 53.021, "looks": 55.107, "luck": 5.482}, {"talent": 38.828, "looks": 47.871, "luck": 6.517}, {"talent": 50.58, "looks": 53.113, "luck": 0.227}, {"talent": 44.126, "looks": 45.82, "luck": 4.499}, {"talent": 50.866, "looks": 54.484, "luck": -0.235}, {"talent": 45.054, "looks": 63.872, "luck": -3.637}, {"talent": 52.838, "looks": 36.831, "luck": 8.449}, {"talent": 61.793, "looks": 27.172, "luck": -8.675}, {"talent": 36.904, "looks": 63.138, "luck": 0.123}, {"talent": 59.254, "looks": 51.227, "luck": -2.784}, {"talent": 30.082, "looks": 58.339, "luck": -8.225}, {"talent": 28.39, "looks": 46.626, "luck": -1.823}, {"talent": 48.806, "looks": 65.106, "luck": 0.417}, {"talent": 50.067, "looks": 67.909, "luck": 2.373}, {"talent": 54.428, "looks": 37.749, "luck": -4.066}, {"talent": 33.526, "looks": 56.319, "luck": 3.824}, {"talent": 49.401, "looks": 43.379, "luck": 1.587}, {"talent": 51.265, "looks": 33.269, "luck": 4.099}, {"talent": 62.552, "looks": 46.459, "luck": -9.592}, {"talent": 48.962, "looks": 55.225, "luck": -2.231}, {"talent": 55.29, "looks": 35.654, "luck": -3.057}, {"talent": 40.226, "looks": 36.476, "luck": 2.896}, {"talent": 48.124, "looks": 61.884, "luck": -3.685}, {"talent": 45.545, "looks": 49.737, "luck": -2.552}, {"talent": 57.033, "looks": 53.455, "luck": -5.714}, {"talent": 40.112, "looks": 37.831, "luck": -5.978}, {"talent": 41.657, "looks": 42.742, "luck": -4.686}, {"talent": 55.76, "looks": 50.548, "luck": 4.802}, {"talent": 67.894, "looks": 51.186, "luck": -5.339}, {"talent": 53.827, "looks": 50.729, "luck": -12.21}, {"talent": 53.036, "looks": 65.303, "luck": 1.409}, {"talent": 46.539, "looks": 50.875, "luck": -2.317}, {"talent": 60.884, "looks": 33.689, "luck": 2.704}, {"talent": 55.399, "looks": 40.296, "luck": 2.61}, {"talent": 67.332, "looks": 48.513, "luck": -1.634}, {"talent": 53.307, "looks": 61.973, "luck": -2.174}, {"talent": 40.513, "looks": 42.092, "luck": -2.84}, {"talent": 44.301, "looks": 45.052, "luck": -0.123}, {"talent": 40.126, "looks": 48.708, "luck": -3.969}, {"talent": 37.492, "looks": 41.803, "luck": 0.893}, {"talent": 62.637, "looks": 40.588, "luck": 6.826}, {"talent": 58.073, "looks": 46.508, "luck": -3.414}, {"talent": 37.614, "looks": 58.905, "luck": -3.221}, {"talent": 67.813, "looks": 53.728, "luck": -3.262}, {"talent": 52.446, "looks": 45.915, "luck": 2.98}, {"talent": 40.431, "looks": 52.873, "luck": 3.201}, {"talent": 53.862, "looks": 35.819, "luck": 7.091}, {"talent": 49.308, "looks": 58.863, "luck": 3.494}, {"talent": 42.273, "looks": 56.25, "luck": 0.575}, {"talent": 30.571, "looks": 51.773, "luck": 2.218}, {"talent": 50.367, "looks": 32.263, "luck": -6.583}, {"talent": 52.92, "looks": 69.3, "luck": 2.767}, {"talent": 24.209, "looks": 19.171, "luck": 0.825}, {"talent": 55.549, "looks": 38.642, "luck": 10.337}, {"talent": 56.176, "looks": 39.433, "luck": 6.838}, {"talent": 45.302, "looks": 55.757, "luck": -4.147}, {"talent": 51.121, "looks": 33.577, "luck": -2.856}, {"talent": 47.193, "looks": 51.107, "luck": 4.363}, {"talent": 41.629, "looks": 47.182, "luck": -10.347}, {"talent": 46.399, "looks": 45.781, "luck": -4.608}, {"talent": 63.516, "looks": 57.376, "luck": 1.826}, {"talent": 35.494, "looks": 63.127, "luck": 3.197}, {"talent": 52.372, "looks": 52.747, "luck": 0.907}, {"talent": 51.841, "looks": 45.956, "luck": 5.797}, {"talent": 42.924, "looks": 25.693, "luck": -1.368}, {"talent": 45.597, "looks": 63.614, "luck": 0.466}, {"talent": 35.996, "looks": 45.707, "luck": -0.976}, {"talent": 41.48, "looks": 30.018, "luck": -5.469}, {"talent": 50.15, "looks": 50.373, "luck": 0.218}, {"talent": 53.267, "looks": 63.421, "luck": -2.762}, {"talent": 41.016, "looks": 47.346, "luck": 0.393}, {"talent": 80.563, "looks": 36.96, "luck": -13.061}, {"talent": 44.297, "looks": 71.61, "luck": 0.539}, {"talent": 51.273, "looks": 55.023, "luck": -2.714}, {"talent": 47.694, "looks": 52.322, "luck": -3.074}, {"talent": 46.002, "looks": 59.131, "luck": 0.222}, {"talent": 63.011, "looks": 26.906, "luck": -2.357}, {"talent": 45.212, "looks": 48.167, "luck": 4.625}, {"talent": 63.344, "looks": 47.218, "luck": 6.226}, {"talent": 61.418, "looks": 71.836, "luck": 4.408}, {"talent": 39.543, "looks": 43.206, "luck": 4.816}, {"talent": 60.355, "looks": 43.332, "luck": 1.817}, {"talent": 43.496, "looks": 34.86, "luck": 0.161}, {"talent": 77.365, "looks": 40.623, "luck": -6.395}, {"talent": 46.142, "looks": 46.875, "luck": -1.836}, {"talent": 40.591, "looks": 51.624, "luck": 6.048}, {"talent": 30.889, "looks": 46.964, "luck": 3.826}, {"talent": 37.07, "looks": 69.286, "luck": -2.437}, {"talent": 44.194, "looks": 53.973, "luck": 0.549}, {"talent": 40.02, "looks": 55.461, "luck": 5.286}, {"talent": 37.713, "looks": 62.856, "luck": -0.794}, {"talent": 43.047, "looks": 55.424, "luck": 8.103}, {"talent": 47.935, "looks": 43.724, "luck": -3.767}, {"talent": 64.493, "looks": 33.356, "luck": 3.952}, {"talent": 32.967, "looks": 52.651, "luck": 3.483}, {"talent": 44.484, "looks": 40.614, "luck": 0.878}, {"talent": 40.461, "looks": 62.377, "luck": 1.523}, {"talent": 34.849, "looks": 41.25, "luck": 2.708}, {"talent": 37.339, "looks": 26.452, "luck": -11.303}, {"talent": 40.943, "looks": 49.454, "luck": 2.368}, {"talent": 57.17, "looks": 59.907, "luck": 5.733}, {"talent": 48.061, "looks": 46.933, "luck": 2.017}, {"talent": 44.62, "looks": 50.884, "luck": 5.707}, {"talent": 56.113, "looks": 50.599, "luck": -5.869}, {"talent": 52.808, "looks": 66.5, "luck": -0.31}, {"talent": 47.767, "looks": 52.088, "luck": 1.678}, {"talent": 53.843, "looks": 48.61, "luck": -1.28}, {"talent": 41.716, "looks": 42.773, "luck": 5.959}, {"talent": 56.274, "looks": 32.359, "luck": 2.455}, {"talent": 54.669, "looks": 63.3, "luck": -2.522}, {"talent": 45.877, "looks": 60.666, "luck": 4.098}, {"talent": 37.805, "looks": 39.333, "luck": 4.11}, {"talent": 65.201, "looks": 55.185, "luck": -2.148}, {"talent": 50.942, "looks": 52.318, "luck": 3.156}, {"talent": 80.513, "looks": 45.133, "luck": 1.914}, {"talent": 43.466, "looks": 45.818, "luck": 1.796}, {"talent": 58.528, "looks": 56.645, "luck": -6.219}, {"talent": 45.658, "looks": 36.754, "luck": 6.389}, {"talent": 52.537, "looks": 43.7, "luck": 3.256}, {"talent": 58.334, "looks": 48.203, "luck": -0.105}, {"talent": 42.007, "looks": 48.912, "luck": 1.762}, {"talent": 48.999, "looks": 46.848, "luck": 1.696}, {"talent": 51.609, "looks": 51.198, "luck": -1.497}, {"talent": 51.135, "looks": 54.375, "luck": -2.894}, {"talent": 55.965, "looks": 39.913, "luck": 0.509}, {"talent": 60.256, "looks": 49.848, "luck": -2.952}, {"talent": 58.336, "looks": 43.628, "luck": -2.402}, {"talent": 52.63, "looks": 64.294, "luck": -5.792}, {"talent": 46.526, "looks": 34.712, "luck": -1.365}, {"talent": 38.703, "looks": 46.605, "luck": 5.035}, {"talent": 42.645, "looks": 56.087, "luck": 1.079}, {"talent": 44.715, "looks": 46.102, "luck": 0.248}, {"talent": 56.827, "looks": 45.618, "luck": -1.567}, {"talent": 46.364, "looks": 43.538, "luck": -2.115}, {"talent": 37.577, "looks": 52.192, "luck": -7.463}, {"talent": 56.263, "looks": 37.21, "luck": 8.269}, {"talent": 41.967, "looks": 48.205, "luck": -3.622}, {"talent": 42.342, "looks": 48.014, "luck": -7.483}, {"talent": 47.737, "looks": 34.202, "luck": 2.004}, {"talent": 54.732, "looks": 51.847, "luck": 1.27}, {"talent": 25.868, "looks": 44.361, "luck": -2.587}, {"talent": 38.785, "looks": 52.24, "luck": -7.361}, {"talent": 51.756, "looks": 57.854, "luck": -6.892}, {"talent": 46.358, "looks": 52.626, "luck": 7.833}, {"talent": 41.355, "looks": 37.174, "luck": -0.587}, {"talent": 44.585, "looks": 52.439, "luck": -3.267}, {"talent": 63.853, "looks": 32.964, "luck": 9.291}, {"talent": 45.443, "looks": 41.437, "luck": -2.723}, {"talent": 57.127, "looks": 66.157, "luck": -4.621}, {"talent": 57.919, "looks": 49.29, "luck": 2.719}, {"talent": 45.498, "looks": 65.05, "luck": 1.832}, {"talent": 54.434, "looks": 47.433, "luck": 7.811}, {"talent": 45.498, "looks": 49.38, "luck": -7.785}, {"talent": 43.896, "looks": 37.983, "luck": 1.44}, {"talent": 38.74, "looks": 58.865, "luck": -8.478}, {"talent": 58.75, "looks": 47.311, "luck": 2.301}, {"talent": 46.018, "looks": 55.682, "luck": -3.275}, {"talent": 44.479, "looks": 53.782, "luck": -2.312}, {"talent": 38.726, "looks": 54.807, "luck": -3.683}, {"talent": 68.088, "looks": 52.724, "luck": 4.191}, {"talent": 57.418, "looks": 49.053, "luck": 8.112}, {"talent": 48.672, "looks": 49.455, "luck": -0.434}, {"talent": 43.053, "looks": 42.472, "luck": -1.29}, {"talent": 34.702, "looks": 27.97, "luck": -2.521}, {"talent": 52.918, "looks": 54.485, "luck": 2.608}, {"talent": 52.884, "looks": 70.647, "luck": -5.162}, {"talent": 35.916, "looks": 60.533, "luck": 17.714}, {"talent": 61.616, "looks": 73.286, "luck": -1.173}, {"talent": 57.76, "looks": 54.577, "luck": 8.555}, {"talent": 40.379, "looks": 39.959, "luck": 0.732}, {"talent": 44.443, "looks": 39.743, "luck": -6.875}, {"talent": 45.727, "looks": 57.312, "luck": -7.83}, {"talent": 51.607, "looks": 53.249, "luck": -2.128}, {"talent": 48.544, "looks": 48.14, "luck": -3.613}, {"talent": 33.611, "looks": 57.347, "luck": -1.265}, {"talent": 64.741, "looks": 40.994, "luck": -5.793}, {"talent": 53.163, "looks": 55.17, "luck": 11.71}, {"talent": 62.608, "looks": 47.044, "luck": 10.612}, {"talent": 62.548, "looks": 51.502, "luck": -9.1}, {"talent": 47.921, "looks": 61.943, "luck": 2.361}, {"talent": 53.42, "looks": 48.538, "luck": 5.945}, {"talent": 57.367, "looks": 63.885, "luck": -1.741}, {"talent": 57.696, "looks": 63.42, "luck": -1.199}, {"talent": 48.361, "looks": 42.304, "luck": 5.394}, {"talent": 43.818, "looks": 73.53, "luck": 2.633}, {"talent": 50.353, "looks": 37.473, "luck": -6.159}, {"talent": 41.985, "looks": 49.02, "luck": 6.058}, {"talent": 44.441, "looks": 57.502, "luck": -2.533}, {"talent": 29.698, "looks": 26.96, "luck": 9.223}, {"talent": 50.836, "looks": 60.521, "luck": -4.901}, {"talent": 39.731, "looks": 61.597, "luck": -11.592}, {"talent": 44.442, "looks": 48.942, "luck": 0.397}, {"talent": 49.473, "looks": 52.847, "luck": 5.98}, {"talent": 53.138, "looks": 52.278, "luck": 2.475}, {"talent": 68.892, "looks": 47.985, "luck": 0.666}, {"talent": 52.044, "looks": 60.961, "luck": -4.752}, {"talent": 35.867, "looks": 46.333, "luck": 4.474}, {"talent": 51.307, "looks": 49.664, "luck": -9.444}, {"talent": 44.043, "looks": 53.814, "luck": 3.833}, {"talent": 53.994, "looks": 58.726, "luck": -6.234}, {"talent": 43.145, "looks": 61.286, "luck": -3.186}, {"talent": 42.916, "looks": 35.128, "luck": -6.812}, {"talent": 44.887, "looks": 29.512, "luck": -4.792}, {"talent": 43.724, "looks": 48.713, "luck": 7.272}, {"talent": 31.752, "looks": 49.556, "luck": -6.143}, {"talent": 43.317, "looks": 39.132, "luck": 0.73}, {"talent": 49.86, "looks": 53.196, "luck": -4.272}, {"talent": 62.005, "looks": 56.478, "luck": 4.926}, {"talent": 47.068, "looks": 53.971, "luck": -7.1}, {"talent": 46.283, "looks": 66.821, "luck": -0.245}, {"talent": 55.798, "looks": 39.589, "luck": 4.289}, {"talent": 55.394, "looks": 50.323, "luck": 11.13}, {"talent": 65.995, "looks": 69.649, "luck": -6.25}, {"talent": 55.851, "looks": 56.972, "luck": -4.71}, {"talent": 49.805, "looks": 38.75, "luck": -0.552}, {"talent": 63.383, "looks": 52.128, "luck": 7.17}, {"talent": 65.295, "looks": 62.037, "luck": -5.464}, {"talent": 45.246, "looks": 71.199, "luck": 3.835}, {"talent": 51.581, "looks": 56.792, "luck": -3.481}, {"talent": 33.194, "looks": 61.908, "luck": -5.559}, {"talent": 46.359, "looks": 38.795, "luck": -8.367}, {"talent": 41.162, "looks": 47.534, "luck": 0.336}, {"talent": 47.859, "looks": 62.169, "luck": 4.624}, {"talent": 45.184, "looks": 40.31, "luck": -0.868}, {"talent": 48.34, "looks": 49.413, "luck": -11.077}, {"talent": 48.97, "looks": 31.086, "luck": -3.195}, {"talent": 54.935, "looks": 65.04, "luck": 4.532}, {"talent": 52.309, "looks": 48.692, "luck": 4.047}, {"talent": 44.382, "looks": 55.763, "luck": 1.025}, {"talent": 37.108, "looks": 34.764, "luck": 7.104}, {"talent": 62.349, "looks": 36.688, "luck": -6.799}, {"talent": 64.173, "looks": 68.426, "luck": -6.624}, {"talent": 45.456, "looks": 46.53, "luck": 11.707}, {"talent": 55.614, "looks": 44.484, "luck": 3.018}, {"talent": 34.739, "looks": 55.192, "luck": -1.408}, {"talent": 34.378, "looks": 55.625, "luck": -2.856}, {"talent": 47.301, "looks": 30.097, "luck": -13.448}, {"talent": 64.717, "looks": 40.103, "luck": 3.866}, {"talent": 39.534, "looks": 50.515, "luck": -10.878}, {"talent": 41.659, "looks": 50.053, "luck": -10.373}, {"talent": 66.076, "looks": 53.565, "luck": -0.645}, {"talent": 31.066, "looks": 45.644, "luck": 7.257}, {"talent": 56.462, "looks": 47.157, "luck": -2.403}, {"talent": 54.878, "looks": 52.181, "luck": 1.507}, {"talent": 47.937, "looks": 43.009, "luck": -2.602}, {"talent": 51.886, "looks": 41.528, "luck": 1.623}, {"talent": 76.217, "looks": 44.431, "luck": -8.858}, {"talent": 38.732, "looks": 50.055, "luck": 10.301}, {"talent": 46.861, "looks": 48.469, "luck": -5.293}, {"talent": 47.619, "looks": 45.133, "luck": 2.459}, {"talent": 43.103, "looks": 47.434, "luck": -10.793}, {"talent": 36.581, "looks": 49.473, "luck": 8.646}, {"talent": 65.933, "looks": 53.217, "luck": 1.829}, {"talent": 52.201, "looks": 53.637, "luck": 9.82}, {"talent": 32.42, "looks": 36.917, "luck": -3.72}, {"talent": 42.972, "looks": 59.818, "luck": 4.915}, {"talent": 54.054, "looks": 33.737, "luck": -1.258}, {"talent": 54.034, "looks": 55.478, "luck": -0.583}, {"talent": 35.597, "looks": 42.785, "luck": 6.268}, {"talent": 49.086, "looks": 55.801, "luck": -4.947}, {"talent": 52.609, "looks": 60.653, "luck": 3.427}, {"talent": 53.926, "looks": 30.881, "luck": 9.581}, {"talent": 53.946, "looks": 55.997, "luck": 8.597}, {"talent": 31.77, "looks": 52.668, "luck": 5.109}, {"talent": 68.47, "looks": 45.202, "luck": 1.384}, {"talent": 52.111, "looks": 53.775, "luck": -5.22}, {"talent": 68.06, "looks": 44.88, "luck": 7.039}, {"talent": 78.631, "looks": 51.078, "luck": -3.737}, {"talent": 48.394, "looks": 39.259, "luck": 5.871}, {"talent": 37.662, "looks": 57.793, "luck": -1.941}, {"talent": 58.641, "looks": 55.821, "luck": -0.189}, {"talent": 48.192, "looks": 57.365, "luck": -0.255}, {"talent": 45.486, "looks": 43.252, "luck": 2.856}, {"talent": 39.667, "looks": 68.421, "luck": -2.472}, {"talent": 66.878, "looks": 69.803, "luck": 0.684}, {"talent": 45.573, "looks": 48.975, "luck": -2.885}, {"talent": 36.004, "looks": 45.65, "luck": 2.469}, {"talent": 45.524, "looks": 45.738, "luck": 1.219}, {"talent": 38.427, "looks": 56.785, "luck": 1.958}, {"talent": 51.579, "looks": 60.227, "luck": -4.532}, {"talent": 45.806, "looks": 42.321, "luck": 1.432}, {"talent": 39.426, "looks": 29.401, "luck": -0.008}, {"talent": 56.018, "looks": 54.435, "luck": 2.747}, {"talent": 43.566, "looks": 49.435, "luck": 0.036}, {"talent": 57.238, "looks": 51.576, "luck": -5.175}, {"talent": 62.61, "looks": 55.056, "luck": 3.467}, {"talent": 46.38, "looks": 38.626, "luck": -3.656}, {"talent": 43.535, "looks": 50.479, "luck": 1.211}, {"talent": 51.993, "looks": 46.815, "luck": -10.785}, {"talent": 58.914, "looks": 53.603, "luck": 2.317}, {"talent": 49.972, "looks": 62.102, "luck": 3.124}, {"talent": 51.4, "looks": 49.801, "luck": -4.926}, {"talent": 49.731, "looks": 41.131, "luck": 2.723}, {"talent": 53.112, "looks": 62.321, "luck": -2.143}, {"talent": 56.287, "looks": 56.895, "luck": 6.776}, {"talent": 42.939, "looks": 47.68, "luck": 3.127}, {"talent": 45.175, "looks": 31.538, "luck": -6.596}, {"talent": 50.436, "looks": 40.867, "luck": -1.287}, {"talent": 43.343, "looks": 51.127, "luck": -9.233}, {"talent": 51.361, "looks": 55.186, "luck": -1.885}, {"talent": 55.361, "looks": 44.329, "luck": 2.517}, {"talent": 49.783, "looks": 54.029, "luck": 3.967}, {"talent": 43.965, "looks": 43.228, "luck": -0.795}, {"talent": 42.228, "looks": 45.349, "luck": -1.463}, {"talent": 67.512, "looks": 54.962, "luck": 0.577}, {"talent": 58.785, "looks": 46.861, "luck": -3.306}, {"talent": 38.801, "looks": 50.987, "luck": 1.425}, {"talent": 41.59, "looks": 58.383, "luck": 5.463}, {"talent": 68.738, "looks": 60.935, "luck": 0.767}, {"talent": 65.113, "looks": 43.62, "luck": 4.164}, {"talent": 51.282, "looks": 46.998, "luck": -4.164}, {"talent": 61.578, "looks": 36.2, "luck": -2.687}, {"talent": 35.13, "looks": 36.394, "luck": 1.54}, {"talent": 50.013, "looks": 52.512, "luck": 10.105}, {"talent": 57.408, "looks": 44.265, "luck": 4.986}, {"talent": 31.4, "looks": 30.848, "luck": 8.534}, {"talent": 42.17, "looks": 54.809, "luck": 0.125}, {"talent": 57.829, "looks": 41.039, "luck": 6.184}, {"talent": 61.316, "looks": 46.329, "luck": -8.656}, {"talent": 44.067, "looks": 53.66, "luck": 2.554}, {"talent": 52.898, "looks": 53.459, "luck": -10.681}, {"talent": 66.007, "looks": 48.886, "luck": 6.172}, {"talent": 46.181, "looks": 29.445, "luck": 2.377}, {"talent": 36.666, "looks": 55.137, "luck": 5.864}, {"talent": 49.386, "looks": 43.482, "luck": 2.003}, {"talent": 46.068, "looks": 35.228, "luck": -2.556}, {"talent": 63.01, "looks": 27.288, "luck": -3.792}, {"talent": 51.601, "looks": 62.709, "luck": 0.952}, {"talent": 41.979, "looks": 50.88, "luck": 7.59}, {"talent": 74.005, "looks": 50.582, "luck": 3.181}, {"talent": 44.999, "looks": 55.575, "luck": -2.738}, {"talent": 54.724, "looks": 48.677, "luck": -2.871}, {"talent": 56.762, "looks": 34.639, "luck": -3.57}, {"talent": 57.843, "looks": 56.287, "luck": -1.064}, {"talent": 51.729, "looks": 59.517, "luck": -0.448}, {"talent": 55.867, "looks": 54.663, "luck": -2.43}, {"talent": 49.321, "looks": 64.904, "luck": 0.057}, {"talent": 35.808, "looks": 68.599, "luck": -7.969}, {"talent": 47.802, "looks": 41.495, "luck": 7.936}, {"talent": 48.016, "looks": 45.046, "luck": 1.276}, {"talent": 48.223, "looks": 58.391, "luck": 7.761}, {"talent": 51.361, "looks": 51.276, "luck": 1.503}, {"talent": 43.753, "looks": 51.626, "luck": -0.949}, {"talent": 63.233, "looks": 58.883, "luck": 0.485}, {"talent": 65.667, "looks": 56.939, "luck": 1.175}, {"talent": 27.996, "looks": 45.097, "luck": -3.287}, {"talent": 50.093, "looks": 50.778, "luck": -1.855}, {"talent": 42.894, "looks": 42.401, "luck": 9.739}, {"talent": 23.938, "looks": 47.58, "luck": 4.825}, {"talent": 54.101, "looks": 38.406, "luck": -2.542}, {"talent": 43.812, "looks": 29.867, "luck": 2.73}, {"talent": 46.243, "looks": 44.57, "luck": -4.139}, {"talent": 43.484, "looks": 43.631, "luck": 7.193}, {"talent": 60.87, "looks": 58.51, "luck": -5.003}, {"talent": 62.393, "looks": 65.324, "luck": 4.627}, {"talent": 52.768, "looks": 49.831, "luck": 0.247}, {"talent": 56.931, "looks": 54.309, "luck": 0.292}, {"talent": 48.876, "looks": 43.23, "luck": -3.982}, {"talent": 51.402, "looks": 40.328, "luck": -1.186}, {"talent": 42.582, "looks": 46.758, "luck": -3.732}, {"talent": 50.345, "looks": 46.759, "luck": -4.238}, {"talent": 42.863, "looks": 52.586, "luck": 2.451}, {"talent": 53.73, "looks": 50.765, "luck": 12.819}, {"talent": 58.273, "looks": 66.234, "luck": -1.609}, {"talent": 53.11, "looks": 47.486, "luck": 5.171}, {"talent": 61.841, "looks": 33.149, "luck": 0.056}, {"talent": 76.902, "looks": 50.873, "luck": -3.485}, {"talent": 28.934, "looks": 43.074, "luck": 6.893}, {"talent": 50.137, "looks": 51.722, "luck": 3.328}, {"talent": 44.313, "looks": 60.936, "luck": 5.875}, {"talent": 45.433, "looks": 43.265, "luck": 0.704}, {"talent": 36.418, "looks": 48.936, "luck": 0.86}, {"talent": 50.525, "looks": 54.87, "luck": -4.002}, {"talent": 47.417, "looks": 40.246, "luck": -1.221}, {"talent": 43.672, "looks": 51.869, "luck": 8.614}, {"talent": 47.457, "looks": 55.169, "luck": -11.367}, {"talent": 44.073, "looks": 57.848, "luck": 2.095}, {"talent": 26.571, "looks": 60.701, "luck": 7.553}, {"talent": 60.774, "looks": 55.282, "luck": 4.178}, {"talent": 46.965, "looks": 53.659, "luck": 4.591}, {"talent": 40.504, "looks": 35.844, "luck": -1.183}, {"talent": 53.064, "looks": 22.972, "luck": 5.855}, {"talent": 43.376, "looks": 40.121, "luck": 5.995}, {"talent": 28.26, "looks": 63.991, "luck": -0.024}, {"talent": 58.869, "looks": 50.947, "luck": 8.618}, {"talent": 33.233, "looks": 27.259, "luck": -2.275}, {"talent": 47.816, "looks": 45.578, "luck": -12.323}, {"talent": 51.202, "looks": 53.409, "luck": 0.12}, {"talent": 63.497, "looks": 31.304, "luck": -0.395}, {"talent": 61.901, "looks": 55.537, "luck": -4.111}, {"talent": 51.657, "looks": 38.357, "luck": -2.141}, {"talent": 42.366, "looks": 60.231, "luck": -2.542}, {"talent": 45.841, "looks": 50.133, "luck": -9.041}, {"talent": 60.877, "looks": 80.779, "luck": 6.377}, {"talent": 67.864, "looks": 36.543, "luck": 0.198}, {"talent": 55.438, "looks": 52.682, "luck": 13.696}, {"talent": 43.552, "looks": 35.126, "luck": 0.095}, {"talent": 60.294, "looks": 61.356, "luck": 2.166}, {"talent": 46.248, "looks": 51.133, "luck": -7.434}, {"talent": 45.922, "looks": 59.099, "luck": 5.287}, {"talent": 47.21, "looks": 50.929, "luck": -5.319}, {"talent": 55.901, "looks": 38.207, "luck": 2.877}, {"talent": 52.753, "looks": 43.406, "luck": 4.819}, {"talent": 59.928, "looks": 37.564, "luck": 4.007}, {"talent": 62.964, "looks": 39.477, "luck": -4.03}, {"talent": 55.132, "looks": 51.374, "luck": -3.878}, {"talent": 26.677, "looks": 60.622, "luck": 3.969}, {"talent": 33.034, "looks": 58.506, "luck": 6.115}, {"talent": 51.586, "looks": 55.069, "luck": 7.436}, {"talent": 49.353, "looks": 44.305, "luck": 0.013}, {"talent": 71.592, "looks": 55.033, "luck": -0.377}, {"talent": 49.698, "looks": 41.404, "luck": 9.175}, {"talent": 48.474, "looks": 51.998, "luck": -2.829}, {"talent": 59.439, "looks": 58.304, "luck": 3.974}, {"talent": 60.644, "looks": 48.08, "luck": -1.425}, {"talent": 47.646, "looks": 45.257, "luck": -7.018}, {"talent": 54.732, "looks": 45.628, "luck": -5.477}, {"talent": 38.665, "looks": 56.066, "luck": 2.412}, {"talent": 40.568, "looks": 46.852, "luck": 1.243}, {"talent": 62.331, "looks": 35.762, "luck": 2.61}, {"talent": 35.929, "looks": 45.812, "luck": -1.636}, {"talent": 59.223, "looks": 39.329, "luck": -2.396}, {"talent": 56.779, "looks": 64.906, "luck": 1.554}, {"talent": 57.698, "looks": 50.067, "luck": -0.8}, {"talent": 59.128, "looks": 35.264, "luck": -7.952}, {"talent": 55.639, "looks": 52.593, "luck": -2.07}, {"talent": 28.585, "looks": 57.118, "luck": 8.634}, {"talent": 39.956, "looks": 53.727, "luck": -3.729}, {"talent": 43.987, "looks": 46.355, "luck": 2.871}, {"talent": 59.148, "looks": 51.432, "luck": -0.307}, {"talent": 38.722, "looks": 52.727, "luck": 3.773}, {"talent": 42.951, "looks": 59.947, "luck": -4.281}, {"talent": 46.372, "looks": 53.575, "luck": -6.331}, {"talent": 63.164, "looks": 72.55, "luck": 2.327}, {"talent": 35.589, "looks": 47.81, "luck": -3.45}, {"talent": 36.461, "looks": 65.187, "luck": -0.111}, {"talent": 56.272, "looks": 50.134, "luck": -1.513}, {"talent": 28.745, "looks": 32.968, "luck": 4.901}, {"talent": 53.32, "looks": 38.265, "luck": 1.348}, {"talent": 45.46, "looks": 31.839, "luck": 0.766}, {"talent": 34.23, "looks": 32.836, "luck": -4.831}, {"talent": 45.797, "looks": 61.935, "luck": -7.818}, {"talent": 39.979, "looks": 43.402, "luck": -4.151}, {"talent": 51.678, "looks": 55.962, "luck": 4.234}, {"talent": 53.638, "looks": 41.085, "luck": 3.518}, {"talent": 64.89, "looks": 49.839, "luck": 2.971}, {"talent": 49.872, "looks": 39.472, "luck": -1.973}, {"talent": 51.006, "looks": 58.585, "luck": -5.1}, {"talent": 44.227, "looks": 47.435, "luck": 5.795}, {"talent": 49.764, "looks": 45.462, "luck": 0.95}, {"talent": 60.496, "looks": 48.339, "luck": 2.711}, {"talent": 30.743, "looks": 71.632, "luck": -4.69}, {"talent": 56.591, "looks": 54.425, "luck": -3.403}, {"talent": 44.648, "looks": 58.288, "luck": 3.257}, {"talent": 50.739, "looks": 37.597, "luck": 3.722}, {"talent": 53.25, "looks": 43.498, "luck": -4.975}, {"talent": 58.506, "looks": 52.904, "luck": 1.464}, {"talent": 52.384, "looks": 31.47, "luck": -5.838}, {"talent": 46.075, "looks": 63.266, "luck": 6.119}, {"talent": 53.117, "looks": 52.661, "luck": 3.336}, {"talent": 50.119, "looks": 49.788, "luck": 11.391}, {"talent": 47.955, "looks": 47.99, "luck": 7.567}, {"talent": 52.051, "looks": 47.627, "luck": -3.287}, {"talent": 58.736, "looks": 44.934, "luck": 0.998}, {"talent": 51.383, "looks": 63.823, "luck": -2.368}, {"talent": 51.555, "looks": 56.805, "luck": 0.717}, {"talent": 37.125, "looks": 62.34, "luck": 3.922}, {"talent": 48.73, "looks": 46.938, "luck": -0.023}, {"talent": 31.42, "looks": 41.203, "luck": 0.31}, {"talent": 57.2, "looks": 63.476, "luck": -6.683}, {"talent": 40.607, "looks": 37.843, "luck": 2.898}, {"talent": 62.954, "looks": 43.892, "luck": -0.069}, {"talent": 79.934, "looks": 57.041, "luck": 3.126}, {"talent": 46.026, "looks": 60.756, "luck": 5.204}, {"talent": 63.296, "looks": 36.863, "luck": 0.164}, {"talent": 54.036, "looks": 47.228, "luck": 3.494}, {"talent": 44.43, "looks": 50.228, "luck": -3.014}, {"talent": 41.587, "looks": 48.626, "luck": 4.723}, {"talent": 55.619, "looks": 41.397, "luck": -0.109}, {"talent": 63.948, "looks": 56.678, "luck": -2.955}, {"talent": 53.537, "looks": 44.724, "luck": -1.151}, {"talent": 34.881, "looks": 47.557, "luck": -7.083}, {"talent": 39.577, "looks": 27.555, "luck": -3.243}, {"talent": 47.72, "looks": 48.855, "luck": -2.145}, {"talent": 63.572, "looks": 30.628, "luck": 0.125}, {"talent": 52.834, "looks": 56.976, "luck": -0.441}, {"talent": 53.273, "looks": 54.852, "luck": -3.22}, {"talent": 62.105, "looks": 44.884, "luck": -0.933}, {"talent": 47.954, "looks": 51.555, "luck": -10.67}, {"talent": 49.109, "looks": 51.026, "luck": 0.437}, {"talent": 48.181, "looks": 48.477, "luck": 2.76}, {"talent": 32.22, "looks": 53.545, "luck": 3.907}, {"talent": 54.667, "looks": 48.714, "luck": 5.342}, {"talent": 54.108, "looks": 45.202, "luck": -1.054}, {"talent": 59.754, "looks": 42.043, "luck": -0.45}, {"talent": 38.111, "looks": 66.606, "luck": -2.418}, {"talent": 41.841, "looks": 51.87, "luck": -2.444}, {"talent": 59.345, "looks": 49.74, "luck": 0.573}, {"talent": 53.231, "looks": 57.125, "luck": 6.641}, {"talent": 63.75, "looks": 46.076, "luck": -8.465}, {"talent": 41.37, "looks": 46.139, "luck": -2.524}, {"talent": 52.008, "looks": 56.56, "luck": 1.316}, {"talent": 43.24, "looks": 60.165, "luck": -5.027}, {"talent": 53.098, "looks": 56.615, "luck": 1.991}, {"talent": 45.15, "looks": 35.208, "luck": -6.898}, {"talent": 55.36, "looks": 50.513, "luck": -1.808}, {"talent": 60.814, "looks": 49.708, "luck": -8.303}, {"talent": 56.753, "looks": 54.451, "luck": 1.271}, {"talent": 31.917, "looks": 41.146, "luck": -4.005}, {"talent": 59.404, "looks": 39.513, "luck": 3.107}, {"talent": 54.475, "looks": 48.776, "luck": -1.573}, {"talent": 39.57, "looks": 41.107, "luck": -4.889}, {"talent": 41.142, "looks": 39.355, "luck": -2.215}, {"talent": 50.083, "looks": 49.24, "luck": 0.487}, {"talent": 55.735, "looks": 59.116, "luck": -0.205}, {"talent": 45.493, "looks": 51.272, "luck": -1.425}, {"talent": 33.775, "looks": 60.998, "luck": -1.895}, {"talent": 52.816, "looks": 40.043, "luck": -0.111}, {"talent": 51.698, "looks": 56.933, "luck": 4.025}, {"talent": 74.411, "looks": 49.804, "luck": -3.005}, {"talent": 37.114, "looks": 41.211, "luck": 2.006}, {"talent": 75.238, "looks": 45.763, "luck": -6.745}, {"talent": 67.447, "looks": 41.405, "luck": 4.408}, {"talent": 53.031, "looks": 47.768, "luck": 1.63}, {"talent": 66.59, "looks": 42.506, "luck": -1.908}, {"talent": 50.966, "looks": 62.372, "luck": -1.798}, {"talent": 59.778, "looks": 46.354, "luck": -8.572}, {"talent": 42.662, "looks": 35.832, "luck": 0.291}, {"talent": 50.797, "looks": 47.97, "luck": -1.379}, {"talent": 39.854, "looks": 53.722, "luck": -7.079}, {"talent": 34.245, "looks": 46.76, "luck": -2.352}, {"talent": 47.283, "looks": 58.413, "luck": 2.692}, {"talent": 43.411, "looks": 40.899, "luck": 0.711}, {"talent": 55.728, "looks": 41.452, "luck": 1.19}, {"talent": 62.708, "looks": 65.958, "luck": -2.905}, {"talent": 48.308, "looks": 49.945, "luck": 4.043}, {"talent": 50.589, "looks": 55.255, "luck": -0.269}, {"talent": 51.879, "looks": 54.798, "luck": 4.057}, {"talent": 33.22, "looks": 55.602, "luck": 10.826}, {"talent": 52.691, "looks": 50.331, "luck": -10.049}, {"talent": 50.114, "looks": 48.025, "luck": -2.623}, {"talent": 49.537, "looks": 60.603, "luck": -0.096}, {"talent": 38.996, "looks": 45.067, "luck": -3.767}, {"talent": 30.181, "looks": 51.053, "luck": 4.991}, {"talent": 47.497, "looks": 56.674, "luck": -1.842}, {"talent": 53.162, "looks": 46.016, "luck": 8.171}, {"talent": 63.409, "looks": 34.799, "luck": 3.649}, {"talent": 61.312, "looks": 54.448, "luck": 2.003}, {"talent": 64.553, "looks": 60.563, "luck": -0.184}, {"talent": 53.7, "looks": 52.436, "luck": 4.104}, {"talent": 61.562, "looks": 33.421, "luck": 2.364}, {"talent": 47.94, "looks": 56.239, "luck": 7.214}, {"talent": 56.284, "looks": 69.301, "luck": 2.028}, {"talent": 59.318, "looks": 34.725, "luck": 5.067}, {"talent": 76.893, "looks": 23.272, "luck": 1.989}, {"talent": 52.426, "looks": 47.535, "luck": 1.634}, {"talent": 37.274, "looks": 50.701, "luck": -7.722}, {"talent": 63.777, "looks": 57.636, "luck": 0.037}, {"talent": 42.087, "looks": 58.002, "luck": 1.939}, {"talent": 49.393, "looks": 50.883, "luck": -5.763}, {"talent": 47.058, "looks": 55.288, "luck": -6.856}, {"talent": 40.922, "looks": 53.27, "luck": -1.502}, {"talent": 63.348, "looks": 51.197, "luck": 1.462}, {"talent": 55.961, "looks": 49.424, "luck": -8.408}, {"talent": 43.88, "looks": 48.483, "luck": 1.552}, {"talent": 50.693, "looks": 56.882, "luck": 4.75}, {"talent": 45.668, "looks": 53.963, "luck": -1.226}, {"talent": 56.152, "looks": 45.804, "luck": 1.196}, {"talent": 46.214, "looks": 60.707, "luck": 2.309}, {"talent": 42.338, "looks": 42.876, "luck": -3.264}, {"talent": 43.557, "looks": 47.731, "luck": 3.079}, {"talent": 45.631, "looks": 51.315, "luck": 2.238}, {"talent": 52.894, "looks": 31.384, "luck": -6.122}, {"talent": 40.811, "looks": 46.302, "luck": 2.57}, {"talent": 49.106, "looks": 58.361, "luck": 4.339}, {"talent": 54.436, "looks": 57.96, "luck": -5.327}, {"talent": 73.373, "looks": 38.326, "luck": 4.305}, {"talent": 58.562, "looks": 41.891, "luck": -1.307}, {"talent": 20.162, "looks": 39.481, "luck": -6.633}, {"talent": 44.889, "looks": 47.695, "luck": -5.13}, {"talent": 46.031, "looks": 49.373, "luck": -4.375}, {"talent": 53.204, "looks": 34.428, "luck": 2.676}, {"talent": 65.694, "looks": 53.104, "luck": -2.38}, {"talent": 57.421, "looks": 50.699, "luck": -1.941}, {"talent": 26.971, "looks": 49.286, "luck": -6.26}, {"talent": 53.07, "looks": 43.435, "luck": 0.108}, {"talent": 51.081, "looks": 48.206, "luck": -6.166}, {"talent": 54.13, "looks": 32.636, "luck": -3.326}, {"talent": 63.589, "looks": 52.26, "luck": 3.031}, {"talent": 39.091, "looks": 52.062, "luck": 3.291}, {"talent": 61.031, "looks": 48.97, "luck": -2.633}, {"talent": 33.461, "looks": 38.488, "luck": -0.256}, {"talent": 50.508, "looks": 62.427, "luck": 2.633}, {"talent": 53.806, "looks": 61.028, "luck": -0.053}, {"talent": 72.845, "looks": 31.731, "luck": 5.967}, {"talent": 42.977, "looks": 54.039, "luck": 6.641}, {"talent": 33.061, "looks": 51.491, "luck": -0.431}, {"talent": 56.871, "looks": 24.964, "luck": -6.098}, {"talent": 43.388, "looks": 55.052, "luck": -0.757}, {"talent": 65.638, "looks": 56.347, "luck": 6.684}, {"talent": 42.919, "looks": 57.032, "luck": 5.594}, {"talent": 41.227, "looks": 51.578, "luck": 5.879}, {"talent": 62.445, "looks": 43.654, "luck": 5.551}, {"talent": 50.854, "looks": 45.018, "luck": -2.535}, {"talent": 60.008, "looks": 55.001, "luck": 1.383}, {"talent": 35.698, "looks": 61.43, "luck": 5.402}, {"talent": 66.511, "looks": 45.251, "luck": 1.34}, {"talent": 44.111, "looks": 47.306, "luck": 4.392}, {"talent": 58.194, "looks": 56.813, "luck": -4.969}, {"talent": 39.951, "looks": 29.052, "luck": -6.015}, {"talent": 34.493, "looks": 54.382, "luck": 10.028}, {"talent": 47.432, "looks": 47.781, "luck": 3.859}, {"talent": 51.745, "looks": 28.668, "luck": 3.081}, {"talent": 65.766, "looks": 57.538, "luck": 7.332}, {"talent": 53.5, "looks": 41.13, "luck": 11.123}, {"talent": 57.155, "looks": 57.748, "luck": 14.38}, {"talent": 56.589, "looks": 63.444, "luck": -11.887}, {"talent": 81.102, "looks": 37.924, "luck": 2.002}, {"talent": 41.819, "looks": 38.381, "luck": 5.22}, {"talent": 62.552, "looks": 49.938, "luck": -9.46}, {"talent": 48.507, "looks": 33.019, "luck": -8.822}, {"talent": 52.608, "looks": 57.162, "luck": -0.803}, {"talent": 44.532, "looks": 51.885, "luck": 9.496}, {"talent": 61.624, "looks": 59.626, "luck": 4.776}, {"talent": 37.451, "looks": 32.249, "luck": 10.839}, {"talent": 36.777, "looks": 52.051, "luck": 1.52}, {"talent": 47.922, "looks": 54.607, "luck": 5.445}, {"talent": 38.42, "looks": 32.599, "luck": 7.691}, {"talent": 57.033, "looks": 58.798, "luck": 2.383}, {"talent": 59.219, "looks": 36.7, "luck": -0.008}, {"talent": 42.47, "looks": 51.891, "luck": 0.698}, {"talent": 57.838, "looks": 37.318, "luck": -18.361}, {"talent": 43.38, "looks": 57.814, "luck": 1.678}, {"talent": 49.558, "looks": 66.758, "luck": -9.248}, {"talent": 50.068, "looks": 50.766, "luck": -4.039}, {"talent": 68.765, "looks": 50.5, "luck": 3.578}, {"talent": 49.996, "looks": 62.877, "luck": 2.033}, {"talent": 40.88, "looks": 45.874, "luck": -9.965}, {"talent": 40.825, "looks": 50.739, "luck": 2.664}, {"talent": 62.0, "looks": 58.258, "luck": 3.787}, {"talent": 33.31, "looks": 54.423, "luck": 1.017}, {"talent": 45.298, "looks": 65.669, "luck": 3.459}]};
+
+  const plotStyle = () => ({ color: 'var(--ink-soft)', fontFamily: "'Public Sans', sans-serif", fontSize: '12px' });
+  const BLUE = '#457b9d', RED = '#e63946', GREEN = '#2d6a4f', NAVY = 'var(--ink)', GREY = '#9aa0ad';
+  const MINUS = '\u2212';
+  function fmtS(v, d) { const s = Math.abs(v).toLocaleString('en-GB', { minimumFractionDigits: d, maximumFractionDigits: d }); return v < 0 ? MINUS + s : s; }
+
+  function accessibleChart(node, label) {
+    node.setAttribute('aria-hidden', 'true');
+    const wrap = document.createElement('div');
+    wrap.setAttribute('role', 'img');
+    wrap.setAttribute('aria-label', label);
+    wrap.appendChild(node);
+    return wrap;
+  }
+  function mount(id, node) { const el = document.getElementById(id); el.innerHTML = ''; el.appendChild(node); }
+  function width(id, max) { const el = document.getElementById(id); return Math.max(260, Math.min(max, (el && el.clientWidth) || max)); }
+  function chartLabel(t) {
+    const el = document.createElement('div');
+    el.textContent = t;
+    el.style.cssText = 'font-family:var(--sans);font-weight:600;font-size:13px;color:var(--ink);text-align:center;margin:0 0 4px;';
+    return el;
+  }
+  function withLabel(t, node) { const d = document.createElement('div'); d.appendChild(chartLabel(t)); d.appendChild(node); return d; }
+
+  /* ---------- least squares: solve (X'X) b = X'y ---------- */
+  function lstsq(X, y) {
+    const k = X[0].length;
+    const A = Array.from({ length: k }, () => new Array(k + 1).fill(0));
+    X.forEach((row, i) => {
+      for (let a = 0; a < k; a++) {
+        for (let b = 0; b < k; b++) A[a][b] += row[a] * row[b];
+        A[a][k] += row[a] * y[i];
+      }
+    });
+    for (let c = 0; c < k; c++) {
+      let p = c;
+      for (let r = c + 1; r < k; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r;
+      [A[c], A[p]] = [A[p], A[c]];
+      for (let r = 0; r < k; r++) {
+        if (r === c) continue;
+        const f = A[r][c] / A[c][c];
+        for (let j = c; j <= k; j++) A[r][j] -= f * A[c][j];
+      }
+    }
+    const beta = A.map((row, i) => row[k] / row[i]);
+    const fit = X.map(row => d3.sum(row.map((v, j) => v * beta[j])));
+    const my = d3.mean(y);
+    const r2 = 1 - d3.sum(y.map((v, i) => (v - fit[i]) ** 2)) / d3.sum(y.map(v => (v - my) ** 2));
+    return { beta, fit, r2 };
+  }
+  const ols1 = (xs, ys) => lstsq(xs.map(x => [1, x]), ys);
+
+  /* ---------- seeded normal draws ---------- */
+  function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function normalGen(seed) { const r = mulberry32(seed); return () => { const u = 1 - r(), v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }; }
+
+
+  /* ================= Week 9 charts ================= */
+
+  const FOUR_CUSTOMERS = [
+    { name: "Asha", y1: 1, y0: 0, te: 1, note: "the email persuaded her to buy" },
+    { name: "Ben", y1: 1, y0: 1, te: 0, note: "nothing: he'd have bought anyway" },
+    { name: "Chloe", y1: 0, y0: 1, te: -1, note: "the email put her off: she unsubscribed instead" },
+    { name: "Dev", y1: 0, y0: 0, te: 0, note: "nothing: he doesn't buy either way" },
+  ];
+
+  function renderFourCustomers() {
+    const teColor = (te) => te > 0 ? 'var(--green)' : (te < 0 ? 'var(--warm)' : 'var(--ink-soft)');
+    const teText = (te) => te > 0 ? '+1' : (te < 0 ? MINUS + '1' : '0');
+    const table = document.createElement('table');
+    table.className = 'data-table';
+    table.innerHTML = `
+      <thead><tr><th>Customer</th><th>Buys if emailed (y&sup1;)</th><th>Buys if not (y&#8304;)</th><th>te</th><th>What the email did</th></tr></thead>
+      <tbody>
+        ${FOUR_CUSTOMERS.map(d => `<tr>
+          <td>${d.name}</td>
+          <td style="text-align:center;">${d.y1}</td>
+          <td style="text-align:center;">${d.y0}</td>
+          <td style="text-align:center;color:${teColor(d.te)};font-weight:600;">${teText(d.te)}</td><td>${d.note}</td>
+        </tr>`).join('')}
+      </tbody>`;
+    mount('four-customers-table', table);
+  }
+
+  /* ---------- Collider: 1,000 simulated actors ---------- */
+
+  function renderCollider() {
+    const cutoff = +document.getElementById('collider-cutoff').value;
+    const dim = document.getElementById('collider-dim').checked;
+    document.getElementById('collider-cutoff-val').textContent = cutoff;
+
+    const rows = W9.actor_rows.map(d => ({
+      looks: d.looks, talent: d.talent,
+      star: (d.talent + d.looks + d.luck) > cutoff ? 1 : 0,
+    }));
+    const stars = rows.filter(d => d.star === 1);
+    const n_star = stars.length;
+
+    const all_fit = ols1(rows.map(d => d.looks), rows.map(d => d.talent));
+    const star_fit = n_star > 2 ? ols1(stars.map(d => d.looks), stars.map(d => d.talent)) : null;
+
+    // Naive t-test p-value approximation via the fit's own residual SE (two-sided, large-sample)
+    function slopeP(xs, ys, fit) {
+      const n = xs.length, k = 2;
+      const mx = d3.mean(xs);
+      const sxx = d3.sum(xs.map(x => (x - mx) ** 2));
+      // HC1 heteroskedasticity-robust variance of the slope, matching the deck's own cov_type="HC1"
+      const meat = d3.sum(xs.map((x, i) => ((x - mx) ** 2) * ((ys[i] - fit.fit[i]) ** 2)));
+      const seB = Math.sqrt((meat / (sxx * sxx)) * (n / (n - k)));
+      const t = fit.beta[1] / seB;
+      const z = Math.abs(t);
+      // Normal-approx two-sided p-value (statsmodels itself uses the normal, not t, reference for HC1 z-stats)
+      const p = 2 * (1 - 0.5 * (1 + erf(z / Math.SQRT2)));
+      return Math.max(0, Math.min(1, p));
+    }
+    function erf(x) {
+      const s = x < 0 ? -1 : 1; x = Math.abs(x);
+      const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
+      const t = 1/(1+p*x);
+      const y = 1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);
+      return s*y;
+    }
+    function twoSidedP(z) { return Math.max(0, Math.min(1, 2 * (1 - 0.5 * (1 + erf(Math.abs(z) / Math.SQRT2))))); }
+
+    // HC1 robust SE for a multi-variable OLS fit (talent ~ looks + star), matching statsmodels' cov_type="HC1".
+    function matInv(A) {
+      const n = A.length;
+      const M = A.map((row, i) => [...row, ...Array.from({ length: n }, (_, j) => (i === j ? 1 : 0))]);
+      for (let c = 0; c < n; c++) {
+        let p = c;
+        for (let r = c + 1; r < n; r++) if (Math.abs(M[r][c]) > Math.abs(M[p][c])) p = r;
+        [M[c], M[p]] = [M[p], M[c]];
+        const piv = M[c][c];
+        for (let j = 0; j < 2 * n; j++) M[c][j] /= piv;
+        for (let r = 0; r < n; r++) {
+          if (r === c) continue;
+          const f = M[r][c];
+          for (let j = 0; j < 2 * n; j++) M[r][j] -= f * M[c][j];
+        }
+      }
+      return M.map(row => row.slice(n));
+    }
+    function matMul(A, B) {
+      const ra = A.length, ca = A[0].length, cb = B[0].length;
+      const C = Array.from({ length: ra }, () => new Array(cb).fill(0));
+      for (let i = 0; i < ra; i++) for (let j = 0; j < cb; j++) { let s = 0; for (let k = 0; k < ca; k++) s += A[i][k] * B[k][j]; C[i][j] = s; }
+      return C;
+    }
+    function robustSEMulti(X, y, fit) {
+      const n = X.length, k = X[0].length;
+      const XtX = Array.from({ length: k }, () => new Array(k).fill(0));
+      X.forEach(row => { for (let a = 0; a < k; a++) for (let b = 0; b < k; b++) XtX[a][b] += row[a] * row[b]; });
+      const XtXinv = matInv(XtX);
+      const meat = Array.from({ length: k }, () => new Array(k).fill(0));
+      X.forEach((row, i) => {
+        const e2 = (y[i] - fit[i]) ** 2;
+        for (let a = 0; a < k; a++) for (let b = 0; b < k; b++) meat[a][b] += row[a] * row[b] * e2;
+      });
+      const V = matMul(matMul(XtXinv, meat), XtXinv).map(row => row.map(v => v * n / (n - k)));
+      return V.map((row, i) => Math.sqrt(row[i]));
+    }
+
+    const domX = d3.extent(rows, d => d.looks);
+    const domY = d3.extent(rows, d => d.talent);
+    const lineX = [domX[0], domX[1]];
+
+    const marks = [
+      Plot.dot(rows.filter(d => !d.star), { x: "looks", y: "talent", r: 2.6, fill: dim ? "#cfcfd6" : "#9a9aa8", fillOpacity: dim ? 0.55 : 1 }),
+      Plot.dot(stars, { x: "looks", y: "talent", r: 2.8, fill: "var(--warm)" }),
+      Plot.line(lineX.map(x => ({ x, y: all_fit.beta[0] + all_fit.beta[1] * x })), { x: "x", y: "y", stroke: "var(--ink)", strokeWidth: 2, strokeOpacity: 0.55 }),
+    ];
+    if (star_fit) {
+      marks.push(Plot.line(lineX.map(x => ({ x, y: star_fit.beta[0] + star_fit.beta[1] * x })), { x: "x", y: "y", stroke: "var(--warm)", strokeWidth: 2.5 }));
+    }
+    marks.push(Plot.line([{ x: domX[0], y: cutoff - domX[0] }, { x: domX[1], y: cutoff - domX[1] }]
+      .map(d => ({ x: d.x, y: Math.max(domY[0], Math.min(domY[1], d.y)) })),
+      { x: "x", y: "y", stroke: "var(--ink-faint)", strokeDasharray: "5,4" }));
+
+    const svg = Plot.plot({
+      width: width('collider-chart', 980), height: 320, marginLeft: 55,
+      x: { label: "Looks (score)", domain: domX }, y: { label: "Acting talent (score)", domain: domY },
+      style: plotStyle(),
+      marks,
+    });
+    mount('collider-chart', accessibleChart(svg,
+      `Scatter of 1,000 simulated actors' looks against talent. ${n_star} are stars at this cutoff, shown in red. Among all actors the fitted line is flat (slope ${all_fit.beta[1].toFixed(2)}); among stars only it slopes down (slope ${star_fit ? star_fit.beta[1].toFixed(2) : 'n/a'}).`));
+
+    document.getElementById('collider-caption').textContent =
+      `${n_star} of 1,000 actors clear the cutoff of ${cutoff} and become stars. They sit above the dashed line, which slopes down: the less good-looking you are, the more talent you need to get over it.`;
+
+    const p_all = slopeP(rows.map(d => d.looks), rows.map(d => d.talent), all_fit);
+    const p_star = star_fit ? slopeP(stars.map(d => d.looks), stars.map(d => d.talent), star_fit) : null;
+    const ctrlX = rows.map(d => [1, d.looks, d.star]);
+    const ctrlY = rows.map(d => d.talent);
+    const ctrl_fit = lstsq(ctrlX, ctrlY);
+    const ctrl_se = robustSEMulti(ctrlX, ctrlY, ctrl_fit.fit);
+    const p_ctrl = twoSidedP(ctrl_fit.beta[1] / ctrl_se[1]);
+
+    const table = document.createElement('table');
+    table.innerHTML = `
+      <thead><tr><th>Model</th><th>Coefficient on looks</th></tr></thead>
+      <tbody>
+        <tr><td>All actors</td><td style="text-align:center;">${fmtS(all_fit.beta[1], 2)} (p ${p_all < 0.01 ? '< 0.01' : '= ' + p_all.toFixed(2)})</td></tr>
+        <tr><td>Stars only</td><td style="text-align:center;">${star_fit ? fmtS(star_fit.beta[1], 2) : MINUS + MINUS} (p ${p_star !== null && p_star < 0.001 ? '< 0.001' : (p_star !== null ? '= ' + p_star.toFixed(3) : MINUS + MINUS)})</td></tr>
+        <tr><td>All actors, controlling for being a star</td><td style="text-align:center;">${fmtS(ctrl_fit.beta[1], 2)} (p ${p_ctrl < 0.001 ? '< 0.001' : '= ' + p_ctrl.toFixed(3)})</td></tr>
+      </tbody>`;
+    table.querySelectorAll('caption').forEach(c => c.remove());
+    const wrap = document.getElementById('collider-table');
+    wrap.className = 'data-table';
+    wrap.innerHTML = table.innerHTML;
+  }
+
+  function wireCollider() {
+    document.getElementById('collider-cutoff').addEventListener('input', renderCollider);
+    document.getElementById('collider-dim').addEventListener('change', renderCollider);
+    renderCollider();
+  }
+
+  /* ---------- WFH quit-rate bar chart ---------- */
+
+  function renderWfhBar() {
+    const rows = [
+      { group: "Control (office)", rate: W9.control_quit_rate },
+      { group: "Treatment (WFH)", rate: W9.treatment_quit_rate },
+    ];
+    const svg = Plot.plot({
+      width: width('wfh-bar-chart', 560), height: 300, marginLeft: 110, marginRight: 40, marginTop: 30,
+      x: { label: "Quit rate (%)", domain: [0, 45] },
+      y: { label: null },
+      style: plotStyle(),
+      marks: [
+        Plot.barX(rows, { y: "group", x: "rate", fill: (d, i) => i === 0 ? "var(--ink-faint)" : "var(--green)" }),
+        Plot.text(rows, { y: "group", x: "rate", text: d => d.rate.toFixed(1) + "%", dx: 22, fill: "var(--ink)", fontWeight: 600 }),
+        Plot.ruleY([0]),
+      ],
+    });
+    mount('wfh-bar-chart', accessibleChart(svg,
+      `Bar chart: control group quit rate ${W9.control_quit_rate}%, treatment group (working from home) quit rate ${W9.treatment_quit_rate}%, a drop of ${Math.abs(W9.quit_effect)} percentage points, 95% confidence interval ${W9.quit_ci_lo} to ${W9.quit_ci_hi}.`));
+
+    const pre = document.createElement('pre');
+    pre.className = 'code-block';
+    pre.style.fontSize = '0.68rem';
+    pre.textContent = W9.quit_summary_text;
+    mount('wfh-summary-wrap', pre);
+  }
+
+  /* ---------- Covariate balance table ---------- */
+
+  function renderBalance() {
+    const table = document.createElement('table');
+    table.className = 'data-table';
+    table.innerHTML = `
+      <thead><tr><th>Covariate</th><th>Treatment mean</th><th>Control mean</th><th>p-value</th></tr></thead>
+      <tbody>
+        ${W9.balance_rows.map(d => {
+          const good = d.p >= 0.05;
+          const pillColor = good ? 'var(--green)' : 'var(--warm)';
+          return `<tr><td>${d.covariate}</td><td style="text-align:center;">${d.treat}</td><td style="text-align:center;">${d.control}</td>
+            <td style="text-align:center;"><span style="display:inline-block;padding:2px 10px;border-radius:10px;font-family:var(--mono);font-size:0.82em;
+              background:color-mix(in srgb, ${pillColor} 16%, transparent);color:${pillColor};font-weight:600;">${d.p}</span></td></tr>`;
+        }).join('')}
+      </tbody>`;
+    mount('balance-chart', table);
+  }
+
+  /* ---------- Power / sample-size calculator ---------- */
+
+  function nTotal(r0, r1) {
+    const r = (r0 + r1) / 2;
+    return 4 * r * (1 - r) * Math.pow((1.96 + 0.84) / (r1 - r0), 2);
+  }
+
+  const POWER_REFS = [
+    { label: "WFH study used", n: W9.wfh_n },
+    { label: "WFH's own rule-of-thumb need", n: W9.n_wfh },
+    { label: "Ad test bought", n: 2000000 },
+  ];
+
+  function renderPower() {
+    const r0 = +document.getElementById('power-r0').value;
+    const relDelta = +document.getElementById('power-delta').value;
+    document.getElementById('power-r0-val').textContent = Math.round(r0 * 100) + '%';
+    document.getElementById('power-delta-val').textContent = MINUS + Math.round(relDelta * 100) + '%';
+    const r1 = Math.max(0.0001, r0 * (1 - relDelta));
+    const n = Math.max(1, nTotal(r0, r1));
+
+    const axisY = 210;
+    const rowYs = [24, 54, 84];
+    const xScale = d3.scaleLog().domain([10, 10000000]).range([20, width('power-chart', 900) - 20]).clamp(true);
+    const w = width('power-chart', 900), h = 260;
+    const svg = d3.create('svg').attr('viewBox', `0 0 ${w} ${h}`).attr('width', w).attr('height', h);
+
+    svg.append('line').attr('x1', 20).attr('x2', w - 20).attr('y1', axisY).attr('y2', axisY).attr('stroke', 'var(--rule)').attr('stroke-width', 2);
+    [10, 100, 1000, 10000, 100000, 1000000, 10000000].forEach(t => {
+      const x = xScale(t);
+      svg.append('line').attr('x1', x).attr('x2', x).attr('y1', axisY - 5).attr('y2', axisY + 5).attr('stroke', 'var(--ink-faint)');
+      svg.append('text').attr('x', x).attr('y', axisY + 20).attr('text-anchor', 'middle').attr('font-size', 11)
+        .attr('fill', 'var(--ink-faint)').attr('font-family', 'var(--mono)')
+        .text(t >= 1000000 ? (t / 1000000) + 'M' : (t >= 1000 ? (t / 1000) + 'k' : t));
+    });
+    // Sort references by n so the leader lines (drawn top row-by-row) never cross awkwardly
+    const sortedRefs = [...POWER_REFS].sort((a, b) => a.n - b.n);
+    sortedRefs.forEach((r, i) => {
+      const x = xScale(r.n);
+      const y = rowYs[i % rowYs.length];
+      const anchor = x < 70 ? 'start' : (x > w - 70 ? 'end' : 'middle');
+      svg.append('line').attr('x1', x).attr('x2', x).attr('y1', y + 6).attr('y2', axisY).attr('stroke', 'var(--ink-faint)').attr('stroke-dasharray', '3,3');
+      svg.append('text').attr('x', x).attr('y', y).attr('text-anchor', anchor).attr('font-size', 10.5)
+        .attr('fill', 'var(--ink-soft)').text(`${r.label} (${r.n.toLocaleString()})`);
+    });
+    const cx = xScale(n);
+    svg.append('circle').attr('cx', cx).attr('cy', axisY).attr('r', 7).attr('fill', 'var(--warm)');
+    svg.append('text').attr('x', cx).attr('y', axisY - 14).attr('text-anchor', cx < 70 ? 'start' : (cx > w - 70 ? 'end' : 'middle')).attr('font-size', 13).attr('font-weight', 700)
+      .attr('fill', 'var(--warm)').text(Math.round(n).toLocaleString());
+
+    mount('power-chart', accessibleChart(svg.node(),
+      `Log scale from 10 to 10 million subjects, marking reference points for the WFH study and the social media ad test. The current slider settings need ${Math.round(n).toLocaleString()} subjects in total.`));
+
+    document.getElementById('power-caption').textContent =
+      `At a ${Math.round(r0*100)}% baseline rate, detecting a relative drop of ${Math.round(relDelta*100)}% (to ${(r1*100).toFixed(2)}%) needs about ${Math.round(n).toLocaleString()} subjects in total.`;
+  }
+
+  function wirePower() {
+    document.getElementById('power-r0').addEventListener('input', renderPower);
+    document.getElementById('power-delta').addEventListener('input', renderPower);
+    renderPower();
+  }
+
+  /* ---------- Social media A/B test table ---------- */
+
+  function renderSocialTable() {
+    const table = document.createElement('table');
+    table.className = 'data-table';
+    table.innerHTML = `
+      <thead><tr><th>Advert</th><th>Shown</th><th>Clicks</th><th>Click rate</th><th>Actions</th><th>Action rate</th></tr></thead>
+      <tbody>
+        ${W9.social_rows.map(d => `<tr><td>${d.action_type.replace("Action ", "")}</td>
+          <td style="text-align:center;">${d.show.toLocaleString()}</td>
+          <td style="text-align:center;">${d.clicks.toLocaleString()}</td>
+          <td style="text-align:center;">${d.click_rate.toFixed(2)}%</td>
+          <td style="text-align:center;">${d.action}</td>
+          <td style="text-align:center;">${d.action_rate.toFixed(4)}%</td></tr>`).join('')}
+        <tr><td><em>p-value</em></td><td></td><td></td><td style="text-align:center;">${W9.p_clicks}</td><td></td><td style="text-align:center;">${W9.p_actions}</td></tr>
+      </tbody>`;
+    mount('social-table', table);
+  }
+
+  renderWfhBar();
+  renderBalance();
+  renderSocialTable();
+  renderFourCustomers();
+  wireCollider();
+  wirePower();
+  let rt9; window.addEventListener('resize', () => { clearTimeout(rt9); rt9 = setTimeout(() => { renderWfhBar(); renderCollider(); renderPower(); }, 200); });
+
+
+  /* ================= Chapter nav =================
+     Hardcoded -- add a new entry here (and to every other chapter's own copy
+     of this array) when the next chapter exists. */
+  const CHAPTERS = [
+    { href: 'week1-lecture-notes.html', num: 'One', title: 'Distributions &amp; Summarising Data' },
+    { href: 'week2-lecture-notes.html', num: 'Two', title: 'Inference: When Is a Difference Real?' },
+    { href: 'week3-lecture-notes.html', num: 'Three', title: 'When y Met x: Correlation and Covariance' },
+    { href: 'week4-lecture-notes.html', num: 'Four', title: 'Regression I: Fitting the Line' },
+    { href: 'week5-lecture-notes.html', num: 'Five', title: 'Model Problems &amp; Inference' },
+    { href: 'week6-lecture-notes.html', num: 'Six', title: 'Multiple Regression' },
+    { href: 'week8-lecture-notes.html', num: 'Eight', title: 'Binary Dependent Variables' },
+    { href: 'week9-lecture-notes.html', num: 'Nine', title: 'Causal Analysis &amp; Experiments' },
+  ];
+  const CURRENT_CHAPTER_HREF = 'week9-lecture-notes.html';
+  function buildChapterNav(container) {
+    const wrap = document.createElement('div');
+    wrap.className = 'toc-block chapter-nav';
+    const label = document.createElement('span');
+    label.className = 'toc-label';
+    label.textContent = 'Chapters';
+    wrap.appendChild(label);
+    const ol = document.createElement('ol');
+    ol.className = 'chapter-list';
+    CHAPTERS.forEach(c => {
+      const li = document.createElement('li');
+      const isCurrent = c.href === CURRENT_CHAPTER_HREF;
+      const el = document.createElement(isCurrent ? 'span' : 'a');
+      if (!isCurrent) el.href = c.href;
+      el.className = 'chapter-link' + (isCurrent ? ' current' : '');
+      el.innerHTML = `<strong>Chapter ${c.num}</strong><span class="chapter-sub">${c.title}</span>`;
+      li.appendChild(el);
+      ol.appendChild(li);
+    });
+    wrap.appendChild(ol);
+    container.appendChild(wrap);
+  }
+
+  /* ================= TOC ================= */
+  const sections = [...document.querySelectorAll('section.chapter')].map(s => ({
+    id: s.id, title: s.querySelector('h2').textContent
+  }));
+  function buildTOC(container) {
+    buildChapterNav(container);
+    const label = document.createElement('span');
+    label.className = 'toc-label';
+    label.textContent = 'Contents';
+    container.appendChild(label);
+    const ol = document.createElement('ol');
+    sections.forEach(s => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = '#' + s.id; a.textContent = s.title; a.dataset.id = s.id;
+      li.appendChild(a); ol.appendChild(li);
+    });
+    container.appendChild(ol);
+  }
+  buildTOC(document.getElementById('toc'));
+  buildTOC(document.getElementById('toc-mobile'));
+
+  const allTocLinks = () => [...document.querySelectorAll('nav.toc a')];
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        allTocLinks().forEach(a => a.classList.toggle('active', a.dataset.id === id));
+      }
+    });
+  }, { rootMargin: '-10% 0px -70% 0px' });
+  sections.forEach(s => io.observe(document.getElementById(s.id)));
+
+})();
+</script>
+
+</body>
+</html>
