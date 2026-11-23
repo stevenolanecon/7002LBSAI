@@ -565,6 +565,33 @@ html`<p>Every one of the <b>${n_union_all}</b> candidate variables got selected 
 html`<p style="font-size:0.75em;color:#999;margin-top:14px;">Steps 1 and 2 already happened: the ${n_work.toLocaleString()}/${n_holdout.toLocaleString()} split came first, before any model got built, and every model above — the comparison table, every cross-validation fold, the LASSO fit and its bootstrap resamples — came from the work set alone.</p>`
 ```
 
+## The workflow, in code {.smaller}
+
+All five steps, start to finish, in the order they actually run:
+
+::: {.mid-code}
+```{.python}
+# Step 1 — split before building anything
+rng = np.random.RandomState(20260921)
+holdout_mask = rng.rand(len(air_df)) < 0.2
+work_df, holdout_df = air_df.loc[~holdout_mask], air_df.loc[holdout_mask]
+
+# Step 2 — model selection, using work_df only
+# (the six-model comparison, 5-fold CV, BIC, and LASSO above all fit on work_df)
+
+# Step 3 — choose a winner (M6), re-estimate it on the WHOLE work set
+m6_work = smf.ols(air_formulas["M6"], data=work_df).fit()
+
+# Step 4 — apply it to the untouched holdout set, for the first time
+holdout_pred = m6_work.predict(holdout_df)
+
+# Step 5 — evaluate: the one honest number
+holdout_rmse = np.sqrt(np.mean((holdout_df["price"] - holdout_pred) ** 2))
+```
+:::
+
+Everything from here on is this same code, one step at a time, with real numbers.
+
 ## Step 3: choosing the winning model {.smaller}
 
 Model selection didn't actually hand us one clear winner — it handed us a trade-off, back on "Comparing the six models":
@@ -585,8 +612,32 @@ M6's CV RMSE beats M4's by about £1, at the cost of 52 extra coefficients — a
 :::
 
 ::: {.fragment}
-Step 3 itself: M6 gets **re-estimated on the whole work set** — not a training fold, not the held-back 20% — exactly the `m6_work` fit already used below.
+Step 3 itself: M6 gets **re-estimated on the whole work set** — not a training fold, not the held-back 20% — exactly the `m6_work` fit used from here on.
 :::
+
+## Step 4: apply it to the holdout set
+
+::: {.mid-code}
+```{.python}
+holdout_pred = m6_work.predict(holdout_df)
+```
+:::
+
+- One line. `m6_work` already exists, fitted on the whole work set in step 3
+- `holdout_df` has sat untouched since the very first split — this is the first time anything has looked at it
+- No re-fitting, no peeking, no "let's just check one more thing first": that would make step 5's number dishonest
+
+## Step 5: evaluate
+
+::: {.mid-code}
+```{.python}
+holdout_rmse = np.sqrt(np.mean((holdout_df["price"] - holdout_pred) ** 2))
+```
+:::
+
+```{ojs}
+html`<p>Holdout RMSE: <b>£${holdout_rmse}</b>. That's the number — not the ${m6_cv_rmse.toFixed(1)} cross-validated RMSE from the work set, which already had a hand in choosing the model. This one didn't.</p>`
+```
 
 ## Predicted vs. actual, on the holdout set
 
@@ -607,7 +658,7 @@ Plot.plot({
 ::::
 
 ```{ojs}
-html`<div class="fragment" id="wk10online-yyhat-frag">Holdout RMSE: <b>£${holdout_rmse}</b>. Points above the dashed line are underpredicted; the model visibly struggles more at the high end — the same pattern Gabor & Kézdi find in their own version of this diagnostic.</div>`
+html`<div class="fragment" id="wk10online-yyhat-frag">The same £${holdout_rmse} from step 5, now broken down point by point. Points above the dashed line are underpredicted; the model visibly struggles more at the high end — the same pattern Gabor & Kézdi find in their own version of this diagnostic.</div>`
 ```
 
 ## Summary
