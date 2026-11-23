@@ -185,10 +185,12 @@ n_sometimes_all = int(((_sel_freq > 0) & (_sel_freq < _n_boot)).sum())
 n_never_all = int((_sel_freq == 0).sum())
 n_union_all = int((_sel_freq > 0).sum())
 
-# --- Holdout diagnostics: predicted vs actual on held-out data, best OLS model (M6) ---
+# --- Holdout diagnostics: predicted vs actual on held-out data ---
 # work_df/holdout_df were already split at the very top, before any of the
 # model building above — this is the same holdout set, touched for the
-# first time only now.
+# first time only now. Two finalists go through: M6 (re-estimated on the
+# whole work set, step 3) and LASSO (already fit on the whole work set —
+# nothing left to re-estimate).
 m6_work = smf.ols(air_formulas["M6"], data=work_df).fit()
 holdout_pred = m6_work.predict(holdout_df)
 holdout_rmse = float(np.sqrt(np.mean((holdout_df["price"] - holdout_pred) ** 2)))
@@ -198,6 +200,11 @@ yyhat_data = [
     for a, p in zip(holdout_df["price"], holdout_pred)
     if a < 300 and p < 300
 ]
+
+Xh = patsy.dmatrix(air_formulas["M6"].split("~")[1], data=holdout_df, return_type="dataframe")
+Xh = Xh.drop(columns=["Intercept"]).reindex(columns=X.columns, fill_value=0)
+lasso_holdout_pred = lasso.predict(scaler.transform(Xh))
+lasso_holdout_rmse = float(np.sqrt(np.mean((holdout_df["price"].values - lasso_holdout_pred) ** 2)))
 
 ojs_define(
     air_stats_rows       = air_stats_rows,
@@ -210,6 +217,7 @@ ojs_define(
     n_total              = n_total,
     m6_cv_rmse           = m6_cv_rmse,
     holdout_rmse         = round(holdout_rmse, 1),
+    lasso_holdout_rmse   = round(lasso_holdout_rmse, 2),
     yyhat_data           = yyhat_data,
     n_work               = n_work,
     n_holdout            = n_holdout,
@@ -553,6 +561,80 @@ html`<p>Every one of the <b>${n_union_all}</b> candidate variables got selected 
 - **Work set**: model building, model selection, training/test folds — all happen here
 - **Holdout set**: touched exactly once, to get an honest read on how the chosen model will do on genuinely new data
 
+## The full picture
+
+```{=html}
+<div style="text-align:center;padding-top:6px;">
+<svg width="820" height="300" viewBox="0 0 820 300" style="font-family:sans-serif;">
+  <defs>
+    <marker id="wk10wfArrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#1a1a2e"/></marker>
+  </defs>
+
+  <!-- Top row: original data and live data -->
+  <rect x="230" y="8" width="180" height="32" fill="white" stroke="#1a1a2e" stroke-width="1.5"/>
+  <text x="320" y="29" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a2e">ORIGINAL DATA</text>
+
+  <rect x="612" y="8" width="180" height="32" fill="white" stroke="#2d6a4f" stroke-width="1.5"/>
+  <text x="702" y="29" text-anchor="middle" font-size="13" font-weight="600" fill="#2d6a4f">LIVE DATA</text>
+
+  <!-- Second row: work set and holdout set -->
+  <line x1="280" y1="40" x2="190" y2="68" stroke="#1a1a2e" stroke-width="1.3" marker-end="url(#wk10wfArrow)"/>
+  <line x1="370" y1="40" x2="455" y2="68" stroke="#1a1a2e" stroke-width="1.3" marker-end="url(#wk10wfArrow)"/>
+
+  <rect x="92" y="70" width="180" height="32" fill="white" stroke="#2f6690" stroke-width="1.5"/>
+  <text x="182" y="91" text-anchor="middle" font-size="13" font-weight="600" fill="#2f6690">WORK SET</text>
+
+  <rect x="367" y="70" width="180" height="32" fill="white" stroke="#2f6690" stroke-width="1.5"/>
+  <text x="457" y="91" text-anchor="middle" font-size="13" font-weight="600" fill="#2f6690">HOLDOUT SET</text>
+
+  <!-- Arrows down into the four detail boxes -->
+  <line x1="140" y1="102" x2="102" y2="140" stroke="#1a1a2e" stroke-width="1.3" marker-end="url(#wk10wfArrow)"/>
+  <line x1="225" y1="102" x2="280" y2="140" stroke="#1a1a2e" stroke-width="1.3" marker-end="url(#wk10wfArrow)"/>
+  <line x1="457" y1="102" x2="457" y2="140" stroke="#1a1a2e" stroke-width="1.3" marker-end="url(#wk10wfArrow)"/>
+  <line x1="702" y1="40" x2="702" y2="140" stroke="#2d6a4f" stroke-width="1.3" marker-end="url(#wk10wfArrow)"/>
+
+  <!-- Model selection -->
+  <rect x="10" y="140" width="185" height="130" fill="#f6f8fb" stroke="#2f6690" stroke-width="1.3"/>
+  <text x="20" y="160" font-size="12" font-weight="600" fill="#1a1a2e">Model selection</text>
+  <text x="20" y="180" font-size="10.5" fill="#333">Create training &amp; test sets</text>
+  <text x="20" y="196" font-size="10.5" fill="#333">Build models on training sets</text>
+  <text x="20" y="212" font-size="10.5" fill="#333">Evaluate models on test sets</text>
+  <text x="20" y="232" font-size="10.5" fill="#333">Choose the model with the</text>
+  <text x="20" y="246" font-size="10.5" fill="#333">lowest average test-set MSE</text>
+
+  <!-- Final prediction (step 3) -->
+  <rect x="205" y="140" width="150" height="100" fill="#f6f8fb" stroke="#2f6690" stroke-width="1.3"/>
+  <text x="215" y="160" font-size="12" font-weight="600" fill="#1a1a2e">Final prediction</text>
+  <text x="215" y="180" font-size="10.5" fill="#333">Once the best model</text>
+  <text x="215" y="196" font-size="10.5" fill="#333">is chosen, re-estimate</text>
+  <text x="215" y="212" font-size="10.5" fill="#333">it on the entire work set</text>
+
+  <!-- Evaluation (steps 4-5) -->
+  <rect x="365" y="140" width="185" height="130" fill="#f6f8fb" stroke="#2f6690" stroke-width="1.3"/>
+  <text x="375" y="160" font-size="12" font-weight="600" fill="#1a1a2e">Evaluation</text>
+  <text x="375" y="180" font-size="10.5" fill="#333">Once the model is estimated</text>
+  <text x="375" y="196" font-size="10.5" fill="#333">on the work set, apply it to</text>
+  <text x="375" y="212" font-size="10.5" fill="#333">the holdout set, and</text>
+  <text x="375" y="228" font-size="10.5" fill="#333">evaluate it there</text>
+
+  <!-- Live prediction -->
+  <rect x="610" y="140" width="185" height="100" fill="#eaf5ef" stroke="#2d6a4f" stroke-width="1.3"/>
+  <text x="620" y="160" font-size="12" font-weight="600" fill="#1a1a2e">Live prediction</text>
+  <text x="620" y="180" font-size="10.5" fill="#333">Apply the estimated model</text>
+  <text x="620" y="196" font-size="10.5" fill="#333">to the live data — and</text>
+  <text x="620" y="212" font-size="10.5" fill="#333">hope for the best</text>
+</svg>
+</div>
+```
+
+::: {style="font-size:0.75em;color:#999;margin-top:6px;text-align:center;"}
+After B&eacute;k&eacute;s &amp; K&eacute;zdi (2021), Ch. 14: "Illustration of the uses of the original data and the live data"
+:::
+
+::: {.fragment}
+One box here is new: **live data** is different from the holdout set. The holdout set still has a real `price` to check against — that's what makes step 5 an honest evaluation. Live data (a new listing coming in tomorrow) has no answer to check against at all. By the time a prediction reaches live data, every chance to evaluate it honestly has already happened.
+:::
+
 ## The workflow
 
 1. Split the original data into a work set and a holdout set
@@ -577,67 +659,92 @@ holdout_mask = rng.rand(len(air_df)) < 0.2
 work_df, holdout_df = air_df.loc[~holdout_mask], air_df.loc[holdout_mask]
 
 # Step 2 — model selection, using work_df only
-# (the six-model comparison, 5-fold CV, BIC, and LASSO above all fit on work_df)
+X_scaled = StandardScaler().fit_transform(X)   # X built from work_df
+lasso = LassoCV(cv=5).fit(X_scaled, y)         # the CV inside this only picks λ
 
-# Step 3 — choose a winner (M6), re-estimate it on the WHOLE work set
-m6_work = smf.ols(air_formulas["M6"], data=work_df).fit()
+# Step 3 — re-estimate the winner on the WHOLE work set
+# For LASSO: already done — it was fit on all of work_df above, not a fold.
+# For a hand-built model chosen by CV/BIC (M1–M6), this step is a real,
+# separate refit — see the next slide for why.
 
 # Step 4 — apply it to the untouched holdout set, for the first time
-holdout_pred = m6_work.predict(holdout_df)
+lasso_holdout_pred = lasso.predict(holdout_X_scaled)
 
 # Step 5 — evaluate: the one honest number
-holdout_rmse = np.sqrt(np.mean((holdout_df["price"] - holdout_pred) ** 2))
+lasso_holdout_rmse = np.sqrt(np.mean((holdout_df["price"] - lasso_holdout_pred) ** 2))
 ```
 :::
 
-Everything from here on is this same code, one step at a time, with real numbers.
+Everything from here on is this same code, one step at a time, with real numbers — for LASSO *and* for the hand-built route, since this deck built both.
 
-## Step 3: choosing the winning model {.smaller}
+## Step 3: two different routes {.smaller}
 
-Model selection didn't actually hand us one clear winner — it handed us a trade-off, back on "Comparing the six models":
+Step 3 isn't the same action for every method — it depends what step 2 actually did.
 
+- **LASSO**: nothing to do. `LassoCV(cv=5).fit(Xs, y)` was already called on the whole work set, above — the internal 5-fold CV only ever chose λ, it never withheld data from the final fit. Step 3 is already satisfied
+- **The hand-built route (M1–M6)**: a real, separate step. Comparing M1–M6 by cross-validated RMSE fits each one on 80%-sized training folds, never on the whole work set at once. Whichever model wins that comparison has to be refit on *all* of the work set before it's a finished model
+
+::: {.fragment}
+Model selection among M1–M6 didn't actually hand us one clear winner either — it handed us a trade-off, back on "Comparing the six models":
+:::
+
+::: {.fragment}
 ```{ojs}
 {
   const m4 = air_stats_rows.find(d => d.Model === "M4"), m6 = air_stats_rows.find(d => d.Model === "M6");
-  return html`<table style="margin:10px auto 0;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;">
-    <tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:5px 16px;"></th><th style="padding:5px 16px;">N coef</th><th style="padding:5px 16px;">CV RMSE</th><th style="padding:5px 16px;">BIC</th></tr>
-    <tr style="border-bottom:1px solid #ddd;"><td style="padding:4px 16px;"><b>M4</b> — BIC's pick</td><td style="padding:4px 16px;text-align:center;">${m4["N coef"]}</td><td style="padding:4px 16px;text-align:center;">${m4["CV RMSE"]}</td><td style="padding:4px 16px;text-align:center;"><b>${m4.BIC.toLocaleString()}</b></td></tr>
-    <tr><td style="padding:4px 16px;"><b>M6</b> — lowest CV RMSE</td><td style="padding:4px 16px;text-align:center;">${m6["N coef"]}</td><td style="padding:4px 16px;text-align:center;"><b>${m6["CV RMSE"]}</b></td><td style="padding:4px 16px;text-align:center;">${m6.BIC.toLocaleString()}</td></tr>
+  return html`<table style="margin:10px auto 0;font-family:sans-serif;font-size:0.8em;border-collapse:collapse;">
+    <tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:4px 14px;"></th><th style="padding:4px 14px;">N coef</th><th style="padding:4px 14px;">CV RMSE</th><th style="padding:4px 14px;">BIC</th></tr>
+    <tr style="border-bottom:1px solid #ddd;"><td style="padding:3px 14px;"><b>M4</b> — BIC's pick</td><td style="padding:3px 14px;text-align:center;">${m4["N coef"]}</td><td style="padding:3px 14px;text-align:center;">${m4["CV RMSE"]}</td><td style="padding:3px 14px;text-align:center;"><b>${m4.BIC.toLocaleString()}</b></td></tr>
+    <tr><td style="padding:3px 14px;"><b>M6</b> — lowest CV RMSE</td><td style="padding:3px 14px;text-align:center;">${m6["N coef"]}</td><td style="padding:3px 14px;text-align:center;"><b>${m6["CV RMSE"]}</b></td><td style="padding:3px 14px;text-align:center;">${m6.BIC.toLocaleString()}</td></tr>
+  </table>`
+}
+```
+:::
+
+::: {.fragment}
+M6's CV RMSE beats M4's by about £1, at the cost of 52 extra coefficients, and BIC prefers M4 by a wide margin. **This session's call: M6**, because the stated goal is predicting price as accurately as possible. It then gets **re-estimated on the whole work set** — exactly the `m6_work` fit used from here on, alongside LASSO.
+:::
+
+## Step 4: apply both to the holdout set
+
+::: {.mid-code}
+```{.python}
+holdout_pred       = m6_work.predict(holdout_df)
+lasso_holdout_pred = lasso.predict(holdout_X_scaled)
+```
+:::
+
+- Two finalists go forward, not one: **M6**, re-estimated in step 3, and **LASSO**, which never needed step 3 at all
+- `holdout_df` has sat untouched since the very first split — this is the first time anything has looked at it, for either model
+- No re-fitting, no peeking, no "let's just check one more thing first": that would make step 5's numbers dishonest
+
+## Step 5: evaluate {.smaller}
+
+::: {.mid-code}
+```{.python}
+holdout_rmse       = np.sqrt(np.mean((holdout_df["price"] - holdout_pred) ** 2))
+lasso_holdout_rmse = np.sqrt(np.mean((holdout_df["price"] - lasso_holdout_pred) ** 2))
+```
+:::
+
+```{ojs}
+{
+  const cols = [["M6", holdout_rmse, m6_cv_rmse], ["LASSO", lasso_holdout_rmse, lasso_cv_rmse]];
+  return html`<table style="margin:10px auto 0;font-family:sans-serif;font-size:0.9em;border-collapse:collapse;">
+    <tr style="border-bottom:2px solid #1a1a2e;"><th style="padding:5px 18px;"></th><th style="padding:5px 18px;">Holdout RMSE</th><th style="padding:5px 18px;">Work-set CV RMSE</th></tr>
+    ${cols.map(([m, h, c]) => `<tr style="border-bottom:1px solid #ddd;"><td style="padding:4px 18px;"><b>${m}</b></td><td style="padding:4px 18px;text-align:center;">£${h.toFixed(2)}</td><td style="padding:4px 18px;text-align:center;">£${c.toFixed(1)}</td></tr>`).join('')}
   </table>`
 }
 ```
 
 ::: {.fragment}
-M6's CV RMSE beats M4's by about £1, at the cost of 52 extra coefficients — and BIC, which penalises exactly that, prefers M4 by a wide margin (36,038 against 36,184). Neither answer is wrong; they're optimising different things. **This session's call: M6**, because the stated goal is predicting price as accurately as possible, and the extra accuracy — however small — is the thing actually being asked for. A project valuing a simpler, cheaper-to-maintain model would reasonably choose M4 instead, and should say so explicitly rather than let the software's default choice decide quietly.
-:::
-
-::: {.fragment}
-Step 3 itself: M6 gets **re-estimated on the whole work set** — not a training fold, not the held-back 20% — exactly the `m6_work` fit used from here on.
-:::
-
-## Step 4: apply it to the holdout set
-
-::: {.mid-code}
-```{.python}
-holdout_pred = m6_work.predict(holdout_df)
-```
-:::
-
-- One line. `m6_work` already exists, fitted on the whole work set in step 3
-- `holdout_df` has sat untouched since the very first split — this is the first time anything has looked at it
-- No re-fitting, no peeking, no "let's just check one more thing first": that would make step 5's number dishonest
-
-## Step 5: evaluate
-
-::: {.mid-code}
-```{.python}
-holdout_rmse = np.sqrt(np.mean((holdout_df["price"] - holdout_pred) ** 2))
-```
-:::
-
 ```{ojs}
-html`<p>Holdout RMSE: <b>£${holdout_rmse}</b>. That's the number — not the ${m6_cv_rmse.toFixed(1)} cross-validated RMSE from the work set, which already had a hand in choosing the model. This one didn't.</p>`
+{
+  const m6n = air_stats_rows.find(d => d.Model === "M6")["N coef"];
+  return html`<p>A near dead heat on data neither model ever touched — <b>£${lasso_holdout_rmse.toFixed(2)}</b> for LASSO against <b>£${holdout_rmse.toFixed(2)}</b> for M6, with ${n_nonzero} coefficients instead of ${m6n}. LASSO's earlier claim &mdash; "matches M6's fit, with fewer moving parts" &mdash; was made from cross-validated RMSE on the work set. This is the same claim checked again, honestly, on data that had no say in choosing either model.</p>`
+}
 ```
+:::
 
 ## Predicted vs. actual, on the holdout set
 
@@ -658,7 +765,7 @@ Plot.plot({
 ::::
 
 ```{ojs}
-html`<div class="fragment" id="wk10online-yyhat-frag">The same £${holdout_rmse} from step 5, now broken down point by point. Points above the dashed line are underpredicted; the model visibly struggles more at the high end — the same pattern Gabor & Kézdi find in their own version of this diagnostic.</div>`
+html`<div class="fragment" id="wk10online-yyhat-frag">M6's £${holdout_rmse} from step 5, broken down point by point. Points above the dashed line are underpredicted; the model visibly struggles more at the high end — the same pattern Gabor & Kézdi find in their own version of this diagnostic.</div>`
 ```
 
 ## Summary
