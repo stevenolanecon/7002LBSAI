@@ -502,12 +502,16 @@ Plot.plot({
 
 The ten largest of the coefficients LASSO kept. Size and room type dominate, but several individual amenities survive the penalty too.
 
-## Why classical inference fails after LASSO
+## Why classical inference fails after LASSO {.smaller}
 
 LASSO gives coefficients but no standard errors or p-values — and that's not an oversight, it's unavoidable. Two separate things are going on:
 
 - **Which variables survive is itself decided by the data.** LASSO's selection step and its coefficient estimates come from the *same* sample. Classical standard errors and p-values are built on the assumption that the model was fixed on paper before any data arrived — here, it wasn't
 - **So applied after LASSO, they understate the real uncertainty.** This is called **post-selection inference**, and it doesn't go away if you refit plain OLS on just the survivors and read *that* model's p-values — the variables going in were still chosen by looking at this data first
+
+::: {.fragment}
+Here's the counterfactual a classical SE formula actually relies on: *if we reran this exact study on a fresh sample, would we get the same model back?* For OLS, where the variable list is fixed in advance, only the coefficients would move — that's all the formula has to account for. For LASSO, the variable *list itself* would likely come back different too, since which coefficients survive depends on this sample's own noise. A formula built to describe only the first kind of wobble can't speak to the second — the next slide makes that second kind of wobble visible, not just claimed.
+:::
 
 ## The selection step, made visible {.smaller}
 
