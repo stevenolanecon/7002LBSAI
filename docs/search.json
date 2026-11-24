@@ -676,7 +676,7 @@
     "href": "index.html#weeks",
     "title": "Research Methods in Analytics",
     "section": "Weeks",
-    "text": "Weeks\nWorkshop and online-session slides, published as each week runs.\n\n\n\n\nWeek 01Distributions and Summarising Data\n\nLive\n\n\nWorkshop slidesOnline sessionOutliers addendumReaction-time toolPooled histogram toolDownload the data\n\n\n\n\n\nWeek 02Inference\n\nLive\n\n\nWorkshop slidesOnline sessionBootstrap toolDownload the data\n\n\n\n\n\nWeek 03Relationships Between Variables\n\nLive\n\n\nWorkshop slidesOnline sessionDownload the data\n\n\n\n\n\nWeek 04Regression I — Fitting the Line\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 05Regression I — Model Problems & Inference\n\nLive\n\n\nWorkshop slidesOnline sessionQuadratic tool\n\n\n\n\n\nWeek 06Regression II — Multiple Regression\n\nLive\n\n\nWorkshop slidesWorkshop slides (no answers)Online session\n\n\n\nWeek 07\n\nCurriculum Enrichment Week — no session\n\n\n\n\n\nWeek 08Other Models (GLMs)\n\nLive\n\n\nWorkshop slidesWorkshop slides (no answers)\n\n\n\n\n\nWeek 09Causal Analysis and Experiments\n\nLive\n\n\nWorkshop slidesWorkshop slides (no answers)\n\n\n\n\n\nWeek 10Prediction\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 11Time Series\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 12Portfolio Presentations\n\nLive\n\n\nPortfolio walkthrough"
+    "text": "Weeks\nWorkshop and online-session slides, published as each week runs.\n\n\n\n\nWeek 01Distributions and Summarising Data\n\nLive\n\n\nWorkshop slidesOnline sessionOutliers addendumReaction-time toolPooled histogram toolDownload the data\n\n\n\n\n\nWeek 02Inference\n\nLive\n\n\nWorkshop slidesOnline sessionBootstrap toolDownload the data\n\n\n\n\n\nWeek 03Relationships Between Variables\n\nLive\n\n\nWorkshop slidesOnline sessionDownload the data\n\n\n\n\n\nWeek 04Regression I — Fitting the Line\n\nLive\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 05Regression I — Model Problems & Inference\n\nLive\n\n\nWorkshop slidesOnline sessionQuadratic tool\n\n\n\n\n\nWeek 06Regression II — Multiple Regression\n\nLive\n\n\nWorkshop slidesWorkshop slides (no answers)Online session\n\n\n\nWeek 07\n\nCurriculum Enrichment Week — no session\n\n\n\n\n\nWeek 08Other Models (GLMs)\n\nLive\n\n\nWorkshop slidesWorkshop slides (no answers)\n\n\n\n\n\nWeek 09Causal Analysis and Experiments\n\nLive\n\n\nWorkshop slidesWorkshop slides (no answers)\n\n\n\n\n\nWeek 10Prediction\n\nLive\n\n\nWorkshop slides (no answers)Online session\n\n\n\n\n\nWeek 11Time Series\n\nComing soon\n\n\nWorkshop slidesOnline session\n\n\n\n\n\nWeek 12Portfolio Presentations\n\nLive\n\n\nPortfolio walkthrough"
   },
   {
     "objectID": "data.html",
@@ -5514,5 +5514,586 @@
     "title": "Causal Analysis and Experiments",
     "section": "Coming up",
     "text": "Coming up\n\nWeek 10: Prediction\n\nA different goal entirely — not “what caused this,” but “what comes next”"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#section",
+    "href": "week10-slides-no-answers.html#section",
+    "title": "Prediction",
+    "section": "",
+    "text": "Prediction\nSo far we have been mostly concerned with answering “what’s the relationship?” This week asks a different question: “what’s my best guess for this new observation?”"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#two-kinds-of-question",
+    "href": "week10-slides-no-answers.html#two-kinds-of-question",
+    "title": "Prediction",
+    "section": "Two kinds of question",
+    "text": "Two kinds of question\n\n“Estimation is about solving \\(\\hat\\beta\\) problems, while prediction is about solving \\(\\hat Y\\) problems.”\n\n\nAEA Papers and Proceedings (2025), doi:10.1257/pandp.20251118\n\n\n\nA \\(\\hat\\beta\\) problem: we care about a coefficient. If we change \\(x\\), how much does \\(y\\) change? That’s been every week so far, and last week’s causal question was the hardest version of it\nA \\(\\hat Y\\) problem: we care about the guess. For a new case, how close does our prediction get? That’s this week"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#selling-your-car",
+    "href": "week10-slides-no-answers.html#selling-your-car",
+    "title": "Prediction",
+    "section": "Selling your car",
+    "text": "Selling your car\n\n\nBusiness question: You want to sell your Toyota Camry through an online ad. What price do you put in the listing?\n\n\nYou have data on hundreds of other Camrys already advertised — their age, mileage, condition, and asking price. Somewhere in that data is the answer."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#the-naive-answer",
+    "href": "week10-slides-no-answers.html#the-naive-answer",
+    "title": "Prediction",
+    "section": "The naive answer",
+    "text": "The naive answer\nNaive answer: run a regression of price on the car’s features, read off the coefficients, plug in your car’s numbers.\n\nWhy it’s not that simple: which features? How many? A model with more variables always fits the data in front of you better — but does it give a better price for your car, or just a better description of the cars you already have data on?"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#explanation-and-prediction-are-different-goals",
+    "href": "week10-slides-no-answers.html#explanation-and-prediction-are-different-goals",
+    "title": "Prediction",
+    "section": "Explanation and prediction are different goals",
+    "text": "Explanation and prediction are different goals\nEvery regression so far has asked: what is the relationship, and can we trust the coefficients?\n\nThis week asks something else: given a new car we haven’t seen, what’s our best guess for its price?\n\nWe care much less about individual coefficients, or multicollinearity between them\nWe care much more about whether \\(\\hat y\\) is close to the true \\(y\\) for new observations\nThe best model for explaining is not always the best model for predicting\n\n\n\nSource: Békés & Kézdi (2021), Ch. 13"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#what-we-need",
+    "href": "week10-slides-no-answers.html#what-we-need",
+    "title": "Prediction",
+    "section": "What we need",
+    "text": "What we need\n\nA way to measure how wrong a prediction is, and how much that should matter\nA way to tell whether a model that fits well is actually a good model, or just an overfit one\nA rule for choosing between models that doesn’t just reward complexity"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#setting-up-the-problem",
+    "href": "week10-slides-no-answers.html#setting-up-the-problem",
+    "title": "Prediction",
+    "section": "Setting up the problem",
+    "text": "Setting up the problem"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#original-data-and-live-data",
+    "href": "week10-slides-no-answers.html#original-data-and-live-data",
+    "title": "Prediction",
+    "section": "Original data and live data",
+    "text": "Original data and live data\n\nOriginal data — what we have: cars with known prices, used to build the model\nLive data — the observations the model will actually be applied to once it’s built: your car, or the next ad posted tomorrow. We know their \\(x\\)’s, but not yet their \\(y\\) — that’s the whole point of predicting them. The model is only useful if the relationship between \\(x\\) and \\(y\\) in the live data matches what it learned from the original data.\nTarget variable \\(y\\) — what we want to predict (price)\nPredictor variables \\(x\\) — what we use to predict it (age, mileage, condition…)\n\n\n\\[\\hat y_j = \\hat f(x_j)\\]\nWe need a predicted value for target observation \\(j\\) — we know its \\(x\\)’s, we don’t know its \\(y\\)."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#the-prediction-error",
+    "href": "week10-slides-no-answers.html#the-prediction-error",
+    "title": "Prediction",
+    "section": "The prediction error",
+    "text": "The prediction error\nThe prediction error is the gap between what the model says and what actually happens — the single number that tells you how wrong a specific prediction was, once you find out:\n\\[e_j = \\hat y_j - y_j\\]\n\nDirection of miss: positive if we overpredict, negative if we underpredict — whether that matters depends on the decision\nSize of miss: larger in absolute value the further the prediction is from the truth\nThe prediction error is unknown until the actual value is realised — that’s the whole problem"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#decomposing-the-prediction-error",
+    "href": "week10-slides-no-answers.html#decomposing-the-prediction-error",
+    "title": "Prediction",
+    "section": "Decomposing the prediction error",
+    "text": "Decomposing the prediction error\nThree sources, stacked together:\n\nEstimation error — we don’t know the true \\(\\beta\\)’s, only estimates. Shrinks with a larger sample.\nModel error — we may not have the best model: wrong functional form, missing an interaction, wrong variables entirely.\nIrreducible (genuine) error — the part no model could ever capture, even with the truth known exactly.\n\n\nEstimation and model error are the two parts an analyst can actually improve."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#point-and-interval-prediction",
+    "href": "week10-slides-no-answers.html#point-and-interval-prediction",
+    "title": "Prediction",
+    "section": "Point and interval prediction",
+    "text": "Point and interval prediction\n\nA point prediction is a single number — the price to put in the ad\nAn interval prediction captures the uncertainty around it\nThe 95% prediction interval covers estimation error and irreducible error — but not model error. It assumes the model itself is right.\n\n\nSource: Békés & Kézdi (2021), Ch. 13"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#the-loss-function",
+    "href": "week10-slides-no-answers.html#the-loss-function",
+    "title": "Prediction",
+    "section": "The loss function",
+    "text": "The loss function"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#turning-errors-into-a-decision",
+    "href": "week10-slides-no-answers.html#turning-errors-into-a-decision",
+    "title": "Prediction",
+    "section": "Turning errors into a decision",
+    "text": "Turning errors into a decision\nA loss function attaches a value to a prediction error — how bad is being wrong by this much, in this direction?\n\nTwo questions decide its shape:\n\nSymmetric? Are errors in opposite directions equally bad?\nConvex? Does an error twice as large cost more than twice as much?"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#loss-functions-of-various-shapes",
+    "href": "week10-slides-no-answers.html#loss-functions-of-various-shapes",
+    "title": "Prediction",
+    "section": "Loss functions of various shapes",
+    "text": "Loss functions of various shapes\n\n\n\nPlot.plot({\n  width: 460, height: 420,\n  x: {label: \"Prediction error\"}, y: {label: \"Loss\"},\n  marks: [\n    Plot.line(d3.range(-10, 10.1, 0.2).map(e =&gt; ({e, loss: Math.abs(e) * 1, series: \"symmetric, linear\"})), {x: \"e\", y: \"loss\", stroke: \"series\"}),\n    Plot.line(d3.range(-10, 10.1, 0.2).map(e =&gt; ({e, loss: (e ** 2) * 0.3, series: \"symmetric, convex\"})), {x: \"e\", y: \"loss\", stroke: \"series\"}),\n    Plot.line(d3.range(-10, 10.1, 0.2).map(e =&gt; ({e, loss: e &gt;= 0 ? (e ** 2) * 0.3 : (e ** 2) * 0.15, series: \"asymmetric, convex\"})), {x: \"e\", y: \"loss\", stroke: \"series\"})\n  ],\n  color: {legend: true}\n})\n\n\n\n\n\n\n\n\n\nSymmetric, linear — a weather forecaster’s temperature guess: being off by 4° costs exactly twice being off by 2°, in either direction\nSymmetric, convex — a courier estimating delivery time: a few small misses barely matter, but one wildly late parcel is disproportionately costly. This is squared loss’s own shape — the default, and what OLS is built to minimise\nAsymmetric, convex — a hospital forecasting tomorrow’s bed demand: running short costs far more than a few empty beds"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#task-would-either-example-change-your-loss-function",
+    "href": "week10-slides-no-answers.html#task-would-either-example-change-your-loss-function",
+    "title": "Prediction",
+    "section": "Task — would either example change your loss function?",
+    "text": "Task — would either example change your loss function?\n\nSelling your car: a too-low price sells fast but leaves money on the table; a too-high price means waiting, and maybe revising the price down later. What loss function fits that?\nA bank deciding on a loan: rejecting a debtor who would have repaid costs a missed opportunity; approving one who defaults costs real money directly. Are those two kinds of error the same size?"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#what-you-should-have-found",
+    "href": "week10-slides-no-answers.html#what-you-should-have-found",
+    "title": "Prediction",
+    "section": "What you should have found",
+    "text": "What you should have found\n\nAnswer revealed in the workshop."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#mean-squared-error-and-rmse",
+    "href": "week10-slides-no-answers.html#mean-squared-error-and-rmse",
+    "title": "Prediction",
+    "section": "Mean squared error and RMSE",
+    "text": "Mean squared error and RMSE\nFor \\(K\\) target observations, \\(\\hat y_k\\) is the model’s prediction for observation \\(k\\) and \\(y_k\\) its actual value:\n\\[MSE = \\frac{1}{K}\\sum_{k=1}^{K}(\\hat y_k - y_k)^2 \\qquad RMSE = \\sqrt{MSE}\\]\n\nSquared loss is symmetric and convex — the most widely used loss function\nOLS chooses its coefficients to make the in-sample MSE as small as possible, so squared loss is the loss OLS is built for\n\\(RMSE\\) is easier to interpret: it’s back in the original units (dollars, not dollars²)"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#mse-decomposes-into-bias-and-variance",
+    "href": "week10-slides-no-answers.html#mse-decomposes-into-bias-and-variance",
+    "title": "Prediction",
+    "section": "MSE decomposes into bias and variance",
+    "text": "MSE decomposes into bias and variance\n\\(\\overline{\\hat y} = \\frac{1}{K}\\sum_k \\hat y_k\\) — the average prediction across all \\(K\\) target observations, not any one \\(\\hat y_k\\) on its own. That lets us write the bias compactly: \\(\\bar e = \\overline{\\hat y} - \\bar y\\), the average of the individual prediction errors \\(e_k = \\hat y_k - y_k\\).\n\\[MSE = \\underbrace{\\bar e^{\\,2}}_{\\text{Bias}^2} \\; + \\; \\underbrace{\\frac{1}{K}\\sum_k (e_k - \\bar e)^2}_{\\text{Prediction variance}}\\]\n\nBias (\\(\\bar e\\)): the average prediction error across all \\(K\\) observations. Zero for an unbiased predictor.\nVariance: how much each error \\(e_k\\) varies around that average — not how much \\(y\\) itself varies.\nOLS is unbiased. Some other methods, such as LASSO in the online session, trade a little bias for a lot less variance.\n\n\nSource: Békés & Kézdi (2021), Ch. 13"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#meet-the-used-cars-data",
+    "href": "week10-slides-no-answers.html#meet-the-used-cars-data",
+    "title": "Prediction",
+    "section": "Meet the used-cars data",
+    "text": "Meet the used-cars data"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#real-data-toyota-camrys-chicago",
+    "href": "week10-slides-no-answers.html#real-data-toyota-camrys-chicago",
+    "title": "Prediction",
+    "section": "Real data: Toyota Camrys, Chicago",
+    "text": "Real data: Toyota Camrys, Chicago\n\n281 used Camry listings scraped from an online marketplace, already cleaned to a comparable set: gas-fuelled, automatic, non-truck, sensible price and mileage range\nTarget: price (US dollars)\nPredictors: age, odometer (×10,000 miles), trim (LE/XLE/SE), condition dummies, dealer vs. private seller\n\n\nSource: Békés & Kézdi (2021), used-cars dataset, osf.io/8tx54"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#five-models-built-up-by-hand",
+    "href": "week10-slides-no-answers.html#five-models-built-up-by-hand",
+    "title": "Prediction",
+    "section": "Five models, built up by hand",
+    "text": "Five models, built up by hand\n\\[\n\\begin{aligned}\nM_1:\\ & price^E = \\beta_0 + \\beta_1\\,age + \\beta_2\\,age^2 \\\\\nM_2:\\ & M_1 + \\beta_3\\,odometer \\\\\nM_3:\\ & M_2 + \\beta_4\\,odometer^2 + \\beta_5\\,LE + \\beta_6\\,cond_{exc} + \\beta_7\\,cond_{good} + \\beta_8\\,dealer \\\\\nM_4:\\ & M_3 + \\beta_9\\,XLE + \\beta_{10}\\,SE + \\beta_{11}\\,cond_{new} + \\beta_{12}\\,cylind6 \\\\\nM_5:\\ & M_4 + \\big(LE + XLE + SE + cond_{new} + cond_{exc} + cond_{good} + cylind6 + odometer + dealer\\big) \\times age\n\\end{aligned}\n\\]\n\nimport statsmodels.formula.api as smf\n\nmodel1 = smf.ols(\"price ~ age + agesq\", data=df).fit()\nmodel2 = smf.ols(\"price ~ age + agesq + odometer\", data=df).fit()\nmodel3 = smf.ols(\"price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer\", data=df).fit()\nmodel4 = smf.ols(\"price ~ age + agesq + odometer + odometersq + LE + XLE + SE\"\n                 \" + cond_likenew + cond_excellent + cond_good + cylind6 + dealer\", data=df).fit()\nmodel5 = smf.ols(\"price ~ age + agesq + odometer + odometersq + LE*age + XLE*age + SE*age\"\n                 \" + cond_likenew*age + cond_excellent*age + cond_good*age + cylind6*age\"\n                 \" + odometer*age + dealer*age\", data=df).fit()\n\nEach model adds more: mileage, trim, condition, dealer status, and finally full interactions with age."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#task-fit-model-1-and-model-3-yourself",
+    "href": "week10-slides-no-answers.html#task-fit-model-1-and-model-3-yourself",
+    "title": "Prediction",
+    "section": "Task — fit Model 1 and Model 3 yourself",
+    "text": "Task — fit Model 1 and Model 3 yourself\n\nBusiness question: how much does adding mileage, trim, and condition actually improve the fit?\nOpen the Colab notebook — data_path is already defined for you. Load it into a dataframe and fit Model 1 (price ~ age + agesq) and Model 3 (add odometer, odometersq, LE, cond_excellent, cond_good, dealer) with smf.ols. Compute the in-sample RMSE for each from the residuals — don’t use a library shortcut. No further syntax hints."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#what-you-should-have-found-1",
+    "href": "week10-slides-no-answers.html#what-you-should-have-found-1",
+    "title": "Prediction",
+    "section": "What you should have found",
+    "text": "What you should have found\n\nmodel1 = smf.ols('price ~ age + agesq', data=df).fit()\nrmse1 = np.sqrt(np.mean(model1.resid ** 2))\n\nmodel3 = smf.ols('price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer', data=df).fit()\nrmse3 = np.sqrt(np.mean(model3.resid ** 2))\n\n\nThe RMSE numbers appear here in the workshop — run the code above in the notebook to see them.\n\n\nDoes a lower in-sample RMSE automatically make a model better to actually use? What would you need to know to answer that?"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#a-quick-way-to-get-the-same-number",
+    "href": "week10-slides-no-answers.html#a-quick-way-to-get-the-same-number",
+    "title": "Prediction",
+    "section": "A quick way to get the same number",
+    "text": "A quick way to get the same number\nOnce you have a fitted model, you don’t have to write the formula out by hand:\n\nThe sklearn version appears here in the workshop — run the code above in the notebook to see it.\n\n\nCareful: statsmodels’ own np.sqrt(model.mse_resid) is not the same number — it divides by \\(n-k\\), not \\(n\\) (the same df-correction idea as the SD back in Week 1). For the plain in-sample RMSE used all session, use sklearn’s version, or the by-hand formula."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#overfitting",
+    "href": "week10-slides-no-answers.html#overfitting",
+    "title": "Prediction",
+    "section": "Overfitting",
+    "text": "Overfitting"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#underfit-overfit",
+    "href": "week10-slides-no-answers.html#underfit-overfit",
+    "title": "Prediction",
+    "section": "Underfit, overfit",
+    "text": "Underfit, overfit\nComparing two models on the same data:\n\nUnderfitting: Model A fits worse than Model B, in both the original data and the live data. Simple — build a better model.\nOverfitting: Model A actually fits better in the original data, but worse in the live data. This is the dangerous one — it looks like the better model until it’s too late to tell.\n\n\nSource: Békés & Kézdi (2021), Ch. 13"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#why-overfitting-happens",
+    "href": "week10-slides-no-answers.html#why-overfitting-happens",
+    "title": "Prediction",
+    "section": "Why overfitting happens",
+    "text": "Why overfitting happens\nTypically: a model too complex for the data — too many variables, too many interactions, too flexible a functional form (high-degree polynomials, splines with too many knots).\n\nIt fits patterns that are:\n\nspecific to this sample, not the general pattern behind it (an internal validity problem), or\nspecific to the world of the original data, not the world the live data comes from (an external validity problem)"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#how-would-we-actually-know",
+    "href": "week10-slides-no-answers.html#how-would-we-actually-know",
+    "title": "Prediction",
+    "section": "How would we actually know?",
+    "text": "How would we actually know?\nIn-sample RMSE can’t catch overfitting — it’s measured on the same data the model was fit to, so it rewards complexity by construction.\n\nWe don’t have live data yet, but we can pretend: hold back some of the original data, fit the model without it, then see how well the model predicts the part it never saw.\nDo that a few times and average the results — this is called cross-validated RMSE."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#the-complexity-curve-on-our-own-data",
+    "href": "week10-slides-no-answers.html#the-complexity-curve-on-our-own-data",
+    "title": "Prediction",
+    "section": "The complexity curve, on our own data",
+    "text": "The complexity curve, on our own data\n\nThe chart (in-sample vs. cross-validated RMSE, by model) appears here in the workshop."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#finding-the-best-model",
+    "href": "week10-slides-no-answers.html#finding-the-best-model",
+    "title": "Prediction",
+    "section": "Finding the best model",
+    "text": "Finding the best model"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#two-ways-to-penalise-complexity",
+    "href": "week10-slides-no-answers.html#two-ways-to-penalise-complexity",
+    "title": "Prediction",
+    "section": "Two ways to penalise complexity",
+    "text": "Two ways to penalise complexity\nApproach 1 — indirectly. Fit on all the data, use a fit measure with a built-in penalty for the number of parameters.\nApproach 2 — directly. Actually hold data back, and see how the model does on data it never saw."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#the-bic-and-aic",
+    "href": "week10-slides-no-answers.html#the-bic-and-aic",
+    "title": "Prediction",
+    "section": "The BIC (and AIC)",
+    "text": "The BIC (and AIC)\nBoth take the same starting point — the model’s log-likelihood — and add a penalty for the number of parameters, \\(k\\):\n\\[AIC = -2 \\times \\ln(likelihood) + 2 \\times k \\qquad\\qquad BIC = -2 \\times \\ln(likelihood) + \\ln(N) \\times k\\]\n\nSame idea, different penalty: BIC’s penalty (\\(\\ln N\\) per parameter) is heavier than AIC’s (a flat 2 per parameter) once \\(N &gt; 7\\)\nNo sample splitting needed — useful when data is limited\nAIC and BIC don’t inherently need normality — they work with whatever likelihood the model actually has (Week 8’s logit/probit AIC/BIC used a Bernoulli likelihood, no normality involved). But the formula above, the one used for OLS, comes from assuming the residuals are normal: that’s what turns “likelihood” into something computable from the residual sum of squares alone. Using it doesn’t come for free — this assumption is the price for not having to hold data back.\nDon’t use plain \\(R^2\\) or MSE for model choice — they never penalise complexity, so they always favour the most complex model\nIn practice, this course uses BIC, not AIC — Gabor & Kézdi’s own recommendation"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#task-read-the-bic",
+    "href": "week10-slides-no-answers.html#task-read-the-bic",
+    "title": "Prediction",
+    "section": "Task — read the BIC",
+    "text": "Task — read the BIC\n\nBusiness question: based on BIC alone, which model would you pick — and why? What does RMSE alone tell you to pick instead?\n\n\nThe table (R², RMSE and BIC for all five models) and the answer both appear here in the workshop — and in your own notebook once you run the setup cell."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#training-and-test-samples",
+    "href": "week10-slides-no-answers.html#training-and-test-samples",
+    "title": "Prediction",
+    "section": "Training and test samples",
+    "text": "Training and test samples\n\nApproach 2, directly: split the data — say 80% training, 20% test\nEstimate every candidate model on the training sample only\nEvaluate each one’s RMSE on the test sample — data it never touched while fitting\nNo distributional assumptions needed, unlike BIC"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#a-single-split-in-code",
+    "href": "week10-slides-no-answers.html#a-single-split-in-code",
+    "title": "Prediction",
+    "section": "A single split, in code",
+    "text": "A single split, in code\n\nfrom sklearn.model_selection import train_test_split\n\ntrain, test = train_test_split(df, test_size=0.2, random_state=1)\nmodel3_train = smf.ols('price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer', data=train).fit()\npred_test = model3_train.predict(test)\nrmse_test = np.sqrt(np.mean((test['price'] - pred_test) ** 2))\n\n\nThe RMSE appears here in the workshop — run the code above in the notebook to see it.\n\nFit on 80% of the cars, predicted the other 20%, measured how far off we were — never touching the test rows while fitting."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#task-why-one-split-isnt-enough",
+    "href": "week10-slides-no-answers.html#task-why-one-split-isnt-enough",
+    "title": "Prediction",
+    "section": "Task — why one split isn’t enough",
+    "text": "Task — why one split isn’t enough\n\nBusiness question: same code, same model — does the test RMSE depend on luck?\nSame notebook, same Model 3 code from the last slide. Each group gets a different random_state (0–4) — use the one you’re assigned. Run it, note your group’s test RMSE, and compare with the other groups."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#what-you-should-have-found-2",
+    "href": "week10-slides-no-answers.html#what-you-should-have-found-2",
+    "title": "Prediction",
+    "section": "What you should have found",
+    "text": "What you should have found\n\nAnswer revealed in the workshop."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#k-fold-cross-validation",
+    "href": "week10-slides-no-answers.html#k-fold-cross-validation",
+    "title": "Prediction",
+    "section": "k-fold cross-validation",
+    "text": "k-fold cross-validation\nRather than one split, do it \\(k\\) times:\n\nDivide the data into \\(k\\) roughly equal folds\nFor each fold: train on the other \\(k-1\\) folds, test on this one, record the RMSE\nAverage the \\(k\\) RMSEs — this is the cross-validated RMSE\n\n\nEvery observation gets used for both training and testing, just never both at once. Less sensitive to which particular split you happened to draw."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#fold-cross-validation-visually",
+    "href": "week10-slides-no-answers.html#fold-cross-validation-visually",
+    "title": "Prediction",
+    "section": "5-fold cross-validation, visually",
+    "text": "5-fold cross-validation, visually\n\n{\n  const rowH = 24, gap = 5, nSets = 5, nSeg = 5;\n  const segW = 36, barX = 76, barW = segW * nSeg;\n  const modelNames = [\"Model 1\", \"Model 2\", \"Model 3\", \"Model 4\", \"Model 5\"];\n  const chip = (label, fill) =&gt; html`&lt;div style=\"width:30px;height:22px;border:1px solid #999;background:${fill};\n      display:flex;align-items:center;justify-content:center;font-family:sans-serif;font-size:0.62em;color:#333;\"&gt;${label}&lt;/div&gt;`;\n  const rows = d3.range(nSets).map(i =&gt; html`&lt;div style=\"display:flex;align-items:center;margin-bottom:${gap}px;\"&gt;\n    &lt;div style=\"width:${barX}px;font-family:sans-serif;font-size:0.75em;text-align:right;padding-right:8px;\"&gt;Set ${i+1}&lt;/div&gt;\n    &lt;div style=\"display:flex;\"&gt;\n      ${d3.range(nSeg).map(j =&gt; html`&lt;div style=\"width:${segW}px;height:${rowH}px;background:${j===i ? '#c0392b' : '#5b7fbd'};border:1px solid white;\"&gt;&lt;/div&gt;`)}\n    &lt;/div&gt;\n    &lt;div style=\"font-family:sans-serif;font-size:0.68em;padding:0 8px;color:#555;\"&gt;→&lt;/div&gt;\n    &lt;div style=\"display:flex;gap:3px;\"&gt;\n      ${modelNames.map(m =&gt; chip(m.replace(\"Model \", \"M\"), \"#eef3fb\"))}\n    &lt;/div&gt;\n  &lt;/div&gt;`);\n  return html`&lt;div style=\"padding-top:6px;\"&gt;\n    ${rows}\n    &lt;div style=\"display:flex;margin-top:4px;\"&gt;\n      &lt;div style=\"width:${barX}px;\"&gt;&lt;/div&gt;\n      &lt;div style=\"width:${barW}px;border-top:2px solid #333;text-align:center;font-family:sans-serif;font-size:0.68em;padding-top:3px;color:#333;\"&gt;Work set&lt;/div&gt;\n    &lt;/div&gt;\n    &lt;div style=\"display:flex;align-items:center;margin-top:10px;\"&gt;\n      &lt;div style=\"width:${barX + barW + 8}px;font-family:sans-serif;font-size:0.72em;text-align:right;padding-right:8px;color:#2d6a4f;\"&gt;Average down each column →&lt;/div&gt;\n      &lt;div style=\"display:flex;gap:3px;\"&gt;\n        ${modelNames.map(m =&gt; chip(m.replace(\"Model \", \"M\"), \"#d7e8db\"))}\n      &lt;/div&gt;\n    &lt;/div&gt;\n    &lt;div style=\"font-family:sans-serif;font-size:0.8em;padding-top:8px;color:#2d6a4f;font-weight:600;\"&gt;Pick the model with the lowest average — not the lowest single fold&lt;/div&gt;\n  &lt;/div&gt;`\n}\n\n\n\n\n\n\n\nThe same five folds are reused for every candidate model — not re-split per model. Each fold produces one MSE per model, so the result is a grid (fold × model), not a single number — averaging down one model’s column (not across models) gives that model’s cross-validated RMSE.\n\n\nRecreated from Békés & Kézdi (2021), Ch. 13"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#walking-through-the-syntax",
+    "href": "week10-slides-no-answers.html#walking-through-the-syntax",
+    "title": "Prediction",
+    "section": "Walking through the syntax",
+    "text": "Walking through the syntax\n\nfrom sklearn.model_selection import KFold\n\nkf = KFold(n_splits=5, shuffle=True, random_state=1)\n\nrmses = []\nfor train_idx, test_idx in kf.split(df):\n    train, test = df.iloc[train_idx], df.iloc[test_idx]\n    model = smf.ols(_____, data=train).fit()\n    pred = model.predict(test)\n    fold_rmse = np.sqrt(np.mean((test['price'] - pred) ** 2))\n    rmses.append(fold_rmse)\n\ncv_rmse = _____\n\n\n\nkf.split(df) hands back one pair of row-indices per fold — the loop runs 5 times, once per fold\n.iloc[train_idx] / .iloc[test_idx] turn those indices into real training/test dataframes\nEverything inside the loop is the single-split code from three slides ago, just repeated automatically\nTwo blanks left for you: which model formula, and how five fold RMSEs become one number"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#task-write-your-own-5-fold-cross-validation",
+    "href": "week10-slides-no-answers.html#task-write-your-own-5-fold-cross-validation",
+    "title": "Prediction",
+    "section": "Task — write your own 5-fold cross-validation",
+    "text": "Task — write your own 5-fold cross-validation\n\nBusiness question: does Model 3’s advantage over Model 1 survive being tested on data it didn’t train on?\nUsing the same notebook, adapt the loop from the last slide. For Model 1 and Model 3 separately: fill in the model formula and the final averaging step, run the 5-fold loop, and compare the two cross-validated RMSEs. No further syntax hints beyond what you’ve already seen."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#what-you-should-have-found-3",
+    "href": "week10-slides-no-answers.html#what-you-should-have-found-3",
+    "title": "Prediction",
+    "section": "What you should have found",
+    "text": "What you should have found\n\nAnswer revealed in the workshop."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#full-cross-validation-table",
+    "href": "week10-slides-no-answers.html#full-cross-validation-table",
+    "title": "Prediction",
+    "section": "Full cross-validation table",
+    "text": "Full cross-validation table\n\nThe full fold-by-fold table appears here in the workshop.\n\n\n5-fold cross-validation, same split reused across all five models.\n\n\n\nShow the full syntax — estimating and tabulating all five models\n\n\nfrom sklearn.model_selection import KFold\n\nkf = KFold(n_splits=5, shuffle=True, random_state=1)\ncv_results = {name: [] for name in model_formulas}\n\nfor train_idx, test_idx in kf.split(df):\n    train, test = df.iloc[train_idx], df.iloc[test_idx]\n    for name, formula in model_formulas.items():\n        model = smf.ols(formula, data=train).fit()\n        pred = model.predict(test)\n        fold_rmse = np.sqrt(np.mean((test['price'] - pred) ** 2))\n        cv_results[name].append(fold_rmse)\n\ncv_table = pd.DataFrame([\n    {\"Model\": name, **{f\"Fold {i+1}\": round(v) for i, v in enumerate(rmses)},\n     \"Average\": round(np.mean(rmses))}\n    for name, rmses in cv_results.items()\n])"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#bic-vs.-cross-validated-rmse",
+    "href": "week10-slides-no-answers.html#bic-vs.-cross-validated-rmse",
+    "title": "Prediction",
+    "section": "BIC vs. cross-validated RMSE",
+    "text": "BIC vs. cross-validated RMSE\n\nBIC’s advantage: no sample splitting, so it’s not a problem in small samples. Quick, and rarely far wrong.\nTest RMSE’s advantage: makes no distributional assumptions.\nWhether the two criteria agree on a final pick — and which model that is — is covered in the workshop.\n\n\nSource: Békés & Kézdi (2021), Ch. 13"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#back-to-the-original-question",
+    "href": "week10-slides-no-answers.html#back-to-the-original-question",
+    "title": "Prediction",
+    "section": "Back to the original question",
+    "text": "Back to the original question"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#what-price-goes-in-the-ad",
+    "href": "week10-slides-no-answers.html#what-price-goes-in-the-ad",
+    "title": "Prediction",
+    "section": "What price goes in the ad?",
+    "text": "What price goes in the ad?\nModel 3, for a 10-year-old Camry LE, excellent condition, 120,000 miles, sold privately:\n\nnew_car = pd.DataFrame({\n    \"age\": [10], \"agesq\": [100], \"odometer\": [12], \"odometersq\": [144],\n    \"LE\": [1], \"cond_excellent\": [1], \"cond_good\": [0], \"dealer\": [0],\n})\n\npred = model3.get_prediction(new_car).summary_frame(alpha=0.20)\npoint_pred = pred[\"mean\"].iloc[0]\npi_lower = pred[\"obs_ci_lower\"].iloc[0]\npi_upper = pred[\"obs_ci_upper\"].iloc[0]\n\nget_prediction() gives both the point forecast (mean) and — via summary_frame(alpha=0.20) — the bounds of a prediction interval, all from the model already fitted.\n\nalpha is the chance the interval misses — the same convention as get_prediction() back in Week 5. \\(1 - \\alpha\\) is the chance it’s covered, so alpha=0.20 gives an 80% interval here, not the 95% Week 5 used."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#the-price",
+    "href": "week10-slides-no-answers.html#the-price",
+    "title": "Prediction",
+    "section": "The price",
+    "text": "The price\n\nAn 80% prediction interval for this specific car: 80% of cars just like it should have their true price land somewhere in this range. It’s wider than a confidence interval for the average price at these characteristics — it has to cover this one car’s entire prediction error, irreducible noise included, not just the uncertainty in a mean.\n\n\n\nThe predicted price and its interval appear here in the workshop.\n\n\n\nEven with a good model, the interval is wide. Tell whoever relies on the number that before they use it."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#stationarity-the-assumption-underneath-everything",
+    "href": "week10-slides-no-answers.html#stationarity-the-assumption-underneath-everything",
+    "title": "Prediction",
+    "section": "Stationarity — the assumption underneath everything",
+    "text": "Stationarity — the assumption underneath everything\n\nAll of this assumes the relationship between \\(x\\) and \\(y\\) in the live data is the same as in the original data\nIf the used-car market shifts — a fuel price shock, a new model year, a different city — the fitted relationship may simply not transfer\nNo amount of BIC or cross-validation on the original data can detect this. It has to be reasoned about, not computed."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#summary",
+    "href": "week10-slides-no-answers.html#summary",
+    "title": "Prediction",
+    "section": "Summary",
+    "text": "Summary\n\nPrediction is a different goal from explanation — coefficients matter less, \\(\\hat y\\) for new observations matters more\nA loss function turns a prediction error into a number a business decision can use; squared loss (MSE/RMSE) is the default, but not the only option\nMore complex models always fit the original data better — that’s exactly why in-sample fit alone is a trap\nBIC and cross-validation both penalise complexity; used properly, they agree"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#online-session",
+    "href": "week10-slides-no-answers.html#online-session",
+    "title": "Prediction",
+    "section": "Online session",
+    "text": "Online session\nModel building for prediction: log targets, feature engineering, LASSO and holdout checks, on Airbnb prices in London."
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#coming-up",
+    "href": "week10-slides-no-answers.html#coming-up",
+    "title": "Prediction",
+    "section": "Coming up",
+    "text": "Coming up\n\nWeek 11: Time Series\n\nEvery model this week assumed each row was independent of the others. What happens when today’s value depends on yesterday’s?"
+  },
+  {
+    "objectID": "week10-online-slides.html#section",
+    "href": "week10-online-slides.html#section",
+    "title": "Model Building for Prediction",
+    "section": "",
+    "text": "Model building for prediction\nThe workshop built the toolbox on six clean predictors and 281 cars. This session: what happens with dozens of candidate variables — and 4,393 real Airbnb listings."
+  },
+  {
+    "objectID": "week10-online-slides.html#target-engineering-choosing-the-target",
+    "href": "week10-online-slides.html#target-engineering-choosing-the-target",
+    "title": "Model Building for Prediction",
+    "section": "Target engineering: choosing the target",
+    "text": "Target engineering: choosing the target\nBefore a single predictor gets chosen, there’s a decision about y itself. Sometimes the business question settles it outright — the price of the hotel room is the price of the hotel room. Often it genuinely needs deciding: level, or log?\n\nPrice is usually closer to a linear relationship with its predictors when expressed in log terms than in levels\nLog differences approximate percentage differences, and percentage differences in price are often more stable across very different kinds of listing than pound differences are\nA technical bonus: log prices tend to sit closer to a normal distribution, which helps a linear regression approximate the average relationship well\n\n\nOne thing to carry forward: choosing to log the target isn’t free. A model fitted on np.log(price) predicts log price, not price — turning that back into a pound figure takes a bit more care than just undoing the log.\n\n\nSource: Békés & Kézdi (2021), Ch. 14"
+  },
+  {
+    "objectID": "week10-online-slides.html#building-the-right-hand-side",
+    "href": "week10-online-slides.html#building-the-right-hand-side",
+    "title": "Model Building for Prediction",
+    "section": "Building the right-hand side",
+    "text": "Building the right-hand side"
+  },
+  {
+    "objectID": "week10-online-slides.html#what-is-feature-engineering",
+    "href": "week10-online-slides.html#what-is-feature-engineering",
+    "title": "Model Building for Prediction",
+    "section": "What is feature engineering?",
+    "text": "What is feature engineering?\n\nOnce the target is settled, feature engineering decides the list of candidate predictors and the functional form each one enters in\nIt draws on two things at once: domain knowledge — what actually drives price for a short-let listing — and statistics, checking which choices the data itself supports\nGábor & Kézdi call it the most effort-intensive part of building a prediction model, and the part with the biggest payoff\n\n\nSource: Békés & Kézdi (2021), Ch. 14"
+  },
+  {
+    "objectID": "week10-online-slides.html#the-checklist",
+    "href": "week10-online-slides.html#the-checklist",
+    "title": "Model Building for Prediction",
+    "section": "The checklist",
+    "text": "The checklist\n\nMissing values — random, or systematic? Impute with a flag column, don’t just drop the observation\nCategorical values — binary, or a small set of dummies\nText — mine it for useful signal, otherwise leave it\nFunctional form — polynomials, splines, logs — the same choices as the workshop, applied to many variables at once\nInteractions — worth thinking about, expensive to search exhaustively\n\n\nSource: Békés & Kézdi (2021), Ch. 14"
+  },
+  {
+    "objectID": "week10-online-slides.html#real-data-airbnb-london",
+    "href": "week10-online-slides.html#real-data-airbnb-london",
+    "title": "Model Building for Prediction",
+    "section": "Real data: Airbnb, London",
+    "text": "Real data: Airbnb, London\n\n4,393 Hackney-borough listings, March 2017 snapshot\nTarget: nightly price, in pounds (the textbook labels it dollars, but the listings are in pounds)\n~70 predictor candidates: capacity, room and property type, cancellation policy, review scores, and 50 individual amenity dummies (d_tv, d_petsallowed, d_elevatorinbuilding, …)\n\n\nSource: Békés & Kézdi (2021), airbnb dataset, osf.io/qyca8"
+  },
+  {
+    "objectID": "week10-online-slides.html#six-models-built-up-by-hand",
+    "href": "week10-online-slides.html#six-models-built-up-by-hand",
+    "title": "Model Building for Prediction",
+    "section": "Six models, built up by hand",
+    "text": "Six models, built up by hand\n\nM1 = smf.ols(\"price ~ n_accommodates\", data=df).fit()\nM2 = smf.ols(\"price ~ n_accommodates + n_beds + C(f_room_type) + C(f_property_type)\", data=df).fit()\nM3 = smf.ols(\"price ~ ... + n_bathrooms + C(f_cancellation_policy) + C(f_bed_type)\", data=df).fit()\nM4 = smf.ols(\"price ~ ... + n_accommodates2 + n_days_since + n_days_since2\", data=df).fit()\nM5 = smf.ols(\"price ~ ... + C(f_room_type)*C(f_property_type)\", data=df).fit()\nM6 = smf.ols(\"price ~ ... + \" + \" + \".join(amenity_dummies), data=df).fit()  # 50 amenities\n\nEach step adds more: capacity and type, then physical features, then non-linearity and interactions, then every amenity."
+  },
+  {
+    "objectID": "week10-online-slides.html#comparing-the-six-models",
+    "href": "week10-online-slides.html#comparing-the-six-models",
+    "title": "Model Building for Prediction",
+    "section": "Comparing the six models",
+    "text": "Comparing the six models\n\n{\n  const cols = [\"Model\", \"N coef\", \"R2\", \"Training RMSE\", \"CV RMSE\", \"BIC\"];\n  return html`&lt;table style=\"margin:20px auto 0;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;\"&gt;\n    &lt;tr style=\"border-bottom:2px solid #1a1a2e;\"&gt;${cols.map(c =&gt; `&lt;th style=\"padding:5px 14px;text-align:center;\"&gt;${c}&lt;/th&gt;`).join('')}&lt;/tr&gt;\n    ${air_stats_rows.map(d =&gt; `&lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;${cols.map(c =&gt; `&lt;td style=\"padding:4px 14px;text-align:center;\"&gt;${d[c]}&lt;/td&gt;`).join('')}&lt;/tr&gt;`).join('')}\n  &lt;/table&gt;`\n}\n\n\n\n\n\n\n\nRMSE keeps improving all the way to M6, but the BIC column is lowest at M4 and rises again for M6: it penalises M6’s 65 coefficients even where cross-validated RMSE doesn’t. Different criteria, different sensitivity to complexity."
+  },
+  {
+    "objectID": "week10-online-slides.html#lasso",
+    "href": "week10-online-slides.html#lasso",
+    "title": "Model Building for Prediction",
+    "section": "LASSO",
+    "text": "LASSO"
+  },
+  {
+    "objectID": "week10-online-slides.html#we-cant-try-every-model",
+    "href": "week10-online-slides.html#we-cant-try-every-model",
+    "title": "Model Building for Prediction",
+    "section": "We can’t try every model",
+    "text": "We can’t try every model\n\nEach candidate predictor is either in or out, so \\(p\\) candidates give \\(2^p\\) possible models. With 70 candidates that’s more than \\(10^{21}\\): far too many to try\nBy hand: domain knowledge drives the choice — interpretable, but slow, and impossible with many interactions\nBy algorithm: let the data suggest which variables earn their place"
+  },
+  {
+    "objectID": "week10-online-slides.html#building-a-model-by-hand",
+    "href": "week10-online-slides.html#building-a-model-by-hand",
+    "title": "Model Building for Prediction",
+    "section": "Building a model by hand",
+    "text": "Building a model by hand\nEven when an algorithm does the final selection, the groundwork is still done by hand:\n\nDomain knowledge picks the key variables first — what plausibly drives price for a short-let listing, before any statistic gets consulted\nDrop the garbage: comb through candidates and cut the ones with poor coverage, poor quality, or no plausible relevance\nCheck pairwise correlations — multicollinearity bites harder the smaller the dataset\nPrefer variables that are cheap to keep updating — a model running in production has to be fed, not just fitted once\nHow far this can go depends on the ratio of variables to observations, not the raw count of either on its own\n\n\nSource: Békés & Kézdi (2021), Ch. 14"
+  },
+  {
+    "objectID": "week10-online-slides.html#what-lasso-does",
+    "href": "week10-online-slides.html#what-lasso-does",
+    "title": "Model Building for Prediction",
+    "section": "What LASSO does",
+    "text": "What LASSO does\n\nLASSO — Least Absolute Shrinkage and Selection Operator — picks variables to include in a regression automatically, built to produce good predictions and avoid overfitting\nIt’s a shrinkage method: every coefficient gets pulled towards zero, which reduces variance\nIt’s also a feature-selection method: some coefficients get pulled all the way to exactly zero, dropping that variable from the model entirely\nBoth happen at once, inside the same single fitting step — no separate “shrink” and “select” stages"
+  },
+  {
+    "objectID": "week10-online-slides.html#the-lasso-equation",
+    "href": "week10-online-slides.html#the-lasso-equation",
+    "title": "Model Building for Prediction",
+    "section": "The LASSO equation",
+    "text": "The LASSO equation\nLASSO adds a penalty to the usual OLS minimisation:\n\\[\\min_\\beta \\left\\{ \\sum_{i=1}^{N}\\left(y_i - \\beta_0 - \\sum_{j=1}^{k}\\beta_j x_{ij}\\right)^2 + \\lambda\\sum_{j=1}^{k}|\\beta_j| \\right\\}\\]\n\n\nThe first term is the familiar OLS objective: fit the data as closely as possible\nThe second is new: a penalty proportional to the sum of the absolute values of the coefficients\n\\(\\lambda\\) sets how much that penalty weighs against fit. \\(\\lambda = 0\\) gives plain OLS back; larger \\(\\lambda\\) pulls harder, and more variables drop out"
+  },
+  {
+    "objectID": "week10-online-slides.html#side-note-lasso-vs.-bic",
+    "href": "week10-online-slides.html#side-note-lasso-vs.-bic",
+    "title": "Model Building for Prediction",
+    "section": "Side note: LASSO vs. BIC",
+    "text": "Side note: LASSO vs. BIC\nBoth exist to balance fit against complexity, but they get there differently:\n\nBIC scores a model after it’s been fitted, so you can compare several separately-built candidates and pick the one with the best in-sample measure of fit\nLASSO doesn’t produce a score to compare models with. It alters the coefficients during fitting, so the penalty is already built into the one model it hands you\n\n\nSource: Békés & Kézdi (2021), Ch. 14"
+  },
+  {
+    "objectID": "week10-online-slides.html#why-some-coefficients-hit-exactly-zero",
+    "href": "week10-online-slides.html#why-some-coefficients-hit-exactly-zero",
+    "title": "Model Building for Prediction",
+    "section": "Why some coefficients hit exactly zero",
+    "text": "Why some coefficients hit exactly zero\nEvery coefficient faces a trade: a bigger \\(\\beta_j\\) may fit the data a little better, but it costs more penalty. Whether that trade settles on zero or not depends on how the penalty’s pull changes as \\(\\beta_j\\) shrinks.\n\nPlot.plot({\n  width: 700, height: 230, marginLeft: 50,\n  x: {label: \"Coefficient β\"}, y: {label: \"Penalty\"},\n  marks: [\n    Plot.line(d3.range(-2, 2.01, 0.05).map(b =&gt; ({b, p: Math.abs(b)})), {x: \"b\", y: \"p\", stroke: \"#2c3e7a\", strokeWidth: 2.5}),\n    Plot.ruleX([0], {stroke: \"#999\"})\n  ]\n})\n\n\n\n\n\n\n\n\nThe penalty is a straight line through zero. Its slope — the saving from nudging \\(\\beta_j\\) a little closer to zero — is exactly the same whether \\(\\beta_j\\) is large or already tiny\nThat constant pull never lets up as \\(\\beta_j\\) shrinks, so the moment a variable’s contribution to fit drops below it, the best move is to push all the way to zero — not just partway"
+  },
+  {
+    "objectID": "week10-online-slides.html#the-cost-bias",
+    "href": "week10-online-slides.html#the-cost-bias",
+    "title": "Model Building for Prediction",
+    "section": "The cost: bias",
+    "text": "The cost: bias\n\nOLS is unbiased. LASSO isn’t — that’s the trade it makes for lower variance\nUnlike OLS, there’s no closed-form solution; an algorithm solves for \\(\\beta\\) and \\(\\lambda\\) together\n\\(\\lambda\\) itself is chosen by cross-validation: try many values, pick the one with the best CV RMSE"
+  },
+  {
+    "objectID": "week10-online-slides.html#lasso-on-the-airbnb-data",
+    "href": "week10-online-slides.html#lasso-on-the-airbnb-data",
+    "title": "Model Building for Prediction",
+    "section": "LASSO on the Airbnb data",
+    "text": "LASSO on the Airbnb data\n\nfrom sklearn.linear_model import LassoCV\nfrom sklearn.preprocessing import StandardScaler\n\nX_scaled = StandardScaler().fit_transform(X)   # LASSO needs standardised features\nlasso = LassoCV(cv=5).fit(X_scaled, y)\n\n\nhtml`&lt;pre style=\"font-family:'SF Mono','Menlo',monospace;font-size:0.68em;line-height:1.4;\n                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;\n                  padding:8px 14px;overflow-x:auto;white-space:pre;\"&gt;${lasso_code_output}&lt;/pre&gt;`\n\n\n\n\n\n\n\nhtml`&lt;div class=\"instructions-box\"&gt;LASSO kept ${n_nonzero} of ${n_total} candidate coefficients, chosen automatically. Its cross-validated RMSE (${lasso_cv_rmse.toFixed(1)}) matches M6's OLS fit (${m6_cv_rmse.toFixed(1)}) with fewer moving parts.&lt;/div&gt;`"
+  },
+  {
+    "objectID": "week10-online-slides.html#what-survived",
+    "href": "week10-online-slides.html#what-survived",
+    "title": "Model Building for Prediction",
+    "section": "What survived",
+    "text": "What survived\n\nPlot.plot({\n  width: 1000, height: 430, marginLeft: 300,\n  x: {label: \"Coefficient on standardised variable (£ per night, per standard deviation)\", grid: true},\n  y: {label: null, domain: lasso_top_rows.map(d =&gt; d.variable)},\n  color: {legend: true, domain: [\"Raises price\", \"Lowers price\"], range: [\"#2d6a4f\", \"#c0392b\"]},\n  marks: [\n    Plot.barX(lasso_top_rows, {x: \"coef\", y: \"variable\", fill: \"sign\"}),\n    Plot.ruleX([0])\n  ]\n})\n\n\n\n\n\n\nThe ten largest of the coefficients LASSO kept. Size and room type dominate, but several individual amenities survive the penalty too."
+  },
+  {
+    "objectID": "week10-online-slides.html#why-classical-inference-fails-after-lasso",
+    "href": "week10-online-slides.html#why-classical-inference-fails-after-lasso",
+    "title": "Model Building for Prediction",
+    "section": "Why classical inference fails after LASSO",
+    "text": "Why classical inference fails after LASSO\nLASSO gives coefficients but no standard errors or p-values — and that’s not an oversight, it’s unavoidable. Two separate things are going on:\n\nWhich variables survive is itself decided by the data. LASSO’s selection step and its coefficient estimates come from the same sample. Classical standard errors and p-values are built on the assumption that the model was fixed on paper before any data arrived — here, it wasn’t\nSo applied after LASSO, they understate the real uncertainty. This is called post-selection inference, and it doesn’t go away if you refit plain OLS on just the survivors and read that model’s p-values — the variables going in were still chosen by looking at this data first\n\n\nHere’s the counterfactual a classical SE formula actually relies on: if we reran this exact study on a fresh sample, would we get the same model back? For OLS, where the variable list is fixed in advance, only the coefficients would move — that’s all the formula has to account for. For LASSO, the variable list itself would likely come back different too, since which coefficients survive depends on this sample’s own noise. A formula built to describe only the first kind of wobble can’t speak to the second — the next slide makes that second kind of wobble visible, not just claimed."
+  },
+  {
+    "objectID": "week10-online-slides.html#the-selection-step-made-visible",
+    "href": "week10-online-slides.html#the-selection-step-made-visible",
+    "title": "Model Building for Prediction",
+    "section": "The selection step, made visible",
+    "text": "The selection step, made visible\nRefit LASSO on  different bootstrap resamples of the exact same work set — same  listings, resampled with replacement each time.\n\nhtml`&lt;p&gt;Every one of the &lt;b&gt;${n_union_all}&lt;/b&gt; candidate variables got selected at least once somewhere across the ${n_boot} resamples. Only &lt;b&gt;${n_always_all}&lt;/b&gt; were selected every single time; the other &lt;b&gt;${n_sometimes_all}&lt;/b&gt; came and went — including, on a smaller scale, ${10 - n_always} of the 10 variables the original single fit leaned on hardest:&lt;/p&gt;`\n\n\n\n\n\n\n\n\n{\n  const cols = [\"Variable\", \"Selected (of 30 resamples)\"];\n  return html`&lt;table style=\"margin:8px auto 0;font-family:sans-serif;font-size:0.72em;border-collapse:collapse;\"&gt;\n    &lt;tr style=\"border-bottom:2px solid #1a1a2e;\"&gt;${cols.map(c =&gt; `&lt;th style=\"padding:3px 16px;text-align:left;\"&gt;${c}&lt;/th&gt;`).join('')}&lt;/tr&gt;\n    ${selection_rows.map(d =&gt; `&lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;&lt;td style=\"padding:3px 16px;\"&gt;${d.variable}&lt;/td&gt;&lt;td style=\"padding:3px 16px;\"&gt;${d.times} / ${d.n_boot}&lt;/td&gt;&lt;/tr&gt;`).join('')}\n  &lt;/table&gt;`\n}"
+  },
+  {
+    "objectID": "week10-online-slides.html#why-lasso-is-still-reasonable",
+    "href": "week10-online-slides.html#why-lasso-is-still-reasonable",
+    "title": "Model Building for Prediction",
+    "section": "Why LASSO is still reasonable",
+    "text": "Why LASSO is still reasonable\n\nThat’s fine for prediction: we judge the model on held-out RMSE, not on any one coefficient’s p-value\nLASSO accepts a little bias for a lot less variance — exactly the right trade when the goal is predicting new cases, not estimating one specific effect\nFor a causal question (Week 9), choose the controls by reasoning about the diagram, not by letting LASSO pick them. LASSO is a prediction tool, not an inference tool"
+  },
+  {
+    "objectID": "week10-online-slides.html#holdout-sets",
+    "href": "week10-online-slides.html#holdout-sets",
+    "title": "Model Building for Prediction",
+    "section": "Holdout sets",
+    "text": "Holdout sets"
+  },
+  {
+    "objectID": "week10-online-slides.html#one-more-split-before-you-trust-the-number",
+    "href": "week10-online-slides.html#one-more-split-before-you-trust-the-number",
+    "title": "Model Building for Prediction",
+    "section": "One more split before you trust the number",
+    "text": "One more split before you trust the number\n\nModel selection (BIC, cross-validation) already uses the data — repeatedly\nBest practice: carve off a holdout set right at the start, and don’t touch it until the very end\nWork set: model building, model selection, training/test folds — all happen here\nHoldout set: touched exactly once, to get an honest read on how the chosen model will do on genuinely new data"
+  },
+  {
+    "objectID": "week10-online-slides.html#the-full-picture",
+    "href": "week10-online-slides.html#the-full-picture",
+    "title": "Model Building for Prediction",
+    "section": "The full picture",
+    "text": "The full picture\n\n\n  \n    \n  \n\n  \n  \n  ORIGINAL DATA\n\n  \n  LIVE DATA\n\n  \n  \n  \n\n  \n  WORK SET\n\n  \n  HOLDOUT SET\n\n  \n  \n  \n  \n  \n\n  \n  \n  Model selection\n  Create training & test sets\n  Build models on training sets\n  Evaluate models on test sets\n  Choose the model with the\n  lowest average test-set MSE\n\n  \n  \n  Final prediction\n  Once the best model\n  is chosen, re-estimate\n  it on the entire work set\n\n  \n  \n  Evaluation\n  Once the model is estimated\n  on the work set, apply it to\n  the holdout set, and\n  evaluate it there\n\n  \n  \n  Live prediction\n  Apply the estimated model\n  to the live data — and\n  hope for the best\n\n\n\nAfter Békés & Kézdi (2021), Ch. 14: “Illustration of the uses of the original data and the live data”\n\n\nOne box here is new: live data is different from the holdout set. The holdout set still has a real price to check against — that’s what makes step 5 an honest evaluation. Live data (a new listing coming in tomorrow) has no answer to check against at all. By the time a prediction reaches live data, every chance to evaluate it honestly has already happened."
+  },
+  {
+    "objectID": "week10-online-slides.html#the-workflow",
+    "href": "week10-online-slides.html#the-workflow",
+    "title": "Model Building for Prediction",
+    "section": "The workflow",
+    "text": "The workflow\n\nSplit the original data into a work set and a holdout set\nInside the work set: training/test folds, k-fold CV, model selection\nRe-estimate the winning model on the whole work set\nApply it to the holdout set — untouched until now\nEvaluate: this is the honest estimate of live-data performance\n\n\nhtml`&lt;p style=\"font-size:0.75em;color:#999;margin-top:14px;\"&gt;Steps 1 and 2 already happened: the ${n_work.toLocaleString()}/${n_holdout.toLocaleString()} split came first, before any model got built, and every model above — the comparison table, every cross-validation fold, the LASSO fit and its bootstrap resamples — came from the work set alone.&lt;/p&gt;`"
+  },
+  {
+    "objectID": "week10-online-slides.html#the-workflow-in-code",
+    "href": "week10-online-slides.html#the-workflow-in-code",
+    "title": "Model Building for Prediction",
+    "section": "The workflow, in code",
+    "text": "The workflow, in code\nAll five steps, start to finish, in the order they actually run:\n\n# Step 1 — split before building anything\nrng = np.random.RandomState(20260921)\nholdout_mask = rng.rand(len(air_df)) &lt; 0.2\nwork_df, holdout_df = air_df.loc[~holdout_mask], air_df.loc[holdout_mask]\n\n# Step 2 — model selection, using work_df only\nX_scaled = StandardScaler().fit_transform(X)   # X built from work_df\nlasso = LassoCV(cv=5).fit(X_scaled, y)         # the CV inside this only picks λ\n\n# Step 3 — re-estimate the winner on the WHOLE work set\n# For LASSO: already done — it was fit on all of work_df above, not a fold.\n# For a hand-built model chosen by CV/BIC (M1–M6), this step is a real,\n# separate refit — see the next slide for why.\n\n# Step 4 — apply it to the untouched holdout set, for the first time\nlasso_holdout_pred = lasso.predict(holdout_X_scaled)\n\n# Step 5 — evaluate: the one honest number\nlasso_holdout_rmse = np.sqrt(np.mean((holdout_df[\"price\"] - lasso_holdout_pred) ** 2))\n\nEverything from here on is this same code, one step at a time, with real numbers — for LASSO and for the hand-built route, since this deck built both."
+  },
+  {
+    "objectID": "week10-online-slides.html#step-3-two-different-routes",
+    "href": "week10-online-slides.html#step-3-two-different-routes",
+    "title": "Model Building for Prediction",
+    "section": "Step 3: two different routes",
+    "text": "Step 3: two different routes\nStep 3 isn’t the same action for every method — it depends what step 2 actually did.\n\nLASSO: nothing to do. LassoCV(cv=5).fit(Xs, y) was already called on the whole work set, above — the internal 5-fold CV only ever chose λ, it never withheld data from the final fit. Step 3 is already satisfied\nThe hand-built route (M1–M6): a real, separate step. Comparing M1–M6 by cross-validated RMSE fits each one on 80%-sized training folds, never on the whole work set at once. Whichever model wins that comparison has to be refit on all of the work set before it’s a finished model\n\n\nModel selection among M1–M6 didn’t actually hand us one clear winner either — it handed us a trade-off, back on “Comparing the six models”:\n\n\n\n{\n  const m4 = air_stats_rows.find(d =&gt; d.Model === \"M4\"), m6 = air_stats_rows.find(d =&gt; d.Model === \"M6\");\n  return html`&lt;table style=\"margin:10px auto 0;font-family:sans-serif;font-size:0.8em;border-collapse:collapse;\"&gt;\n    &lt;tr style=\"border-bottom:2px solid #1a1a2e;\"&gt;&lt;th style=\"padding:4px 14px;\"&gt;&lt;/th&gt;&lt;th style=\"padding:4px 14px;\"&gt;N coef&lt;/th&gt;&lt;th style=\"padding:4px 14px;\"&gt;CV RMSE&lt;/th&gt;&lt;th style=\"padding:4px 14px;\"&gt;BIC&lt;/th&gt;&lt;/tr&gt;\n    &lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;&lt;td style=\"padding:3px 14px;\"&gt;&lt;b&gt;M4&lt;/b&gt; — BIC's pick&lt;/td&gt;&lt;td style=\"padding:3px 14px;text-align:center;\"&gt;${m4[\"N coef\"]}&lt;/td&gt;&lt;td style=\"padding:3px 14px;text-align:center;\"&gt;${m4[\"CV RMSE\"]}&lt;/td&gt;&lt;td style=\"padding:3px 14px;text-align:center;\"&gt;&lt;b&gt;${m4.BIC.toLocaleString()}&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;\n    &lt;tr&gt;&lt;td style=\"padding:3px 14px;\"&gt;&lt;b&gt;M6&lt;/b&gt; — lowest CV RMSE&lt;/td&gt;&lt;td style=\"padding:3px 14px;text-align:center;\"&gt;${m6[\"N coef\"]}&lt;/td&gt;&lt;td style=\"padding:3px 14px;text-align:center;\"&gt;&lt;b&gt;${m6[\"CV RMSE\"]}&lt;/b&gt;&lt;/td&gt;&lt;td style=\"padding:3px 14px;text-align:center;\"&gt;${m6.BIC.toLocaleString()}&lt;/td&gt;&lt;/tr&gt;\n  &lt;/table&gt;`\n}\n\n\n\n\n\n\n\n\nM6’s CV RMSE beats M4’s by about £1, at the cost of 52 extra coefficients, and BIC prefers M4 by a wide margin. This session’s call: M6, because the stated goal is predicting price as accurately as possible. It then gets re-estimated on the whole work set — exactly the m6_work fit used from here on, alongside LASSO."
+  },
+  {
+    "objectID": "week10-online-slides.html#step-4-apply-both-to-the-holdout-set",
+    "href": "week10-online-slides.html#step-4-apply-both-to-the-holdout-set",
+    "title": "Model Building for Prediction",
+    "section": "Step 4: apply both to the holdout set",
+    "text": "Step 4: apply both to the holdout set\n\nholdout_pred       = m6_work.predict(holdout_df)\nlasso_holdout_pred = lasso.predict(holdout_X_scaled)\n\n\nTwo finalists go forward, not one: M6, re-estimated in step 3, and LASSO, which never needed step 3 at all\nholdout_df has sat untouched since the very first split — this is the first time anything has looked at it, for either model\nNo re-fitting, no peeking, no “let’s just check one more thing first”: that would make step 5’s numbers dishonest"
+  },
+  {
+    "objectID": "week10-online-slides.html#step-5-evaluate",
+    "href": "week10-online-slides.html#step-5-evaluate",
+    "title": "Model Building for Prediction",
+    "section": "Step 5: evaluate",
+    "text": "Step 5: evaluate\n\nholdout_rmse       = np.sqrt(np.mean((holdout_df[\"price\"] - holdout_pred) ** 2))\nlasso_holdout_rmse = np.sqrt(np.mean((holdout_df[\"price\"] - lasso_holdout_pred) ** 2))\n\n\n{\n  const cols = [[\"M6\", holdout_rmse, m6_cv_rmse], [\"LASSO\", lasso_holdout_rmse, lasso_cv_rmse]];\n  return html`&lt;table style=\"margin:10px auto 0;font-family:sans-serif;font-size:0.9em;border-collapse:collapse;\"&gt;\n    &lt;tr style=\"border-bottom:2px solid #1a1a2e;\"&gt;&lt;th style=\"padding:5px 18px;\"&gt;&lt;/th&gt;&lt;th style=\"padding:5px 18px;\"&gt;Holdout RMSE&lt;/th&gt;&lt;th style=\"padding:5px 18px;\"&gt;Work-set CV RMSE&lt;/th&gt;&lt;/tr&gt;\n    ${cols.map(([m, h, c]) =&gt; `&lt;tr style=\"border-bottom:1px solid #ddd;\"&gt;&lt;td style=\"padding:4px 18px;\"&gt;&lt;b&gt;${m}&lt;/b&gt;&lt;/td&gt;&lt;td style=\"padding:4px 18px;text-align:center;\"&gt;£${h.toFixed(2)}&lt;/td&gt;&lt;td style=\"padding:4px 18px;text-align:center;\"&gt;£${c.toFixed(1)}&lt;/td&gt;&lt;/tr&gt;`).join('')}\n  &lt;/table&gt;`\n}\n\n\n\n\n\n\n\n\n{\n  const m6n = air_stats_rows.find(d =&gt; d.Model === \"M6\")[\"N coef\"];\n  return html`&lt;p&gt;A near dead heat on data neither model ever touched — &lt;b&gt;£${lasso_holdout_rmse.toFixed(2)}&lt;/b&gt; for LASSO against &lt;b&gt;£${holdout_rmse.toFixed(2)}&lt;/b&gt; for M6, with ${n_nonzero} coefficients instead of ${m6n}. LASSO's earlier claim &mdash; \"matches M6's fit, with fewer moving parts\" &mdash; was made from cross-validated RMSE on the work set. This is the same claim checked again, honestly, on data that had no say in choosing either model.&lt;/p&gt;`\n}"
+  },
+  {
+    "objectID": "week10-online-slides.html#predicted-vs.-actual-on-the-holdout-set",
+    "href": "week10-online-slides.html#predicted-vs.-actual-on-the-holdout-set",
+    "title": "Model Building for Prediction",
+    "section": "Predicted vs. actual, on the holdout set",
+    "text": "Predicted vs. actual, on the holdout set\n\n\n\nPlot.plot({\n  width: 560, height: 540,\n  x: {label: \"Predicted price (£)\", domain: [0, 300]},\n  y: {label: \"Actual price (£)\", domain: [0, 300]},\n  marks: [\n    Plot.line([{x:0,y:0},{x:300,y:300}], {x: \"x\", y: \"y\", stroke: \"#999\", strokeDasharray: \"4,4\"}),\n    Plot.dot(yyhat_data, {x: \"predicted\", y: \"actual\", fill: \"#2c3e7a\", opacity: 0.4, r: 3})\n  ]\n})\n\n\n\n\n\n\n\n\n\nhtml`&lt;div class=\"fragment\" id=\"wk10online-yyhat-frag\"&gt;M6's £${holdout_rmse} from step 5, broken down point by point. Points above the dashed line are underpredicted; the model visibly struggles more at the high end — the same pattern Gabor & Kézdi find in their own version of this diagnostic.&lt;/div&gt;`"
+  },
+  {
+    "objectID": "week10-online-slides.html#summary",
+    "href": "week10-online-slides.html#summary",
+    "title": "Model Building for Prediction",
+    "section": "Summary",
+    "text": "Summary\n\nPrediction with many candidate variables needs the same discipline as prediction with a few — just automated where hand-picking becomes infeasible\nChoosing the target itself — level or log — is a decision too, and converting a logged prediction back takes more than just undoing the log\nLASSO trades a little bias for a lot less variance, and sets weak coefficients to exactly zero. It gives no valid p-values, so use it for prediction, not inference\nA holdout set, touched only once, is the honest final check — everything before it is negotiable, this isn’t"
+  },
+  {
+    "objectID": "week10-online-slides.html#coming-up",
+    "href": "week10-online-slides.html#coming-up",
+    "title": "Model Building for Prediction",
+    "section": "Coming up",
+    "text": "Coming up\n\nWeek 11: Time Series\n\nFeature engineering treated every predictor as fixed at a point in time. Next week, one of them is time itself."
   }
 ]

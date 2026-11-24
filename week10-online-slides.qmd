@@ -1,7 +1,6 @@
 ---
 title: "Model Building for Prediction"
 subtitle: "7002LBSAI Research Methods in Analytics — Week 10 Online Session"
-search: false
 format:
   revealjs:
     theme: simple
@@ -77,30 +76,6 @@ for tr_idx, te_idx in air_kf.split(work_df):
         pred = m.predict(test)
         air_cv[name].append(float(np.sqrt(np.mean((test["price"] - pred) ** 2))))
 air_cv_avg = {name: float(np.mean(v)) for name, v in air_cv.items()}
-
-# --- Label engineering: log price needs a correction term to convert back.
-# Fitted on work_df, same right-hand side as M6, so it's directly comparable
-# to the level-price M6 already built above.
-air_log_formula = air_formulas["M6"].replace("price ~", "np.log(price) ~")
-log_m6 = smf.ols(air_log_formula, data=work_df).fit()
-sigma_hat = float(np.sqrt(log_m6.mse_resid))
-log_pred_work = log_m6.predict(work_df)
-naive_pred_work = np.exp(log_pred_work)
-corrected_pred_work = naive_pred_work * np.exp(sigma_hat ** 2 / 2)
-label_actual_mean = float(work_df["price"].mean())
-label_naive_mean = float(naive_pred_work.mean())
-label_corrected_mean = float(corrected_pred_work.mean())
-
-# One concrete listing, walked through step by step
-_ex = work_df.iloc[0]
-label_example = {
-    "accommodates": int(_ex["n_accommodates"]),
-    "room_type": str(_ex["f_room_type"]),
-    "actual": float(_ex["price"]),
-    "ln_pred": float(log_pred_work.iloc[0]),
-    "naive": float(naive_pred_work.iloc[0]),
-    "corrected": float(corrected_pred_work.iloc[0]),
-}
 
 air_stats_rows = [
     {"Model": name, "N coef": len(air_fitted[name].params), "R2": round(air_fitted[name].rsquared, 2),
@@ -221,11 +196,6 @@ ojs_define(
     yyhat_data           = yyhat_data,
     n_work               = n_work,
     n_holdout            = n_holdout,
-    sigma_hat            = round(sigma_hat, 3),
-    label_actual_mean    = round(label_actual_mean, 1),
-    label_naive_mean     = round(label_naive_mean, 1),
-    label_corrected_mean = round(label_corrected_mean, 1),
-    label_example        = label_example,
     selection_rows       = selection_rows,
     n_boot               = _n_boot,
     n_always             = n_always,
@@ -280,7 +250,7 @@ ojs_define(
 
 ---
 
-## Label engineering: choosing the target
+## Target engineering: choosing the target
 
 Before a single predictor gets chosen, there's a decision about **y** itself. Sometimes the business question settles it outright — the price of the hotel room is the price of the hotel room. Often it genuinely needs deciding: **level, or log?**
 
@@ -288,28 +258,12 @@ Before a single predictor gets chosen, there's a decision about **y** itself. So
 - Log differences approximate *percentage* differences, and percentage differences in price are often more stable across very different kinds of listing than pound differences are
 - A technical bonus: log prices tend to sit closer to a normal distribution, which helps a linear regression approximate the average relationship well
 
+::: {.fragment}
+One thing to carry forward: choosing to log the target isn't free. A model fitted on `np.log(price)` predicts log price, not price — turning that back into a pound figure takes a bit more care than just undoing the log.
+:::
+
 ::: {style="font-size:0.75em;color:#999;margin-top:12px;"}
 Source: Békés & Kézdi (2021), Ch. 14
-:::
-
-## Converting a log prediction back
-
-Fit `np.log(price) ~ ...` and the model predicts **ln(price)**, not price. Exponentiating the prediction directly undershoots, systematically:
-
-$$\hat y = e^{\widehat{\ln y}} \times e^{\hat\sigma^2/2}$$
-
-::: {.fragment}
-Why the extra term: the regression predicts the *average* log price, but we want the average price itself — and because $\ln$ is a curved (concave) function, the average of $e^{\ln y}$ across many listings is **not** the same as $e$ raised to the average $\ln y$. The correction, built from the spread of the regression's own residuals ($\hat\sigma$), puts that back.
-:::
-
-::: {.fragment}
-```{ojs}
-html`<p style="margin:14px 0 4px;">One listing: a ${label_example.accommodates}-guest ${label_example.room_type.toLowerCase()}, actual price <b>£${label_example.actual.toFixed(0)}</b>. Naive: e<sup>${label_example.ln_pred.toFixed(2)}</sup> = <b>£${label_example.naive.toFixed(2)}</b>. Corrected: × e<sup>${sigma_hat.toFixed(3)}²/2</sup> = <b>£${label_example.corrected.toFixed(2)}</b> — closer, though one listing is still just one listing.</p>`
-```
-
-```{ojs}
-html`<p style="margin:4px 0;">Across all ${n_work.toLocaleString()} work-set listings, the pattern is systematic, not a fluke: actual average price <b>£${label_actual_mean}</b>; naive average prediction <b>£${label_naive_mean}</b> (undershoots by £${(label_actual_mean - label_naive_mean).toFixed(1)}); corrected average prediction <b>£${label_corrected_mean}</b>.</p>`
-```
 :::
 
 ---
@@ -333,7 +287,7 @@ Source: Békés & Kézdi (2021), Ch. 14
 
 1. **Missing values** — random, or systematic? Impute with a flag column, don't just drop the observation
 2. **Categorical values** — binary, or a small set of dummies
-3. **Text** — mine it for useful signal (a "seminar" keyword, say), otherwise leave it
+3. **Text** — mine it for useful signal, otherwise leave it
 4. **Functional form** — polynomials, splines, logs — the same choices as the workshop, applied to many variables at once
 5. **Interactions** — worth thinking about, expensive to search exhaustively
 
@@ -430,7 +384,7 @@ $$\min_\beta \left\{ \sum_{i=1}^{N}\left(y_i - \beta_0 - \sum_{j=1}^{k}\beta_j x
 
 ## Side note: LASSO vs. BIC
 
-Both exist to balance fit against complexity — the same goal as the BIC column two slides ago — but they get there differently:
+Both exist to balance fit against complexity, but they get there differently:
 
 - **BIC** scores a model *after* it's been fitted, so you can compare several separately-built candidates and pick the one with the best in-sample measure of fit
 - **LASSO** doesn't produce a score to compare models with. It alters the coefficients *during* fitting, so the penalty is already built into the one model it hands you
@@ -441,24 +395,22 @@ Source: Békés & Kézdi (2021), Ch. 14
 
 ## Why some coefficients hit exactly zero {.smaller}
 
-Every coefficient faces a trade: a bigger $\beta_j$ may fit the data a little better, but it costs more penalty. Where that trade settles depends on *how the penalty's pull changes as $\beta_j$ shrinks* — and that's where LASSO and ridge genuinely differ.
+Every coefficient faces a trade: a bigger $\beta_j$ may fit the data a little better, but it costs more penalty. Whether that trade settles on zero or not depends on *how the penalty's pull changes as $\beta_j$ shrinks*.
 
 ```{ojs}
 Plot.plot({
   width: 700, height: 230, marginLeft: 50,
   x: {label: "Coefficient β"}, y: {label: "Penalty"},
-  color: {legend: true, domain: ["LASSO: λ|β|", "Ridge: λβ²"], range: ["#2c3e7a", "#c0392b"]},
   marks: [
-    Plot.line(d3.range(-2, 2.01, 0.05).map(b => ({b, p: Math.abs(b), k: "LASSO: λ|β|"})), {x: "b", y: "p", stroke: "k", strokeWidth: 2.5}),
-    Plot.line(d3.range(-2, 2.01, 0.05).map(b => ({b, p: b * b / 2, k: "Ridge: λβ²"})), {x: "b", y: "p", stroke: "k", strokeWidth: 2.5}),
+    Plot.line(d3.range(-2, 2.01, 0.05).map(b => ({b, p: Math.abs(b)})), {x: "b", y: "p", stroke: "#2c3e7a", strokeWidth: 2.5}),
     Plot.ruleX([0], {stroke: "#999"})
   ]
 })
 ```
 
 ::: {.fragment}
-- **LASSO's penalty (blue) is a straight line through zero.** Its slope — the saving from nudging $\beta_j$ a little closer to zero — is exactly the same whether $\beta_j$ is large or already tiny. That constant pull never lets up, so the moment a variable's contribution to fit drops below it, the best move is to push all the way to zero, not just partway
-- **Ridge's penalty (red) is a curve that flattens near zero.** Its slope shrinks right along with $\beta_j$, so the closer you get to zero, the weaker the incentive to go any further. Coefficients get small, but the pull fades out before they ever actually reach it
+- **The penalty is a straight line through zero.** Its slope — the saving from nudging $\beta_j$ a little closer to zero — is exactly the same whether $\beta_j$ is large or already tiny
+- That constant pull never lets up as $\beta_j$ shrinks, so the moment a variable's contribution to fit drops below it, the best move is to push all the way to zero — not just partway
 :::
 
 ## The cost: bias
@@ -466,10 +418,6 @@ Plot.plot({
 - OLS is unbiased. LASSO isn't — that's the trade it makes for lower variance
 - Unlike OLS, there's no closed-form solution; an algorithm solves for $\beta$ and $\lambda$ together
 - $\lambda$ itself is chosen by cross-validation: try many values, pick the one with the best CV RMSE
-
-::: {.fragment}
-The two penalty shapes have names: LASSO's is "L1," ridge's squared penalty is "L2." Regularisation covers both.
-:::
 
 ## LASSO on the Airbnb data
 
@@ -771,7 +719,7 @@ html`<div class="fragment" id="wk10online-yyhat-frag">M6's £${holdout_rmse} fro
 ## Summary
 
 - Prediction with many candidate variables needs the same discipline as prediction with a few — just automated where hand-picking becomes infeasible
-- Log targets need a correction term before converting back — skipping it silently biases predictions down
+- Choosing the target itself — level or log — is a decision too, and converting a logged prediction back takes more than just undoing the log
 - LASSO trades a little bias for a lot less variance, and sets weak coefficients to exactly zero. It gives no valid p-values, so use it for prediction, not inference
 - A holdout set, touched only once, is the honest final check — everything before it is negotiable, this isn't
 

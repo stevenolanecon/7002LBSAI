@@ -81,9 +81,9 @@ weeks = [
          ("Workshop slides", "week9-slides.html", False),
          ("Workshop slides (no answers)", "week9-slides-no-answers.html", False),
      ]},
-    {"n": 10, "topic": "Prediction", "status": "pending",
+    {"n": 10, "topic": "Prediction", "status": "live",
      "links": [
-         ("Workshop slides", "week10-slides.html", False),
+         ("Workshop slides (no answers)", "week10-slides-no-answers.html", False),
          ("Online session", "week10-online-slides.html", False),
      ]},
     {"n": 11, "topic": "Time Series", "status": "pending",
