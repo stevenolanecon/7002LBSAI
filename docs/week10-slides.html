@@ -208,37 +208,41 @@
 </section>
 <section class="slide level2">
 
-<div id="0d56058c" class="cell" data-execution_count="1">
+<div id="a74d9263" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-display">
-<script type="ojs-define">{"contents": [{"name": "model_stats_markdown", "value": "| Model   |   N vars |   N coef |   R2 |   RMSE |   BIC |\n|:--------|---------:|---------:|-----:|-------:|------:|\n| Model 1 |        1 |        3 | 0.85 |   1755 |  5013 |\n| Model 2 |        2 |        4 | 0.9  |   1434 |  4905 |\n| Model 3 |        5 |        9 | 0.91 |   1323 |  4888 |\n| Model 4 |        6 |       13 | 0.92 |   1270 |  4887 |\n| Model 5 |        6 |       22 | 0.92 |   1238 |  4924 |"}, {"name": "model_stats_rows", "value": [{"Model": "Model 1", "N vars": 1, "N coef": 3, "R2": 0.85, "RMSE": 1755, "BIC": 5013}, {"Model": "Model 2", "N vars": 2, "N coef": 4, "R2": 0.9, "RMSE": 1434, "BIC": 4905}, {"Model": "Model 3", "N vars": 5, "N coef": 9, "R2": 0.91, "RMSE": 1323, "BIC": 4888}, {"Model": "Model 4", "N vars": 6, "N coef": 13, "R2": 0.92, "RMSE": 1270, "BIC": 4887}, {"Model": "Model 5", "N vars": 6, "N coef": 22, "R2": 0.92, "RMSE": 1238, "BIC": 4924}]}, {"name": "cv_stats_markdown", "value": "| Model   |   Fold 1 |   Fold 2 |   Fold 3 |   Fold 4 |   Fold 5 |   Average |\n|:--------|---------:|---------:|---------:|---------:|---------:|----------:|\n| Model 1 |     2078 |     1706 |     2018 |     1541 |     1508 |      1770 |\n| Model 2 |     1625 |     1217 |     1818 |     1191 |     1351 |      1441 |\n| Model 3 |     1447 |     1189 |     1683 |     1057 |     1370 |      1349 |\n| Model 4 |     1338 |     1184 |     1582 |     1184 |     1489 |      1355 |\n| Model 5 |     1378 |     1197 |     1558 |     1265 |     1468 |      1373 |"}, {"name": "cv_stats_rows", "value": [{"Model": "Model 1", "Fold 1": 2078, "Fold 2": 1706, "Fold 3": 2018, "Fold 4": 1541, "Fold 5": 1508, "Average": 1770}, {"Model": "Model 2", "Fold 1": 1625, "Fold 2": 1217, "Fold 3": 1818, "Fold 4": 1191, "Fold 5": 1351, "Average": 1441}, {"Model": "Model 3", "Fold 1": 1447, "Fold 2": 1189, "Fold 3": 1683, "Fold 4": 1057, "Fold 5": 1370, "Average": 1349}, {"Model": "Model 4", "Fold 1": 1338, "Fold 2": 1184, "Fold 3": 1582, "Fold 4": 1184, "Fold 5": 1489, "Average": 1355}, {"Model": "Model 5", "Fold 1": 1378, "Fold 2": 1197, "Fold 3": 1558, "Fold 4": 1265, "Fold 5": 1468, "Average": 1373}]}, {"name": "complexity_data", "value": [{"n_coef": 3, "rmse": 1755, "series": "In-sample RMSE", "model": "Model 1"}, {"n_coef": 3, "rmse": 1770, "series": "Cross-validated RMSE", "model": "Model 1"}, {"n_coef": 4, "rmse": 1434, "series": "In-sample RMSE", "model": "Model 2"}, {"n_coef": 4, "rmse": 1441, "series": "Cross-validated RMSE", "model": "Model 2"}, {"n_coef": 9, "rmse": 1323, "series": "In-sample RMSE", "model": "Model 3"}, {"n_coef": 9, "rmse": 1349, "series": "Cross-validated RMSE", "model": "Model 3"}, {"n_coef": 13, "rmse": 1270, "series": "In-sample RMSE", "model": "Model 4"}, {"n_coef": 13, "rmse": 1355, "series": "Cross-validated RMSE", "model": "Model 4"}, {"n_coef": 22, "rmse": 1238, "series": "In-sample RMSE", "model": "Model 5"}, {"n_coef": 22, "rmse": 1373, "series": "Cross-validated RMSE", "model": "Model 5"}]}, {"name": "model3_summary_text", "value": "                            OLS Regression Results                            \n==============================================================================\nDep. Variable:                  price   R-squared:                       0.913\nModel:                            OLS   Adj. R-squared:                  0.910\nMethod:                 Least Squares   F-statistic:                     356.5\nDate:                Tue, 29 Sep 2026   Prob (F-statistic):          2.19e-139\nTime:                        13:21:51   Log-Likelihood:                -2418.4\nNo. Observations:                 281   AIC:                             4855.\nDf Residuals:                     272   BIC:                             4888.\nDf Model:                           8                                         \nCovariance Type:            nonrobust                                         \n==================================================================================\n                     coef    std err          t      P>|t|      [0.025      0.975]\n----------------------------------------------------------------------------------\nIntercept       1.942e+04    443.520     43.794      0.000    1.86e+04    2.03e+04\nage             -872.7027     75.848    -11.506      0.000   -1022.027    -723.378\nagesq             18.1927      2.670      6.815      0.000      12.937      23.449\nodometer        -778.2356     85.442     -9.108      0.000    -946.447    -610.024\nodometersq        18.7372      3.136      5.974      0.000      12.563      24.912\nLE                -6.5176    211.447     -0.031      0.975    -422.798     409.763\ncond_excellent   177.8462    195.419      0.910      0.364    -206.879     562.572\ncond_good        298.7953    215.459      1.387      0.167    -125.384     722.974\ndealer           573.0297    209.990      2.729      0.007     159.618     986.441\n=============================================================================="}, {"name": "single_split_output_text", "value": ">>> train, test = train_test_split(df, test_size=0.2, random_state=1)\n>>> model3_train = smf.ols('price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer', data=train).fit()\n>>> pred_test = model3_train.predict(test)\n>>> rmse_test = np.sqrt(np.mean((test['price'] - pred_test) ** 2))\n>>> round(rmse_test)\n1319"}, {"name": "split_instability_rows", "value": [{"draw": "Random draw 1", "rmse": 1259}, {"draw": "Random draw 2", "rmse": 1319}, {"draw": "Random draw 3", "rmse": 1298}, {"draw": "Random draw 4", "rmse": 1335}, {"draw": "Random draw 5", "rmse": 1451}]}, {"name": "split_instability_range", "value": "$1259\u2013$1451"}, {"name": "task1_output_text", "value": ">>> model1 = smf.ols('price ~ age + agesq', data=df).fit()\n>>> rmse1 = np.sqrt(np.mean(model1.resid ** 2))\n>>> round(rmse1)\n1755\n\n>>> model3 = smf.ols('price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer', data=df).fit()\n>>> rmse3 = np.sqrt(np.mean(model3.resid ** 2))\n>>> round(rmse3)\n1323"}, {"name": "task2_output_text", "value": ">>> # 5-fold CV, Model 1\n>>> round(cv_rmse_model1)\n1770\n\n>>> # 5-fold CV, Model 3\n>>> round(cv_rmse_model3)\n1349"}, {"name": "point_pred", "value": 6046}, {"name": "pi_lower", "value": 4291}, {"name": "pi_upper", "value": 7802}]}</script>
+<script type="ojs-define">{"contents": [{"name": "model_stats_markdown", "value": "| Model   |   N vars |   N coef |   R2 |   RMSE |   BIC |\n|:--------|---------:|---------:|-----:|-------:|------:|\n| Model 1 |        1 |        3 | 0.85 |   1755 |  5013 |\n| Model 2 |        2 |        4 | 0.9  |   1434 |  4905 |\n| Model 3 |        5 |        9 | 0.91 |   1323 |  4888 |\n| Model 4 |        6 |       13 | 0.92 |   1270 |  4887 |\n| Model 5 |        6 |       22 | 0.92 |   1238 |  4924 |"}, {"name": "model_stats_rows", "value": [{"Model": "Model 1", "N vars": 1, "N coef": 3, "R2": 0.85, "RMSE": 1755, "BIC": 5013}, {"Model": "Model 2", "N vars": 2, "N coef": 4, "R2": 0.9, "RMSE": 1434, "BIC": 4905}, {"Model": "Model 3", "N vars": 5, "N coef": 9, "R2": 0.91, "RMSE": 1323, "BIC": 4888}, {"Model": "Model 4", "N vars": 6, "N coef": 13, "R2": 0.92, "RMSE": 1270, "BIC": 4887}, {"Model": "Model 5", "N vars": 6, "N coef": 22, "R2": 0.92, "RMSE": 1238, "BIC": 4924}]}, {"name": "cv_stats_markdown", "value": "| Model   |   Fold 1 |   Fold 2 |   Fold 3 |   Fold 4 |   Fold 5 |   Average |\n|:--------|---------:|---------:|---------:|---------:|---------:|----------:|\n| Model 1 |     1831 |     1918 |     1768 |     1653 |     1686 |      1771 |\n| Model 2 |     1475 |     1576 |     1367 |     1428 |     1468 |      1463 |\n| Model 3 |     1319 |     1477 |     1199 |     1314 |     1490 |      1360 |\n| Model 4 |     1347 |     1432 |     1097 |     1354 |     1443 |      1335 |\n| Model 5 |     1376 |     1465 |     1150 |     1447 |     1469 |      1381 |"}, {"name": "cv_stats_rows", "value": [{"Model": "Model 1", "Fold 1": 1831, "Fold 2": 1918, "Fold 3": 1768, "Fold 4": 1653, "Fold 5": 1686, "Average": 1771}, {"Model": "Model 2", "Fold 1": 1475, "Fold 2": 1576, "Fold 3": 1367, "Fold 4": 1428, "Fold 5": 1468, "Average": 1463}, {"Model": "Model 3", "Fold 1": 1319, "Fold 2": 1477, "Fold 3": 1199, "Fold 4": 1314, "Fold 5": 1490, "Average": 1360}, {"Model": "Model 4", "Fold 1": 1347, "Fold 2": 1432, "Fold 3": 1097, "Fold 4": 1354, "Fold 5": 1443, "Average": 1335}, {"Model": "Model 5", "Fold 1": 1376, "Fold 2": 1465, "Fold 3": 1150, "Fold 4": 1447, "Fold 5": 1469, "Average": 1381}]}, {"name": "complexity_data", "value": [{"n_coef": 3, "rmse": 1755, "series": "In-sample RMSE", "model": "Model 1"}, {"n_coef": 3, "rmse": 1771, "series": "Cross-validated RMSE", "model": "Model 1"}, {"n_coef": 4, "rmse": 1434, "series": "In-sample RMSE", "model": "Model 2"}, {"n_coef": 4, "rmse": 1463, "series": "Cross-validated RMSE", "model": "Model 2"}, {"n_coef": 9, "rmse": 1323, "series": "In-sample RMSE", "model": "Model 3"}, {"n_coef": 9, "rmse": 1360, "series": "Cross-validated RMSE", "model": "Model 3"}, {"n_coef": 13, "rmse": 1270, "series": "In-sample RMSE", "model": "Model 4"}, {"n_coef": 13, "rmse": 1335, "series": "Cross-validated RMSE", "model": "Model 4"}, {"n_coef": 22, "rmse": 1238, "series": "In-sample RMSE", "model": "Model 5"}, {"n_coef": 22, "rmse": 1381, "series": "Cross-validated RMSE", "model": "Model 5"}]}, {"name": "single_split_output_text", "value": ">>> train, test = train_test_split(df, test_size=0.2, random_state=1)\n>>> model3_train = smf.ols('price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer', data=train).fit()\n>>> pred_test = model3_train.predict(test)\n>>> rmse_test = np.sqrt(np.mean((test['price'] - pred_test) ** 2))\n>>> round(rmse_test)\n1319"}, {"name": "split_instability_rows", "value": [{"draw": "Random draw 1", "rmse": "$1,259"}, {"draw": "Random draw 2", "rmse": "$1,319"}, {"draw": "Random draw 3", "rmse": "$1,298"}, {"draw": "Random draw 4", "rmse": "$1,335"}, {"draw": "Random draw 5", "rmse": "$1,451"}]}, {"name": "split_instability_range", "value": "$1,259\u2013$1,451"}, {"name": "task1_output_text", "value": ">>> model1 = smf.ols('price ~ age + agesq', data=df).fit()\n>>> rmse1 = np.sqrt(np.mean(model1.resid ** 2))\n>>> round(rmse1)\n1755\n\n>>> model3 = smf.ols('price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer', data=df).fit()\n>>> rmse3 = np.sqrt(np.mean(model3.resid ** 2))\n>>> round(rmse3)\n1323"}, {"name": "quick_rmse_text", "value": ">>> from sklearn.metrics import root_mean_squared_error\n>>> round(root_mean_squared_error(df['price'], model1.fittedvalues))\n1755\n\n>>> round(root_mean_squared_error(df['price'], model3.fittedvalues))\n1323"}, {"name": "mse_resid_rmse1", "value": 1765}, {"name": "mse_resid_rmse3", "value": 1344}, {"name": "task2_output_text", "value": ">>> # 5-fold CV, Model 1\n>>> round(cv_rmse_model1)\n1771\n\n>>> # 5-fold CV, Model 3\n>>> round(cv_rmse_model3)\n1360"}, {"name": "point_pred", "value": 6046}, {"name": "pi_lower", "value": 4291}, {"name": "pi_upper", "value": 7802}]}</script>
 </div>
 </div>
 <div class="cell hidden">
-<div class="sourceCode cell-code hidden" id="cb1" data-startfrom="164" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 163;"><span id="cb1-164"><a></a>{</span>
-<span id="cb1-165"><a></a>  <span class="co">// Generic "shrink on reveal" wiring, used by every chart wrapped as</span></span>
-<span id="cb1-166"><a></a>  <span class="co">// `:::: {.shrink-on-reveal data-frag="some-fragment-id" style="--large-height:...;--small-height:...;--shrink-scale:..."}`</span></span>
-<span id="cb1-167"><a></a>  <span class="co">// Each chart renders large while its named fragment is hidden, then</span></span>
-<span id="cb1-168"><a></a>  <span class="co">// shrinks smoothly to make room the moment that fragment is revealed.</span></span>
-<span id="cb1-169"><a></a>  <span class="co">// Sizes live entirely in each wrapper's own inline style — this cell only</span></span>
-<span id="cb1-170"><a></a>  <span class="co">// handles show/hide, once, for every wrapper on the page, so adding a new</span></span>
-<span id="cb1-171"><a></a>  <span class="co">// chart to this pattern never means touching this cell.</span></span>
-<span id="cb1-172"><a></a>  <span class="kw">const</span> wrapperFor <span class="op">=</span> (fragId) <span class="kw">=&gt;</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="vs">`.shrink-on-reveal[data-frag="</span><span class="sc">${</span>fragId<span class="sc">}</span><span class="vs">"]`</span>)</span>
-<span id="cb1-173"><a></a></span>
-<span id="cb1-174"><a></a>  <span class="co">// Sets each wrapper's correct starting state immediately, including on a</span></span>
-<span id="cb1-175"><a></a>  <span class="co">// reload or direct navigation to a slide whose fragment is already shown</span></span>
-<span id="cb1-176"><a></a>  <span class="co">// — matters because this cell (no reactive deps) only runs once, at load.</span></span>
-<span id="cb1-177"><a></a>  <span class="bu">document</span><span class="op">.</span><span class="fu">querySelectorAll</span>(<span class="st">'.shrink-on-reveal[data-frag]'</span>)<span class="op">.</span><span class="fu">forEach</span>(el <span class="kw">=&gt;</span> {</span>
-<span id="cb1-178"><a></a>    <span class="kw">const</span> frag <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">getElementById</span>(el<span class="op">.</span><span class="at">dataset</span><span class="op">.</span><span class="at">frag</span>)</span>
-<span id="cb1-179"><a></a>    el<span class="op">.</span><span class="at">classList</span><span class="op">.</span><span class="fu">toggle</span>(<span class="st">'is-small'</span><span class="op">,</span> <span class="op">!!</span>frag<span class="op">?.</span><span class="at">classList</span><span class="op">.</span><span class="fu">contains</span>(<span class="st">'visible'</span>))</span>
-<span id="cb1-180"><a></a>  })</span>
-<span id="cb1-181"><a></a></span>
-<span id="cb1-182"><a></a>  Reveal<span class="op">.</span><span class="fu">on</span>(<span class="st">'fragmentshown'</span><span class="op">,</span> (<span class="bu">event</span>) <span class="kw">=&gt;</span> {</span>
-<span id="cb1-183"><a></a>    <span class="fu">wrapperFor</span>(<span class="bu">event</span><span class="op">.</span><span class="at">fragment</span><span class="op">.</span><span class="at">id</span>)<span class="op">?.</span><span class="at">classList</span><span class="op">.</span><span class="fu">add</span>(<span class="st">'is-small'</span>)</span>
-<span id="cb1-184"><a></a>  })</span>
-<span id="cb1-185"><a></a>  Reveal<span class="op">.</span><span class="fu">on</span>(<span class="st">'fragmenthidden'</span><span class="op">,</span> (<span class="bu">event</span>) <span class="kw">=&gt;</span> {</span>
-<span id="cb1-186"><a></a>    <span class="fu">wrapperFor</span>(<span class="bu">event</span><span class="op">.</span><span class="at">fragment</span><span class="op">.</span><span class="at">id</span>)<span class="op">?.</span><span class="at">classList</span><span class="op">.</span><span class="fu">remove</span>(<span class="st">'is-small'</span>)</span>
-<span id="cb1-187"><a></a>  })</span>
-<span id="cb1-188"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb1" data-startfrom="173" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 172;"><span id="cb1-173"><a></a>{</span>
+<span id="cb1-174"><a></a>  <span class="co">// Generic "shrink on reveal" wiring, used by every chart wrapped as</span></span>
+<span id="cb1-175"><a></a>  <span class="co">// `:::: {.shrink-on-reveal data-frag="some-fragment-id" style="--large-height:...;--small-height:...;--shrink-scale:..."}`</span></span>
+<span id="cb1-176"><a></a>  <span class="co">// Each chart renders large while its named fragment is hidden, then</span></span>
+<span id="cb1-177"><a></a>  <span class="co">// shrinks smoothly to make room the moment that fragment is revealed.</span></span>
+<span id="cb1-178"><a></a>  <span class="co">// Sizes live entirely in each wrapper's own inline style — this cell only</span></span>
+<span id="cb1-179"><a></a>  <span class="co">// handles show/hide, once, for every wrapper on the page, so adding a new</span></span>
+<span id="cb1-180"><a></a>  <span class="co">// chart to this pattern never means touching this cell.</span></span>
+<span id="cb1-181"><a></a>  <span class="kw">const</span> wrapperFor <span class="op">=</span> (fragId) <span class="kw">=&gt;</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="vs">`.shrink-on-reveal[data-frag="</span><span class="sc">${</span>fragId<span class="sc">}</span><span class="vs">"]`</span>)</span>
+<span id="cb1-182"><a></a></span>
+<span id="cb1-183"><a></a>  <span class="co">// Sets each wrapper's correct starting state immediately, including on a</span></span>
+<span id="cb1-184"><a></a>  <span class="co">// reload or direct navigation to a slide whose fragment is already shown</span></span>
+<span id="cb1-185"><a></a>  <span class="co">// — matters because this cell (no reactive deps) only runs once, at load.</span></span>
+<span id="cb1-186"><a></a>  <span class="kw">const</span> syncAll <span class="op">=</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb1-187"><a></a>    <span class="bu">document</span><span class="op">.</span><span class="fu">querySelectorAll</span>(<span class="st">'.fragment[id]'</span>)<span class="op">.</span><span class="fu">forEach</span>(frag <span class="kw">=&gt;</span></span>
+<span id="cb1-188"><a></a>      <span class="fu">wrapperFor</span>(frag<span class="op">.</span><span class="at">id</span>)<span class="op">?.</span><span class="at">classList</span><span class="op">.</span><span class="fu">toggle</span>(<span class="st">'is-small'</span><span class="op">,</span> frag<span class="op">.</span><span class="at">classList</span><span class="op">.</span><span class="fu">contains</span>(<span class="st">'visible'</span>))</span>
+<span id="cb1-189"><a></a>    )</span>
+<span id="cb1-190"><a></a>  }</span>
+<span id="cb1-191"><a></a>  <span class="fu">syncAll</span>()</span>
+<span id="cb1-192"><a></a>  <span class="co">// PDF export rebuilds the slide DOM, so re-sync on any change (same fix as Weeks 2, 4, 5 and 6).</span></span>
+<span id="cb1-193"><a></a>  <span class="kw">new</span> <span class="bu">MutationObserver</span>(syncAll)<span class="op">.</span><span class="fu">observe</span>(<span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">,</span> { <span class="dt">childList</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">subtree</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">attributes</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">attributeFilter</span><span class="op">:</span> [<span class="st">'class'</span>] })</span>
+<span id="cb1-194"><a></a></span>
+<span id="cb1-195"><a></a>  Reveal<span class="op">.</span><span class="fu">on</span>(<span class="st">'fragmentshown'</span><span class="op">,</span> (<span class="bu">event</span>) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-196"><a></a>    <span class="fu">wrapperFor</span>(<span class="bu">event</span><span class="op">.</span><span class="at">fragment</span><span class="op">.</span><span class="at">id</span>)<span class="op">?.</span><span class="at">classList</span><span class="op">.</span><span class="fu">add</span>(<span class="st">'is-small'</span>)</span>
+<span id="cb1-197"><a></a>  })</span>
+<span id="cb1-198"><a></a>  Reveal<span class="op">.</span><span class="fu">on</span>(<span class="st">'fragmenthidden'</span><span class="op">,</span> (<span class="bu">event</span>) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-199"><a></a>    <span class="fu">wrapperFor</span>(<span class="bu">event</span><span class="op">.</span><span class="at">fragment</span><span class="op">.</span><span class="at">id</span>)<span class="op">?.</span><span class="at">classList</span><span class="op">.</span><span class="fu">remove</span>(<span class="st">'is-small'</span>)</span>
+<span id="cb1-200"><a></a>  })</span>
+<span id="cb1-201"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display hidden">
 <div id="ojs-cell-1" data-nodetype="expression">
 
@@ -250,11 +254,32 @@
 <h2></h2>
 <div style="text-align: center; padding-top: 180px;">
 <p><span style="font-size: 2.2em; color: white;"><strong>Prediction</strong></span></p>
-<p><span style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;">Every model so far has answered “what’s the relationship?” This week asks a different question: “what’s my best guess for this new observation?”</span></p>
+<p><span style="font-size: 1.1em; color: #aaa; padding-top: 20px; display: block;">So far we have been mostly concerned with answering “what’s the relationship?” This week asks a different question: “what’s my best guess for this new observation?”</span></p>
+</div>
+</section>
+<section id="two-kinds-of-question" class="slide level2">
+<h2>Two kinds of question</h2>
+<div style="font-size: 1.35em; text-align: center; padding: 30px 40px 10px; color: #1a1a2e;">
+<p>“Estimation is about solving <span class="math inline">\(\hat\beta\)</span> problems, while prediction is about solving <span class="math inline">\(\hat Y\)</span> problems.”</p>
+</div>
+<div style="font-size:0.75em;color:#999;text-align:center;margin-bottom:24px;">
+<p><em>AEA Papers and Proceedings</em> (2025), doi:10.1257/pandp.20251118</p>
+</div>
+<div class="fragment">
+<ul>
+<li>A <span class="math inline">\(\hat\beta\)</span> problem: we care about a coefficient. If we change <span class="math inline">\(x\)</span>, how much does <span class="math inline">\(y\)</span> change? That’s been every week so far, and last week’s causal question was the hardest version of it</li>
+<li>A <span class="math inline">\(\hat Y\)</span> problem: we care about the guess. For a new case, how close does our prediction get? That’s this week</li>
+</ul>
 </div>
 </section>
 <section id="selling-your-car" class="slide level2">
 <h2>Selling your car</h2>
+<style>
+.reveal .mid-code div.sourceCode { font-size: 0.56em !important; }
+.reveal .mid-code div.sourceCode pre.sourceCode { font-size: 1em !important; }
+.reveal .small-code div.sourceCode { font-size: 0.5em !important; }
+.reveal .small-code div.sourceCode pre.sourceCode { font-size: 1em !important; }
+</style>
 <div class="instructions-box">
 <p><strong>Business question</strong>: You want to sell your Toyota Camry through an online ad. What price do you put in the listing?</p>
 </div>
@@ -357,29 +382,52 @@
 </section>
 <section id="loss-functions-of-various-shapes" class="slide level2">
 <h2>Loss functions of various shapes</h2>
+<div class="two-col">
+<div>
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="310" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 309;"><span id="cb2-310"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
-<span id="cb2-311"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">640</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">560</span><span class="op">,</span></span>
-<span id="cb2-312"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Prediction error"</span>}<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Loss"</span>}<span class="op">,</span></span>
-<span id="cb2-313"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
-<span id="cb2-314"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(d3<span class="op">.</span><span class="fu">range</span>(<span class="op">-</span><span class="dv">10</span><span class="op">,</span> <span class="fl">10.1</span><span class="op">,</span> <span class="fl">0.2</span>)<span class="op">.</span><span class="fu">map</span>(e <span class="kw">=&gt;</span> ({e<span class="op">,</span> <span class="dt">loss</span><span class="op">:</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">abs</span>(e) <span class="op">*</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">series</span><span class="op">:</span> <span class="st">"symmetric, linear"</span>}))<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"e"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"loss"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"series"</span>})<span class="op">,</span></span>
-<span id="cb2-315"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(d3<span class="op">.</span><span class="fu">range</span>(<span class="op">-</span><span class="dv">10</span><span class="op">,</span> <span class="fl">10.1</span><span class="op">,</span> <span class="fl">0.2</span>)<span class="op">.</span><span class="fu">map</span>(e <span class="kw">=&gt;</span> ({e<span class="op">,</span> <span class="dt">loss</span><span class="op">:</span> (e <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> <span class="fl">0.3</span><span class="op">,</span> <span class="dt">series</span><span class="op">:</span> <span class="st">"symmetric, convex"</span>}))<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"e"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"loss"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"series"</span>})<span class="op">,</span></span>
-<span id="cb2-316"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(d3<span class="op">.</span><span class="fu">range</span>(<span class="op">-</span><span class="dv">10</span><span class="op">,</span> <span class="fl">10.1</span><span class="op">,</span> <span class="fl">0.2</span>)<span class="op">.</span><span class="fu">map</span>(e <span class="kw">=&gt;</span> ({e<span class="op">,</span> <span class="dt">loss</span><span class="op">:</span> e <span class="op">&gt;=</span> <span class="dv">0</span> <span class="op">?</span> (e <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> <span class="fl">0.3</span> <span class="op">:</span> (e <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> <span class="fl">0.15</span><span class="op">,</span> <span class="dt">series</span><span class="op">:</span> <span class="st">"asymmetric, convex"</span>}))<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"e"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"loss"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"series"</span>})</span>
-<span id="cb2-317"><a></a>  ]<span class="op">,</span></span>
-<span id="cb2-318"><a></a>  <span class="dt">color</span><span class="op">:</span> {<span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}</span>
-<span id="cb2-319"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="350" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 349;"><span id="cb2-350"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb2-351"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">460</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">420</span><span class="op">,</span></span>
+<span id="cb2-352"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Prediction error"</span>}<span class="op">,</span> <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Loss"</span>}<span class="op">,</span></span>
+<span id="cb2-353"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb2-354"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(d3<span class="op">.</span><span class="fu">range</span>(<span class="op">-</span><span class="dv">10</span><span class="op">,</span> <span class="fl">10.1</span><span class="op">,</span> <span class="fl">0.2</span>)<span class="op">.</span><span class="fu">map</span>(e <span class="kw">=&gt;</span> ({e<span class="op">,</span> <span class="dt">loss</span><span class="op">:</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">abs</span>(e) <span class="op">*</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">series</span><span class="op">:</span> <span class="st">"symmetric, linear"</span>}))<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"e"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"loss"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"series"</span>})<span class="op">,</span></span>
+<span id="cb2-355"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(d3<span class="op">.</span><span class="fu">range</span>(<span class="op">-</span><span class="dv">10</span><span class="op">,</span> <span class="fl">10.1</span><span class="op">,</span> <span class="fl">0.2</span>)<span class="op">.</span><span class="fu">map</span>(e <span class="kw">=&gt;</span> ({e<span class="op">,</span> <span class="dt">loss</span><span class="op">:</span> (e <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> <span class="fl">0.3</span><span class="op">,</span> <span class="dt">series</span><span class="op">:</span> <span class="st">"symmetric, convex"</span>}))<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"e"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"loss"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"series"</span>})<span class="op">,</span></span>
+<span id="cb2-356"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(d3<span class="op">.</span><span class="fu">range</span>(<span class="op">-</span><span class="dv">10</span><span class="op">,</span> <span class="fl">10.1</span><span class="op">,</span> <span class="fl">0.2</span>)<span class="op">.</span><span class="fu">map</span>(e <span class="kw">=&gt;</span> ({e<span class="op">,</span> <span class="dt">loss</span><span class="op">:</span> e <span class="op">&gt;=</span> <span class="dv">0</span> <span class="op">?</span> (e <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> <span class="fl">0.3</span> <span class="op">:</span> (e <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> <span class="fl">0.15</span><span class="op">,</span> <span class="dt">series</span><span class="op">:</span> <span class="st">"asymmetric, convex"</span>}))<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"e"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"loss"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"series"</span>})</span>
+<span id="cb2-357"><a></a>  ]<span class="op">,</span></span>
+<span id="cb2-358"><a></a>  <span class="dt">color</span><span class="op">:</span> {<span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}</span>
+<span id="cb2-359"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="ojs-cell-2" data-nodetype="expression">
 
 </div>
 </div>
 </div>
+</div>
+<div style="font-size:0.85em;padding-top:30px;">
+<ul>
+<li><strong>Symmetric, linear</strong> — a weather forecaster’s temperature guess: being off by 4° costs exactly twice being off by 2°, in either direction</li>
+<li><strong>Symmetric, convex</strong> — a courier estimating delivery time: a few small misses barely matter, but one wildly late parcel is disproportionately costly. This is squared loss’s own shape — the default, and what OLS is built to minimise</li>
+<li><strong>Asymmetric, convex</strong> — a hospital forecasting tomorrow’s bed demand: running short costs far more than a few empty beds</li>
+</ul>
+</div>
+</div>
 </section>
-<section id="would-either-example-change-your-loss-function" class="slide level2">
-<h2>Would either example change your loss function?</h2>
+<section id="task-would-either-example-change-your-loss-function" class="slide level2">
+<h2>Task — would either example change your loss function?</h2>
 <div class="instructions-box">
 <p><strong>Selling your car</strong>: a too-low price sells fast but leaves money on the table; a too-high price means waiting, and maybe revising the price down later. What loss function fits that?</p>
 <p><strong>A bank deciding on a loan</strong>: rejecting a debtor who would have repaid costs a missed opportunity; approving one who defaults costs real money directly. Are those two kinds of error the same size?</p>
+</div>
+</section>
+<section id="what-you-should-have-found" class="slide level2">
+<h2>What you should have found</h2>
+<div class="fragment">
+<p><strong>Selling your car</strong>: both errors cost something, but not the same thing — a too-low price is pure lost money, a too-high price mainly costs time (and the hassle of cutting it later). There’s no single right answer, but it’s reasonable to weight the two unevenly — an <strong>asymmetric</strong> loss, not the symmetric default.</p>
+</div>
+<div class="fragment">
+<p><strong>A bank deciding on a loan</strong>: clearly asymmetric. Approving a borrower who defaults loses real money — potentially the whole loan. Rejecting one who would have repaid only loses the interest you’d have earned. A bank’s loss function should weight the first error much more heavily than the second.</p>
+</div>
+<div class="fragment">
+<p>Neither case is symmetric or squared-error by default. <strong>Squared loss is the convenient, common choice — not the automatically correct one.</strong> The rest of today uses it because it’s what OLS is built around, but the shape of the loss function is itself a business decision.</p>
 </div>
 </section>
 <section id="mean-squared-error-and-rmse" class="slide level2">
@@ -388,7 +436,7 @@
 <p><span class="math display">\[MSE = \frac{1}{K}\sum_{k=1}^{K}(\hat y_k - y_k)^2 \qquad RMSE = \sqrt{MSE}\]</span></p>
 <ul>
 <li>Squared loss is symmetric and convex — the most widely used loss function</li>
-<li><span class="math inline">\(MSE\)</span> minimisation is exactly what OLS already does — that’s why the average is the best predictor under squared loss</li>
+<li>OLS chooses its coefficients to make the in-sample MSE as small as possible, so squared loss is the loss OLS is built for</li>
 <li><span class="math inline">\(RMSE\)</span> is easier to interpret: it’s back in the original units (dollars, not dollars²)</li>
 </ul>
 </section>
@@ -399,7 +447,7 @@
 <ul>
 <li><strong>Bias</strong> (<span class="math inline">\(\bar e\)</span>): the average prediction error across all <span class="math inline">\(K\)</span> observations. Zero for an unbiased predictor.</li>
 <li><strong>Variance</strong>: how much each error <span class="math inline">\(e_k\)</span> varies around <em>that average</em> — not how much <span class="math inline">\(y\)</span> itself varies.</li>
-<li>OLS is unbiased. Some other methods (LASSO, later this week’s online session) trade a little bias for a lot less variance.</li>
+<li>OLS is unbiased. Some other methods, such as LASSO in the online session, trade a little bias for a lot less variance.</li>
 </ul>
 <div style="font-size:0.75em;color:#999;margin-top:12px;">
 <p>Source: Békés &amp; Kézdi (2021), Ch. 13</p>
@@ -430,27 +478,19 @@ M_4:\ &amp; M_3 + \beta_9\,XLE + \beta_{10}\,SE + \beta_{11}\,cond_{new} + \beta
 M_5:\ &amp; M_4 + \big(LE + XLE + SE + cond_{new} + cond_{exc} + cond_{good} + cylind6 + odometer + dealer\big) \times age
 \end{aligned}
 \]</span></p>
+<div class="small-code">
 <div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
 <span id="cb3-2"><a></a></span>
 <span id="cb3-3"><a></a>model1 <span class="op">=</span> smf.ols(<span class="st">"price ~ age + agesq"</span>, data<span class="op">=</span>df).fit()</span>
 <span id="cb3-4"><a></a>model2 <span class="op">=</span> smf.ols(<span class="st">"price ~ age + agesq + odometer"</span>, data<span class="op">=</span>df).fit()</span>
 <span id="cb3-5"><a></a>model3 <span class="op">=</span> smf.ols(<span class="st">"price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer"</span>, data<span class="op">=</span>df).fit()</span>
-<span id="cb3-6"><a></a>model4 <span class="op">=</span> smf.ols(<span class="st">"price ~ age + agesq + odometer + odometersq + LE + XLE + SE + cond_likenew + cond_excellent + cond_good + cylind6 + dealer"</span>, data<span class="op">=</span>df).fit()</span>
-<span id="cb3-7"><a></a>model5 <span class="op">=</span> smf.ols(<span class="st">"price ~ age + agesq + odometer + odometersq + LE*age + XLE*age + SE*age + cond_likenew*age + cond_excellent*age + cond_good*age + cylind6*age + odometer*age + dealer*age"</span>, data<span class="op">=</span>df).fit()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-6"><a></a>model4 <span class="op">=</span> smf.ols(<span class="st">"price ~ age + agesq + odometer + odometersq + LE + XLE + SE"</span></span>
+<span id="cb3-7"><a></a>                 <span class="st">" + cond_likenew + cond_excellent + cond_good + cylind6 + dealer"</span>, data<span class="op">=</span>df).fit()</span>
+<span id="cb3-8"><a></a>model5 <span class="op">=</span> smf.ols(<span class="st">"price ~ age + agesq + odometer + odometersq + LE*age + XLE*age + SE*age"</span></span>
+<span id="cb3-9"><a></a>                 <span class="st">" + cond_likenew*age + cond_excellent*age + cond_good*age + cylind6*age"</span></span>
+<span id="cb3-10"><a></a>                 <span class="st">" + odometer*age + dealer*age"</span>, data<span class="op">=</span>df).fit()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <p>Each model adds more: mileage, trim, condition, dealer status, and finally full interactions with age.</p>
-</section>
-<section id="reading-real-output-model-3" class="slide level2">
-<h2>Reading real output — Model 3</h2>
-<div class="cell">
-<div class="sourceCode cell-code hidden" id="cb4" data-startfrom="397" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 396;"><span id="cb4-397"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.5em;line-height:1.35;</span></span>
-<span id="cb4-398"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
-<span id="cb4-399"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>model3_summary_text<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div id="ojs-cell-3" data-nodetype="expression">
-
-</div>
-</div>
-</div>
 </section>
 <section id="task-fit-model-1-and-model-3-yourself" class="slide level2">
 <h2>Task — fit Model 1 and Model 3 yourself</h2>
@@ -459,25 +499,44 @@ M_5:\ &amp; M_4 + \big(LE + XLE + SE + cond_{new} + cond_{exc} + cond_{good} + c
 <p>Open the Colab notebook — <code>data_path</code> is already defined for you. Load it into a dataframe and fit Model 1 (<code>price ~ age + agesq</code>) and Model 3 (add <code>odometer</code>, <code>odometersq</code>, <code>LE</code>, <code>cond_excellent</code>, <code>cond_good</code>, <code>dealer</code>) with <code>smf.ols</code>. Compute the <strong>in-sample RMSE</strong> for each from the residuals — don’t use a library shortcut. No further syntax hints.</p>
 </div>
 </section>
-<section id="what-you-should-have-found" class="slide level2">
+<section id="what-you-should-have-found-1" class="slide level2">
 <h2>What you should have found</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a></a>model1 <span class="op">=</span> smf.ols(<span class="st">'price ~ age + agesq'</span>, data<span class="op">=</span>df).fit()</span>
-<span id="cb5-2"><a></a>rmse1 <span class="op">=</span> np.sqrt(np.mean(model1.resid <span class="op">**</span> <span class="dv">2</span>))</span>
-<span id="cb5-3"><a></a></span>
-<span id="cb5-4"><a></a>model3 <span class="op">=</span> smf.ols(<span class="st">'price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer'</span>, data<span class="op">=</span>df).fit()</span>
-<span id="cb5-5"><a></a>rmse3 <span class="op">=</span> np.sqrt(np.mean(model3.resid <span class="op">**</span> <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="mid-code">
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a></a>model1 <span class="op">=</span> smf.ols(<span class="st">'price ~ age + agesq'</span>, data<span class="op">=</span>df).fit()</span>
+<span id="cb4-2"><a></a>rmse1 <span class="op">=</span> np.sqrt(np.mean(model1.resid <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb4-3"><a></a></span>
+<span id="cb4-4"><a></a>model3 <span class="op">=</span> smf.ols(<span class="st">'price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer'</span>, data<span class="op">=</span>df).fit()</span>
+<span id="cb4-5"><a></a>rmse3 <span class="op">=</span> np.sqrt(np.mean(model3.resid <span class="op">**</span> <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb6" data-startfrom="421" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 420;"><span id="cb6-421"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.62em;line-height:1.4;</span></span>
-<span id="cb6-422"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
-<span id="cb6-423"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>task1_output_text<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb5" data-startfrom="482" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 481;"><span id="cb5-482"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.62em;line-height:1.4;</span></span>
+<span id="cb5-483"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
+<span id="cb5-484"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>task1_output_text<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<div id="ojs-cell-4" data-nodetype="expression">
+<div id="ojs-cell-3" data-nodetype="expression">
 
 </div>
 </div>
 </div>
 <div class="instructions-box">
 <p>Model 3’s RMSE is noticeably lower than Model 1’s. Does that automatically make Model 3 the better model to actually use? What would you need to know to answer that?</p>
+</div>
+</section>
+<section id="a-quick-way-to-get-the-same-number" class="slide level2">
+<h2>A quick way to get the same number</h2>
+<p>Once you have a fitted model, you don’t have to write the formula out by hand:</p>
+<div class="cell">
+<div class="sourceCode cell-code hidden" id="cb6" data-startfrom="496" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 495;"><span id="cb6-496"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.62em;line-height:1.4;</span></span>
+<span id="cb6-497"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
+<span id="cb6-498"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>quick_rmse_text<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-4" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Careful: statsmodels’ own <code>np.sqrt(model.mse_resid)</code> is <strong>not</strong> the same number — it divides by <span class="math inline">\(n-k\)</span>, not <span class="math inline">\(n\)</span> (the same df-correction idea as the SD back in Week 1), giving <span><span id="ojs-element-id-1"></span></span> and <span><span id="ojs-element-id-2"></span></span> here instead. For the plain in-sample RMSE used all session, use <code>sklearn</code>’s version, or the by-hand formula.</p>
 </div>
 </section>
 <section id="overfitting" class="slide level2">
@@ -510,7 +569,7 @@ M_5:\ &amp; M_4 + \big(LE + XLE + SE + cond_{new} + cond_{exc} + cond_{good} + c
 <p>In-sample RMSE can’t catch overfitting — it’s measured on the same data the model was fit to, so it rewards complexity by construction.</p>
 <div class="fragment">
 <p>We don’t have live data yet, but we can <em>pretend</em>: hold back some of the original data, fit the model without it, then see how well the model predicts the part it never saw.</p>
-<p>Do that a few times and average the results — that’s what the chart’s <strong>cross-validated RMSE</strong> line means. The full mechanics come shortly.</p>
+<p>Do that a few times and average the results — this is called <strong>cross-validated RMSE</strong>.</p>
 </div>
 </section>
 <section id="the-complexity-curve-on-our-own-data" class="slide level2">
@@ -518,17 +577,17 @@ M_5:\ &amp; M_4 + \big(LE + XLE + SE + cond_{new} + cond_{exc} + cond_{good} + c
 <div class="shrink-on-reveal" data-frag="wk10-complexity-frag" style="--large-height:560px;--small-height:380px;--shrink-scale:0.679;">
 <div class="shrink-on-reveal-inner">
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="473" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 472;"><span id="cb7-473"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
-<span id="cb7-474"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">700</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">560</span><span class="op">,</span></span>
-<span id="cb7-475"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Number of coefficients"</span>}<span class="op">,</span></span>
-<span id="cb7-476"><a></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"RMSE ($)"</span>}<span class="op">,</span></span>
-<span id="cb7-477"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
-<span id="cb7-478"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(complexity_data<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"n_coef"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"rmse"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"series"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">2.5</span>})<span class="op">,</span></span>
-<span id="cb7-479"><a></a>    Plot<span class="op">.</span><span class="fu">dot</span>(complexity_data<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"n_coef"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"rmse"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"series"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">4</span>})<span class="op">,</span></span>
-<span id="cb7-480"><a></a>    Plot<span class="op">.</span><span class="fu">text</span>(complexity_data<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">series</span> <span class="op">===</span> <span class="st">"In-sample RMSE"</span>)<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"n_coef"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"rmse"</span><span class="op">,</span> <span class="dt">text</span><span class="op">:</span> <span class="st">"model"</span><span class="op">,</span> <span class="dt">dy</span><span class="op">:</span> <span class="op">-</span><span class="dv">12</span><span class="op">,</span> <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">10</span>})</span>
-<span id="cb7-481"><a></a>  ]<span class="op">,</span></span>
-<span id="cb7-482"><a></a>  <span class="dt">color</span><span class="op">:</span> {<span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}</span>
-<span id="cb7-483"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="548" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 547;"><span id="cb7-548"><a></a>Plot<span class="op">.</span><span class="fu">plot</span>({</span>
+<span id="cb7-549"><a></a>  <span class="dt">width</span><span class="op">:</span> <span class="dv">700</span><span class="op">,</span> <span class="dt">height</span><span class="op">:</span> <span class="dv">560</span><span class="op">,</span></span>
+<span id="cb7-550"><a></a>  <span class="dt">x</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"Number of coefficients"</span>}<span class="op">,</span></span>
+<span id="cb7-551"><a></a>  <span class="dt">y</span><span class="op">:</span> {<span class="dt">label</span><span class="op">:</span> <span class="st">"RMSE ($)"</span>}<span class="op">,</span></span>
+<span id="cb7-552"><a></a>  <span class="dt">marks</span><span class="op">:</span> [</span>
+<span id="cb7-553"><a></a>    Plot<span class="op">.</span><span class="fu">line</span>(complexity_data<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"n_coef"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"rmse"</span><span class="op">,</span> <span class="dt">stroke</span><span class="op">:</span> <span class="st">"series"</span><span class="op">,</span> <span class="dt">strokeWidth</span><span class="op">:</span> <span class="fl">2.5</span>})<span class="op">,</span></span>
+<span id="cb7-554"><a></a>    Plot<span class="op">.</span><span class="fu">dot</span>(complexity_data<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"n_coef"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"rmse"</span><span class="op">,</span> <span class="dt">fill</span><span class="op">:</span> <span class="st">"series"</span><span class="op">,</span> <span class="dt">r</span><span class="op">:</span> <span class="dv">4</span>})<span class="op">,</span></span>
+<span id="cb7-555"><a></a>    Plot<span class="op">.</span><span class="fu">text</span>(complexity_data<span class="op">.</span><span class="fu">filter</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">series</span> <span class="op">===</span> <span class="st">"In-sample RMSE"</span>)<span class="op">,</span> {<span class="dt">x</span><span class="op">:</span> <span class="st">"n_coef"</span><span class="op">,</span> <span class="dt">y</span><span class="op">:</span> <span class="st">"rmse"</span><span class="op">,</span> <span class="dt">text</span><span class="op">:</span> <span class="st">"model"</span><span class="op">,</span> <span class="dt">dy</span><span class="op">:</span> <span class="op">-</span><span class="dv">12</span><span class="op">,</span> <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">10</span>})</span>
+<span id="cb7-556"><a></a>  ]<span class="op">,</span></span>
+<span id="cb7-557"><a></a>  <span class="dt">color</span><span class="op">:</span> {<span class="dt">legend</span><span class="op">:</span> <span class="kw">true</span>}</span>
+<span id="cb7-558"><a></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="ojs-cell-5" data-nodetype="expression">
 
@@ -538,7 +597,7 @@ M_5:\ &amp; M_4 + \big(LE + XLE + SE + cond_{new} + cond_{exc} + cond_{good} + c
 </div>
 </div>
 <div id="wk10-complexity-frag" class="fragment">
-<p>In-sample RMSE falls the whole way to Model 5. Cross-validated RMSE — the held-back-data kind — bottoms out at Model 3–4 and <strong>rises</strong> at Model 5. A real overfitting signal, not a hypothetical one.</p>
+<p>In-sample RMSE falls the whole way to Model 5. Cross-validated RMSE, measured on held-back data, bottoms out at Models 3–4 and <strong>rises</strong> at Model 5. That rise is overfitting.</p>
 </div>
 </section>
 <section id="finding-the-best-model" class="slide level2">
@@ -549,32 +608,35 @@ M_5:\ &amp; M_4 + \big(LE + XLE + SE + cond_{new} + cond_{exc} + cond_{good} + c
 <p><strong>Approach 1 — indirectly.</strong> Fit on all the data, use a fit measure with a built-in penalty for the number of parameters.</p>
 <p><strong>Approach 2 — directly.</strong> Actually hold data back, and see how the model does on data it never saw.</p>
 </section>
-<section id="the-bic-and-aic" class="slide level2">
+<section id="the-bic-and-aic" class="slide level2 smaller">
 <h2>The BIC (and AIC)</h2>
 <p>Both take the same starting point — the model’s log-likelihood — and add a penalty for the number of parameters, <span class="math inline">\(k\)</span>:</p>
 <p><span class="math display">\[AIC = -2 \times \ln(likelihood) + 2 \times k \qquad\qquad BIC = -2 \times \ln(likelihood) + \ln(N) \times k\]</span></p>
 <ul>
 <li>Same idea, different penalty: BIC’s penalty (<span class="math inline">\(\ln N\)</span> per parameter) is heavier than AIC’s (a flat 2 per parameter) once <span class="math inline">\(N &gt; 7\)</span></li>
 <li>No sample splitting needed — useful when data is limited</li>
-<li><strong>The likelihood requires a distributional assumption</strong> — for OLS, that the residuals are normally distributed. Neither AIC nor BIC is free: this is the price for not having to hold data back.</li>
+<li><strong>AIC and BIC don’t inherently need normality</strong> — they work with whatever likelihood the model actually has (Week 8’s logit/probit AIC/BIC used a Bernoulli likelihood, no normality involved). But the formula above, the one used for OLS, comes from assuming the residuals are normal: that’s what turns “likelihood” into something computable from the residual sum of squares alone. Using it doesn’t come for free — this assumption is the price for not having to hold data back.</li>
 <li><strong>Don’t</strong> use plain <span class="math inline">\(R^2\)</span> or MSE for model choice — they never penalise complexity, so they always favour the most complex model</li>
 <li>In practice, this course uses <strong>BIC</strong>, not AIC — Gabor &amp; Kézdi’s own recommendation</li>
 </ul>
 </section>
-<section id="bic-on-our-own-data" class="slide level2">
-<h2>BIC on our own data</h2>
+<section id="task-read-the-bic" class="slide level2">
+<h2>Task — read the BIC</h2>
+<div class="instructions-box">
+<p><strong>Business question</strong>: based on BIC alone, which model would you pick — and why? What does RMSE alone tell you to pick instead?</p>
+</div>
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb8" data-startfrom="519" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 518;"><span id="cb8-519"><a></a>{</span>
-<span id="cb8-520"><a></a>  <span class="kw">const</span> cols <span class="op">=</span> [<span class="st">"Model"</span><span class="op">,</span> <span class="st">"N vars"</span><span class="op">,</span> <span class="st">"N coef"</span><span class="op">,</span> <span class="st">"R2"</span><span class="op">,</span> <span class="st">"RMSE"</span><span class="op">,</span> <span class="st">"BIC"</span>]<span class="op">;</span></span>
-<span id="cb8-521"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:20px auto 0;font-family:sans-serif;font-size:1.05em;border-collapse:collapse;"&gt;</span></span>
-<span id="cb8-522"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;</span></span>
-<span id="cb8-523"><a></a><span class="vs">      </span><span class="sc">${</span>cols<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> <span class="vs">`&lt;th style="padding:6px 20px;text-align:center;"&gt;</span><span class="sc">${</span>c<span class="sc">}</span><span class="vs">&lt;/th&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
-<span id="cb8-524"><a></a><span class="vs">    &lt;/tr&gt;</span></span>
-<span id="cb8-525"><a></a><span class="vs">    </span><span class="sc">${</span>model_stats_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`</span></span>
-<span id="cb8-526"><a></a><span class="vs">      &lt;tr style="border-bottom:1px solid #ddd;"&gt;</span><span class="sc">${</span>cols<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> <span class="vs">`&lt;td style="padding:5px 20px;text-align:center;"&gt;</span><span class="sc">${</span>d[c]<span class="sc">}</span><span class="vs">&lt;/td&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span><span class="vs">&lt;/tr&gt;</span></span>
-<span id="cb8-527"><a></a><span class="vs">    `</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
-<span id="cb8-528"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
-<span id="cb8-529"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb8" data-startfrom="598" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 597;"><span id="cb8-598"><a></a>{</span>
+<span id="cb8-599"><a></a>  <span class="kw">const</span> cols <span class="op">=</span> [<span class="st">"Model"</span><span class="op">,</span> <span class="st">"N vars"</span><span class="op">,</span> <span class="st">"N coef"</span><span class="op">,</span> <span class="st">"R2"</span><span class="op">,</span> <span class="st">"RMSE"</span><span class="op">,</span> <span class="st">"BIC"</span>]<span class="op">;</span></span>
+<span id="cb8-600"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:20px auto 0;font-family:sans-serif;font-size:1.05em;border-collapse:collapse;"&gt;</span></span>
+<span id="cb8-601"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;</span></span>
+<span id="cb8-602"><a></a><span class="vs">      </span><span class="sc">${</span>cols<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> <span class="vs">`&lt;th style="padding:6px 20px;text-align:center;"&gt;</span><span class="sc">${</span>c<span class="sc">}</span><span class="vs">&lt;/th&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb8-603"><a></a><span class="vs">    &lt;/tr&gt;</span></span>
+<span id="cb8-604"><a></a><span class="vs">    </span><span class="sc">${</span>model_stats_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`</span></span>
+<span id="cb8-605"><a></a><span class="vs">      &lt;tr style="border-bottom:1px solid #ddd;"&gt;</span><span class="sc">${</span>cols<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> <span class="vs">`&lt;td style="padding:5px 20px;text-align:center;"&gt;</span><span class="sc">${</span>d[c]<span class="sc">}</span><span class="vs">&lt;/td&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span><span class="vs">&lt;/tr&gt;</span></span>
+<span id="cb8-606"><a></a><span class="vs">    `</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb8-607"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
+<span id="cb8-608"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="ojs-cell-6" data-nodetype="expression">
 
@@ -582,7 +644,7 @@ M_5:\ &amp; M_4 + \big(LE + XLE + SE + cond_{new} + cond_{exc} + cond_{good} + c
 </div>
 </div>
 <div class="fragment">
-<p>BIC is lowest for <strong>Model 3</strong>. Model 4 is close behind. Model 5 — despite having the lowest in-sample RMSE — has the worst BIC of the five: the extra interactions aren’t worth their complexity penalty.</p>
+<p>Models 3 and 4 are effectively tied: Model 4’s BIC is lower by one point. Model 5, despite the lowest in-sample RMSE, has a worse BIC than either: the extra interactions aren’t worth their complexity penalty. RMSE alone would have pointed to Model 5 — exactly the trap the complexity penalty exists to catch.</p>
 </div>
 </section>
 <section id="training-and-test-samples" class="slide level2">
@@ -596,16 +658,18 @@ M_5:\ &amp; M_4 + \big(LE + XLE + SE + cond_{new} + cond_{exc} + cond_{good} + c
 </section>
 <section id="a-single-split-in-code" class="slide level2">
 <h2>A single split, in code</h2>
+<div class="mid-code">
 <div class="sourceCode" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
 <span id="cb9-2"><a></a></span>
 <span id="cb9-3"><a></a>train, test <span class="op">=</span> train_test_split(df, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb9-4"><a></a>model3_train <span class="op">=</span> smf.ols(<span class="st">'price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer'</span>, data<span class="op">=</span>train).fit()</span>
 <span id="cb9-5"><a></a>pred_test <span class="op">=</span> model3_train.predict(test)</span>
 <span id="cb9-6"><a></a>rmse_test <span class="op">=</span> np.sqrt(np.mean((test[<span class="st">'price'</span>] <span class="op">-</span> pred_test) <span class="op">**</span> <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb10" data-startfrom="555" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 554;"><span id="cb10-555"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.62em;line-height:1.4;</span></span>
-<span id="cb10-556"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
-<span id="cb10-557"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>single_split_output_text<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb10" data-startfrom="636" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 635;"><span id="cb10-636"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.62em;line-height:1.4;</span></span>
+<span id="cb10-637"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
+<span id="cb10-638"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>single_split_output_text<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="ojs-cell-7" data-nodetype="expression">
 
@@ -614,16 +678,23 @@ M_5:\ &amp; M_4 + \big(LE + XLE + SE + cond_{new} + cond_{exc} + cond_{good} + c
 </div>
 <p>Fit on 80% of the cars, predicted the other 20%, measured how far off we were — never touching the test rows while fitting.</p>
 </section>
-<section id="why-one-split-isnt-enough" class="slide level2">
-<h2>Why one split isn’t enough</h2>
+<section id="task-why-one-split-isnt-enough" class="slide level2">
+<h2>Task — why one split isn’t enough</h2>
+<div class="instructions-box">
+<p><strong>Business question</strong>: same code, same model — does the test RMSE depend on luck?</p>
+<p>Same notebook, same Model 3 code from the last slide. Each group gets a different <code>random_state</code> (0–4) — use the one you’re assigned. Run it, note your group’s test RMSE, and compare with the other groups.</p>
+</div>
+</section>
+<section id="what-you-should-have-found-2" class="slide level2">
+<h2>What you should have found</h2>
 <p>Same code, same model — only the random seed for the split changes:</p>
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb11" data-startfrom="567" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 566;"><span id="cb11-567"><a></a>{</span>
-<span id="cb11-568"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:16px auto 0;font-family:sans-serif;font-size:1.05em;border-collapse:collapse;"&gt;</span></span>
-<span id="cb11-569"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;&lt;th style="padding:6px 22px;"&gt;Split&lt;/th&gt;&lt;th style="padding:6px 22px;"&gt;Test RMSE&lt;/th&gt;&lt;/tr&gt;</span></span>
-<span id="cb11-570"><a></a><span class="vs">    </span><span class="sc">${</span>split_instability_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="border-bottom:1px solid #ddd;"&gt;&lt;td style="padding:5px 22px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">draw</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:5px 22px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">rmse</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
-<span id="cb11-571"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
-<span id="cb11-572"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb11" data-startfrom="656" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 655;"><span id="cb11-656"><a></a>{</span>
+<span id="cb11-657"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:16px auto 0;font-family:sans-serif;font-size:1.05em;border-collapse:collapse;"&gt;</span></span>
+<span id="cb11-658"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;&lt;th style="padding:6px 22px;"&gt;Split&lt;/th&gt;&lt;th style="padding:6px 22px;"&gt;Test RMSE&lt;/th&gt;&lt;/tr&gt;</span></span>
+<span id="cb11-659"><a></a><span class="vs">    </span><span class="sc">${</span>split_instability_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`&lt;tr style="border-bottom:1px solid #ddd;"&gt;&lt;td style="padding:5px 22px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">draw</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;td style="padding:5px 22px;text-align:center;"&gt;</span><span class="sc">${</span>d<span class="op">.</span><span class="at">rmse</span><span class="sc">}</span><span class="vs">&lt;/td&gt;&lt;/tr&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb11-660"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
+<span id="cb11-661"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="ojs-cell-8" data-nodetype="expression">
 
@@ -631,7 +702,7 @@ M_5:\ &amp; M_4 + \big(LE + XLE + SE + cond_{new} + cond_{exc} + cond_{good} + c
 </div>
 </div>
 <div class="fragment">
-<p>Same model, same data, same code — test RMSE still swings from <strong><span><span id="ojs-element-id-1"></span></span></strong> just on which cars happened to land in the test set. A single split is partly luck. We need to average that luck away.</p>
+<p>Same model, same data, same code — test RMSE still swings from <strong><span><span id="ojs-element-id-3"></span></span></strong> just on which cars happened to land in the test set. A single split is partly luck. We need to average that luck away.</p>
 </div>
 </section>
 <section id="k-fold-cross-validation" class="slide level2">
@@ -646,40 +717,56 @@ M_5:\ &amp; M_4 + \big(LE + XLE + SE + cond_{new} + cond_{exc} + cond_{good} + c
 <p>Every observation gets used for both training and testing, just never both at once. Less sensitive to which particular split you happened to draw.</p>
 </div>
 </section>
-<section id="fold-cross-validation-visually" class="slide level2">
+<section id="fold-cross-validation-visually" class="slide level2 smaller">
 <h2>5-fold cross-validation, visually</h2>
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb12" data-startfrom="594" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 593;"><span id="cb12-594"><a></a>{</span>
-<span id="cb12-595"><a></a>  <span class="kw">const</span> rowH <span class="op">=</span> <span class="dv">26</span><span class="op">,</span> gap <span class="op">=</span> <span class="dv">6</span><span class="op">,</span> nSets <span class="op">=</span> <span class="dv">5</span><span class="op">,</span> nSeg <span class="op">=</span> <span class="dv">5</span><span class="op">;</span></span>
-<span id="cb12-596"><a></a>  <span class="kw">const</span> segW <span class="op">=</span> <span class="dv">42</span><span class="op">,</span> barX <span class="op">=</span> <span class="dv">90</span><span class="op">,</span> barW <span class="op">=</span> segW <span class="op">*</span> nSeg<span class="op">;</span></span>
-<span id="cb12-597"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> d3<span class="op">.</span><span class="fu">range</span>(nSets)<span class="op">.</span><span class="fu">map</span>(i <span class="kw">=&gt;</span> <span class="fu">html</span><span class="vs">`&lt;div style="display:flex;align-items:center;margin-bottom:</span><span class="sc">${</span>gap<span class="sc">}</span><span class="vs">px;"&gt;</span></span>
-<span id="cb12-598"><a></a><span class="vs">    &lt;div style="width:</span><span class="sc">${</span>barX<span class="sc">}</span><span class="vs">px;font-family:sans-serif;font-size:0.8em;text-align:right;padding-right:10px;"&gt;Set </span><span class="sc">${</span>i<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="vs">&lt;/div&gt;</span></span>
-<span id="cb12-599"><a></a><span class="vs">    &lt;div style="display:flex;"&gt;</span></span>
-<span id="cb12-600"><a></a><span class="vs">      </span><span class="sc">${</span>d3<span class="op">.</span><span class="fu">range</span>(nSeg)<span class="op">.</span><span class="fu">map</span>(j <span class="kw">=&gt;</span> <span class="fu">html</span><span class="vs">`&lt;div style="width:</span><span class="sc">${</span>segW<span class="sc">}</span><span class="vs">px;height:</span><span class="sc">${</span>rowH<span class="sc">}</span><span class="vs">px;background:</span><span class="sc">${</span>j<span class="op">===</span>i <span class="op">?</span> <span class="st">'#c0392b'</span> <span class="op">:</span> <span class="st">'#5b7fbd'</span><span class="sc">}</span><span class="vs">;border:1px solid white;"&gt;&lt;/div&gt;`</span>)<span class="sc">}</span></span>
-<span id="cb12-601"><a></a><span class="vs">    &lt;/div&gt;</span></span>
-<span id="cb12-602"><a></a><span class="vs">    &lt;div style="font-family:sans-serif;font-size:0.75em;padding-left:14px;color:#555;"&gt;→ train on blue, test on red → MSE&lt;sub&gt;</span><span class="sc">${</span>i<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="vs">&lt;/sub&gt;&lt;/div&gt;</span></span>
-<span id="cb12-603"><a></a><span class="vs">  &lt;/div&gt;`</span>)<span class="op">;</span></span>
-<span id="cb12-604"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div style="padding-top:10px;"&gt;</span></span>
-<span id="cb12-605"><a></a><span class="vs">    </span><span class="sc">${</span>rows<span class="sc">}</span></span>
-<span id="cb12-606"><a></a><span class="vs">    &lt;div style="display:flex;margin-top:6px;"&gt;</span></span>
-<span id="cb12-607"><a></a><span class="vs">      &lt;div style="width:</span><span class="sc">${</span>barX<span class="sc">}</span><span class="vs">px;"&gt;&lt;/div&gt;</span></span>
-<span id="cb12-608"><a></a><span class="vs">      &lt;div style="width:</span><span class="sc">${</span>barW<span class="sc">}</span><span class="vs">px;border-top:2px solid #333;text-align:center;font-family:sans-serif;font-size:0.75em;padding-top:4px;color:#333;"&gt;Work set&lt;/div&gt;</span></span>
-<span id="cb12-609"><a></a><span class="vs">    &lt;/div&gt;</span></span>
-<span id="cb12-610"><a></a><span class="vs">    &lt;div style="font-family:sans-serif;font-size:0.9em;padding-top:14px;color:#2d6a4f;font-weight:600;"&gt;Average the 5 MSEs → take the square root → cross-validated RMSE&lt;/div&gt;</span></span>
-<span id="cb12-611"><a></a><span class="vs">  &lt;/div&gt;`</span></span>
-<span id="cb12-612"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb12" data-startfrom="683" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 682;"><span id="cb12-683"><a></a>{</span>
+<span id="cb12-684"><a></a>  <span class="kw">const</span> rowH <span class="op">=</span> <span class="dv">24</span><span class="op">,</span> gap <span class="op">=</span> <span class="dv">5</span><span class="op">,</span> nSets <span class="op">=</span> <span class="dv">5</span><span class="op">,</span> nSeg <span class="op">=</span> <span class="dv">5</span><span class="op">;</span></span>
+<span id="cb12-685"><a></a>  <span class="kw">const</span> segW <span class="op">=</span> <span class="dv">36</span><span class="op">,</span> barX <span class="op">=</span> <span class="dv">76</span><span class="op">,</span> barW <span class="op">=</span> segW <span class="op">*</span> nSeg<span class="op">;</span></span>
+<span id="cb12-686"><a></a>  <span class="kw">const</span> modelNames <span class="op">=</span> model_stats_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> d<span class="op">.</span><span class="at">Model</span>)<span class="op">;</span></span>
+<span id="cb12-687"><a></a>  <span class="kw">const</span> chip <span class="op">=</span> (label<span class="op">,</span> fill) <span class="kw">=&gt;</span> <span class="fu">html</span><span class="vs">`&lt;div style="width:30px;height:22px;border:1px solid #999;background:</span><span class="sc">${</span>fill<span class="sc">}</span><span class="vs">;</span></span>
+<span id="cb12-688"><a></a><span class="vs">      display:flex;align-items:center;justify-content:center;font-family:sans-serif;font-size:0.62em;color:#333;"&gt;</span><span class="sc">${</span>label<span class="sc">}</span><span class="vs">&lt;/div&gt;`</span><span class="op">;</span></span>
+<span id="cb12-689"><a></a>  <span class="kw">const</span> rows <span class="op">=</span> d3<span class="op">.</span><span class="fu">range</span>(nSets)<span class="op">.</span><span class="fu">map</span>(i <span class="kw">=&gt;</span> <span class="fu">html</span><span class="vs">`&lt;div style="display:flex;align-items:center;margin-bottom:</span><span class="sc">${</span>gap<span class="sc">}</span><span class="vs">px;"&gt;</span></span>
+<span id="cb12-690"><a></a><span class="vs">    &lt;div style="width:</span><span class="sc">${</span>barX<span class="sc">}</span><span class="vs">px;font-family:sans-serif;font-size:0.75em;text-align:right;padding-right:8px;"&gt;Set </span><span class="sc">${</span>i<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="vs">&lt;/div&gt;</span></span>
+<span id="cb12-691"><a></a><span class="vs">    &lt;div style="display:flex;"&gt;</span></span>
+<span id="cb12-692"><a></a><span class="vs">      </span><span class="sc">${</span>d3<span class="op">.</span><span class="fu">range</span>(nSeg)<span class="op">.</span><span class="fu">map</span>(j <span class="kw">=&gt;</span> <span class="fu">html</span><span class="vs">`&lt;div style="width:</span><span class="sc">${</span>segW<span class="sc">}</span><span class="vs">px;height:</span><span class="sc">${</span>rowH<span class="sc">}</span><span class="vs">px;background:</span><span class="sc">${</span>j<span class="op">===</span>i <span class="op">?</span> <span class="st">'#c0392b'</span> <span class="op">:</span> <span class="st">'#5b7fbd'</span><span class="sc">}</span><span class="vs">;border:1px solid white;"&gt;&lt;/div&gt;`</span>)<span class="sc">}</span></span>
+<span id="cb12-693"><a></a><span class="vs">    &lt;/div&gt;</span></span>
+<span id="cb12-694"><a></a><span class="vs">    &lt;div style="font-family:sans-serif;font-size:0.68em;padding:0 8px;color:#555;"&gt;→&lt;/div&gt;</span></span>
+<span id="cb12-695"><a></a><span class="vs">    &lt;div style="display:flex;gap:3px;"&gt;</span></span>
+<span id="cb12-696"><a></a><span class="vs">      </span><span class="sc">${</span>modelNames<span class="op">.</span><span class="fu">map</span>(m <span class="kw">=&gt;</span> <span class="fu">chip</span>(m<span class="op">.</span><span class="fu">replace</span>(<span class="st">"Model "</span><span class="op">,</span> <span class="st">"M"</span>)<span class="op">,</span> <span class="st">"#eef3fb"</span>))<span class="sc">}</span></span>
+<span id="cb12-697"><a></a><span class="vs">    &lt;/div&gt;</span></span>
+<span id="cb12-698"><a></a><span class="vs">  &lt;/div&gt;`</span>)<span class="op">;</span></span>
+<span id="cb12-699"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;div style="padding-top:6px;"&gt;</span></span>
+<span id="cb12-700"><a></a><span class="vs">    </span><span class="sc">${</span>rows<span class="sc">}</span></span>
+<span id="cb12-701"><a></a><span class="vs">    &lt;div style="display:flex;margin-top:4px;"&gt;</span></span>
+<span id="cb12-702"><a></a><span class="vs">      &lt;div style="width:</span><span class="sc">${</span>barX<span class="sc">}</span><span class="vs">px;"&gt;&lt;/div&gt;</span></span>
+<span id="cb12-703"><a></a><span class="vs">      &lt;div style="width:</span><span class="sc">${</span>barW<span class="sc">}</span><span class="vs">px;border-top:2px solid #333;text-align:center;font-family:sans-serif;font-size:0.68em;padding-top:3px;color:#333;"&gt;Work set&lt;/div&gt;</span></span>
+<span id="cb12-704"><a></a><span class="vs">    &lt;/div&gt;</span></span>
+<span id="cb12-705"><a></a><span class="vs">    &lt;div style="display:flex;align-items:center;margin-top:10px;"&gt;</span></span>
+<span id="cb12-706"><a></a><span class="vs">      &lt;div style="width:</span><span class="sc">${</span>barX <span class="op">+</span> barW <span class="op">+</span> <span class="dv">8</span><span class="sc">}</span><span class="vs">px;font-family:sans-serif;font-size:0.72em;text-align:right;padding-right:8px;color:#2d6a4f;"&gt;Average down each column →&lt;/div&gt;</span></span>
+<span id="cb12-707"><a></a><span class="vs">      &lt;div style="display:flex;gap:3px;"&gt;</span></span>
+<span id="cb12-708"><a></a><span class="vs">        </span><span class="sc">${</span>modelNames<span class="op">.</span><span class="fu">map</span>(m <span class="kw">=&gt;</span> <span class="fu">chip</span>(m<span class="op">.</span><span class="fu">replace</span>(<span class="st">"Model "</span><span class="op">,</span> <span class="st">"M"</span>)<span class="op">,</span> <span class="st">"#d7e8db"</span>))<span class="sc">}</span></span>
+<span id="cb12-709"><a></a><span class="vs">      &lt;/div&gt;</span></span>
+<span id="cb12-710"><a></a><span class="vs">    &lt;/div&gt;</span></span>
+<span id="cb12-711"><a></a><span class="vs">    &lt;div style="font-family:sans-serif;font-size:0.8em;padding-top:8px;color:#2d6a4f;font-weight:600;"&gt;Pick the model with the lowest average — not the lowest single fold&lt;/div&gt;</span></span>
+<span id="cb12-712"><a></a><span class="vs">  &lt;/div&gt;`</span></span>
+<span id="cb12-713"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="ojs-cell-9" data-nodetype="expression">
 
 </div>
 </div>
 </div>
+<div class="fragment">
+<p>The same five folds are reused for <strong>every</strong> candidate model — not re-split per model. Each fold produces one MSE <em>per model</em>, so the result is a grid (fold × model), not a single number — averaging down one model’s column (not across models) gives that model’s cross-validated RMSE.</p>
+</div>
 <div style="font-size:0.75em;color:#999;margin-top:12px;">
 <p>Recreated from Békés &amp; Kézdi (2021), Ch. 13</p>
 </div>
 </section>
-<section id="walking-through-the-syntax" class="slide level2">
+<section id="walking-through-the-syntax" class="slide level2 smaller">
 <h2>Walking through the syntax</h2>
+<div class="mid-code">
 <div class="sourceCode" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> KFold</span>
 <span id="cb13-2"><a></a></span>
 <span id="cb13-3"><a></a>kf <span class="op">=</span> KFold(n_splits<span class="op">=</span><span class="dv">5</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">1</span>)</span>
@@ -693,6 +780,7 @@ M_5:\ &amp; M_4 + \big(LE + XLE + SE + cond_{new} + cond_{exc} + cond_{good} + c
 <span id="cb13-11"><a></a>    rmses.append(fold_rmse)</span>
 <span id="cb13-12"><a></a></span>
 <span id="cb13-13"><a></a>cv_rmse <span class="op">=</span> _____</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <div class="fragment">
 <ul>
 <li><code>kf.split(df)</code> hands back one pair of row-indices per fold — the loop runs 5 times, once per fold</li>
@@ -709,12 +797,12 @@ M_5:\ &amp; M_4 + \big(LE + XLE + SE + cond_{new} + cond_{exc} + cond_{good} + c
 <p>Using the same notebook, adapt the loop from the last slide. For <strong>Model 1</strong> and <strong>Model 3</strong> separately: fill in the model formula and the final averaging step, run the 5-fold loop, and compare the two cross-validated RMSEs. No further syntax hints beyond what you’ve already seen.</p>
 </div>
 </section>
-<section id="what-you-should-have-found-1" class="slide level2">
+<section id="what-you-should-have-found-3" class="slide level2">
 <h2>What you should have found</h2>
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb14" data-startfrom="655" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 654;"><span id="cb14-655"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.62em;line-height:1.4;</span></span>
-<span id="cb14-656"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
-<span id="cb14-657"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>task2_output_text<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb14" data-startfrom="762" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 761;"><span id="cb14-762"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.62em;line-height:1.4;</span></span>
+<span id="cb14-763"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
+<span id="cb14-764"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;</span><span class="sc">${</span>task2_output_text<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="ojs-cell-10" data-nodetype="expression">
 
@@ -722,23 +810,23 @@ M_5:\ &amp; M_4 + \big(LE + XLE + SE + cond_{new} + cond_{exc} + cond_{good} + c
 </div>
 </div>
 <div class="instructions-box">
-<p>Model 3 still wins on cross-validated RMSE — the advantage isn’t just an artefact of fitting the same data twice.</p>
+<p>Model 3 still beats Model 1 on cross-validated RMSE, so the advantage isn’t just from fitting and scoring on the same data.</p>
 </div>
 </section>
-<section id="full-cross-validation-table" class="slide level2">
+<section id="full-cross-validation-table" class="slide level2 smaller">
 <h2>Full cross-validation table</h2>
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb15" data-startfrom="667" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 666;"><span id="cb15-667"><a></a>{</span>
-<span id="cb15-668"><a></a>  <span class="kw">const</span> cols <span class="op">=</span> [<span class="st">"Model"</span><span class="op">,</span> <span class="st">"Fold 1"</span><span class="op">,</span> <span class="st">"Fold 2"</span><span class="op">,</span> <span class="st">"Fold 3"</span><span class="op">,</span> <span class="st">"Fold 4"</span><span class="op">,</span> <span class="st">"Fold 5"</span><span class="op">,</span> <span class="st">"Average"</span>]<span class="op">;</span></span>
-<span id="cb15-669"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:20px auto 0;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;"&gt;</span></span>
-<span id="cb15-670"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;</span></span>
-<span id="cb15-671"><a></a><span class="vs">      </span><span class="sc">${</span>cols<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> <span class="vs">`&lt;th style="padding:5px 14px;text-align:center;"&gt;</span><span class="sc">${</span>c<span class="sc">}</span><span class="vs">&lt;/th&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
-<span id="cb15-672"><a></a><span class="vs">    &lt;/tr&gt;</span></span>
-<span id="cb15-673"><a></a><span class="vs">    </span><span class="sc">${</span>cv_stats_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`</span></span>
-<span id="cb15-674"><a></a><span class="vs">      &lt;tr style="border-bottom:1px solid #ddd;"&gt;</span><span class="sc">${</span>cols<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> <span class="vs">`&lt;td style="padding:4px 14px;text-align:center;</span><span class="sc">${</span>c<span class="op">===</span><span class="st">'Average'</span><span class="op">?</span><span class="st">'font-weight:700;'</span><span class="op">:</span><span class="st">''</span><span class="sc">}</span><span class="vs">"&gt;</span><span class="sc">${</span>d[c]<span class="sc">}</span><span class="vs">&lt;/td&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span><span class="vs">&lt;/tr&gt;</span></span>
-<span id="cb15-675"><a></a><span class="vs">    `</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
-<span id="cb15-676"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
-<span id="cb15-677"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb15" data-startfrom="774" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 773;"><span id="cb15-774"><a></a>{</span>
+<span id="cb15-775"><a></a>  <span class="kw">const</span> cols <span class="op">=</span> [<span class="st">"Model"</span><span class="op">,</span> <span class="st">"Fold 1"</span><span class="op">,</span> <span class="st">"Fold 2"</span><span class="op">,</span> <span class="st">"Fold 3"</span><span class="op">,</span> <span class="st">"Fold 4"</span><span class="op">,</span> <span class="st">"Fold 5"</span><span class="op">,</span> <span class="st">"Average"</span>]<span class="op">;</span></span>
+<span id="cb15-776"><a></a>  <span class="cf">return</span> <span class="fu">html</span><span class="vs">`&lt;table style="margin:20px auto 0;font-family:sans-serif;font-size:0.85em;border-collapse:collapse;"&gt;</span></span>
+<span id="cb15-777"><a></a><span class="vs">    &lt;tr style="border-bottom:2px solid #1a1a2e;"&gt;</span></span>
+<span id="cb15-778"><a></a><span class="vs">      </span><span class="sc">${</span>cols<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> <span class="vs">`&lt;th style="padding:5px 14px;text-align:center;"&gt;</span><span class="sc">${</span>c<span class="sc">}</span><span class="vs">&lt;/th&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb15-779"><a></a><span class="vs">    &lt;/tr&gt;</span></span>
+<span id="cb15-780"><a></a><span class="vs">    </span><span class="sc">${</span>cv_stats_rows<span class="op">.</span><span class="fu">map</span>(d <span class="kw">=&gt;</span> <span class="vs">`</span></span>
+<span id="cb15-781"><a></a><span class="vs">      &lt;tr style="border-bottom:1px solid #ddd;"&gt;</span><span class="sc">${</span>cols<span class="op">.</span><span class="fu">map</span>(c <span class="kw">=&gt;</span> <span class="vs">`&lt;td style="padding:4px 14px;text-align:center;</span><span class="sc">${</span>c<span class="op">===</span><span class="st">'Average'</span><span class="op">?</span><span class="st">'font-weight:700;'</span><span class="op">:</span><span class="st">''</span><span class="sc">}</span><span class="vs">"&gt;</span><span class="sc">${</span>d[c]<span class="sc">}</span><span class="vs">&lt;/td&gt;`</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span><span class="vs">&lt;/tr&gt;</span></span>
+<span id="cb15-782"><a></a><span class="vs">    `</span>)<span class="op">.</span><span class="fu">join</span>(<span class="st">''</span>)<span class="sc">}</span></span>
+<span id="cb15-783"><a></a><span class="vs">  &lt;/table&gt;`</span></span>
+<span id="cb15-784"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="ojs-cell-11" data-nodetype="expression">
 
@@ -749,45 +837,28 @@ M_5:\ &amp; M_4 + \big(LE + XLE + SE + cond_{new} + cond_{exc} + cond_{good} + c
 <p>5-fold cross-validation, same split reused across all five models.</p>
 </div>
 <details>
-<summary style="cursor:pointer;color:#2d6a4f;font-size:0.9em;">
-Show the Python syntax
+<summary style="cursor:pointer;color:#2d6a4f;font-size:0.8em;">
+Show the full syntax — estimating and tabulating all five models
 </summary>
-<div class="cell">
-<div class="sourceCode cell-code hidden" id="cb16" data-startfrom="688" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 687;"><span id="cb16-688"><a></a><span class="fu">html</span><span class="vs">`&lt;pre style="font-family:'SF Mono','Menlo',monospace;font-size:0.5em;line-height:1.35;</span></span>
-<span id="cb16-689"><a></a><span class="vs">                  background:#f6f6f8;border:1px solid #e0e0e6;border-radius:6px;</span></span>
-<span id="cb16-690"><a></a><span class="vs">                  padding:8px 14px;overflow-x:auto;white-space:pre;"&gt;from sklearn.model_selection import KFold</span></span>
-<span id="cb16-691"><a></a></span>
-<span id="cb16-692"><a></a><span class="vs">model_formulas = {</span></span>
-<span id="cb16-693"><a></a><span class="vs">    "Model 1": "price ~ age + agesq",</span></span>
-<span id="cb16-694"><a></a><span class="vs">    "Model 2": "price ~ age + agesq + odometer",</span></span>
-<span id="cb16-695"><a></a><span class="vs">    "Model 3": "price ~ age + agesq + odometer + odometersq + LE + cond_excellent + cond_good + dealer",</span></span>
-<span id="cb16-696"><a></a><span class="vs">    "Model 4": "price ~ age + agesq + odometer + odometersq + LE + XLE + SE + cond_likenew + cond_excellent + cond_good + cylind6 + dealer",</span></span>
-<span id="cb16-697"><a></a><span class="vs">    "Model 5": "price ~ age + agesq + odometer + odometersq + LE*age + XLE*age + SE*age + cond_likenew*age + cond_excellent*age + cond_good*age + cylind6*age + odometer*age + dealer*age",</span></span>
-<span id="cb16-698"><a></a><span class="vs">}</span></span>
-<span id="cb16-699"><a></a></span>
-<span id="cb16-700"><a></a><span class="vs">kf = KFold(n_splits=5, shuffle=True, random_state=1)</span></span>
-<span id="cb16-701"><a></a><span class="vs">cv_results = {name: [] for name in model_formulas}</span></span>
-<span id="cb16-702"><a></a></span>
-<span id="cb16-703"><a></a><span class="vs">for train_idx, test_idx in kf.split(df):</span></span>
-<span id="cb16-704"><a></a><span class="vs">    train, test = df.iloc[train_idx], df.iloc[test_idx]</span></span>
-<span id="cb16-705"><a></a><span class="vs">    for name, formula in model_formulas.items():</span></span>
-<span id="cb16-706"><a></a><span class="vs">        model = smf.ols(formula, data=train).fit()</span></span>
-<span id="cb16-707"><a></a><span class="vs">        pred = model.predict(test)</span></span>
-<span id="cb16-708"><a></a><span class="vs">        fold_rmse = np.sqrt(np.mean((test['price'] - pred) ** 2))</span></span>
-<span id="cb16-709"><a></a><span class="vs">        cv_results[name].append(fold_rmse)</span></span>
-<span id="cb16-710"><a></a></span>
-<span id="cb16-711"><a></a><span class="vs">cv_avg = {name: np.mean(v) for name, v in cv_results.items()}</span></span>
-<span id="cb16-712"><a></a></span>
-<span id="cb16-713"><a></a><span class="vs">cv_table = pd.DataFrame([</span></span>
-<span id="cb16-714"><a></a><span class="vs">    {"Model": name, "Fold 1": round(v[0]), "Fold 2": round(v[1]), "Fold 3": round(v[2]),</span></span>
-<span id="cb16-715"><a></a><span class="vs">     "Fold 4": round(v[3]), "Fold 5": round(v[4]), "Average": round(cv_avg[name])}</span></span>
-<span id="cb16-716"><a></a><span class="vs">    for name, v in cv_results.items()</span></span>
-<span id="cb16-717"><a></a><span class="vs">])&lt;/pre&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div id="ojs-cell-12" data-nodetype="expression">
-
-</div>
-</div>
+<div class="small-code">
+<div class="sourceCode" id="cb16"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> KFold</span>
+<span id="cb16-2"><a></a></span>
+<span id="cb16-3"><a></a>kf <span class="op">=</span> KFold(n_splits<span class="op">=</span><span class="dv">5</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb16-4"><a></a>cv_results <span class="op">=</span> {name: [] <span class="cf">for</span> name <span class="kw">in</span> model_formulas}</span>
+<span id="cb16-5"><a></a></span>
+<span id="cb16-6"><a></a><span class="cf">for</span> train_idx, test_idx <span class="kw">in</span> kf.split(df):</span>
+<span id="cb16-7"><a></a>    train, test <span class="op">=</span> df.iloc[train_idx], df.iloc[test_idx]</span>
+<span id="cb16-8"><a></a>    <span class="cf">for</span> name, formula <span class="kw">in</span> model_formulas.items():</span>
+<span id="cb16-9"><a></a>        model <span class="op">=</span> smf.ols(formula, data<span class="op">=</span>train).fit()</span>
+<span id="cb16-10"><a></a>        pred <span class="op">=</span> model.predict(test)</span>
+<span id="cb16-11"><a></a>        fold_rmse <span class="op">=</span> np.sqrt(np.mean((test[<span class="st">'price'</span>] <span class="op">-</span> pred) <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb16-12"><a></a>        cv_results[name].append(fold_rmse)</span>
+<span id="cb16-13"><a></a></span>
+<span id="cb16-14"><a></a>cv_table <span class="op">=</span> pd.DataFrame([</span>
+<span id="cb16-15"><a></a>    {<span class="st">"Model"</span>: name, <span class="op">**</span>{<span class="ss">f"Fold </span><span class="sc">{</span>i<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">"</span>: <span class="bu">round</span>(v) <span class="cf">for</span> i, v <span class="kw">in</span> <span class="bu">enumerate</span>(rmses)},</span>
+<span id="cb16-16"><a></a>     <span class="st">"Average"</span>: <span class="bu">round</span>(np.mean(rmses))}</span>
+<span id="cb16-17"><a></a>    <span class="cf">for</span> name, rmses <span class="kw">in</span> cv_results.items()</span>
+<span id="cb16-18"><a></a>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </details>
 </section>
@@ -796,7 +867,7 @@ Show the Python syntax
 <ul>
 <li><strong>BIC’s advantage</strong>: no sample splitting, so it’s not a problem in small samples. Quick, and rarely far wrong.</li>
 <li><strong>Test RMSE’s advantage</strong>: makes no distributional assumptions.</li>
-<li>In practice, both approaches agreed here: <strong>Model 3</strong> (or the very similar Model 4) is the one to use. Small sample, simple model.</li>
+<li>Here they agree: Models 3 and 4 are effectively tied on both. When two models predict about equally well, pick the simpler one: <strong>Model 3</strong></li>
 </ul>
 <div style="font-size:0.75em;color:#999;margin-top:12px;">
 <p>Source: Békés &amp; Kézdi (2021), Ch. 13</p>
@@ -808,6 +879,7 @@ Show the Python syntax
 <section id="what-price-goes-in-the-ad" class="slide level2">
 <h2>What price goes in the ad?</h2>
 <p>Model 3, for a 10-year-old Camry LE, excellent condition, 120,000 miles, sold privately:</p>
+<div class="mid-code">
 <div class="sourceCode" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a></a>new_car <span class="op">=</span> pd.DataFrame({</span>
 <span id="cb17-2"><a></a>    <span class="st">"age"</span>: [<span class="dv">10</span>], <span class="st">"agesq"</span>: [<span class="dv">100</span>], <span class="st">"odometer"</span>: [<span class="dv">12</span>], <span class="st">"odometersq"</span>: [<span class="dv">144</span>],</span>
 <span id="cb17-3"><a></a>    <span class="st">"LE"</span>: [<span class="dv">1</span>], <span class="st">"cond_excellent"</span>: [<span class="dv">1</span>], <span class="st">"cond_good"</span>: [<span class="dv">0</span>], <span class="st">"dealer"</span>: [<span class="dv">0</span>],</span>
@@ -817,7 +889,11 @@ Show the Python syntax
 <span id="cb17-7"><a></a>point_pred <span class="op">=</span> pred[<span class="st">"mean"</span>].iloc[<span class="dv">0</span>]</span>
 <span id="cb17-8"><a></a>pi_lower <span class="op">=</span> pred[<span class="st">"obs_ci_lower"</span>].iloc[<span class="dv">0</span>]</span>
 <span id="cb17-9"><a></a>pi_upper <span class="op">=</span> pred[<span class="st">"obs_ci_upper"</span>].iloc[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><code>get_prediction()</code> gives both the point forecast (<code>mean</code>) and — via <code>summary_frame(alpha=0.20)</code> — the bounds of an 80% prediction interval, all from the model already fitted.</p>
+</div>
+<p><code>get_prediction()</code> gives both the point forecast (<code>mean</code>) and — via <code>summary_frame(alpha=0.20)</code> — the bounds of a prediction interval, all from the model already fitted.</p>
+<div class="fragment">
+<p><code>alpha</code> is the chance the interval <strong>misses</strong> — the same convention as <code>get_prediction()</code> back in Week 5. <span class="math inline">\(1 - \alpha\)</span> is the chance it’s covered, so <code>alpha=0.20</code> gives an <strong>80%</strong> interval here, not the 95% Week 5 used.</p>
+</div>
 </section>
 <section id="the-price" class="slide level2">
 <h2>The price</h2>
@@ -826,19 +902,19 @@ Show the Python syntax
 </div>
 <div class="fragment">
 <div class="cell">
-<div class="sourceCode cell-code hidden" id="cb18" data-startfrom="764" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 763;"><span id="cb18-764"><a></a><span class="fu">html</span><span class="vs">`&lt;div style="text-align:center;padding-top:20px;"&gt;</span></span>
-<span id="cb18-765"><a></a><span class="vs">  &lt;div style="font-size:2.4em;color:#2d6a4f;font-weight:700;"&gt;$</span><span class="sc">${</span>point_pred<span class="sc">}</span><span class="vs">&lt;/div&gt;</span></span>
-<span id="cb18-766"><a></a><span class="vs">  &lt;div style="font-size:1.1em;color:#666;padding-top:10px;"&gt;80% prediction interval: $</span><span class="sc">${</span>pi_lower<span class="sc">}</span><span class="vs"> – $</span><span class="sc">${</span>pi_upper<span class="sc">}</span><span class="vs">&lt;/div&gt;</span></span>
-<span id="cb18-767"><a></a><span class="vs">&lt;/div&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb18" data-startfrom="868" data-source-offset="0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 867;"><span id="cb18-868"><a></a><span class="fu">html</span><span class="vs">`&lt;div style="text-align:center;padding-top:20px;"&gt;</span></span>
+<span id="cb18-869"><a></a><span class="vs">  &lt;div style="font-size:2.4em;color:#2d6a4f;font-weight:700;"&gt;$</span><span class="sc">${</span>point_pred<span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs">&lt;/div&gt;</span></span>
+<span id="cb18-870"><a></a><span class="vs">  &lt;div style="font-size:1.1em;color:#666;padding-top:10px;"&gt;80% prediction interval: $</span><span class="sc">${</span>pi_lower<span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs"> – $</span><span class="sc">${</span>pi_upper<span class="op">.</span><span class="fu">toLocaleString</span>()<span class="sc">}</span><span class="vs">&lt;/div&gt;</span></span>
+<span id="cb18-871"><a></a><span class="vs">&lt;/div&gt;`</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<div id="ojs-cell-13" data-nodetype="expression">
+<div id="ojs-cell-12" data-nodetype="expression">
 
 </div>
 </div>
 </div>
 </div>
 <div class="fragment">
-<p>Even with a good model, the interval is wide. Prediction is genuinely hard — and it’s worth telling whoever’s relying on the number in advance.</p>
+<p>Even with a good model, the interval is wide. Tell whoever relies on the number that before they use it.</p>
 </div>
 </section>
 <section id="stationarity-the-assumption-underneath-everything" class="slide level2">
@@ -860,7 +936,7 @@ Show the Python syntax
 </section>
 <section id="online-session" class="slide level2">
 <h2>Online session</h2>
-<p>See <strong>week10-online.html</strong> — model building for prediction: feature engineering, LASSO, and post-prediction diagnostics, using a real Airbnb pricing case study.</p>
+<p>Model building for prediction: log targets, feature engineering, LASSO and holdout checks, on Airbnb prices in London.</p>
 </section>
 <section id="coming-up" class="slide level2">
 <h2>Coming up</h2>
@@ -874,7 +950,7 @@ Show the Python syntax
 
 <div class="ojs-auto-generated hidden">
 <script type="ojs-module-contents">
-eyJjb250ZW50cyI6WyAgeyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiaW5saW5lIjoidHJ1ZSIsInNvdXJjZSI6Imh0bC5odG1sYDxzcGFuPiR7c3BsaXRfaW5zdGFiaWxpdHlfcmFuZ2V9PC9zcGFuPmAiLCAiY2VsbE5hbWUiOiJvanMtZWxlbWVudC1pZC0xIn1dfQ==
+eyJjb250ZW50cyI6WyAgeyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiaW5saW5lIjoidHJ1ZSIsInNvdXJjZSI6Imh0bC5odG1sYDxzcGFuPiR7bXNlX3Jlc2lkX3Jtc2UxfTwvc3Bhbj5gIiwgImNlbGxOYW1lIjoib2pzLWVsZW1lbnQtaWQtMSJ9LCAgeyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiaW5saW5lIjoidHJ1ZSIsInNvdXJjZSI6Imh0bC5odG1sYDxzcGFuPiR7bXNlX3Jlc2lkX3Jtc2UzfTwvc3Bhbj5gIiwgImNlbGxOYW1lIjoib2pzLWVsZW1lbnQtaWQtMiJ9LCAgeyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiaW5saW5lIjoidHJ1ZSIsInNvdXJjZSI6Imh0bC5odG1sYDxzcGFuPiR7c3BsaXRfaW5zdGFiaWxpdHlfcmFuZ2V9PC9zcGFuPmAiLCAiY2VsbE5hbWUiOiJvanMtZWxlbWVudC1pZC0zIn1dfQ==
 </script>
 </div>
 </section>
@@ -1094,7 +1170,7 @@ eyJjb250ZW50cyI6WyAgeyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiaW5saW5lIjoidHJ1ZSIsInNv
       });
     </script>
     <script type="ojs-module-contents">
-    eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgLy8gR2VuZXJpYyBcInNocmluayBvbiByZXZlYWxcIiB3aXJpbmcsIHVzZWQgYnkgZXZlcnkgY2hhcnQgd3JhcHBlZCBhc1xuICAvLyBgOjo6OiB7LnNocmluay1vbi1yZXZlYWwgZGF0YS1mcmFnPVwic29tZS1mcmFnbWVudC1pZFwiIHN0eWxlPVwiLS1sYXJnZS1oZWlnaHQ6Li4uOy0tc21hbGwtaGVpZ2h0Oi4uLjstLXNocmluay1zY2FsZTouLi5cIn1gXG4gIC8vIEVhY2ggY2hhcnQgcmVuZGVycyBsYXJnZSB3aGlsZSBpdHMgbmFtZWQgZnJhZ21lbnQgaXMgaGlkZGVuLCB0aGVuXG4gIC8vIHNocmlua3Mgc21vb3RobHkgdG8gbWFrZSByb29tIHRoZSBtb21lbnQgdGhhdCBmcmFnbWVudCBpcyByZXZlYWxlZC5cbiAgLy8gU2l6ZXMgbGl2ZSBlbnRpcmVseSBpbiBlYWNoIHdyYXBwZXIncyBvd24gaW5saW5lIHN0eWxlIOKAlCB0aGlzIGNlbGwgb25seVxuICAvLyBoYW5kbGVzIHNob3cvaGlkZSwgb25jZSwgZm9yIGV2ZXJ5IHdyYXBwZXIgb24gdGhlIHBhZ2UsIHNvIGFkZGluZyBhIG5ld1xuICAvLyBjaGFydCB0byB0aGlzIHBhdHRlcm4gbmV2ZXIgbWVhbnMgdG91Y2hpbmcgdGhpcyBjZWxsLlxuICBjb25zdCB3cmFwcGVyRm9yID0gKGZyYWdJZCkgPT4gZG9jdW1lbnQucXVlcnlTZWxlY3RvcihgLnNocmluay1vbi1yZXZlYWxbZGF0YS1mcmFnPVwiJHtmcmFnSWR9XCJdYClcblxuICAvLyBTZXRzIGVhY2ggd3JhcHBlcidzIGNvcnJlY3Qgc3RhcnRpbmcgc3RhdGUgaW1tZWRpYXRlbHksIGluY2x1ZGluZyBvbiBhXG4gIC8vIHJlbG9hZCBvciBkaXJlY3QgbmF2aWdhdGlvbiB0byBhIHNsaWRlIHdob3NlIGZyYWdtZW50IGlzIGFscmVhZHkgc2hvd25cbiAgLy8g4oCUIG1hdHRlcnMgYmVjYXVzZSB0aGlzIGNlbGwgKG5vIHJlYWN0aXZlIGRlcHMpIG9ubHkgcnVucyBvbmNlLCBhdCBsb2FkLlxuICBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCcuc2hyaW5rLW9uLXJldmVhbFtkYXRhLWZyYWddJykuZm9yRWFjaChlbCA9PiB7XG4gICAgY29uc3QgZnJhZyA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKGVsLmRhdGFzZXQuZnJhZylcbiAgICBlbC5jbGFzc0xpc3QudG9nZ2xlKCdpcy1zbWFsbCcsICEhZnJhZz8uY2xhc3NMaXN0LmNvbnRhaW5zKCd2aXNpYmxlJykpXG4gIH0pXG5cbiAgUmV2ZWFsLm9uKCdmcmFnbWVudHNob3duJywgKGV2ZW50KSA9PiB7XG4gICAgd3JhcHBlckZvcihldmVudC5mcmFnbWVudC5pZCk/LmNsYXNzTGlzdC5hZGQoJ2lzLXNtYWxsJylcbiAgfSlcbiAgUmV2ZWFsLm9uKCdmcmFnbWVudGhpZGRlbicsIChldmVudCkgPT4ge1xuICAgIHdyYXBwZXJGb3IoZXZlbnQuZnJhZ21lbnQuaWQpPy5jbGFzc0xpc3QucmVtb3ZlKCdpcy1zbWFsbCcpXG4gIH0pXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJQbG90LnBsb3Qoe1xuICB3aWR0aDogNjQwLCBoZWlnaHQ6IDU2MCxcbiAgeDoge2xhYmVsOiBcIlByZWRpY3Rpb24gZXJyb3JcIn0sIHk6IHtsYWJlbDogXCJMb3NzXCJ9LFxuICBtYXJrczogW1xuICAgIFBsb3QubGluZShkMy5yYW5nZSgtMTAsIDEwLjEsIDAuMikubWFwKGUgPT4gKHtlLCBsb3NzOiBNYXRoLmFicyhlKSAqIDEsIHNlcmllczogXCJzeW1tZXRyaWMsIGxpbmVhclwifSkpLCB7eDogXCJlXCIsIHk6IFwibG9zc1wiLCBzdHJva2U6IFwic2VyaWVzXCJ9KSxcbiAgICBQbG90LmxpbmUoZDMucmFuZ2UoLTEwLCAxMC4xLCAwLjIpLm1hcChlID0+ICh7ZSwgbG9zczogKGUgKiogMikgKiAwLjMsIHNlcmllczogXCJzeW1tZXRyaWMsIGNvbnZleFwifSkpLCB7eDogXCJlXCIsIHk6IFwibG9zc1wiLCBzdHJva2U6IFwic2VyaWVzXCJ9KSxcbiAgICBQbG90LmxpbmUoZDMucmFuZ2UoLTEwLCAxMC4xLCAwLjIpLm1hcChlID0+ICh7ZSwgbG9zczogZSA+PSAwID8gKGUgKiogMikgKiAwLjMgOiAoZSAqKiAyKSAqIDAuMTUsIHNlcmllczogXCJhc3ltbWV0cmljLCBjb252ZXhcIn0pKSwge3g6IFwiZVwiLCB5OiBcImxvc3NcIiwgc3Ryb2tlOiBcInNlcmllc1wifSlcbiAgXSxcbiAgY29sb3I6IHtsZWdlbmQ6IHRydWV9XG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC0zIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8cHJlIHN0eWxlPVwiZm9udC1mYW1pbHk6J1NGIE1vbm8nLCdNZW5sbycsbW9ub3NwYWNlO2ZvbnQtc2l6ZTowLjVlbTtsaW5lLWhlaWdodDoxLjM1O1xuICAgICAgICAgICAgICAgICAgYmFja2dyb3VuZDojZjZmNmY4O2JvcmRlcjoxcHggc29saWQgI2UwZTBlNjtib3JkZXItcmFkaXVzOjZweDtcbiAgICAgICAgICAgICAgICAgIHBhZGRpbmc6OHB4IDE0cHg7b3ZlcmZsb3cteDphdXRvO3doaXRlLXNwYWNlOnByZTtcIj4ke21vZGVsM19zdW1tYXJ5X3RleHR9PC9wcmU+YFxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC00IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8cHJlIHN0eWxlPVwiZm9udC1mYW1pbHk6J1NGIE1vbm8nLCdNZW5sbycsbW9ub3NwYWNlO2ZvbnQtc2l6ZTowLjYyZW07bGluZS1oZWlnaHQ6MS40O1xuICAgICAgICAgICAgICAgICAgYmFja2dyb3VuZDojZjZmNmY4O2JvcmRlcjoxcHggc29saWQgI2UwZTBlNjtib3JkZXItcmFkaXVzOjZweDtcbiAgICAgICAgICAgICAgICAgIHBhZGRpbmc6OHB4IDE0cHg7b3ZlcmZsb3cteDphdXRvO3doaXRlLXNwYWNlOnByZTtcIj4ke3Rhc2sxX291dHB1dF90ZXh0fTwvcHJlPmBcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IlBsb3QucGxvdCh7XG4gIHdpZHRoOiA3MDAsIGhlaWdodDogNTYwLFxuICB4OiB7bGFiZWw6IFwiTnVtYmVyIG9mIGNvZWZmaWNpZW50c1wifSxcbiAgeToge2xhYmVsOiBcIlJNU0UgKCQpXCJ9LFxuICBtYXJrczogW1xuICAgIFBsb3QubGluZShjb21wbGV4aXR5X2RhdGEsIHt4OiBcIm5fY29lZlwiLCB5OiBcInJtc2VcIiwgc3Ryb2tlOiBcInNlcmllc1wiLCBzdHJva2VXaWR0aDogMi41fSksXG4gICAgUGxvdC5kb3QoY29tcGxleGl0eV9kYXRhLCB7eDogXCJuX2NvZWZcIiwgeTogXCJybXNlXCIsIGZpbGw6IFwic2VyaWVzXCIsIHI6IDR9KSxcbiAgICBQbG90LnRleHQoY29tcGxleGl0eV9kYXRhLmZpbHRlcihkID0+IGQuc2VyaWVzID09PSBcIkluLXNhbXBsZSBSTVNFXCIpLCB7eDogXCJuX2NvZWZcIiwgeTogXCJybXNlXCIsIHRleHQ6IFwibW9kZWxcIiwgZHk6IC0xMiwgZm9udFNpemU6IDEwfSlcbiAgXSxcbiAgY29sb3I6IHtsZWdlbmQ6IHRydWV9XG59KVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC02IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICBjb25zdCBjb2xzID0gW1wiTW9kZWxcIiwgXCJOIHZhcnNcIiwgXCJOIGNvZWZcIiwgXCJSMlwiLCBcIlJNU0VcIiwgXCJCSUNcIl07XG4gIHJldHVybiBodG1sYDx0YWJsZSBzdHlsZT1cIm1hcmdpbjoyMHB4IGF1dG8gMDtmb250LWZhbWlseTpzYW5zLXNlcmlmO2ZvbnQtc2l6ZToxLjA1ZW07Ym9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlO1wiPlxuICAgIDx0ciBzdHlsZT1cImJvcmRlci1ib3R0b206MnB4IHNvbGlkICMxYTFhMmU7XCI+XG4gICAgICAke2NvbHMubWFwKGMgPT4gYDx0aCBzdHlsZT1cInBhZGRpbmc6NnB4IDIwcHg7dGV4dC1hbGlnbjpjZW50ZXI7XCI+JHtjfTwvdGg+YCkuam9pbignJyl9XG4gICAgPC90cj5cbiAgICAke21vZGVsX3N0YXRzX3Jvd3MubWFwKGQgPT4gYFxuICAgICAgPHRyIHN0eWxlPVwiYm9yZGVyLWJvdHRvbToxcHggc29saWQgI2RkZDtcIj4ke2NvbHMubWFwKGMgPT4gYDx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDIwcHg7dGV4dC1hbGlnbjpjZW50ZXI7XCI+JHtkW2NdfTwvdGQ+YCkuam9pbignJyl9PC90cj5cbiAgICBgKS5qb2luKCcnKX1cbiAgPC90YWJsZT5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTciLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJodG1sYDxwcmUgc3R5bGU9XCJmb250LWZhbWlseTonU0YgTW9ubycsJ01lbmxvJyxtb25vc3BhY2U7Zm9udC1zaXplOjAuNjJlbTtsaW5lLWhlaWdodDoxLjQ7XG4gICAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kOiNmNmY2Zjg7Ym9yZGVyOjFweCBzb2xpZCAjZTBlMGU2O2JvcmRlci1yYWRpdXM6NnB4O1xuICAgICAgICAgICAgICAgICAgcGFkZGluZzo4cHggMTRweDtvdmVyZmxvdy14OmF1dG87d2hpdGUtc3BhY2U6cHJlO1wiPiR7c2luZ2xlX3NwbGl0X291dHB1dF90ZXh0fTwvcHJlPmBcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtOCIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgcmV0dXJuIGh0bWxgPHRhYmxlIHN0eWxlPVwibWFyZ2luOjE2cHggYXV0byAwO2ZvbnQtZmFtaWx5OnNhbnMtc2VyaWY7Zm9udC1zaXplOjEuMDVlbTtib3JkZXItY29sbGFwc2U6Y29sbGFwc2U7XCI+XG4gICAgPHRyIHN0eWxlPVwiYm9yZGVyLWJvdHRvbToycHggc29saWQgIzFhMWEyZTtcIj48dGggc3R5bGU9XCJwYWRkaW5nOjZweCAyMnB4O1wiPlNwbGl0PC90aD48dGggc3R5bGU9XCJwYWRkaW5nOjZweCAyMnB4O1wiPlRlc3QgUk1TRTwvdGg+PC90cj5cbiAgICAke3NwbGl0X2luc3RhYmlsaXR5X3Jvd3MubWFwKGQgPT4gYDx0ciBzdHlsZT1cImJvcmRlci1ib3R0b206MXB4IHNvbGlkICNkZGQ7XCI+PHRkIHN0eWxlPVwicGFkZGluZzo1cHggMjJweDt0ZXh0LWFsaWduOmNlbnRlcjtcIj4ke2QuZHJhd308L3RkPjx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDIycHg7dGV4dC1hbGlnbjpjZW50ZXI7XCI+JHtkLnJtc2V9PC90ZD48L3RyPmApLmpvaW4oJycpfVxuICA8L3RhYmxlPmBcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtOSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgY29uc3Qgcm93SCA9IDI2LCBnYXAgPSA2LCBuU2V0cyA9IDUsIG5TZWcgPSA1O1xuICBjb25zdCBzZWdXID0gNDIsIGJhclggPSA5MCwgYmFyVyA9IHNlZ1cgKiBuU2VnO1xuICBjb25zdCByb3dzID0gZDMucmFuZ2UoblNldHMpLm1hcChpID0+IGh0bWxgPGRpdiBzdHlsZT1cImRpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7bWFyZ2luLWJvdHRvbToke2dhcH1weDtcIj5cbiAgICA8ZGl2IHN0eWxlPVwid2lkdGg6JHtiYXJYfXB4O2ZvbnQtZmFtaWx5OnNhbnMtc2VyaWY7Zm9udC1zaXplOjAuOGVtO3RleHQtYWxpZ246cmlnaHQ7cGFkZGluZy1yaWdodDoxMHB4O1wiPlNldCAke2krMX08L2Rpdj5cbiAgICA8ZGl2IHN0eWxlPVwiZGlzcGxheTpmbGV4O1wiPlxuICAgICAgJHtkMy5yYW5nZShuU2VnKS5tYXAoaiA9PiBodG1sYDxkaXYgc3R5bGU9XCJ3aWR0aDoke3NlZ1d9cHg7aGVpZ2h0OiR7cm93SH1weDtiYWNrZ3JvdW5kOiR7aj09PWkgPyAnI2MwMzkyYicgOiAnIzViN2ZiZCd9O2JvcmRlcjoxcHggc29saWQgd2hpdGU7XCI+PC9kaXY+YCl9XG4gICAgPC9kaXY+XG4gICAgPGRpdiBzdHlsZT1cImZvbnQtZmFtaWx5OnNhbnMtc2VyaWY7Zm9udC1zaXplOjAuNzVlbTtwYWRkaW5nLWxlZnQ6MTRweDtjb2xvcjojNTU1O1wiPuKGkiB0cmFpbiBvbiBibHVlLCB0ZXN0IG9uIHJlZCDihpIgTVNFPHN1Yj4ke2krMX08L3N1Yj48L2Rpdj5cbiAgPC9kaXY+YCk7XG4gIHJldHVybiBodG1sYDxkaXYgc3R5bGU9XCJwYWRkaW5nLXRvcDoxMHB4O1wiPlxuICAgICR7cm93c31cbiAgICA8ZGl2IHN0eWxlPVwiZGlzcGxheTpmbGV4O21hcmdpbi10b3A6NnB4O1wiPlxuICAgICAgPGRpdiBzdHlsZT1cIndpZHRoOiR7YmFyWH1weDtcIj48L2Rpdj5cbiAgICAgIDxkaXYgc3R5bGU9XCJ3aWR0aDoke2Jhcld9cHg7Ym9yZGVyLXRvcDoycHggc29saWQgIzMzMzt0ZXh0LWFsaWduOmNlbnRlcjtmb250LWZhbWlseTpzYW5zLXNlcmlmO2ZvbnQtc2l6ZTowLjc1ZW07cGFkZGluZy10b3A6NHB4O2NvbG9yOiMzMzM7XCI+V29yayBzZXQ8L2Rpdj5cbiAgICA8L2Rpdj5cbiAgICA8ZGl2IHN0eWxlPVwiZm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MC45ZW07cGFkZGluZy10b3A6MTRweDtjb2xvcjojMmQ2YTRmO2ZvbnQtd2VpZ2h0OjYwMDtcIj5BdmVyYWdlIHRoZSA1IE1TRXMg4oaSIHRha2UgdGhlIHNxdWFyZSByb290IOKGkiBjcm9zcy12YWxpZGF0ZWQgUk1TRTwvZGl2PlxuICA8L2Rpdj5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTEwIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8cHJlIHN0eWxlPVwiZm9udC1mYW1pbHk6J1NGIE1vbm8nLCdNZW5sbycsbW9ub3NwYWNlO2ZvbnQtc2l6ZTowLjYyZW07bGluZS1oZWlnaHQ6MS40O1xuICAgICAgICAgICAgICAgICAgYmFja2dyb3VuZDojZjZmNmY4O2JvcmRlcjoxcHggc29saWQgI2UwZTBlNjtib3JkZXItcmFkaXVzOjZweDtcbiAgICAgICAgICAgICAgICAgIHBhZGRpbmc6OHB4IDE0cHg7b3ZlcmZsb3cteDphdXRvO3doaXRlLXNwYWNlOnByZTtcIj4ke3Rhc2syX291dHB1dF90ZXh0fTwvcHJlPmBcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMTEiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIGNvbnN0IGNvbHMgPSBbXCJNb2RlbFwiLCBcIkZvbGQgMVwiLCBcIkZvbGQgMlwiLCBcIkZvbGQgM1wiLCBcIkZvbGQgNFwiLCBcIkZvbGQgNVwiLCBcIkF2ZXJhZ2VcIl07XG4gIHJldHVybiBodG1sYDx0YWJsZSBzdHlsZT1cIm1hcmdpbjoyMHB4IGF1dG8gMDtmb250LWZhbWlseTpzYW5zLXNlcmlmO2ZvbnQtc2l6ZTowLjg1ZW07Ym9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlO1wiPlxuICAgIDx0ciBzdHlsZT1cImJvcmRlci1ib3R0b206MnB4IHNvbGlkICMxYTFhMmU7XCI+XG4gICAgICAke2NvbHMubWFwKGMgPT4gYDx0aCBzdHlsZT1cInBhZGRpbmc6NXB4IDE0cHg7dGV4dC1hbGlnbjpjZW50ZXI7XCI+JHtjfTwvdGg+YCkuam9pbignJyl9XG4gICAgPC90cj5cbiAgICAke2N2X3N0YXRzX3Jvd3MubWFwKGQgPT4gYFxuICAgICAgPHRyIHN0eWxlPVwiYm9yZGVyLWJvdHRvbToxcHggc29saWQgI2RkZDtcIj4ke2NvbHMubWFwKGMgPT4gYDx0ZCBzdHlsZT1cInBhZGRpbmc6NHB4IDE0cHg7dGV4dC1hbGlnbjpjZW50ZXI7JHtjPT09J0F2ZXJhZ2UnPydmb250LXdlaWdodDo3MDA7JzonJ31cIj4ke2RbY119PC90ZD5gKS5qb2luKCcnKX08L3RyPlxuICAgIGApLmpvaW4oJycpfVxuICA8L3RhYmxlPmBcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMTIiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJodG1sYDxwcmUgc3R5bGU9XCJmb250LWZhbWlseTonU0YgTW9ubycsJ01lbmxvJyxtb25vc3BhY2U7Zm9udC1zaXplOjAuNWVtO2xpbmUtaGVpZ2h0OjEuMzU7XG4gICAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kOiNmNmY2Zjg7Ym9yZGVyOjFweCBzb2xpZCAjZTBlMGU2O2JvcmRlci1yYWRpdXM6NnB4O1xuICAgICAgICAgICAgICAgICAgcGFkZGluZzo4cHggMTRweDtvdmVyZmxvdy14OmF1dG87d2hpdGUtc3BhY2U6cHJlO1wiPmZyb20gc2tsZWFybi5tb2RlbF9zZWxlY3Rpb24gaW1wb3J0IEtGb2xkXG5cbm1vZGVsX2Zvcm11bGFzID0ge1xuICAgIFwiTW9kZWwgMVwiOiBcInByaWNlIH4gYWdlICsgYWdlc3FcIixcbiAgICBcIk1vZGVsIDJcIjogXCJwcmljZSB+IGFnZSArIGFnZXNxICsgb2RvbWV0ZXJcIixcbiAgICBcIk1vZGVsIDNcIjogXCJwcmljZSB+IGFnZSArIGFnZXNxICsgb2RvbWV0ZXIgKyBvZG9tZXRlcnNxICsgTEUgKyBjb25kX2V4Y2VsbGVudCArIGNvbmRfZ29vZCArIGRlYWxlclwiLFxuICAgIFwiTW9kZWwgNFwiOiBcInByaWNlIH4gYWdlICsgYWdlc3EgKyBvZG9tZXRlciArIG9kb21ldGVyc3EgKyBMRSArIFhMRSArIFNFICsgY29uZF9saWtlbmV3ICsgY29uZF9leGNlbGxlbnQgKyBjb25kX2dvb2QgKyBjeWxpbmQ2ICsgZGVhbGVyXCIsXG4gICAgXCJNb2RlbCA1XCI6IFwicHJpY2UgfiBhZ2UgKyBhZ2VzcSArIG9kb21ldGVyICsgb2RvbWV0ZXJzcSArIExFKmFnZSArIFhMRSphZ2UgKyBTRSphZ2UgKyBjb25kX2xpa2VuZXcqYWdlICsgY29uZF9leGNlbGxlbnQqYWdlICsgY29uZF9nb29kKmFnZSArIGN5bGluZDYqYWdlICsgb2RvbWV0ZXIqYWdlICsgZGVhbGVyKmFnZVwiLFxufVxuXG5rZiA9IEtGb2xkKG5fc3BsaXRzPTUsIHNodWZmbGU9VHJ1ZSwgcmFuZG9tX3N0YXRlPTEpXG5jdl9yZXN1bHRzID0ge25hbWU6IFtdIGZvciBuYW1lIGluIG1vZGVsX2Zvcm11bGFzfVxuXG5mb3IgdHJhaW5faWR4LCB0ZXN0X2lkeCBpbiBrZi5zcGxpdChkZik6XG4gICAgdHJhaW4sIHRlc3QgPSBkZi5pbG9jW3RyYWluX2lkeF0sIGRmLmlsb2NbdGVzdF9pZHhdXG4gICAgZm9yIG5hbWUsIGZvcm11bGEgaW4gbW9kZWxfZm9ybXVsYXMuaXRlbXMoKTpcbiAgICAgICAgbW9kZWwgPSBzbWYub2xzKGZvcm11bGEsIGRhdGE9dHJhaW4pLmZpdCgpXG4gICAgICAgIHByZWQgPSBtb2RlbC5wcmVkaWN0KHRlc3QpXG4gICAgICAgIGZvbGRfcm1zZSA9IG5wLnNxcnQobnAubWVhbigodGVzdFsncHJpY2UnXSAtIHByZWQpICoqIDIpKVxuICAgICAgICBjdl9yZXN1bHRzW25hbWVdLmFwcGVuZChmb2xkX3Jtc2UpXG5cbmN2X2F2ZyA9IHtuYW1lOiBucC5tZWFuKHYpIGZvciBuYW1lLCB2IGluIGN2X3Jlc3VsdHMuaXRlbXMoKX1cblxuY3ZfdGFibGUgPSBwZC5EYXRhRnJhbWUoW1xuICAgIHtcIk1vZGVsXCI6IG5hbWUsIFwiRm9sZCAxXCI6IHJvdW5kKHZbMF0pLCBcIkZvbGQgMlwiOiByb3VuZCh2WzFdKSwgXCJGb2xkIDNcIjogcm91bmQodlsyXSksXG4gICAgIFwiRm9sZCA0XCI6IHJvdW5kKHZbM10pLCBcIkZvbGQgNVwiOiByb3VuZCh2WzRdKSwgXCJBdmVyYWdlXCI6IHJvdW5kKGN2X2F2Z1tuYW1lXSl9XG4gICAgZm9yIG5hbWUsIHYgaW4gY3ZfcmVzdWx0cy5pdGVtcygpXG5dKTwvcHJlPmBcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMTMiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJodG1sYDxkaXYgc3R5bGU9XCJ0ZXh0LWFsaWduOmNlbnRlcjtwYWRkaW5nLXRvcDoyMHB4O1wiPlxuICA8ZGl2IHN0eWxlPVwiZm9udC1zaXplOjIuNGVtO2NvbG9yOiMyZDZhNGY7Zm9udC13ZWlnaHQ6NzAwO1wiPiQke3BvaW50X3ByZWR9PC9kaXY+XG4gIDxkaXYgc3R5bGU9XCJmb250LXNpemU6MS4xZW07Y29sb3I6IzY2NjtwYWRkaW5nLXRvcDoxMHB4O1wiPjgwJSBwcmVkaWN0aW9uIGludGVydmFsOiAkJHtwaV9sb3dlcn0g4oCTICQke3BpX3VwcGVyfTwvZGl2PlxuPC9kaXY+YFxuIn1dfQ==
+    eyJjb250ZW50cyI6W3sibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMSIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgLy8gR2VuZXJpYyBcInNocmluayBvbiByZXZlYWxcIiB3aXJpbmcsIHVzZWQgYnkgZXZlcnkgY2hhcnQgd3JhcHBlZCBhc1xuICAvLyBgOjo6OiB7LnNocmluay1vbi1yZXZlYWwgZGF0YS1mcmFnPVwic29tZS1mcmFnbWVudC1pZFwiIHN0eWxlPVwiLS1sYXJnZS1oZWlnaHQ6Li4uOy0tc21hbGwtaGVpZ2h0Oi4uLjstLXNocmluay1zY2FsZTouLi5cIn1gXG4gIC8vIEVhY2ggY2hhcnQgcmVuZGVycyBsYXJnZSB3aGlsZSBpdHMgbmFtZWQgZnJhZ21lbnQgaXMgaGlkZGVuLCB0aGVuXG4gIC8vIHNocmlua3Mgc21vb3RobHkgdG8gbWFrZSByb29tIHRoZSBtb21lbnQgdGhhdCBmcmFnbWVudCBpcyByZXZlYWxlZC5cbiAgLy8gU2l6ZXMgbGl2ZSBlbnRpcmVseSBpbiBlYWNoIHdyYXBwZXIncyBvd24gaW5saW5lIHN0eWxlIOKAlCB0aGlzIGNlbGwgb25seVxuICAvLyBoYW5kbGVzIHNob3cvaGlkZSwgb25jZSwgZm9yIGV2ZXJ5IHdyYXBwZXIgb24gdGhlIHBhZ2UsIHNvIGFkZGluZyBhIG5ld1xuICAvLyBjaGFydCB0byB0aGlzIHBhdHRlcm4gbmV2ZXIgbWVhbnMgdG91Y2hpbmcgdGhpcyBjZWxsLlxuICBjb25zdCB3cmFwcGVyRm9yID0gKGZyYWdJZCkgPT4gZG9jdW1lbnQucXVlcnlTZWxlY3RvcihgLnNocmluay1vbi1yZXZlYWxbZGF0YS1mcmFnPVwiJHtmcmFnSWR9XCJdYClcblxuICAvLyBTZXRzIGVhY2ggd3JhcHBlcidzIGNvcnJlY3Qgc3RhcnRpbmcgc3RhdGUgaW1tZWRpYXRlbHksIGluY2x1ZGluZyBvbiBhXG4gIC8vIHJlbG9hZCBvciBkaXJlY3QgbmF2aWdhdGlvbiB0byBhIHNsaWRlIHdob3NlIGZyYWdtZW50IGlzIGFscmVhZHkgc2hvd25cbiAgLy8g4oCUIG1hdHRlcnMgYmVjYXVzZSB0aGlzIGNlbGwgKG5vIHJlYWN0aXZlIGRlcHMpIG9ubHkgcnVucyBvbmNlLCBhdCBsb2FkLlxuICBjb25zdCBzeW5jQWxsID0gKCkgPT4ge1xuICAgIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoJy5mcmFnbWVudFtpZF0nKS5mb3JFYWNoKGZyYWcgPT5cbiAgICAgIHdyYXBwZXJGb3IoZnJhZy5pZCk/LmNsYXNzTGlzdC50b2dnbGUoJ2lzLXNtYWxsJywgZnJhZy5jbGFzc0xpc3QuY29udGFpbnMoJ3Zpc2libGUnKSlcbiAgICApXG4gIH1cbiAgc3luY0FsbCgpXG4gIC8vIFBERiBleHBvcnQgcmVidWlsZHMgdGhlIHNsaWRlIERPTSwgc28gcmUtc3luYyBvbiBhbnkgY2hhbmdlIChzYW1lIGZpeCBhcyBXZWVrcyAyLCA0LCA1IGFuZCA2KS5cbiAgbmV3IE11dGF0aW9uT2JzZXJ2ZXIoc3luY0FsbCkub2JzZXJ2ZShkb2N1bWVudC5ib2R5LCB7IGNoaWxkTGlzdDogdHJ1ZSwgc3VidHJlZTogdHJ1ZSwgYXR0cmlidXRlczogdHJ1ZSwgYXR0cmlidXRlRmlsdGVyOiBbJ2NsYXNzJ10gfSlcblxuICBSZXZlYWwub24oJ2ZyYWdtZW50c2hvd24nLCAoZXZlbnQpID0+IHtcbiAgICB3cmFwcGVyRm9yKGV2ZW50LmZyYWdtZW50LmlkKT8uY2xhc3NMaXN0LmFkZCgnaXMtc21hbGwnKVxuICB9KVxuICBSZXZlYWwub24oJ2ZyYWdtZW50aGlkZGVuJywgKGV2ZW50KSA9PiB7XG4gICAgd3JhcHBlckZvcihldmVudC5mcmFnbWVudC5pZCk/LmNsYXNzTGlzdC5yZW1vdmUoJ2lzLXNtYWxsJylcbiAgfSlcbn1cbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtMiIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IlBsb3QucGxvdCh7XG4gIHdpZHRoOiA0NjAsIGhlaWdodDogNDIwLFxuICB4OiB7bGFiZWw6IFwiUHJlZGljdGlvbiBlcnJvclwifSwgeToge2xhYmVsOiBcIkxvc3NcIn0sXG4gIG1hcmtzOiBbXG4gICAgUGxvdC5saW5lKGQzLnJhbmdlKC0xMCwgMTAuMSwgMC4yKS5tYXAoZSA9PiAoe2UsIGxvc3M6IE1hdGguYWJzKGUpICogMSwgc2VyaWVzOiBcInN5bW1ldHJpYywgbGluZWFyXCJ9KSksIHt4OiBcImVcIiwgeTogXCJsb3NzXCIsIHN0cm9rZTogXCJzZXJpZXNcIn0pLFxuICAgIFBsb3QubGluZShkMy5yYW5nZSgtMTAsIDEwLjEsIDAuMikubWFwKGUgPT4gKHtlLCBsb3NzOiAoZSAqKiAyKSAqIDAuMywgc2VyaWVzOiBcInN5bW1ldHJpYywgY29udmV4XCJ9KSksIHt4OiBcImVcIiwgeTogXCJsb3NzXCIsIHN0cm9rZTogXCJzZXJpZXNcIn0pLFxuICAgIFBsb3QubGluZShkMy5yYW5nZSgtMTAsIDEwLjEsIDAuMikubWFwKGUgPT4gKHtlLCBsb3NzOiBlID49IDAgPyAoZSAqKiAyKSAqIDAuMyA6IChlICoqIDIpICogMC4xNSwgc2VyaWVzOiBcImFzeW1tZXRyaWMsIGNvbnZleFwifSkpLCB7eDogXCJlXCIsIHk6IFwibG9zc1wiLCBzdHJva2U6IFwic2VyaWVzXCJ9KVxuICBdLFxuICBjb2xvcjoge2xlZ2VuZDogdHJ1ZX1cbn0pXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTMiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJodG1sYDxwcmUgc3R5bGU9XCJmb250LWZhbWlseTonU0YgTW9ubycsJ01lbmxvJyxtb25vc3BhY2U7Zm9udC1zaXplOjAuNjJlbTtsaW5lLWhlaWdodDoxLjQ7XG4gICAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kOiNmNmY2Zjg7Ym9yZGVyOjFweCBzb2xpZCAjZTBlMGU2O2JvcmRlci1yYWRpdXM6NnB4O1xuICAgICAgICAgICAgICAgICAgcGFkZGluZzo4cHggMTRweDtvdmVyZmxvdy14OmF1dG87d2hpdGUtc3BhY2U6cHJlO1wiPiR7dGFzazFfb3V0cHV0X3RleHR9PC9wcmU+YFxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC00IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8cHJlIHN0eWxlPVwiZm9udC1mYW1pbHk6J1NGIE1vbm8nLCdNZW5sbycsbW9ub3NwYWNlO2ZvbnQtc2l6ZTowLjYyZW07bGluZS1oZWlnaHQ6MS40O1xuICAgICAgICAgICAgICAgICAgYmFja2dyb3VuZDojZjZmNmY4O2JvcmRlcjoxcHggc29saWQgI2UwZTBlNjtib3JkZXItcmFkaXVzOjZweDtcbiAgICAgICAgICAgICAgICAgIHBhZGRpbmc6OHB4IDE0cHg7b3ZlcmZsb3cteDphdXRvO3doaXRlLXNwYWNlOnByZTtcIj4ke3F1aWNrX3Jtc2VfdGV4dH08L3ByZT5gXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTUiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJQbG90LnBsb3Qoe1xuICB3aWR0aDogNzAwLCBoZWlnaHQ6IDU2MCxcbiAgeDoge2xhYmVsOiBcIk51bWJlciBvZiBjb2VmZmljaWVudHNcIn0sXG4gIHk6IHtsYWJlbDogXCJSTVNFICgkKVwifSxcbiAgbWFya3M6IFtcbiAgICBQbG90LmxpbmUoY29tcGxleGl0eV9kYXRhLCB7eDogXCJuX2NvZWZcIiwgeTogXCJybXNlXCIsIHN0cm9rZTogXCJzZXJpZXNcIiwgc3Ryb2tlV2lkdGg6IDIuNX0pLFxuICAgIFBsb3QuZG90KGNvbXBsZXhpdHlfZGF0YSwge3g6IFwibl9jb2VmXCIsIHk6IFwicm1zZVwiLCBmaWxsOiBcInNlcmllc1wiLCByOiA0fSksXG4gICAgUGxvdC50ZXh0KGNvbXBsZXhpdHlfZGF0YS5maWx0ZXIoZCA9PiBkLnNlcmllcyA9PT0gXCJJbi1zYW1wbGUgUk1TRVwiKSwge3g6IFwibl9jb2VmXCIsIHk6IFwicm1zZVwiLCB0ZXh0OiBcIm1vZGVsXCIsIGR5OiAtMTIsIGZvbnRTaXplOiAxMH0pXG4gIF0sXG4gIGNvbG9yOiB7bGVnZW5kOiB0cnVlfVxufSlcbiJ9LHsibWV0aG9kTmFtZSI6ImludGVycHJldCIsImNlbGxOYW1lIjoib2pzLWNlbGwtNiIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6IntcbiAgY29uc3QgY29scyA9IFtcIk1vZGVsXCIsIFwiTiB2YXJzXCIsIFwiTiBjb2VmXCIsIFwiUjJcIiwgXCJSTVNFXCIsIFwiQklDXCJdO1xuICByZXR1cm4gaHRtbGA8dGFibGUgc3R5bGU9XCJtYXJnaW46MjBweCBhdXRvIDA7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MS4wNWVtO2JvcmRlci1jb2xsYXBzZTpjb2xsYXBzZTtcIj5cbiAgICA8dHIgc3R5bGU9XCJib3JkZXItYm90dG9tOjJweCBzb2xpZCAjMWExYTJlO1wiPlxuICAgICAgJHtjb2xzLm1hcChjID0+IGA8dGggc3R5bGU9XCJwYWRkaW5nOjZweCAyMHB4O3RleHQtYWxpZ246Y2VudGVyO1wiPiR7Y308L3RoPmApLmpvaW4oJycpfVxuICAgIDwvdHI+XG4gICAgJHttb2RlbF9zdGF0c19yb3dzLm1hcChkID0+IGBcbiAgICAgIDx0ciBzdHlsZT1cImJvcmRlci1ib3R0b206MXB4IHNvbGlkICNkZGQ7XCI+JHtjb2xzLm1hcChjID0+IGA8dGQgc3R5bGU9XCJwYWRkaW5nOjVweCAyMHB4O3RleHQtYWxpZ246Y2VudGVyO1wiPiR7ZFtjXX08L3RkPmApLmpvaW4oJycpfTwvdHI+XG4gICAgYCkuam9pbignJyl9XG4gIDwvdGFibGU+YFxufVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC03IiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8cHJlIHN0eWxlPVwiZm9udC1mYW1pbHk6J1NGIE1vbm8nLCdNZW5sbycsbW9ub3NwYWNlO2ZvbnQtc2l6ZTowLjYyZW07bGluZS1oZWlnaHQ6MS40O1xuICAgICAgICAgICAgICAgICAgYmFja2dyb3VuZDojZjZmNmY4O2JvcmRlcjoxcHggc29saWQgI2UwZTBlNjtib3JkZXItcmFkaXVzOjZweDtcbiAgICAgICAgICAgICAgICAgIHBhZGRpbmc6OHB4IDE0cHg7b3ZlcmZsb3cteDphdXRvO3doaXRlLXNwYWNlOnByZTtcIj4ke3NpbmdsZV9zcGxpdF9vdXRwdXRfdGV4dH08L3ByZT5gXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTgiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIHJldHVybiBodG1sYDx0YWJsZSBzdHlsZT1cIm1hcmdpbjoxNnB4IGF1dG8gMDtmb250LWZhbWlseTpzYW5zLXNlcmlmO2ZvbnQtc2l6ZToxLjA1ZW07Ym9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlO1wiPlxuICAgIDx0ciBzdHlsZT1cImJvcmRlci1ib3R0b206MnB4IHNvbGlkICMxYTFhMmU7XCI+PHRoIHN0eWxlPVwicGFkZGluZzo2cHggMjJweDtcIj5TcGxpdDwvdGg+PHRoIHN0eWxlPVwicGFkZGluZzo2cHggMjJweDtcIj5UZXN0IFJNU0U8L3RoPjwvdHI+XG4gICAgJHtzcGxpdF9pbnN0YWJpbGl0eV9yb3dzLm1hcChkID0+IGA8dHIgc3R5bGU9XCJib3JkZXItYm90dG9tOjFweCBzb2xpZCAjZGRkO1wiPjx0ZCBzdHlsZT1cInBhZGRpbmc6NXB4IDIycHg7dGV4dC1hbGlnbjpjZW50ZXI7XCI+JHtkLmRyYXd9PC90ZD48dGQgc3R5bGU9XCJwYWRkaW5nOjVweCAyMnB4O3RleHQtYWxpZ246Y2VudGVyO1wiPiR7ZC5ybXNlfTwvdGQ+PC90cj5gKS5qb2luKCcnKX1cbiAgPC90YWJsZT5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTkiLCJpbmxpbmUiOmZhbHNlLCJzb3VyY2UiOiJ7XG4gIGNvbnN0IHJvd0ggPSAyNCwgZ2FwID0gNSwgblNldHMgPSA1LCBuU2VnID0gNTtcbiAgY29uc3Qgc2VnVyA9IDM2LCBiYXJYID0gNzYsIGJhclcgPSBzZWdXICogblNlZztcbiAgY29uc3QgbW9kZWxOYW1lcyA9IG1vZGVsX3N0YXRzX3Jvd3MubWFwKGQgPT4gZC5Nb2RlbCk7XG4gIGNvbnN0IGNoaXAgPSAobGFiZWwsIGZpbGwpID0+IGh0bWxgPGRpdiBzdHlsZT1cIndpZHRoOjMwcHg7aGVpZ2h0OjIycHg7Ym9yZGVyOjFweCBzb2xpZCAjOTk5O2JhY2tncm91bmQ6JHtmaWxsfTtcbiAgICAgIGRpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7anVzdGlmeS1jb250ZW50OmNlbnRlcjtmb250LWZhbWlseTpzYW5zLXNlcmlmO2ZvbnQtc2l6ZTowLjYyZW07Y29sb3I6IzMzMztcIj4ke2xhYmVsfTwvZGl2PmA7XG4gIGNvbnN0IHJvd3MgPSBkMy5yYW5nZShuU2V0cykubWFwKGkgPT4gaHRtbGA8ZGl2IHN0eWxlPVwiZGlzcGxheTpmbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjttYXJnaW4tYm90dG9tOiR7Z2FwfXB4O1wiPlxuICAgIDxkaXYgc3R5bGU9XCJ3aWR0aDoke2Jhclh9cHg7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MC43NWVtO3RleHQtYWxpZ246cmlnaHQ7cGFkZGluZy1yaWdodDo4cHg7XCI+U2V0ICR7aSsxfTwvZGl2PlxuICAgIDxkaXYgc3R5bGU9XCJkaXNwbGF5OmZsZXg7XCI+XG4gICAgICAke2QzLnJhbmdlKG5TZWcpLm1hcChqID0+IGh0bWxgPGRpdiBzdHlsZT1cIndpZHRoOiR7c2VnV31weDtoZWlnaHQ6JHtyb3dIfXB4O2JhY2tncm91bmQ6JHtqPT09aSA/ICcjYzAzOTJiJyA6ICcjNWI3ZmJkJ307Ym9yZGVyOjFweCBzb2xpZCB3aGl0ZTtcIj48L2Rpdj5gKX1cbiAgICA8L2Rpdj5cbiAgICA8ZGl2IHN0eWxlPVwiZm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MC42OGVtO3BhZGRpbmc6MCA4cHg7Y29sb3I6IzU1NTtcIj7ihpI8L2Rpdj5cbiAgICA8ZGl2IHN0eWxlPVwiZGlzcGxheTpmbGV4O2dhcDozcHg7XCI+XG4gICAgICAke21vZGVsTmFtZXMubWFwKG0gPT4gY2hpcChtLnJlcGxhY2UoXCJNb2RlbCBcIiwgXCJNXCIpLCBcIiNlZWYzZmJcIikpfVxuICAgIDwvZGl2PlxuICA8L2Rpdj5gKTtcbiAgcmV0dXJuIGh0bWxgPGRpdiBzdHlsZT1cInBhZGRpbmctdG9wOjZweDtcIj5cbiAgICAke3Jvd3N9XG4gICAgPGRpdiBzdHlsZT1cImRpc3BsYXk6ZmxleDttYXJnaW4tdG9wOjRweDtcIj5cbiAgICAgIDxkaXYgc3R5bGU9XCJ3aWR0aDoke2Jhclh9cHg7XCI+PC9kaXY+XG4gICAgICA8ZGl2IHN0eWxlPVwid2lkdGg6JHtiYXJXfXB4O2JvcmRlci10b3A6MnB4IHNvbGlkICMzMzM7dGV4dC1hbGlnbjpjZW50ZXI7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MC42OGVtO3BhZGRpbmctdG9wOjNweDtjb2xvcjojMzMzO1wiPldvcmsgc2V0PC9kaXY+XG4gICAgPC9kaXY+XG4gICAgPGRpdiBzdHlsZT1cImRpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7bWFyZ2luLXRvcDoxMHB4O1wiPlxuICAgICAgPGRpdiBzdHlsZT1cIndpZHRoOiR7YmFyWCArIGJhclcgKyA4fXB4O2ZvbnQtZmFtaWx5OnNhbnMtc2VyaWY7Zm9udC1zaXplOjAuNzJlbTt0ZXh0LWFsaWduOnJpZ2h0O3BhZGRpbmctcmlnaHQ6OHB4O2NvbG9yOiMyZDZhNGY7XCI+QXZlcmFnZSBkb3duIGVhY2ggY29sdW1uIOKGkjwvZGl2PlxuICAgICAgPGRpdiBzdHlsZT1cImRpc3BsYXk6ZmxleDtnYXA6M3B4O1wiPlxuICAgICAgICAke21vZGVsTmFtZXMubWFwKG0gPT4gY2hpcChtLnJlcGxhY2UoXCJNb2RlbCBcIiwgXCJNXCIpLCBcIiNkN2U4ZGJcIikpfVxuICAgICAgPC9kaXY+XG4gICAgPC9kaXY+XG4gICAgPGRpdiBzdHlsZT1cImZvbnQtZmFtaWx5OnNhbnMtc2VyaWY7Zm9udC1zaXplOjAuOGVtO3BhZGRpbmctdG9wOjhweDtjb2xvcjojMmQ2YTRmO2ZvbnQtd2VpZ2h0OjYwMDtcIj5QaWNrIHRoZSBtb2RlbCB3aXRoIHRoZSBsb3dlc3QgYXZlcmFnZSDigJQgbm90IHRoZSBsb3dlc3Qgc2luZ2xlIGZvbGQ8L2Rpdj5cbiAgPC9kaXY+YFxufVxuIn0seyJtZXRob2ROYW1lIjoiaW50ZXJwcmV0IiwiY2VsbE5hbWUiOiJvanMtY2VsbC0xMCIsImlubGluZSI6ZmFsc2UsInNvdXJjZSI6Imh0bWxgPHByZSBzdHlsZT1cImZvbnQtZmFtaWx5OidTRiBNb25vJywnTWVubG8nLG1vbm9zcGFjZTtmb250LXNpemU6MC42MmVtO2xpbmUtaGVpZ2h0OjEuNDtcbiAgICAgICAgICAgICAgICAgIGJhY2tncm91bmQ6I2Y2ZjZmODtib3JkZXI6MXB4IHNvbGlkICNlMGUwZTY7Ym9yZGVyLXJhZGl1czo2cHg7XG4gICAgICAgICAgICAgICAgICBwYWRkaW5nOjhweCAxNHB4O292ZXJmbG93LXg6YXV0bzt3aGl0ZS1zcGFjZTpwcmU7XCI+JHt0YXNrMl9vdXRwdXRfdGV4dH08L3ByZT5gXG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTExIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoie1xuICBjb25zdCBjb2xzID0gW1wiTW9kZWxcIiwgXCJGb2xkIDFcIiwgXCJGb2xkIDJcIiwgXCJGb2xkIDNcIiwgXCJGb2xkIDRcIiwgXCJGb2xkIDVcIiwgXCJBdmVyYWdlXCJdO1xuICByZXR1cm4gaHRtbGA8dGFibGUgc3R5bGU9XCJtYXJnaW46MjBweCBhdXRvIDA7Zm9udC1mYW1pbHk6c2Fucy1zZXJpZjtmb250LXNpemU6MC44NWVtO2JvcmRlci1jb2xsYXBzZTpjb2xsYXBzZTtcIj5cbiAgICA8dHIgc3R5bGU9XCJib3JkZXItYm90dG9tOjJweCBzb2xpZCAjMWExYTJlO1wiPlxuICAgICAgJHtjb2xzLm1hcChjID0+IGA8dGggc3R5bGU9XCJwYWRkaW5nOjVweCAxNHB4O3RleHQtYWxpZ246Y2VudGVyO1wiPiR7Y308L3RoPmApLmpvaW4oJycpfVxuICAgIDwvdHI+XG4gICAgJHtjdl9zdGF0c19yb3dzLm1hcChkID0+IGBcbiAgICAgIDx0ciBzdHlsZT1cImJvcmRlci1ib3R0b206MXB4IHNvbGlkICNkZGQ7XCI+JHtjb2xzLm1hcChjID0+IGA8dGQgc3R5bGU9XCJwYWRkaW5nOjRweCAxNHB4O3RleHQtYWxpZ246Y2VudGVyOyR7Yz09PSdBdmVyYWdlJz8nZm9udC13ZWlnaHQ6NzAwOyc6Jyd9XCI+JHtkW2NdfTwvdGQ+YCkuam9pbignJyl9PC90cj5cbiAgICBgKS5qb2luKCcnKX1cbiAgPC90YWJsZT5gXG59XG4ifSx7Im1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJjZWxsTmFtZSI6Im9qcy1jZWxsLTEyIiwiaW5saW5lIjpmYWxzZSwic291cmNlIjoiaHRtbGA8ZGl2IHN0eWxlPVwidGV4dC1hbGlnbjpjZW50ZXI7cGFkZGluZy10b3A6MjBweDtcIj5cbiAgPGRpdiBzdHlsZT1cImZvbnQtc2l6ZToyLjRlbTtjb2xvcjojMmQ2YTRmO2ZvbnQtd2VpZ2h0OjcwMDtcIj4kJHtwb2ludF9wcmVkLnRvTG9jYWxlU3RyaW5nKCl9PC9kaXY+XG4gIDxkaXYgc3R5bGU9XCJmb250LXNpemU6MS4xZW07Y29sb3I6IzY2NjtwYWRkaW5nLXRvcDoxMHB4O1wiPjgwJSBwcmVkaWN0aW9uIGludGVydmFsOiAkJHtwaV9sb3dlci50b0xvY2FsZVN0cmluZygpfSDigJMgJCR7cGlfdXBwZXIudG9Mb2NhbGVTdHJpbmcoKX08L2Rpdj5cbjwvZGl2PmBcbiJ9XX0=
     </script>
     <script type="module">
     if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }

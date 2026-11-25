@@ -83,6 +83,7 @@ weeks = [
      ]},
     {"n": 10, "topic": "Prediction", "status": "live",
      "links": [
+         ("Workshop slides", "week10-slides.html", False),
          ("Workshop slides (no answers)", "week10-slides-no-answers.html", False),
          ("Online session", "week10-online-slides.html", False),
      ]},
