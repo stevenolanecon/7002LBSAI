@@ -775,7 +775,7 @@ Show the full syntax — estimating and tabulating all five models
 <section id="back-to-the-original-question" class="slide level2">
 <h2>Back to the original question</h2>
 </section>
-<section id="what-price-goes-in-the-ad" class="slide level2">
+<section id="what-price-goes-in-the-ad" class="slide level2 smaller">
 <h2>What price goes in the ad?</h2>
 <p>Model 3, for a 10-year-old Camry LE, excellent condition, 120,000 miles, sold privately:</p>
 <div class="mid-code">
@@ -789,7 +789,10 @@ Show the full syntax — estimating and tabulating all five models
 <span id="cb9-8"><a></a>pi_lower <span class="op">=</span> pred[<span class="st">"obs_ci_lower"</span>].iloc[<span class="dv">0</span>]</span>
 <span id="cb9-9"><a></a>pi_upper <span class="op">=</span> pred[<span class="st">"obs_ci_upper"</span>].iloc[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p><code>get_prediction()</code> gives both the point forecast (<code>mean</code>) and — via <code>summary_frame(alpha=0.20)</code> — the bounds of a prediction interval, all from the model already fitted.</p>
+<p><code>get_prediction()</code> gives both the point forecast (<code>mean</code>) and — via <code>summary_frame(alpha=0.20)</code> — the bounds of a prediction interval.</p>
+<div class="fragment">
+<p><code>model3</code> here is refit on the <strong>full</strong> dataset, not on any one training split or cross-validation fold. BIC and cross-validation only needed held-out data to <em>choose</em> between models — now that Model 3’s chosen, there’s no reason to hold anything back, and more data means tighter coefficients.</p>
+</div>
 <div class="fragment">
 <p><code>alpha</code> is the chance the interval <strong>misses</strong> — the same convention as <code>get_prediction()</code> back in Week 5. <span class="math inline">\(1 - \alpha\)</span> is the chance it’s covered, so <code>alpha=0.20</code> gives an <strong>80%</strong> interval here, not the 95% Week 5 used.</p>
 </div>

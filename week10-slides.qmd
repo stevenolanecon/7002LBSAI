@@ -852,7 +852,7 @@ Source: Békés & Kézdi (2021), Ch. 13
 
 ---
 
-## What price goes in the ad?
+## What price goes in the ad? {.smaller}
 
 Model 3, for a 10-year-old Camry LE, excellent condition, 120,000 miles, sold privately:
 
@@ -870,7 +870,11 @@ pi_upper = pred["obs_ci_upper"].iloc[0]
 ```
 :::
 
-`get_prediction()` gives both the point forecast (`mean`) and — via `summary_frame(alpha=0.20)` — the bounds of a prediction interval, all from the model already fitted.
+`get_prediction()` gives both the point forecast (`mean`) and — via `summary_frame(alpha=0.20)` — the bounds of a prediction interval.
+
+::: {.fragment}
+`model3` here is refit on the **full** dataset, not on any one training split or cross-validation fold. BIC and cross-validation only needed held-out data to *choose* between models — now that Model 3's chosen, there's no reason to hold anything back, and more data means tighter coefficients.
+:::
 
 ::: {.fragment}
 `alpha` is the chance the interval **misses** — the same convention as `get_prediction()` back in Week 5. $1 - \alpha$ is the chance it's covered, so `alpha=0.20` gives an **80%** interval here, not the 95% Week 5 used.
