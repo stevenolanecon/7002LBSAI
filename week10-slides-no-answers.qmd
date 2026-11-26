@@ -781,3 +781,12 @@ Model building for prediction: log targets, feature engineering, LASSO and holdo
 *Every model this week assumed each row was independent of the others. What happens when today's value depends on yesterday's?*
 :::
 :::
+
+
+---
+
+## Guest event: Huw Pill at LJMU
+
+::: {style="text-align:center;"}
+<img src="images/huw-pill-event.png" style="max-width:100%;max-height:620px;border-radius:6px;box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+:::

@@ -6466,5 +6466,19 @@
     "title": "Prediction",
     "section": "The classic picture: target shooting",
     "text": "The classic picture: target shooting\nPicture four shooters aiming at a target. The bullseye is the true value; each dart is one prediction.\n\nLow bias, low varianceLow bias, high varianceHigh bias, low varianceHigh bias, high variance\n\n\nA shooter who’s biased but consistent (bottom left) can still beat one who’s unbiased but scattered (top right) — small, repeated misses can add up to a smaller MSE than big, random ones. That’s the whole case for trading a little bias for a lot less variance, which is exactly what LASSO does in the online session.\n\n\nSource: Békés & Kézdi (2021), Ch. 13"
+  },
+  {
+    "objectID": "week10-slides.html#guest-event-huw-pill-at-ljmu",
+    "href": "week10-slides.html#guest-event-huw-pill-at-ljmu",
+    "title": "Prediction",
+    "section": "Guest event: Huw Pill at LJMU",
+    "text": "Guest event: Huw Pill at LJMU"
+  },
+  {
+    "objectID": "week10-slides-no-answers.html#guest-event-huw-pill-at-ljmu",
+    "href": "week10-slides-no-answers.html#guest-event-huw-pill-at-ljmu",
+    "title": "Prediction",
+    "section": "Guest event: Huw Pill at LJMU",
+    "text": "Guest event: Huw Pill at LJMU"
   }
 ]
